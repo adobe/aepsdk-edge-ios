@@ -15,5 +15,14 @@
 //
 
 public class ACPExperiencePlatform {
-
+    @available(*, unavailable) private init() {}
+    
+    public static func registerExtension() {
+        // TODO: implement me
+    }
+    
+    public static func extensionVersion() -> String {
+        // TODO: implement me
+        return "1.0.0-alpha"
+    }
 }
