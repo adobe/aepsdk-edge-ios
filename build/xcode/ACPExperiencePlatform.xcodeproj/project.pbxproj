@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8C2E73C582A9E14034E89093 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 821B888570648BE40B90D4CB /* Pods_AEPCommerceDemoApp.framework */; };
+		16FE7A31C7DAAF9F4E529FAD /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A8933DE27A288E8CCC4C61 /* Pods_AEPCommerceDemoApp.framework */; };
+		60779FA70473598C0F52EF96 /* Pods_AEPDemoAppSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 86A2B8F00D380A56B98C5B2C /* Pods_AEPDemoAppSwiftUI.framework */; };
 		D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */; platformFilter = ios; };
 		D4D5B5262432599B00CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
 		D4D5B52C243259B700CAB6E4 /* ExampleTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B51B2432594000CAB6E4 /* ExampleTest.swift */; platformFilter = ios; };
@@ -20,6 +21,13 @@
 		D4D5B5862432977F00CAB6E4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5852432977F00CAB6E4 /* Preview Assets.xcassets */; };
 		D4D5B5892432977F00CAB6E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5872432977F00CAB6E4 /* LaunchScreen.storyboard */; };
 		D4D5B58F2432979C00CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; };
+		D4D5B5992433F9C300CAB6E4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B5982433F9C300CAB6E4 /* AppDelegate.swift */; };
+		D4D5B59B2433F9C300CAB6E4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B59A2433F9C300CAB6E4 /* SceneDelegate.swift */; };
+		D4D5B59D2433F9C300CAB6E4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B59C2433F9C300CAB6E4 /* ViewController.swift */; };
+		D4D5B5A02433F9C300CAB6E4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B59E2433F9C300CAB6E4 /* Main.storyboard */; };
+		D4D5B5A22433F9C400CAB6E4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5A12433F9C400CAB6E4 /* Assets.xcassets */; };
+		D4D5B5A52433F9C400CAB6E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5A32433F9C400CAB6E4 /* LaunchScreen.storyboard */; };
+		D4D5B5AA2433FA1000CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,9 +60,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		821B888570648BE40B90D4CB /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		892F92BC0E9920C4A0C5BEA5 /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
-		C3CA0DE996DD67995A3EA292 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		4D26EF3DA5C26AE13A39116B /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		823119B68364F1FF445EB197 /* Pods-AEPDemoAppSwiftUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPDemoAppSwiftUI.release.xcconfig"; path = "Target Support Files/Pods-AEPDemoAppSwiftUI/Pods-AEPDemoAppSwiftUI.release.xcconfig"; sourceTree = "<group>"; };
+		83196435BA71A616F1B9EE0C /* Pods-AEPDemoAppSwiftUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPDemoAppSwiftUI.debug.xcconfig"; path = "Target Support Files/Pods-AEPDemoAppSwiftUI/Pods-AEPDemoAppSwiftUI.debug.xcconfig"; sourceTree = "<group>"; };
+		86A2B8F00D380A56B98C5B2C /* Pods_AEPDemoAppSwiftUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPDemoAppSwiftUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7A8933DE27A288E8CCC4C61 /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACPExperiencePlatform.swift; sourceTree = "<group>"; };
 		D4D5B51B2432594000CAB6E4 /* ExampleTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleTest.swift; sourceTree = "<group>"; };
@@ -63,7 +73,7 @@
 		D4D5B53324325AB700CAB6E4 /* functionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B53524325AB700CAB6E4 /* ExampleFunctionalTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleFunctionalTest.swift; sourceTree = "<group>"; };
 		D4D5B53724325AB700CAB6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D4D5B57A2432977F00CAB6E4 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4D5B57A2432977F00CAB6E4 /* AEPDemoAppSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPDemoAppSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D4D5B57E2432977F00CAB6E4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D4D5B5802432977F00CAB6E4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -71,6 +81,15 @@
 		D4D5B5852432977F00CAB6E4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D4D5B5882432977F00CAB6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D4D5B58A2432977F00CAB6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D4D5B5962433F9C300CAB6E4 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4D5B5982433F9C300CAB6E4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		D4D5B59A2433F9C300CAB6E4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		D4D5B59C2433F9C300CAB6E4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		D4D5B59F2433F9C300CAB6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		D4D5B5A12433F9C400CAB6E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D4D5B5A42433F9C400CAB6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		D4D5B5A62433F9C400CAB6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E4D329943CA31F25C1066A9C /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,23 +121,42 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4D5B58F2432979C00CAB6E4 /* libACPExperiencePlatform.a in Frameworks */,
-				8C2E73C582A9E14034E89093 /* Pods_AEPCommerceDemoApp.framework in Frameworks */,
+				60779FA70473598C0F52EF96 /* Pods_AEPDemoAppSwiftUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4D5B5932433F9C300CAB6E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4D5B5AA2433FA1000CAB6E4 /* libACPExperiencePlatform.a in Frameworks */,
+				16FE7A31C7DAAF9F4E529FAD /* Pods_AEPCommerceDemoApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		77683D9D134523BDB73EDF7F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				86A2B8F00D380A56B98C5B2C /* Pods_AEPDemoAppSwiftUI.framework */,
+				A7A8933DE27A288E8CCC4C61 /* Pods_AEPCommerceDemoApp.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		D4D5B4DE242EBB1600CAB6E4 = {
 			isa = PBXGroup;
 			children = (
 				D4D5B4E9242EBB1600CAB6E4 /* src */,
 				D4D5B4F1242EBD2200CAB6E4 /* unitTests */,
 				D4D5B4F2242EBFAE00CAB6E4 /* functionalTests */,
-				D4D5B57B2432977F00CAB6E4 /* AEPCommerceDemoApp */,
+				D4D5B5972433F9C300CAB6E4 /* AEPCommerceDemoApp */,
+				D4D5B57B2432977F00CAB6E4 /* AEPDemoAppSwiftUI */,
 				D4D5B4E8242EBB1600CAB6E4 /* Products */,
-				D4D5B58E2432979C00CAB6E4 /* Frameworks */,
 				E5239B915F53B993A1976FC4 /* Pods */,
+				77683D9D134523BDB73EDF7F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -128,7 +166,8 @@
 				D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */,
 				D4D5B5212432599B00CAB6E4 /* unitTests.xctest */,
 				D4D5B53324325AB700CAB6E4 /* functionalTests.xctest */,
-				D4D5B57A2432977F00CAB6E4 /* AEPCommerceDemoApp.app */,
+				D4D5B57A2432977F00CAB6E4 /* AEPDemoAppSwiftUI.app */,
+				D4D5B5962433F9C300CAB6E4 /* AEPCommerceDemoApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,7 +201,7 @@
 			path = ../../code/functionalTests;
 			sourceTree = "<group>";
 		};
-		D4D5B57B2432977F00CAB6E4 /* AEPCommerceDemoApp */ = {
+		D4D5B57B2432977F00CAB6E4 /* AEPDemoAppSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
 				D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */,
@@ -173,8 +212,7 @@
 				D4D5B58A2432977F00CAB6E4 /* Info.plist */,
 				D4D5B5842432977F00CAB6E4 /* Preview Content */,
 			);
-			name = AEPCommerceDemoApp;
-			path = ../../demo/AEPCommerceDemoApp;
+			path = AEPDemoAppSwiftUI;
 			sourceTree = "<group>";
 		};
 		D4D5B5842432977F00CAB6E4 /* Preview Content */ = {
@@ -185,19 +223,27 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		D4D5B58E2432979C00CAB6E4 /* Frameworks */ = {
+		D4D5B5972433F9C300CAB6E4 /* AEPCommerceDemoApp */ = {
 			isa = PBXGroup;
 			children = (
-				821B888570648BE40B90D4CB /* Pods_AEPCommerceDemoApp.framework */,
+				D4D5B5982433F9C300CAB6E4 /* AppDelegate.swift */,
+				D4D5B59A2433F9C300CAB6E4 /* SceneDelegate.swift */,
+				D4D5B59C2433F9C300CAB6E4 /* ViewController.swift */,
+				D4D5B59E2433F9C300CAB6E4 /* Main.storyboard */,
+				D4D5B5A12433F9C400CAB6E4 /* Assets.xcassets */,
+				D4D5B5A32433F9C400CAB6E4 /* LaunchScreen.storyboard */,
+				D4D5B5A62433F9C400CAB6E4 /* Info.plist */,
 			);
-			name = Frameworks;
+			path = AEPCommerceDemoApp;
 			sourceTree = "<group>";
 		};
 		E5239B915F53B993A1976FC4 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				892F92BC0E9920C4A0C5BEA5 /* Pods-AEPCommerceDemoApp.debug.xcconfig */,
-				C3CA0DE996DD67995A3EA292 /* Pods-AEPCommerceDemoApp.release.xcconfig */,
+				83196435BA71A616F1B9EE0C /* Pods-AEPDemoAppSwiftUI.debug.xcconfig */,
+				823119B68364F1FF445EB197 /* Pods-AEPDemoAppSwiftUI.release.xcconfig */,
+				E4D329943CA31F25C1066A9C /* Pods-AEPCommerceDemoApp.debug.xcconfig */,
+				4D26EF3DA5C26AE13A39116B /* Pods-AEPCommerceDemoApp.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -258,11 +304,11 @@
 			productReference = D4D5B53324325AB700CAB6E4 /* functionalTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		D4D5B5792432977F00CAB6E4 /* AEPCommerceDemoApp */ = {
+		D4D5B5792432977F00CAB6E4 /* AEPDemoAppSwiftUI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D4D5B58D2432977F00CAB6E4 /* Build configuration list for PBXNativeTarget "AEPCommerceDemoApp" */;
+			buildConfigurationList = D4D5B58D2432977F00CAB6E4 /* Build configuration list for PBXNativeTarget "AEPDemoAppSwiftUI" */;
 			buildPhases = (
-				5FD88D33CBA037E0E3396173 /* [CP] Check Pods Manifest.lock */,
+				777FF007993C137E065C66F9 /* [CP] Check Pods Manifest.lock */,
 				D4D5B5762432977F00CAB6E4 /* Sources */,
 				D4D5B5772432977F00CAB6E4 /* Frameworks */,
 				D4D5B5782432977F00CAB6E4 /* Resources */,
@@ -271,9 +317,27 @@
 			);
 			dependencies = (
 			);
+			name = AEPDemoAppSwiftUI;
+			productName = AEPCommerceDemoApp;
+			productReference = D4D5B57A2432977F00CAB6E4 /* AEPDemoAppSwiftUI.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D4D5B5952433F9C300CAB6E4 /* AEPCommerceDemoApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D4D5B5A72433F9C400CAB6E4 /* Build configuration list for PBXNativeTarget "AEPCommerceDemoApp" */;
+			buildPhases = (
+				8BEE9B70D4B64A3389274299 /* [CP] Check Pods Manifest.lock */,
+				D4D5B5922433F9C300CAB6E4 /* Sources */,
+				D4D5B5932433F9C300CAB6E4 /* Frameworks */,
+				D4D5B5942433F9C300CAB6E4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
 			name = AEPCommerceDemoApp;
 			productName = AEPCommerceDemoApp;
-			productReference = D4D5B57A2432977F00CAB6E4 /* AEPCommerceDemoApp.app */;
+			productReference = D4D5B5962433F9C300CAB6E4 /* AEPCommerceDemoApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -297,6 +361,9 @@
 					D4D5B5792432977F00CAB6E4 = {
 						CreatedOnToolsVersion = 11.3.1;
 					};
+					D4D5B5952433F9C300CAB6E4 = {
+						CreatedOnToolsVersion = 11.3.1;
+					};
 				};
 			};
 			buildConfigurationList = D4D5B4E2242EBB1600CAB6E4 /* Build configuration list for PBXProject "ACPExperiencePlatform" */;
@@ -315,7 +382,8 @@
 				D4D5B4E6242EBB1600CAB6E4 /* ACPExperiencePlatform */,
 				D4D5B5202432599B00CAB6E4 /* unitTests */,
 				D4D5B53224325AB700CAB6E4 /* functionalTests */,
-				D4D5B5792432977F00CAB6E4 /* AEPCommerceDemoApp */,
+				D4D5B5792432977F00CAB6E4 /* AEPDemoAppSwiftUI */,
+				D4D5B5952433F9C300CAB6E4 /* AEPCommerceDemoApp */,
 			);
 		};
 /* End PBXProject section */
@@ -345,10 +413,42 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D4D5B5942433F9C300CAB6E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4D5B5A52433F9C400CAB6E4 /* LaunchScreen.storyboard in Resources */,
+				D4D5B5A22433F9C400CAB6E4 /* Assets.xcassets in Resources */,
+				D4D5B5A02433F9C300CAB6E4 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5FD88D33CBA037E0E3396173 /* [CP] Check Pods Manifest.lock */ = {
+		777FF007993C137E065C66F9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AEPDemoAppSwiftUI-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8BEE9B70D4B64A3389274299 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -407,6 +507,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D4D5B5922433F9C300CAB6E4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4D5B59D2433F9C300CAB6E4 /* ViewController.swift in Sources */,
+				D4D5B5992433F9C300CAB6E4 /* AppDelegate.swift in Sources */,
+				D4D5B59B2433F9C300CAB6E4 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -429,6 +539,22 @@
 			isa = PBXVariantGroup;
 			children = (
 				D4D5B5882432977F00CAB6E4 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		D4D5B59E2433F9C300CAB6E4 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D4D5B59F2433F9C300CAB6E4 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		D4D5B5A32433F9C400CAB6E4 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D4D5B5A42433F9C400CAB6E4 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -658,14 +784,14 @@
 		};
 		D4D5B58B2432977F00CAB6E4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 892F92BC0E9920C4A0C5BEA5 /* Pods-AEPCommerceDemoApp.debug.xcconfig */;
+			baseConfigurationReference = 83196435BA71A616F1B9EE0C /* Pods-AEPDemoAppSwiftUI.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"../../demo/AEPCommerceDemoApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"../../demo/AEPDemoAppSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = ../../demo/AEPCommerceDemoApp/Info.plist;
+				INFOPLIST_FILE = ../../demo/AEPDemoAppSwiftUI/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -687,14 +813,54 @@
 		};
 		D4D5B58C2432977F00CAB6E4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C3CA0DE996DD67995A3EA292 /* Pods-AEPCommerceDemoApp.release.xcconfig */;
+			baseConfigurationReference = 823119B68364F1FF445EB197 /* Pods-AEPDemoAppSwiftUI.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"../../demo/AEPCommerceDemoApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"../../demo/AEPDemoAppSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = ../../demo/AEPCommerceDemoApp/Info.plist;
+				INFOPLIST_FILE = ../../demo/AEPDemoAppSwiftUI/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.AEPCommerceDemoApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D4D5B5A82433F9C400CAB6E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E4D329943CA31F25C1066A9C /* Pods-AEPCommerceDemoApp.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FKGEE875K4;
+				INFOPLIST_FILE = AEPCommerceDemoApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.AEPCommerceDemoApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D4D5B5A92433F9C400CAB6E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4D26EF3DA5C26AE13A39116B /* Pods-AEPCommerceDemoApp.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FKGEE875K4;
+				INFOPLIST_FILE = AEPCommerceDemoApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -746,11 +912,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D4D5B58D2432977F00CAB6E4 /* Build configuration list for PBXNativeTarget "AEPCommerceDemoApp" */ = {
+		D4D5B58D2432977F00CAB6E4 /* Build configuration list for PBXNativeTarget "AEPDemoAppSwiftUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D4D5B58B2432977F00CAB6E4 /* Debug */,
 				D4D5B58C2432977F00CAB6E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D4D5B5A72433F9C400CAB6E4 /* Build configuration list for PBXNativeTarget "AEPCommerceDemoApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4D5B5A82433F9C400CAB6E4 /* Debug */,
+				D4D5B5A92433F9C400CAB6E4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
