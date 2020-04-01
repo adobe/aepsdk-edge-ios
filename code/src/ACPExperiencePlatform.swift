@@ -14,6 +14,8 @@
 // from Adobe.
 //
 
+import ACPCore
+
 public class ACPExperiencePlatform {
     @available(*, unavailable) private init() {}
     

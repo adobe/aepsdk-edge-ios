@@ -14,6 +14,7 @@ DerivedData/
 bin/*
 build/xcode/*/out
 build/xcode/genhtml
+demo/AEPDemoAppSwiftUI/build
 demo/AEPCommerceDemoApp/build
 
 build/xcode/*/out
