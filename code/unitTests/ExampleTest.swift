@@ -15,6 +15,7 @@
 //
 
 import XCTest
+@testable import ACPExperiencePlatform
 
 class ExampleTest: XCTestCase {
 
