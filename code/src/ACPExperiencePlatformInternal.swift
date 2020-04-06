@@ -30,7 +30,7 @@ class ACPExperiencePlatformInternal : ACPExtension {
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "init")
         do {
-            try api.registerListener(ExperiencePlatformExtensionListener.self,
+            try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
                                      eventType: ACPExperiencePlatformConstants.eventTypeAdobeHub,
                                      eventSource: ACPExperiencePlatformConstants.eventSourceAdobeSharedState)
         } catch {
@@ -38,11 +38,20 @@ class ACPExperiencePlatformInternal : ACPExtension {
         }
         
         do {
-            try api.registerListener(ExperiencePlatformExtensionListener.self,
+            try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
                                      eventType: ACPExperiencePlatformConstants.eventTypeExperiencePlatform,
                                      eventSource: ACPExperiencePlatformConstants.eventSourceExtensionRequestContent)
         } catch {
             ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension request content events: \(error)")
+
+        }
+        
+        do {
+            try api.registerListener(ExperiencePlatformExtensionResponseListener.self,
+                                     eventType: ACPExperiencePlatformConstants.eventTypeExperiencePlatform,
+                                     eventSource: ACPExperiencePlatformConstants.eventSourceExtensionResponseContent)
+        } catch {
+            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension response content events: \(error)")
 
         }
         
@@ -69,10 +78,8 @@ class ACPExperiencePlatformInternal : ACPExtension {
         ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Oh snap! An unexpected error occured: \(error.localizedDescription)")
     }
     
-    /**
-     Adds an event to the event queue and starts processing the queue.  Events with no event data are ignored.
-     - Parameter event: The event to add to the event queue for processing
-     */
+     /// Adds an event to the event queue and starts processing the queue.  Events with no event data are ignored.
+     /// - Parameter event: The event to add to the event queue for processing
     func processAddEvent(_ event: ACPExtensionEvent) {
         
         if event.eventData == nil {
@@ -89,12 +96,15 @@ class ACPExperiencePlatformInternal : ACPExtension {
         
     }
     
-    /**
-     Processes the events in the event queue in the order they were received.
-     
-     A valid Configuration shared state is required for processing events and if one is not available, processing the queue is halted without removing events from
-     the queue. If a valid Configuration shared state is available but no `experiencePlatform.configId ` is found, the event is dropped.
-     */
+    /// Handle Konductor response by calling response callback.
+    func processPlatformResponseEvent(_ event: ACPExtensionEvent) {
+        // TODO implement me
+    }
+    
+     /// Processes the events in the event queue in the order they were received.
+     ///
+     /// A valid Configuration shared state is required for processing events and if one is not available, processing the queue is halted without removing events from
+     /// the queue. If a valid Configuration shared state is available but no `experiencePlatform.configId ` is found, the event is dropped.
     func processEventQueue() {
         if (eventQueue.isEmpty) {
             return;
@@ -134,8 +144,7 @@ class ACPExperiencePlatformInternal : ACPExtension {
         }
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Finished processing and sending events to Platform.")
-
-        
         
     }
+
 }

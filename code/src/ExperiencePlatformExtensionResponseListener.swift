@@ -18,7 +18,7 @@
 import Foundation
 import ACPCore
 
-class ExperiencePlatformExtensionListener : ACPExtensionListener {
+class ExperiencePlatformExtensionResponseListener : ACPExtensionListener {
     private let TAG = "ExperiencePlatformExtensionListener"
     
     override init() {
@@ -33,22 +33,6 @@ class ExperiencePlatformExtensionListener : ACPExtensionListener {
             return;
         }
         
-        // Handle SharedState events
-        if (event.eventType == ACPExperiencePlatformConstants.eventTypeAdobeHub) {
-            guard let eventData = event.eventData else {
-                ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Adobe Hub event contains no data. Cannot process event '\(event.eventUniqueIdentifier)'")
-                return;
-            }
-            
-            let stateOwner = eventData[ACPExperiencePlatformConstants.SharedState.stateowner] as? String
-            if stateOwner == ACPExperiencePlatformConstants.SharedState.configuration {
-                // kick event queue processing
-                parentExtension.processEventQueue()
-            }
-        } else if event.eventType == ACPExperiencePlatformConstants.eventTypeExperiencePlatform &&
-            event.eventSource == ACPExperiencePlatformConstants.eventSourceExtensionRequestContent {
-            // Handle Platform Extension events
-            parentExtension.processAddEvent(event)
-        }
+        parentExtension.processPlatformResponseEvent(event)
     }
 }
