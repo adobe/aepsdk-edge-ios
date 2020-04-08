@@ -18,6 +18,16 @@
 import SwiftUI
 import ACPExperiencePlatform
 
+class TestHttpConnectionPerformer: HttpConnectionPerformer {
+    func shouldOverride(url: URL, httpMethod: HttpMethod) -> Bool {
+        return true
+    }
+    
+    func connectAsync(networkRequest: NetworkRequest, completionHandler: @escaping (HttpConnection) -> Void) {
+        print("Do nothing \(networkRequest)")
+    }
+}
+
 struct ContentView: View {
     var body: some View {
         Button(action: {
@@ -28,12 +38,17 @@ struct ContentView: View {
             guard networkRequest1 != nil else {
                 return;
             }
-            networkService.connectUrlAsync(networkRequest: networkRequest1!, completionHandler: {connection in
+            
+            NetworkServiceOverrider.shared.enableOverride(with: TestHttpConnectionPerformer())
+            networkService.connectAsync(networkRequest: networkRequest1!, completionHandler: {connection in
                                                // function body goes here
                 print(connection.responseHttpHeader(forKey: "Content-Type"))
                 print(connection.responseCode)
                 print(connection.responseMessage)
             })
+            
+            NetworkServiceOverrider.shared.reset()
+            NetworkServiceOverrider.shared.enableOverride(with: TestHttpConnectionPerformer())
         }) {
             Text("Ping")
         }
