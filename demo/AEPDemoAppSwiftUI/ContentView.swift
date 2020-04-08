@@ -47,7 +47,20 @@ struct ContentView: View {
             })
             
             NetworkServiceOverrider.shared.reset()
-            NetworkServiceOverrider.shared.enableOverride(with: TestHttpConnectionPerformer())
+            
+            // not permitted
+            // NetworkService.shared.connectAsync(networkRequest: nil)
+            
+            // fire and forget example
+            NetworkService.shared.connectAsync(networkRequest: networkRequest1!)
+            
+            // not https protocol not permitted from construction, returns nil
+            let networkRequestNil:NetworkRequest? = NetworkRequest(url: URL(string: "http://www.adobe.com")!) ?? nil // using default param values
+            print(networkRequestNil)
+            
+            // nil/empty url not permitted
+            //let networkRequestWithNilUrl:NetworkRequest? = NetworkRequest(url: nil, httpMethod: HttpMethod.get, connectPayload: "test", httpHeaders: [:],
+            //connectTimeout: 5, readTimeout: 5) ?? nil
         }) {
             Text("Ping")
         }
