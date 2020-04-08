@@ -220,13 +220,13 @@ public class NetworkServiceOverrider {
     /// - Parameter with: HttpConnectionPerformer new performer to be used in place of default network stack.
     public func enableOverride(with : HttpConnectionPerformer) {
         print("NetworkServiceOverrider - Enabling network override.")
-        self.queue.sync { self.internalPerformer = with }
+        self.queue.async(flags: .barrier) { self.internalPerformer = with }
     }
     
     
     /// Resets currently set HttpConnectionPerformer and allows the SDK to use the default network stack for network requests
     public func reset() {
         print("NetworkServiceOverrider - Disabling network override, using default network service.")
-        self.queue.sync { self.internalPerformer = nil }
+        self.queue.async(flags: .barrier) { self.internalPerformer = nil }
     }
 }
