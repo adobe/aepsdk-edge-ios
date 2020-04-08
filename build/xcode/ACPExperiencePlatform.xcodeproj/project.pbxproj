@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		16FE7A31C7DAAF9F4E529FAD /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A8933DE27A288E8CCC4C61 /* Pods_AEPCommerceDemoApp.framework */; };
-		214189192436663A00907D0A /* HttpConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214189172436663A00907D0A /* HttpConnection.swift */; };
 		2141891A2436663A00907D0A /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214189182436663A00907D0A /* NetworkService.swift */; };
 		60779FA70473598C0F52EF96 /* Pods_AEPDemoAppSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 86A2B8F00D380A56B98C5B2C /* Pods_AEPDemoAppSwiftUI.framework */; };
 		7BA0355DED886EDBDD884FB8 /* Pods_ACPExperiencePlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AA521D8593FDD04EE662B1A /* Pods_ACPExperiencePlatform.framework */; };
@@ -63,8 +62,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		214189172436663A00907D0A /* HttpConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpConnection.swift; sourceTree = "<group>"; };
-		214189182436663A00907D0A /* NetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		214189182436663A00907D0A /* NetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4D26EF3DA5C26AE13A39116B /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		823119B68364F1FF445EB197 /* Pods-AEPDemoAppSwiftUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPDemoAppSwiftUI.release.xcconfig"; path = "Target Support Files/Pods-AEPDemoAppSwiftUI/Pods-AEPDemoAppSwiftUI.release.xcconfig"; sourceTree = "<group>"; };
 		83196435BA71A616F1B9EE0C /* Pods-AEPDemoAppSwiftUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPDemoAppSwiftUI.debug.xcconfig"; path = "Target Support Files/Pods-AEPDemoAppSwiftUI/Pods-AEPDemoAppSwiftUI.debug.xcconfig"; sourceTree = "<group>"; };
@@ -186,7 +184,6 @@
 			isa = PBXGroup;
 			children = (
 				D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */,
-				214189172436663A00907D0A /* HttpConnection.swift */,
 				214189182436663A00907D0A /* NetworkService.swift */,
 			);
 			name = src;
@@ -518,7 +515,6 @@
 			files = (
 				D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */,
 				2141891A2436663A00907D0A /* NetworkService.swift in Sources */,
-				214189192436663A00907D0A /* HttpConnection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

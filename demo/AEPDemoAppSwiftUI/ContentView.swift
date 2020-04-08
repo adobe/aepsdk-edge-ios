@@ -16,10 +16,28 @@
 
 
 import SwiftUI
+import ACPExperiencePlatform
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello, World!")
+        Button(action: {
+            let networkService:NetworkService = NetworkService()
+            let networkRequest1:NetworkRequest? = NetworkRequest(url: URL(string: "https://www.adobe.com")!, httpMethod: HttpMethod.get, connectPayload: "test", httpHeaders: [:],
+                                                                connectTimeout: 5, readTimeout: 5) ?? nil
+            
+            guard networkRequest1 != nil else {
+                return;
+            }
+            networkService.connectUrlAsync(networkRequest: networkRequest1!, completionHandler: {connection in
+                                               // function body goes here
+                print(connection.responseHttpHeader(forKey: "Content-Type"))
+                print(connection.responseCode)
+                print(connection.responseMessage)
+            })
+        }) {
+            Text("Ping")
+        }
+        
     }
 }
 
