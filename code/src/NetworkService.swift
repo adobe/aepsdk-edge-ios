@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 
 import Foundation
 
+// TBD - new values added in the enum break the compatibility for out param or return types, e.g. HttpConnectionPerformer methods
 public enum HttpMethod: String {
     case get = "GET"
     case post = "POST"
@@ -116,8 +117,9 @@ protocol NetworkServiceProtocol {
 public class NetworkService: NetworkServiceProtocol {
     // TODO: use ThreadSafeDictionary when moving to core
     private var sessions:[String:URLSession]
+    public static let shared = NetworkService()
     
-    public init() {
+    private init() {
          sessions = [String:URLSession]()
     }
     

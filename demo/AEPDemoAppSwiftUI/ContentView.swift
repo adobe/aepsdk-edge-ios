@@ -31,7 +31,6 @@ class TestHttpConnectionPerformer: HttpConnectionPerformer {
 struct ContentView: View {
     var body: some View {
         Button(action: {
-            let networkService:NetworkService = NetworkService()
             let networkRequest1:NetworkRequest? = NetworkRequest(url: URL(string: "https://www.adobe.com")!, httpMethod: HttpMethod.get, connectPayload: "test", httpHeaders: [:],
                                                                 connectTimeout: 5, readTimeout: 5) ?? nil
             
@@ -40,7 +39,7 @@ struct ContentView: View {
             }
             
             NetworkServiceOverrider.shared.enableOverride(with: TestHttpConnectionPerformer())
-            networkService.connectAsync(networkRequest: networkRequest1!, completionHandler: {connection in
+            NetworkService.shared.connectAsync(networkRequest: networkRequest1!, completionHandler: {connection in
                                                // function body goes here
                 print(connection.responseHttpHeader(forKey: "Content-Type"))
                 print(connection.responseCode)
