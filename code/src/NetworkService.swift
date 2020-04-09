@@ -91,8 +91,8 @@ public protocol HttpConnectionPerformer {
     /// NetworkRequest to override with a completion handler
     /// - Parameters:
     ///   - networkRequest: NetworkRequest instance containing the full URL for the connection, the HttpMethod, HTTP body, connect and read timeout
-    ///   - completionHandler: The completion handler which is called once the connection is initiated; In case of a network error, timeout or an unexpected error, the HttpConnection is nil
-    func connectAsync(networkRequest:NetworkRequest, completionHandler: @escaping (HttpConnection) -> Void)
+    ///   - completionHandler: Optional completion handler which needs to be called once the connection is initiated
+    func connectAsync(networkRequest:NetworkRequest, completionHandler: ((HttpConnection) -> Void)?)
 }
 
 protocol NetworkServiceProtocol {
@@ -100,16 +100,13 @@ protocol NetworkServiceProtocol {
     /// Initiates an asynchronous network connection to the specified NetworkRequest.url
     /// - Parameters:
     ///   - networkRequest: the NetworkRequest used for this connection
-    ///   - completionHandler:invoked whe the HttpConnection is available
-    func connectAsync(networkRequest: NetworkRequest, completionHandler: @escaping (HttpConnection) -> Void)
-    
-    
-    /// Initiates an asynchronous network connection.
-    /// - Parameter networkRequest: the NetworkRequest used for this connection
-    func connectAsync(networkRequest: NetworkRequest)
+    ///   - completionHandler:Optional completion handler which is called once the HttpConnection is available; it can be called from an HttpConnectionPerformer if NetworkServiceOverrider is enabled.
+    ///   In case of a network error, timeout or an unexpected error, the HttpConnection is nil
+    func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)?)
 }
 
 public class NetworkService: NetworkServiceProtocol {
+  
     // TODO: use ThreadSafeDictionary when moving to core
     private var sessions:[String:URLSession]
     public static let shared = NetworkService()
@@ -118,24 +115,7 @@ public class NetworkService: NetworkServiceProtocol {
          sessions = [String:URLSession]()
     }
     
-    // TODO: discuss if we should have a convenience method like this - fire and forget
-    public func connectAsync(networkRequest: NetworkRequest) {
-        if !networkRequest.url.absoluteString.starts(with: "https") {
-            print("NetworkRequest - Network request for (\( networkRequest.url.absoluteString)) could not be created, only https requests are accepted.");
-            return
-        }
-        
-        // TODO: shouldOverride
-        guard let urlRequest = createURLRequest(networkRequest: networkRequest) else { return }
-        guard let urlSession = createURLSession(networkRequest: networkRequest) else { return }
-        
-        // initiate the request
-        print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)).")
-        let task = urlSession.dataTask(with: urlRequest)
-        task.resume()
-    }
-    
-    public func connectAsync(networkRequest: NetworkRequest, completionHandler: @escaping (HttpConnection) -> Void) {
+    public func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         if !networkRequest.url.absoluteString.starts(with: "https") {
             print("NetworkRequest - Network request for (\( networkRequest.url.absoluteString)) could not be created, only https requests are accepted.");
             return
@@ -151,13 +131,19 @@ public class NetworkService: NetworkServiceProtocol {
             guard let urlRequest = createURLRequest(networkRequest: networkRequest) else { return }
             guard let urlSession = createURLSession(networkRequest: networkRequest) else { return }
             
-            // initiate the request
+            // initiate the request with/without completion handler
+            guard let closure = completionHandler else {
+                print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)).")
+                let task = urlSession.dataTask(with: urlRequest)
+                task.resume()
+                return
+            }
+            
             print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)) with completion handler.")
             let task = urlSession.dataTask(with: urlRequest, completionHandler: { (data, response, error) in
                 let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse , error: error)
-                completionHandler(httpConnection)
+                closure(httpConnection)
             })
-            
             task.resume()
         }
     }

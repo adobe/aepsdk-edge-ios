@@ -23,7 +23,7 @@ class TestHttpConnectionPerformer: HttpConnectionPerformer {
         return true
     }
     
-    func connectAsync(networkRequest: NetworkRequest, completionHandler: @escaping (HttpConnection) -> Void) {
+    func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)?) {
         print("Do nothing \(networkRequest)")
     }
 }
@@ -37,9 +37,9 @@ struct ContentView: View {
             NetworkServiceOverrider.shared.enableOverride(with: TestHttpConnectionPerformer())
             NetworkService.shared.connectAsync(networkRequest: networkRequest1, completionHandler: {connection in
                                                // function body goes here
-                print(connection.responseHttpHeader(forKey: "Content-Type"))
-                print(connection.responseCode)
-                print(connection.responseMessage)
+                print(connection.responseHttpHeader(forKey: "Content-Type") ?? "no content-type header")
+                print(connection.responseCode ?? "no response code")
+                print(connection.responseMessage ?? "no response message")
             })
             
             NetworkServiceOverrider.shared.reset()
