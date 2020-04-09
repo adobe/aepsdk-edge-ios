@@ -35,12 +35,13 @@ class RequestBuilderTests: XCTestCase {
         request.recordSeparator = "A"
         request.lineFeed = "B"
 
+        
         let event = try? ACPExtensionEvent(name: "Request Test",
                                            type: "type",
                                            source: "source",
-                                           data: nil)
+                                           data: ["data":["key":"value"]])
         
-        let data = request.getPayload(events: [event!])
+        let data = request.getPayload([event!])
         
         XCTAssertNotNil(data)
         

@@ -37,7 +37,7 @@ class RequestBuilder {
     init() {
     }
     
-    func getPayload(events: [ACPExtensionEvent]) -> Data? {
+    func getPayload(_ events: [ACPExtensionEvent]) -> Data? {
         if (events.isEmpty) {
             return nil
         }
@@ -47,6 +47,7 @@ class RequestBuilder {
         // TODO add state store to request metadata
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig)
         
+
         // TODO add ECID here ???
         let request = EdgeRequest(meta: requestMetadata)
         
@@ -60,6 +61,31 @@ class RequestBuilder {
         }
         
         return nil
+    }
+    
+    private func extractPlatformEvents(_ events: [ACPExtensionEvent]) -> [ [AnyHashable : Any] ] {
+        var platformEvents: [[AnyHashable:Any]] = []
+        
+        for event in events {
+            guard var eventData = event.eventData else {
+                continue
+            }
+            
+            if eventData["xdm"] == nil {
+                eventData["xdm"] = [:]
+            }
+            
+            if var xdm = eventData["xdm"] as? [String : Any] {
+                xdm["timestamp"] = event.eventTimestamp
+                xdm["eventId"] = event.eventUniqueIdentifier
+                eventData["xdm"] = xdm
+            }
+            
+            platformEvents.append(eventData)
+            
+        }
+        
+        return platformEvents
     }
     
 }

@@ -150,7 +150,7 @@ class ACPExperiencePlatformInternal : ACPExtension {
             requestBuilder.recordSeparator = ACPExperiencePlatformConstants.Defaults.requestConfigRecordSeparator
             requestBuilder.lineFeed = ACPExperiencePlatformConstants.Defaults.requestConfigLineFeed
             
-            if let requestData = requestBuilder.getPayload(events: [event]) {
+            if let requestData = requestBuilder.getPayload([event]) {
                 // TODO send network request
                 
                 // DEBUG
