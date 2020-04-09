@@ -30,7 +30,10 @@ struct ACPExperiencePlatformConstants {
     static let platformDataStorage: String = "PlatformExtensionDataStorage"
     
     struct Defaults {
-        static let NetworkRequestMaxRetries: Int = 5
+        static let networkRequestMaxRetries: Int = 5
+        
+        static let requestConfigRecordSeparator = "\u{0000}"
+        static let requestConfigLineFeed = "\n"
     }
 
     struct EventDataKeys {

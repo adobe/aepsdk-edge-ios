@@ -120,27 +120,44 @@ class ACPExperiencePlatformInternal : ACPExtension {
                 continue
             }
             
-            let configSharedState: [AnyHashable:Any]?
+            let configState: [AnyHashable:Any]?
             do {
-                configSharedState = try api.getSharedEventState(ACPExperiencePlatformConstants.SharedState.configuration, event: event)
+                configState = try api.getSharedEventState(ACPExperiencePlatformConstants.SharedState.configuration, event: event)
             } catch {
                 ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to retrieve config shared state: \(error)")
                 return
             }
             
-            if (configSharedState == nil) {
+            guard let configSharedState = configState else {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Could not process queued events, configuration shared state is pending.")
                 return
             }
             
-            let configId: String? = configSharedState![ACPExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String
+            let configId: String? = configSharedState[ACPExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String
             if (configId ?? "").isEmpty {
                 ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Removed event '\(event.eventUniqueIdentifier)' because of invalid experiencePlatform.configId in configuration.")
                 _ = eventQueue.dropLast()
                 return
             }
             
-            // TODO Request Builder
+            // Build Request object
+            
+            let requestBuilder = RequestBuilder()
+            if let orgId = configSharedState[ACPExperiencePlatformConstants.SharedState.Configuration.experienceCloudOrgId] as? String{
+                requestBuilder.organizationId = orgId
+            }
+            
+            requestBuilder.recordSeparator = ACPExperiencePlatformConstants.Defaults.requestConfigRecordSeparator
+            requestBuilder.lineFeed = ACPExperiencePlatformConstants.Defaults.requestConfigLineFeed
+            
+            if let requestData = requestBuilder.getPayload(events: [event]) {
+                // TODO send network request
+                
+                // DEBUG
+                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request with body '\(String(data: requestData, encoding: .utf8) ?? "failed to parse")'")
+            }
+            
+            
         }
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Finished processing and sending events to Platform.")
