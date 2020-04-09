@@ -59,11 +59,48 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertEqual("A" , flattenDict[".meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("B", flattenDict[".meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertTrue(flattenDict[".meta.konductorConfig.streaming.enabled"] as? Bool ?? false)
-        let identity = flattenDict[".xdm.identityMap.ECID"] as? [[String: Any]]
-        XCTAssertNotNil(identity)
-        XCTAssertEqual(1, identity!.count)
-        XCTAssertEqual("ecid", identity![0]["id"] as? String)
+        XCTAssertEqual("ecid", flattenDict[".xdm.identityMap.ECID[0].id"] as? String)
         
+    }
+    
+    func testGetPayload_withEventXdm_verifyEventId_verifyTimestamp() {
+        let request = RequestBuilder()
+        request.organizationId = "orgID"
+        request.recordSeparator = "A"
+        request.lineFeed = "B"
+        request.experienceCloudId = "ecid"
+        
+        var events: [ACPExtensionEvent] = []
+        
+        events.append(try! ACPExtensionEvent(name: "Request Test 1",
+                                           type: "type",
+                                           source: "source",
+                                           data: ["xdm":["application":["name":"myapp"]]]))
+        
+        events.append(try! ACPExtensionEvent(name: "Request Test 2",
+                                             type: "type",
+                                             source: "source",
+                                             data: ["xdm":["environment":["type":"widget"]]]))
+        
+        let data = request.getPayload(events)
+        
+        XCTAssertNotNil(data)
+        
+        let json = try? JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String:Any]
+        
+        guard let dict = json else {
+            XCTFail("Failed to parse request payload to dictionary.")
+            return
+        }
+        
+        let flattenDict = flattenDictionary(dict: dict)
+        XCTAssertEqual("myapp", flattenDict[".events[0].xdm.application.name"] as? String)
+        XCTAssertEqual(events[0].eventUniqueIdentifier, flattenDict[".events[0].xdm.eventId"] as? String)
+        XCTAssertEqual(timestampToISO8601(events[0].eventTimestamp), flattenDict[".events[0].xdm.timestamp"] as? String)
+        
+        XCTAssertEqual("widget", flattenDict[".events[1].xdm.environment.type"] as? String)
+        XCTAssertEqual(events[1].eventUniqueIdentifier, flattenDict[".events[1].xdm.eventId"] as? String)
+        XCTAssertEqual(timestampToISO8601(events[1].eventTimestamp), flattenDict[".events[1].xdm.timestamp"] as? String)
     }
     
     func flattenDictionary(dict: [String : Any]) -> [String : Any] {
@@ -72,14 +109,33 @@ class RequestBuilderTests: XCTestCase {
         func recursive(dict: [String : Any], out: inout [String : Any], currentKey: String = "") {
             for (key, val) in dict {
                 let resultKey = currentKey + "." + key
-                if let val = val as? [String : Any] {
-                    recursive(dict: val, out: &out, currentKey: resultKey)
-                } else {
-                    out[resultKey] = val
-                }
+                process(value: val, out: &out, key: resultKey)
             }
         }
+        
+        func recursive(list: [Any], out: inout [String : Any], currentKey: String) {
+            for (index, value) in list.enumerated() {
+                let resultKey = currentKey + "[\(index)]"
+                process(value: value, out: &out, key: resultKey)
+            }
+        }
+        
+        func process(value: Any, out: inout [String : Any], key: String) {
+            if let value = value as? [String : Any] {
+                recursive(dict: value, out: &out, currentKey: key)
+            } else if let value = value as? [Any] {
+                recursive(list: value, out: &out, currentKey: key)
+            } else {
+                out[key] = value
+            }
+        }
+        
         recursive(dict: dict, out: &result)
         return result
+    }
+    
+    func timestampToISO8601(_ timestamp: Int) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(timestamp/1000))
+        return ISO8601DateFormatter().string(from: date)
     }
 }

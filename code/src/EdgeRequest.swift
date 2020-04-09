@@ -24,6 +24,9 @@ struct EdgeRequest {
     /// XDM context data for the entire request
     var xdm: RequestContext?
     
+    /// List of Events
+    var events: [[AnyHashable : AnyCodable]]?
+    
     // TODO handle Events list
     
     enum CodingKeys: String, CodingKey {
@@ -38,6 +41,7 @@ extension EdgeRequest : Encodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if let unwrapped = meta { try container.encode(unwrapped, forKey: .meta)}
         if let unwrapped = xdm { try container.encode(unwrapped, forKey: .xdm)}
+        if let unwrapped = events as? [[String:AnyCodable]] { try container.encode(unwrapped, forKey: .events)}
     }
 }
 
@@ -46,5 +50,6 @@ extension EdgeRequest : Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         meta = try? container.decode(RequestMetadata.self, forKey: .meta)
         xdm = try? container.decode(RequestContext.self, forKey: .xdm)
+        events = try? container.decode([[String:AnyCodable]].self, forKey: .events)
     }
 }

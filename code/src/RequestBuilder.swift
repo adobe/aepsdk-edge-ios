@@ -48,6 +48,7 @@ class RequestBuilder {
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig)
         
         var request = EdgeRequest(meta: requestMetadata)
+        request.events = extractPlatformEvents(events)
         
         // set ECID if available
         if let ecid = experienceCloudId {
@@ -69,8 +70,8 @@ class RequestBuilder {
         return nil
     }
     
-    private func extractPlatformEvents(_ events: [ACPExtensionEvent]) -> [ [AnyHashable : Any] ] {
-        var platformEvents: [[AnyHashable:Any]] = []
+    private func extractPlatformEvents(_ events: [ACPExtensionEvent]) -> [ [AnyHashable : AnyCodable] ] {
+        var platformEvents: [[AnyHashable:AnyCodable]] = []
         
         for event in events {
             guard var eventData = event.eventData else {
@@ -88,7 +89,7 @@ class RequestBuilder {
                 eventData["xdm"] = xdm
             }
             
-            platformEvents.append(eventData)
+            platformEvents.append(AnyCodable.from(dictionary: eventData))
             
         }
         
