@@ -65,13 +65,8 @@ public struct NetworkRequest {
     ///   - httpHeaders: optional HTTP headers for the request
     ///   - connectTimeout: optional connect timeout value in seconds; default is 5 seconds
     ///   - readTimeout: optional read timeout value in seconds, used to wait for a read to finish after a successful connect, default is 5 seconds
-    /// - Returns: an initialized NetworkRequest object or nil if an error occured durinng initialization
-    public init?(url: URL, httpMethod: HttpMethod = HttpMethod.get, connectPayload: String = "", httpHeaders: [String: String] = [:], connectTimeout: TimeInterval = 5, readTimeout: TimeInterval = 5) {
-        guard url.absoluteString.starts(with: "https") else {
-            print("NetworkRequest - Network request for (\(url.absoluteString)) could not be created, only https requests are accepted.");
-            return nil
-        }
-        
+    /// - Returns: an initialized NetworkRequest object
+    public init(url: URL, httpMethod: HttpMethod = HttpMethod.get, connectPayload: String = "", httpHeaders: [String: String] = [:], connectTimeout: TimeInterval = 5, readTimeout: TimeInterval = 5) {
         self.url = url
         self.httpMethod = httpMethod
         self.connectPayload = connectPayload
@@ -125,41 +120,45 @@ public class NetworkService: NetworkServiceProtocol {
     
     // TODO: discuss if we should have a convenience method like this - fire and forget
     public func connectAsync(networkRequest: NetworkRequest) {
+        if !networkRequest.url.absoluteString.starts(with: "https") {
+            print("NetworkRequest - Network request for (\( networkRequest.url.absoluteString)) could not be created, only https requests are accepted.");
+            return
+        }
         
         // TODO: shouldOverride
-        let urlRequest = createURLRequest(networkRequest: networkRequest)
-        guard urlRequest != nil else { return }
-        
-        let urlSession = createURLSession(networkRequest: networkRequest)
+        guard let urlRequest = createURLRequest(networkRequest: networkRequest) else { return }
+        guard let urlSession = createURLSession(networkRequest: networkRequest) else { return }
         
         // initiate the request
         print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)).")
-        let task = urlSession?.dataTask(with: urlRequest!);
-        task?.resume()
+        let task = urlSession.dataTask(with: urlRequest)
+        task.resume()
     }
     
     public func connectAsync(networkRequest: NetworkRequest, completionHandler: @escaping (HttpConnection) -> Void) {
+        if !networkRequest.url.absoluteString.starts(with: "https") {
+            print("NetworkRequest - Network request for (\( networkRequest.url.absoluteString)) could not be created, only https requests are accepted.");
+            return
+        }
         
-        let shouldOverride = NetworkServiceOverrider.shared.performer?.shouldOverride(url: networkRequest.url, httpMethod: networkRequest.httpMethod)
-        if (shouldOverride ?? false) {
-            print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)) with completion handler using the NetworkServiceOverrider.")
+        let overridePerformer = NetworkServiceOverrider.shared.performer
+        if overridePerformer != nil && overridePerformer!.shouldOverride(url: networkRequest.url, httpMethod: networkRequest.httpMethod) {
             // TODO: should the default headers be injected in the network request even when networkOverride is enabled
-            NetworkServiceOverrider.shared.performer?.connectAsync(networkRequest: networkRequest, completionHandler: completionHandler)
+            print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)) with completion handler using the NetworkServiceOverrider.")
+            overridePerformer!.connectAsync(networkRequest: networkRequest, completionHandler: completionHandler)
         } else {
             // using the default network service
-            let urlRequest = createURLRequest(networkRequest: networkRequest)
-            guard urlRequest != nil else { return }
-            
-            let urlSession = createURLSession(networkRequest: networkRequest)
+            guard let urlRequest = createURLRequest(networkRequest: networkRequest) else { return }
+            guard let urlSession = createURLSession(networkRequest: networkRequest) else { return }
             
             // initiate the request
             print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)) with completion handler.")
-            let task = urlSession?.dataTask(with: urlRequest!, completionHandler: { (data, response, error) in
+            let task = urlSession.dataTask(with: urlRequest, completionHandler: { (data, response, error) in
                 let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse , error: error)
                 completionHandler(httpConnection)
             })
             
-            task?.resume()
+            task.resume()
         }
     }
     
@@ -184,17 +183,16 @@ public class NetworkService: NetworkServiceProtocol {
     /// - Parameter networkRequest: current network request
     private func createURLSession(networkRequest: NetworkRequest) -> URLSession? {
         let sessionId = "\(networkRequest.url.absoluteString)\(networkRequest.readTimeout)\(networkRequest.connectTimeout)"
-        var session = self.sessions[sessionId]
-        
-        if session == nil {
+        guard let session = self.sessions[sessionId] else {
             // Create config for an ephemeral NSURLSession with specified timeouts
             let config = URLSessionConfiguration.ephemeral
             config.urlCache = nil
             config.timeoutIntervalForRequest = networkRequest.readTimeout
             config.timeoutIntervalForResource = networkRequest.connectTimeout
             
-            session = URLSession(configuration: config)
-            self.sessions[sessionId] = session
+            let newSession = URLSession(configuration: config)
+            self.sessions[sessionId] = newSession
+            return newSession
         }
         
         return session;

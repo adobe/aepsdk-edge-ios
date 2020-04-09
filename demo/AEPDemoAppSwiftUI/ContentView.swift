@@ -31,15 +31,11 @@ class TestHttpConnectionPerformer: HttpConnectionPerformer {
 struct ContentView: View {
     var body: some View {
         Button(action: {
-            let networkRequest1:NetworkRequest? = NetworkRequest(url: URL(string: "https://www.adobe.com")!, httpMethod: HttpMethod.get, connectPayload: "test", httpHeaders: [:],
-                                                                connectTimeout: 5, readTimeout: 5) ?? nil
-            
-            guard networkRequest1 != nil else {
-                return;
-            }
+            let networkRequest1:NetworkRequest = NetworkRequest(url: URL(string: "https://www.adobe.com")!, httpMethod: HttpMethod.get, connectPayload: "test", httpHeaders: [:],
+                                                                connectTimeout: 5, readTimeout: 5)
             
             NetworkServiceOverrider.shared.enableOverride(with: TestHttpConnectionPerformer())
-            NetworkService.shared.connectAsync(networkRequest: networkRequest1!, completionHandler: {connection in
+            NetworkService.shared.connectAsync(networkRequest: networkRequest1, completionHandler: {connection in
                                                // function body goes here
                 print(connection.responseHttpHeader(forKey: "Content-Type"))
                 print(connection.responseCode)
@@ -52,14 +48,15 @@ struct ContentView: View {
             // NetworkService.shared.connectAsync(networkRequest: nil)
             
             // fire and forget example
-            NetworkService.shared.connectAsync(networkRequest: networkRequest1!)
+            NetworkService.shared.connectAsync(networkRequest: networkRequest1)
             
-            // not https protocol not permitted from construction, returns nil
-            let networkRequestNil:NetworkRequest? = NetworkRequest(url: URL(string: "http://www.adobe.com")!) ?? nil // using default param values
-            print(networkRequestNil)
+            // not https protocol not permitted, network request is constructed, but the connection is not initiated
+            let networkRequestInvalid:NetworkRequest = NetworkRequest(url: URL(string: "http://www.adobe.com")!) // using default param values
+            NetworkService.shared.connectAsync(networkRequest: networkRequestInvalid)
+            print(networkRequestInvalid)
             
             // nil/empty url not permitted
-            //let networkRequestWithNilUrl:NetworkRequest? = NetworkRequest(url: nil, httpMethod: HttpMethod.get, connectPayload: "test", httpHeaders: [:],
+            //let networkRequestWithNilUrl:NetworkRequest = NetworkRequest(url: nil, httpMethod: HttpMethod.get, connectPayload: "test", httpHeaders: [:],
             //connectTimeout: 5, readTimeout: 5) ?? nil
         }) {
             Text("Ping")
