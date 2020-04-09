@@ -82,7 +82,8 @@ class RequestBuilder {
             }
             
             if var xdm = eventData["xdm"] as? [String : Any] {
-                xdm["timestamp"] = event.eventTimestamp
+                let date = Date(timeIntervalSince1970: TimeInterval(event.eventTimestamp/1000))
+                xdm["timestamp"] = ISO8601DateFormatter().string(from: date)
                 xdm["eventId"] = event.eventUniqueIdentifier
                 eventData["xdm"] = xdm
             }
