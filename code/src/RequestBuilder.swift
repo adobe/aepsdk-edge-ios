@@ -47,9 +47,15 @@ class RequestBuilder {
         // TODO add state store to request metadata
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig)
         
-
-        // TODO add ECID here ???
-        let request = EdgeRequest(meta: requestMetadata)
+        var request = EdgeRequest(meta: requestMetadata)
+        
+        // set ECID if available
+        if let ecid = experienceCloudId {
+            var identityMap = IdentityMap()
+            identityMap.addItem(namespace: "ECID", id: ecid)
+            let requestContext = RequestContext(identityMap: identityMap)
+            request.xdm = requestContext
+        }
         
         let encoder = JSONEncoder()
         

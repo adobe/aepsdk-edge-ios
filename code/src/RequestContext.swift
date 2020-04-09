@@ -17,34 +17,25 @@
 
 import Foundation
 
-struct EdgeRequest {
-    /// Metadata passed to solutions and even to Konductor itself with possiblity of overriding at event level
-    var meta: RequestMetadata?
-    
-    /// XDM context data for the entire request
-    var xdm: RequestContext?
-    
-    // TODO handle Events list
-    
+/// Property that holds the global XDM context data within an Edge Request object.
+struct RequestContext {
+    var identityMap: IdentityMap?
+
     enum CodingKeys: String, CodingKey {
-        case meta = "meta"
-        case events = "events"
-        case xdm = "xdm"
+        case identityMap = "identityMap"
     }
 }
 
-extension EdgeRequest : Encodable {
+extension RequestContext : Encodable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        if let unwrapped = meta { try container.encode(unwrapped, forKey: .meta)}
-        if let unwrapped = xdm { try container.encode(unwrapped, forKey: .xdm)}
+        if let unwrapped = identityMap { try container.encode(unwrapped, forKey: .identityMap)}
     }
 }
 
-extension EdgeRequest : Decodable {
+extension RequestContext : Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        meta = try? container.decode(RequestMetadata.self, forKey: .meta)
-        xdm = try? container.decode(RequestContext.self, forKey: .xdm)
+        identityMap = try? container.decode(IdentityMap.self, forKey: .identityMap)
     }
 }

@@ -34,6 +34,7 @@ class RequestBuilderTests: XCTestCase {
         request.organizationId = "orgID"
         request.recordSeparator = "A"
         request.lineFeed = "B"
+        request.experienceCloudId = "ecid"
 
         
         let event = try? ACPExtensionEvent(name: "Request Test",
@@ -58,6 +59,10 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertEqual("A" , flattenDict[".meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("B", flattenDict[".meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertTrue(flattenDict[".meta.konductorConfig.streaming.enabled"] as? Bool ?? false)
+        let identity = flattenDict[".xdm.identityMap.ECID"] as? [[String: Any]]
+        XCTAssertNotNil(identity)
+        XCTAssertEqual(1, identity!.count)
+        XCTAssertEqual("ecid", identity![0]["id"] as? String)
         
     }
     
