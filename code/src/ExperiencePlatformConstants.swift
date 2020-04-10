@@ -34,6 +34,8 @@ struct ExperiencePlatformConstants {
         
         static let requestConfigRecordSeparator = "\u{0000}"
         static let requestConfigLineFeed = "\n"
+        
+        static let requestStateCookiesEnabled = false
     }
 
     struct EventDataKeys {

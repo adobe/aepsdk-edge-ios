@@ -35,20 +35,20 @@ class StoreResponsePayloadTests: XCTestCase {
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(payload)
         
         XCTAssertNotNil(data)
         let expected = """
            {
-             "expiryDate" : \(payload.expiryDate.timeIntervalSince1970),
+             "expiryDate" : "\(ISO8601DateFormatter().string(from: payload.expiryDate))",
              "key" : "key",
              "maxAge" : 3600,
              "value" : "value"
            }
            """
         let jsonString = String(data: data!, encoding: .utf8)
-        print(jsonString!)
         XCTAssertEqual(expected, jsonString)
     }
     
@@ -57,20 +57,24 @@ class StoreResponsePayloadTests: XCTestCase {
     func testDecode() {
         let data = """
             {
-              "expiryDate" : 1586456450.171706,
+              "expiryDate" : "2020-04-10T20:34:12Z",
               "key" : "key",
               "maxAge" : 3600,
               "value" : "value"
             }
         """.data(using: .utf8)
         let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
         
         let payload = try? decoder.decode(StoreResponsePayload.self, from: data!)
         XCTAssertNotNil(payload)
         XCTAssertEqual("key", payload?.key)
         XCTAssertEqual("value", payload?.value)
         XCTAssertEqual(3600, payload?.maxAgeSeconds)
-        XCTAssertEqual(1586456450.171706, payload?.expiryDate.timeIntervalSince1970)
+        
+        let dateFormatter = ISO8601DateFormatter()
+        let expectedDate = dateFormatter.date(from: "2020-04-10T20:34:12Z")
+        XCTAssertEqual(expectedDate, payload?.expiryDate)
     }
     
     // MARK: is expired tests
@@ -84,6 +88,7 @@ class StoreResponsePayloadTests: XCTestCase {
             }
         """.data(using: .utf8)
         let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
         
         guard let payload = try? decoder.decode(StoreResponsePayload.self, from: data!) else {
             XCTFail("Failed to decode StoreResponsePayload.")
@@ -96,13 +101,14 @@ class StoreResponsePayloadTests: XCTestCase {
     func testIsExpired_expiryDate_inPast() {
         let data = """
             {
-              "expiryDate" : 1586454650.831231,
+              "expiryDate" : "1955-11-05T06:00:00Z",
               "key" : "key",
               "maxAge" : 3600,
               "value" : "value"
             }
         """.data(using: .utf8)
         let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
         
         guard let payload = try? decoder.decode(StoreResponsePayload.self, from: data!) else {
             XCTFail("Failed to decode StoreResponsePayload.")

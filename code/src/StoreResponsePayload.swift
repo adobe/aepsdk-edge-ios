@@ -47,7 +47,7 @@ extension StoreResponsePayload : Encodable {
         try container.encode(key, forKey: .key)
         try container.encode(value, forKey: .value)
         try container.encode(maxAgeSeconds, forKey: .maxAgeSeconds)
-        try container.encode(expiryDate.timeIntervalSince1970, forKey: .expiryDate)
+        try container.encode(expiryDate, forKey: .expiryDate)
     }
 }
 
@@ -57,8 +57,8 @@ extension StoreResponsePayload : Decodable {
         key = (try? container.decode(String.self, forKey: .key)) ?? ""
         value = (try? container.decode(String.self, forKey: .value)) ?? ""
         maxAgeSeconds = (try? container.decode(TimeInterval.self, forKey: .maxAgeSeconds)) ?? 0
-        if let expiryTime = try? container.decode(TimeInterval.self, forKey: .expiryDate) {
-            expiryDate = Date(timeIntervalSince1970: expiryTime)
+        if let date = try? container.decode(Date.self, forKey: .expiryDate) {
+            expiryDate = date
         } else {
             expiryDate = Date(timeIntervalSinceNow: maxAgeSeconds)
         }

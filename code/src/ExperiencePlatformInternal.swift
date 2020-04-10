@@ -83,16 +83,17 @@ class ExperiencePlatformInternal : ACPExtension {
      /// Adds an event to the event queue and starts processing the queue.  Events with no event data are ignored.
      /// - Parameter event: the event to add to the event queue for processing
     func processAddEvent(_ event: ACPExtensionEvent) {
-        eventQueue.add(event, handleAddEvent(event:))
+        eventQueue.add((event, handleAddEvent(event:)))
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) added to queue.")
     }
     
     /// Called by event listeners to kick the processing of the event queue. Event passed to function is not added to queue for processing
     /// - Parameter event: the event which triggered processing of the event queue
     func processEventQueue(_ event: ACPExtensionEvent) {
-        eventQueue.add(event, {(event: ACPExtensionEvent) -> Bool in
-            // do nothing
-        })
+        eventQueue.add((event, {(event: ACPExtensionEvent) -> Bool in
+            // trigger processing of queue
+            return true
+        }))
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) requested event queue kick.")
     }
     
@@ -110,12 +111,13 @@ class ExperiencePlatformInternal : ACPExtension {
     /// Handle Konductor response by calling response callback. Called by event listener.
     /// - Parameter event: the response event to add to the queue
     func processPlatformResponseEvent(_ event: ACPExtensionEvent){
-        eventQueue.add(event, handleResponseEvent(event:))
+        eventQueue.add((event, handleResponseEvent(event:)))
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) added to queue.")
     }
     
     func handleResponseEvent(event: ACPExtensionEvent) -> Bool {
         // TODO implement me
+        return true
     }
     
      /// Processes the events in the event queue in the order they were received.
@@ -161,7 +163,7 @@ class ExperiencePlatformInternal : ACPExtension {
         }
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Finished processing and sending events to Platform.")
-        
+        return true
     }
 
 }
