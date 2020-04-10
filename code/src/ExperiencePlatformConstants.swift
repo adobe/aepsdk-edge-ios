@@ -17,7 +17,7 @@
 
 import Foundation
 
-struct ACPExperiencePlatformConstants {
+struct ExperiencePlatformConstants {
     
     static let eventTypeExperiencePlatform: String = "com.adobe.eventType.experiencePlatform"
     static let eventTypeAdobeHub: String = "com.adobe.eventType.hub"

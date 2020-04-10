@@ -18,7 +18,7 @@
 import Foundation
 import ACPCore
 
-class ACPExperiencePlatformInternal : ACPExtension {
+class ExperiencePlatformInternal : ACPExtension {
     // Tag for logging
     private let TAG = "ACPExperiencePlatformInternal"
     
@@ -31,16 +31,16 @@ class ACPExperiencePlatformInternal : ACPExtension {
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "init")
         do {
             try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
-                                     eventType: ACPExperiencePlatformConstants.eventTypeAdobeHub,
-                                     eventSource: ACPExperiencePlatformConstants.eventSourceAdobeSharedState)
+                                     eventType: ExperiencePlatformConstants.eventTypeAdobeHub,
+                                     eventSource: ExperiencePlatformConstants.eventSourceAdobeSharedState)
         } catch {
             ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for shared state events: \(error)")
         }
         
         do {
             try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
-                                     eventType: ACPExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                     eventSource: ACPExperiencePlatformConstants.eventSourceExtensionRequestContent)
+                                     eventType: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                                     eventSource: ExperiencePlatformConstants.eventSourceExtensionRequestContent)
         } catch {
             ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension request content events: \(error)")
 
@@ -48,8 +48,8 @@ class ACPExperiencePlatformInternal : ACPExtension {
         
         do {
             try api.registerListener(ExperiencePlatformExtensionResponseListener.self,
-                                     eventType: ACPExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                     eventSource: ACPExperiencePlatformConstants.eventSourceExtensionResponseContent)
+                                     eventType: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                                     eventSource: ExperiencePlatformConstants.eventSourceExtensionResponseContent)
         } catch {
             ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension response content events: \(error)")
 
@@ -122,7 +122,7 @@ class ACPExperiencePlatformInternal : ACPExtension {
             
             let configState: [AnyHashable:Any]?
             do {
-                configState = try api.getSharedEventState(ACPExperiencePlatformConstants.SharedState.configuration, event: event)
+                configState = try api.getSharedEventState(ExperiencePlatformConstants.SharedState.configuration, event: event)
             } catch {
                 ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to retrieve config shared state: \(error)")
                 return
@@ -133,7 +133,7 @@ class ACPExperiencePlatformInternal : ACPExtension {
                 return
             }
             
-            let configId: String? = configSharedState[ACPExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String
+            let configId: String? = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String
             if (configId ?? "").isEmpty {
                 ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Removed event '\(event.eventUniqueIdentifier)' because of invalid experiencePlatform.configId in configuration.")
                 _ = eventQueue.dropLast()
@@ -143,12 +143,12 @@ class ACPExperiencePlatformInternal : ACPExtension {
             // Build Request object
             
             let requestBuilder = RequestBuilder()
-            if let orgId = configSharedState[ACPExperiencePlatformConstants.SharedState.Configuration.experienceCloudOrgId] as? String{
+            if let orgId = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experienceCloudOrgId] as? String{
                 requestBuilder.organizationId = orgId
             }
             
-            requestBuilder.recordSeparator = ACPExperiencePlatformConstants.Defaults.requestConfigRecordSeparator
-            requestBuilder.lineFeed = ACPExperiencePlatformConstants.Defaults.requestConfigLineFeed
+            requestBuilder.recordSeparator = ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator
+            requestBuilder.lineFeed = ExperiencePlatformConstants.Defaults.requestConfigLineFeed
             
             if let requestData = requestBuilder.getPayload([event]) {
                 // TODO send network request

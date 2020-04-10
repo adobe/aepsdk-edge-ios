@@ -12,8 +12,8 @@
 		60779FA70473598C0F52EF96 /* Pods_AEPDemoAppSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 86A2B8F00D380A56B98C5B2C /* Pods_AEPDemoAppSwiftUI.framework */; };
 		7BA0355DED886EDBDD884FB8 /* Pods_ACPExperiencePlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AA521D8593FDD04EE662B1A /* Pods_ACPExperiencePlatform.framework */; };
 		A53484FE747C8CF4E96FDFB3 /* Pods_functionalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 125A7C7C99BD76D8EB7F3CF2 /* Pods_functionalTests.framework */; };
-		BF947F64243565CC0057A6CC /* ACPExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F62243565CC0057A6CC /* ACPExperiencePlatformInternal.swift */; platformFilter = ios; };
-		BF947F65243565CC0057A6CC /* ACPExperiencePlatformConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F63243565CC0057A6CC /* ACPExperiencePlatformConstants.swift */; platformFilter = ios; };
+		BF947F64243565CC0057A6CC /* ExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */; platformFilter = ios; };
+		BF947F65243565CC0057A6CC /* ExperiencePlatformConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */; platformFilter = ios; };
 		BF947F6824366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */; platformFilter = ios; };
 		BF947F72243BA0BB0057A6CC /* KonductorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F71243BA0BA0057A6CC /* KonductorConfig.swift */; };
 		BF947F74243BA0E10057A6CC /* KonductorConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */; };
@@ -91,8 +91,8 @@
 		A7A8933DE27A288E8CCC4C61 /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB25FE2EDB4499D7EC12B963 /* Pods-ACPExperiencePlatform.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ACPExperiencePlatform.debug.xcconfig"; path = "Target Support Files/Pods-ACPExperiencePlatform/Pods-ACPExperiencePlatform.debug.xcconfig"; sourceTree = "<group>"; };
 		BBE094F0BA76234B2D689502 /* Pods-unitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-unitTests.release.xcconfig"; path = "Target Support Files/Pods-unitTests/Pods-unitTests.release.xcconfig"; sourceTree = "<group>"; };
-		BF947F62243565CC0057A6CC /* ACPExperiencePlatformInternal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACPExperiencePlatformInternal.swift; sourceTree = "<group>"; };
-		BF947F63243565CC0057A6CC /* ACPExperiencePlatformConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACPExperiencePlatformConstants.swift; sourceTree = "<group>"; };
+		BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformInternal.swift; sourceTree = "<group>"; };
+		BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformConstants.swift; sourceTree = "<group>"; };
 		BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformExtensionRequestListener.swift; sourceTree = "<group>"; };
 		BF947F71243BA0BA0057A6CC /* KonductorConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KonductorConfig.swift; sourceTree = "<group>"; };
 		BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KonductorConfigTests.swift; sourceTree = "<group>"; };
@@ -234,8 +234,8 @@
 			isa = PBXGroup;
 			children = (
 				BF947F89243F9C9E0057A6CC /* util */,
-				BF947F63243565CC0057A6CC /* ACPExperiencePlatformConstants.swift */,
-				BF947F62243565CC0057A6CC /* ACPExperiencePlatformInternal.swift */,
+				BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */,
+				BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */,
 				D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */,
 				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
 				BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */,
@@ -636,9 +636,9 @@
 				BF947F80243EF79D0057A6CC /* IdentityMap.swift in Sources */,
 				BF947F7A243BE3C00057A6CC /* RequestMetadata.swift in Sources */,
 				BF947F7C243E75E70057A6CC /* RequestBuilder.swift in Sources */,
-				BF947F64243565CC0057A6CC /* ACPExperiencePlatformInternal.swift in Sources */,
+				BF947F64243565CC0057A6CC /* ExperiencePlatformInternal.swift in Sources */,
 				D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */,
-				BF947F65243565CC0057A6CC /* ACPExperiencePlatformConstants.swift in Sources */,
+				BF947F65243565CC0057A6CC /* ExperiencePlatformConstants.swift in Sources */,
 				BF947F76243BDECA0057A6CC /* ExperiencePlatformExtensionResponseListener.swift in Sources */,
 				BF947F78243BE16C0057A6CC /* EdgeRequest.swift in Sources */,
 			);
