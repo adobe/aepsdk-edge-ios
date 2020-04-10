@@ -54,8 +54,7 @@ class RequestBuilder {
         if let ecid = experienceCloudId {
             var identityMap = IdentityMap()
             identityMap.addItem(namespace: "ECID", id: ecid)
-            let requestContext = RequestContext(identityMap: identityMap)
-            request.xdm = requestContext
+            request.xdm = RequestContext(identityMap: identityMap)
         }
         
         let encoder = JSONEncoder()

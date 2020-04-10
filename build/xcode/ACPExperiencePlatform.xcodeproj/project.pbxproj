@@ -28,6 +28,7 @@
 		BF947F86243F24570057A6CC /* StoreResponsePayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F85243F24570057A6CC /* StoreResponsePayload.swift */; };
 		BF947F88243F2EF70057A6CC /* StoreResponsePayloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */; };
 		BF947F8B243F9CCE0057A6CC /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F8A243F9CCE0057A6CC /* AnyCodable.swift */; };
+		BF947F8D244029040057A6CC /* OperationQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F8C244029040057A6CC /* OperationQueue.swift */; };
 		D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */; platformFilter = ios; };
 		D4D5B5262432599B00CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
 		D4D5B52C243259B700CAB6E4 /* ExampleTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B51B2432594000CAB6E4 /* ExampleTest.swift */; platformFilter = ios; };
@@ -107,6 +108,7 @@
 		BF947F85243F24570057A6CC /* StoreResponsePayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreResponsePayload.swift; sourceTree = "<group>"; };
 		BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreResponsePayloadTests.swift; sourceTree = "<group>"; };
 		BF947F8A243F9CCE0057A6CC /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
+		BF947F8C244029040057A6CC /* OperationQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationQueue.swift; sourceTree = "<group>"; };
 		CA1B9330FD97A1900EFD4E39 /* Pods-unitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-unitTests.debug.xcconfig"; path = "Target Support Files/Pods-unitTests/Pods-unitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACPExperiencePlatform.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				BF947F8A243F9CCE0057A6CC /* AnyCodable.swift */,
+				BF947F8C244029040057A6CC /* OperationQueue.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -635,6 +638,7 @@
 				BF947F86243F24570057A6CC /* StoreResponsePayload.swift in Sources */,
 				BF947F80243EF79D0057A6CC /* IdentityMap.swift in Sources */,
 				BF947F7A243BE3C00057A6CC /* RequestMetadata.swift in Sources */,
+				BF947F8D244029040057A6CC /* OperationQueue.swift in Sources */,
 				BF947F7C243E75E70057A6CC /* RequestBuilder.swift in Sources */,
 				BF947F64243565CC0057A6CC /* ExperiencePlatformInternal.swift in Sources */,
 				D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */,
