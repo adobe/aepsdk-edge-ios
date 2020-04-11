@@ -42,6 +42,11 @@ struct ExperiencePlatformConstants {
         static let uniqueSequenceId: String = "uniquesequenceid"
     }
     
+    struct DataStoreKeys {
+        static let storeName: String = "ACPExperiencePlatform"
+        static let storePayloads: String = "storePayloads"
+    }
+    
     struct SharedState {
         static let stateowner: String = "stateowner"
         static let configuration: String = "com.adobe.module.configuration"

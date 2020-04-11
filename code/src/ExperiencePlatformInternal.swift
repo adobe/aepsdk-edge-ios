@@ -36,7 +36,7 @@ class ExperiencePlatformInternal : ACPExtension {
                                      eventType: ExperiencePlatformConstants.eventTypeAdobeHub,
                                      eventSource: ExperiencePlatformConstants.eventSourceAdobeSharedState)
         } catch {
-            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for shared state events: \(error)")
+            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for shared state events: \(error.localizedDescription)")
         }
         
         do {
@@ -44,7 +44,7 @@ class ExperiencePlatformInternal : ACPExtension {
                                      eventType: ExperiencePlatformConstants.eventTypeExperiencePlatform,
                                      eventSource: ExperiencePlatformConstants.eventSourceExtensionRequestContent)
         } catch {
-            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension request content events: \(error)")
+            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension request content events: \(error.localizedDescription)")
 
         }
         
@@ -53,7 +53,7 @@ class ExperiencePlatformInternal : ACPExtension {
                                      eventType: ExperiencePlatformConstants.eventTypeExperiencePlatform,
                                      eventSource: ExperiencePlatformConstants.eventSourceExtensionResponseContent)
         } catch {
-            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension response content events: \(error)")
+            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension response content events: \(error.localizedDescription)")
 
         }
         

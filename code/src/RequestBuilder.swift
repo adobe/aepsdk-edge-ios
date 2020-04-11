@@ -33,8 +33,12 @@ class RequestBuilder {
     /// The Experiece Cloud ID to be sent with this request
     var experienceCloudId: String?
     
-    // TODO add system info service and data store as parameters
+    /// Data store manager for retrieving store response payloads for `StateMetadata`
+    private let storeResponsePayloadManager: StoreResponsePayloadManager
+    
     init() {
+        let dataStore = NamedUserDefaultsStore(name: ExperiencePlatformConstants.DataStoreKeys.storeName)
+        storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
     }
     
     func getPayload(_ events: [ACPExtensionEvent]) -> Data? {
@@ -44,8 +48,8 @@ class RequestBuilder {
         
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
         let konductorConfig = KonductorConfig(imsOrgId: organizationId, streaming: streamingMetadata)
-        // TODO add state store to request metadata
-        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig)
+        let stateMetadata = StateMetadata(payload: storeResponsePayloadManager.getActiveStores())
+        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: stateMetadata)
         
         var request = EdgeRequest(meta: requestMetadata)
         request.events = extractPlatformEvents(events)

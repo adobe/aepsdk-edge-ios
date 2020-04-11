@@ -19,8 +19,7 @@ import Foundation
 
 struct RequestMetadata {
     var konductorConfig: KonductorConfig?
-    // TODO add state metadata
-    var state: String?
+    var state: StateMetadata?
     
     enum CodingKeys: String, CodingKey {
         case konductorConfig = "konductorConfig"
@@ -40,6 +39,6 @@ extension RequestMetadata : Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         konductorConfig = try? container.decode(KonductorConfig.self, forKey: .konductorConfig)
-        state = try? container.decode(String.self, forKey: .state)
+        state = try? container.decode(StateMetadata.self, forKey: .state)
     }
 }

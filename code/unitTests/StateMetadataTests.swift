@@ -94,16 +94,16 @@ class StateMetadataTests: XCTestCase {
           "cookiesEnabled" : false,
           "entries" : [
             {
-              "expiryDate" : "\(ISO8601DateFormatter().string(from: payload["key"]!.expiryDate))",
-              "key" : "key",
-              "maxAge" : 3600,
-              "value" : "value"
-            },
-            {
               "expiryDate" : "\(ISO8601DateFormatter().string(from: payload["key2"]!.expiryDate))",
               "key" : "key2",
               "maxAge" : 300,
               "value" : "two"
+            },
+            {
+              "expiryDate" : "\(ISO8601DateFormatter().string(from: payload["key"]!.expiryDate))",
+              "key" : "key",
+              "maxAge" : 3600,
+              "value" : "value"
             }
           ]
         }
