@@ -33,7 +33,7 @@ class StoreResponsePayloadManager {
     func getActiveStores() -> [String : StoreResponsePayload] {
         
         guard let serializedPayloads = dataStore.getDictionary(key: keyName, fallback: nil) else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Cannot get active stores as returned payload is nil.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "No active payloads were found in the data store.")
             return [:]
         }
         

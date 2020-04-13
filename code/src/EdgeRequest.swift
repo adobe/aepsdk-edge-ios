@@ -26,9 +26,7 @@ struct EdgeRequest {
     
     /// List of Events
     var events: [[AnyHashable : AnyCodable]]?
-    
-    // TODO handle Events list
-    
+        
     enum CodingKeys: String, CodingKey {
         case meta = "meta"
         case events = "events"

@@ -20,7 +20,7 @@ import ACPCore
 
 class ExperiencePlatformInternal : ACPExtension {
     // Tag for logging
-    private let TAG = "ACPExperiencePlatformInternal"
+    private let TAG = "ExperiencePlatformInternal"
     
     typealias EventHandlerMapping = (event: ACPExtensionEvent, handler: (ACPExtensionEvent) -> (Bool))
     private let eventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal")
@@ -30,7 +30,6 @@ class ExperiencePlatformInternal : ACPExtension {
         eventQueue.setHandler({ return $0.handler($0.event) })
         eventQueue.start()
         
-        ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "init")
         do {
             try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
                                      eventType: ExperiencePlatformConstants.eventTypeAdobeHub,
@@ -90,6 +89,7 @@ class ExperiencePlatformInternal : ACPExtension {
     /// Called by event listeners to kick the processing of the event queue. Event passed to function is not added to queue for processing
     /// - Parameter event: the event which triggered processing of the event queue
     func processEventQueue(_ event: ACPExtensionEvent) {
+        // TODO add way to trigger event queue without needing to add item (make triggerSourceIfNeeded public?)
         eventQueue.add((event, {(event: ACPExtensionEvent) -> Bool in
             // trigger processing of queue
             return true
@@ -100,7 +100,7 @@ class ExperiencePlatformInternal : ACPExtension {
     /// Handler called from `OperationQueue` to add and process an event.
     /// - Parameter event: an event containing ExperiencePlatformEvent data for processing
     func handleAddEvent(event: ACPExtensionEvent) -> Bool {
-        guard let eventData = event.eventData else {
+        if event.eventData == nil {
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) contained no data, ignoring.")
             return true;
         }
@@ -125,12 +125,13 @@ class ExperiencePlatformInternal : ACPExtension {
      /// A valid Configuration shared state is required for processing events and if one is not available, processing the queue is halted without removing events from
      /// the queue. If a valid Configuration shared state is available but no `experiencePlatform.configId ` is found, the event is dropped.
     func handleSendEvent(_ event: ACPExtensionEvent) -> Bool {
+        ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Processing handleSendEvent for event with id \(event.eventUniqueIdentifier).")
         
         let configState: [AnyHashable:Any]?
         do {
             configState = try api.getSharedEventState(ExperiencePlatformConstants.SharedState.configuration, event: event)
         } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to retrieve config shared state: \(error)")
+            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to retrieve config shared state: \(error.localizedDescription)")
             return false // keep event in queue to process on next trigger
         }
         
@@ -139,8 +140,7 @@ class ExperiencePlatformInternal : ACPExtension {
             return false // keep event in queue to process on next trigger
         }
         
-        let configId: String? = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String
-        if (configId ?? "").isEmpty {
+        guard let configId = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String else {
             ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Removed event '\(event.eventUniqueIdentifier)' because of invalid experiencePlatform.configId in configuration.")
             return true // drop event from queue
         }
@@ -159,7 +159,7 @@ class ExperiencePlatformInternal : ACPExtension {
             // TODO send network request
             
             // DEBUG
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request with body '\(String(data: requestData, encoding: .utf8) ?? "failed to parse")'")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request for config '\(configId)' and body: \(String(data: requestData, encoding: .utf8) ?? "failed to parse")")
         }
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Finished processing and sending events to Platform.")

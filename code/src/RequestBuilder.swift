@@ -62,12 +62,13 @@ class RequestBuilder {
         }
         
         let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted]
         
         do {
             // TODO return EdgeRequest here instead of encoded JSON Data?
             return try encoder.encode(request)
         } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to encode request to JSON with error '\(error)'")
+            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to encode request to JSON with error '\(error.localizedDescription)'")
         }
         
         return nil
