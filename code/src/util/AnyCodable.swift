@@ -16,6 +16,8 @@
 
 import Foundation
 
+import Foundation
+
 /// A type erasing struct that can allow for dynamic `Codable` types
 struct AnyCodable: Codable {
     public let value: Any?
@@ -23,44 +25,48 @@ struct AnyCodable: Codable {
     var stringValue: String? {
         return value as? String
     }
-
+    
     var boolValue: Bool? {
         return value as? Bool
     }
-
+    
     var intValue: Int? {
         return value as? Int
     }
-
+    
     var doubleValue: Double? {
         return value as? Double
     }
-
+    
     var arrayValue: [Any]? {
         return value as? [Any]
     }
-
+    
     var dictionaryValue: [AnyHashable: Any]? {
         return value as? [AnyHashable: Any]
     }
-
+    
     public init(_ value: Any?) {
         self.value = value
     }
-
+    
     static func from(dictionary: [AnyHashable: Any]) -> [AnyHashable: AnyCodable] {
         var newDict: [AnyHashable: AnyCodable] = [:]
         for (key, val) in dictionary {
-            newDict[key] = AnyCodable(val)
+            if let anyCodableVal = val as? AnyCodable {
+                newDict[key] = anyCodableVal
+            } else {
+                newDict[key] = AnyCodable(val)
+            }
         }
-
+        
         return newDict
     }
-
+    
     // MARK: Decodable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-
+        
         if let string = try? container.decode(String.self) {
             self.init(string)
         } else if let bool = try? container.decode(Bool.self) {
@@ -79,17 +85,19 @@ struct AnyCodable: Codable {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Failed to decode AnyCodable")
         }
     }
-
+    
     // MARK: Codable
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-
+        
         guard value != nil else {
             try container.encodeNil()
             return
         }
-
+        
         switch value {
+        case let num as NSNumber:
+            try encode(nsNumber: num, into: &container)
         case let string as String:
             try container.encode(string)
         case let bool as Bool:
@@ -108,6 +116,35 @@ struct AnyCodable: Codable {
             try container.encode(dictionary.mapValues { AnyCodable($0) })
         default:
             print("AnyCodable - encode: Failed to encode \(String(describing: value))")
+        }
+    }
+    
+    private func encode(nsNumber: NSNumber, into container: inout SingleValueEncodingContainer) throws {
+        switch CFNumberGetType(nsNumber) {
+        case .charType:
+            try container.encode(nsNumber.boolValue)
+        case .sInt8Type:
+            try container.encode(nsNumber.int8Value)
+        case .sInt16Type:
+            try container.encode(nsNumber.int16Value)
+        case .sInt32Type:
+            try container.encode(nsNumber.int32Value)
+        case .sInt64Type:
+            try container.encode(nsNumber.int64Value)
+        case .shortType:
+            try container.encode(nsNumber.uint16Value)
+        case .longType:
+            try container.encode(nsNumber.uint32Value)
+        case .longLongType:
+            try container.encode(nsNumber.uint64Value)
+        case .intType, .nsIntegerType, .cfIndexType:
+            try container.encode(nsNumber.intValue)
+        case .floatType, .float32Type:
+            try container.encode(nsNumber.floatValue)
+        case .doubleType, .float64Type, .cgFloatType:
+            try container.encode(nsNumber.doubleValue)
+        @unknown default:
+            print("AnyCodable - encode: Failed to encode NSNumber \(String(describing: value))")
         }
     }
 }
@@ -162,7 +199,7 @@ extension AnyCodable: Equatable {
         if lhs.value == nil && rhs.value == nil {
             return true
         }
-
+        
         switch (lhs.value, rhs.value) {
         case let (lhs as String, rhs as String):
             return lhs == rhs
