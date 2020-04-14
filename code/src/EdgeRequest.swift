@@ -19,7 +19,7 @@ import Foundation
 
 /// A request for pushing events to the Adobe Data Platform.
 /// An `EdgeRequest` is the top-level request object sent to Konductor.
-struct EdgeRequest {
+struct EdgeRequest : Codable{
     /// Metadata passed to solutions and even to Konductor itself with possiblity of overriding at event level
     var meta: RequestMetadata?
     
@@ -27,29 +27,5 @@ struct EdgeRequest {
     var xdm: RequestContext?
     
     /// List of Experience events
-    var events: [[AnyHashable : AnyCodable]]?
-        
-    enum CodingKeys: String, CodingKey {
-        case meta = "meta"
-        case events = "events"
-        case xdm = "xdm"
-    }
-}
-
-extension EdgeRequest : Encodable {
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        if let unwrapped = meta { try container.encode(unwrapped, forKey: .meta)}
-        if let unwrapped = xdm { try container.encode(unwrapped, forKey: .xdm)}
-        if let unwrapped = events as? [[String:AnyCodable]] { try container.encode(unwrapped, forKey: .events)}
-    }
-}
-
-extension EdgeRequest : Decodable {
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        meta = try? container.decode(RequestMetadata.self, forKey: .meta)
-        xdm = try? container.decode(RequestContext.self, forKey: .xdm)
-        events = try? container.decode([[String:AnyCodable]].self, forKey: .events)
-    }
+    var events: [[String : AnyCodable]]?
 }

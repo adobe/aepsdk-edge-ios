@@ -63,6 +63,21 @@ struct AnyCodable: Codable {
         return newDict
     }
     
+    static func from(dictionary: [AnyHashable: Any]) -> [String: AnyCodable] {
+         var newDict: [String: AnyCodable] = [:]
+         for (key, val) in dictionary {
+            if let key:String = key as? String {
+                 if let anyCodableVal = val as? AnyCodable {
+                     newDict[key] = anyCodableVal
+                 } else {
+                     newDict[key] = AnyCodable(val)
+                 }
+            }
+         }
+         
+         return newDict
+     }
+    
     // MARK: Decodable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()

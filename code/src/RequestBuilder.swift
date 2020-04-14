@@ -84,8 +84,8 @@ class RequestBuilder {
     ///
     /// - Parameter events: A list of `ACPExtensionEvent` which contain an Experience Platform Event as event data.
     /// - Returns: A list of Experience Platform Events as maps
-    private func extractPlatformEvents(_ events: [ACPExtensionEvent]) -> [ [AnyHashable : AnyCodable] ] {
-        var platformEvents: [[AnyHashable:AnyCodable]] = []
+    private func extractPlatformEvents(_ events: [ACPExtensionEvent]) -> [ [String : AnyCodable] ] {
+        var platformEvents: [[String:AnyCodable]] = []
         
         for event in events {
             guard var eventData = event.eventData else {
