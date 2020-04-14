@@ -18,10 +18,20 @@
 import Foundation
 
 struct StoreResponsePayload {
+    
+    /// They payload key identifier
     let key: String
+    
+    /// The payload value
     let value: String
+    
+    /// The max age in seconds this payload should be stored
     let maxAgeSeconds: TimeInterval
+    
+    /// The `Date` at which this payload expires
     let expiryDate: Date
+    
+    /// Checks if the payload has exceeded its max age
     var isExpired: Bool {
         return Date() >= expiryDate
     }

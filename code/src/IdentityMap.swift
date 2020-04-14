@@ -22,9 +22,18 @@ enum AuthenticationState : String {
     case loggedOut = "loggedOut"
 }
 
+/// Defines a map containing a set of end user identities, keyed on either namespace integration code or the namespace ID of the identity.
+/// Within each namespace, the identity is unique. The values of the map are an array, meaning that more than one identity of each namespace may be carried.
 struct IdentityMap {
     private var items: [String : [IdentityItem]] = [:]
     
+    /// Adds an `IdentityItem` to this map. If an item is added which shares the same `namespace` and `id` as an item
+    /// already in the map, then the new item replaces the existing item.
+    /// - Parameters:
+    ///   - namespace: the namespace for this identity
+    ///   - id: Identity of the consumer in the related namespace.
+    ///   - state: The state this identity is authenticated as for this observed ExperienceEvent.
+    ///   - primary: Indicates this identity is the preferred identity. Is used as a hint to help systems better organize how identities are queried.
     mutating func addItem(namespace: String,
                  id: String,
                  state: AuthenticationState? = nil,
@@ -43,6 +52,9 @@ struct IdentityMap {
         }
     }
     
+    /// Get the array of `IdentityItem` for the given namespace.
+    /// - Parameter namespace: the namespace of items to retrieve
+    /// - Returns: An array of `IdentityItem` for the given `namespace` or nil if this `IdentityMap` does not contain the `namespace`.
     func getItemsFor(namespace: String) -> [IdentityItem]? {
         if let list = items[namespace] {
             return list
@@ -68,6 +80,7 @@ extension IdentityMap : Decodable {
     }
 }
 
+/// Identity is used to clearly distinguish people that are interacting with digital experiences.
 struct IdentityItem {
     var id: String?
     var state: AuthenticationState?
@@ -80,6 +93,7 @@ struct IdentityItem {
     }
 }
 
+/// Defines two `IdentityItem` objects are equal if they have the same `id`.
 extension IdentityItem : Equatable {
     static func ==(lhs: IdentityItem, rhs: IdentityItem) -> Bool {
         return lhs.id == rhs.id

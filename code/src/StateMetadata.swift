@@ -17,6 +17,8 @@
 
 import Foundation
 
+/// Client side stored information.
+/// A property in the `RequestMetadata` object.
 struct StateMetadata {
     private var cookiesEnabled: Bool
     private var entries: [StoreResponsePayload]

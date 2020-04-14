@@ -41,6 +41,10 @@ class RequestBuilder {
         storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
     }
     
+    /// Builds the request payload with all the provided parameters and events.
+    /// - Parameter events: List of `ACPExtensionEvent` objects. Each event is expected to contain a serialized Experience Platform Event
+    /// encoded in the `ACPExtensionEvent.eventData` property.
+    /// - Returns: A `Data` object of the JSON encoded request.
     func getPayload(_ events: [ACPExtensionEvent]) -> Data? {
         if (events.isEmpty) {
             return nil
@@ -74,6 +78,12 @@ class RequestBuilder {
         return nil
     }
     
+    /// Extract the Experience Platform Event from each `ACPExtensionEvent` and return as a list of maps. The timestamp for each
+    /// `ACPExtensionEvent` is set as the timestamp for its contained Experience Platform Event. The unique identifier for each
+    /// `ACPExtensionEvent` is set as the event ID for its contained Experience Platform Event.
+    ///
+    /// - Parameter events: A list of `ACPExtensionEvent` which contain an Experience Platform Event as event data.
+    /// - Returns: A list of Experience Platform Events as maps
     private func extractPlatformEvents(_ events: [ACPExtensionEvent]) -> [ [AnyHashable : AnyCodable] ] {
         var platformEvents: [[AnyHashable:AnyCodable]] = []
         

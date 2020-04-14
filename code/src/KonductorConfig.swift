@@ -17,6 +17,7 @@
 import Foundation
 
 /// Konductor configuration metadata.
+/// Is contained within the `RequestMetadata` request property.
 struct KonductorConfig {
     /// The IMS Org ID. Typically this is the Experience Platform Org ID.
     var imsOrgId: String?

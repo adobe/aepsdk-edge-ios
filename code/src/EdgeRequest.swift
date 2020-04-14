@@ -17,6 +17,8 @@
 
 import Foundation
 
+/// A request for pushing events to the Adobe Data Platform.
+/// An `EdgeRequest` is the top-level request object sent to Konductor.
 struct EdgeRequest {
     /// Metadata passed to solutions and even to Konductor itself with possiblity of overriding at event level
     var meta: RequestMetadata?
@@ -24,7 +26,7 @@ struct EdgeRequest {
     /// XDM context data for the entire request
     var xdm: RequestContext?
     
-    /// List of Events
+    /// List of Experience events
     var events: [[AnyHashable : AnyCodable]]?
         
     enum CodingKeys: String, CodingKey {
