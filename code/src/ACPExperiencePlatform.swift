@@ -61,7 +61,10 @@ public class ACPExperiencePlatform {
 
         var eventData = experiencePlatformEvent.getData()
         eventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
-        let event:ACPExtensionEvent = try! ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
+        guard let event = try? ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
+        else {
+            return
+        }
         do {
             try ACPCore.dispatchEvent(event)
         } catch {
@@ -77,7 +80,10 @@ public class ACPExperiencePlatform {
         var sendAllEventData = [String: Any]()
         sendAllEventData[ExperiencePlatformConstants.EventDataKeys.send_all_events] = true
         sendAllEventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
-        let sendAllEvent:ACPExtensionEvent = try! ACPExtensionEvent.init(name: "Send all events to Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: sendAllEventData)
+       guard let sendAllEvent:ACPExtensionEvent = try? ACPExtensionEvent(name: "Send all events to Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: sendAllEventData)
+        else {
+            return
+        }
         try? ACPCore.dispatchEvent(sendAllEvent)
      }
 }

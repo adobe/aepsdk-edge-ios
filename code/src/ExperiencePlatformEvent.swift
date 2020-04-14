@@ -16,7 +16,6 @@
 
 
 import Foundation
-import ACPCore
 
 public class ExperiencePlatformEvent {
      private let LOG_TAG = "ExperiencePlatformEvent"
@@ -24,7 +23,7 @@ public class ExperiencePlatformEvent {
      private var data: [String: Any]
      private var xdmData: [String: Any]
     
-    private init(data: [String: Any], xdmData: [String: Any] ) {
+    public init(data: [String: Any], xdmData: [String: Any] ) {
         self.data = data
         self.xdmData = xdmData
     }
