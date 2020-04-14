@@ -14,9 +14,18 @@ governing permissions and limitations under the License.
 import Foundation
 
 // TBD - new values added in the enum break the compatibility for out param or return types, e.g. HttpConnectionPerformer methods
-public enum HttpMethod: String {
-    case get = "GET"
-    case post = "POST"
+@objc public enum HttpMethod: Int {
+    case get
+    case post
+    
+    func toString() -> String {
+        switch self {
+        case .get:
+            return "GET"
+        case .post:
+            return "POST"
+        }
+    }
 }
 
 public struct HttpConnection {
@@ -97,7 +106,7 @@ public protocol HttpConnectionPerformer {
 
 protocol NetworkServiceProtocol {
     
-    /// Initiates an asynchronous network connection to the specified NetworkRequest.url
+    /// Initiates an asynchronous network connection to the specified NetworkRequest.url. This API uses URLRequest.CachePolicy.reloadIgnoringLocalCache.
     /// - Parameters:
     ///   - networkRequest: the NetworkRequest used for this connection
     ///   - completionHandler:Optional completion handler which is called once the HttpConnection is available; it can be called from an HttpConnectionPerformer if NetworkServiceOverrider is enabled.
@@ -128,8 +137,8 @@ public class NetworkService: NetworkServiceProtocol {
             overridePerformer!.connectAsync(networkRequest: networkRequest, completionHandler: completionHandler)
         } else {
             // using the default network service
-            guard let urlRequest = createURLRequest(networkRequest: networkRequest) else { return }
-            guard let urlSession = createURLSession(networkRequest: networkRequest) else { return }
+            let urlRequest = createURLRequest(networkRequest: networkRequest)
+            let urlSession = createURLSession(networkRequest: networkRequest)
             
             // initiate the request with/without completion handler
             guard let closure = completionHandler else {
@@ -148,10 +157,12 @@ public class NetworkService: NetworkServiceProtocol {
         }
     }
     
-    private func createURLRequest(networkRequest: NetworkRequest) -> URLRequest? {
+    /// Creates an URLRequest with the provided parameters and adds the SDK default headers. The cache policy used is reloadIgnoringLocalCacheData.
+    /// - Parameter networkRequest: NetworkRequest
+    private func createURLRequest(networkRequest: NetworkRequest) -> URLRequest {
         var request = URLRequest(url: networkRequest.url)
         request.cachePolicy = .reloadIgnoringLocalCacheData
-        request.httpMethod = networkRequest.httpMethod.rawValue
+        request.httpMethod = networkRequest.httpMethod.toString()
         
         if !networkRequest.connectPayload.isEmpty && networkRequest.httpMethod == .post {
             request.httpBody = networkRequest.connectPayload.data(using: .utf8)
@@ -167,7 +178,7 @@ public class NetworkService: NetworkServiceProtocol {
     
     /// Check if a session is already created for the specified URL, readTimeout, connectTimeout or create a new one with a new URLSessionConfiguration
     /// - Parameter networkRequest: current network request
-    private func createURLSession(networkRequest: NetworkRequest) -> URLSession? {
+    private func createURLSession(networkRequest: NetworkRequest) -> URLSession {
         let sessionId = "\(networkRequest.url.absoluteString)\(networkRequest.readTimeout)\(networkRequest.connectTimeout)"
         guard let session = self.sessions[sessionId] else {
             // Create config for an ephemeral NSURLSession with specified timeouts
