@@ -26,38 +26,48 @@ class Serializer {
     private  let TIMESTAMP_FORMAT: String = "yyyy-MM-dd'T'HH:mm:ssXXX"
     private  let DATE_FORMAT: String = "yyyy-MM-dd"
     
+    /// Serialize a list of Property elements to a list of XDM formatted maps.
+    /// Calls Property.serializeToXdm()} on each element in the list.
+    /// - Parameters:
+    ///   -  listProperty: list of Property elements
+    /// - Returns: a list of Property elements serialized to XDM map structure
     func serializeFromList(listProperty: [Property]) -> [[String: Any]] {
         
         var serializedList:[[String: Any]] = [[String: Any]]()
-        
         for property in listProperty {
             serializedList.append(property.serializeToXdm())
         }
         return serializedList
     }
 
+    /// Serialize the given Date to a string formatted to an ISO 8601 date-time as defined in
+    /// <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>
+    /// For example, 2017-09-26T15:52:25-07:00
+    /// - Parameters:
+    ///   - timestamp: A timestamp
+    /// - Returns: The timestamp formatted to a string in the format of 'yyyy-MM-dd'T'HH:mm:ssXXX',
+    /// or an empty string if {@code timestamp} is null
     func serializeToISO8601String(timestamp: Date?) -> String {
         
-        if timestamp == nil {
-            return ""
-         }
- 
+        guard let unwrappedTimestamp = timestamp else { return "" }
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = TIMESTAMP_FORMAT
-        return dateFormatter.string(from: timestamp!)
-        
+        return dateFormatter.string(from: unwrappedTimestamp)
     }
 
-       func serializeToShortDateString(timestamp: Date?) -> String {
-           
-           if timestamp == nil {
-               return ""
-            }
-    
-           let dateFormatter = DateFormatter()
-           dateFormatter.dateFormat = DATE_FORMAT
-           return dateFormatter.string(from: timestamp!)
-           
-       }
+    /// Serialize the given Date to a string formatted to an ISO 8601 date without time as defined in
+    /// <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>
+    /// For example, 2017-09-26
+    /// - Parameters:
+    ///   - date: A date
+    /// - Returns: The timestamp formatted to a string in the format of 'yyyy-MM-dd',
+    /// or an empty string if the date is null
+   func serializeToShortDateString(timestamp: Date?) -> String {
+       
+       guard let unwrappedTimestamp = timestamp else { return "" }
+       let dateFormatter = DateFormatter()
+       dateFormatter.dateFormat = DATE_FORMAT
+       return dateFormatter.string(from: unwrappedTimestamp)
+   }
 
 }

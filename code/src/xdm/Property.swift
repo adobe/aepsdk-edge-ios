@@ -19,6 +19,9 @@ import Foundation
 
 public protocol Property {
     
+    /// Serialize the given object to a map equivalent of its XDM schema.
+    /// - Returns: XDM formatted map of the given Property object
+    
     func serializeToXdm() -> [String: Any]
     
 }

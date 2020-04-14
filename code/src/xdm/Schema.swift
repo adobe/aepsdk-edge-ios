@@ -19,12 +19,22 @@ import Foundation
 
 public protocol Schema {
     
+    /// Returns the version of this schema as defined in the Adobe Experience Platform.
+    /// - Returns: The version of this schema
     func getSchemaVersion() -> String
-
+    
+    /// Returns the identifier for this schema as defined in the Adobe Experience Platform.
+    /// The identifier is a URI where this schema is defined.
+    /// - Returns: The URI identifier for this schema
     func getSchemaIdentifier() -> String
     
+    /// Returns the identifier for this dataset as defined in the Adobe Experience Platform.
+    /// The identifier is a URI where this dataset is defined.
+    /// - Returns: The URI identifier for this dataset
     func getDatasetIdentifier() -> String
-
+    
+    /// Serialize this Schema object to a map equivalent of its XDM schema.
+    /// - Returns: XDM formatted map of this Schema object
     func serializeToXdm() -> [String: Any]
     
 }

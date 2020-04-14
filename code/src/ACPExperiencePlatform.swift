@@ -26,10 +26,10 @@ public class ACPExperiencePlatform {
     /// Registers the extension with the Mobile SDK. This method should be called only once in your application class
     public static func registerExtension() {
         
-        if((try? ACPCore.registerExtension(ExperiencePlatformInternal.self)) != nil){
+        do {
+            try ACPCore.registerExtension(ExperiencePlatformInternal.self)
             ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Extention successfully registered!")
-        }
-        else {
+        } catch {
             ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"Extension Registration has failed!")
         }
     }
@@ -59,16 +59,11 @@ public class ACPExperiencePlatform {
     /// - Returns: A Boolean indicating if the provided ExperiencePlatformEvent was dispatched
     private static func addDataPlatformEvent(experiencePlatformEvent: ExperiencePlatformEvent, uniqueSequenceId: String) -> Bool {
 
-        var eventData: [String: Any]! = experiencePlatformEvent.getData()
-        if eventData == nil {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Cannot make request with null/empty event data.")
-            return false
-        }
-        
+        var eventData = experiencePlatformEvent.getData()
         eventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
-        let event:ACPExtensionEvent! = try? ACPExtensionEvent.init(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
+        let event:ACPExtensionEvent = try! ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
         do {
-            try ACPCore.dispatchEvent(event);
+            try ACPCore.dispatchEvent(event)
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event.")
             return false
@@ -84,11 +79,7 @@ public class ACPExperiencePlatform {
         var sendAllEventData = [String: Any]()
         sendAllEventData[ExperiencePlatformConstants.EventDataKeys.send_all_events] = true
         sendAllEventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
-        let sendAllEvent:ACPExtensionEvent! = try? ACPExtensionEvent.init(name: "Send all events to Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: sendAllEventData)
-        do {
-                   try ACPCore.dispatchEvent(sendAllEvent);
-               } catch {
-                   ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event.")
-            }
-    }
+        let sendAllEvent:ACPExtensionEvent = try! ACPExtensionEvent.init(name: "Send all events to Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: sendAllEventData)
+        try? ACPCore.dispatchEvent(sendAllEvent)
+     }
 }
