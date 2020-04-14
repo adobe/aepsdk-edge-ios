@@ -33,11 +33,7 @@ class Serializer {
     /// - Returns: a list of Property elements serialized to XDM map structure
     func serializeFromList(listProperty: [Property]) -> [[String: Any]] {
         
-        var serializedList:[[String: Any]] = [[String: Any]]()
-        for property in listProperty {
-            serializedList.append(property.serializeToXdm())
-        }
-        return serializedList
+        return listProperty.map({$0.serializeToXdm()})
     }
 
     /// Serialize the given Date to a string formatted to an ISO 8601 date-time as defined in

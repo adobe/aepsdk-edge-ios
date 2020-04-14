@@ -16,8 +16,8 @@
 
 import ACPCore
 
-public let LOG_TAG = "ACPExperiencePlatform"
-public let EXTENSION_VERSION = "1.0.0-alpha"
+private let LOG_TAG = "ACPExperiencePlatform"
+private let EXTENSION_VERSION = "1.0.0-alpha"
 
 public class ACPExperiencePlatform {
 
@@ -48,7 +48,7 @@ public class ACPExperiencePlatform {
                                responseCallback: (_ data: [String: Any]) -> ()) {
  
     let uniqueSequenceId = UUID().uuidString
-    var _: Bool = addDataPlatformEvent(experiencePlatformEvent: experiencePlatformEvent, uniqueSequenceId: uniqueSequenceId)
+    addDataPlatformEvent(experiencePlatformEvent: experiencePlatformEvent, uniqueSequenceId: uniqueSequenceId)
     dispatchSendAllEvent(uniqueSequenceId: uniqueSequenceId)
     }
 
@@ -57,7 +57,7 @@ public class ACPExperiencePlatform {
     ///   -  experiencePlatformEvent: The ExperiencePlatformEvent to be dispatched to the internal extension, event should not be null
     ///   - uniqueSequenceId: Unique event sequence identifier, used to identify all the events from the same batch before being sent to Data Platform
     /// - Returns: A Boolean indicating if the provided ExperiencePlatformEvent was dispatched
-    private static func addDataPlatformEvent(experiencePlatformEvent: ExperiencePlatformEvent, uniqueSequenceId: String) -> Bool {
+    private static func addDataPlatformEvent(experiencePlatformEvent: ExperiencePlatformEvent, uniqueSequenceId: String) {
 
         var eventData = experiencePlatformEvent.getData()
         eventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
@@ -66,9 +66,7 @@ public class ACPExperiencePlatform {
             try ACPCore.dispatchEvent(event)
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event.")
-            return false
         }
-        return true
     }
     
     /// Dispatches the SendAll event for the Experience platform extension in order to start processing the queued events, prepare and initiate the network request.

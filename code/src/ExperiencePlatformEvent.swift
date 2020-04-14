@@ -54,12 +54,15 @@ public class ExperiencePlatformEvent {
         self.xdmData = xdm
       }
 
-    
+    /// Returns the free form data associated with this event
+    /// - Returns:Free form data in JSON format
     func getData() -> [String: Any]{
         return self.data
     }
     
-    func getxdmData() -> [String: Any]{
+    /// Returns the solution specific XDM event data for this event.
+    /// - Returns:The XDM schema data
+    func getXdmData() -> [String: Any]{
         return self.xdmData
       }
 }
