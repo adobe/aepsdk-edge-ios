@@ -21,8 +21,6 @@ public class ACPExperiencePlatform {
     
     public static func registerExtension() {
         // TODO: implement me
-        ACPCore.log(ACPMobileLogLevel.debug, tag: "ACPExperiencePlatform", message: "registerExtension")
-        _ = try? ACPCore.registerExtension(ExperiencePlatformInternal.self)
     }
     
     public static func extensionVersion() -> String {
