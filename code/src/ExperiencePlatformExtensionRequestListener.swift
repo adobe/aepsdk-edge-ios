@@ -41,7 +41,7 @@ class ExperiencePlatformExtensionRequestListener : ACPExtensionListener {
             }
             
             let stateOwner = eventData[ExperiencePlatformConstants.SharedState.stateowner] as? String
-            if stateOwner == ExperiencePlatformConstants.SharedState.configuration {
+            if stateOwner == ExperiencePlatformConstants.SharedState.Configuration.stateOwner {
                 // kick event queue processing
                 parentExtension.processEventQueue(event)
             }

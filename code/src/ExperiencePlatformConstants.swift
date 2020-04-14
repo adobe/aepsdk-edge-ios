@@ -18,6 +18,7 @@
 import Foundation
 
 struct ExperiencePlatformConstants {
+    private init() {}
     
     static let eventTypeExperiencePlatform: String = "com.adobe.eventType.experiencePlatform"
     static let eventTypeAdobeHub: String = "com.adobe.eventType.hub"
@@ -30,32 +31,53 @@ struct ExperiencePlatformConstants {
     static let platformDataStorage: String = "PlatformExtensionDataStorage"
     
     struct Defaults {
+        private init() {}
+        
         static let networkRequestMaxRetries: Int = 5
         
         static let requestConfigRecordSeparator = "\u{0000}"
         static let requestConfigLineFeed = "\n"
         
         static let requestStateCookiesEnabled = false
+        
     }
 
     struct EventDataKeys {
+        private init() {}
+        
         static let uniqueSequenceId: String = "uniquesequenceid"
     }
     
     struct DataStoreKeys {
+        private init() {}
+        
         static let storeName: String = "ACPExperiencePlatform"
         static let storePayloads: String = "storePayloads"
     }
     
     struct SharedState {
+        private init() {}
+        
         static let stateowner: String = "stateowner"
-        static let configuration: String = "com.adobe.module.configuration"
-        static let identity: String = "com.adobe.mobile.identity"
-        static let lifecycle: String = "com.adobe.mobile.lifecycle"
         
         struct Configuration {
+            private init() {}
+            
+            static let stateOwner = "com.adobe.module.configuration"
             static let experiencePlatformConfigId: String = "experiencePlatform.configId"
             static let experienceCloudOrgId: String = "experienceCloud.org"
+        }
+        
+        struct Identity {
+            private init() {}
+            
+            static let stateOwner = "com.adobe.mobile.identity"
+        }
+        
+        struct Lifecycle {
+            private init() {}
+            
+            static let stateOwner = "com.adobe.mobile.lifecycle"
         }
     }
 }

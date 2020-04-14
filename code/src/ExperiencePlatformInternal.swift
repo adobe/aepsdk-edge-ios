@@ -129,7 +129,7 @@ class ExperiencePlatformInternal : ACPExtension {
         
         let configState: [AnyHashable:Any]?
         do {
-            configState = try api.getSharedEventState(ExperiencePlatformConstants.SharedState.configuration, event: event)
+            configState = try api.getSharedEventState(ExperiencePlatformConstants.SharedState.Configuration.stateOwner, event: event)
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to retrieve config shared state: \(error.localizedDescription)")
             return false // keep event in queue to process on next trigger
