@@ -103,39 +103,4 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertEqual(timestampToISO8601(events[1].eventTimestamp), flattenDict[".events[1].xdm.timestamp"] as? String)
     }
     
-    func flattenDictionary(dict: [String : Any]) -> [String : Any] {
-        var result: [String : Any] = [:]
-        
-        func recursive(dict: [String : Any], out: inout [String : Any], currentKey: String = "") {
-            for (key, val) in dict {
-                let resultKey = currentKey + "." + key
-                process(value: val, out: &out, key: resultKey)
-            }
-        }
-        
-        func recursive(list: [Any], out: inout [String : Any], currentKey: String) {
-            for (index, value) in list.enumerated() {
-                let resultKey = currentKey + "[\(index)]"
-                process(value: value, out: &out, key: resultKey)
-            }
-        }
-        
-        func process(value: Any, out: inout [String : Any], key: String) {
-            if let value = value as? [String : Any] {
-                recursive(dict: value, out: &out, currentKey: key)
-            } else if let value = value as? [Any] {
-                recursive(list: value, out: &out, currentKey: key)
-            } else {
-                out[key] = value
-            }
-        }
-        
-        recursive(dict: dict, out: &result)
-        return result
-    }
-    
-    func timestampToISO8601(_ timestamp: Int) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(timestamp/1000))
-        return ISO8601DateFormatter().string(from: date)
-    }
 }

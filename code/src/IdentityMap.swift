@@ -32,19 +32,23 @@ struct IdentityMap {
         let item = IdentityItem(id: id, state: state, primary: primary)
         
         if var namespaceItems = items[namespace] {
-            namespaceItems.append(item)
+            if let index = namespaceItems.firstIndex(of: item) {
+                namespaceItems[index] = item
+            } else {
+                namespaceItems.append(item)
+            }
             items[namespace] = namespaceItems
         } else {
             items[namespace] = [item]
         }
     }
     
-    func getItemsFor(namespace: String) -> [IdentityItem] {
+    func getItemsFor(namespace: String) -> [IdentityItem]? {
         if let list = items[namespace] {
             return list
         }
         
-        return []
+        return nil
     }
 }
 
@@ -73,6 +77,12 @@ struct IdentityItem {
         case id = "id"
         case primary = "primary"
         case state = "authenticationState"
+    }
+}
+
+extension IdentityItem : Equatable {
+    static func ==(lhs: IdentityItem, rhs: IdentityItem) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
