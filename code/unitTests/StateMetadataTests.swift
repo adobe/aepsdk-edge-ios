@@ -40,7 +40,10 @@ class StateMetadataTests: XCTestCase {
         XCTAssertNotNil(data)
         let expected = """
         {
-          "cookiesEnabled" : false
+          "cookiesEnabled" : false,
+          "entries" : [
+
+          ]
         }
         """
         let jsonString = String(data: data!, encoding: .utf8)

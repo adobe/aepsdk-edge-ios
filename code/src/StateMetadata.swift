@@ -19,7 +19,7 @@ import Foundation
 
 /// Client side stored information.
 /// A property in the `RequestMetadata` object.
-struct StateMetadata {
+struct StateMetadata : Codable {
     private var cookiesEnabled: Bool
     private var entries: [StoreResponsePayload]
 
@@ -30,28 +30,5 @@ struct StateMetadata {
         for (_, payload) in payload {
             entries.append(payload)
         }
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case entries = "entries"
-        case cookiesEnabled = "cookiesEnabled"
-    }
-}
-
-extension StateMetadata : Encodable {
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(cookiesEnabled, forKey: .cookiesEnabled)
-        if !entries.isEmpty {
-            try container.encode(entries, forKey: .entries)
-        }
-    }
-}
-
-extension StateMetadata : Decodable {
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        cookiesEnabled = (try? container.decode(Bool.self, forKey: .cookiesEnabled)) ?? ExperiencePlatformConstants.Defaults.requestStateCookiesEnabled
-        entries = (try? container.decode([StoreResponsePayload].self, forKey: .entries)) ?? []
     }
 }
