@@ -80,4 +80,13 @@ struct ExperiencePlatformConstants {
             static let stateOwner = "com.adobe.mobile.lifecycle"
         }
     }
+    
+    struct JsonKeys {
+        private init() {}
+        
+        static let xdm = "xdm"
+        static let ECID = "ECID"
+        static let timestamp = "timestamp"
+        static let eventId = "eventId"
+    }
 }

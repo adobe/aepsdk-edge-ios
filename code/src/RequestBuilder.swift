@@ -61,7 +61,7 @@ class RequestBuilder {
         // set ECID if available
         if let ecid = experienceCloudId {
             var identityMap = IdentityMap()
-            identityMap.addItem(namespace: "ECID", id: ecid)
+            identityMap.addItem(namespace: ExperiencePlatformConstants.JsonKeys.ECID, id: ecid)
             request.xdm = RequestContext(identityMap: identityMap)
         }
         
@@ -92,15 +92,15 @@ class RequestBuilder {
                 continue
             }
             
-            if eventData["xdm"] == nil {
-                eventData["xdm"] = [:]
+            if eventData[ExperiencePlatformConstants.JsonKeys.xdm] == nil {
+                eventData[ExperiencePlatformConstants.JsonKeys.xdm] = [:]
             }
             
-            if var xdm = eventData["xdm"] as? [String : Any] {
+            if var xdm = eventData[ExperiencePlatformConstants.JsonKeys.xdm] as? [String : Any] {
                 let date = Date(timeIntervalSince1970: TimeInterval(event.eventTimestamp/1000))
-                xdm["timestamp"] = ISO8601DateFormatter().string(from: date)
-                xdm["eventId"] = event.eventUniqueIdentifier
-                eventData["xdm"] = xdm
+                xdm[ExperiencePlatformConstants.JsonKeys.timestamp] = ISO8601DateFormatter().string(from: date)
+                xdm[ExperiencePlatformConstants.JsonKeys.eventId] = event.eventUniqueIdentifier
+                eventData[ExperiencePlatformConstants.JsonKeys.xdm] = xdm
             }
             
             platformEvents.append(AnyCodable.from(dictionary: eventData))
