@@ -133,10 +133,38 @@ class RequestBuilderTests: XCTestCase {
         
         let flattenDict = flattenDictionary(dict: dict)
         
-        XCTAssertFalse(flattenDict[".meta.state.cookiesEnabled"] as? Bool ?? true)
         XCTAssertEqual("key", flattenDict[".meta.state.entries[0].key"] as? String)
         XCTAssertEqual("value" , flattenDict[".meta.state.entries[0].value"] as? String)
         XCTAssertEqual(3600, flattenDict[".meta.state.entries[0].maxAge"] as? Int)
         XCTAssertNil(flattenDict[".meta.state.entries[0].expiryDate"])
+    }
+    
+    func testGetPayload_withOutStorePayload_responseDoesNotContainsStateEntries() {
+        let request = RequestBuilder(dataStore: MockKeyValueStore())
+        request.organizationId = "orgID"
+        request.recordSeparator = "A"
+        request.lineFeed = "B"
+        request.experienceCloudId = "ecid"
+
+        
+        let event = try? ACPExtensionEvent(name: "Request Test",
+                                           type: "type",
+                                           source: "source",
+                                           data: ["data":["key":"value"]])
+        
+        let data = request.getPayload([event!])
+        
+        XCTAssertNotNil(data)
+        
+        let json = try? JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String:Any]
+        
+        guard let dict = json else {
+            XCTFail("Failed to parse request payload to dictionary.")
+            return
+        }
+        
+        let flattenDict = flattenDictionary(dict: dict)
+        
+        XCTAssertNil(flattenDict[".meta.state"])
     }
 }

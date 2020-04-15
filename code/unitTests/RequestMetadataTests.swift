@@ -89,7 +89,6 @@ class RequestMetadataTests: XCTestCase {
         let expected = """
             {
               "state" : {
-                "cookiesEnabled" : false,
                 "entries" : [
                   {
                     "key" : "key",
@@ -124,7 +123,6 @@ class RequestMetadataTests: XCTestCase {
 
               },
               "state" : {
-                "cookiesEnabled" : false,
                 "entries" : [
                   {
                     "key" : "key",
@@ -181,7 +179,6 @@ class RequestMetadataTests: XCTestCase {
        let data = """
        {
         "state" : {
-          "cookiesEnabled" : false,
           "entries" : [
             {
               "key" : "key",
@@ -208,7 +205,6 @@ class RequestMetadataTests: XCTestCase {
        {
         "konductorConfig" : { },
         "state" : {
-          "cookiesEnabled" : false,
           "entries" : [
             {
               "key" : "key",
@@ -238,7 +234,6 @@ class RequestMetadataTests: XCTestCase {
             "isUnknown" : true
         },
         "state" : {
-          "cookiesEnabled" : false,
           "entries" : [
             {
               "key" : "key",

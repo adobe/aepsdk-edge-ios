@@ -20,11 +20,9 @@ import Foundation
 /// Client side stored information.
 /// A property in the `RequestMetadata` object.
 struct StateMetadata : Codable {
-    private var cookiesEnabled: Bool
-    private var entries: [StorePayload]
+    private var entries: [StorePayload]?
 
     init(payload: [StorePayload]) {
-        cookiesEnabled = ExperiencePlatformConstants.Defaults.requestStateCookiesEnabled
-        entries = payload
+        entries = payload.isEmpty ? nil : payload
     }
 }
