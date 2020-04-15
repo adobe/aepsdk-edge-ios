@@ -35,7 +35,7 @@ struct Streaming {
     var lineFeed: String?
     
     /// Getter to state whether response streaming is enabled.
-    var streamingEnabled: Bool? {
+    var enabled: Bool? {
         if (recordSeparator == nil || lineFeed == nil) {
             return false
         }
@@ -54,7 +54,7 @@ extension Streaming : Encodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if let unwrapped = recordSeparator { try container.encode(unwrapped, forKey: .recordSeparator)}
         if let unwrapped = lineFeed { try container.encode(unwrapped, forKey: .lineFeed)}
-        if let unwrapped = streamingEnabled { try container.encode(unwrapped, forKey: .streamingEnabled)}
+        if let unwrapped = enabled { try container.encode(unwrapped, forKey: .streamingEnabled)}
     }
 }
 

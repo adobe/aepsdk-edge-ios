@@ -159,7 +159,7 @@ class KonductorConfigTests: XCTestCase {
         XCTAssertNotNil(streaming)
         XCTAssertEqual("A", streaming!.recordSeparator)
         XCTAssertEqual("B", streaming!.lineFeed)
-        XCTAssertTrue(streaming!.streamingEnabled!)
+        XCTAssertTrue(streaming!.enabled!)
     }
     
     func testStreamingDecodeEmptyLineFeed() {
@@ -176,7 +176,7 @@ class KonductorConfigTests: XCTestCase {
         XCTAssertNotNil(streaming)
         XCTAssertEqual("A", streaming!.recordSeparator)
         XCTAssertNil(streaming!.lineFeed)
-        XCTAssertFalse(streaming!.streamingEnabled!)
+        XCTAssertFalse(streaming!.enabled!)
     }
     
     func testStreamingDecodeEmptyRecordSeparator() {
@@ -193,7 +193,7 @@ class KonductorConfigTests: XCTestCase {
         XCTAssertNotNil(streaming)
         XCTAssertNil(streaming!.recordSeparator)
         XCTAssertEqual("B", streaming!.lineFeed)
-        XCTAssertFalse(streaming!.streamingEnabled!)
+        XCTAssertFalse(streaming!.enabled!)
     }
     
     func testStreamingDecodeEmptyJson() {
@@ -208,7 +208,7 @@ class KonductorConfigTests: XCTestCase {
         XCTAssertNotNil(streaming)
         XCTAssertNil(streaming!.lineFeed)
         XCTAssertNil(streaming!.recordSeparator)
-        XCTAssertFalse(streaming!.streamingEnabled!)
+        XCTAssertFalse(streaming!.enabled!)
     }
     
     // MARK: KonductorConfig encoder tests
@@ -301,7 +301,7 @@ class KonductorConfigTests: XCTestCase {
         XCTAssertEqual("id", config!.imsOrgId)
         XCTAssertEqual("B", config!.streaming!.lineFeed)
         XCTAssertEqual("A", config!.streaming!.recordSeparator)
-        XCTAssertTrue(config!.streaming!.streamingEnabled!)
+        XCTAssertTrue(config!.streaming!.enabled!)
     }
     
     func testKonductorConfigDecodeWithoutStreaming() {
