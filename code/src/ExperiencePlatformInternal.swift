@@ -28,7 +28,6 @@ class ExperiencePlatformInternal : ACPExtension {
     override init() {
         super.init()
         eventQueue.setHandler({ return $0.handler($0.event) })
-        eventQueue.start()
         
         do {
             try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
@@ -44,7 +43,6 @@ class ExperiencePlatformInternal : ACPExtension {
                                      eventSource: ExperiencePlatformConstants.eventSourceExtensionRequestContent)
         } catch {
             ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension request content events: \(error.localizedDescription)")
-
         }
         
         do {
@@ -53,9 +51,9 @@ class ExperiencePlatformInternal : ACPExtension {
                                      eventSource: ExperiencePlatformConstants.eventSourceExtensionResponseContent)
         } catch {
             ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension response content events: \(error.localizedDescription)")
-
         }
         
+        eventQueue.start()
     }
     
     override func name() -> String? {
