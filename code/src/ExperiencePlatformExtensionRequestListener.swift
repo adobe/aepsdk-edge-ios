@@ -30,14 +30,14 @@ class ExperiencePlatformExtensionRequestListener : ACPExtensionListener {
         // get parent extension
         guard let parentExtension = self.extension as? ExperiencePlatformInternal else {
             ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Unable to hear event '\(event.eventUniqueIdentifier)' as parent extension is not instance of ExperiencePlatformInternal.")
-            return;
+            return
         }
         
         // Handle SharedState events
         if (event.eventType == ExperiencePlatformConstants.eventTypeAdobeHub) {
             guard let eventData = event.eventData else {
                 ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Adobe Hub event contains no data. Cannot process event '\(event.eventUniqueIdentifier)'")
-                return;
+                return
             }
             
             let stateOwner = eventData[ExperiencePlatformConstants.SharedState.stateowner] as? String

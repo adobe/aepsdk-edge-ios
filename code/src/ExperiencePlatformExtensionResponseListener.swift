@@ -30,7 +30,7 @@ class ExperiencePlatformExtensionResponseListener : ACPExtensionListener {
         // get parent extension
         guard let parentExtension = self.extension as? ExperiencePlatformInternal else {
             ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Unable to hear event '\(event.eventUniqueIdentifier)' as parent extension is not instance of ExperiencePlatformInternal.")
-            return;
+            return
         }
         
         parentExtension.processPlatformResponseEvent(event)

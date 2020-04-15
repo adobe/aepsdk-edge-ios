@@ -102,7 +102,7 @@ class ExperiencePlatformInternal : ACPExtension {
     func handleAddEvent(event: ACPExtensionEvent) -> Bool {
         if event.eventData == nil {
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) contained no data, ignoring.")
-            return true;
+            return true
         }
         
         return handleSendEvent(event)
