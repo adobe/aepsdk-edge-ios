@@ -18,100 +18,7 @@ import XCTest
 
 @testable import ACPExperiencePlatform
 
-class MockTask: URLSessionDataTask {
-    private let data: Data?
-    private let urlResponse: URLResponse?
-    private let _error: Error?
-    var completionHandler: ((Data?, URLResponse?, Error?) -> Void)? // set by MockURLSession
-
-    init(data: Data?, urlResponse: URLResponse?, error: Error?) {
-        self.data = data
-        self.urlResponse = urlResponse
-        self._error = error
-    }
-    
-    override func resume() {
-        guard let unwrappedCompletionHandler = completionHandler else { return }
-        unwrappedCompletionHandler(self.data, self.urlResponse, self._error)
-    }
-}
-
-class MockURLSession: URLSession {
-    typealias CompletionHandler = (Data?, URLResponse?, Error?) -> Void
-
-    // Properties that enable us to set exactly what data or error
-    // we want our mocked URLSession to return for any request.
-    var data: Data?
-    var error: Error?
-    var dataTaskWithCompletionHandlerCalled:Bool
-    var dataTaskCalled:Bool
-    var calledWithUrlRequest: URLRequest?
-    
-    private let mockTask: MockTask
-    
-    init(data: Data? = nil, urlResponse: URLResponse? = nil, error: Error? = nil) {
-        mockTask = MockTask(data: data, urlResponse: urlResponse, error:
-            error)
-        dataTaskWithCompletionHandlerCalled = false
-        dataTaskCalled = false
-    }
-
-    override func dataTask(with: URLRequest, completionHandler: @escaping CompletionHandler) -> URLSessionDataTask {
-        mockTask.completionHandler = completionHandler
-        calledWithUrlRequest = with
-        dataTaskWithCompletionHandlerCalled = true
-        return mockTask
-    }
-    
-    override func dataTask(with: URLRequest) -> URLSessionDataTask {
-        mockTask.completionHandler = nil
-        calledWithUrlRequest = with
-        dataTaskCalled = true
-        return mockTask
-    }
-}
-
-class TestPerformerOverrider : HttpConnectionPerformer {
-    var overrideUrlList:[URL]
-    var shouldOverrideCalled:Bool?
-    var shouldOverrideCalledWithUrls:[URL]
-    var connectAsyncCalled:Bool?
-    var connectAsyncCalledWithNetworkRequest:NetworkRequest?
-    var connectAsyncCalledWithCompletionHandler: ((HttpConnection) -> Void)?
-    
-    init(overrideUrls:[URL] = []) {
-        overrideUrlList = overrideUrls
-        shouldOverrideCalledWithUrls = []
-        reset()
-    }
-    
-    func shouldOverride(url: URL, httpMethod: HttpMethod) -> Bool {
-        shouldOverrideCalled = true
-        shouldOverrideCalledWithUrls.append(url)
-        
-        return overrideUrlList.isEmpty || overrideUrlList.contains(url)
-    }
-    
-    func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)?) {
-        print("Do nothing \(networkRequest)")
-        connectAsyncCalled = true
-        connectAsyncCalledWithNetworkRequest = networkRequest
-        connectAsyncCalledWithCompletionHandler = completionHandler
-    }
-    
-    func reset() {
-        shouldOverrideCalled = false
-        shouldOverrideCalledWithUrls = []
-        connectAsyncCalled = false
-        connectAsyncCalledWithNetworkRequest = nil
-        connectAsyncCalledWithCompletionHandler = nil
-    }
-}
-
 class NetworkServiceTests: XCTestCase {
-
-    override func setUp() {
-    }
 
     override func tearDown() {
         NetworkService.shared.session = nil
@@ -212,7 +119,7 @@ class NetworkServiceTests: XCTestCase {
         
         // verify
         wait(for: [expectation], timeout: 1.0)
-        XCTAssertFalse(mockSession.dataTaskCalled)
+        XCTAssertTrue(mockSession.dataTaskWithCompletionHandlerCalled)
         XCTAssertEqual(URLRequest.CachePolicy.reloadIgnoringCacheData, mockSession.calledWithUrlRequest?.cachePolicy)
         XCTAssertEqual(Data(testBody.utf8), mockSession.calledWithUrlRequest?.httpBody)
         XCTAssertEqual(["Accept": "text/html"], mockSession.calledWithUrlRequest?.allHTTPHeaderFields) // TODO: add assert for default headers
@@ -247,14 +154,13 @@ class NetworkServiceTests: XCTestCase {
         NetworkService.shared.connectAsync(networkRequest: networkRequest)
         
         // verify
-        XCTAssertTrue(mockSession.dataTaskCalled)
-        XCTAssertFalse(mockSession.dataTaskWithCompletionHandlerCalled)
+        XCTAssertTrue(mockSession.dataTaskWithCompletionHandlerCalled)
     }
     
     // MARK: NetworkServiceOverrider tests
     
     func testShouldOverride_calledWithValidUrls_whenMultipleRequests() {
-        let testPerformerOverrider = TestPerformerOverrider()
+        let testPerformerOverrider = MockPerformerOverrider()
         
         // test
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
@@ -272,7 +178,7 @@ class NetworkServiceTests: XCTestCase {
     }
     
     func testOverridenConnectAsync_called_whenMultipleRequests() {
-        let testPerformerOverrider = TestPerformerOverrider()
+        let testPerformerOverrider = MockPerformerOverrider()
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!, httpMethod: HttpMethod.post, connectPayload: "test body", httpHeaders: ["Accept": "text/html"], connectTimeout: 2.0, readTimeout: 3.0)
         let request2 = NetworkRequest(url: URL(string: "https://test2.com")!, httpMethod: HttpMethod.get, httpHeaders: ["Accept": "text/html"])
         let request3 = NetworkRequest(url: URL(string: "https://test3.com")!)
@@ -298,7 +204,7 @@ class NetworkServiceTests: XCTestCase {
     }
     
     func testOverridenConnectAsync_calledOnlyWhenShouldOverride_whenMultipleRequests() {
-        let testPerformerOverrider = TestPerformerOverrider(overrideUrls: [URL(string: "https://test2.com")!])
+        let testPerformerOverrider = MockPerformerOverrider(overrideUrls: [URL(string: "https://test2.com")!])
         
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
@@ -314,7 +220,7 @@ class NetworkServiceTests: XCTestCase {
     
     // TODO: enable for AMSDK-9800
     func disable_testOverridenConnectAsync_addsDefaultHeaders_whenCalledWithHeaders() {
-        let testPerformerOverrider = TestPerformerOverrider()
+        let testPerformerOverrider = MockPerformerOverrider()
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!, httpMethod: HttpMethod.post, connectPayload: "test body", httpHeaders: ["Accept": "text/html"], connectTimeout: 2.0, readTimeout: 3.0)
         
         // test&verify
@@ -329,7 +235,7 @@ class NetworkServiceTests: XCTestCase {
     
     // TODO: enable for AMSDK-9800
     func disable_testOverridenConnectAsync_addsDefaultHeaders_whenCalledWithoutHeaders() {
-        let testPerformerOverrider = TestPerformerOverrider()
+        let testPerformerOverrider = MockPerformerOverrider()
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!)
         
         // test&verify
@@ -342,7 +248,7 @@ class NetworkServiceTests: XCTestCase {
     }
     
     func testOverridenConnectAsync_doesNotOverrideHeaders_whenCalledWithDefaultHeaders() {
-        let testPerformerOverrider = TestPerformerOverrider()
+        let testPerformerOverrider = MockPerformerOverrider()
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!, httpMethod: HttpMethod.get, httpHeaders: ["User-Agent": "test", "Accept-Language": "ro-RO"], connectTimeout: 2.0, readTimeout: 3.0)
         
         // test&verify
@@ -355,7 +261,7 @@ class NetworkServiceTests: XCTestCase {
     }
 
     func testReset_disablesOverride_whenCalled() {
-        let testPerformerOverrider = TestPerformerOverrider()
+        let testPerformerOverrider = MockPerformerOverrider()
         
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
@@ -372,7 +278,7 @@ class NetworkServiceTests: XCTestCase {
     }
     
     func testEnableOverrideAndReset_work_whenCalledMultipleTimes() {
-        let testPerformerOverrider = TestPerformerOverrider()
+        let testPerformerOverrider = MockPerformerOverrider()
         
         // test&verify
         // enable overrider
@@ -397,9 +303,9 @@ class NetworkServiceTests: XCTestCase {
     }
     
     func testEnableOverride_work_whenCalledWithTwoOverriders() {
-        let testPerformerOverrider1 = TestPerformerOverrider(overrideUrls:[URL(string: "https://test1.com")!])
-        let testPerformerOverrider2 = TestPerformerOverrider(overrideUrls:[URL(string: "https://test2.com")!])
-        let testPerformerOverrider3 = TestPerformerOverrider()
+        let testPerformerOverrider1 = MockPerformerOverrider(overrideUrls:[URL(string: "https://test1.com")!])
+        let testPerformerOverrider2 = MockPerformerOverrider(overrideUrls:[URL(string: "https://test2.com")!])
+        let testPerformerOverrider3 = MockPerformerOverrider()
         
         // test&verify
         // set first overrider

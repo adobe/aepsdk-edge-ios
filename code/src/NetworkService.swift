@@ -16,11 +16,15 @@ import Foundation
 extension String {
 
     private func matches(pattern: String) -> Bool {
-        let regex = try! NSRegularExpression(pattern: pattern,options: [.caseInsensitive])
+        guard let regex = try? NSRegularExpression(pattern: pattern,options: [.caseInsensitive]) else {
+            print("Failed to create regex for the provided patern, returning non match")
+            return false
+        }
+        
         return regex.firstMatch(in: self, range: NSRange(location: 0, length: utf16.count)) != nil
     }
 
-    func isValidUrl() -> Bool {
+    var isValidUrl: Bool {
         // taken from Diego Perini's post, https://gist.github.com/dperini/729294
         // see also https://mathiasbynens.be/demo/url-regex
         let urlPattern:String = """
@@ -172,7 +176,7 @@ public class NetworkService: NetworkServiceProtocol {
             }
             return
         }
-        if !networkRequest.url.absoluteString.isValidUrl() {
+        if !networkRequest.url.absoluteString.isValidUrl {
             print("NetworkService - Invalid URL (\( networkRequest.url.absoluteString))")
             if let closure = completionHandler {
                 closure(HttpConnection(data: nil, response: nil, error: NetworkServiceError.invalidUrl))
@@ -180,28 +184,22 @@ public class NetworkService: NetworkServiceProtocol {
             return
         }
         
-        let overridePerformer = NetworkServiceOverrider.shared.performer
-        if overridePerformer != nil && overridePerformer!.shouldOverride(url: networkRequest.url, httpMethod: networkRequest.httpMethod) {
+        if let overridePerformer = NetworkServiceOverrider.shared.performer, overridePerformer.shouldOverride(url: networkRequest.url, httpMethod: networkRequest.httpMethod) {
             // TODO: AMSDK-9800 should the default headers be injected in the network request even when networkOverride is enabled
-            print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)) with completion handler using the NetworkServiceOverrider.")
-            overridePerformer!.connectAsync(networkRequest: networkRequest, completionHandler: completionHandler)
+            print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)) using the NetworkServiceOverrider.")
+            overridePerformer.connectAsync(networkRequest: networkRequest, completionHandler: completionHandler)
         } else {
             // using the default network service
             let urlRequest = createURLRequest(networkRequest: networkRequest)
             let urlSession = createURLSession(networkRequest: networkRequest)
             
-            // initiate the request with/without completion handler
-            guard let closure = completionHandler else {
-                print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)).")
-                let task = urlSession.dataTask(with: urlRequest)
-                task.resume()
-                return
-            }
-            
-            print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)) with completion handler.")
+            // initiate the network request
+            print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)).")
             let task = urlSession.dataTask(with: urlRequest, completionHandler: { (data, response, error) in
-                let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse , error: error)
-                closure(httpConnection)
+                if let closure = completionHandler {
+                    let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse , error: error)
+                    closure(httpConnection)
+                }
             })
             task.resume()
         }
@@ -237,7 +235,7 @@ public class NetworkService: NetworkServiceProtocol {
             config.timeoutIntervalForRequest = networkRequest.readTimeout
             config.timeoutIntervalForResource = networkRequest.connectTimeout
             
-            let newSession:URLSession = self.session != nil ? self.session! : URLSession(configuration: config)
+            let newSession:URLSession = self.session ?? URLSession(configuration: config)
             self.sessions[sessionId] = newSession
             return newSession
         }
@@ -248,13 +246,12 @@ public class NetworkService: NetworkServiceProtocol {
 
 /// Used to set the HttpConnectionPerformer instance being used to override the network stack
 public class NetworkServiceOverrider {
-    private let queue: DispatchQueue // used to ensure concurrent mutations of the performer
+    // queue used to ensure concurrent mutations of the performer
+    private let queue = DispatchQueue(label: "com.adobe.networkserviceoverrider", attributes: .concurrent)
     private var internalPerformer:HttpConnectionPerformer?
     public static let shared = NetworkServiceOverrider()
     
-    private init(){
-        queue = DispatchQueue(label: "com.adobe.networkserviceoverrider", attributes: .concurrent)
-    }
+    private init(){}
     
     /// Current HttpConnectionPerformer, nil if NetworkServiceOverrider is not set or `reset()` was called before
     public var performer: HttpConnectionPerformer? {

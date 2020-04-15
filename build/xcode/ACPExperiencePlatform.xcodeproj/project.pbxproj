@@ -31,6 +31,9 @@
 		D4D5B5A52433F9C400CAB6E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5A32433F9C400CAB6E4 /* LaunchScreen.storyboard */; };
 		D4D5B5AA2433FA1000CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; };
 		D4F74FE5244633B000379258 /* NetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE4244633B000379258 /* NetworkServiceTests.swift */; };
+		D4F74FE72447A8B800379258 /* MockPerformerOverrider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE62447A8B800379258 /* MockPerformerOverrider.swift */; };
+		D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE82447A92800379258 /* MockURLSession.swift */; };
+		D4F74FEB2447A94900379258 /* MockTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FEA2447A94900379258 /* MockTask.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +99,9 @@
 		D4D5B5A42433F9C400CAB6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D4D5B5A62433F9C400CAB6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D4F74FE4244633B000379258 /* NetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceTests.swift; sourceTree = "<group>"; };
+		D4F74FE62447A8B800379258 /* MockPerformerOverrider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPerformerOverrider.swift; sourceTree = "<group>"; };
+		D4F74FE82447A92800379258 /* MockURLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLSession.swift; sourceTree = "<group>"; };
+		D4F74FEA2447A94900379258 /* MockTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTask.swift; sourceTree = "<group>"; };
 		E4D329943CA31F25C1066A9C /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 		FA6F6C08514B77F798670336 /* Pods-ACPExperiencePlatform.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ACPExperiencePlatform.release.xcconfig"; path = "Target Support Files/Pods-ACPExperiencePlatform/Pods-ACPExperiencePlatform.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -195,6 +201,7 @@
 		D4D5B4F1242EBD2200CAB6E4 /* unitTests */ = {
 			isa = PBXGroup;
 			children = (
+				D4F74FEC2447A95400379258 /* utils */,
 				D4D5B51B2432594000CAB6E4 /* ExampleTest.swift */,
 				D4D5B5252432599B00CAB6E4 /* Info.plist */,
 				D4F74FE4244633B000379258 /* NetworkServiceTests.swift */,
@@ -249,6 +256,16 @@
 			);
 			name = AEPCommerceDemoApp;
 			path = ../../demo/AEPCommerceDemoApp;
+			sourceTree = "<group>";
+		};
+		D4F74FEC2447A95400379258 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				D4F74FE62447A8B800379258 /* MockPerformerOverrider.swift */,
+				D4F74FE82447A92800379258 /* MockURLSession.swift */,
+				D4F74FEA2447A94900379258 /* MockTask.swift */,
+			);
+			name = utils;
 			sourceTree = "<group>";
 		};
 		E5239B915F53B993A1976FC4 /* Pods */ = {
@@ -525,8 +542,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */,
+				D4F74FEB2447A94900379258 /* MockTask.swift in Sources */,
 				D4F74FE5244633B000379258 /* NetworkServiceTests.swift in Sources */,
 				D4D5B52C243259B700CAB6E4 /* ExampleTest.swift in Sources */,
+				D4F74FE72447A8B800379258 /* MockPerformerOverrider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
