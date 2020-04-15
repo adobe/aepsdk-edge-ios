@@ -17,7 +17,7 @@
 
 import Foundation
 
-public class ExperiencePlatformEvent {
+public struct ExperiencePlatformEvent {
      private let LOG_TAG = "ExperiencePlatformEvent"
 
      private var data: [String: Any]
@@ -31,7 +31,7 @@ public class ExperiencePlatformEvent {
     /// Sets a free form data associated with this event to be passed to Adobe Data Platform
     /// - Parameters:
     ///   -  data: Free form data, JSON like types are accepted
-    func setData(data: [String: Any])  {
+    mutating func setData(data: [String: Any])  {
         self.data = data
     }
     
@@ -39,7 +39,7 @@ public class ExperiencePlatformEvent {
     /// If XDM schema is set multiple times using either this API
     /// - Parameters:
     ///   -  xdm: Schema information
-    func setXdmSchema(xdm: Schema) {
+   mutating func setXdmSchema(xdm: Schema) {
         self.xdmData = xdm.serializeToXdm()
       }
     
@@ -49,7 +49,7 @@ public class ExperiencePlatformEvent {
     /// and only the last changes are applied.
     /// - Parameters:
     ///   -  xdm: Raw XDM schema data
-    func setXdmSchema(xdm: [String: Any]) {
+    mutating func setXdmSchema(xdm: [String: Any]) {
         self.xdmData = xdm
       }
 
