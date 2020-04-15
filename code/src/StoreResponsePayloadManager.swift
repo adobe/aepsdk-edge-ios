@@ -21,7 +21,7 @@ import ACPCore
 class StoreResponsePayloadManager {
     private let TAG: String = "StoreResponsePayloadManager"
     private let dataStore: KeyValueStore
-    private let keyName: String = ExperiencePlatformConstants.DataStoreKeys.storePayloads
+    private let storePayloadKeyName: String = ExperiencePlatformConstants.DataStoreKeys.storePayloads
     
     init(_ store: KeyValueStore) {
         dataStore = store
@@ -32,7 +32,7 @@ class StoreResponsePayloadManager {
     /// - Returns: a map of `StoreResponsePayload` objects keyed by `StoreResponsePayload.key`
     func getActiveStores() -> [String : StoreResponsePayload] {
         
-        guard let serializedPayloads = dataStore.getDictionary(key: keyName, fallback: nil) else {
+        guard let serializedPayloads = dataStore.getDictionary(key: storePayloadKeyName, fallback: nil) else {
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Unable to retrieve active payloads. No payloads were found in the data store.")
             return [:]
         }
@@ -89,7 +89,7 @@ class StoreResponsePayloadManager {
             return
         }
         
-        guard var serializedPayloads = dataStore.getDictionary(key: keyName, fallback: [:]) else {
+        guard var serializedPayloads = dataStore.getDictionary(key: storePayloadKeyName, fallback: [:]) else {
             return
         }
         
@@ -119,7 +119,7 @@ class StoreResponsePayloadManager {
             }
         }
         
-        dataStore.setDictionary(key: keyName, value: serializedPayloads)
+        dataStore.setDictionary(key: storePayloadKeyName, value: serializedPayloads)
         deleteStoredResponses(keys: expiredList)
         
     }
@@ -127,7 +127,7 @@ class StoreResponsePayloadManager {
     /// Deletes a list of stores from the data store
     /// - Parameter keys: a list of `StoreResponsePayload.key`
     private func deleteStoredResponses(keys: [String]) {
-        guard var codedPayloads = dataStore.getDictionary(key: keyName, fallback: nil) else {
+        guard var codedPayloads = dataStore.getDictionary(key: storePayloadKeyName, fallback: nil) else {
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Unable to delete expired payloads. No payloads were found in the data store.")
             return
         }
@@ -136,6 +136,6 @@ class StoreResponsePayloadManager {
             codedPayloads.removeValue(forKey: key)
         }
         
-        dataStore.setDictionary(key: keyName, value: codedPayloads)
+        dataStore.setDictionary(key: storePayloadKeyName, value: codedPayloads)
     }
 }
