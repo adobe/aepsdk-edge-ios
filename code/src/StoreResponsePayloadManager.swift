@@ -33,7 +33,7 @@ class StoreResponsePayloadManager {
     func getActiveStores() -> [String : StoreResponsePayload] {
         
         guard let serializedPayloads = dataStore.getDictionary(key: keyName, fallback: nil) else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "No active payloads were found in the data store.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Unable to retrieve active payloads. No payloads were found in the data store.")
             return [:]
         }
         
@@ -49,7 +49,7 @@ class StoreResponsePayloadManager {
         for (_, codedPayload) in serializedPayloads {
             
             guard let data = codedPayload.data(using: .utf8) else {
-                ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to convert store response payload string to data.")
+                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to convert store response payload string to data.")
                 continue
             }
             
@@ -62,7 +62,7 @@ class StoreResponsePayloadManager {
                     payloads[storeResponse.payload.key] = storeResponse
                 }
             } catch {
-                ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to decode store response payload with: \(error.localizedDescription)")
+                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to decode store response payload with: \(error.localizedDescription)")
             }
         }
         
@@ -128,6 +128,7 @@ class StoreResponsePayloadManager {
     /// - Parameter keys: a list of `StoreResponsePayload.key`
     private func deleteStoredResponses(keys: [String]) {
         guard var codedPayloads = dataStore.getDictionary(key: keyName, fallback: nil) else {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Unable to delete expired payloads. No payloads were found in the data store.")
             return
         }
         
