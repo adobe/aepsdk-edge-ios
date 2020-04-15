@@ -89,7 +89,7 @@ class StoreResponsePayloadManager {
         
         for payload in payloads {
             // The Experience Edge server (Konductor) defines state values with 0 or -1 max age as to be deleted on the client.
-            if (payload.maxAgeSeconds <= 0) {
+            if (payload.payload.maxAge <= 0) {
                 expiredList.append(payload.key)
                 continue
             }

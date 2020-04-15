@@ -19,14 +19,12 @@ import Foundation
 
 struct StoreResponsePayload {
     
-    /// They payload key identifier
-    let key: String
+    /// The store payload from the server response
+    let payload: StorePayload
     
-    /// The payload value
-    let value: String
-    
-    /// The max age in seconds this payload should be stored
-    let maxAgeSeconds: TimeInterval
+    var key: String {
+        return payload.key
+    }
     
     /// The `Date` at which this payload expires
     let expiryDate: Date
@@ -37,9 +35,7 @@ struct StoreResponsePayload {
     }
     
     init(key: String, value: String, maxAgeSeconds: TimeInterval) {
-        self.key = key
-        self.value = value
-        self.maxAgeSeconds = maxAgeSeconds
+        payload = StorePayload(key: key, value: value, maxAge: maxAgeSeconds)
         expiryDate = Date(timeIntervalSinceNow: maxAgeSeconds)
     }
     
@@ -54,9 +50,9 @@ struct StoreResponsePayload {
 extension StoreResponsePayload : Encodable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(key, forKey: .key)
-        try container.encode(value, forKey: .value)
-        try container.encode(maxAgeSeconds, forKey: .maxAgeSeconds)
+        try container.encode(payload.key, forKey: .key)
+        try container.encode(payload.value, forKey: .value)
+        try container.encode(payload.maxAge, forKey: .maxAgeSeconds)
         try container.encode(expiryDate, forKey: .expiryDate)
     }
 }
@@ -64,13 +60,26 @@ extension StoreResponsePayload : Encodable {
 extension StoreResponsePayload : Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        key = (try? container.decode(String.self, forKey: .key)) ?? ""
-        value = (try? container.decode(String.self, forKey: .value)) ?? ""
-        maxAgeSeconds = (try? container.decode(TimeInterval.self, forKey: .maxAgeSeconds)) ?? 0
+        let key = try container.decode(String.self, forKey: .key)
+        let value = try container.decode(String.self, forKey: .value)
+        let maxAgeSeconds = try container.decode(TimeInterval.self, forKey: .maxAgeSeconds)
+        self.payload = StorePayload(key: key, value: value, maxAge: maxAgeSeconds)
+        
         if let date = try? container.decode(Date.self, forKey: .expiryDate) {
             expiryDate = date
         } else {
             expiryDate = Date(timeIntervalSinceNow: maxAgeSeconds)
         }
     }
+}
+
+struct StorePayload : Codable {
+    /// They payload key identifier
+    let key: String
+    
+    /// The payload value
+    let value: String
+    
+    /// The max age in seconds this payload should be stored
+    let maxAge: TimeInterval
 }

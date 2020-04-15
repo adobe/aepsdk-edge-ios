@@ -69,8 +69,8 @@ class StoreResponsePayloadTests: XCTestCase {
         let payload = try? decoder.decode(StoreResponsePayload.self, from: data!)
         XCTAssertNotNil(payload)
         XCTAssertEqual("key", payload?.key)
-        XCTAssertEqual("value", payload?.value)
-        XCTAssertEqual(3600, payload?.maxAgeSeconds)
+        XCTAssertEqual("value", payload?.payload.value)
+        XCTAssertEqual(3600, payload?.payload.maxAge)
         
         let dateFormatter = ISO8601DateFormatter()
         let expectedDate = dateFormatter.date(from: "2020-04-10T20:34:12Z")
