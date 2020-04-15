@@ -36,10 +36,7 @@ struct Streaming {
     
     /// Getter to state whether response streaming is enabled.
     var enabled: Bool? {
-        if (recordSeparator == nil || lineFeed == nil) {
-            return false
-        }
-        return true
+        return recordSeparator != nil && lineFeed != nil
     }
 
     enum CodingKeys: String, CodingKey {
