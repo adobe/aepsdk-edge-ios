@@ -30,6 +30,7 @@
 		D4D5B5A22433F9C400CAB6E4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5A12433F9C400CAB6E4 /* Assets.xcassets */; };
 		D4D5B5A52433F9C400CAB6E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5A32433F9C400CAB6E4 /* LaunchScreen.storyboard */; };
 		D4D5B5AA2433FA1000CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; };
+		D4F74FE5244633B000379258 /* NetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE4244633B000379258 /* NetworkServiceTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +95,7 @@
 		D4D5B5A12433F9C400CAB6E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D4D5B5A42433F9C400CAB6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D4D5B5A62433F9C400CAB6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D4F74FE4244633B000379258 /* NetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceTests.swift; sourceTree = "<group>"; };
 		E4D329943CA31F25C1066A9C /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 		FA6F6C08514B77F798670336 /* Pods-ACPExperiencePlatform.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ACPExperiencePlatform.release.xcconfig"; path = "Target Support Files/Pods-ACPExperiencePlatform/Pods-ACPExperiencePlatform.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -195,6 +197,7 @@
 			children = (
 				D4D5B51B2432594000CAB6E4 /* ExampleTest.swift */,
 				D4D5B5252432599B00CAB6E4 /* Info.plist */,
+				D4F74FE4244633B000379258 /* NetworkServiceTests.swift */,
 			);
 			name = unitTests;
 			path = ../../code/unitTests;
@@ -522,6 +525,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4F74FE5244633B000379258 /* NetworkServiceTests.swift in Sources */,
 				D4D5B52C243259B700CAB6E4 /* ExampleTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

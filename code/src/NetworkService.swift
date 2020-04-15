@@ -13,7 +13,40 @@ governing permissions and limitations under the License.
 
 import Foundation
 
-// TBD - new values added in the enum break the compatibility for out param or return types, e.g. HttpConnectionPerformer methods
+extension String {
+
+    private func matches(pattern: String) -> Bool {
+        let regex = try! NSRegularExpression(pattern: pattern,options: [.caseInsensitive])
+        return regex.firstMatch(in: self, range: NSRange(location: 0, length: utf16.count)) != nil
+    }
+
+    func isValidUrl() -> Bool {
+        // taken from Diego Perini's post, https://gist.github.com/dperini/729294
+        // see also https://mathiasbynens.be/demo/url-regex
+        let urlPattern:String = """
+                                ^\
+                                (?:(?:https?|ftp)://)\
+                                (?:\\S+(?::\\S*)?@)?\
+                                (?:\
+                                (?!(?:10)(?:\\.\\d{1,3}){3})\
+                                (?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})\
+                                (?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})\
+                                (?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])\
+                                (?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}\
+                                (?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))\
+                                |\
+                                (?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)\
+                                (?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*\
+                                \\.?\
+                                )\
+                                (?::\\d{2,5})?\
+                                (?:[/?#]\\S*)?\
+                                $
+                                """
+        return self.matches(pattern: urlPattern)
+    }
+}
+
 @objc public enum HttpMethod: Int {
     case get
     case post
@@ -26,6 +59,10 @@ import Foundation
             return "POST"
         }
     }
+}
+
+enum NetworkServiceError: Error {
+    case invalidUrl
 }
 
 public struct HttpConnection {
@@ -118,21 +155,34 @@ public class NetworkService: NetworkServiceProtocol {
   
     // TODO: use ThreadSafeDictionary when moving to core
     private var sessions:[String:URLSession]
+    var session: URLSession? // to be used only for dependency injection for testing
     public static let shared = NetworkService()
     
     private init() {
-         sessions = [String:URLSession]()
+        sessions = [String:URLSession]()
+        session = nil
     }
     
     public func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
+        
         if !networkRequest.url.absoluteString.starts(with: "https") {
-            print("NetworkRequest - Network request for (\( networkRequest.url.absoluteString)) could not be created, only https requests are accepted.");
+            print("NetworkService - Network request for (\( networkRequest.url.absoluteString)) could not be created, only https requests are accepted.")
+            if let closure = completionHandler {
+                closure(HttpConnection(data: nil, response: nil, error: NetworkServiceError.invalidUrl))
+            }
+            return
+        }
+        if !networkRequest.url.absoluteString.isValidUrl() {
+            print("NetworkService - Invalid URL (\( networkRequest.url.absoluteString))")
+            if let closure = completionHandler {
+                closure(HttpConnection(data: nil, response: nil, error: NetworkServiceError.invalidUrl))
+            }
             return
         }
         
         let overridePerformer = NetworkServiceOverrider.shared.performer
         if overridePerformer != nil && overridePerformer!.shouldOverride(url: networkRequest.url, httpMethod: networkRequest.httpMethod) {
-            // TODO: should the default headers be injected in the network request even when networkOverride is enabled
+            // TODO: AMSDK-9800 should the default headers be injected in the network request even when networkOverride is enabled
             print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)) with completion handler using the NetworkServiceOverrider.")
             overridePerformer!.connectAsync(networkRequest: networkRequest, completionHandler: completionHandler)
         } else {
@@ -168,9 +218,9 @@ public class NetworkService: NetworkServiceProtocol {
             request.httpBody = networkRequest.connectPayload.data(using: .utf8)
         }
         
-        // TODO: Set default user agent from system info service
+        // TODO: AMSDK-9800 Set default user agent from system info service
         for (key, val) in networkRequest.httpHeaders {
-            request.setValue(key, forHTTPHeaderField: val)
+            request.setValue(val, forHTTPHeaderField: key)
         }
         
         return request;
@@ -187,7 +237,7 @@ public class NetworkService: NetworkServiceProtocol {
             config.timeoutIntervalForRequest = networkRequest.readTimeout
             config.timeoutIntervalForResource = networkRequest.connectTimeout
             
-            let newSession = URLSession(configuration: config)
+            let newSession:URLSession = self.session != nil ? self.session! : URLSession(configuration: config)
             self.sessions[sessionId] = newSession
             return newSession
         }
