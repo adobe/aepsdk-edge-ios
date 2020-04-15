@@ -76,8 +76,8 @@ class RequestMetadataTests: XCTestCase {
     }
     
     func testEncode_paramStateMetadata() {
-        let payload = StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600)
-        let metadata = RequestMetadata(state: StateMetadata(payload: [payload.key : payload]))
+        let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
+        let metadata = RequestMetadata(state: StateMetadata(payload: [payload]))
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -92,7 +92,6 @@ class RequestMetadataTests: XCTestCase {
                 "cookiesEnabled" : false,
                 "entries" : [
                   {
-                    "expiryDate" : "\(ISO8601DateFormatter().string(from: payload.expiryDate))",
                     "key" : "key",
                     "maxAge" : 3600,
                     "value" : "value"
@@ -108,9 +107,9 @@ class RequestMetadataTests: XCTestCase {
     }
     
     func testEncode_paramKonductorConfig_paramStateMetadata() {
-        let payload = StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600)
+        let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
         let metadata = RequestMetadata(konductorConfig: KonductorConfig(),
-                                       state: StateMetadata(payload: [payload.key : payload]))
+                                       state: StateMetadata(payload: [payload]))
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -128,7 +127,6 @@ class RequestMetadataTests: XCTestCase {
                 "cookiesEnabled" : false,
                 "entries" : [
                   {
-                    "expiryDate" : "\(ISO8601DateFormatter().string(from: payload.expiryDate))",
                     "key" : "key",
                     "maxAge" : 3600,
                     "value" : "value"
@@ -186,7 +184,6 @@ class RequestMetadataTests: XCTestCase {
           "cookiesEnabled" : false,
           "entries" : [
             {
-              "expiryDate" : "2020-04-14T17:12:42Z",
               "key" : "key",
               "maxAge" : 3600,
               "value" : "value"
@@ -214,7 +211,6 @@ class RequestMetadataTests: XCTestCase {
           "cookiesEnabled" : false,
           "entries" : [
             {
-              "expiryDate" : "2020-04-14T17:12:42Z",
               "key" : "key",
               "maxAge" : 3600,
               "value" : "value"
@@ -245,7 +241,6 @@ class RequestMetadataTests: XCTestCase {
           "cookiesEnabled" : false,
           "entries" : [
             {
-              "expiryDate" : "2020-04-14T17:12:42Z",
               "key" : "key",
               "maxAge" : 3600,
               "value" : "value"

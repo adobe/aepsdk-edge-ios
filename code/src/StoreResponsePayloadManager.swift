@@ -53,13 +53,13 @@ class StoreResponsePayloadManager {
                 continue
             }
             
-            let payload: StoreResponsePayload
+            let storeResponse: StoreResponsePayload
             do {
-                payload = try decoder.decode(StoreResponsePayload.self, from: data)
-                if payload.isExpired {
-                    expiredList.append(payload.key)
+                storeResponse = try decoder.decode(StoreResponsePayload.self, from: data)
+                if storeResponse.isExpired {
+                    expiredList.append(storeResponse.payload.key)
                 } else {
-                    payloads[payload.key] = payload
+                    payloads[storeResponse.payload.key] = storeResponse
                 }
             } catch {
                 ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to decode store response payload with: \(error.localizedDescription)")
@@ -67,6 +67,18 @@ class StoreResponsePayloadManager {
         }
         
         deleteStoredResponses(keys: expiredList)
+        return payloads
+    }
+    
+    /// Reads all the active saved store payloads from the data store and returns them as a list.
+    /// Any store payload that has expired is not included and is evicted from the data store
+    /// - Returns: a list of `StorePayload` objects
+    func getActivePayloadList() -> [StorePayload] {
+        let storeResponses = getActiveStores()
+        var payloads: [StorePayload] = []
+        for (_, storeResponse) in storeResponses {
+            payloads.append(storeResponse.payload)
+        }
         return payloads
     }
     
@@ -87,20 +99,20 @@ class StoreResponsePayloadManager {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         
-        for payload in payloads {
+        for storeResponse in payloads {
             // The Experience Edge server (Konductor) defines state values with 0 or -1 max age as to be deleted on the client.
-            if (payload.payload.maxAge <= 0) {
-                expiredList.append(payload.key)
+            if (storeResponse.payload.maxAge <= 0) {
+                expiredList.append(storeResponse.payload.key)
                 continue
             }
             
             do {
-                let payloadData = try encoder.encode(payload)
+                let payloadData = try encoder.encode(storeResponse)
                 guard let serializedPayload = String(data: payloadData, encoding: .utf8) else {
                     continue
                 }
                 
-                serializedPayloads[payload.key] = serializedPayload
+                serializedPayloads[storeResponse.payload.key] = serializedPayload
             } catch {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to encode store response payload: \(error.localizedDescription)")
                 continue

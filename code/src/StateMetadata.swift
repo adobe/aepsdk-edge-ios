@@ -21,14 +21,10 @@ import Foundation
 /// A property in the `RequestMetadata` object.
 struct StateMetadata : Codable {
     private var cookiesEnabled: Bool
-    private var entries: [StoreResponsePayload]
+    private var entries: [StorePayload]
 
-    init(payload: [String : StoreResponsePayload]) {
+    init(payload: [StorePayload]) {
         cookiesEnabled = ExperiencePlatformConstants.Defaults.requestStateCookiesEnabled
-        entries = []
-        // convert map to list of StoreResponsePayload objects
-        for (_, payload) in payload {
-            entries.append(payload)
-        }
+        entries = payload
     }
 }

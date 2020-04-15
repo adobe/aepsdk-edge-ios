@@ -43,9 +43,11 @@ class StoreResponsePayloadTests: XCTestCase {
         let expected = """
            {
              "expiryDate" : "\(ISO8601DateFormatter().string(from: payload.expiryDate))",
-             "key" : "key",
-             "maxAge" : 3600,
-             "value" : "value"
+             "payload" : {
+               "key" : "key",
+               "maxAge" : 3600,
+               "value" : "value"
+             }
            }
            """
         let jsonString = String(data: data!, encoding: .utf8)
@@ -58,33 +60,39 @@ class StoreResponsePayloadTests: XCTestCase {
         let data = """
             {
               "expiryDate" : "2020-04-10T20:34:12Z",
-              "key" : "key",
-              "maxAge" : 3600,
-              "value" : "value"
+              "payload" : {
+                "key" : "key",
+                "maxAge" : 3600,
+                "value" : "value"
+              }
             }
         """.data(using: .utf8)
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         
-        let payload = try? decoder.decode(StoreResponsePayload.self, from: data!)
-        XCTAssertNotNil(payload)
-        XCTAssertEqual("key", payload?.key)
-        XCTAssertEqual("value", payload?.payload.value)
-        XCTAssertEqual(3600, payload?.payload.maxAge)
+        let storeResponse = try? decoder.decode(StoreResponsePayload.self, from: data!)
+        XCTAssertNotNil(storeResponse)
+        XCTAssertEqual("key", storeResponse?.payload.key)
+        XCTAssertEqual("value", storeResponse?.payload.value)
+        XCTAssertEqual(3600, storeResponse?.payload.maxAge)
         
         let dateFormatter = ISO8601DateFormatter()
         let expectedDate = dateFormatter.date(from: "2020-04-10T20:34:12Z")
-        XCTAssertEqual(expectedDate, payload?.expiryDate)
+        XCTAssertEqual(expectedDate, storeResponse?.expiryDate)
     }
     
     // MARK: is expired tests
     
     func testIsExpired_expiryDateSetFromMaxAge_oneHourAhead() {
+        let date = Date(timeIntervalSinceNow: 36000)
         let data = """
             {
-              "key" : "key",
-              "maxAge" : 3600,
-              "value" : "value"
+              "expiryDate" : "\(ISO8601DateFormatter().string(from: date))",
+              "payload" : {
+                "key" : "key",
+                "maxAge" : 3600,
+                "value" : "value"
+              }
             }
         """.data(using: .utf8)
         let decoder = JSONDecoder()
@@ -102,9 +110,11 @@ class StoreResponsePayloadTests: XCTestCase {
         let data = """
             {
               "expiryDate" : "1955-11-05T06:00:00Z",
-              "key" : "key",
-              "maxAge" : 3600,
-              "value" : "value"
+              "payload" : {
+                "key" : "key",
+                "maxAge" : 3600,
+                "value" : "value"
+              }
             }
         """.data(using: .utf8)
         let decoder = JSONDecoder()

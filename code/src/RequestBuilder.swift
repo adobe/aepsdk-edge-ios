@@ -41,6 +41,10 @@ class RequestBuilder {
         storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
     }
     
+    init(dataStore:KeyValueStore) {
+        storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
+    }
+    
     /// Builds the request payload with all the provided parameters and events.
     /// - Parameter events: List of `ACPExtensionEvent` objects. Each event is expected to contain a serialized Experience Platform Event
     /// encoded in the `ACPExtensionEvent.eventData` property.
@@ -52,7 +56,7 @@ class RequestBuilder {
         
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
         let konductorConfig = KonductorConfig(imsOrgId: organizationId, streaming: streamingMetadata)
-        let stateMetadata = StateMetadata(payload: storeResponsePayloadManager.getActiveStores())
+        let stateMetadata = StateMetadata(payload: storeResponsePayloadManager.getActivePayloadList())
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: stateMetadata)
         
         var request = EdgeRequest(meta: requestMetadata)

@@ -29,7 +29,7 @@ class StateMetadataTests: XCTestCase {
     }
 
     func testInit_withEmptyMap_isNotNil() {
-        let state = StateMetadata(payload: [:])
+        let state = StateMetadata(payload: [])
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -51,7 +51,7 @@ class StateMetadataTests: XCTestCase {
     }
     
     func testEncode_singlePayload() {
-        let payload = ["key": StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600)]
+        let payload = [StorePayload(key: "key", value: "value", maxAge: 3600)]
         let state = StateMetadata(payload: payload)
         
         let encoder = JSONEncoder()
@@ -66,44 +66,6 @@ class StateMetadataTests: XCTestCase {
           "cookiesEnabled" : false,
           "entries" : [
             {
-              "expiryDate" : "\(ISO8601DateFormatter().string(from: payload["key"]!.expiryDate))",
-              "key" : "key",
-              "maxAge" : 3600,
-              "value" : "value"
-            }
-          ]
-        }
-        """
-        let jsonString = String(data: data!, encoding: .utf8)
-        XCTAssertEqual(expected, jsonString)
-    }
-    
-    func testEncode_multiplePayload() {
-        let payload = [
-            "key": StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600),
-            "key2": StoreResponsePayload(key: "key2", value: "two", maxAgeSeconds: 300)
-        ]
-        let state = StateMetadata(payload: payload)
-        
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        encoder.dateEncodingStrategy = .iso8601
-        
-        let data = try? encoder.encode(state)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-        {
-          "cookiesEnabled" : false,
-          "entries" : [
-            {
-              "expiryDate" : "\(ISO8601DateFormatter().string(from: payload["key2"]!.expiryDate))",
-              "key" : "key2",
-              "maxAge" : 300,
-              "value" : "two"
-            },
-            {
-              "expiryDate" : "\(ISO8601DateFormatter().string(from: payload["key"]!.expiryDate))",
               "key" : "key",
               "maxAge" : 3600,
               "value" : "value"

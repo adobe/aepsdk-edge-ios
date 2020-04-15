@@ -17,14 +17,12 @@
 
 import Foundation
 
-struct StoreResponsePayload {
+/// Contains a `StorePayload` plus bookeeping expires information.
+/// Use this object when serializing to local storage.
+struct StoreResponsePayload : Codable {
     
     /// The store payload from the server response
     let payload: StorePayload
-    
-    var key: String {
-        return payload.key
-    }
     
     /// The `Date` at which this payload expires
     let expiryDate: Date
@@ -38,41 +36,10 @@ struct StoreResponsePayload {
         payload = StorePayload(key: key, value: value, maxAge: maxAgeSeconds)
         expiryDate = Date(timeIntervalSinceNow: maxAgeSeconds)
     }
-    
-    enum CodingKeys: String, CodingKey {
-        case key = "key"
-        case value = "value"
-        case maxAgeSeconds = "maxAge"
-        case expiryDate = "expiryDate"
-    }
 }
 
-extension StoreResponsePayload : Encodable {
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(payload.key, forKey: .key)
-        try container.encode(payload.value, forKey: .value)
-        try container.encode(payload.maxAge, forKey: .maxAgeSeconds)
-        try container.encode(expiryDate, forKey: .expiryDate)
-    }
-}
-
-extension StoreResponsePayload : Decodable {
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let key = try container.decode(String.self, forKey: .key)
-        let value = try container.decode(String.self, forKey: .value)
-        let maxAgeSeconds = try container.decode(TimeInterval.self, forKey: .maxAgeSeconds)
-        self.payload = StorePayload(key: key, value: value, maxAge: maxAgeSeconds)
-        
-        if let date = try? container.decode(Date.self, forKey: .expiryDate) {
-            expiryDate = date
-        } else {
-            expiryDate = Date(timeIntervalSinceNow: maxAgeSeconds)
-        }
-    }
-}
-
+/// Store payload from the server response.
+/// Contains only the parameters sent over the network.
 struct StorePayload : Codable {
     /// They payload key identifier
     let key: String

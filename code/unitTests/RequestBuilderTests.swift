@@ -103,4 +103,40 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertEqual(timestampToISO8601(events[1].eventTimestamp), flattenDict[".events[1].xdm.timestamp"] as? String)
     }
     
+    func testGetPayload_withStorePayload_responseContainsStateEntries() {
+        let dataStore = MockKeyValueStore()
+        let manager = StoreResponsePayloadManager(dataStore)
+        manager.saveStorePayloads([StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600)])
+        
+        let request = RequestBuilder(dataStore: dataStore)
+        request.organizationId = "orgID"
+        request.recordSeparator = "A"
+        request.lineFeed = "B"
+        request.experienceCloudId = "ecid"
+
+        
+        let event = try? ACPExtensionEvent(name: "Request Test",
+                                           type: "type",
+                                           source: "source",
+                                           data: ["data":["key":"value"]])
+        
+        let data = request.getPayload([event!])
+        
+        XCTAssertNotNil(data)
+        
+        let json = try? JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String:Any]
+        
+        guard let dict = json else {
+            XCTFail("Failed to parse request payload to dictionary.")
+            return
+        }
+        
+        let flattenDict = flattenDictionary(dict: dict)
+        
+        XCTAssertFalse(flattenDict[".meta.state.cookiesEnabled"] as? Bool ?? true)
+        XCTAssertEqual("key", flattenDict[".meta.state.entries[0].key"] as? String)
+        XCTAssertEqual("value" , flattenDict[".meta.state.entries[0].value"] as? String)
+        XCTAssertEqual(3600, flattenDict[".meta.state.entries[0].maxAge"] as? Int)
+        XCTAssertNil(flattenDict[".meta.state.entries[0].expiryDate"])
+    }
 }
