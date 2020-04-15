@@ -19,24 +19,6 @@ import Foundation
 
 /// Property that holds the global XDM context data within an Edge Request object.
 /// Is contained within the `EdgeRequest` request property.
-struct RequestContext {
+struct RequestContext : Codable {
     var identityMap: IdentityMap?
-
-    enum CodingKeys: String, CodingKey {
-        case identityMap = "identityMap"
-    }
-}
-
-extension RequestContext : Encodable {
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        if let unwrapped = identityMap { try container.encode(unwrapped, forKey: .identityMap)}
-    }
-}
-
-extension RequestContext : Decodable {
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        identityMap = try? container.decode(IdentityMap.self, forKey: .identityMap)
-    }
 }
