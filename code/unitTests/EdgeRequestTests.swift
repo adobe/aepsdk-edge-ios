@@ -35,7 +35,7 @@ class EdgeRequestTests: XCTestCase {
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig)
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
-        let requestContext = RequestContext(identityMap: identityMap)
+        let requestContext = RequestContextData(identityMap: identityMap)
         
         let events: [[String : AnyCodable]] = [
         [
@@ -124,7 +124,7 @@ class EdgeRequestTests: XCTestCase {
     func testEncode_onlyRequestContext() {
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
-        let requestContext = RequestContext(identityMap: identityMap)
+        let requestContext = RequestContextData(identityMap: identityMap)
         var edgeRequest = EdgeRequest()
         edgeRequest.xdm = requestContext
         

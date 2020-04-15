@@ -18,7 +18,7 @@
 import XCTest
 @testable import ACPExperiencePlatform
 
-class RequestContextTests: XCTestCase {
+class RequestContextDataTests: XCTestCase {
     
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -32,7 +32,7 @@ class RequestContextTests: XCTestCase {
     // MARK: encoder tests
     
     func testEncode_noParameters() {
-        let context = RequestContext()
+        let context = RequestContextData()
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -52,7 +52,7 @@ class RequestContextTests: XCTestCase {
     }
     
     func testEncode_paramIdentityMap() {
-        let context = RequestContext(identityMap: IdentityMap())
+        let context = RequestContextData(identityMap: IdentityMap())
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -85,7 +85,7 @@ class RequestContextTests: XCTestCase {
          let decoder = JSONDecoder()
          decoder.dateDecodingStrategy = .iso8601
          
-         let context = try? decoder.decode(RequestContext.self, from: data!)
+         let context = try? decoder.decode(RequestContextData.self, from: data!)
          
          XCTAssertNotNil(context)
          XCTAssertNil(context!.identityMap)
@@ -101,7 +101,7 @@ class RequestContextTests: XCTestCase {
        let decoder = JSONDecoder()
        decoder.dateDecodingStrategy = .iso8601
        
-       let context = try? decoder.decode(RequestContext.self, from: data!)
+       let context = try? decoder.decode(RequestContextData.self, from: data!)
        
        XCTAssertNotNil(context)
        XCTAssertNotNil(context!.identityMap)
@@ -118,7 +118,7 @@ class RequestContextTests: XCTestCase {
        let decoder = JSONDecoder()
        decoder.dateDecodingStrategy = .iso8601
        
-       let context = try? decoder.decode(RequestContext.self, from: data!)
+       let context = try? decoder.decode(RequestContextData.self, from: data!)
        
        XCTAssertNotNil(context)
        XCTAssertNotNil(context!.identityMap)
@@ -134,7 +134,7 @@ class RequestContextTests: XCTestCase {
        let decoder = JSONDecoder()
        decoder.dateDecodingStrategy = .iso8601
        
-       let context = try? decoder.decode(RequestContext.self, from: data!)
+       let context = try? decoder.decode(RequestContextData.self, from: data!)
        
        XCTAssertNotNil(context)
        XCTAssertNil(context!.identityMap)

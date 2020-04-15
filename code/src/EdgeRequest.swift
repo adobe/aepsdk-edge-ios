@@ -24,7 +24,7 @@ struct EdgeRequest : Codable{
     var meta: RequestMetadata?
     
     /// XDM context data for the entire request
-    var xdm: RequestContext?
+    var xdm: RequestContextData?
     
     /// List of Experience events
     var events: [[String : AnyCodable]]?
