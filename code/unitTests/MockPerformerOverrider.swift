@@ -19,17 +19,15 @@ import Foundation
 @testable import ACPExperiencePlatform
 
 class MockPerformerOverrider : HttpConnectionPerformer {
-    var overrideUrlList:[URL]
-    var shouldOverrideCalled:Bool?
-    var shouldOverrideCalledWithUrls:[URL]
-    var connectAsyncCalled:Bool?
+    var overrideUrlList = [URL]()
+    var shouldOverrideCalled:Bool = false
+    var shouldOverrideCalledWithUrls = [URL]()
+    var connectAsyncCalled:Bool = false
     var connectAsyncCalledWithNetworkRequest:NetworkRequest?
     var connectAsyncCalledWithCompletionHandler: ((HttpConnection) -> Void)?
     
     init(overrideUrls:[URL] = []) {
         overrideUrlList = overrideUrls
-        shouldOverrideCalledWithUrls = []
-        reset()
     }
     
     func shouldOverride(url: URL, httpMethod: HttpMethod) -> Bool {

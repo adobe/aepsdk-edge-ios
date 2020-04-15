@@ -51,6 +51,7 @@ extension String {
     }
 }
 
+/// This enum is used for building `NetworkRequest` objects.
 @objc public enum HttpMethod: Int {
     case get
     case post
@@ -65,15 +66,24 @@ extension String {
     }
 }
 
-enum NetworkServiceError: Error {
+/// This enum includes custom errors that can be returned by the SDK when using the `NetworkService` with completion handler.
+public enum NetworkServiceError: Error {
     case invalidUrl
 }
 
+/// The HttpConnection represents the response to NetworkRequest, to be used for network completion handlers and when overriding the network stack in place of internal network connection implementation.
 public struct HttpConnection {
+    
+    /// Returns application server response data from the connection or nil if there was an error
     public let data: Data?
+    
+    /// Response metadata provided by the server
     public let response: HTTPURLResponse?
+    
+    /// The error associated with the request failure or nil on success
     public let error: Error?
     
+    /// Returns application server response as string from the connection, if available.
     public var responseString: String? {
         if let unwrappedData = data {
             return String(data: unwrappedData, encoding: .utf8)
@@ -82,10 +92,12 @@ public struct HttpConnection {
         return nil
     }
     
+    /// Returns the connection response code for the connection request.
     public var responseCode: Int? {
         return response?.statusCode
     }
     
+    /// Returns application server response message as string extracted from the `response` property, if available.
     public var responseMessage: String? {
         if let code = responseCode {
             return HTTPURLResponse.localizedString(forStatusCode: code)
@@ -94,11 +106,16 @@ public struct HttpConnection {
         return nil
     }
     
+    
+    /// Returns a value for the response header key from the `response` property, if available.
+    /// This is protocol specific. For example, HTTP URLs could have headers like "last-modified", or "ETag" set.
+    /// - Parameter forKey: the header key name sent in response when requesting a connection to the URL.
     public func responseHttpHeader(forKey: String) -> String? {
         return response?.allHeaderFields[forKey] as? String
     }
 }
 
+/// NetworkRequest struct to be used by the NetworkService and the HttpConnectionPerformer when initiating network calls
 public struct NetworkRequest {
     public let url: URL
     public let httpMethod: HttpMethod
@@ -107,15 +124,15 @@ public struct NetworkRequest {
     public let connectTimeout: TimeInterval
     public let readTimeout: TimeInterval
     
-    /// Initialize the NetworkRequest
+    /// Initialize the `NetworkRequest`
     /// - Parameters:
     ///   - url: URL used to initiate the network connection, should use https scheme
-    ///   - httpMethod: HttpMethod to be used for this network request; the default value is GET
+    ///   - httpMethod: `HttpMethod` to be used for this network request; the default value is GET
     ///   - connectPayload: the body of the network request as a String; this parameter is ignored for GET requests
     ///   - httpHeaders: optional HTTP headers for the request
     ///   - connectTimeout: optional connect timeout value in seconds; default is 5 seconds
     ///   - readTimeout: optional read timeout value in seconds, used to wait for a read to finish after a successful connect, default is 5 seconds
-    /// - Returns: an initialized NetworkRequest object
+    /// - Returns: an initialized `NetworkRequest` object
     public init(url: URL, httpMethod: HttpMethod = HttpMethod.get, connectPayload: String = "", httpHeaders: [String: String] = [:], connectTimeout: TimeInterval = 5, readTimeout: TimeInterval = 5) {
         self.url = url
         self.httpMethod = httpMethod
@@ -128,30 +145,31 @@ public struct NetworkRequest {
 
 /// Protocol for network overrides.
 /// To be implemented by anyone who wishes to override the SDK's default network stack.
-/// Implementer is responsible for updating the  `shouldOverride(url:httpMethod:) method to let the SDK know if the default network stack should be overriden or not.
+/// Implementer is responsible for updating the  `shouldOverride(url:httpMethod:)` method to let the SDK know if the default network stack should be overriden or not.
 public protocol HttpConnectionPerformer {
     
-    /// Determines if the provided URL & HTTP method should be overriden by this instance. Used to determine if the network stack should be overriden
+    /// Determines if the provided URL & HTTP method should be overriden by this instance. Used to determine if the network stack should be overriden.
     /// - Parameters:
     ///   - url: URL of the request to override
-    ///   - httpMethod: HttpMethod for the request to override
+    ///   - httpMethod: `HttpMethod` for the request to override
+    /// - Returns: `Bool` indicating if the override should be enabled or not for current URL
     func shouldOverride(url:URL, httpMethod: HttpMethod) -> Bool
     
     
     /// NetworkRequest to override with a completion handler
     /// - Parameters:
-    ///   - networkRequest: NetworkRequest instance containing the full URL for the connection, the HttpMethod, HTTP body, connect and read timeout
+    ///   - networkRequest: `NetworkRequest` instance containing the full URL for the connection, the `HttpMethod`, HTTP body, connect and read timeout
     ///   - completionHandler: Optional completion handler which needs to be called once the connection is initiated
     func connectAsync(networkRequest:NetworkRequest, completionHandler: ((HttpConnection) -> Void)?)
 }
 
 protocol NetworkServiceProtocol {
     
-    /// Initiates an asynchronous network connection to the specified NetworkRequest.url. This API uses URLRequest.CachePolicy.reloadIgnoringLocalCache.
+    /// Initiates an asynchronous network connection to the specified NetworkRequest.url. This API uses `URLRequest.CachePolicy.reloadIgnoringLocalCache`.
     /// - Parameters:
-    ///   - networkRequest: the NetworkRequest used for this connection
-    ///   - completionHandler:Optional completion handler which is called once the HttpConnection is available; it can be called from an HttpConnectionPerformer if NetworkServiceOverrider is enabled.
-    ///   In case of a network error, timeout or an unexpected error, the HttpConnection is nil
+    ///   - networkRequest: the `NetworkRequest` used for this connection
+    ///   - completionHandler:Optional completion handler which is called once the `HttpConnection` is available; it can be called from an `HttpConnectionPerformer` if `NetworkServiceOverrider` is enabled.
+    ///   In case of a network error, timeout or an unexpected error, the `HttpConnection` is nil
     func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)?)
 }
 
@@ -186,7 +204,7 @@ public class NetworkService: NetworkServiceProtocol {
         
         if let overridePerformer = NetworkServiceOverrider.shared.performer, overridePerformer.shouldOverride(url: networkRequest.url, httpMethod: networkRequest.httpMethod) {
             // TODO: AMSDK-9800 should the default headers be injected in the network request even when networkOverride is enabled
-            print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)) using the NetworkServiceOverrider.")
+            print("NetworkService - Initiated (\(networkRequest.httpMethod.toString())) network request to (\(networkRequest.url.absoluteString)) using the NetworkServiceOverrider.")
             overridePerformer.connectAsync(networkRequest: networkRequest, completionHandler: completionHandler)
         } else {
             // using the default network service
@@ -194,7 +212,7 @@ public class NetworkService: NetworkServiceProtocol {
             let urlSession = createURLSession(networkRequest: networkRequest)
             
             // initiate the network request
-            print("NetworkService - Initiated (\(networkRequest.httpMethod.rawValue)) network request to (\(networkRequest.url.absoluteString)).")
+            print("NetworkService - Initiated (\(networkRequest.httpMethod.toString())) network request to (\(networkRequest.url.absoluteString)).")
             let task = urlSession.dataTask(with: urlRequest, completionHandler: { (data, response, error) in
                 if let closure = completionHandler {
                     let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse , error: error)
@@ -205,8 +223,8 @@ public class NetworkService: NetworkServiceProtocol {
         }
     }
     
-    /// Creates an URLRequest with the provided parameters and adds the SDK default headers. The cache policy used is reloadIgnoringLocalCacheData.
-    /// - Parameter networkRequest: NetworkRequest
+    /// Creates an `URLRequest` with the provided parameters and adds the SDK default headers. The cache policy used is reloadIgnoringLocalCacheData.
+    /// - Parameter networkRequest: `NetworkRequest`
     private func createURLRequest(networkRequest: NetworkRequest) -> URLRequest {
         var request = URLRequest(url: networkRequest.url)
         request.cachePolicy = .reloadIgnoringLocalCacheData
@@ -224,7 +242,7 @@ public class NetworkService: NetworkServiceProtocol {
         return request;
     }
     
-    /// Check if a session is already created for the specified URL, readTimeout, connectTimeout or create a new one with a new URLSessionConfiguration
+    /// Check if a session is already created for the specified URL, readTimeout, connectTimeout or create a new one with a new `URLSessionConfiguration`
     /// - Parameter networkRequest: current network request
     private func createURLSession(networkRequest: NetworkRequest) -> URLSession {
         let sessionId = "\(networkRequest.url.absoluteString)\(networkRequest.readTimeout)\(networkRequest.connectTimeout)"
@@ -244,7 +262,7 @@ public class NetworkService: NetworkServiceProtocol {
     }
 }
 
-/// Used to set the HttpConnectionPerformer instance being used to override the network stack
+/// Used to set the `HttpConnectionPerformer` instance being used to override the network stack
 public class NetworkServiceOverrider {
     // queue used to ensure concurrent mutations of the performer
     private let queue = DispatchQueue(label: "com.adobe.networkserviceoverrider", attributes: .concurrent)
@@ -258,15 +276,15 @@ public class NetworkServiceOverrider {
         self.queue.sync { self.internalPerformer}
     }
     
-    /// Sets a new HttpConnectionPerformer to override default network activity.
-    /// - Parameter with: HttpConnectionPerformer new performer to be used in place of default network stack.
+    /// Sets a new `HttpConnectionPerformer` to override default network activity.
+    /// - Parameter with: `HttpConnectionPerformer` new performer to be used in place of default network stack.
     public func enableOverride(with : HttpConnectionPerformer) {
         print("NetworkServiceOverrider - Enabling network override.")
         self.queue.async(flags: .barrier) { self.internalPerformer = with }
     }
     
     
-    /// Resets currently set HttpConnectionPerformer and allows the SDK to use the default network stack for network requests
+    /// Resets currently set `HttpConnectionPerformer` and allows the SDK to use the default network stack for network requests.
     public func reset() {
         print("NetworkServiceOverrider - Disabling network override, using default network service.")
         self.queue.async(flags: .barrier) { self.internalPerformer = nil }

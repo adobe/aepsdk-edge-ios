@@ -209,13 +209,13 @@ class NetworkServiceTests: XCTestCase {
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
         NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertFalse(testPerformerOverrider.connectAsyncCalled!)
+        XCTAssertFalse(testPerformerOverrider.connectAsyncCalled)
         testPerformerOverrider.reset()
         
         NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test2.com")!))
         XCTAssertEqual("https://test2.com", testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.url.absoluteString)
         XCTAssertNil(testPerformerOverrider.connectAsyncCalledWithCompletionHandler)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled!)
+        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
     }
     
     // TODO: enable for AMSDK-9800
@@ -226,7 +226,7 @@ class NetworkServiceTests: XCTestCase {
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
         NetworkService.shared.connectAsync(networkRequest: request1)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled!)
+        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
         XCTAssertEqual(3, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
         XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept"])
         XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
@@ -241,7 +241,7 @@ class NetworkServiceTests: XCTestCase {
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
         NetworkService.shared.connectAsync(networkRequest: request1)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled!)
+        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
         XCTAssertEqual(2, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
         XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
         XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept-Language"])
@@ -254,7 +254,7 @@ class NetworkServiceTests: XCTestCase {
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
         NetworkService.shared.connectAsync(networkRequest: request1)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled!)
+        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
         XCTAssertEqual(2, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
         XCTAssertEqual("test", testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
         XCTAssertEqual("ro-RO", testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept-Language"])
@@ -266,14 +266,14 @@ class NetworkServiceTests: XCTestCase {
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
         NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled!)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled!)
+        XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled)
+        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
         testPerformerOverrider.reset()
         
         NetworkServiceOverrider.shared.reset()
         NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertFalse(testPerformerOverrider.shouldOverrideCalled!)
-        XCTAssertFalse(testPerformerOverrider.connectAsyncCalled!)
+        XCTAssertFalse(testPerformerOverrider.shouldOverrideCalled)
+        XCTAssertFalse(testPerformerOverrider.connectAsyncCalled)
         testPerformerOverrider.reset()
     }
     
@@ -284,22 +284,22 @@ class NetworkServiceTests: XCTestCase {
         // enable overrider
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
         NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled!)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled!)
+        XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled)
+        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
         testPerformerOverrider.reset()
         
         // disable overrider
         NetworkServiceOverrider.shared.reset()
         NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertFalse(testPerformerOverrider.shouldOverrideCalled!)
-        XCTAssertFalse(testPerformerOverrider.connectAsyncCalled!)
+        XCTAssertFalse(testPerformerOverrider.shouldOverrideCalled)
+        XCTAssertFalse(testPerformerOverrider.connectAsyncCalled)
         testPerformerOverrider.reset()
         
         // re-enable overrider
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
         NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled!)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled!)
+        XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled)
+        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
     }
     
     func testEnableOverride_work_whenCalledWithTwoOverriders() {
@@ -311,28 +311,28 @@ class NetworkServiceTests: XCTestCase {
         // set first overrider
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider1)
         NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider1.shouldOverrideCalled!)
-        XCTAssertTrue(testPerformerOverrider1.connectAsyncCalled!)
+        XCTAssertTrue(testPerformerOverrider1.shouldOverrideCalled)
+        XCTAssertTrue(testPerformerOverrider1.connectAsyncCalled)
         testPerformerOverrider1.reset()
         
         // set second overrider, the first one should not be called anymore
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider2)
         NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider2.shouldOverrideCalled!)
-        XCTAssertFalse(testPerformerOverrider2.connectAsyncCalled!)
-        XCTAssertFalse(testPerformerOverrider1.shouldOverrideCalled!)
-        XCTAssertFalse(testPerformerOverrider1.connectAsyncCalled!)
+        XCTAssertTrue(testPerformerOverrider2.shouldOverrideCalled)
+        XCTAssertFalse(testPerformerOverrider2.connectAsyncCalled)
+        XCTAssertFalse(testPerformerOverrider1.shouldOverrideCalled)
+        XCTAssertFalse(testPerformerOverrider1.connectAsyncCalled)
         testPerformerOverrider1.reset()
         testPerformerOverrider2.reset()
         
         // set third overrider, the other two should not be called anymore
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider3)
         NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider3.shouldOverrideCalled!)
-        XCTAssertTrue(testPerformerOverrider3.connectAsyncCalled!)
-        XCTAssertFalse(testPerformerOverrider1.shouldOverrideCalled!)
-        XCTAssertFalse(testPerformerOverrider1.connectAsyncCalled!)
-        XCTAssertFalse(testPerformerOverrider2.shouldOverrideCalled!)
-        XCTAssertFalse(testPerformerOverrider2.connectAsyncCalled!)
+        XCTAssertTrue(testPerformerOverrider3.shouldOverrideCalled)
+        XCTAssertTrue(testPerformerOverrider3.connectAsyncCalled)
+        XCTAssertFalse(testPerformerOverrider1.shouldOverrideCalled)
+        XCTAssertFalse(testPerformerOverrider1.connectAsyncCalled)
+        XCTAssertFalse(testPerformerOverrider2.shouldOverrideCalled)
+        XCTAssertFalse(testPerformerOverrider2.connectAsyncCalled)
     }
 }
