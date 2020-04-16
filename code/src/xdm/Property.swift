@@ -17,6 +17,11 @@
 
 import Foundation
 
+/// The XDM property contains the attribures of data such as time stamp, device ID, IP, or MAC address,
+/// or other potentially user-identifying values are incorporated in the generation of the xdm
+/// The values should be hashed, so that no PII is encoded in the value, as the goal is not to identify
+/// user or device, but the specific measure in time.
+
 public protocol Property {
     
     /// Serialize the given object to a map equivalent of its XDM schema.

@@ -53,22 +53,22 @@ public class ACPExperiencePlatform {
     /// - Returns: A Boolean indicating if the provided ExperiencePlatformEvent was dispatched
     private static func addDataPlatformEvent(experiencePlatformEvent: ExperiencePlatformEvent, uniqueSequenceId: String) -> Bool{
 
-        var eventData = experiencePlatformEvent.getData()
+        var eventData = experiencePlatformEvent.getFreeFormData()
         eventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
         var event : ACPExtensionEvent
         do {
-            event = try? ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
+            event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
+            do {
+                 try ACPCore.dispatchEvent(event)
+             } catch {
+                 ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id \(uniqueSequenceId) due to an Unexpected error: \(error).")
+                 return false
+             }
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch due to an Unexpected error: \(error)." )
-        }
- 
-        do {
-            try ACPCore.dispatchEvent(event)
-        } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id \(uniqueSequenceId) due to an Unexpected error: \(error).")
             return false
         }
-        return true
+          return true
     }
     
     /// Dispatches the SendAll event for the Experience platform extension in order to start processing the queued events, prepare and initiate the network request.
@@ -80,7 +80,7 @@ public class ACPExperiencePlatform {
         sendAllEventData[ExperiencePlatformConstants.EventDataKeys.send_all_events] = true
         sendAllEventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
         do {
-            sendAllEvent = try? ACPExtensionEvent(name: "Send all events to Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: sendAllEventData)
+            sendAllEvent = try ACPExtensionEvent(name: "Send all events to Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: sendAllEventData)
 
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id \(uniqueSequenceId) due to an Unexpected error: \(error).")

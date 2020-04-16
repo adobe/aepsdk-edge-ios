@@ -33,9 +33,4 @@ public protocol Schema {
     /// The identifier is a URI where this dataset is defined.
     /// - Returns: The URI identifier for this dataset
     func getDatasetIdentifier() -> String
-    
-    /// Serialize this Schema object to a map equivalent of its XDM schema.
-    /// - Returns: XDM formatted map of this Schema object
-    func serializeToXdm() -> [String: Any]
-    
 }
