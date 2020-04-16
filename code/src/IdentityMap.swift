@@ -78,9 +78,9 @@ extension IdentityMap : Decodable {
 
 /// Identity is used to clearly distinguish people that are interacting with digital experiences.
 struct IdentityItem : Codable {
-    var id: String?
-    var authenticationState: AuthenticationState?
-    var primary: Bool?
+    let id: String?
+    let authenticationState: AuthenticationState?
+    let primary: Bool?
 }
 
 /// Defines two `IdentityItem` objects are equal if they have the same `id`.

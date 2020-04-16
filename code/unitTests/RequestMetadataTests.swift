@@ -32,7 +32,7 @@ class RequestMetadataTests: XCTestCase {
     // MARK: encoder tests
     
     func testEncode_noParameters() {
-        let metadata = RequestMetadata()
+        let metadata = RequestMetadata(konductorConfig: nil, state: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -53,7 +53,8 @@ class RequestMetadataTests: XCTestCase {
     }
     
     func testEncode_paramKonductorConfig() {
-        let metadata = RequestMetadata(konductorConfig: KonductorConfig())
+        let metadata = RequestMetadata(konductorConfig: KonductorConfig(imsOrgId: nil, streaming: nil),
+                                       state: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -77,7 +78,7 @@ class RequestMetadataTests: XCTestCase {
     
     func testEncode_paramStateMetadata() {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
-        let metadata = RequestMetadata(state: StateMetadata(payload: [payload]))
+        let metadata = RequestMetadata(konductorConfig: nil, state: StateMetadata(payload: [payload]))
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -107,7 +108,7 @@ class RequestMetadataTests: XCTestCase {
     
     func testEncode_paramKonductorConfig_paramStateMetadata() {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
-        let metadata = RequestMetadata(konductorConfig: KonductorConfig(),
+        let metadata = RequestMetadata(konductorConfig: KonductorConfig(imsOrgId: nil, streaming: nil),
                                        state: StateMetadata(payload: [payload]))
         
         let encoder = JSONEncoder()

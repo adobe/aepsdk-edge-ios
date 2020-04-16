@@ -20,19 +20,19 @@ import Foundation
 /// Is contained within the `RequestMetadata` request property.
 struct KonductorConfig : Codable {
     /// The IMS Org ID. Typically this is the Experience Platform Org ID.
-    var imsOrgId: String?
+    let imsOrgId: String?
     
     /// Configure Konductor to provide the response fragments in a streaming fashion.
-    var streaming: Streaming?
+    let streaming: Streaming?
 }
 
 /// Konductor configuration metadata to provide response fragments in a streaming fashion (HTTP 1.1/chunked, IETF RFC 7464).
 struct Streaming {
     /// Control charactor used before each response fragment.
-    var recordSeparator: String?
+    let recordSeparator: String?
     
     /// Control character used at the end of each response fragment.
-    var lineFeed: String?
+    let lineFeed: String?
     
     /// Getter to state whether response streaming is enabled.
     var enabled: Bool? {

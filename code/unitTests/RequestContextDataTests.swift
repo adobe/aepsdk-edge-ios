@@ -32,7 +32,7 @@ class RequestContextDataTests: XCTestCase {
     // MARK: encoder tests
     
     func testEncode_noParameters() {
-        let context = RequestContextData()
+        let context = RequestContextData(identityMap: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]

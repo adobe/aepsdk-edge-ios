@@ -20,6 +20,6 @@ import Foundation
 /// Metadata passed to solutions and even to Konductor itself with possibility of overriding at event level.
 /// Is contained within the `EdgeRequest` request property.
 struct RequestMetadata : Codable {
-    var konductorConfig: KonductorConfig?
-    var state: StateMetadata?
+    let konductorConfig: KonductorConfig?
+    let state: StateMetadata?
 }

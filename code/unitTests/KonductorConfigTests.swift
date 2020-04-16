@@ -55,9 +55,7 @@ class KonductorConfigTests: XCTestCase {
     }
     
     func testStreamingEncodeFromParametersAll() {
-        var streaming = Streaming()
-        streaming.recordSeparator = "A"
-        streaming.lineFeed = "B"
+        var streaming = Streaming(recordSeparator: "A", lineFeed: "B")
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -79,8 +77,7 @@ class KonductorConfigTests: XCTestCase {
     }
     
     func testStreamingEncodeWithNilRecordSeparator() {
-        var streaming = Streaming()
-        streaming.lineFeed = "B"
+        var streaming = Streaming(recordSeparator: nil, lineFeed: "B")
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -101,8 +98,7 @@ class KonductorConfigTests: XCTestCase {
     }
     
     func testStreamingEncodeWithNilLineFeed() {
-        var streaming = Streaming()
-        streaming.recordSeparator = "A"
+        var streaming = Streaming(recordSeparator: "A", lineFeed: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -123,7 +119,7 @@ class KonductorConfigTests: XCTestCase {
     }
     
     func testStreamingEncodeWithNilLineFeedAndRecordSeparator() {
-        let streaming = Streaming()
+        let streaming = Streaming(recordSeparator: nil, lineFeed: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -240,7 +236,7 @@ class KonductorConfigTests: XCTestCase {
     }
     
     func testKonductorConfigEncodeFromInitWithoutStreaming() {
-        let config = KonductorConfig(imsOrgId: "id")
+        let config = KonductorConfig(imsOrgId: "id", streaming: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -260,7 +256,7 @@ class KonductorConfigTests: XCTestCase {
     }
     
     func testKonductorConfigEncodeEmptyParameters() {
-        let config = KonductorConfig()
+        let config = KonductorConfig(imsOrgId: nil, streaming: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]

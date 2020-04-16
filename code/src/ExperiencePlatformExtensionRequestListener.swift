@@ -34,7 +34,7 @@ class ExperiencePlatformExtensionRequestListener : ACPExtensionListener {
         }
         
         // Handle SharedState events
-        if (event.eventType == ExperiencePlatformConstants.eventTypeAdobeHub) {
+        if event.eventType == ExperiencePlatformConstants.eventTypeAdobeHub {
             guard let eventData = event.eventData else {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Adobe Hub event contains no data. Cannot process event '\(event.eventUniqueIdentifier)'")
                 return
