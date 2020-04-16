@@ -28,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         ACPCore.setLogLevel(ACPMobileLogLevel.debug)
         ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with ACPExperiencePlatform v" + ACPExperiencePlatform.extensionVersion()))
+        ACPExperiencePlatform.registerExtension()
         // TODO: add commerce demo app code in here
         return true
     }

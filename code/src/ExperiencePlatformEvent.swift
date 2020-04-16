@@ -20,19 +20,19 @@ import Foundation
 public struct ExperiencePlatformEvent {
      private let LOG_TAG = "ExperiencePlatformEvent"
 
-     private var data: [String: Any]
-     private var xdmData: [String: Any]
+     private var data: [String: AnyCodable]
+     private var xdmData: [String: AnyCodable]
     
-    public init(data: [String: Any], xdmData: [String: Any] ) {
-        self.data = data
-        self.xdmData = xdmData
+     init(data: [String: Any], xdmData: [String: Any]) {
+         self.data =  AnyCodable.from(dictionary: data)
+         self.xdmData = AnyCodable.from(dictionary: xdmData)
     }
     
     /// Sets a free form data associated with this event to be passed to Adobe Data Platform
     /// - Parameters:
     ///   -  data: Free form data, JSON like types are accepted
     mutating func setData(data: [String: Any])  {
-        self.data = data
+        self.data = AnyCodable.from(dictionary: data)
     }
     
     /// Sets the solution specific XDM event data for this event.
@@ -40,7 +40,7 @@ public struct ExperiencePlatformEvent {
     /// - Parameters:
     ///   -  xdm: Schema information
    mutating func setXdmSchema(xdm: Schema) {
-        self.xdmData = xdm.serializeToXdm()
+        self.xdmData = AnyCodable.from(dictionary: xdm as! [AnyHashable : Any])
       }
     
     /// Sets solution specific XDM event data for this event, passed as raw mapping of keys and
@@ -50,7 +50,7 @@ public struct ExperiencePlatformEvent {
     /// - Parameters:
     ///   -  xdm: Raw XDM schema data
     mutating func setXdmSchema(xdm: [String: Any]) {
-        self.xdmData = xdm
+        self.xdmData = AnyCodable.from(dictionary: xdm)
       }
 
     /// Returns the free form data associated with this event
@@ -64,5 +64,10 @@ public struct ExperiencePlatformEvent {
     func getXdmData() -> [String: Any]{
         return self.xdmData
       }
+    
+    
+    
+    
+    
 }
 
