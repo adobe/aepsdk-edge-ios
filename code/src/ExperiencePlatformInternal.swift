@@ -87,11 +87,8 @@ class ExperiencePlatformInternal : ACPExtension {
     /// Called by event listeners to kick the processing of the event queue. Event passed to function is not added to queue for processing
     /// - Parameter event: the event which triggered processing of the event queue
     func processEventQueue(_ event: ACPExtensionEvent) {
-        // TODO add way to trigger event queue without needing to add item (make triggerSourceIfNeeded public?)
-        eventQueue.add((event, {(event: ACPExtensionEvent) -> Bool in
-            // trigger processing of queue
-            return true
-        }))
+        // Trigger processing of queue
+        eventQueue.start()
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) requested event queue kick.")
     }
     
@@ -114,7 +111,7 @@ class ExperiencePlatformInternal : ACPExtension {
     }
     
     func handleResponseEvent(event: ACPExtensionEvent) -> Bool {
-        // TODO implement me
+        // TODO implement me in AMSDK-9555
         return true
     }
     
@@ -154,7 +151,7 @@ class ExperiencePlatformInternal : ACPExtension {
         requestBuilder.lineFeed = ExperiencePlatformConstants.Defaults.requestConfigLineFeed
         
         if let requestData = requestBuilder.getPayload([event]) {
-            // TODO send network request
+            // TODO AMSDK-9555, send network request
             
             // DEBUG
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request for config '\(configId)' and body: \(String(data: requestData, encoding: .utf8) ?? "failed to parse")")
