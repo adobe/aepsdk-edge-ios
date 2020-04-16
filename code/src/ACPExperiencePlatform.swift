@@ -29,7 +29,7 @@ public class ACPExperiencePlatform {
         
         do {
             try ACPCore.registerExtension(ExperiencePlatformInternal.self)
-            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Extention Version '" + String(ExperiencePlatformInternal.version()) + "' has been successfully registered!")
+            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Extention Version has been successfully registered!")
         } catch {
             ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"Extension Registration has failed!")
         }
@@ -76,13 +76,21 @@ public class ACPExperiencePlatform {
     ///   - uniqueSequenceId: Unique event sequence identifier, used to identify all the events from the same batch before being sent to Data Platform
     private static func dispatchSendAllEvent(uniqueSequenceId: String) {
         var sendAllEventData = [String: Any]()
+        var sendAllEvent:ACPExtensionEvent
         sendAllEventData[ExperiencePlatformConstants.EventDataKeys.send_all_events] = true
         sendAllEventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
-        guard let sendAllEvent:ACPExtensionEvent = try? ACPExtensionEvent(name: "Send all events to Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: sendAllEventData)
-        else {
+        do {
+            sendAllEvent = try? ACPExtensionEvent(name: "Send all events to Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: sendAllEventData)
+
+        } catch {
+            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id \(uniqueSequenceId) due to an Unexpected error: \(error).")
             return
         }
-        try? ACPCore.dispatchEvent(sendAllEvent)
+        do {
+            try ACPCore.dispatchEvent(sendAllEvent)
+        } catch {
+            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id \(uniqueSequenceId) due to an Unexpected error: \(error).")
+        }
      }
     
 }
