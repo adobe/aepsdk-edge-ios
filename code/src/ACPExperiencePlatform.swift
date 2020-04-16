@@ -68,7 +68,7 @@ public class ACPExperiencePlatform {
         do {
             try ACPCore.dispatchEvent(event)
         } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event.")
+            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id : " + uniqueSequenceId)
         }
     }
     

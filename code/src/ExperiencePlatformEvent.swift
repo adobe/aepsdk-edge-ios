@@ -31,16 +31,20 @@ public struct ExperiencePlatformEvent {
     /// Sets a free form data associated with this event to be passed to Adobe Data Platform
     /// - Parameters:
     ///   -  data: Free form data, JSON like types are accepted
-    mutating func setData(data: [String: Any])  {
-        self.data = AnyCodable.from(dictionary: data)
+    mutating func setData(data: [String: Any]?)  {
+        guard let unwrappedData = data else { return }
+        self.data = AnyCodable.from(dictionary: unwrappedData)
     }
     
     /// Sets the solution specific XDM event data for this event.
     /// If XDM schema is set multiple times using either this API
+    /// or the value will be overwritten and only the last changes are applied.
+    /// Setting the xdm to null clears the value.
     /// - Parameters:
     ///   -  xdm: Schema information
-   mutating func setXdmSchema(xdm: Schema) {
-        self.xdmData = AnyCodable.from(dictionary: xdm as! [AnyHashable : Any])
+   mutating func setXdmSchema(xdm: Schema?) {
+        guard let unwrappedXdm = xdm else { return }
+        self.xdmData = AnyCodable.from(dictionary: unwrappedXdm as! [AnyHashable : Any])
       }
     
     /// Sets solution specific XDM event data for this event, passed as raw mapping of keys and
