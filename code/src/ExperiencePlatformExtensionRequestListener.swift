@@ -21,10 +21,6 @@ import ACPCore
 class ExperiencePlatformExtensionRequestListener : ACPExtensionListener {
     private let TAG = "ExperiencePlatformExtensionListener"
     
-    override init() {
-        super.init()
-    }
-    
     override func hear(_ event: ACPExtensionEvent) {
         
         // get parent extension
