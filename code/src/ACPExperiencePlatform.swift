@@ -51,19 +51,24 @@ public class ACPExperiencePlatform {
     ///   -  experiencePlatformEvent: The ExperiencePlatformEvent to be dispatched to the internal extension
     ///   - uniqueSequenceId: Unique event sequence identifier, used to identify all the events from the same batch before being sent to Data Platform
     /// - Returns: A Boolean indicating if the provided ExperiencePlatformEvent was dispatched
-    private static func addDataPlatformEvent(experiencePlatformEvent: ExperiencePlatformEvent, uniqueSequenceId: String) {
+    private static func addDataPlatformEvent(experiencePlatformEvent: ExperiencePlatformEvent, uniqueSequenceId: String) -> Bool{
 
         var eventData = experiencePlatformEvent.getData()
         eventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
-        guard let event = try? ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
-        else {
-            return
+        var event : ACPExtensionEvent
+        do {
+            event = try? ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
+        } catch {
+            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch due to an Unexpected error: \(error)." )
         }
+ 
         do {
             try ACPCore.dispatchEvent(event)
         } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id : " + uniqueSequenceId)
+            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id \(uniqueSequenceId) due to an Unexpected error: \(error).")
+            return false
         }
+        return true
     }
     
     /// Dispatches the SendAll event for the Experience platform extension in order to start processing the queued events, prepare and initiate the network request.
