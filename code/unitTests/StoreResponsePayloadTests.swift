@@ -125,8 +125,6 @@ class StoreResponsePayloadTests: XCTestCase {
             return
         }
 
-        print(Date().timeIntervalSince1970)
-        print(payload.expiryDate.timeIntervalSince1970)
         XCTAssertTrue(payload.isExpired)
     }
 }
