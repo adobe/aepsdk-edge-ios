@@ -59,15 +59,19 @@ class RequestBuilder {
         let stateMetadata = StateMetadata(payload: storeResponsePayloadManager.getActivePayloadList())
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: stateMetadata)
         
-        var request = EdgeRequest(meta: requestMetadata)
-        request.events = extractPlatformEvents(events)
+        let platformEvents = extractPlatformEvents(events)
+        var contextData: RequestContextData? = nil
         
         // set ECID if available
         if let ecid = experienceCloudId {
             var identityMap = IdentityMap()
             identityMap.addItem(namespace: ExperiencePlatformConstants.JsonKeys.ECID, id: ecid)
-            request.xdm = RequestContextData(identityMap: identityMap)
+            contextData = RequestContextData(identityMap: identityMap)
         }
+        
+        let request = EdgeRequest(meta: requestMetadata,
+                                  xdm: contextData,
+                                  events: platformEvents)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]

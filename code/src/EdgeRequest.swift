@@ -21,11 +21,11 @@ import Foundation
 /// An `EdgeRequest` is the top-level request object sent to Konductor.
 struct EdgeRequest : Codable{
     /// Metadata passed to solutions and even to Konductor itself with possiblity of overriding at event level
-    var meta: RequestMetadata?
+    let meta: RequestMetadata?
     
     /// XDM context data for the entire request
-    var xdm: RequestContextData?
+    let xdm: RequestContextData?
     
     /// List of Experience events
-    var events: [[String : AnyCodable]]?
+    let events: [[String : AnyCodable]]?
 }

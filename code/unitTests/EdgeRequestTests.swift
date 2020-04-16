@@ -97,8 +97,9 @@ class EdgeRequestTests: XCTestCase {
     func testEncode_onlyRequestMetadata() {
         let konductorConfig = KonductorConfig(imsOrgId: "id", streaming: nil)
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
-        var edgeRequest = EdgeRequest()
-        edgeRequest.meta = requestMetadata
+        let edgeRequest = EdgeRequest(meta: requestMetadata,
+                                      xdm: nil,
+                                      events: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -125,8 +126,9 @@ class EdgeRequestTests: XCTestCase {
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
         let requestContext = RequestContextData(identityMap: identityMap)
-        var edgeRequest = EdgeRequest()
-        edgeRequest.xdm = requestContext
+        let edgeRequest = EdgeRequest(meta: nil,
+                                      xdm: requestContext,
+                                      events: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -176,8 +178,9 @@ class EdgeRequestTests: XCTestCase {
                 ]
             ]
         ]]
-        var edgeRequest = EdgeRequest()
-        edgeRequest.events = events
+        let edgeRequest = EdgeRequest(meta: nil,
+                                      xdm: nil,
+                                      events: events)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
