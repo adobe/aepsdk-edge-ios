@@ -17,7 +17,6 @@
 import ACPCore
 
 private let LOG_TAG = "ACPExperiencePlatform"
-private let EXTENSION_VERSION = "1.0.0-alpha"
 
 public class ACPExperiencePlatform {
 
@@ -30,15 +29,10 @@ public class ACPExperiencePlatform {
         
         do {
             try ACPCore.registerExtension(ExperiencePlatformInternal.self)
-            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Extention Version '" + extensionVersion() + "' has been successfully registered!")
+            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Extention Version '" + String(ExperiencePlatformInternal.version()) + "' has been successfully registered!")
         } catch {
             ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"Extension Registration has failed!")
         }
-    }
-    
-   /// Returns the current version of the ACPExperiencePlatform Extesion
-   public static func extensionVersion() -> String {
-        return EXTENSION_VERSION
     }
 
     /// Sends one event to Adobe Data Platform and registers a callback for responses coming from Data Platform
