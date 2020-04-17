@@ -42,8 +42,11 @@ public class ACPExperiencePlatform {
     ///   Adobe Data Platform. It may be invoked on a different thread and may be invoked multiple times
     public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent, responseCallback: (([String: Any]) -> Void)?) {
         let uniqueSequenceId = UUID().uuidString
-        addDataPlatformEvent(experiencePlatformEvent: experiencePlatformEvent, uniqueSequenceId: uniqueSequenceId)
-        dispatchSendAllEvent(uniqueSequenceId: uniqueSequenceId)
+        if addDataPlatformEvent(experiencePlatformEvent: experiencePlatformEvent, uniqueSequenceId: uniqueSequenceId) {
+                dispatchSendAllEvent(uniqueSequenceId: uniqueSequenceId)
+        } else {
+                ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Unable to dispatch the event with id : \(uniqueSequenceId)." )
+        }
     }
 
     /// Deserialize the provided experiencePlatformEvent and dispatches a new event for the Experience platform extension with that data.
@@ -51,10 +54,11 @@ public class ACPExperiencePlatform {
     ///   -  experiencePlatformEvent: The ExperiencePlatformEvent to be dispatched to the internal extension
     ///   - uniqueSequenceId: Unique event sequence identifier, used to identify all the events from the same batch before being sent to Data Platform
     /// - Returns: A Boolean indicating if the provided ExperiencePlatformEvent was dispatched
-    private static func addDataPlatformEvent(experiencePlatformEvent: ExperiencePlatformEvent, uniqueSequenceId: String) -> Bool{
+    private static func addDataPlatformEvent(experiencePlatformEvent: ExperiencePlatformEvent, uniqueSequenceId: String) -> Bool {
 
-        var eventData = experiencePlatformEvent.getFreeFormData()
-        eventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
+        var eventData = experiencePlatformEvent.getData()
+        eventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = AnyCodable(uniqueSequenceId)
+        
         var event : ACPExtensionEvent
         do {
             event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)

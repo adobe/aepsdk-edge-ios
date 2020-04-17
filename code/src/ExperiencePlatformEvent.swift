@@ -18,36 +18,32 @@
 import Foundation
 
 public struct ExperiencePlatformEvent {
-     private let LOG_TAG = "ExperiencePlatformEvent"
+    private let LOG_TAG = "ExperiencePlatformEvent"
 
-     private let freeFormData: [String: AnyCodable]
-     private let xdmData: [String: AnyCodable]
-    
-     init(data: [String: Any], xdmData: [String: Any]) {
-         self.freeFormData =  AnyCodable.from(dictionary: data)
-         self.xdmData = AnyCodable.from(dictionary: xdmData)
-    }
-    
-    init(xdmData: [String : Any], data: [String : Any]? = nil) {
-        self.freeFormData = [:]
+    private var xdmData: [String: AnyCodable]
+    private var data: [String: AnyCodable]?
+
+    init(xdmData: [String: Any], data: [String: Any]?) {
         self.xdmData = AnyCodable.from(dictionary: xdmData)
+        self.data = AnyCodable.from(dictionary: data!)
     }
-    
-    init(xdmData: [String : Any]? = nil, data: [String : Any]) {
-        self.freeFormData = AnyCodable.from(dictionary: data)
-        self.xdmData = [:]
-    }
-    
-    /// Returns the free form data associated with this event
-    /// - Returns:Free form data in JSON format
-    func getFreeFormData() -> [String: Any]{
-        return self.freeFormData
+
+    init(xdmData: XDMSchema, data: [String : Any]?) {
+        self.xdmData = AnyCodable.from(dictionary: xdmData as! [AnyHashable : Any])
+        self.data = AnyCodable.from(dictionary: data!)
     }
     
     /// Returns the solution specific XDM event data for this event.
     /// - Returns:The XDM schema data
-    func getXdmData() -> [String: Any]{
+    func getXdmData() -> [String: AnyCodable]{
         return self.xdmData
       }
+
+    /// Returns the free form data associated with this event
+    /// - Returns:Free form data in JSON format
+    func getData() -> [String: AnyCodable]{
+        return self.data!
+    }
+    
 }
 
