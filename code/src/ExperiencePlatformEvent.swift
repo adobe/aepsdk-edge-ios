@@ -18,7 +18,7 @@
 import Foundation
 
 public struct ExperiencePlatformEvent {
-<<<<<<< HEAD
+
     private let LOG_TAG = "ExperiencePlatformEvent"
 
     private var xdmData: [String: AnyCodable]
@@ -45,39 +45,5 @@ public struct ExperiencePlatformEvent {
     func getData() -> [String: AnyCodable]{
         return self.data!
     }
-    
-=======
-     private let LOG_TAG = "ExperiencePlatformEvent"
-
-     private let freeFormData: [String: AnyCodable]
-     private let xdmData: [String: AnyCodable]
-    
-     init(data: [String: Any], xdmData: [String: Any]) {
-         self.freeFormData =  AnyCodable.from(dictionary: data)
-         self.xdmData = AnyCodable.from(dictionary: xdmData)
-    }
-    
-    init(xdmData: [String : Any], data: [String : Any]? = nil) {
-        self.freeFormData = [:]
-        self.xdmData = AnyCodable.from(dictionary: xdmData)
-    }
-    
-    init(xdmData: [String : Any]? = nil, data: [String : Any]) {
-        self.freeFormData = AnyCodable.from(dictionary: data)
-        self.xdmData = [:]
-    }
-    
-    /// Returns the free form data associated with this event
-    /// - Returns:Free form data in JSON format
-    func getFreeFormData() -> [String: Any]{
-        return self.freeFormData
-    }
-    
-    /// Returns the solution specific XDM event data for this event.
-    /// - Returns:The XDM schema data
-    func getXdmData() -> [String: Any]{
-        return self.xdmData
-      }
->>>>>>> 3733e2e4614299703df5d588821fa036624761e3
 }
 
