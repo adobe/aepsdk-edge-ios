@@ -142,7 +142,7 @@ class RequestMetadataTests: XCTestCase {
 
     // MARK: decoder tests
      
-     func testDecode_noParameters() {
+     func testDecode_withEmptyParams_decodesEmptyObject() {
         let data = """
         {
 
@@ -197,80 +197,44 @@ class RequestMetadataTests: XCTestCase {
        let metadata = try? decoder.decode(RequestMetadata.self, from: data!)
        
        XCTAssertNotNil(metadata)
-       XCTAssertNil(metadata!.konductorConfig)
-       XCTAssertNotNil(metadata!.state)
+       XCTAssertNil(metadata?.konductorConfig)
+       XCTAssertNotNil(metadata?.state)
+       XCTAssertNotNil(metadata?.state?.entries)
+       XCTAssertEqual(1, metadata?.state?.entries?.count)
+       XCTAssertEqual("key", metadata?.state?.entries?[0].key)
+       XCTAssertEqual("value", metadata?.state?.entries?[0].value)
+       XCTAssertEqual(3600, metadata?.state?.entries?[0].maxAge)
     }
     
     func testDecode_paramKonductorConfig_paramStateMetadata() {
-       let data = """
-       {
-        "konductorConfig" : { },
-        "state" : {
-          "entries" : [
-            {
-              "key" : "key",
-              "maxAge" : 3600,
-              "value" : "value"
+        let data = """
+           {
+            "konductorConfig" : { },
+            "state" : {
+              "entries" : [
+                {
+                  "key" : "key",
+                  "maxAge" : 3600,
+                  "value" : "value"
+                }
+              ]
             }
-          ]
-        }
-       }
-       """.data(using: .utf8)
+           }
+           """.data(using: .utf8)
+           
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
        
-       let decoder = JSONDecoder()
-       decoder.dateDecodingStrategy = .iso8601
+        let metadata = try? decoder.decode(RequestMetadata.self, from: data!)
        
-       let metadata = try? decoder.decode(RequestMetadata.self, from: data!)
-       
-       XCTAssertNotNil(metadata)
-       XCTAssertNotNil(metadata!.konductorConfig)
-       XCTAssertNotNil(metadata!.state)
-    }
-    
-    func testDecode_withValidAndUnknownParams_decodesValidParams() {
-       let data = """
-       {
-        "konductorConfig" : { },
-        "unknown" : {
-            "isUnknown" : true
-        },
-        "state" : {
-          "entries" : [
-            {
-              "key" : "key",
-              "maxAge" : 3600,
-              "value" : "value"
-            }
-          ]
-        }
-       }
-       """.data(using: .utf8)
-       
-       let decoder = JSONDecoder()
-       decoder.dateDecodingStrategy = .iso8601
-       
-       let metadata = try? decoder.decode(RequestMetadata.self, from: data!)
-       
-       XCTAssertNotNil(metadata)
-       XCTAssertNotNil(metadata!.konductorConfig)
-       XCTAssertNotNil(metadata!.state)
-    }
-    
-    func testDecode_withUnknownParams_decodesEmptyObject() {
-       let data = """
-       {
-        "Unknown" : { }
-       }
-       """.data(using: .utf8)
-       
-       let decoder = JSONDecoder()
-       decoder.dateDecodingStrategy = .iso8601
-       
-       let metadata = try? decoder.decode(RequestMetadata.self, from: data!)
-       
-       XCTAssertNotNil(metadata)
-       XCTAssertNil(metadata!.konductorConfig)
-       XCTAssertNil(metadata!.state)
+        XCTAssertNotNil(metadata)
+        XCTAssertNotNil(metadata!.konductorConfig)
+        XCTAssertNotNil(metadata!.state)
+        XCTAssertNotNil(metadata?.state?.entries)
+        XCTAssertEqual(1, metadata?.state?.entries?.count)
+        XCTAssertEqual("key", metadata?.state?.entries?[0].key)
+        XCTAssertEqual("value", metadata?.state?.entries?[0].value)
+        XCTAssertEqual(3600, metadata?.state?.entries?[0].maxAge)
     }
     
 }

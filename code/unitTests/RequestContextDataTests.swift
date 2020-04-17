@@ -106,37 +106,4 @@ class RequestContextDataTests: XCTestCase {
        XCTAssertNotNil(context)
        XCTAssertNotNil(context!.identityMap)
     }
-    
-    func testDecode_validAndUnknownParams_decodeValidParams() {
-       let data = """
-       {
-         "unknown" : [ ],
-         "identityMap" : { }
-       }
-       """.data(using: .utf8)
-       
-       let decoder = JSONDecoder()
-       decoder.dateDecodingStrategy = .iso8601
-       
-       let context = try? decoder.decode(RequestContextData.self, from: data!)
-       
-       XCTAssertNotNil(context)
-       XCTAssertNotNil(context!.identityMap)
-    }
-    
-    func testDecode_unknownParams_decodeEmptyObject() {
-       let data = """
-       {
-         "unknown" : [ ]
-       }
-       """.data(using: .utf8)
-       
-       let decoder = JSONDecoder()
-       decoder.dateDecodingStrategy = .iso8601
-       
-       let context = try? decoder.decode(RequestContextData.self, from: data!)
-       
-       XCTAssertNotNil(context)
-       XCTAssertNil(context!.identityMap)
-    }
 }
