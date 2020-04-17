@@ -20,7 +20,7 @@ import Foundation
 /// Client side stored information.
 /// A property in the `RequestMetadata` object.
 struct StateMetadata : Codable {
-    private let entries: [StorePayload]?
+    let entries: [StorePayload]?
 
     init(payload: [StorePayload]) {
         entries = payload.isEmpty ? nil : payload
