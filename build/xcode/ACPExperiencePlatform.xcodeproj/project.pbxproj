@@ -9,9 +9,12 @@
 /* Begin PBXBuildFile section */
 		16FE7A31C7DAAF9F4E529FAD /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A8933DE27A288E8CCC4C61 /* Pods_AEPCommerceDemoApp.framework */; };
 		1C61A14A2445549B007EC692 /* ExperiencePlatformEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C61A1492445549B007EC692 /* ExperiencePlatformEvent.swift */; };
-		1C61A14F2445551F007EC692 /* Property.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C61A14C2445551F007EC692 /* Property.swift */; };
-		1C61A1502445551F007EC692 /* Schema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C61A14D2445551F007EC692 /* Schema.swift */; };
-		1C61A1512445551F007EC692 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C61A14E2445551F007EC692 /* Serializer.swift */; };
+		1C84325B244A19B10013F9CE /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C84325A244A19B10013F9CE /* XDMProtocols.swift */; };
+		1C84325C244A19B10013F9CE /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C84325A244A19B10013F9CE /* XDMProtocols.swift */; };
+		1C84325D244A19B10013F9CE /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C84325A244A19B10013F9CE /* XDMProtocols.swift */; };
+		1C84325F244A19EF0013F9CE /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C84325E244A19EF0013F9CE /* XDMFormatters.swift */; };
+		1C843260244A19EF0013F9CE /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C84325E244A19EF0013F9CE /* XDMFormatters.swift */; };
+		1C843261244A19EF0013F9CE /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C84325E244A19EF0013F9CE /* XDMFormatters.swift */; };
 		60779FA70473598C0F52EF96 /* Pods_AEPDemoAppSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 86A2B8F00D380A56B98C5B2C /* Pods_AEPDemoAppSwiftUI.framework */; };
 		7BA0355DED886EDBDD884FB8 /* Pods_ACPExperiencePlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AA521D8593FDD04EE662B1A /* Pods_ACPExperiencePlatform.framework */; };
 		D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */; platformFilter = ios; };
@@ -66,9 +69,8 @@
 
 /* Begin PBXFileReference section */
 		1C61A1492445549B007EC692 /* ExperiencePlatformEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformEvent.swift; sourceTree = "<group>"; };
-		1C61A14C2445551F007EC692 /* Property.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Property.swift; sourceTree = "<group>"; };
-		1C61A14D2445551F007EC692 /* Schema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Schema.swift; sourceTree = "<group>"; };
-		1C61A14E2445551F007EC692 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
+		1C84325A244A19B10013F9CE /* XDMProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDMProtocols.swift; sourceTree = "<group>"; };
+		1C84325E244A19EF0013F9CE /* XDMFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDMFormatters.swift; sourceTree = "<group>"; };
 		4D26EF3DA5C26AE13A39116B /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		823119B68364F1FF445EB197 /* Pods-AEPDemoAppSwiftUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPDemoAppSwiftUI.release.xcconfig"; path = "Target Support Files/Pods-AEPDemoAppSwiftUI/Pods-AEPDemoAppSwiftUI.release.xcconfig"; sourceTree = "<group>"; };
 		83196435BA71A616F1B9EE0C /* Pods-AEPDemoAppSwiftUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPDemoAppSwiftUI.debug.xcconfig"; path = "Target Support Files/Pods-AEPDemoAppSwiftUI/Pods-AEPDemoAppSwiftUI.debug.xcconfig"; sourceTree = "<group>"; };
@@ -153,9 +155,8 @@
 		1C61A14B2445551F007EC692 /* xdm */ = {
 			isa = PBXGroup;
 			children = (
-				1C61A14C2445551F007EC692 /* Property.swift */,
-				1C61A14D2445551F007EC692 /* Schema.swift */,
-				1C61A14E2445551F007EC692 /* Serializer.swift */,
+				1C84325A244A19B10013F9CE /* XDMProtocols.swift */,
+				1C84325E244A19EF0013F9CE /* XDMFormatters.swift */,
 			);
 			name = xdm;
 			path = ../../code/src/xdm;
@@ -531,11 +532,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C61A1502445551F007EC692 /* Schema.swift in Sources */,
-				1C61A14F2445551F007EC692 /* Property.swift in Sources */,
 				D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */,
 				1C61A14A2445549B007EC692 /* ExperiencePlatformEvent.swift in Sources */,
-				1C61A1512445551F007EC692 /* Serializer.swift in Sources */,
+				1C84325B244A19B10013F9CE /* XDMProtocols.swift in Sources */,
+				1C84325F244A19EF0013F9CE /* XDMFormatters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -562,6 +562,8 @@
 				D4D5B57D2432977F00CAB6E4 /* AppDelegate.swift in Sources */,
 				D4D5B57F2432977F00CAB6E4 /* SceneDelegate.swift in Sources */,
 				D4D5B5812432977F00CAB6E4 /* ContentView.swift in Sources */,
+				1C84325C244A19B10013F9CE /* XDMProtocols.swift in Sources */,
+				1C843260244A19EF0013F9CE /* XDMFormatters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -572,6 +574,8 @@
 				D4D5B59D2433F9C300CAB6E4 /* ViewController.swift in Sources */,
 				D4D5B5992433F9C300CAB6E4 /* AppDelegate.swift in Sources */,
 				D4D5B59B2433F9C300CAB6E4 /* SceneDelegate.swift in Sources */,
+				1C84325D244A19B10013F9CE /* XDMProtocols.swift in Sources */,
+				1C843261244A19EF0013F9CE /* XDMFormatters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
