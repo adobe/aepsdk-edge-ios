@@ -30,7 +30,7 @@ public protocol XDMSchema {
     
     /// Returns the identifier for this dataset as defined in the Adobe Experience Platform.
     /// This is a system generated identifier for the Dataset the event belongs to.
-    /// - Returns: The URI identifier for this dataset
+    /// - Returns: The  identifier as a String for this dataset
     var datasetIdentifier: String { get }
 
 }
