@@ -38,7 +38,6 @@ public class NetworkServiceOverrider {
         self.queue.async(flags: .barrier) { self.internalPerformer = with }
     }
     
-    
     /// Resets currently set `HttpConnectionPerformer` and allows the SDK to use the default network stack for network requests.
     public func reset() {
         print("NetworkServiceOverrider - Disabling network override, using default network service.")

@@ -18,10 +18,23 @@ import XCTest
 
 @testable import ACPExperiencePlatform
 
-class NetworkServiceTests: XCTestCase {
+let testBody = "{\"test\": \"json\"\"}"
+let jsonData = testBody.data(using: .utf8)
+var mockSession : MockURLSession = MockURLSession(data: jsonData, urlResponse: nil, error: nil)
 
+class StubACPNetworkService : ACPNetworkService {
+    
+    override func createURLSession(networkRequest: NetworkRequest) -> URLSession {
+        return mockSession
+    }
+}
+
+class NetworkServiceTests: XCTestCase {
+    private var networkStub = StubACPNetworkService()
+    
     override func tearDown() {
-        ACPNetworkService.shared.session = nil
+        // reset the mock session after previous test
+        mockSession = MockURLSession(data: jsonData, urlResponse: nil, error: nil)
     }
     
     // MARK: NetworkService tests
@@ -97,12 +110,8 @@ class NetworkServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Completion handler called")
 
         let testUrl = URL(string: "https://test.com")!
-        let testBody = "test body"
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"], connectTimeout: 2.0, readTimeout: 3.0)
-        let jsonData = "{\"test\": \"json\"\"}".data(using: .utf8)
-        let mockSession = MockURLSession(data: jsonData, urlResponse: nil, error: nil)
-        ACPNetworkService.shared.session = mockSession
-        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
+        networkStub.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertEqual(jsonData, connection.data)
             XCTAssertNil(connection.response)
             XCTAssertNil(connection.error)
@@ -114,7 +123,7 @@ class NetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
         XCTAssertTrue(mockSession.dataTaskWithCompletionHandlerCalled)
         XCTAssertEqual(URLRequest.CachePolicy.reloadIgnoringCacheData, mockSession.calledWithUrlRequest?.cachePolicy)
-        XCTAssertEqual(Data(testBody.utf8), mockSession.calledWithUrlRequest?.httpBody)
+        XCTAssertEqual(jsonData, mockSession.calledWithUrlRequest?.httpBody)
         XCTAssertEqual(["Accept": "text/html"], mockSession.calledWithUrlRequest?.allHTTPHeaderFields) // TODO: add assert for default headers
         XCTAssertEqual("POST", mockSession.calledWithUrlRequest?.httpMethod)
         XCTAssertEqual(testUrl, mockSession.calledWithUrlRequest?.url)
@@ -124,7 +133,6 @@ class NetworkServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Completion handler called")
 
         let testUrl = URL(string: "https://example.com:81")!
-        let testBody = "test body"
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"], connectTimeout: 1.0, readTimeout: 1.0)
         ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertNil(connection.data)
@@ -140,11 +148,9 @@ class NetworkServiceTests: XCTestCase {
     func testConnectAsync_initiatesConnection_whenValidUrl_noCompletionHandler() {
         let testUrl = URL(string: "https://test.com")!
         let networkRequest = NetworkRequest(url: testUrl)
-        let mockSession = MockURLSession()
-        ACPNetworkService.shared.session = mockSession
         
         // test
-        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest)
+        networkStub.connectAsync(networkRequest: networkRequest)
         
         // verify
         XCTAssertTrue(mockSession.dataTaskWithCompletionHandlerCalled)

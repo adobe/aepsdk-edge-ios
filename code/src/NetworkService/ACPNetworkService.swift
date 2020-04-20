@@ -21,14 +21,8 @@ public enum NetworkServiceError: Error {
 public class ACPNetworkService: NetworkService {
   
     // TODO: use ThreadSafeDictionary when moving to core
-    private var sessions:[String:URLSession]
-    var session: URLSession? // to be used only for dependency injection for testing
+    private var sessions = [String:URLSession]()
     public static let shared = ACPNetworkService()
-    
-    private init() {
-        sessions = [String:URLSession]()
-        session = nil
-    }
     
     public func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         
@@ -61,6 +55,25 @@ public class ACPNetworkService: NetworkService {
         }
     }
     
+    /// Check if a session is already created for the specified URL, readTimeout, connectTimeout or create a new one with a new `URLSessionConfiguration`
+    /// - Parameter networkRequest: current network request
+    func createURLSession(networkRequest: NetworkRequest) -> URLSession {
+        let sessionId = "\(networkRequest.url.absoluteString)\(networkRequest.readTimeout)\(networkRequest.connectTimeout)"
+        guard let session = self.sessions[sessionId] else {
+            // Create config for an ephemeral NSURLSession with specified timeouts
+            let config = URLSessionConfiguration.ephemeral
+            config.urlCache = nil
+            config.timeoutIntervalForRequest = networkRequest.readTimeout
+            config.timeoutIntervalForResource = networkRequest.connectTimeout
+            
+            let newSession:URLSession = URLSession(configuration: config)
+            self.sessions[sessionId] = newSession
+            return newSession
+        }
+        
+        return session;
+    }
+    
     /// Creates an `URLRequest` with the provided parameters and adds the SDK default headers. The cache policy used is reloadIgnoringLocalCacheData.
     /// - Parameter networkRequest: `NetworkRequest`
     private func createURLRequest(networkRequest: NetworkRequest) -> URLRequest {
@@ -78,24 +91,5 @@ public class ACPNetworkService: NetworkService {
         }
         
         return request;
-    }
-    
-    /// Check if a session is already created for the specified URL, readTimeout, connectTimeout or create a new one with a new `URLSessionConfiguration`
-    /// - Parameter networkRequest: current network request
-    private func createURLSession(networkRequest: NetworkRequest) -> URLSession {
-        let sessionId = "\(networkRequest.url.absoluteString)\(networkRequest.readTimeout)\(networkRequest.connectTimeout)"
-        guard let session = self.sessions[sessionId] else {
-            // Create config for an ephemeral NSURLSession with specified timeouts
-            let config = URLSessionConfiguration.ephemeral
-            config.urlCache = nil
-            config.timeoutIntervalForRequest = networkRequest.readTimeout
-            config.timeoutIntervalForResource = networkRequest.connectTimeout
-            
-            let newSession:URLSession = self.session ?? URLSession(configuration: config)
-            self.sessions[sessionId] = newSession
-            return newSession
-        }
-        
-        return session;
     }
 }
