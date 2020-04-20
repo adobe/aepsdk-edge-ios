@@ -55,7 +55,7 @@ class KonductorConfigTests: XCTestCase {
     }
     
     func testStreamingEncodeFromParametersAll() {
-        var streaming = Streaming(recordSeparator: "A", lineFeed: "B")
+        let streaming = Streaming(recordSeparator: "A", lineFeed: "B")
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -77,7 +77,7 @@ class KonductorConfigTests: XCTestCase {
     }
     
     func testStreamingEncodeWithNilRecordSeparator() {
-        var streaming = Streaming(recordSeparator: nil, lineFeed: "B")
+        let streaming = Streaming(recordSeparator: nil, lineFeed: "B")
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -98,7 +98,7 @@ class KonductorConfigTests: XCTestCase {
     }
     
     func testStreamingEncodeWithNilLineFeed() {
-        var streaming = Streaming(recordSeparator: "A", lineFeed: nil)
+        let streaming = Streaming(recordSeparator: "A", lineFeed: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
