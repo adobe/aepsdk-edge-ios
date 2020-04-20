@@ -73,37 +73,4 @@ class RequestContextDataTests: XCTestCase {
         XCTAssertEqual(expected, jsonString)
     }
     
-    // MARK: decoder tests
-      
-      func testDecode_noParameters() {
-         let data = """
-         {
-
-         }
-         """.data(using: .utf8)
-         
-         let decoder = JSONDecoder()
-         decoder.dateDecodingStrategy = .iso8601
-         
-         let context = try? decoder.decode(RequestContextData.self, from: data!)
-         
-         XCTAssertNotNil(context)
-         XCTAssertNil(context!.identityMap)
-      }
-     
-    func testDecode_paramIdentityMap() {
-       let data = """
-       {
-         "identityMap" : { }
-       }
-       """.data(using: .utf8)
-       
-       let decoder = JSONDecoder()
-       decoder.dateDecodingStrategy = .iso8601
-       
-       let context = try? decoder.decode(RequestContextData.self, from: data!)
-       
-       XCTAssertNotNil(context)
-       XCTAssertNotNil(context!.identityMap)
-    }
 }

@@ -19,7 +19,7 @@ import Foundation
 
 /// Client side stored information.
 /// A property in the `RequestMetadata` object.
-struct StateMetadata : Codable {
+struct StateMetadata : Encodable {
     let entries: [StorePayload]?
 
     init(payload: [StorePayload]) {

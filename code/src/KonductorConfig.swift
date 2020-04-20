@@ -18,7 +18,7 @@ import Foundation
 
 /// Konductor configuration metadata.
 /// Is contained within the `RequestMetadata` request property.
-struct KonductorConfig : Codable {
+struct KonductorConfig : Encodable {
     /// The IMS Org ID. Typically this is the Experience Platform Org ID.
     let imsOrgId: String?
     
@@ -42,7 +42,7 @@ struct Streaming {
     enum CodingKeys: String, CodingKey {
         case recordSeparator = "recordSeparator"
         case lineFeed = "lineFeed"
-        case streamingEnabled = "enabled"
+        case enabled = "enabled"
     }
 }
 
@@ -51,14 +51,7 @@ extension Streaming : Encodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if let unwrapped = recordSeparator { try container.encode(unwrapped, forKey: .recordSeparator)}
         if let unwrapped = lineFeed { try container.encode(unwrapped, forKey: .lineFeed)}
-        if let unwrapped = enabled { try container.encode(unwrapped, forKey: .streamingEnabled)}
+        if let unwrapped = enabled { try container.encode(unwrapped, forKey: .enabled)}
     }
 }
 
-extension Streaming : Decodable {
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        recordSeparator = try? container.decode(String.self, forKey: .recordSeparator)
-        lineFeed = try? container.decode(String.self, forKey: .lineFeed)
-    }
-}
