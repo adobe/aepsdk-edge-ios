@@ -139,7 +139,7 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertNil(flattenDict[".meta.state.entries[0].expiryDate"])
     }
     
-    func testGetPayload_withOutStorePayload_responseDoesNotContainsStateEntries() {
+    func testGetPayload_withoutStorePayload_responseDoesNotContainsStateEntries() {
         let request = RequestBuilder(dataStore: MockKeyValueStore())
         request.organizationId = "orgID"
         request.recordSeparator = "A"
@@ -165,6 +165,7 @@ class RequestBuilderTests: XCTestCase {
         
         let flattenDict = flattenDictionary(dict: dict)
         
+        XCTAssertFalse(flattenDict.isEmpty)
         XCTAssertNil(flattenDict[".meta.state"])
     }
 }

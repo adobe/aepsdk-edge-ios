@@ -23,6 +23,10 @@ func flattenDictionary(dict: [String : Any]) -> [String : Any] {
     var result: [String : Any] = [:]
     
     func recursive(dict: [String : Any], out: inout [String : Any], currentKey: String = "") {
+        if dict.isEmpty {
+            out[currentKey] = "isEmpty"
+            return
+        }
         for (key, val) in dict {
             let resultKey = currentKey + "." + key
             process(value: val, out: &out, key: resultKey)
@@ -30,6 +34,10 @@ func flattenDictionary(dict: [String : Any]) -> [String : Any] {
     }
     
     func recursive(list: [Any], out: inout [String : Any], currentKey: String) {
+        if list.isEmpty {
+            out[currentKey] = "isEmpty"
+            return
+        }
         for (index, value) in list.enumerated() {
             let resultKey = currentKey + "[\(index)]"
             process(value: value, out: &out, key: resultKey)

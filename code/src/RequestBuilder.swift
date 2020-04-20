@@ -56,8 +56,10 @@ class RequestBuilder {
         
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
         let konductorConfig = KonductorConfig(imsOrgId: organizationId, streaming: streamingMetadata)
-        let stateMetadata = StateMetadata(payload: storeResponsePayloadManager.getActivePayloadList())
-        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: stateMetadata)
+        
+        let storedPayloads = storeResponsePayloadManager.getActivePayloadList()
+        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig,
+                                              state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads))
         
         let platformEvents = extractPlatformEvents(events)
         var contextData: RequestContextData? = nil
