@@ -35,7 +35,7 @@ struct ContentView: View {
                                                                 connectTimeout: 5, readTimeout: 5)
             
             NetworkServiceOverrider.shared.enableOverride(with: TestHttpConnectionPerformer())
-            NetworkService.shared.connectAsync(networkRequest: networkRequest1, completionHandler: {connection in
+            ACPNetworkService.shared.connectAsync(networkRequest: networkRequest1, completionHandler: {connection in
                                                // function body goes here
                 print(connection.responseHttpHeader(forKey: "Content-Type") ?? "no content-type header")
                 print(connection.responseCode ?? "no response code")
@@ -45,14 +45,14 @@ struct ContentView: View {
             NetworkServiceOverrider.shared.reset()
             
             // not permitted
-            // NetworkService.shared.connectAsync(networkRequest: nil)
+            // ACPNetworkService.shared.connectAsync(networkRequest: nil)
             
             // fire and forget example
-            NetworkService.shared.connectAsync(networkRequest: networkRequest1)
+            ACPNetworkService.shared.connectAsync(networkRequest: networkRequest1)
             
             // not https protocol not permitted, network request is constructed, but the connection is not initiated
             let networkRequestInvalid:NetworkRequest = NetworkRequest(url: URL(string: "http://www.adobe.com")!) // using default param values
-            NetworkService.shared.connectAsync(networkRequest: networkRequestInvalid)
+            ACPNetworkService.shared.connectAsync(networkRequest: networkRequestInvalid)
             print(networkRequestInvalid)
             
             // nil/empty url not permitted

@@ -21,28 +21,21 @@ import XCTest
 class NetworkServiceTests: XCTestCase {
 
     override func tearDown() {
-        NetworkService.shared.session = nil
+        ACPNetworkService.shared.session = nil
     }
     
     // MARK: NetworkService tests
 
     func testConnectAsync_returnsError_whenIncompleteUrl() {
         let expectation = XCTestExpectation(description: "Completion handler called")
+
         let testUrl = URL(string: "https://")!
-        let networkRequest = NetworkRequest(url: testUrl)
-        NetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
+        let testBody = "test body"
+        let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"])
+        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertNil(connection.data)
             XCTAssertNil(connection.response)
-            guard let resultError = connection.error else {
-                XCTFail()
-                expectation.fulfill()
-                return
-            }
-            guard case NetworkServiceError.invalidUrl = resultError else {
-                XCTFail()
-                expectation.fulfill()
-                return
-            }
+            XCTAssertEqual("Could not connect to the server.", connection.error?.localizedDescription)
             
             expectation.fulfill()
         })
@@ -55,7 +48,7 @@ class NetworkServiceTests: XCTestCase {
         let testUrl = URL(string: "http://www.adobe.com")!
         let networkRequest = NetworkRequest(url: testUrl)
         // test&verify
-        NetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
+        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertNil(connection.data)
             XCTAssertNil(connection.response)
             guard let resultError = connection.error else {
@@ -80,7 +73,7 @@ class NetworkServiceTests: XCTestCase {
         let testUrl = URL(string: "invalid.url")!
         let networkRequest = NetworkRequest(url: testUrl)
         // test&verify
-        NetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
+        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertNil(connection.data)
             XCTAssertNil(connection.response)
             guard let resultError = connection.error else {
@@ -108,8 +101,8 @@ class NetworkServiceTests: XCTestCase {
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"], connectTimeout: 2.0, readTimeout: 3.0)
         let jsonData = "{\"test\": \"json\"\"}".data(using: .utf8)
         let mockSession = MockURLSession(data: jsonData, urlResponse: nil, error: nil)
-        NetworkService.shared.session = mockSession
-        NetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
+        ACPNetworkService.shared.session = mockSession
+        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertEqual(jsonData, connection.data)
             XCTAssertNil(connection.response)
             XCTAssertNil(connection.error)
@@ -133,7 +126,7 @@ class NetworkServiceTests: XCTestCase {
         let testUrl = URL(string: "https://example.com:81")!
         let testBody = "test body"
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"], connectTimeout: 1.0, readTimeout: 1.0)
-        NetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
+        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertNil(connection.data)
             XCTAssertNil(connection.response)
             XCTAssertEqual("The request timed out.", connection.error?.localizedDescription)
@@ -148,10 +141,10 @@ class NetworkServiceTests: XCTestCase {
         let testUrl = URL(string: "https://test.com")!
         let networkRequest = NetworkRequest(url: testUrl)
         let mockSession = MockURLSession()
-        NetworkService.shared.session = mockSession
+        ACPNetworkService.shared.session = mockSession
         
         // test
-        NetworkService.shared.connectAsync(networkRequest: networkRequest)
+        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest)
         
         // verify
         XCTAssertTrue(mockSession.dataTaskWithCompletionHandlerCalled)
@@ -164,11 +157,11 @@ class NetworkServiceTests: XCTestCase {
         
         // test
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "schema://test2.com")!))
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "http://test3.com")!))
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "invalid.url")!))
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test3.com?param=val&second=param")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "schema://test2.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "http://test3.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "invalid.url")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test3.com?param=val&second=param")!))
         
         // verify
         // the url is checked if valid before calling the overrider
@@ -188,17 +181,17 @@ class NetworkServiceTests: XCTestCase {
     
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        NetworkService.shared.connectAsync(networkRequest: request1, completionHandler: completionHandler)
+        ACPNetworkService.shared.connectAsync(networkRequest: request1, completionHandler: completionHandler)
         XCTAssertEqual(request1.url, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.url)
         XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithCompletionHandler)
         testPerformerOverrider.reset()
         
-        NetworkService.shared.connectAsync(networkRequest: request2, completionHandler: nil)
+        ACPNetworkService.shared.connectAsync(networkRequest: request2, completionHandler: nil)
         XCTAssertEqual(request2.url, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.url)
         XCTAssertNil(testPerformerOverrider.connectAsyncCalledWithCompletionHandler)
         testPerformerOverrider.reset()
         
-        NetworkService.shared.connectAsync(networkRequest: request3)
+        ACPNetworkService.shared.connectAsync(networkRequest: request3)
         XCTAssertEqual(request3.url, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.url)
         XCTAssertNil(testPerformerOverrider.connectAsyncCalledWithCompletionHandler)
     }
@@ -208,11 +201,11 @@ class NetworkServiceTests: XCTestCase {
         
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
         XCTAssertFalse(testPerformerOverrider.connectAsyncCalled)
         testPerformerOverrider.reset()
         
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test2.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test2.com")!))
         XCTAssertEqual("https://test2.com", testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.url.absoluteString)
         XCTAssertNil(testPerformerOverrider.connectAsyncCalledWithCompletionHandler)
         XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
@@ -225,7 +218,7 @@ class NetworkServiceTests: XCTestCase {
         
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        NetworkService.shared.connectAsync(networkRequest: request1)
+        ACPNetworkService.shared.connectAsync(networkRequest: request1)
         XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
         XCTAssertEqual(3, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
         XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept"])
@@ -240,7 +233,7 @@ class NetworkServiceTests: XCTestCase {
         
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        NetworkService.shared.connectAsync(networkRequest: request1)
+        ACPNetworkService.shared.connectAsync(networkRequest: request1)
         XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
         XCTAssertEqual(2, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
         XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
@@ -253,7 +246,7 @@ class NetworkServiceTests: XCTestCase {
         
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        NetworkService.shared.connectAsync(networkRequest: request1)
+        ACPNetworkService.shared.connectAsync(networkRequest: request1)
         XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
         XCTAssertEqual(2, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
         XCTAssertEqual("test", testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
@@ -265,13 +258,13 @@ class NetworkServiceTests: XCTestCase {
         
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
         XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled)
         XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
         testPerformerOverrider.reset()
         
         NetworkServiceOverrider.shared.reset()
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
         XCTAssertFalse(testPerformerOverrider.shouldOverrideCalled)
         XCTAssertFalse(testPerformerOverrider.connectAsyncCalled)
         testPerformerOverrider.reset()
@@ -283,21 +276,21 @@ class NetworkServiceTests: XCTestCase {
         // test&verify
         // enable overrider
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
         XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled)
         XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
         testPerformerOverrider.reset()
         
         // disable overrider
         NetworkServiceOverrider.shared.reset()
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
         XCTAssertFalse(testPerformerOverrider.shouldOverrideCalled)
         XCTAssertFalse(testPerformerOverrider.connectAsyncCalled)
         testPerformerOverrider.reset()
         
         // re-enable overrider
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
         XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled)
         XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
     }
@@ -310,14 +303,14 @@ class NetworkServiceTests: XCTestCase {
         // test&verify
         // set first overrider
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider1)
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
         XCTAssertTrue(testPerformerOverrider1.shouldOverrideCalled)
         XCTAssertTrue(testPerformerOverrider1.connectAsyncCalled)
         testPerformerOverrider1.reset()
         
         // set second overrider, the first one should not be called anymore
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider2)
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
         XCTAssertTrue(testPerformerOverrider2.shouldOverrideCalled)
         XCTAssertFalse(testPerformerOverrider2.connectAsyncCalled)
         XCTAssertFalse(testPerformerOverrider1.shouldOverrideCalled)
@@ -327,7 +320,7 @@ class NetworkServiceTests: XCTestCase {
         
         // set third overrider, the other two should not be called anymore
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider3)
-        NetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
+        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
         XCTAssertTrue(testPerformerOverrider3.shouldOverrideCalled)
         XCTAssertTrue(testPerformerOverrider3.connectAsyncCalled)
         XCTAssertFalse(testPerformerOverrider1.shouldOverrideCalled)
