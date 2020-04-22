@@ -10,6 +10,7 @@ setup:
 
 update:
 	(cd build/xcode && pod repo update && pod update)
+	(git submodule update --remote)
 
 code-format: _code-format
 
