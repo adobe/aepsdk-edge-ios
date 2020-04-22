@@ -1,12 +1,14 @@
-# Open Source Starter Repo
+# Adobe Experience Platform Mobile Extension
 
-This repository contains templates for project documentation, ensuring necessary
-legal and contributor documentation is explicit. All sections below in this `README.md`
-should be considered a template for a typical project `README.md`.
 
-## PROJECT NAME
+## About this project
 
-A short description of what this project does.
+The Experience Platform Mobile extension allows you to send data to the Adobe Experience Platform from a mobile application. This extension allows you to implement Adobe Experience Cloud capabilities in a more robust way, serve multiple Adobe solutions though one network call, and simultaneously forward this information to the Adobe Experience Platform.
+
+The Adobe Experience Platform Mobile Extension is an extension for the [Adobe Experience Platform SDK](https://github.com/Adobe-Marketing-Cloud/acp-sdks).
+
+## Current version
+The Experience Platform Mobile extension for iOS is currently in Alpha development.
 
 ## Goals
 
@@ -25,7 +27,7 @@ Instructions for how to download/install the code onto your machine.
 
 Example:
 ```
-npm install myProject --save
+TBD
 ```
 
 ### Usage
@@ -35,9 +37,7 @@ Usage instructions for your code.
 Example:
 
 ```
-var myMod = require('mymodule');
-
-myMod.foo('hi');
+TBD
 ```
 
 ### Contributing
