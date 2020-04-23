@@ -10,35 +10,26 @@ The Adobe Experience Platform Mobile Extension is an extension for the [Adobe Ex
 ## Current version
 The Experience Platform Mobile extension for iOS is currently in Alpha development.
 
-## Goals
-
-It is a good idea to provide a mission statement for your project, enshrining
-what the project wants to accomplish so that as more people join your project
-everyone can work in alignment.
-
-## Non-Goals
-
-It is also a good idea to declare what are _not_ goals of the project to prevent
-potential feature creep.
-
 ### Installation
 
-Instructions for how to download/install the code onto your machine.
+The first time you clone or download the project, you should run the following from the root directory to setup the environment:
 
-Example:
-```
-TBD
-```
+~~~
+make setup
+~~~
 
-### Usage
+Subsequently, you can make sure your environment is updated by running the following:
 
-Usage instructions for your code.
+~~~
+make update
+~~~
 
-Example:
+#### Open the Xcode workspace
+Open the workspace in Xcode by running the following command from the root directory of the repository:
 
-```
-TBD
-```
+~~~
+open build/xcode/ACPExperienceExtension.xcworkspace
+~~~
 
 ### Contributing
 
