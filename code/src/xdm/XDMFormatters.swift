@@ -30,7 +30,7 @@ class XDMFormatters {
         if let unwrapped = from {
             return unwrapped.asISO8601String()
         } else {
-            return ""
+            return nil
         }
     }
     
@@ -45,7 +45,7 @@ class XDMFormatters {
         if let unwrapped = from {
             return unwrapped.asFullDate()
         } else {
-            return ""
+            return nil
         }
     }
 }

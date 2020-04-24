@@ -66,10 +66,13 @@ class XDMFormattersTests: XCTestCase {
         XCTAssertEqual(NSMakeRange(0, 20), matches(regex: pattern, text: serializedDate))
     }
     
-    func test_dateToISO8601String_onNil_returnsEmptyString() {
-        let currentDateTime:Date? = nil
-        let serializedDate: String = XDMFormatters.dateToISO8601String (from:currentDateTime)!
-        XCTAssertEqual(serializedDate,"")
+    func test_dateToISO8601String_onNil_returnsNil() {
+        let cal:Date? = nil
+        guard XDMFormatters.dateToISO8601String (from:cal) != nil else {
+            XCTAssertTrue(true)
+            return
+        }
+            XCTAssertTrue(false)
     }
 
     func test_dateToFullDateString_onValidTimestamp_returnsFormattedString() {
@@ -93,13 +96,14 @@ class XDMFormattersTests: XCTestCase {
         XCTAssertEqual(NSMakeRange(0, 10), matches(regex: pattern, text: serializedDate))
        }
 
-    func test_dateToFullDateString_onNil_returnsEmptyString() {
+    func test_dateToFullDateString_onNil_returnsNil() {
         
-         let cal:Date? = nil
-         let serializedDate: String = XDMFormatters.dateToFullDateString (from:cal)!
-         XCTAssertEqual("",serializedDate)
+        let cal:Date? = nil
+        guard XDMFormatters.dateToFullDateString (from:cal) != nil else {
+            XCTAssertTrue(true)
+            return
+        }
+            XCTAssertTrue(false)
     }
-    
-    
 }
 
