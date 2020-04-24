@@ -17,7 +17,7 @@
 import Foundation
 
 /// An interface representing a Platform XDM Event Data schema.
-public protocol XDMSchema: Encodable, Equatable {
+public protocol XDMSchema: Encodable {
     
     /// Returns the version of this schema as defined in the Adobe Experience Platform.
     /// - Returns: The version of this schema
@@ -33,4 +33,10 @@ public protocol XDMSchema: Encodable, Equatable {
     /// - Returns: The  identifier as a String for this dataset
     var datasetIdentifier: String { get }
 
+}
+
+extension XDMSchema {
+    func toJSONData() -> Data? {
+        try? JSONEncoder().encode(self)
+    }
 }

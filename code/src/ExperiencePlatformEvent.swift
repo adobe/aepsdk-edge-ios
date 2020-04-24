@@ -21,31 +21,18 @@ public struct ExperiencePlatformEvent {
 
     private let LOG_TAG = "ExperiencePlatformEvent"
 
-    public var xdmData: [String: Any]
-    public var data: [String: Any]
+    public var xdmData: [String: Any]?
+    public var data: [String: Any]?
 
     internal func asDictionary() -> [String : Any]? {
          var dataDict: [String : Any] = [:]
-              dataDict["xdm"] = xdmData
+         if let xdm = xdmData {
+              dataDict["xdm"] = xdm
+         }
+         if let data = data {
              dataDict["data"] = data
+        }
         return dataDict.isEmpty ? nil : dataDict
     }
 
-    //    To be updated / implemented after the updated implentation for XDMSchema has been checked-in
-    //    init(xdmData: XDMSchema, data: [String : Any]?) {
-    //          do {
-    //              let xdmdata = try JSONEncoder().encode(xdmData)
-    //                if let xdmDict = try JSONSerialization.jsonObject(with: xdmdata, options: []) as? [String: Any] {
-    //                self.xdmData = xdmDict
-    //              } else {
-    //                // log failed to serialize JSON data error
-    //            }
-    //
-    //        } catch {
-    //            // log thrown error
-    //        }
-    //         self.data = AnyCodable.from(dictionary: data!)
-    //    }
-
-    
 }

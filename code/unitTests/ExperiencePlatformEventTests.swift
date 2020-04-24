@@ -38,26 +38,27 @@ class ExperiencePlatformEventTests: XCTestCase {
         return xdmData;
     }
  
-    func generateEventData()  -> [String : Any] {
-        var eventData = [String: Any]()
-         eventData["testeventDataKey1"] = "testeventDataValue1"
-         eventData["testeventDataKey2"] = "testeventDataValue2"
-         return eventData;
-
-    }
+    func generateData()  -> [String : Any] {
+        var data = [String: Any]()
+         data["testeventDataKey1"] = "testeventDataValue1"
+         data["testeventDataKey2"] = "testeventDataValue2"
+         return data;
+   }
 
     
     
-    func test_ExperiencePlatformEvent() {
+    func test_asDictionary_ExperiencePlatformEventData() {
         
         let expectedXdmData = generateXdmData()
-        let expectedEventData = generateEventData()
-        let experiencePlatformEvent: ExperiencePlatformEvent! = ExperiencePlatformEvent(xdmData:expectedXdmData,data:expectedEventData)
-        let actualXdmData = experiencePlatformEvent.xdmData
-        let actualEventData = experiencePlatformEvent.data
-        XCTAssertTrue(NSDictionary(dictionary: actualXdmData).isEqual(to: expectedXdmData))
-        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+        let expectedData = generateData()
+        
+        var expectedEventData: [String : Any] = [:]
+        expectedEventData["xdm"] = expectedXdmData
+        expectedEventData["data"] = expectedData
+        let experiencePlatformEvent: ExperiencePlatformEvent! = ExperiencePlatformEvent(xdmData:expectedXdmData,data:expectedData)
 
+        let actualEventData = experiencePlatformEvent.asDictionary()
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData!).isEqual(to: expectedEventData))
     }
 
    
