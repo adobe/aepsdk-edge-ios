@@ -94,11 +94,6 @@ all-no-clean: check-xcode-version arm64 armv7s armv7 i386 x86_64 lipo copy-files
 
 build-shallow: check-xcode-version x86_64
 
-scan: clean
-	#$(ROOT_DIR)/tools/lint/nslog_lint.sh
-	#$(ROOT_DIR)/tools/lint/setvalue_lint.sh
-	#$(ROOT_DIR)/tools/lint/sync_lint.sh
-
 armv7:
 	@echo "######################################################################"
 	@echo "### Building: "$@
