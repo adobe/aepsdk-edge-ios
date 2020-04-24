@@ -18,6 +18,7 @@ build/xcode/genhtml
 demo/AEPDemoAppSwiftUI/build
 demo/AEPCommerceDemoApp/build
 ci/*
+out/*
 build/xcode/*/out
 DerivedData/
 *.moved-aside
