@@ -27,7 +27,7 @@ class EdgeRequestTests: XCTestCase {
 
     
     func testEncode_allProperties() {
-        let konductorConfig = KonductorConfig(imsOrgId: "id", streaming: nil)
+        let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
@@ -71,7 +71,11 @@ class EdgeRequestTests: XCTestCase {
           ],
           "meta" : {
             "konductorConfig" : {
-              "imsOrgId" : "id"
+              "streaming" : {
+                "enabled" : true,
+                "lineFeed" : "B",
+                "recordSeparator" : "A"
+              }
             }
           },
           "xdm" : {
@@ -91,7 +95,7 @@ class EdgeRequestTests: XCTestCase {
     }
     
     func testEncode_onlyRequestMetadata() {
-        let konductorConfig = KonductorConfig(imsOrgId: "id", streaming: nil)
+        let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
         let edgeRequest = EdgeRequest(meta: requestMetadata,
                                       xdm: nil,
@@ -108,7 +112,11 @@ class EdgeRequestTests: XCTestCase {
         {
           "meta" : {
             "konductorConfig" : {
-              "imsOrgId" : "id"
+              "streaming" : {
+                "enabled" : true,
+                "lineFeed" : "B",
+                "recordSeparator" : "A"
+              }
             }
           }
         }

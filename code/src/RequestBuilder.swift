@@ -23,9 +23,6 @@ class RequestBuilder {
     /// Control character used at the end of each response fragment. Response streaming is enabled when both `recoredSeparator` and `lineFeed` are non nil.
     var lineFeed: String?
     
-    /// The Experience Cloud Organization ID to be sent with this request
-    var organizationId: String?
-    
     /// The Experiece Cloud ID to be sent with this request
     var experienceCloudId: String?
     
@@ -51,7 +48,7 @@ class RequestBuilder {
         }
         
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
-        let konductorConfig = KonductorConfig(imsOrgId: organizationId, streaming: streamingMetadata)
+        let konductorConfig = KonductorConfig(streaming: streamingMetadata)
         
         let storedPayloads = storeResponsePayloadManager.getActivePayloadList()
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig,

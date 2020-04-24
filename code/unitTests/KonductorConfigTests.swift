@@ -138,7 +138,7 @@ class KonductorConfigTests: XCTestCase {
     
     func testKonductorConfigEncodeFromInitAll() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: "B")
-        let config = KonductorConfig(imsOrgId: "id", streaming: streaming)
+        let config = KonductorConfig(streaming: streaming)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -148,7 +148,6 @@ class KonductorConfigTests: XCTestCase {
         XCTAssertNotNil(jsonData)
         let expected = """
             {
-              "imsOrgId" : "id",
               "streaming" : {
                 "enabled" : true,
                 "lineFeed" : "B",
@@ -162,28 +161,8 @@ class KonductorConfigTests: XCTestCase {
         XCTAssertEqual(expected, jsonString)
     }
     
-    func testKonductorConfigEncodeFromInitWithoutStreaming() {
-        let config = KonductorConfig(imsOrgId: "id", streaming: nil)
-        
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        
-        let jsonData = try? encoder.encode(config)
-        
-        XCTAssertNotNil(jsonData)
-        let expected = """
-            {
-              "imsOrgId" : "id"
-            }
-            """
-        let jsonString = String(data: jsonData!, encoding: .utf8)
-        print(jsonString!)
-        
-        XCTAssertEqual(expected, jsonString)
-    }
-    
     func testKonductorConfigEncodeEmptyParameters() {
-        let config = KonductorConfig(imsOrgId: nil, streaming: nil)
+        let config = KonductorConfig(streaming: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]

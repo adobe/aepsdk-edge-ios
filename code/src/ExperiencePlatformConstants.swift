@@ -65,6 +65,7 @@ struct ExperiencePlatformConstants {
             private init() {}
             
             static let stateOwner = "com.adobe.mobile.identity"
+            static let ecid = "mid"
         }
         
         struct Lifecycle {

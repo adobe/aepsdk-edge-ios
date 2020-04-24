@@ -49,7 +49,7 @@ class RequestMetadataTests: XCTestCase {
     }
     
     func testEncode_paramKonductorConfig() {
-        let metadata = RequestMetadata(konductorConfig: KonductorConfig(imsOrgId: nil, streaming: nil),
+        let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil),
                                        state: nil)
         
         let encoder = JSONEncoder()
@@ -104,7 +104,7 @@ class RequestMetadataTests: XCTestCase {
     
     func testEncode_paramKonductorConfig_paramStateMetadata() {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
-        let metadata = RequestMetadata(konductorConfig: KonductorConfig(imsOrgId: nil, streaming: nil),
+        let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil),
                                        state: StateMetadata(payload: [payload]))
         
         let encoder = JSONEncoder()

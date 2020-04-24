@@ -27,7 +27,6 @@ class RequestBuilderTests: XCTestCase {
     
     func testGetPayload_allParameters_verifyMetadata() {
         let request = RequestBuilder()
-        request.organizationId = "orgID"
         request.recordSeparator = "A"
         request.lineFeed = "B"
         request.experienceCloudId = "ecid"
@@ -51,7 +50,6 @@ class RequestBuilderTests: XCTestCase {
         
         let flattenDict = flattenDictionary(dict: dict)
         
-        XCTAssertEqual("orgID", flattenDict[".meta.konductorConfig.imsOrgId"] as? String)
         XCTAssertEqual("A" , flattenDict[".meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("B", flattenDict[".meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertTrue(flattenDict[".meta.konductorConfig.streaming.enabled"] as? Bool ?? false)
@@ -61,7 +59,6 @@ class RequestBuilderTests: XCTestCase {
     
     func testGetPayload_withEventXdm_verifyEventId_verifyTimestamp() {
         let request = RequestBuilder()
-        request.organizationId = "orgID"
         request.recordSeparator = "A"
         request.lineFeed = "B"
         request.experienceCloudId = "ecid"
@@ -105,7 +102,6 @@ class RequestBuilderTests: XCTestCase {
         manager.saveStorePayloads([StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600)])
         
         let request = RequestBuilder(dataStore: dataStore)
-        request.organizationId = "orgID"
         request.recordSeparator = "A"
         request.lineFeed = "B"
         request.experienceCloudId = "ecid"
@@ -137,7 +133,6 @@ class RequestBuilderTests: XCTestCase {
     
     func testGetPayload_withoutStorePayload_responseDoesNotContainsStateEntries() {
         let request = RequestBuilder(dataStore: MockKeyValueStore())
-        request.organizationId = "orgID"
         request.recordSeparator = "A"
         request.lineFeed = "B"
         request.experienceCloudId = "ecid"

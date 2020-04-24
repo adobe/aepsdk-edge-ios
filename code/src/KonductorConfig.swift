@@ -15,9 +15,6 @@ import Foundation
 /// Konductor configuration metadata.
 /// Is contained within the `RequestMetadata` request property.
 struct KonductorConfig : Encodable {
-    /// The IMS Org ID. Typically this is the Experience Platform Org ID.
-    let imsOrgId: String?
-    
     /// Configure Konductor to provide the response fragments in a streaming fashion.
     let streaming: Streaming?
 }
