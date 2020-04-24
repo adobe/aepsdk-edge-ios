@@ -43,7 +43,7 @@ public class ACPExperiencePlatform {
     public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent!, responseCallback: (([String: Any]) -> Void)?) {
 
         guard let eventData = experiencePlatformEvent.asDictionary() else {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with null event data.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"Failed to dispatch the event because the event data is nil.")
             return
         }
         var event : ACPExtensionEvent
