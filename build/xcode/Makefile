@@ -40,8 +40,9 @@ TEST_DERIVED_DATA = $(DERIVED_DATA) '$(TEST_DERIVED_DATA_PATH)'
 TEST_DESTINATION = $(DESTINATION) 'platform=iOS Simulator,name=iPhone 8'
 TIMESTAMP = $(shell date "+%m%d_%H%M")
 XCODEBUILD = xcodebuild
-XCODEBUILD_VERSION = $(shell xcodebuild -version | grep Xcode | sed 's/Xcode[[:space:]]*\([0-9]*\)\..*/\1/')
-XCODEBUILD_COMPATIBLE = $(shell [ $(XCODEBUILD_VERSION) -gt 7 ] && echo true)
+XCODEBUILD_VERSION_MAJOR = $(shell xcodebuild -version | grep Xcode | sed 's/Xcode[[:space:]]*\([0-9]*\)\..*/\1/')
+XCODEBUILD_VERSION_MINOR = $(shell xcodebuild -version | grep Xcode | sed 's/Xcode[[:space:]]*\([0-9]*\)\.\([0-9]*\).*/\2/')
+XCODEBUILD_COMPATIBLE = $(shell [[ $(XCODEBUILD_VERSION_MAJOR) -gt 10  ||  ($(XCODEBUILD_VERSION_MAJOR) -eq 10) && ($(XCODEBUILD_VERSION_MINOR) -ge 2) ]] && echo true)
 XCPRETTY = $(ROOT_DIR)/tools/xcpretty/bin/xcpretty
 XCPRETTY_CMD = $(XCPRETTY) $(XCPRETTY_OPTIONS)
 XCPRETTY_OPTIONS = --no-color --no-utf
@@ -82,12 +83,12 @@ FUNCTIONAL_TEST_REPORT_HTML = $(FUNCTIONAL_TEST_REPORT).html
 FUNCTIONAL_TEST_REPORT_XML = $(FUNCTIONAL_TEST_REPORT).xml
 # targets
 check-xcode-version:
-	# check xcodebuild version (requires version 10.1)
-	@echo "build version: " $(XCODEBUILD_VERSION)
+	# check xcodebuild version (requires version 10.2)
+	@echo "build version: " $(XCODEBUILD_VERSION_MAJOR).$(XCODEBUILD_VERSION_MINOR)
 ifeq ($(XCODEBUILD_COMPATIBLE),true)
-	@echo "Running make with xcodebuild version:" $(XCODEBUILD_VERSION)
+	@echo "Running make with xcodebuild version:" $(XCODEBUILD_VERSION_MAJOR).$(XCODEBUILD_VERSION_MINOR)
 else
-	$(error Failed to run make, incompatible xcodebuild version (requires 7+))
+	$(error Failed to run make, incompatible xcodebuild version (requires 10.2 or higher))
 endif
 
 all: check-xcode-version clean arm64 armv7s armv7 x86_64 i386 lipo copy-files
@@ -218,7 +219,7 @@ unit-test:
 		-workspace $(WORKSPACE_NAME) \
 		-scheme $(BUILD_SCHEME) \
 		$(TEST_DESTINATION) \
-		$(TEST_DERIVED_DATA) -enableCodeCoverage YES | $(TEST_BUILD_REPORT)
+		$(TEST_DERIVED_DATA) | $(TEST_BUILD_REPORT)
 
 
 functional-test:
