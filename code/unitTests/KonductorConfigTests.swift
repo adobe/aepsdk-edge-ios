@@ -1,17 +1,13 @@
 //
-// ADOBE CONFIDENTIAL
+// Copyright 2020 Adobe. All rights reserved.
+// This file is licensed to you under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License. You may obtain a copy
+// of the License at http://www.apache.org/licenses/LICENSE-2.0
 //
-// Copyright 2020 Adobe
-// All Rights Reserved.
-//
-// NOTICE: All information contained herein is, and remains
-// the property of Adobe and its suppliers, if any. The intellectual
-// and technical concepts contained herein are proprietary to Adobe
-// and its suppliers and are protected by all applicable intellectual
-// property laws, including trade secret and copyright laws.
-// Dissemination of this information or reproduction of this material
-// is strictly forbidden unless prior written permission is obtained
-// from Adobe.
+// Unless required by applicable law or agreed to in writing, software distributed under
+// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+// OF ANY KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
 //
 
 import XCTest
@@ -142,7 +138,7 @@ class KonductorConfigTests: XCTestCase {
     
     func testKonductorConfigEncodeFromInitAll() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: "B")
-        let config = KonductorConfig(imsOrgId: "id", streaming: streaming)
+        let config = KonductorConfig(streaming: streaming)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -152,7 +148,6 @@ class KonductorConfigTests: XCTestCase {
         XCTAssertNotNil(jsonData)
         let expected = """
             {
-              "imsOrgId" : "id",
               "streaming" : {
                 "enabled" : true,
                 "lineFeed" : "B",
@@ -166,28 +161,8 @@ class KonductorConfigTests: XCTestCase {
         XCTAssertEqual(expected, jsonString)
     }
     
-    func testKonductorConfigEncodeFromInitWithoutStreaming() {
-        let config = KonductorConfig(imsOrgId: "id", streaming: nil)
-        
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        
-        let jsonData = try? encoder.encode(config)
-        
-        XCTAssertNotNil(jsonData)
-        let expected = """
-            {
-              "imsOrgId" : "id"
-            }
-            """
-        let jsonString = String(data: jsonData!, encoding: .utf8)
-        print(jsonString!)
-        
-        XCTAssertEqual(expected, jsonString)
-    }
-    
     func testKonductorConfigEncodeEmptyParameters() {
-        let config = KonductorConfig(imsOrgId: nil, streaming: nil)
+        let config = KonductorConfig(streaming: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
