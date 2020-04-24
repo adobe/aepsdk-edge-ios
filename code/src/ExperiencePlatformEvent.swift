@@ -21,29 +21,61 @@ public struct ExperiencePlatformEvent {
 
     private let LOG_TAG = "ExperiencePlatformEvent"
 
-    private var xdmData: [String: AnyCodable]
-    private var data: [String: AnyCodable]?
+    public var xdmData: [String: Any]?
+    public var data: [String: Any]?
 
     init(xdmData: [String: Any], data: [String: Any]?) {
-        self.xdmData = AnyCodable.from(dictionary: xdmData)
-        self.data = AnyCodable.from(dictionary: data!)
+        self.xdmData = xdmData
+        self.data = data
     }
 
-    init(xdmData: XDMSchema, data: [String : Any]?) {
-        self.xdmData = AnyCodable.from(dictionary: xdmData as! [AnyHashable : Any])
-        self.data = AnyCodable.from(dictionary: data!)
+//    To be updated / implemented after the updated implentation for XDMSchema has been checked-in
+//    init(xdmData: XDMSchema, data: [String : Any]?) {
+//          do {
+//              let xdmdata = try JSONEncoder().encode(xdmData)
+//                if let xdmDict = try JSONSerialization.jsonObject(with: xdmdata, options: []) as? [String: Any] {
+//                self.xdmData = xdmDict
+//              } else {
+//                // log failed to serialize JSON data error
+//            }
+//
+//        } catch {
+//            // log thrown error
+//        }
+//         self.data = AnyCodable.from(dictionary: data!)
+//    }
+    
+    internal func asDictionary() -> [String : Any]? {
+         var dataDict: [String : Any] = [:]
+        
+         if let xdm = xdmData {
+              dataDict["xdm"] = xdm
+         }
+         if let data = data {
+             dataDict["data"] = data
+        }
+       
+        return dataDict.isEmpty ? nil : dataDict
     }
+    
     
     /// Returns the solution specific XDM event data for this event.
     /// - Returns:The XDM schema data
-    func getXdmData() -> [String: AnyCodable]{
-        return self.xdmData
+    func getXdmData() -> [String: Any]{
+
+        guard let xdmdata = self.xdmData else {
+            return [:]
+        }
+        return xdmdata
       }
 
     /// Returns the free form data associated with this event
     /// - Returns:Free form data in JSON format
-    func getData() -> [String: AnyCodable]{
-        return self.data!
+    func getData() -> [String: Any]{
+        
+        guard let data = self.data else {
+            return [:]
+        }
+        return data
     }
 }
-

@@ -17,7 +17,7 @@
 import Foundation
 
 /// An interface representing a Platform XDM Event Data schema.
-public protocol XDMSchema {
+public protocol XDMSchema: Encodable {
     
     /// Returns the version of this schema as defined in the Adobe Experience Platform.
     /// - Returns: The version of this schema
