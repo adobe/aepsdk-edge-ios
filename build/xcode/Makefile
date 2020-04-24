@@ -34,8 +34,7 @@ ENABLE_CODE_COVERAGE = $(GENERATE_COVERAGE_FILES) && $(GENERATE_PROGRAM_FLOW) &&
 DISABLE_CODE_COVERAGE = $(DO_NOT_GENERATE_COVERAGE_FILES) && $(DO_NOT_GENERATE_PROGRAM_FLOW)
 
 RELEASE = -configuration Release
-TEST_BUILD_REPORT = $(XCPRETTY) $(XCPRETTY_OPTIONS) -r junit -o $(UNIT_TEST_REPORT_XML) -r html -o $(UNIT_TEST_REPORT_HTML)
-FUNCTIONAL_TEST_BUILD_REPORT = $(XCPRETTY) $(XCPRETTY_OPTIONS) -r junit -o $(FUNCTIONAL_TEST_REPORT_XML) -r html -o $(FUNCTIONAL_TEST_REPORT_HTML)
+
 TEST_DERIVED_DATA = $(DERIVED_DATA) '$(TEST_DERIVED_DATA_PATH)'
 TEST_DESTINATION = $(DESTINATION) 'platform=iOS Simulator,name=iPhone 8'
 TIMESTAMP = $(shell date "+%m%d_%H%M")
@@ -43,9 +42,7 @@ XCODEBUILD = xcodebuild
 XCODEBUILD_VERSION_MAJOR = $(shell xcodebuild -version | grep Xcode | sed 's/Xcode[[:space:]]*\([0-9]*\)\..*/\1/')
 XCODEBUILD_VERSION_MINOR = $(shell xcodebuild -version | grep Xcode | sed 's/Xcode[[:space:]]*\([0-9]*\)\.\([0-9]*\).*/\2/')
 XCODEBUILD_COMPATIBLE = $(shell [[ $(XCODEBUILD_VERSION_MAJOR) -gt 10  ||  ($(XCODEBUILD_VERSION_MAJOR) -eq 10) && ($(XCODEBUILD_VERSION_MINOR) -ge 2) ]] && echo true)
-XCPRETTY = $(ROOT_DIR)/tools/xcpretty/bin/xcpretty
-XCPRETTY_CMD = $(XCPRETTY) $(XCPRETTY_OPTIONS)
-XCPRETTY_OPTIONS = --no-color --no-utf
+
 ZIP = zip
 
 # directories
@@ -106,15 +103,13 @@ armv7:
 	@echo "######################################################################"
 	@echo "### Building: "$@
 	@echo "######################################################################"
-	$(ENABLE_XCPRETTY_FAILURE) && \
 	$(XCODEBUILD) $(RELEASE) \
 		-workspace $(WORKSPACE_NAME) \
 		-scheme $(BUILD_SCHEME) \
 		-sdk $(SDK_IOS) \
 		-arch $(ARCH_ARMV7) \
 		-derivedDataPath $(BUILD_TEMP_DIR) \
-		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS) \
-		| $(XCPRETTY_CMD)
+		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME)-$(ARCH_ARMV7).a
 
@@ -122,15 +117,13 @@ armv7s:
 	@echo "######################################################################"
 	@echo "### Building: "$@
 	@echo "######################################################################"
-	$(ENABLE_XCPRETTY_FAILURE) && \
 	$(XCODEBUILD) $(RELEASE) \
 		-workspace $(WORKSPACE_NAME) \
 		-scheme $(BUILD_SCHEME) \
 		-sdk $(SDK_IOS) \
 		-arch $(ARCH_ARMV7S) \
 		-derivedDataPath $(BUILD_TEMP_DIR) \
-		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS) \
-		| $(XCPRETTY_CMD)
+		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME)-$(ARCH_ARMV7S).a
 
@@ -138,15 +131,13 @@ arm64:
 	@echo "######################################################################"
 	@echo "### Building: "$@
 	@echo "######################################################################"
-	$(ENABLE_XCPRETTY_FAILURE) && \
 	$(XCODEBUILD) $(RELEASE) \
 		-workspace $(WORKSPACE_NAME) \
 		-scheme $(BUILD_SCHEME) \
 		-sdk $(SDK_IOS) \
 		-arch $(ARCH_ARM64) \
 		-derivedDataPath $(BUILD_TEMP_DIR) \
-		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS) \
-		| $(XCPRETTY_CMD)
+		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME)-$(ARCH_ARM64).a
 
@@ -154,15 +145,13 @@ i386:
 	@echo "######################################################################"
 	@echo "### Building: "$@
 	@echo "######################################################################"
-	$(ENABLE_XCPRETTY_FAILURE) && \
 	$(XCODEBUILD) $(RELEASE) \
 	  -workspace $(WORKSPACE_NAME) \
 		-scheme $(BUILD_SCHEME) \
 		-sdk $(SDK_IOS_SIMULATOR) \
 		-arch $(ARCH_I386) \
 		-derivedDataPath $(BUILD_TEMP_DIR) \
-		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS) \
-		| $(XCPRETTY_CMD)
+		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME)-$(ARCH_I386).a
 
@@ -170,15 +159,13 @@ x86_64:
 	@echo "######################################################################"
 	@echo "### Building: "$@
 	@echo "######################################################################"
-	$(ENABLE_XCPRETTY_FAILURE) && \
 	$(XCODEBUILD) $(RELEASE) \
 		-workspace $(WORKSPACE_NAME) \
 		-scheme $(BUILD_SCHEME) \
 		-sdk $(SDK_IOS_SIMULATOR) \
 		-arch $(ARCH_X86_64) \
 		-derivedDataPath $(BUILD_TEMP_DIR) \
-		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS) \
-		| $(XCPRETTY_CMD)
+		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME)-$(ARCH_X86_64).a
 
@@ -213,13 +200,12 @@ unit-test:
 	@echo "######################################################################"
 	@echo "### Unit Testing iOS"
 	@echo "######################################################################"
-	#$(ENABLE_CODE_COVERAGE)
-	$(ENABLE_XCPRETTY_FAILURE) && \
+	$(ENABLE_CODE_COVERAGE)
 	$(XCODEBUILD) $(TEST) \
 		-workspace $(WORKSPACE_NAME) \
 		-scheme $(BUILD_SCHEME) \
 		$(TEST_DESTINATION) \
-		$(TEST_DERIVED_DATA) | $(TEST_BUILD_REPORT)
+		$(TEST_DERIVED_DATA)
 
 
 functional-test:
@@ -227,12 +213,11 @@ functional-test:
 	@echo "### Functional Testing"
 	@echo "######################################################################"
 	$(ENABLE_CODE_COVERAGE)
-	$(ENABLE_XCPRETTY_FAILURE) && \
 	$(XCODEBUILD) $(TEST) \
 		-workspace $(WORKSPACE_NAME) \
 		-scheme $(FUNCTIONAL_TEST_SCHEME) \
 		$(TEST_DESTINATION) \
-		$(TEST_DERIVED_DATA) | $(FUNCTIONAL_TEST_BUILD_REPORT)
+		$(TEST_DERIVED_DATA)
 
 disable-code-coverage:
 	@echo "######################################################################"
