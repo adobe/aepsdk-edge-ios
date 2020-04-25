@@ -46,18 +46,16 @@ public class ACPExperiencePlatform {
             ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"Failed to dispatch the event because the event data is nil.")
             return
         }
-        var event : ACPExtensionEvent
+        var event : ACPExtensionEvent = ACPExtensionEvent()
         do {
             event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
-            do {
-                 try ACPCore.dispatchEvent(event)
-             } catch {
-                 ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event due to an unexpected error: \(error).")
-                 return
-            }
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch due to an unexpected error: \(error)." )
-            return
+        }
+        do {
+             try ACPCore.dispatchEvent(event)
+         } catch {
+             ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event due to an unexpected error: \(error).")
         }
         return
     }

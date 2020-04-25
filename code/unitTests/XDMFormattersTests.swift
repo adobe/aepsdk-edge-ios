@@ -20,15 +20,6 @@ import XCTest
 
 class XDMFormattersTests: XCTestCase {
     
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-        continueAfterFailure = false // fail so nil checks stop execution
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
     func matches(regex: String, text: String) -> NSRange {
         var range:NSRange = NSRange(location: 0, length: 0)
         do {
@@ -59,20 +50,17 @@ class XDMFormattersTests: XCTestCase {
         let serializedDate: String = XDMFormatters.dateToISO8601String (from:cal)!
         var pattern: String
         if (serializedDate.contains("Z")) {
-            pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T([0-9]{2}:){2}[0-9]{2}Z";
+            pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T([0-9]{2}:){2}[0-9]{2}Z"
         } else {
-            pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T([0-9]{2}:){2}[0-9]{2}[+|-][0-9]{2}:[0-9]{2}";
+            pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T([0-9]{2}:){2}[0-9]{2}[+|-][0-9]{2}:[0-9]{2}"
         }
         XCTAssertEqual(NSMakeRange(0, 20), matches(regex: pattern, text: serializedDate))
     }
     
     func test_dateToISO8601String_onNil_returnsNil() {
+
         let cal:Date? = nil
-        guard XDMFormatters.dateToISO8601String (from:cal) != nil else {
-            XCTAssertTrue(true)
-            return
-        }
-            XCTAssertTrue(false)
+        XCTAssertNil(XDMFormatters.dateToISO8601String (from:cal))
     }
 
     func test_dateToFullDateString_onValidTimestamp_returnsFormattedString() {
@@ -90,7 +78,7 @@ class XDMFormattersTests: XCTestCase {
 
         let serializedDate: String = XDMFormatters.dateToFullDateString (from:cal)!
         var pattern: String
-        pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}";
+        pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}"
 
         XCTAssertEqual("2019-09-23",serializedDate)
         XCTAssertEqual(NSMakeRange(0, 10), matches(regex: pattern, text: serializedDate))
@@ -99,11 +87,7 @@ class XDMFormattersTests: XCTestCase {
     func test_dateToFullDateString_onNil_returnsNil() {
         
         let cal:Date? = nil
-        guard XDMFormatters.dateToFullDateString (from:cal) != nil else {
-            XCTAssertTrue(true)
-            return
-        }
-            XCTAssertTrue(false)
+        XCTAssertNil(XDMFormatters.dateToFullDateString (from:cal))
     }
 }
 

@@ -20,29 +20,20 @@ import XCTest
 
 
 class ExperiencePlatformEventTests: XCTestCase {
-
-     override func setUp() {
-          // Put setup code here. This method is called before the invocation of each test method in the class.
-          continueAfterFailure = false // fail so nil checks stop execution
-      }
-      
-      override func tearDown() {
-          // Put teardown code here. This method is called after the invocation of each test method in the class.
-      }
     
     func generateXdmData() -> [String : Any] {
         
         var xdmData = [String: Any]()
         xdmData["testXdmKey1"] = "testXdmValue1"
         xdmData["testXdmKey2"] = "testXdmValue2"
-        return xdmData;
+        return xdmData
     }
  
     func generateData()  -> [String : Any] {
         var data = [String: Any]()
          data["testeventDataKey1"] = "testeventDataValue1"
          data["testeventDataKey2"] = "testeventDataValue2"
-         return data;
+         return data
    }
 
     
