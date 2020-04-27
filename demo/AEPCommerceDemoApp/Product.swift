@@ -1,12 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-<key>FILEHEADER</key>
-<string>
+//
 // ADOBE CONFIDENTIAL
 //
-// Copyright ___YEAR___ Adobe
+// Copyright 2020 Adobe
 // All Rights Reserved.
 //
 // NOTICE: All information contained herein is, and remains
@@ -18,6 +13,25 @@
 // is strictly forbidden unless prior written permission is obtained
 // from Adobe.
 //
-</string>
-</dict>
-</plist>
+
+
+import Foundation
+
+struct Product: Codable, Equatable {
+
+    var imageLarge: String
+    var sku: String
+    var name: String
+    var price: Float
+    var quantity : Int = 1
+    func subTotal() -> Float{
+        return price * Float(quantity)
+    }
+ }
+
+extension Product {
+    static func ==(lhs: Product, rhs: Product) -> Bool {
+        return lhs.sku == rhs.sku   
+    }
+    
+}

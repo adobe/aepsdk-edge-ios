@@ -1,12 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-<key>FILEHEADER</key>
-<string>
+//
 // ADOBE CONFIDENTIAL
 //
-// Copyright ___YEAR___ Adobe
+// Copyright 2020 Adobe
 // All Rights Reserved.
 //
 // NOTICE: All information contained herein is, and remains
@@ -18,6 +13,18 @@
 // is strictly forbidden unless prior written permission is obtained
 // from Adobe.
 //
-</string>
-</dict>
-</plist>
+
+
+import Foundation
+
+public class CartItem {
+    
+    var product : Product
+    var quantity : Int = 1
+
+    var subTotal : Float { get { return product.price * Float(quantity) } }
+    
+    init(product: Product) {
+        self.product = product
+    }
+}
