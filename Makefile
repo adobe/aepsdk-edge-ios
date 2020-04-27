@@ -3,12 +3,10 @@ export EXTENSION_NAME = ACPExperiencePlatform
 PROJECT_NAME = $(EXTENSION_NAME)
 
 setup:
-	(git submodule update --init --recursive)
 	(cd build/xcode && pod install)
 
 update:
 	(cd build/xcode && pod repo update && pod update)
-	(git submodule update --remote)
 
 open:
 	open ./build/xcode/*.xcworkspace
