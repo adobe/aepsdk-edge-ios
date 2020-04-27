@@ -36,13 +36,31 @@ class CartViewController: UIViewController {
     
     @IBAction func SCartCancelBtn(_ sender: UIButton) {
         print("Shopping Cart Cancel Button has been clicked....")
+            clearCart()
     }
     
     @IBAction func SCartOrderNowBtn(_ sender: UIButton) {
         print("Shopping Cart Order Now Button has been clicked....")
-
+        
+        if ADBMobileShoppingCart.items.count != 0 {
+            for item in ADBMobileShoppingCart.items {
+                print(" Sku : " + item.product.sku +  ", Name : " +  item.product.name +  ", Qty : \(item.product.quantity), UnitPrice : \(item.product.price),  SubTotal : \(Float(item.product.quantity)*item.product.price)")
+            }
+            print("Total Cost : \(ADBMobileShoppingCart.total)")
+            
+            // Todo : Send this Event to Platform - and then clean the cart
+            // Call sendEvent()
+            // clearCart()
+        } else {
+            print("Sorry, No item in the shopping cart to place an order.So, add atleast one item to place an order.")
+        }
     }
 
+    func clearCart() {
+        ADBMobileShoppingCart.clearCart()
+        ShoppingCartTableView.reloadData()
+        OrderTotalLbl.text = "Order Total $ " + String(format: "%.2f", ADBMobileShoppingCart.total)
+    }
 }
 
 extension CartViewController: UITableViewDataSource, UITableViewDelegate {

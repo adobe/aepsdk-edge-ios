@@ -23,6 +23,10 @@ class ShoppingCart {
 }
 
 extension ShoppingCart {
+    
+    func clearCart(){
+        items.removeAll()
+    }
 
     func printme() {
         print(items)
@@ -45,6 +49,8 @@ extension ShoppingCart {
             print("Item Not found - So, added to the cart as a new item....")
         }
     }
+    
+    
 
     var totalQuantity : Float {
         get { return items.reduce(0) { value, item in
@@ -59,5 +65,6 @@ extension ShoppingCart {
                }
            }
        }
+    
 
 }
