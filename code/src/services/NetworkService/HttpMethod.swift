@@ -13,8 +13,17 @@
 
 import Foundation
 
-/// Property that holds the global XDM context data within an Edge Request object.
-/// Is contained within the `EdgeRequest` request property.
-struct RequestContextData : Encodable {
-    let identityMap: IdentityMap?
+/// This enum is used for building `NetworkRequest` objects.
+@objc public enum HttpMethod: Int {
+    case get
+    case post
+    
+    func toString() -> String {
+        switch self {
+        case .get:
+            return "GET"
+        case .post:
+            return "POST"
+        }
+    }
 }
