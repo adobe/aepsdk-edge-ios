@@ -62,7 +62,6 @@ public class ACPExperiencePlatform {
         do {
             if let  responsecallback = responseCallback {
                 responseCallbacksHandlerClosure(eventId: event.eventUniqueIdentifier, completionHandler:responsecallback)
-                print(event.eventUniqueIdentifier)
             }
              try ACPCore.dispatchEvent(event)
          } catch {
