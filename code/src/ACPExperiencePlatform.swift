@@ -43,7 +43,7 @@ public class ACPExperiencePlatform {
     ///   - experiencePlatformEvent: Event to be sent to Adobe Data Platform
     ///   - responseCallback: Optional callback to be invoked when the response handles are received from
     ///                       Adobe Data Platform. It may be invoked on a different thread and may be invoked multiple times
-    public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent!, responseCallback: (([String: Any]) -> Void)?) {
+    public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent, responseCallback: (([String: Any]) -> Void)?) {
 
         guard let eventData = experiencePlatformEvent.asDictionary() else {
             ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"Failed to dispatch the event because the event data is nil.")
