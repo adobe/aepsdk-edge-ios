@@ -32,9 +32,9 @@ public class ACPExperiencePlatform {
         
         do {
             try ACPCore.registerExtension(ExperiencePlatformInternal.self)
-            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Extention has been successfully registered!")
+            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Extension has been successfully registered.")
         } catch {
-            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"Extension Registration has failed!")
+            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"Extension Registration has failed.")
         }
     }
 
@@ -54,16 +54,16 @@ public class ACPExperiencePlatform {
             event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch due to an unexpected error: \(error)." )
+            return
         }
         do {
             if let  responsecallback = responseCallback {
                 responseCallbacksHandlerClosure(eventId: event.eventUniqueIdentifier, completionHandler:responsecallback)
             }
              try ACPCore.dispatchEvent(event)
-         } catch {
-             ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event due to an unexpected error: \(error).")
+        } catch {
+            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event due to an unexpected error: \(error).")
         }
-        return
     }
 }
 
