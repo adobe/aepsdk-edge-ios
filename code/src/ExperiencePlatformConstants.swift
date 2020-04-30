@@ -31,8 +31,8 @@ struct ExperiencePlatformConstants {
         
         static let networkRequestMaxRetries: Int = 5
         
-        static let requestConfigRecordSeparator = "\u{0000}"
-        static let requestConfigLineFeed = "\n"
+        static let requestConfigRecordSeparator: Character = "\u{0000}"
+        static let requestConfigLineFeed: Character = "\n"
     }
 
     struct EventDataKeys {
@@ -82,5 +82,19 @@ struct ExperiencePlatformConstants {
         static let ECID = "ECID"
         static let timestamp = "timestamp"
         static let eventId = "eventId"
+    }
+    
+    struct NetworkKeys {
+        private init() {}
+        
+        static let edgeEndpoint: String = "https://edge.adobedc.net/ee/v1"
+        static let requestParamConfigId: String = "configId"
+        static let requestParamRequestId: String = "requestId"
+        static let defaultConnectTimeout: TimeInterval = 5
+        static let defaultReadTimeout: TimeInterval = 5
+        
+        static let headerKeyAccept: String = "accept"
+        static let headerKeyContentType: String = "Content-Type"
+        static let headerValueApplicationJson: String = "application/json"
     }
 }

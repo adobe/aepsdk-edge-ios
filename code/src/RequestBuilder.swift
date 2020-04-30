@@ -18,10 +18,10 @@ class RequestBuilder {
     private let TAG = "RequestBuilder"
     
     /// Control charactor used before each response fragment. Response streaming is enabled when both `recoredSeparator` and `lineFeed` are non nil.
-    var recordSeparator: String?
+    var recordSeparator: Character?
     
     /// Control character used at the end of each response fragment. Response streaming is enabled when both `recoredSeparator` and `lineFeed` are non nil.
-    var lineFeed: String?
+    var lineFeed: Character?
     
     /// The Experiece Cloud ID to be sent with this request
     var experienceCloudId: String?

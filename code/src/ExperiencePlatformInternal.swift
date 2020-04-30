@@ -20,6 +20,7 @@ class ExperiencePlatformInternal : ACPExtension {
     
     typealias EventHandlerMapping = (event: ACPExtensionEvent, handler: (ACPExtensionEvent) -> (Bool))
     private let eventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal")
+    private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
     
     override init() {
         super.init()
@@ -141,11 +142,23 @@ class ExperiencePlatformInternal : ACPExtension {
             }
         }
         
-        if let requestData = requestBuilder.getPayload([event]) {
-            // TODO AMSDK-9555, send network request
+        // Build and send the network request to Konductor
+        let listOfEvents: [ACPExtensionEvent] = [event]
+        if let requestData = requestBuilder.getPayload(listOfEvents) {
+            let requestId:String = UUID.init().uuidString
             
-            // DEBUG
+            // NOTE: the order of these events need to be maintained as they were sent in the network request
+            // otherwise the response callback cannot be matched
+            // todo: add waiting events in list
+            guard let url:URL = experiencePlatformNetworkService.buildUrl(requestType: RequestType.interact, configId: configId, requestId: requestId) else {
+                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to build the URL, skipping current event.")
+                return true
+            }
+            
+            let callback: ResponseCallback = NetworkResponseCallback()
+            
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request for config '\(configId)' and body: \(String(data: requestData, encoding: .utf8) ?? "failed to parse")")
+            experiencePlatformNetworkService.doConnectAsync(url: url, jsonBody: requestData, requestHeaders: [:], responseCallback: callback)
         }
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Finished processing and sending events to Platform.")

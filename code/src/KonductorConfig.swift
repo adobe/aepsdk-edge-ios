@@ -14,7 +14,7 @@ import Foundation
 
 /// Konductor configuration metadata.
 /// Is contained within the `RequestMetadata` request property.
-struct KonductorConfig : Encodable {
+struct KonductorConfig : Codable {
     /// Configure Konductor to provide the response fragments in a streaming fashion.
     let streaming: Streaming?
 }
@@ -22,10 +22,10 @@ struct KonductorConfig : Encodable {
 /// Konductor configuration metadata to provide response fragments in a streaming fashion (HTTP 1.1/chunked, IETF RFC 7464).
 struct Streaming {
     /// Control charactor used before each response fragment.
-    let recordSeparator: String?
+    let recordSeparator: Character?
     
     /// Control character used at the end of each response fragment.
-    let lineFeed: String?
+    let lineFeed: Character?
     
     /// Getter to state whether response streaming is enabled.
     var enabled: Bool? {
@@ -39,12 +39,38 @@ struct Streaming {
     }
 }
 
-extension Streaming : Encodable {
+extension Streaming : Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if let unwrapped = recordSeparator { try container.encode(unwrapped, forKey: .recordSeparator)}
         if let unwrapped = lineFeed { try container.encode(unwrapped, forKey: .lineFeed)}
         if let unwrapped = enabled { try container.encode(unwrapped, forKey: .enabled)}
     }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        recordSeparator = try? container.decode(Character.self, forKey: .recordSeparator)
+        lineFeed = try? container.decode(Character.self, forKey: .lineFeed)
+    }
+}
+
+extension Character : Codable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(String(self))
+    }
+    
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        let string = try container.decode(String.self)
+        guard string.count == 1 else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unable to decode Character with multiple characters")
+        }
+        guard let character = string.first else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unable to decode empty Character")
+        }
+        self = character
+    }
+    
 }
 

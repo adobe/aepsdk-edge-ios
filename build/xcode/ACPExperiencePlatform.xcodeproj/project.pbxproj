@@ -41,6 +41,10 @@
 		BF947FA2244587520057A6CC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA1244587520057A6CC /* TestUtils.swift */; };
 		BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */; };
 		BF947FA6244619E80057A6CC /* RequestContextDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA5244619E80057A6CC /* RequestContextDataTests.swift */; };
+		D4000F312459E2080052C536 /* NetworkResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F302459E2080052C536 /* NetworkResponseHandler.swift */; };
+		D4000F332459E2300052C536 /* ExperiencePlatformNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F322459E2300052C536 /* ExperiencePlatformNetworkService.swift */; };
+		D4000F35245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F34245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift */; };
+		D4000F37245B7E200052C536 /* NetworkResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */; };
 		D42B86BE2449007500A4E13B /* HttpMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86BD2449007500A4E13B /* HttpMethod.swift */; };
 		D42B86C0244900A100A4E13B /* HttpConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86BF244900A100A4E13B /* HttpConnection.swift */; };
 		D42B86C2244900C700A4E13B /* NetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86C1244900C700A4E13B /* NetworkRequest.swift */; };
@@ -143,6 +147,10 @@
 		BF947FA1244587520057A6CC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestMetadataTests.swift; sourceTree = "<group>"; };
 		BF947FA5244619E80057A6CC /* RequestContextDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestContextDataTests.swift; sourceTree = "<group>"; };
+		D4000F302459E2080052C536 /* NetworkResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseHandler.swift; sourceTree = "<group>"; };
+		D4000F322459E2300052C536 /* ExperiencePlatformNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformNetworkService.swift; sourceTree = "<group>"; };
+		D4000F34245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformNetworkServiceTests.swift; sourceTree = "<group>"; };
+		D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseCallback.swift; sourceTree = "<group>"; };
 		D42B86BD2449007500A4E13B /* HttpMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpMethod.swift; sourceTree = "<group>"; };
 		D42B86BF244900A100A4E13B /* HttpConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpConnection.swift; sourceTree = "<group>"; };
 		D42B86C1244900C700A4E13B /* NetworkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkRequest.swift; sourceTree = "<group>"; };
@@ -318,6 +326,9 @@
 				BF947F8E2440F0940057A6CC /* StateMetadata.swift */,
 				BF947F85243F24570057A6CC /* StoreResponsePayload.swift */,
 				BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */,
+				D4000F302459E2080052C536 /* NetworkResponseHandler.swift */,
+				D4000F322459E2300052C536 /* ExperiencePlatformNetworkService.swift */,
+				D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */,
 			);
 			name = src;
 			path = ../../code/src;
@@ -338,6 +349,7 @@
 				BF947F902440F6660057A6CC /* StateMetadataTests.swift */,
 				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */,
+				D4000F34245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift */,
 			);
 			name = unitTests;
 			path = ../../code/unitTests;
@@ -722,14 +734,17 @@
 				BF947F72243BA0BB0057A6CC /* KonductorConfig.swift in Sources */,
 				BF947F84243F0D8A0057A6CC /* RequestContextData.swift in Sources */,
 				BF947F6824366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift in Sources */,
+				D4000F312459E2080052C536 /* NetworkResponseHandler.swift in Sources */,
 				BF947F86243F24570057A6CC /* StoreResponsePayload.swift in Sources */,
 				BF947F80243EF79D0057A6CC /* IdentityMap.swift in Sources */,
 				BF947F7A243BE3C00057A6CC /* RequestMetadata.swift in Sources */,
 				BF947F93244126D70057A6CC /* StoreResponsePayloadManager.swift in Sources */,
+				D4000F332459E2300052C536 /* ExperiencePlatformNetworkService.swift in Sources */,
 				BF947F8D244029040057A6CC /* OperationQueue.swift in Sources */,
 				BF947F7C243E75E70057A6CC /* RequestBuilder.swift in Sources */,
 				BF947F99244150530057A6CC /* KeyValueStore.swift in Sources */,
 				BF947F64243565CC0057A6CC /* ExperiencePlatformInternal.swift in Sources */,
+				D4000F37245B7E200052C536 /* NetworkResponseCallback.swift in Sources */,
 				D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */,
 				BF947F8F2440F0940057A6CC /* StateMetadata.swift in Sources */,
 				BF947F65243565CC0057A6CC /* ExperiencePlatformConstants.swift in Sources */,
@@ -763,6 +778,7 @@
 				BF947FA6244619E80057A6CC /* RequestContextDataTests.swift in Sources */,
 				D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */,
 				D4F74FEB2447A94900379258 /* MockTask.swift in Sources */,
+				D4000F35245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift in Sources */,
 				D4F74FE5244633B000379258 /* NetworkServiceTests.swift in Sources */,
 				D4F74FE72447A8B800379258 /* MockPerformerOverrider.swift in Sources */,
 			);
