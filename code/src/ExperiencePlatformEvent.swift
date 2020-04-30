@@ -16,31 +16,29 @@ public struct ExperiencePlatformEvent {
 
     private let LOG_TAG = "ExperiencePlatformEvent"
 
-    var xdm: [String: Any]?
-    var data: [String: Any]?
+    public let xdm: [String: Any]?
+    public let data: [String: Any]?
     
-    init(xdm: [String : Any]?, data: [String : Any]?) {
+    public init(xdm: [String : Any], data: [String : Any]? = nil) {
             self.xdm = xdm
             self.data = data
     }
 
-     init(xdm: XDMSchema?, data: [String : Any]?) {
-        if let unwrappedxdm = xdm {
-            let jsonXdm = unwrappedxdm.toJSONData()
+    public init(xdm: XDMSchema, data: [String : Any]?) {
+            let jsonXdm = xdm.toJSONData()
             if let unwrappedJsonXdm = jsonXdm {
-                self.xdm = try? JSONSerialization.jsonObject(with: unwrappedJsonXdm, options: []) as? [String: Any]
+                self.xdm = try? JSONSerialization.jsonObject(with: unwrappedJsonXdm, options: []) as? [String : Any]
+            } else {
+                self.xdm = nil
             }
-        }
             self.data = data
     }
 
    internal func asDictionary() -> [String : Any]? {
          var dataDict: [String : Any] = [:]
-         if let xdm = xdm {
-              dataDict["xdm"] = xdm
-         }
+         dataDict[ExperiencePlatformConstants.JsonKeys.xdm] = xdm
          if let data = data {
-             dataDict["data"] = data
+            dataDict[ExperiencePlatformConstants.JsonKeys.data] = data
         }
         return dataDict.isEmpty ? nil : dataDict
     }
