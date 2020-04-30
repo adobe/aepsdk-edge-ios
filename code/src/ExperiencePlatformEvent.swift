@@ -19,11 +19,19 @@ public struct ExperiencePlatformEvent {
     public let xdm: [String: Any]?
     public let data: [String: Any]?
     
+    /// Initialize an Experience Platform Event with the provided event data
+    /// - Parameters:
+    ///   - xdm:  Solution specific XDM event data for this event, passed as raw mapping of keys and Object values.
+    ///   - data: Any free form data in a [String : Any] dictionay structure
     public init(xdm: [String : Any], data: [String : Any]? = nil) {
             self.xdm = xdm
             self.data = data
     }
 
+    /// Initialize an Experience Platform Event with the provided event data
+    /// - Parameters:
+    ///   - xdm: Solution specific XDM event data paased as an XDMSchema
+    ///   - data:  Any free form data in a [String : Any] dictionay structure
     public init(xdm: XDMSchema, data: [String : Any]?) {
             let jsonXdm = xdm.toJSONData()
             if let unwrappedJsonXdm = jsonXdm {
