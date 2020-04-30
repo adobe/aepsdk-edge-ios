@@ -8,16 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		1CCD27C62458CB2300E912B2 /* ExperiencePlatformEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C52458CB2300E912B2 /* ExperiencePlatformEvent.swift */; };
-		1CCD27D024592B2800E912B2 /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */; };
-		1CCD27D124592B2800E912B2 /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */; };
-		1CCD27D224592B2800E912B2 /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */; };
-		1CCD27D324592B2800E912B2 /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */; };
 		1CCD27D424592B2800E912B2 /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */; };
-		1CCD27D524592B2800E912B2 /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */; };
-		1CCD27D624592B2800E912B2 /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */; };
-		1CCD27D724592B2800E912B2 /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */; };
 		1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */; };
-		1CCD27D92459EEBF00E912B2 /* ExperiencePlatformEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C82458CB8000E912B2 /* ExperiencePlatformEventTests.swift */; };
+		1CCD27DC245A240F00E912B2 /* ExperiencePlatformEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C82458CB8000E912B2 /* ExperiencePlatformEventTests.swift */; };
+		1CCD27DE245A254D00E912B2 /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */; };
 		2141891A2436663A00907D0A /* ACPNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214189182436663A00907D0A /* ACPNetworkService.swift */; };
 		490599ACF7DE3C0A0092BECC /* Pods_unitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED71717352BC28F3B63AF1C /* Pods_unitTests.framework */; };
 		68731D9E49F10F79248BE550 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CC57F9F0692D56FA85489EF /* Pods_AEPCommerceDemoApp.framework */; };
@@ -773,8 +767,8 @@
 				D42B86C82449016300A4E13B /* NetworkServiceOverrider.swift in Sources */,
 				D42B86C0244900A100A4E13B /* HttpConnection.swift in Sources */,
 				D42B86C2244900C700A4E13B /* NetworkRequest.swift in Sources */,
+				1CCD27DE245A254D00E912B2 /* XDMFormatters.swift in Sources */,
 				1CCD27C62458CB2300E912B2 /* ExperiencePlatformEvent.swift in Sources */,
-				1CCD27D024592B2800E912B2 /* XDMFormatters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -785,7 +779,6 @@
 				BF947F912440F6660057A6CC /* StateMetadataTests.swift in Sources */,
 				BF947F9D244181FF0057A6CC /* MockKeyValueStore.swift in Sources */,
 				BF947FA0244569190057A6CC /* EdgeRequestTests.swift in Sources */,
-				1CCD27D524592B2800E912B2 /* XDMProtocols.swift in Sources */,
 				1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */,
 				BF947F82243F05BF0057A6CC /* IdentityMapTests.swift in Sources */,
 				BF947FA2244587520057A6CC /* TestUtils.swift in Sources */,
@@ -798,8 +791,7 @@
 				D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */,
 				D4F74FEB2447A94900379258 /* MockTask.swift in Sources */,
 				D4F74FE5244633B000379258 /* NetworkServiceTests.swift in Sources */,
-				1CCD27D124592B2800E912B2 /* XDMFormatters.swift in Sources */,
-				1CCD27D92459EEBF00E912B2 /* ExperiencePlatformEventTests.swift in Sources */,
+				1CCD27DC245A240F00E912B2 /* ExperiencePlatformEventTests.swift in Sources */,
 				D4F74FE72447A8B800379258 /* MockPerformerOverrider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -818,8 +810,6 @@
 			files = (
 				D4D5B57D2432977F00CAB6E4 /* AppDelegate.swift in Sources */,
 				D4D5B57F2432977F00CAB6E4 /* SceneDelegate.swift in Sources */,
-				1CCD27D624592B2800E912B2 /* XDMProtocols.swift in Sources */,
-				1CCD27D224592B2800E912B2 /* XDMFormatters.swift in Sources */,
 				D4D5B5812432977F00CAB6E4 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -830,8 +820,6 @@
 			files = (
 				D4D5B59D2433F9C300CAB6E4 /* ViewController.swift in Sources */,
 				D4D5B5992433F9C300CAB6E4 /* AppDelegate.swift in Sources */,
-				1CCD27D724592B2800E912B2 /* XDMProtocols.swift in Sources */,
-				1CCD27D324592B2800E912B2 /* XDMFormatters.swift in Sources */,
 				D4D5B59B2433F9C300CAB6E4 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

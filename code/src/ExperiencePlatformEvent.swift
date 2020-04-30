@@ -17,10 +17,20 @@ public struct ExperiencePlatformEvent {
 
     private let LOG_TAG = "ExperiencePlatformEvent"
 
-    public var xdm: [String: Any]?
-    public var data: [String: Any]?
+    var xdm: [String: Any]?
+    var data: [String: Any]?
+ 
     
-    init(xdm: XDMSchema?, data: [String : Any]?) {
+    init(xdm: [String : Any]?, data: [String : Any]?) {
+         if let unwrappedXdm = xdm {
+                self.xdm = unwrappedXdm
+        }
+        if let unwrappedData = data {
+            self.data = unwrappedData
+        }
+    }
+
+     init(xdm: XDMSchema?, data: [String : Any]?) {
         if let unwrappedXdm = xdm {
             let jsonData = unwrappedXdm.toJSONData()
             if let unwrappedjsonData = jsonData {
@@ -31,6 +41,7 @@ public struct ExperiencePlatformEvent {
             self.data = unwrappedData
         }
     }
+
 
     internal func asDictionary() -> [String : Any]? {
          var dataDict: [String : Any] = [:]
