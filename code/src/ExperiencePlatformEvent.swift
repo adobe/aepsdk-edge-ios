@@ -23,7 +23,7 @@ public struct ExperiencePlatformEvent {
     
     init(xdm: [String : Any]?, data: [String : Any]?) {
          if let unwrappedXdm = xdm {
-                self.xdm = unwrappedXdm
+            self.xdm = unwrappedXdm
         }
         if let unwrappedData = data {
             self.data = unwrappedData
