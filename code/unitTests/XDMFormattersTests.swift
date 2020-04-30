@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import XCTest
 @testable import ACPExperiencePlatform
 
@@ -31,7 +30,7 @@ class XDMFormattersTests: XCTestCase {
         }
     }
     
-    func test_dateToISO8601String_onValidTimestamp_returnsFormattedString() {
+    func testDateToISO8601String_onValidTimestamp_returnsFormattedString() {
         
         var dateComponents = DateComponents()
         dateComponents.year = 2019
@@ -53,13 +52,13 @@ class XDMFormattersTests: XCTestCase {
         XCTAssertEqual(NSMakeRange(0, 20), matches(regex: pattern, text: serializedDate))
     }
     
-    func test_dateToISO8601String_onNil_returnsNil() {
+    func testDateToISO8601String_onNil_returnsNil() {
 
         let cal:Date? = nil
         XCTAssertNil(XDMFormatters.dateToISO8601String (from:cal))
     }
 
-    func test_dateToFullDateString_onValidTimestamp_returnsFormattedString() {
+    func testDateToFullDateString_onValidTimestamp_returnsFormattedString() {
            
         var dateComponents = DateComponents()
         dateComponents.year = 2019
@@ -80,7 +79,7 @@ class XDMFormattersTests: XCTestCase {
         XCTAssertEqual(NSMakeRange(0, 10), matches(regex: pattern, text: serializedDate))
        }
 
-    func test_dateToFullDateString_onNil_returnsNil() {
+    func testDateToFullDateString_onNil_returnsNil() {
         
         let cal:Date? = nil
         XCTAssertNil(XDMFormatters.dateToFullDateString (from:cal))

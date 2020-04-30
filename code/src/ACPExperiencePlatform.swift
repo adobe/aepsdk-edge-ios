@@ -17,13 +17,11 @@ private let LOG_TAG = "ACPExperiencePlatform"
 public class ACPExperiencePlatform {
 
     @available(*, unavailable) private init() {}
-    
     static var responseCallbacksHandler: [String: ([String: Any]) -> Void] = [:]
 
     static func responseCallbacksHandlerClosure(eventId:String, completionHandler: @escaping ([String: Any]) -> Void) {
         responseCallbacksHandler[eventId] = completionHandler
     }
-    
 
     /// Registers the ACPExperiencePlatform extension with the Mobile SDK. This method should be called only once in your application class
     /// from the AppDelegate's application:didFinishLaunchingWithOptions method. This call should be before any calls into ACPCore
@@ -67,4 +65,3 @@ public class ACPExperiencePlatform {
         }
     }
 }
-

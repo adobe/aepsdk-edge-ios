@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 public struct ExperiencePlatformEvent {
@@ -19,31 +18,23 @@ public struct ExperiencePlatformEvent {
 
     var xdm: [String: Any]?
     var data: [String: Any]?
- 
     
     init(xdm: [String : Any]?, data: [String : Any]?) {
-         if let unwrappedXdm = xdm {
-            self.xdm = unwrappedXdm
-        }
-        if let unwrappedData = data {
-            self.data = unwrappedData
-        }
+            self.xdm = xdm
+            self.data = data
     }
 
      init(xdm: XDMSchema?, data: [String : Any]?) {
-        if let unwrappedXdm = xdm {
-            let jsonData = unwrappedXdm.toJSONData()
-            if let unwrappedjsonData = jsonData {
-                self.xdm = try? JSONSerialization.jsonObject(with: unwrappedjsonData, options: []) as? [String: Any]
+        if let unwrappedxdm = xdm {
+            let jsonXdm = unwrappedxdm.toJSONData()
+            if let unwrappedJsonXdm = jsonXdm {
+                self.xdm = try? JSONSerialization.jsonObject(with: unwrappedJsonXdm, options: []) as? [String: Any]
             }
         }
-        if let unwrappedData = data {
-            self.data = unwrappedData
-        }
+            self.data = data
     }
 
-
-    internal func asDictionary() -> [String : Any]? {
+   internal func asDictionary() -> [String : Any]? {
          var dataDict: [String : Any] = [:]
          if let xdm = xdm {
               dataDict["xdm"] = xdm
@@ -53,5 +44,4 @@ public struct ExperiencePlatformEvent {
         }
         return dataDict.isEmpty ? nil : dataDict
     }
-
 }

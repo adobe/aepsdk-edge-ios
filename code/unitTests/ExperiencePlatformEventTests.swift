@@ -10,10 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-
 import XCTest
 @testable import ACPExperiencePlatform
-
 
 class ExperiencePlatformEventTests: XCTestCase {
     
@@ -39,7 +37,7 @@ class ExperiencePlatformEventTests: XCTestCase {
     let generatedXdmSchema = MobileSDKSchema(schemaVersion: "1.4", schemaIdentifier: "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", datasetIdentifier: "5dd603781b95cc18a83d42ce")
     let expectedXdmSchema =  ["schemaVersion": "1.4", "schemaIdentifier": "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", "datasetIdentifier": "5dd603781b95cc18a83d42ce"]
 
-    func test_asDictionary_withNonNullXdmAndNonNullData_ExperiencePlatformEventData() {
+    func testAsDictionary_withNonNullXdmAndNonNullData_ExperiencePlatformEventData() {
         
         let expectedXdm = generateXdm()
         let expectedData = generateData()
@@ -54,7 +52,7 @@ class ExperiencePlatformEventTests: XCTestCase {
         }
     }
 
-    func test_asDictionary_withNonNullXdmAndNullData_ExperiencePlatformEventData() {
+    func testAsDictionary_withNonNullXdmAndNullData_ExperiencePlatformEventData() {
 
         let expectedXdm = generateXdm()
         
@@ -68,7 +66,7 @@ class ExperiencePlatformEventTests: XCTestCase {
         }
     }
         
-    func test_asDictionary_withNonNullXdmSchemsAndNonNullData_ExperiencePlatformEventData() {
+    func testAsDictionary_withNonNullXdmSchemsAndNonNullData_ExperiencePlatformEventData() {
         
         let expectedData = generateData()
         var expectedEventData: [String : Any] = [:]
@@ -80,7 +78,7 @@ class ExperiencePlatformEventTests: XCTestCase {
         }
       }
 
-   func test_asDictionary_withNonNullXdmSchemsAndNullData_ExperiencePlatformEventData() {
+   func testAsDictionary_withNonNullXdmSchemsAndNullData_ExperiencePlatformEventData() {
        
        var expectedEventData: [String : Any] = [:]
        expectedEventData["xdm"] = expectedXdmSchema
