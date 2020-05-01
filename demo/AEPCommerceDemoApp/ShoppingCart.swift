@@ -18,7 +18,7 @@
 import Foundation
 
 class ShoppingCart {
-    
+
     private(set) var items : [CartItem] = []
 }
 
@@ -28,21 +28,18 @@ extension ShoppingCart {
         items.removeAll()
     }
 
-    func printme() {
-        print(items)
-        print("Number of items in the Shopping Cart : \(items.count) " )
+    func listTheContentOfCart() {
         for item in items {
-            print(item.product, item.product.quantity, item.quantity, item.subTotal)
+            print(item)
         }
     }
 
     func add(product: Product) {
         
-        print("From Add method Product Name : " + product.name + " Price : \(product.price)" + "Qty : \(product.quantity)")
-        
+        print("Product added into Cart : \(product)")
         let item = items.filter { $0.product == product }
-        if item.first != nil {
-            item.first!.product.quantity += product.quantity
+        if let unwrappedItem = item.first {
+            unwrappedItem.product.quantity += product.quantity
             print("Item exists in the cart. So, Quantity has been increased ....")
         } else {
             items.append(CartItem(product: product))

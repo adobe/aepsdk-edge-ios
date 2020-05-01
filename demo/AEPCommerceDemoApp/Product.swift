@@ -17,16 +17,18 @@
 
 import Foundation
 
-struct Product: Codable, Equatable {
+struct Product: Codable, Equatable, CustomStringConvertible {
+    public var description: String {
+        return("Image : \(imageLarge): Sku: \(sku) : Name : \(name) : Unit Price :  \(price)")
+    }
+    
 
     var imageLarge: String
     var sku: String
     var name: String
     var price: Float
     var quantity : Int = 1
-    func subTotal() -> Float{
-        return price * Float(quantity)
-    }
+    var subtotal: Float { return price * Float(quantity) }
  }
 
 extension Product {

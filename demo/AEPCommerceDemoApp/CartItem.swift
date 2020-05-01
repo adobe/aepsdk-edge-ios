@@ -15,14 +15,27 @@
 //
 
 
+//import Foundation
+//
+//public class CartItem {
+//
+//    var product : Product
+//    var quantity : Int = 1
+//    var subtotal: Float { return product.price * Float(quantity) }
+//
+//    init(product: Product) {
+//        self.product = product
+//    }
+//}
+
 import Foundation
 
-public class CartItem {
+public class CartItem: CustomStringConvertible {
     
     var product : Product
-    var quantity : Int = 1
-
-    var subTotal : Float { get { return product.price * Float(quantity) } }
+    public var description: String {
+        return "(Product : \(product))"
+    }
     
     init(product: Product) {
         self.product = product

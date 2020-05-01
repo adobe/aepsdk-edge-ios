@@ -22,25 +22,25 @@ import UIKit
 
 class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
    
-    @IBOutlet var AppTitle: UILabel!    
-    @IBOutlet var ProductList: UITableView!
-    @IBOutlet var CartImage: UIImageView!
-    @IBOutlet var GriffonImage: UIImageView!
+    @IBOutlet var appTitle: UILabel!
+    @IBOutlet var productList: UITableView!
+    @IBOutlet var cartImage: UIImageView!
+    @IBOutlet var griffonImage: UIImageView!
     
     let productData = ProductDataLoader().productData
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        CartImage.layer.cornerRadius = CartImage.frame.size.width/3
-        CartImage.clipsToBounds = true
+        cartImage.layer.cornerRadius = cartImage.frame.size.width/3
+        cartImage.clipsToBounds = true
 
 
         let productData = ProductDataLoader().productData
         print(productData)
-        ProductList.reloadData()
-        ProductList.delegate = self
-        ProductList.dataSource = self
+        productList.reloadData()
+        productList.delegate = self
+        productList.dataSource = self
     }
     
     
@@ -67,13 +67,15 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destination = segue.destination as? ProductViewController {
-            destination.productData = productData[ProductList.indexPathForSelectedRow!.row]
+            if let unwrappedIndexPathForSelectedRow = productList.indexPathForSelectedRow {
+                destination.productData = productData[unwrappedIndexPathForSelectedRow.row]
+            }
         }
     }
     
     
     @IBAction func CartBtn(_ sender: UIButton) {
-        print("Cart Button Clicked....: \(ADBMobileShoppingCart.total)" )
+        print("Cart Button Clicked....: \(adbMobileShoppingCart.total)" )
         self.performSegue(withIdentifier: "showShoppingCartPage", sender: self)
     }
     

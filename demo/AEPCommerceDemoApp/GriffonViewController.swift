@@ -23,12 +23,12 @@ class GriffonViewController: UIViewController {
 
 
     
-    @IBOutlet var GriffonSessionURL: UITextField!
+    @IBOutlet var griffonSessionURL: UITextField!
     var isConnected: Bool = false
     
     @IBAction func GriffonConnectBtn(_ sender: UIButton) {
      if !isConnected {
-                if let url = URL(string: GriffonSessionURL.text ?? "") {
+                if let url = URL(string: griffonSessionURL.text ?? "") {
                      print("Griffon Session URL : \(url)")
                      ACPGriffon.startSession(url)
                      isConnected = true
@@ -46,12 +46,6 @@ class GriffonViewController: UIViewController {
                    } else {
                        print("Griffon Session is not active...")
                    }
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        print("Griffon Connection Page has been loaded..." )
     }
 }
 

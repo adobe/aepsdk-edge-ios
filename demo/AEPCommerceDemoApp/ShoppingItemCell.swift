@@ -19,19 +19,19 @@ import UIKit
 
 class ShoppingItemCell: UITableViewCell {
 
-    @IBOutlet var ProductImageView: UIImageView!
-    @IBOutlet var ProductNameLbl: UILabel!
-    @IBOutlet var ProductUnitPriceLbl: UILabel!
-    @IBOutlet var ProductQtyLbl: UILabel!
-    @IBOutlet var ProductPriceLbl: UILabel!
+    @IBOutlet var productImageView: UIImageView!
+    @IBOutlet var productNameLbl: UILabel!
+    @IBOutlet var productUnitPriceLbl: UILabel!
+    @IBOutlet var productQtyLbl: UILabel!
+    @IBOutlet var productPriceLbl: UILabel!
  
     func setProduct(product: Product) {
 
-        ProductImageView.image = UIImage(named:product.imageLarge)
-        ProductNameLbl.text = product.name
-        ProductUnitPriceLbl.text  = String(format: "%.2f", product.price)
-        ProductQtyLbl.text = String(Int(product.quantity))
-        ProductPriceLbl.text = String(format: "%.2f", product.subTotal())
+        productImageView.image = UIImage(named:product.imageLarge)
+        productNameLbl.text = product.name
+        productUnitPriceLbl.text  = String(format: "%.2f", product.price)
+        productQtyLbl.text = String(Int(product.quantity))
+        productPriceLbl.text = String(format: "%.2f", product.subtotal)
     }
 
 }

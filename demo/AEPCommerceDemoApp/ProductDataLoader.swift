@@ -23,24 +23,21 @@ public class ProductDataLoader {
     var productData = [ProductData]()
     
     init() {
-        load_products()
+        loadProducts()
     }
     
-    func sortby_product_name() {
-         self.productData = self.productData.sorted(by: { $0.name < $1.name })
-     }
-    
-    func load_products() {
+    func loadProducts() {
         
         if let jsonFileLocation = Bundle.main.url(forResource: "product_list_colors", withExtension: "json") {
-            do {
-                let data = try Data(contentsOf: jsonFileLocation)
+                let data = try? Data(contentsOf: jsonFileLocation)
                 let jsonDecoder = JSONDecoder()
-                let productDataFromJson = try jsonDecoder.decode([ProductData].self, from: data)
-                self.productData = productDataFromJson
-            } catch {
-                print("Unable to load the Product List Colors JSON due to \(error)")
-            }
+                var productDataFromJson:[ProductData]!
+                if let unwrappedData = data {
+                     productDataFromJson = try? jsonDecoder.decode([ProductData].self, from: unwrappedData)
+                }
+                if let unwrappedProductDataFromJson = productDataFromJson {
+                    self.productData = unwrappedProductDataFromJson
+                }
         }
     }
     

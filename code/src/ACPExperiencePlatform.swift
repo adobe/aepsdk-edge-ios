@@ -29,9 +29,9 @@ public class ACPExperiencePlatform {
         
         do {
             try ACPCore.registerExtension(ExperiencePlatformInternal.self)
-            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Extention Version has been successfully registered!")
+            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Experience Platform Extention has been successfully registered")
         } catch {
-            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"Extension Registration has failed!")
+            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"Experience Platform Extension Registration has failed!")
         }
     }
 

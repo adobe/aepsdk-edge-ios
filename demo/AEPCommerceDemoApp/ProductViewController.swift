@@ -18,20 +18,20 @@
 import UIKit
 
 
-var ADBMobileShoppingCart = ShoppingCart()
+var adbMobileShoppingCart = ShoppingCart()
 
 
 class ProductViewController: UIViewController {
 
-    @IBOutlet var ProductImage: UIImageView!
-    @IBOutlet var ProductSku: UILabel!
-    @IBOutlet var ProductName: UILabel!
-    @IBOutlet var ProductDetails: UILabel!
-    @IBOutlet var ProductCurrency: UILabel!
-    @IBOutlet var ProductPrice: UILabel!
-    @IBOutlet var ProductQty: UIPickerView!
+    @IBOutlet var productImage: UIImageView!
+    @IBOutlet var productSku: UILabel!
+    @IBOutlet var productName: UILabel!
+    @IBOutlet var productDetails: UILabel!
+    @IBOutlet var productCurrency: UILabel!
+    @IBOutlet var productPrice: UILabel!
+    @IBOutlet var productQty: UIPickerView!
     
-    // let ADBMobileShoppingCart = ShoppingCart()
+    // let adbMobileShoppingCart = ShoppingCart()
 
     var productData:ProductData?
     var qtyOrdered: Int = 1
@@ -40,17 +40,17 @@ class ProductViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         print("\((productData?.imageSmall)!)")
-        ProductImage.image = UIImage(named: "\((productData?.imageSmall)!)")
-        ProductImage.layer.cornerRadius = 30
-        ProductImage.clipsToBounds = true
-        ProductSku.text = productData?.sku
-        ProductName.text = productData?.name
-        ProductDetails.text = productData?.details
-        ProductCurrency.text = productData?.currency
-        ProductPrice.text = "\((productData?.price)!)"
-        ProductQty.dataSource = self
-        ProductQty.delegate = self
-        ProductQty.setValue(UIColor.white, forKey: "textColor")
+        productImage.image = UIImage(named: "\((productData?.imageSmall)!)")
+        productImage.layer.cornerRadius = 30
+        productImage.clipsToBounds = true
+        productSku.text = productData?.sku
+        productName.text = productData?.name
+        productDetails.text = productData?.details
+        productCurrency.text = productData?.currency
+        productPrice.text = "\((productData?.price)!)"
+        productQty.dataSource = self
+        productQty.delegate = self
+        productQty.setValue(UIColor.white, forKey: "textColor")
         
     }
     
@@ -59,10 +59,11 @@ class ProductViewController: UIViewController {
         
         print("Add To Cart Button has been clicked....")
         
-        let product = Product(imageLarge:productData!.imageLarge, sku:productData!.sku, name: productData!.name, price: productData!.price, quantity:qtyOrdered )
-        ADBMobileShoppingCart.add(product: product)
-        ADBMobileShoppingCart.printme()
-        
+        if let unwrappedproductData = productData {
+            let product = Product(imageLarge:unwrappedproductData.imageLarge, sku:unwrappedproductData.sku, name: unwrappedproductData.name, price: unwrappedproductData.price, quantity:qtyOrdered )
+            adbMobileShoppingCart.add(product: product)
+            adbMobileShoppingCart.listTheContentOfCart()
+        }
         // Todo : Send this Event to Platform
 
      }

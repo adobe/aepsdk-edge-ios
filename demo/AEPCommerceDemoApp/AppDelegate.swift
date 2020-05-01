@@ -20,22 +20,22 @@ import ACPExperiencePlatform
 import ACPCore
 import ACPGriffon
 
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         ACPCore.setLogLevel(ACPMobileLogLevel.debug)
         ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with ACPExperiencePlatform"))
-        
         // Griffon Session Configs
         ACPGriffon.registerExtension()
-
         // TODO: add commerce demo app code in here
-        
+        ACPExperiencePlatform.registerExtension()
+        ACPCore.configure(withAppId: "94f571f308d5/e3fc566f21d5/launch-a7a05abd3c78-development")
+        ACPCore.start {
+
+        };
+
     
         return true
     }

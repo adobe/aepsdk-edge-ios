@@ -23,7 +23,7 @@ class ExperiencePlatformExtensionRequestListener : ACPExtensionListener {
     
     override init() {
         super.init()
-        ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"ExperiencePlatformExtensionRequestListener successfully registered!")
+        ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"ExperiencePlatformExtensionRequestListener successfully registered.")
     }
     
     override func hear(_ event: ACPExtensionEvent) {
