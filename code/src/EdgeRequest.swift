@@ -1,27 +1,55 @@
 //
-// Copyright 2020 Adobe. All rights reserved.
-// This file is licensed to you under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy
-// of the License at http://www.apache.org/licenses/LICENSE-2.0
+// ADOBE CONFIDENTIAL
 //
-// Unless required by applicable law or agreed to in writing, software distributed under
-// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-// OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
+// Copyright 2020 Adobe
+// All Rights Reserved.
+//
+// NOTICE: All information contained herein is, and remains
+// the property of Adobe and its suppliers, if any. The intellectual
+// and technical concepts contained herein are proprietary to Adobe
+// and its suppliers and are protected by all applicable intellectual
+// property laws, including trade secret and copyright laws.
+// Dissemination of this information or reproduction of this material
+// is strictly forbidden unless prior written permission is obtained
+// from Adobe.
 //
 
 
 import Foundation
 
-/// A request for pushing events to the Adobe Data Platform.
-/// An `EdgeRequest` is the top-level request object sent to Konductor.
-struct EdgeRequest : Encodable {
+struct EdgeRequest {
     /// Metadata passed to solutions and even to Konductor itself with possiblity of overriding at event level
-    let meta: RequestMetadata?
+    var meta: RequestMetadata?
     
     /// XDM context data for the entire request
-    let xdm: RequestContextData?
+    var xdm: RequestContext?
     
-    /// List of Experience events
-    let events: [[String : AnyCodable]]?
+    /// List of Events
+    var events: [[AnyHashable : AnyCodable]]?
+    
+    // TODO handle Events list
+    
+    enum CodingKeys: String, CodingKey {
+        case meta = "meta"
+        case events = "events"
+        case xdm = "xdm"
+    }
+}
+
+extension EdgeRequest : Encodable {
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        if let unwrapped = meta { try container.encode(unwrapped, forKey: .meta)}
+        if let unwrapped = xdm { try container.encode(unwrapped, forKey: .xdm)}
+        if let unwrapped = events as? [[String:AnyCodable]] { try container.encode(unwrapped, forKey: .events)}
+    }
+}
+
+extension EdgeRequest : Decodable {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        meta = try? container.decode(RequestMetadata.self, forKey: .meta)
+        xdm = try? container.decode(RequestContext.self, forKey: .xdm)
+        events = try? container.decode([[String:AnyCodable]].self, forKey: .events)
+    }
 }

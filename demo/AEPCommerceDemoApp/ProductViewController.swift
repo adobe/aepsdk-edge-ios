@@ -62,6 +62,9 @@ class ProductViewController: UIViewController {
         let product = Product(imageLarge:productData!.imageLarge, sku:productData!.sku, name: productData!.name, price: productData!.price, quantity:qtyOrdered )
         ADBMobileShoppingCart.add(product: product)
         ADBMobileShoppingCart.printme()
+        
+        // Todo : Send this Event to Platform
+
      }
 }
 

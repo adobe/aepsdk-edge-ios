@@ -11,19 +11,15 @@
 //
 
 
-import Foundation
+import UIKit
 
-/// This enum is used for building `NetworkRequest` objects.
-@objc public enum HttpMethod: Int {
-    case get
-    case post
-    
-    func toString() -> String {
-        switch self {
-        case .get:
-            return "GET"
-        case .post:
-            return "POST"
-        }
+class ViewController: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view.
     }
+
+
 }
+

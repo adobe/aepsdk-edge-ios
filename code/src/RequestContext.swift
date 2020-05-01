@@ -17,28 +17,25 @@
 
 import Foundation
 
-struct RequestMetadata {
-    var konductorConfig: KonductorConfig?
-    var state: StateMetadata?
-    
+/// Property that holds the global XDM context data within an Edge Request object.
+struct RequestContext {
+    var identityMap: IdentityMap?
+
     enum CodingKeys: String, CodingKey {
-        case konductorConfig = "konductorConfig"
-        case state = "state"
+        case identityMap = "identityMap"
     }
 }
 
-extension RequestMetadata : Encodable {
+extension RequestContext : Encodable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        if let unwrapped = konductorConfig { try container.encode(unwrapped, forKey: .konductorConfig)}
-        if let unwrapped = state { try container.encode(unwrapped, forKey: .state)}
+        if let unwrapped = identityMap { try container.encode(unwrapped, forKey: .identityMap)}
     }
 }
 
-extension RequestMetadata : Decodable {
+extension RequestContext : Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        konductorConfig = try? container.decode(KonductorConfig.self, forKey: .konductorConfig)
-        state = try? container.decode(StateMetadata.self, forKey: .state)
+        identityMap = try? container.decode(IdentityMap.self, forKey: .identityMap)
     }
 }

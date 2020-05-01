@@ -1,24 +1,55 @@
 //
-// Copyright 2020 Adobe. All rights reserved.
-// This file is licensed to you under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy
-// of the License at http://www.apache.org/licenses/LICENSE-2.0
+// ADOBE CONFIDENTIAL
 //
-// Unless required by applicable law or agreed to in writing, software distributed under
-// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-// OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
+// Copyright 2020 Adobe
+// All Rights Reserved.
+//
+// NOTICE: All information contained herein is, and remains
+// the property of Adobe and its suppliers, if any. The intellectual
+// and technical concepts contained herein are proprietary to Adobe
+// and its suppliers and are protected by all applicable intellectual
+// property laws, including trade secret and copyright laws.
+// Dissemination of this information or reproduction of this material
+// is strictly forbidden unless prior written permission is obtained
+// from Adobe.
 //
 
 
 import Foundation
 
-/// Client side stored information.
-/// A property in the `RequestMetadata` object.
-struct StateMetadata : Encodable {
-    let entries: [StorePayload]?
+struct StateMetadata {
+    private var cookiesEnabled: Bool
+    private var entries: [StoreResponsePayload]
 
-    init(payload: [StorePayload]) {
-        entries = payload.isEmpty ? nil : payload
+    init(payload: [String : StoreResponsePayload]) {
+        cookiesEnabled = ExperiencePlatformConstants.Defaults.requestStateCookiesEnabled
+        entries = []
+        // convert map to list of StoreResponsePayload objects
+        for (_, payload) in payload {
+            entries.append(payload)
+        }
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case entries = "entries"
+        case cookiesEnabled = "cookiesEnabled"
+    }
+}
+
+extension StateMetadata : Encodable {
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(cookiesEnabled, forKey: .cookiesEnabled)
+        if !entries.isEmpty {
+            try container.encode(entries, forKey: .entries)
+        }
+    }
+}
+
+extension StateMetadata : Decodable {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        cookiesEnabled = (try? container.decode(Bool.self, forKey: .cookiesEnabled)) ?? ExperiencePlatformConstants.Defaults.requestStateCookiesEnabled
+        entries = (try? container.decode([StoreResponsePayload].self, forKey: .entries)) ?? []
     }
 }

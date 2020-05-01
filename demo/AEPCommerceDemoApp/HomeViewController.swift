@@ -59,6 +59,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
      }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        // Todo : Send this Event to Platform - and then performSegue
+
         performSegue(withIdentifier: "showProductDetailsPage", sender: self)
     }
 

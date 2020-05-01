@@ -1,21 +1,24 @@
 //
-// Copyright 2020 Adobe. All rights reserved.
-// This file is licensed to you under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy
-// of the License at http://www.apache.org/licenses/LICENSE-2.0
+// ADOBE CONFIDENTIAL
 //
-// Unless required by applicable law or agreed to in writing, software distributed under
-// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-// OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
+// Copyright 2020 Adobe
+// All Rights Reserved.
+//
+// NOTICE: All information contained herein is, and remains
+// the property of Adobe and its suppliers, if any. The intellectual
+// and technical concepts contained herein are proprietary to Adobe
+// and its suppliers and are protected by all applicable intellectual
+// property laws, including trade secret and copyright laws.
+// Dissemination of this information or reproduction of this material
+// is strictly forbidden unless prior written permission is obtained
+// from Adobe.
 //
 
 
 import Foundation
 
 struct ExperiencePlatformConstants {
-    private init() {}
-    
+
     static let eventTypeExperiencePlatform: String = "com.adobe.eventType.experiencePlatform"
     static let eventTypeAdobeHub: String = "com.adobe.eventType.hub"
 
@@ -27,60 +30,35 @@ struct ExperiencePlatformConstants {
     static let platformDataStorage: String = "PlatformExtensionDataStorage"
     
     struct Defaults {
-        private init() {}
-        
         static let networkRequestMaxRetries: Int = 5
         
         static let requestConfigRecordSeparator = "\u{0000}"
         static let requestConfigLineFeed = "\n"
-    }
-
-    struct EventDataKeys {
-        private init() {}
         
+        static let requestStateCookiesEnabled = false
+    }
+    
+    struct EventDataKeys {
         static let uniqueSequenceId: String = "uniquesequenceid"
+        static let send_all_events = "sendallevents"
     }
     
     struct DataStoreKeys {
-        private init() {}
-        
         static let storeName: String = "ACPExperiencePlatform"
         static let storePayloads: String = "storePayloads"
     }
     
     struct SharedState {
-        private init() {}
-        
         static let stateowner: String = "stateowner"
+        static let configuration: String = "com.adobe.module.configuration"
+        static let identity: String = "com.adobe.mobile.identity"
+        static let lifecycle: String = "com.adobe.mobile.lifecycle"
         
         struct Configuration {
-            private init() {}
-            
-            static let stateOwner = "com.adobe.module.configuration"
             static let experiencePlatformConfigId: String = "experiencePlatform.configId"
             static let experienceCloudOrgId: String = "experienceCloud.org"
         }
-        
-        struct Identity {
-            private init() {}
-            
-            static let stateOwner = "com.adobe.mobile.identity"
-            static let ecid = "mid"
-        }
-        
-        struct Lifecycle {
-            private init() {}
-            
-            static let stateOwner = "com.adobe.mobile.lifecycle"
-        }
     }
     
-    struct JsonKeys {
-        private init() {}
-        
-        static let xdm = "xdm"
-        static let ECID = "ECID"
-        static let timestamp = "timestamp"
-        static let eventId = "eventId"
-    }
+    
 }

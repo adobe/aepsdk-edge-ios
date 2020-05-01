@@ -1,48 +1,66 @@
 //
-// Copyright 2020 Adobe. All rights reserved.
-// This file is licensed to you under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy
-// of the License at http://www.apache.org/licenses/LICENSE-2.0
+// ADOBE CONFIDENTIAL
 //
-// Unless required by applicable law or agreed to in writing, software distributed under
-// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-// OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
+// Copyright 2020 Adobe
+// All Rights Reserved.
+//
+// NOTICE: All information contained herein is, and remains
+// the property of Adobe and its suppliers, if any. The intellectual
+// and technical concepts contained herein are proprietary to Adobe
+// and its suppliers and are protected by all applicable intellectual
+// property laws, including trade secret and copyright laws.
+// Dissemination of this information or reproduction of this material
+// is strictly forbidden unless prior written permission is obtained
+// from Adobe.
 //
 
 
 import Foundation
 
-/// Contains a `StorePayload` plus bookeeping expires information.
-/// Use this object when serializing to local storage.
-struct StoreResponsePayload : Codable {
-    
-    /// The store payload from the server response
-    let payload: StorePayload
-    
-    /// The `Date` at which this payload expires
+struct StoreResponsePayload {
+    let key: String
+    let value: String
+    let maxAgeSeconds: TimeInterval
     let expiryDate: Date
-    
-    /// Checks if the payload has exceeded its max age
     var isExpired: Bool {
         return Date() >= expiryDate
     }
     
     init(key: String, value: String, maxAgeSeconds: TimeInterval) {
-        payload = StorePayload(key: key, value: value, maxAge: maxAgeSeconds)
+        self.key = key
+        self.value = value
+        self.maxAgeSeconds = maxAgeSeconds
         expiryDate = Date(timeIntervalSinceNow: maxAgeSeconds)
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case key = "key"
+        case value = "value"
+        case maxAgeSeconds = "maxAge"
+        case expiryDate = "expiryDate"
     }
 }
 
-/// Store payload from the server response.
-/// Contains only the parameters sent over the network.
-struct StorePayload : Codable {
-    /// They payload key identifier
-    let key: String
-    
-    /// The payload value
-    let value: String
-    
-    /// The max age in seconds this payload should be stored
-    let maxAge: TimeInterval
+extension StoreResponsePayload : Encodable {
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(key, forKey: .key)
+        try container.encode(value, forKey: .value)
+        try container.encode(maxAgeSeconds, forKey: .maxAgeSeconds)
+        try container.encode(expiryDate, forKey: .expiryDate)
+    }
+}
+
+extension StoreResponsePayload : Decodable {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        key = (try? container.decode(String.self, forKey: .key)) ?? ""
+        value = (try? container.decode(String.self, forKey: .value)) ?? ""
+        maxAgeSeconds = (try? container.decode(TimeInterval.self, forKey: .maxAgeSeconds)) ?? 0
+        if let date = try? container.decode(Date.self, forKey: .expiryDate) {
+            expiryDate = date
+        } else {
+            expiryDate = Date(timeIntervalSinceNow: maxAgeSeconds)
+        }
+    }
 }

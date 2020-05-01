@@ -1,13 +1,17 @@
 //
-// Copyright 2020 Adobe. All rights reserved.
-// This file is licensed to you under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy
-// of the License at http://www.apache.org/licenses/LICENSE-2.0
+// ADOBE CONFIDENTIAL
 //
-// Unless required by applicable law or agreed to in writing, software distributed under
-// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-// OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
+// Copyright 2020 Adobe
+// All Rights Reserved.
+//
+// NOTICE: All information contained herein is, and remains
+// the property of Adobe and its suppliers, if any. The intellectual
+// and technical concepts contained herein are proprietary to Adobe
+// and its suppliers and are protected by all applicable intellectual
+// property laws, including trade secret and copyright laws.
+// Dissemination of this information or reproduction of this material
+// is strictly forbidden unless prior written permission is obtained
+// from Adobe.
 //
 
 
@@ -17,7 +21,7 @@ import ACPCore
 class StoreResponsePayloadManager {
     private let TAG: String = "StoreResponsePayloadManager"
     private let dataStore: KeyValueStore
-    private let storePayloadKeyName: String = ExperiencePlatformConstants.DataStoreKeys.storePayloads
+    private let keyName: String = ExperiencePlatformConstants.DataStoreKeys.storePayloads
     
     init(_ store: KeyValueStore) {
         dataStore = store
@@ -28,8 +32,8 @@ class StoreResponsePayloadManager {
     /// - Returns: a map of `StoreResponsePayload` objects keyed by `StoreResponsePayload.key`
     func getActiveStores() -> [String : StoreResponsePayload] {
         
-        guard let serializedPayloads = dataStore.getDictionary(key: storePayloadKeyName, fallback: nil) else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Unable to retrieve active payloads. No payloads were found in the data store.")
+        guard let serializedPayloads = dataStore.getDictionary(key: keyName, fallback: nil) else {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Cannot get active stores as returned payload is nil.")
             return [:]
         }
         
@@ -45,36 +49,24 @@ class StoreResponsePayloadManager {
         for (_, codedPayload) in serializedPayloads {
             
             guard let data = codedPayload.data(using: .utf8) else {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to convert store response payload string to data.")
+                ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to convert store response payload string to data.")
                 continue
             }
             
-            let storeResponse: StoreResponsePayload
+            let payload: StoreResponsePayload
             do {
-                storeResponse = try decoder.decode(StoreResponsePayload.self, from: data)
-                if storeResponse.isExpired {
-                    expiredList.append(storeResponse.payload.key)
+                payload = try decoder.decode(StoreResponsePayload.self, from: data)
+                if payload.isExpired {
+                    expiredList.append(payload.key)
                 } else {
-                    payloads[storeResponse.payload.key] = storeResponse
+                    payloads[payload.key] = payload
                 }
             } catch {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to decode store response payload with: \(error.localizedDescription)")
+                ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to decode store response payload with: \(error.localizedDescription)")
             }
         }
         
         deleteStoredResponses(keys: expiredList)
-        return payloads
-    }
-    
-    /// Reads all the active saved store payloads from the data store and returns them as a list.
-    /// Any store payload that has expired is not included and is evicted from the data store
-    /// - Returns: a list of `StorePayload` objects
-    func getActivePayloadList() -> [StorePayload] {
-        let storeResponses = getActiveStores()
-        var payloads: [StorePayload] = []
-        for (_, storeResponse) in storeResponses {
-            payloads.append(storeResponse.payload)
-        }
         return payloads
     }
     
@@ -85,7 +77,7 @@ class StoreResponsePayloadManager {
             return
         }
         
-        guard var serializedPayloads = dataStore.getDictionary(key: storePayloadKeyName, fallback: [:]) else {
+        guard var serializedPayloads = dataStore.getDictionary(key: keyName, fallback: [:]) else {
             return
         }
         
@@ -95,27 +87,27 @@ class StoreResponsePayloadManager {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         
-        for storeResponse in payloads {
+        for payload in payloads {
             // The Experience Edge server (Konductor) defines state values with 0 or -1 max age as to be deleted on the client.
-            if (storeResponse.payload.maxAge <= 0) {
-                expiredList.append(storeResponse.payload.key)
+            if (payload.maxAgeSeconds <= 0) {
+                expiredList.append(payload.key)
                 continue
             }
             
             do {
-                let payloadData = try encoder.encode(storeResponse)
+                let payloadData = try encoder.encode(payload)
                 guard let serializedPayload = String(data: payloadData, encoding: .utf8) else {
                     continue
                 }
                 
-                serializedPayloads[storeResponse.payload.key] = serializedPayload
+                serializedPayloads[payload.key] = serializedPayload
             } catch {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to encode store response payload: \(error.localizedDescription)")
                 continue
             }
         }
         
-        dataStore.setDictionary(key: storePayloadKeyName, value: serializedPayloads)
+        dataStore.setDictionary(key: keyName, value: serializedPayloads)
         deleteStoredResponses(keys: expiredList)
         
     }
@@ -123,8 +115,7 @@ class StoreResponsePayloadManager {
     /// Deletes a list of stores from the data store
     /// - Parameter keys: a list of `StoreResponsePayload.key`
     private func deleteStoredResponses(keys: [String]) {
-        guard var codedPayloads = dataStore.getDictionary(key: storePayloadKeyName, fallback: nil) else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Unable to delete expired payloads. No payloads were found in the data store.")
+        guard var codedPayloads = dataStore.getDictionary(key: keyName, fallback: nil) else {
             return
         }
         
@@ -132,6 +123,6 @@ class StoreResponsePayloadManager {
             codedPayloads.removeValue(forKey: key)
         }
         
-        dataStore.setDictionary(key: storePayloadKeyName, value: codedPayloads)
+        dataStore.setDictionary(key: keyName, value: codedPayloads)
     }
 }
