@@ -28,7 +28,26 @@ make update
 Open the workspace in Xcode by running the following command from the root directory of the repository:
 
 ~~~
-open build/xcode/ACPExperienceExtension.xcworkspace
+make open
+~~~
+
+#### Command line integration
+From command line you can build the project for a simulator by running the following command:
+
+~~~
+make build
+~~~
+
+To build the project for release, run the following command and find the lib under `bin/iOS/libACPExperiencePlatform.a`:
+
+~~~
+make build-all
+~~~
+
+You can also run the unit test suite from command line:
+
+~~~
+make test
 ~~~
 
 ### Contributing
