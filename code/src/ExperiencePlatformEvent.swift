@@ -31,8 +31,8 @@ public struct ExperiencePlatformEvent {
     /// Initialize an Experience Platform Event with the provided event data
     /// - Parameters:
     ///   - xdm: Solution specific XDM event data paased as an XDMSchema
-    ///   - data:  Any free form data in a [String : Any] dictionay structure
-    public init(xdm: XDMSchema, data: [String : Any]?) {
+    ///   - data: data
+    public init(xdm: XDMSchema, data: [String : Any]? = nil) {
             let jsonXdm = xdm.toJSONData()
             if let unwrappedJsonXdm = jsonXdm {
                 self.xdm = try? JSONSerialization.jsonObject(with: unwrappedJsonXdm, options: []) as? [String : Any]

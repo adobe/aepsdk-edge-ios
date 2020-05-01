@@ -50,16 +50,10 @@ public class ACPExperiencePlatform {
         var event : ACPExtensionEvent = ACPExtensionEvent()
         do {
             event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
-        } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch due to an unexpected error: \(error)." )
-        }
-        do {
             if let  responsecallback = responseCallback {
                 responseCallbacksHandlerClosure(eventId: event.eventUniqueIdentifier, completionHandler:responsecallback)
-            } else {
-                return
             }
-             try ACPCore.dispatchEvent(event)
+            try ACPCore.dispatchEvent(event)
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event due to an unexpected error: \(error).")
         }
