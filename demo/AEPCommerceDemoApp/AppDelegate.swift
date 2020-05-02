@@ -25,6 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ACPCore.setLogLevel(ACPMobileLogLevel.debug)
         ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with ACPExperiencePlatform v" + ACPExperiencePlatform.extensionVersion()))
         // TODO: add commerce demo app code in here
+        
         return true
     }
 

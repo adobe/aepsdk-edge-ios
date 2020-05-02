@@ -11,10 +11,6 @@
 //
 
 
-import Foundation
+class xdmlib {
 
-/// Property that holds the global XDM context data within an Edge Request object.
-/// Is contained within the `EdgeRequest` request property.
-struct RequestContextData : Encodable {
-    let acpIdentityMap: ACPIdentityMap?
 }
