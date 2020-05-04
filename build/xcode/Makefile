@@ -202,28 +202,6 @@ functional-test:
 		$(TEST_DERIVED_DATA) \
 		$(ENABLE_COVERAGE)
 
-coverage:
-	@echo "######################################################################"
-	@echo "### Unit Test Coverage iOS"
-	@echo "######################################################################"
-	rm -rf $(TEST_DERIVED_DATA_PATH)/coverage
-	mkdir $(TEST_DERIVED_DATA_PATH)/coverage
-
-	# capture coverage from object files
-	lcov --capture --directory \
-		$(TEST_DERIVED_DATA_PATH)/Build/Intermediates.noindex/$(EXTENSION_NAME).build/Debug-iphonesimulator/$(EXTENSION_NAME).build/ \
-		--output-file $(TEST_DERIVED_DATA_PATH)/coverage/test.info
-
-	# remove non-source results
-	lcov --remove $(TEST_DERIVED_DATA_PATH)/coverage/test.info '*/code/unitTests/*' '*/tools/*' '*/v1/*' '*/usr/include/*' \
-		'/Applications/Xcode.app/*' '*/bourbon-core-cpp/*' '*/bourbon-ios-unit-tests/util/*' \
-		-o $(TEST_DERIVED_DATA_PATH)/coverage/all.info
-
-	# generate html report from results
-	genhtml $(TEST_DERIVED_DATA_PATH)/coverage/all.info \
-		--output-directory $(TEST_DERIVED_DATA_PATH)/reports/coverage
-
-
 clean:
 	@echo "######################################################################"
 	@echo "### Cleaning..."
