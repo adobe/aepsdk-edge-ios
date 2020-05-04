@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-04-24 12:43:41.183272 -0700 PDT m=+2.101635036 by XDMTool
+ XDM Property Swift Object Generated 2020-05-04 09:37:54.460327 -0700 PDT m=+1.684245867 by XDMTool
 
  Title			:	
  Description	:	Product list is saved for future use, for example a product wish list.

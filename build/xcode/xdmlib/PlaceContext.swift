@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-04-24 12:43:41.181129 -0700 PDT m=+2.099492529 by XDMTool
+ XDM Property Swift Object Generated 2020-05-04 09:37:54.459153 -0700 PDT m=+1.683072629 by XDMTool
 
  Title			:	Place context
  Description	:	The transient circumstances related to the observation. Examples include locale specific information such as weather, local time, traffic, day of the week, workday vs. holiday, and working hours.
@@ -18,17 +18,16 @@
 */
 
 import Foundation
-import ACPExperiencePlatform
 
 struct PlaceContext {
 	public var geo: Geo?
-	public var localTimezoneOffset: Int64?
 	public var localTime: Date?
+	public var localTimezoneOffset: Int64?
 
 	enum CodingKeys: String, CodingKey {
 		case geo = "geo"
-		case localTimezoneOffset = "localTimezoneOffset"
 		case localTime = "localTime"
+		case localTimezoneOffset = "localTimezoneOffset"
 	}	
 }
 
@@ -36,7 +35,7 @@ extension PlaceContext:Encodable {
 	func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = geo { try container.encode(unwrapped, forKey: .geo) }
-		if let unwrapped = localTimezoneOffset { try container.encode(unwrapped, forKey: .localTimezoneOffset) }
 		if let unwrapped = XDMFormatters.dateToISO8601String(from: localTime) { try container.encode(unwrapped, forKey: .localTime) }
+		if let unwrapped = localTimezoneOffset { try container.encode(unwrapped, forKey: .localTimezoneOffset) }
 	}
 }

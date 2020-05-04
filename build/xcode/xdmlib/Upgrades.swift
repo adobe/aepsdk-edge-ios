@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-04-24 12:43:41.180949 -0700 PDT m=+2.099312583 by XDMTool
+ XDM Property Swift Object Generated 2020-05-04 09:37:54.460189 -0700 PDT m=+1.684108114 by XDMTool
 
  Title			:	
  Description	:	Upgrade of an application that has previously been installed. Triggered on first launch after upgrade.

@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Schema Swift Object Generated 2020-04-24 12:43:41.178808 -0700 PDT m=+2.097171766 by XDMTool
+ XDM Schema Swift Object Generated 2020-05-04 09:37:54.458155 -0700 PDT m=+1.682073884 by XDMTool
 
  Title			:	Mobile SDK Platform Event Schema
  Version		:	1.4
@@ -23,8 +23,6 @@
 */
 
 import Foundation
-import ACPExperiencePlatform
-
 
 struct MobileSDKPlatformEventSchema : XDMSchema {
 	public let schemaVersion = "1.4"
@@ -68,6 +66,6 @@ extension MobileSDKPlatformEventSchema {
 		if let unwrapped = identityMap { try container.encode(unwrapped, forKey: .identityMap) }
 		if let unwrapped = placeContext { try container.encode(unwrapped, forKey: .placeContext) }
 		if let unwrapped = productListItems { try container.encode(unwrapped, forKey: .productListItems) }
-        if let unwrapped = XDMFormatters.dateToISO8601String(from: timestamp) { try container.encode(unwrapped, forKey: .timestamp) }
+		if let unwrapped = XDMFormatters.dateToISO8601String(from: timestamp) { try container.encode(unwrapped, forKey: .timestamp) }
 	}
 }
