@@ -47,9 +47,8 @@ public class ACPExperiencePlatform {
             ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"Failed to dispatch the event because the event data is nil.")
             return
         }
-        var event : ACPExtensionEvent = ACPExtensionEvent()
         do {
-            event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
+            let event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
             if let  responsecallback = responseCallback {
                 responseCallbacksHandlerClosure(eventId: event.eventUniqueIdentifier, completionHandler:responsecallback)
             }
