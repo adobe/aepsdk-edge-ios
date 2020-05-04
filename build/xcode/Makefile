@@ -22,15 +22,7 @@ BUILDFLAGS_BITCODE = BITCODE_GENERATION_MODE=bitcode OTHER_CFLAGS='-fembed-bitco
 BUILDFLAGS = GCC_TREAT_WARNINGS_AS_ERRORS=YES GCC_GENERATE_DEBUGGING_SYMBOLS=NO STRIP_INSTALLED_PRODUCT=YES STRIP_STYLE=ALL GCC_PREPROCESSOR_DEFINITIONS='$GCC_PREPROCESSOR_DEFINITIONS NDEBUG=1 NS_BLOCK_ASSERTIONS=1 COMPILEFORAPP'
 DERIVED_DATA = -derivedDataPath
 DESTINATION = -destination
-
-CLANG_ENABLE_CODE_COVERAGE = sed -i '' 's/CLANG_ENABLE_CODE_COVERAGE = NO/CLANG_ENABLE_CODE_COVERAGE = YES/g' $(PROJECT_FILE)/project.pbxproj
-GENERATE_COVERAGE_FILES = sed -i '' 's/GCC_GENERATE_TEST_COVERAGE_FILES = NO/GCC_GENERATE_TEST_COVERAGE_FILES = YES/g' $(PROJECT_FILE)/project.pbxproj
-GENERATE_PROGRAM_FLOW = sed -i '' 's/GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO/GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES/g' $(PROJECT_FILE)/project.pbxproj
-DO_NOT_GENERATE_COVERAGE_FILES = sed -i '' 's/GCC_GENERATE_TEST_COVERAGE_FILES = YES/GCC_GENERATE_TEST_COVERAGE_FILES = NO/g' $(PROJECT_FILE)/project.pbxproj
-DO_NOT_GENERATE_PROGRAM_FLOW = sed -i '' 's/GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES/GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO/g' $(PROJECT_FILE)/project.pbxproj
-ENABLE_CODE_COVERAGE = $(GENERATE_COVERAGE_FILES) && $(GENERATE_PROGRAM_FLOW) && $(CLANG_ENABLE_CODE_COVERAGE)
-DISABLE_CODE_COVERAGE = $(DO_NOT_GENERATE_COVERAGE_FILES) && $(DO_NOT_GENERATE_PROGRAM_FLOW)
-
+ENABLE_COVERAGE = -enableCodeCoverage YES
 RELEASE = -configuration Release
 
 TEST_DERIVED_DATA = $(DERIVED_DATA) '$(TEST_DERIVED_DATA_PATH)'
@@ -191,30 +183,24 @@ unit-test:
 	@echo "######################################################################"
 	@echo "### Unit Testing iOS"
 	@echo "######################################################################"
-	$(ENABLE_CODE_COVERAGE)
 	$(XCODEBUILD) $(TEST) \
 		-workspace $(WORKSPACE_NAME) \
 		-scheme $(BUILD_SCHEME) \
 		$(TEST_DESTINATION) \
-		$(TEST_DERIVED_DATA)
+		$(TEST_DERIVED_DATA) \
+		$(ENABLE_COVERAGE)
 
 
 functional-test:
 	@echo "######################################################################"
 	@echo "### Functional Testing"
 	@echo "######################################################################"
-	$(ENABLE_CODE_COVERAGE)
 	$(XCODEBUILD) $(TEST) \
 		-workspace $(WORKSPACE_NAME) \
 		-scheme $(FUNCTIONAL_TEST_SCHEME) \
 		$(TEST_DESTINATION) \
-		$(TEST_DERIVED_DATA)
-
-disable-code-coverage:
-	@echo "######################################################################"
-	@echo "### Disabling code coverage"
-	@echo "######################################################################"
-	$(DISABLE_CODE_COVERAGE)
+		$(TEST_DERIVED_DATA) \
+		$(ENABLE_COVERAGE)
 
 coverage:
 	@echo "######################################################################"
