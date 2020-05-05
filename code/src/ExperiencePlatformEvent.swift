@@ -43,8 +43,7 @@ public struct ExperiencePlatformEvent {
     }
 
    internal func asDictionary() -> [String : Any]? {
-         var dataDict: [String : Any] = [:]
-         dataDict[ExperiencePlatformConstants.JsonKeys.xdm] = xdm
+    var dataDict: [String: Any] = [ExperiencePlatformConstants.JsonKeys.xdm: xdm as Any]
          if let data = data {
             dataDict[ExperiencePlatformConstants.JsonKeys.data] = data
         }

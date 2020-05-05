@@ -17,9 +17,9 @@ private let LOG_TAG = "ACPExperiencePlatform"
 public class ACPExperiencePlatform {
 
     @available(*, unavailable) private init() {}
-    static var responseCallbacksHandler: [String: ([String: Any]) -> Void] = [:]
+    private static var responseCallbacksHandler: [String: ([String: Any]) -> Void] = [:]
 
-    static func responseCallbacksHandlerClosure(eventId:String, completionHandler: @escaping ([String: Any]) -> Void) {
+    private static func responseCallbacksHandlerClosure(eventId:String, completionHandler: @escaping ([String: Any]) -> Void) {
         responseCallbacksHandler[eventId] = completionHandler
     }
 
