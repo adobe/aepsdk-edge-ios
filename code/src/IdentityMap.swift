@@ -20,7 +20,7 @@ enum AuthenticationState : String, Codable {
 
 /// Defines a map containing a set of end user identities, keyed on either namespace integration code or the namespace ID of the identity.
 /// Within each namespace, the identity is unique. The values of the map are an array, meaning that more than one identity of each namespace may be carried.
-struct ACPIdentityMap {
+struct IdentityMap {
     private var items: [String : [IdentityItem]] = [:]
     
     /// Adds an `IdentityItem` to this map. If an item is added which shares the same `namespace` and `id` as an item
@@ -56,14 +56,14 @@ struct ACPIdentityMap {
     }
 }
 
-extension ACPIdentityMap : Encodable {
+extension IdentityMap : Encodable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(items)
     }
 }
 
-extension ACPIdentityMap : Decodable {
+extension IdentityMap : Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let identityItems = try? container.decode([String : [IdentityItem]].self) {
