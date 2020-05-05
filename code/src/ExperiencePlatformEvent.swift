@@ -24,8 +24,8 @@ public struct ExperiencePlatformEvent {
     ///   - xdm:  Solution specific XDM event data for this event, passed as a raw XDM Schema data dictionary.
     ///   - data: Any free form data in a [String : Any] dictionary structure.
     public init(xdm: [String : Any], data: [String : Any]? = nil) {
-            self.xdm = xdm
-            self.data = data
+        self.xdm = xdm
+        self.data = data
     }
 
     /// Initialize an Experience Platform Event with the provided event data
@@ -33,20 +33,23 @@ public struct ExperiencePlatformEvent {
     ///   - xdm: Solution specific XDM event data pased as an XDMSchema
     ///   - data: Any free form data in a [String : Any] dictionary structure.
     public init(xdm: XDMSchema, data: [String : Any]? = nil) {
-            let jsonXdm = xdm.toJSONData()
-            if let unwrappedJsonXdm = jsonXdm {
-                self.xdm = try? JSONSerialization.jsonObject(with: unwrappedJsonXdm, options: []) as? [String : Any]
-            } else {
-                self.xdm = nil
-            }
-            self.data = data
+        let jsonXdm = xdm.toJSONData()
+        if let unwrappedJsonXdm = jsonXdm {
+            self.xdm = try? JSONSerialization.jsonObject(with: unwrappedJsonXdm, options: []) as? [String : Any]
+        } else {
+            self.xdm = nil
+        }
+        self.data = data
     }
 
-   internal func asDictionary() -> [String : Any]? {
-    var dataDict: [String: Any] = [ExperiencePlatformConstants.JsonKeys.xdm: xdm as Any]
-         if let data = data {
-            dataDict[ExperiencePlatformConstants.JsonKeys.data] = data
+    internal func asDictionary() -> [String : Any]? {
+        var dataDict: [String: Any] = [:]
+         if let unwrappedXdm = xdm {
+            dataDict = [ExperiencePlatformConstants.JsonKeys.xdm: unwrappedXdm as Any]
+        }
+        if let unwrappedData = data {
+            dataDict[ExperiencePlatformConstants.JsonKeys.data] = unwrappedData
         }
         return dataDict.isEmpty ? nil : dataDict
-    }
+}
 }
