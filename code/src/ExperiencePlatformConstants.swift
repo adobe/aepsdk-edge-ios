@@ -35,12 +35,6 @@ struct ExperiencePlatformConstants {
         static let requestConfigLineFeed = "\n"
     }
 
-    struct EventDataKeys {
-        private init() {}
-        
-        static let uniqueSequenceId: String = "uniquesequenceid"
-    }
-    
     struct DataStoreKeys {
         private init() {}
         
@@ -79,6 +73,7 @@ struct ExperiencePlatformConstants {
         private init() {}
         
         static let xdm = "xdm"
+        static let data = "data"
         static let ECID = "ECID"
         static let timestamp = "timestamp"
         static let eventId = "eventId"
