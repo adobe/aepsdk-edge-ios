@@ -59,9 +59,9 @@ class RequestBuilder {
         
         // set ECID if available
         if let ecid = experienceCloudId {
-            var acpIdentityMap = IdentityMap()
-            acpIdentityMap.addItem(namespace: ExperiencePlatformConstants.JsonKeys.ECID, id: ecid)
-            contextData = RequestContextData(identityMap:acpIdentityMap)
+            var identityMap = IdentityMap()
+            identityMap.addItem(namespace: ExperiencePlatformConstants.JsonKeys.ECID, id: ecid)
+            contextData = RequestContextData(identityMap: identityMap)
         }
         
         let request = EdgeRequest(meta: requestMetadata,

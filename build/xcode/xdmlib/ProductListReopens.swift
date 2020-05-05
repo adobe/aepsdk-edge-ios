@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.463347 -0700 PDT m=+1.687266145 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.091881 -0700 PDT m=+1.756363902 by XDMTool
 
  Title			:	
  Description	:	A product list that was no longer accessible (abandoned) has been re-activated by the user. Example via a re-marketing activity.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct ProductListReopens {
+
+public struct ProductListReopens {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct ProductListReopens {
 }
 
 extension ProductListReopens:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

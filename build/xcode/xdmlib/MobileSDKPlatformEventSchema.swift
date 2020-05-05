@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Schema Swift Object Generated 2020-05-04 09:37:54.458155 -0700 PDT m=+1.682073884 by XDMTool
+ XDM Schema Swift Object Generated 2020-05-06 03:42:23.088254 -0700 PDT m=+1.752737713 by XDMTool
 
  Title			:	Mobile SDK Platform Event Schema
  Version		:	1.4
@@ -23,11 +23,14 @@
 */
 
 import Foundation
+import ACPExperiencePlatform
 
-struct MobileSDKPlatformEventSchema : XDMSchema {
+public struct MobileSDKPlatformEventSchema : XDMSchema {
 	public let schemaVersion = "1.4"
 	public let schemaIdentifier = "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae"
 	public let datasetIdentifier = "5dd603781b95cc18a83d42ce"
+	
+	public init() {}
 
 	public var application: Application?
 	public var commerce: Commerce?
@@ -55,7 +58,7 @@ struct MobileSDKPlatformEventSchema : XDMSchema {
 }
 
 extension MobileSDKPlatformEventSchema {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = application { try container.encode(unwrapped, forKey: .application) }
 		if let unwrapped = commerce { try container.encode(unwrapped, forKey: .commerce) }

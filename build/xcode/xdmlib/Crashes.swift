@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.463112 -0700 PDT m=+1.687031211 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.093782 -0700 PDT m=+1.758265393 by XDMTool
 
  Title			:	
  Description	:	Triggered when the application does not exit gracefully. Event is sent on application launch after a crash.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct Crashes {
+
+public struct Crashes {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct Crashes {
 }
 
 extension Crashes:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

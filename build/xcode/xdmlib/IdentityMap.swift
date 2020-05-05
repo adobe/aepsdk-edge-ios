@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.46006 -0700 PDT m=+1.683979090 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.09408 -0700 PDT m=+1.758563570 by XDMTool
 
  Title			:	
  Description	:	
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct IdentityMap {
+
+public struct IdentityMap {
+	public init() {}
+
 	public var items: Items?
 
 	enum CodingKeys: String, CodingKey {
@@ -28,7 +31,7 @@ struct IdentityMap {
 }
 
 extension IdentityMap:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = items { try container.encode(unwrapped, forKey: .items) }
 	}

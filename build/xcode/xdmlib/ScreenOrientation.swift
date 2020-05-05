@@ -10,12 +10,12 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Swift Enum Generated 2020-05-04 09:37:54.458837 -0700 PDT m=+1.682756384 by XDMTool
+ XDM Swift Enum Generated 2020-05-06 03:42:23.089111 -0700 PDT m=+1.753594421 by XDMTool
 ----
 */
 import Foundation
 
-enum ScreenOrientation:String, Encodable {
+public enum ScreenOrientation:String, Encodable {
 	case portrait = "portrait" // Portrait
 	case landscape = "landscape" // Landscape
 	 

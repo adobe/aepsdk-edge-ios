@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.462051 -0700 PDT m=+1.685970580 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.091651 -0700 PDT m=+1.756134080 by XDMTool
 
  Title			:	
  Description	:	Addition of a product to the product list, for example a product is added to a shopping cart.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct ProductListAdds {
+
+public struct ProductListAdds {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct ProductListAdds {
 }
 
 extension ProductListAdds:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

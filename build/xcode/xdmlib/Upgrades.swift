@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.460189 -0700 PDT m=+1.684108114 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.090704 -0700 PDT m=+1.755186926 by XDMTool
 
  Title			:	
  Description	:	Upgrade of an application that has previously been installed. Triggered on first launch after upgrade.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct Upgrades {
+
+public struct Upgrades {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct Upgrades {
 }
 
 extension Upgrades:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

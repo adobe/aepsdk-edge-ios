@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.460327 -0700 PDT m=+1.684245867 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.090044 -0700 PDT m=+1.754527260 by XDMTool
 
  Title			:	
  Description	:	Product list is saved for future use, for example a product wish list.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct SaveForLaters {
+
+public struct SaveForLaters {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct SaveForLaters {
 }
 
 extension SaveForLaters:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

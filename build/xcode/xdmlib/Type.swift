@@ -10,12 +10,12 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Swift Enum Generated 2020-05-04 09:37:54.458783 -0700 PDT m=+1.682701908 by XDMTool
+ XDM Swift Enum Generated 2020-05-06 03:42:23.089405 -0700 PDT m=+1.753888561 by XDMTool
 ----
 */
 import Foundation
 
-enum Type:String, Encodable {
+public enum Type:String, Encodable {
 	case browser = "browser" // Browser
 	case application = "application" // Application
 	case iot = "iot" // Internet of things

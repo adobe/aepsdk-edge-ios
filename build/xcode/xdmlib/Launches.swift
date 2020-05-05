@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.461612 -0700 PDT m=+1.685530979 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.094446 -0700 PDT m=+1.758929751 by XDMTool
 
  Title			:	
  Description	:	Launch of an application. Triggered on every run, including crashes and installs. Also triggered on a resume from background when the session timeout has been exceeded.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct Launches {
+
+public struct Launches {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct Launches {
 }
 
 extension Launches:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

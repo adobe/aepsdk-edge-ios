@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.461671 -0700 PDT m=+1.685590198 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.092811 -0700 PDT m=+1.757293946 by XDMTool
 
  Title			:	Commerce
  Description	:	Commerce specific data related to this event.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct Commerce {
+
+public struct Commerce {
+	public init() {}
+
 	public var cartAbandons: CartAbandons?
 	public var checkouts: Checkouts?
 	public var inStorePurchase: InStorePurchase?
@@ -50,7 +53,7 @@ struct Commerce {
 }
 
 extension Commerce:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = cartAbandons { try container.encode(unwrapped, forKey: .cartAbandons) }
 		if let unwrapped = checkouts { try container.encode(unwrapped, forKey: .checkouts) }

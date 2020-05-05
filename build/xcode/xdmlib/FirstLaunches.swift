@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.45887 -0700 PDT m=+1.682788856 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.090624 -0700 PDT m=+1.755107814 by XDMTool
 
  Title			:	
  Description	:	Triggered on first launch after install.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct FirstLaunches {
+
+public struct FirstLaunches {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct FirstLaunches {
 }
 
 extension FirstLaunches:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

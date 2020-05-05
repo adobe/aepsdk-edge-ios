@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.458936 -0700 PDT m=+1.682855595 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.090146 -0700 PDT m=+1.754629382 by XDMTool
 
  Title			:	Order
  Description	:	The placed order for one or more products.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct Order {
+
+public struct Order {
+	public init() {}
+
 	public var currencyCode: String?
 	public var payments: Array<PaymentsItem?>?
 	public var priceTotal: Float?
@@ -36,7 +39,7 @@ struct Order {
 }
 
 extension Order:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = currencyCode { try container.encode(unwrapped, forKey: .currencyCode) }
 		if let unwrapped = payments { try container.encode(unwrapped, forKey: .payments) }

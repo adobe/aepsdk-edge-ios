@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.46051 -0700 PDT m=+1.684428767 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.093666 -0700 PDT m=+1.758148908 by XDMTool
 
  Title			:	
  Description	:	
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct Items {
+
+public struct Items {
+	public init() {}
+
 	public var authenticatedState: AuthenticatedState?
 	public var id: String?
 	public var primary: Bool?
@@ -32,7 +35,7 @@ struct Items {
 }
 
 extension Items:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = authenticatedState { try container.encode(unwrapped, forKey: .authenticatedState) }
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }

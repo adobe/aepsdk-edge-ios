@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.462581 -0700 PDT m=+1.686499947 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.094135 -0700 PDT m=+1.758617830 by XDMTool
 
  Title			:	Geo
  Description	:	The geographic location where the experience was delivered.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct Geo {
+
+public struct Geo {
+	public init() {}
+
 	public var city: String?
 	public var countryCode: String?
 	public var description_: String?
@@ -46,7 +49,7 @@ struct Geo {
 }
 
 extension Geo:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = city { try container.encode(unwrapped, forKey: .city) }
 		if let unwrapped = countryCode { try container.encode(unwrapped, forKey: .countryCode) }

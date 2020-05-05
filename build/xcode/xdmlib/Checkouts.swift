@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.463166 -0700 PDT m=+1.687085589 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.094515 -0700 PDT m=+1.758998071 by XDMTool
 
  Title			:	
  Description	:	An action during a checkout process of a product list, there can be more than one checkout event if there are multiple steps in a checkout process. If there are multiple steps the event time information and referenced page or experience is used to identify the step individual events represent in order.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct Checkouts {
+
+public struct Checkouts {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct Checkouts {
 }
 
 extension Checkouts:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

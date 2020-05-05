@@ -10,12 +10,12 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Swift Enum Generated 2020-05-04 09:37:54.458707 -0700 PDT m=+1.682626554 by XDMTool
+ XDM Swift Enum Generated 2020-05-06 03:42:23.089201 -0700 PDT m=+1.753683984 by XDMTool
 ----
 */
 import Foundation
 
-enum ConnectionType:String, Encodable {
+public enum ConnectionType:String, Encodable {
 	case dialup = "dialup" // Dial-up
 	case isdn = "isdn" // ISDN
 	case bisdn = "bisdn" // BISDN

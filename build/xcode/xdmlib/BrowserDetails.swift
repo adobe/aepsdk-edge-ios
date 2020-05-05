@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.460938 -0700 PDT m=+1.684857119 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.090783 -0700 PDT m=+1.755266158 by XDMTool
 
  Title			:	Browser details
  Description	:	The browser specific details such as browser name, version, javascript version, user agent string, and accept language.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct BrowserDetails {
+
+public struct BrowserDetails {
+	public init() {}
+
 	public var acceptLanguage: String?
 	public var cookiesEnabled: Bool?
 	public var javaEnabled: Bool?
@@ -54,7 +57,7 @@ struct BrowserDetails {
 }
 
 extension BrowserDetails:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = acceptLanguage { try container.encode(unwrapped, forKey: .acceptLanguage) }
 		if let unwrapped = cookiesEnabled { try container.encode(unwrapped, forKey: .cookiesEnabled) }

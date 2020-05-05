@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.45957 -0700 PDT m=+1.683489604 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.094895 -0700 PDT m=+1.759378397 by XDMTool
 
  Title			:	
  Description	:	A product list has been identified as no longer accessible or purchasable by the user.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct CartAbandons {
+
+public struct CartAbandons {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct CartAbandons {
 }
 
 extension CartAbandons:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

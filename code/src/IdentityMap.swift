@@ -50,7 +50,7 @@ struct IdentityMap {
     
     /// Get the array of `IdentityItem` for the given namespace.
     /// - Parameter namespace: the namespace of items to retrieve
-    /// - Returns: An array of `IdentityItem` for the given `namespace` or nil if this `ACPIdentityMap` does not contain the `namespace`.
+    /// - Returns: An array of `IdentityItem` for the given `namespace` or nil if this `IdentityMap` does not contain the `namespace`.
     func getItemsFor(namespace: String) -> [IdentityItem]? {
         return items[namespace]
     }

@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.460442 -0700 PDT m=+1.684361404 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.090424 -0700 PDT m=+1.754907064 by XDMTool
 
  Title			:	
  Description	:	Removal or removals of a product entry from a product list, for example a product is removed from a shopping cart.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct ProductListRemovals {
+
+public struct ProductListRemovals {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct ProductListRemovals {
 }
 
 extension ProductListRemovals:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

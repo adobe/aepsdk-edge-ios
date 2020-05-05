@@ -10,12 +10,12 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Swift Enum Generated 2020-05-04 09:37:54.458816 -0700 PDT m=+1.682734999 by XDMTool
+ XDM Swift Enum Generated 2020-05-06 03:42:23.089653 -0700 PDT m=+1.754136362 by XDMTool
 ----
 */
 import Foundation
 
-enum AuthenticatedState:String, Encodable {
+public enum AuthenticatedState:String, Encodable {
 	case ambiguous = "ambiguous" // Ambiguous
 	case authenticated = "authenticated" // User identified by a login or similar action that was valid at the time of the event observation.
 	case loggedOut = "loggedOut" // User was identified by a login action at some point of time previously, but is not currently logged in.

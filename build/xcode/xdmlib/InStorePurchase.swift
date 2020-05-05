@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.460384 -0700 PDT m=+1.684303168 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.091799 -0700 PDT m=+1.756282556 by XDMTool
 
  Title			:	
  Description	:	'inStore' purchase is saved for analytics use.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct InStorePurchase {
+
+public struct InStorePurchase {
+	public init() {}
+
 	public var id: String?
 	public var value: Float?
 
@@ -30,7 +33,7 @@ struct InStorePurchase {
 }
 
 extension InStorePurchase:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
 		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }

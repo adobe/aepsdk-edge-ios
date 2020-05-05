@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.461332 -0700 PDT m=+1.685250711 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.092468 -0700 PDT m=+1.756951121 by XDMTool
 
  Title			:	Application
  Description	:	This mixin is used to capture application information related to an ExperienceEvent, including the name of the application, app version, installs, launches, crashes, and closures. It could be either the application targeted by the event like the send of a push notification or the application originating the event such as a click, or a login.
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct Application {
+
+public struct Application {
+	public init() {}
+
 	public var applicationCloses: ApplicationCloses?
 	public var crashes: Crashes?
 	public var featureUsages: FeatureUsages?
@@ -46,7 +49,7 @@ struct Application {
 }
 
 extension Application:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = applicationCloses { try container.encode(unwrapped, forKey: .applicationCloses) }
 		if let unwrapped = crashes { try container.encode(unwrapped, forKey: .crashes) }

@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-04 09:37:54.462852 -0700 PDT m=+1.686771038 by XDMTool
+ XDM Property Swift Object Generated 2020-05-06 03:42:23.09459 -0700 PDT m=+1.759073242 by XDMTool
 
  Title			:	
  Description	:	
@@ -19,7 +19,10 @@
 
 import Foundation
 
-struct ProductListItemsItem {
+
+public struct ProductListItemsItem {
+	public init() {}
+
 	public var currencyCode: String?
 	public var name: String?
 	public var priceTotal: Float?
@@ -40,7 +43,7 @@ struct ProductListItemsItem {
 }
 
 extension ProductListItemsItem:Encodable {
-	func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = currencyCode { try container.encode(unwrapped, forKey: .currencyCode) }
 		if let unwrapped = name { try container.encode(unwrapped, forKey: .name) }
