@@ -19,7 +19,8 @@ class ExperiencePlatformInternalFunctionalTests: XCTestCase {
 
     override func setUp() {
         continueAfterFailure = false // fail so nil checks stop execution
-
+        FunctionalTestUtils.resetUserDefaults()
+        
         do {
             try ACPCore.registerExtension(TestableExperiencePlatformInternal.self)
             ACPCore.start(nil)

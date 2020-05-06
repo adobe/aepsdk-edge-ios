@@ -10,28 +10,19 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "YES">
+      <CodeCoverageTargets>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D4D5B4E6242EBB1600CAB6E4"
+            BuildableName = "libACPExperiencePlatform.a"
+            BlueprintName = "ACPExperiencePlatform"
+            ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
+         </BuildableReference>
+      </CodeCoverageTargets>
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B5202432599B00CAB6E4"
-               BuildableName = "unitTests.xctest"
-               BlueprintName = "unitTests"
-               ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B53224325AB700CAB6E4"
-               BuildableName = "functionalTests.xctest"
-               BlueprintName = "functionalTests"
-               ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference

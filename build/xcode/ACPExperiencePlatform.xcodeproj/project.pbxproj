@@ -13,7 +13,12 @@
 		6ABE2134790901CF0445BACE /* Pods_functionalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B803FF967131F9FA944775CD /* Pods_functionalTests.framework */; };
 		73899DE74DC413D4346293B0 /* Pods_AEPDemoAppSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00E26DCA0284CBFDA951A1E0 /* Pods_AEPDemoAppSwiftUI.framework */; };
 		97ED2776F18792FA4263423E /* Pods_ACPExperiencePlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B6956263FCE1C13E3298E6 /* Pods_ACPExperiencePlatform.framework */; };
-		BF0C092424608EEC00892B5D /* ExperiencePlatformInternalFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C092324608EEC00892B5D /* ExperiencePlatformInternalFunctionalTests.swift */; };
+		BF0C092A2461209900892B5D /* ExperiencePlatformInternalFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C092324608EEC00892B5D /* ExperiencePlatformInternalFunctionalTests.swift */; };
+		BF0C092D2461209900892B5D /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
+		BF0C092E2461209900892B5D /* Pods_functionalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B803FF967131F9FA944775CD /* Pods_functionalTests.framework */; };
+		BF0C0935246120B200892B5D /* ExampleFunctionalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* ExampleFunctionalTest.swift */; };
+		BF0C093E246215B000892B5D /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */; };
+		BF0C09402462806100892B5D /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */; };
 		BF947F64243565CC0057A6CC /* ExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */; platformFilter = ios; };
 		BF947F65243565CC0057A6CC /* ExperiencePlatformConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */; platformFilter = ios; };
 		BF947F6824366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */; platformFilter = ios; };
@@ -50,7 +55,6 @@
 		D42B86C82449016300A4E13B /* NetworkServiceOverrider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86C72449016300A4E13B /* NetworkServiceOverrider.swift */; };
 		D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */; platformFilter = ios; };
 		D4D5B5262432599B00CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
-		D4D5B53624325AB700CAB6E4 /* ExampleFunctionalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* ExampleFunctionalTest.swift */; platformFilter = ios; };
 		D4D5B53824325AB700CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
 		D4D5B57D2432977F00CAB6E4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */; };
 		D4D5B57F2432977F00CAB6E4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B57E2432977F00CAB6E4 /* SceneDelegate.swift */; };
@@ -73,6 +77,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		BF0C09272461209900892B5D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4D5B4E6242EBB1600CAB6E4;
+			remoteInfo = ACPExperiencePlatform;
+		};
 		D4D5B5272432599B00CAB6E4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
@@ -117,6 +128,8 @@
 		B1B68A6EEAE7926E5EF3AF66 /* Pods-ACPExperiencePlatform.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ACPExperiencePlatform.debug.xcconfig"; path = "Target Support Files/Pods-ACPExperiencePlatform/Pods-ACPExperiencePlatform.debug.xcconfig"; sourceTree = "<group>"; };
 		B803FF967131F9FA944775CD /* Pods_functionalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_functionalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF0C092324608EEC00892B5D /* ExperiencePlatformInternalFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformInternalFunctionalTests.swift; sourceTree = "<group>"; };
+		BF0C09332461209900892B5D /* functionalTestsConfig.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsConfig.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestUtils.swift; sourceTree = "<group>"; };
 		BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformInternal.swift; sourceTree = "<group>"; };
 		BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformConstants.swift; sourceTree = "<group>"; };
 		BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformExtensionRequestListener.swift; sourceTree = "<group>"; };
@@ -183,6 +196,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		BF0C092C2461209900892B5D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF0C092D2461209900892B5D /* libACPExperiencePlatform.a in Frameworks */,
+				BF0C092E2461209900892B5D /* Pods_functionalTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D4D5B4E4242EBB1600CAB6E4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -242,6 +264,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		BF0C093B2462159400892B5D /* util */ = {
+			isa = PBXGroup;
+			children = (
+				BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */,
+			);
+			path = util;
+			sourceTree = "<group>";
+		};
 		BF947F89243F9C9E0057A6CC /* util */ = {
 			isa = PBXGroup;
 			children = (
@@ -297,6 +327,7 @@
 				D4D5B53324325AB700CAB6E4 /* functionalTests.xctest */,
 				D4D5B57A2432977F00CAB6E4 /* AEPDemoAppSwiftUI.app */,
 				D4D5B5962433F9C300CAB6E4 /* AEPCommerceDemoApp.app */,
+				BF0C09332461209900892B5D /* functionalTestsConfig.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -348,6 +379,7 @@
 		D4D5B4F2242EBFAE00CAB6E4 /* functionalTests */ = {
 			isa = PBXGroup;
 			children = (
+				BF0C093B2462159400892B5D /* util */,
 				D4D5B53524325AB700CAB6E4 /* ExampleFunctionalTest.swift */,
 				D4D5B53724325AB700CAB6E4 /* Info.plist */,
 				BF0C092324608EEC00892B5D /* ExperiencePlatformInternalFunctionalTests.swift */,
@@ -426,6 +458,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		BF0C09252461209900892B5D /* functionalTestsConfig */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BF0C09302461209900892B5D /* Build configuration list for PBXNativeTarget "functionalTestsConfig" */;
+			buildPhases = (
+				BF0C09282461209900892B5D /* [CP] Check Pods Manifest.lock */,
+				BF0C09292461209900892B5D /* Sources */,
+				BF0C092C2461209900892B5D /* Frameworks */,
+				BF0C092F2461209900892B5D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BF0C09262461209900892B5D /* PBXTargetDependency */,
+			);
+			name = functionalTestsConfig;
+			productName = functionalTests;
+			productReference = BF0C09332461209900892B5D /* functionalTestsConfig.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		D4D5B4E6242EBB1600CAB6E4 /* ACPExperiencePlatform */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D4D5B4EE242EBB1700CAB6E4 /* Build configuration list for PBXNativeTarget "ACPExperiencePlatform" */;
@@ -560,6 +611,7 @@
 				D4D5B4E6242EBB1600CAB6E4 /* ACPExperiencePlatform */,
 				D4D5B5202432599B00CAB6E4 /* unitTests */,
 				D4D5B53224325AB700CAB6E4 /* functionalTests */,
+				BF0C09252461209900892B5D /* functionalTestsConfig */,
 				D4D5B5792432977F00CAB6E4 /* AEPDemoAppSwiftUI */,
 				D4D5B5952433F9C300CAB6E4 /* AEPCommerceDemoApp */,
 			);
@@ -567,6 +619,13 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		BF0C092F2461209900892B5D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D4D5B51F2432599B00CAB6E4 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -670,6 +729,28 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		BF0C09282461209900892B5D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-functionalTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		E4DDD67DE8C92CAE60DBAEC0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -717,6 +798,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		BF0C09292461209900892B5D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF0C093E246215B000892B5D /* FunctionalTestUtils.swift in Sources */,
+				BF0C092A2461209900892B5D /* ExperiencePlatformInternalFunctionalTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D4D5B4E3242EBB1600CAB6E4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -775,8 +865,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF0C092424608EEC00892B5D /* ExperiencePlatformInternalFunctionalTests.swift in Sources */,
-				D4D5B53624325AB700CAB6E4 /* ExampleFunctionalTest.swift in Sources */,
+				BF0C09402462806100892B5D /* FunctionalTestUtils.swift in Sources */,
+				BF0C0935246120B200892B5D /* ExampleFunctionalTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -803,6 +893,12 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		BF0C09262461209900892B5D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = D4D5B4E6242EBB1600CAB6E4 /* ACPExperiencePlatform */;
+			targetProxy = BF0C09272461209900892B5D /* PBXContainerItemProxy */;
+		};
 		D4D5B5282432599B00CAB6E4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			platformFilter = ios;
@@ -845,6 +941,46 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		BF0C09312461209900892B5D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8984469654A17DC8F3762C7E /* Pods-functionalTests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FKGEE875K4;
+				INFOPLIST_FILE = ../../code/functionalTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.functionalTestsConfig;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BF0C09322461209900892B5D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D894FEBCBD947C4F5637F0A /* Pods-functionalTests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FKGEE875K4;
+				INFOPLIST_FILE = ../../code/functionalTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.functionalTestsConfig;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		D4D5B4EC242EBB1600CAB6E4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1167,6 +1303,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BF0C09302461209900892B5D /* Build configuration list for PBXNativeTarget "functionalTestsConfig" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BF0C09312461209900892B5D /* Debug */,
+				BF0C09322461209900892B5D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D4D5B4E2242EBB1600CAB6E4 /* Build configuration list for PBXProject "ACPExperiencePlatform" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
