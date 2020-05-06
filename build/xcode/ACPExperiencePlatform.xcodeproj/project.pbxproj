@@ -15,7 +15,6 @@
 		97ED2776F18792FA4263423E /* Pods_ACPExperiencePlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B6956263FCE1C13E3298E6 /* Pods_ACPExperiencePlatform.framework */; };
 		BF0C092A2461209900892B5D /* FunctionalTestsWithNoConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */; };
 		BF0C092D2461209900892B5D /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
-		BF0C092E2461209900892B5D /* Pods_functionalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B803FF967131F9FA944775CD /* Pods_functionalTests.framework */; };
 		BF0C0935246120B200892B5D /* ExampleFunctionalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* ExampleFunctionalTest.swift */; };
 		BF0C093E246215B000892B5D /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */; };
 		BF0C09402462806100892B5D /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */; };
@@ -47,6 +46,7 @@
 		BF947FA2244587520057A6CC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA1244587520057A6CC /* TestUtils.swift */; };
 		BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */; };
 		BF947FA6244619E80057A6CC /* RequestContextDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA5244619E80057A6CC /* RequestContextDataTests.swift */; };
+		C69B47458EDC95B85DA69EB1 /* Pods_functionalTestsConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C751A591165C4B689FA3840 /* Pods_functionalTestsConfig.framework */; };
 		D42B86BE2449007500A4E13B /* HttpMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86BD2449007500A4E13B /* HttpMethod.swift */; };
 		D42B86C0244900A100A4E13B /* HttpConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86BF244900A100A4E13B /* HttpConnection.swift */; };
 		D42B86C2244900C700A4E13B /* NetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86C1244900C700A4E13B /* NetworkRequest.swift */; };
@@ -117,6 +117,8 @@
 		214189182436663A00907D0A /* ACPNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACPNetworkService.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		235BE7EBF849E66B0516E7E4 /* Pods-AEPDemoAppSwiftUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPDemoAppSwiftUI.release.xcconfig"; path = "Target Support Files/Pods-AEPDemoAppSwiftUI/Pods-AEPDemoAppSwiftUI.release.xcconfig"; sourceTree = "<group>"; };
 		27B6956263FCE1C13E3298E6 /* Pods_ACPExperiencePlatform.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ACPExperiencePlatform.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		352081E8EFA865D80BCAE9DA /* Pods-functionalTestsConfig.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTestsConfig.release.xcconfig"; path = "Target Support Files/Pods-functionalTestsConfig/Pods-functionalTestsConfig.release.xcconfig"; sourceTree = "<group>"; };
+		3C751A591165C4B689FA3840 /* Pods_functionalTestsConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_functionalTestsConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D894FEBCBD947C4F5637F0A /* Pods-functionalTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTests.release.xcconfig"; path = "Target Support Files/Pods-functionalTests/Pods-functionalTests.release.xcconfig"; sourceTree = "<group>"; };
 		49DA694159189B926AAFAB36 /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 		5796E32AE7EDA931C4054723 /* Pods-AEPDemoAppSwiftUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPDemoAppSwiftUI.debug.xcconfig"; path = "Target Support Files/Pods-AEPDemoAppSwiftUI/Pods-AEPDemoAppSwiftUI.debug.xcconfig"; sourceTree = "<group>"; };
@@ -126,7 +128,6 @@
 		7ED71717352BC28F3B63AF1C /* Pods_unitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_unitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8984469654A17DC8F3762C7E /* Pods-functionalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTests.debug.xcconfig"; path = "Target Support Files/Pods-functionalTests/Pods-functionalTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B1B68A6EEAE7926E5EF3AF66 /* Pods-ACPExperiencePlatform.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ACPExperiencePlatform.debug.xcconfig"; path = "Target Support Files/Pods-ACPExperiencePlatform/Pods-ACPExperiencePlatform.debug.xcconfig"; sourceTree = "<group>"; };
-		B803FF967131F9FA944775CD /* Pods_functionalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_functionalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestsWithNoConfiguration.swift; sourceTree = "<group>"; };
 		BF0C09332461209900892B5D /* functionalTestsConfig.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsConfig.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestUtils.swift; sourceTree = "<group>"; };
@@ -193,6 +194,7 @@
 		D4F74FEA2447A94900379258 /* MockTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTask.swift; sourceTree = "<group>"; };
 		DA87FA64D7A21A05A1763614 /* Pods-ACPExperiencePlatform.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ACPExperiencePlatform.release.xcconfig"; path = "Target Support Files/Pods-ACPExperiencePlatform/Pods-ACPExperiencePlatform.release.xcconfig"; sourceTree = "<group>"; };
 		F6E525C86F6F502F40B862A5 /* Pods-unitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-unitTests.debug.xcconfig"; path = "Target Support Files/Pods-unitTests/Pods-unitTests.debug.xcconfig"; sourceTree = "<group>"; };
+		F87AFFD64257784FA23F1166 /* Pods-functionalTestsConfig.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTestsConfig.debug.xcconfig"; path = "Target Support Files/Pods-functionalTestsConfig/Pods-functionalTestsConfig.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,7 +203,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF0C092D2461209900892B5D /* libACPExperiencePlatform.a in Frameworks */,
-				BF0C092E2461209900892B5D /* Pods_functionalTests.framework in Frameworks */,
+				C69B47458EDC95B85DA69EB1 /* Pods_functionalTestsConfig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,8 +260,8 @@
 				27B6956263FCE1C13E3298E6 /* Pods_ACPExperiencePlatform.framework */,
 				6CC57F9F0692D56FA85489EF /* Pods_AEPCommerceDemoApp.framework */,
 				00E26DCA0284CBFDA951A1E0 /* Pods_AEPDemoAppSwiftUI.framework */,
-				B803FF967131F9FA944775CD /* Pods_functionalTests.framework */,
 				7ED71717352BC28F3B63AF1C /* Pods_unitTests.framework */,
+				3C751A591165C4B689FA3840 /* Pods_functionalTestsConfig.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -451,6 +453,8 @@
 				3D894FEBCBD947C4F5637F0A /* Pods-functionalTests.release.xcconfig */,
 				F6E525C86F6F502F40B862A5 /* Pods-unitTests.debug.xcconfig */,
 				647AF995E67E79DAD8B3B3B1 /* Pods-unitTests.release.xcconfig */,
+				F87AFFD64257784FA23F1166 /* Pods-functionalTestsConfig.debug.xcconfig */,
+				352081E8EFA865D80BCAE9DA /* Pods-functionalTestsConfig.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -744,7 +748,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-functionalTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-functionalTestsConfig-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -943,7 +947,7 @@
 /* Begin XCBuildConfiguration section */
 		BF0C09312461209900892B5D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8984469654A17DC8F3762C7E /* Pods-functionalTests.debug.xcconfig */;
+			baseConfigurationReference = F87AFFD64257784FA23F1166 /* Pods-functionalTestsConfig.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FKGEE875K4;
@@ -963,7 +967,7 @@
 		};
 		BF0C09322461209900892B5D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D894FEBCBD947C4F5637F0A /* Pods-functionalTests.release.xcconfig */;
+			baseConfigurationReference = 352081E8EFA865D80BCAE9DA /* Pods-functionalTestsConfig.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FKGEE875K4;
