@@ -27,8 +27,7 @@ class RequestBuilderTests: XCTestCase {
     
     func testGetPayload_allParameters_verifyMetadata() {
         let request = RequestBuilder()
-        request.recordSeparator = "A"
-        request.lineFeed = "B"
+        request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
         
@@ -59,8 +58,7 @@ class RequestBuilderTests: XCTestCase {
     
     func testGetPayload_withEventXdm_verifyEventId_verifyTimestamp() {
         let request = RequestBuilder()
-        request.recordSeparator = "A"
-        request.lineFeed = "B"
+        request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
         
         var events: [ACPExtensionEvent] = []
@@ -102,8 +100,7 @@ class RequestBuilderTests: XCTestCase {
         manager.saveStorePayloads([StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600)])
         
         let request = RequestBuilder(dataStore: dataStore)
-        request.recordSeparator = "A"
-        request.lineFeed = "B"
+        request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
         
@@ -133,8 +130,7 @@ class RequestBuilderTests: XCTestCase {
     
     func testGetPayload_withoutStorePayload_responseDoesNotContainsStateEntries() {
         let request = RequestBuilder(dataStore: MockKeyValueStore())
-        request.recordSeparator = "A"
-        request.lineFeed = "B"
+        request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
         

@@ -51,6 +51,8 @@
 		D42B86C4244900ED00A4E13B /* HttpConnectionPerformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86C3244900ED00A4E13B /* HttpConnectionPerformer.swift */; };
 		D42B86C62449013200A4E13B /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86C52449013200A4E13B /* NetworkService.swift */; };
 		D42B86C82449016300A4E13B /* NetworkServiceOverrider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86C72449016300A4E13B /* NetworkServiceOverrider.swift */; };
+		D42FB8D224610A0000E9321C /* ResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8D124610A0000E9321C /* ResponseCallback.swift */; };
+		D42FB8D424610F3C00E9321C /* ResponseCallbackHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */; };
 		D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */; platformFilter = ios; };
 		D4D5B5262432599B00CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
 		D4D5B53624325AB700CAB6E4 /* ExampleFunctionalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* ExampleFunctionalTest.swift */; platformFilter = ios; };
@@ -157,6 +159,8 @@
 		D42B86C3244900ED00A4E13B /* HttpConnectionPerformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpConnectionPerformer.swift; sourceTree = "<group>"; };
 		D42B86C52449013200A4E13B /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		D42B86C72449016300A4E13B /* NetworkServiceOverrider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceOverrider.swift; sourceTree = "<group>"; };
+		D42FB8D124610A0000E9321C /* ResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallback.swift; sourceTree = "<group>"; };
+		D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallbackHandler.swift; sourceTree = "<group>"; };
 		D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACPExperiencePlatform.swift; sourceTree = "<group>"; };
 		D4D5B5212432599B00CAB6E4 /* unitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = unitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -281,6 +285,19 @@
 			path = NetworkService;
 			sourceTree = "<group>";
 		};
+		D42FB8D02461086200E9321C /* network handlers */ = {
+			isa = PBXGroup;
+			children = (
+				D4000F322459E2300052C536 /* ExperiencePlatformNetworkService.swift */,
+				D42FB8D124610A0000E9321C /* ResponseCallback.swift */,
+				D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */,
+				D4000F302459E2080052C536 /* NetworkResponseHandler.swift */,
+				BF947F7B243E75E60057A6CC /* RequestBuilder.swift */,
+				D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */,
+			);
+			path = "network handlers";
+			sourceTree = "<group>";
+		};
 		D4D5B4DE242EBB1600CAB6E4 = {
 			isa = PBXGroup;
 			children = (
@@ -312,6 +329,7 @@
 			children = (
 				BF947F9A2441811E0057A6CC /* services */,
 				BF947F89243F9C9E0057A6CC /* util */,
+				D42FB8D02461086200E9321C /* network handlers */,
 				D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */,
 				BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */,
 				BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */,
@@ -320,15 +338,11 @@
 				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
 				BF947F7F243EF79D0057A6CC /* IdentityMap.swift */,
 				BF947F71243BA0BA0057A6CC /* KonductorConfig.swift */,
-				BF947F7B243E75E60057A6CC /* RequestBuilder.swift */,
 				BF947F83243F0D8A0057A6CC /* RequestContextData.swift */,
 				BF947F79243BE3C00057A6CC /* RequestMetadata.swift */,
 				BF947F8E2440F0940057A6CC /* StateMetadata.swift */,
 				BF947F85243F24570057A6CC /* StoreResponsePayload.swift */,
 				BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */,
-				D4000F302459E2080052C536 /* NetworkResponseHandler.swift */,
-				D4000F322459E2300052C536 /* ExperiencePlatformNetworkService.swift */,
-				D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */,
 			);
 			name = src;
 			path = ../../code/src;
@@ -739,6 +753,7 @@
 				BF947F80243EF79D0057A6CC /* IdentityMap.swift in Sources */,
 				BF947F7A243BE3C00057A6CC /* RequestMetadata.swift in Sources */,
 				BF947F93244126D70057A6CC /* StoreResponsePayloadManager.swift in Sources */,
+				D42FB8D224610A0000E9321C /* ResponseCallback.swift in Sources */,
 				D4000F332459E2300052C536 /* ExperiencePlatformNetworkService.swift in Sources */,
 				BF947F8D244029040057A6CC /* OperationQueue.swift in Sources */,
 				BF947F7C243E75E70057A6CC /* RequestBuilder.swift in Sources */,
@@ -757,6 +772,7 @@
 				2141891A2436663A00907D0A /* ACPNetworkService.swift in Sources */,
 				D42B86C82449016300A4E13B /* NetworkServiceOverrider.swift in Sources */,
 				D42B86C0244900A100A4E13B /* HttpConnection.swift in Sources */,
+				D42FB8D424610F3C00E9321C /* ResponseCallbackHandler.swift in Sources */,
 				D42B86C2244900C700A4E13B /* NetworkRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

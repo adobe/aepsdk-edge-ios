@@ -1,0 +1,262 @@
+//
+// Copyright 2020 Adobe. All rights reserved.
+// This file is licensed to you under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License. You may obtain a copy
+// of the License at http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed under
+// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+// OF ANY KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
+//
+
+
+import Foundation
+import ACPCore
+
+/// ExperienceEdge Request Types:
+///     - interact - makes request and expects a response
+///     - collect - makes request without expecting a response
+enum ExperienceEdgeRequestType: String {
+   case interact = "interact"
+   case collect = "collect"
+}
+
+/// Used to identify if a `NetworkRequest` should e retried or not
+enum RetryNetworkRequest: Int {
+   case yes = 1
+   case no = 0
+}
+
+/// Convenience enum for the known error codes
+enum HttpResponseCodes: Int {
+    case ok = 200
+    case noContent = 204
+    case clientTimeout = 408
+    case tooManyRequests = 429
+    case serviceUnavailable = 503
+    case gatewayTimeout = 504
+}
+
+/// Network service for requests to the Adobe Experience Edge
+class ExperiencePlatformNetworkService {
+    private let TAG:String = "ExperiencePlatformNetworkService"
+    private let defaultGenericErrorMessage = "Request to Data platform failed with an unknown exception"
+    private let defaultNamespace = "global"
+    private let recoverableNetworkErrorCodes:[Int] = [HttpResponseCodes.clientTimeout.rawValue,
+                                                      HttpResponseCodes.tooManyRequests.rawValue,
+                                                      HttpResponseCodes.serviceUnavailable.rawValue,
+                                                      HttpResponseCodes.gatewayTimeout.rawValue]
+    private let waitTimeout:TimeInterval = max(ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout, ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout) + 1
+    private var defaultHeaders = [ExperiencePlatformConstants.NetworkKeys.headerKeyAccept: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson,
+                        ExperiencePlatformConstants.NetworkKeys.headerKeyContentType: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson]
+    
+    
+    /// Builds the URL required for connections to ExEdge with the provided `RequestType`
+    /// - Parameters:
+    ///   - requestType: see `RequestType`
+    ///   - configId: blackbird configuration id
+    ///   - requestId: batch request identifier
+    /// - Returns: built URL or nil on error
+    func buildUrl(requestType: ExperienceEdgeRequestType, configId: String, requestId: String) -> URL? {
+        guard var url = URL(string: ExperiencePlatformConstants.NetworkKeys.edgeEndpoint) else { return nil }
+        url.appendPathComponent(requestType.rawValue)
+        
+        guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
+        urlComponents.queryItems = [URLQueryItem(name: ExperiencePlatformConstants.NetworkKeys.requestParamConfigId, value: configId),
+                                    URLQueryItem(name: ExperiencePlatformConstants.NetworkKeys.requestParamRequestId, value: requestId)]
+        
+        return urlComponents.url
+    }
+    
+    /// Make a network request to the Experience Edge and handle the connection.
+      /// - Parameters:
+      ///   - url: request URL
+      ///   - jsonBody: request body as JSON formatted Data, to be used for POST requests
+      ///   - requestHeaders: request HTTP headers
+      ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
+      ///   - retryTimes: number of retries required for this request in case the connection failed or a `recoverableNetworkErrorCodes` was encountered
+    func doRequest(url: URL, jsonBody: Data, requestHeaders: [String: String]? = [:], responseCallback: ResponseCallback, retryTimes: UInt = 0) {
+        // AMSDK-8909 check if this network request fails and needs a retry. The retry will happen right away, repeatedly (if needed) for
+        // maximum NETWORK_REQUEST_MAX_RETRIES times or until the request is accepted by the server.
+        // To be reconsidered when implementing AMSDK-8822 when we may not need the max retries limit anymore.
+        
+        var shouldRetry = self.doRequest(url: url, jsonBody: jsonBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
+        var retries = 0
+        while shouldRetry == RetryNetworkRequest.yes && retries < retryTimes {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "doRequest with retry - Error occurred for network request, retrying...")
+            shouldRetry = self.doRequest(url: url, jsonBody: jsonBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
+            retries += 1
+        }
+        
+        // force cleanup if the network request did not succeed
+        if (shouldRetry == RetryNetworkRequest.yes) {
+            responseCallback.onComplete();
+        }
+    }
+    
+    /// Make a network request to the Experience Edge and handle the connection.
+    /// - Parameters:
+    ///   - url: request URL
+    ///   - jsonBody: request body as JSON formatted Data, to be used for POST requests
+    ///   - requestHeaders: request HTTP headers
+    ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
+    /// - Returns: `RetryNetworkRequest` status, returns yes if the connection was not successful or a `recoverableNetworkErrorCodes` was encountered; the caller should retry this request if needed
+    func doRequest(url: URL, jsonBody: Data, requestHeaders: [String: String]? = [:], responseCallback: ResponseCallback) -> RetryNetworkRequest {
+        let decoder = JSONDecoder()
+        guard let edgeRequest = try? decoder.decode(EdgeRequest.self, from: jsonBody) else {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Failed to send request to ExEdge due to parsing.")
+            return RetryNetworkRequest.no
+        }
+        let headers = defaultHeaders.merging(requestHeaders ?? [:]) { (_, new) in new}
+        let networkRequest:NetworkRequest = NetworkRequest(url: url, httpMethod: HttpMethod.post, connectPayload: String(decoding: jsonBody, as: UTF8.self), httpHeaders: headers,
+                                                           connectTimeout: ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout,
+                                                           readTimeout: ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout);
+        
+        var shouldRetry: RetryNetworkRequest = RetryNetworkRequest.no
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest) { (connection:HttpConnection) in
+            if (connection.error != nil) {
+                // handle generic error
+                self.handleError(connection: connection, responseCallback: responseCallback)
+                
+                shouldRetry = RetryNetworkRequest.no
+                semaphore.signal()
+                return
+            }
+            
+            shouldRetry = RetryNetworkRequest.no
+            if let responseCode = connection.responseCode {
+                if (responseCode == HttpResponseCodes.ok.rawValue) {
+                    ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Interact connection to data platform successful.")
+                    if let responseString = connection.responseString {
+                        ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Response message: " + responseString)
+                    }
+                   
+                    self.handleContent(connection: connection, streaming: edgeRequest.meta?.konductorConfig?.streaming, responseCallback: responseCallback)
+                   
+               } else if (responseCode == HttpResponseCodes.noContent.rawValue) {
+                   // Successful collect requests do not return content
+                    ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Collect connection to data platform successful.")
+                   
+                } else if (self.recoverableNetworkErrorCodes.contains(responseCode)) {
+                    ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Connection to data platform returned recoverable error code \(responseCode)")
+                   shouldRetry = RetryNetworkRequest.yes
+               } else {
+                    ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unrecoverable error code \(responseCode)")
+                    self.handleError(connection: connection, responseCallback: responseCallback)
+               }
+           } else {
+                ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unrecoverable error code")
+                self.handleError(connection: connection, responseCallback: responseCallback)
+           }
+           
+            semaphore.signal()
+        }
+        
+        let _ = semaphore.wait(timeout: .now() + waitTimeout)
+        if shouldRetry == RetryNetworkRequest.no {
+            responseCallback.onComplete()
+        }
+        
+        return shouldRetry
+    }
+    
+    
+    /// Attempts the read the response from the c`connection`and return the content via the `responseCallback`. This method should be used for handling 2xx server response.
+    /// In the eventuality of an error, this method returns false and an error message will be logged.
+    /// - Parameters:
+    ///   - connection: `HttpConnection` containing the response from the server
+    ///   - streaming: `Streaming` settings to be used to determine if streaming is enabled or not
+    ///   - responseCallback: `ResponseCallback` that is invoked for each individual stream if streaming is enabled or once with the unrapped response content
+    func handleContent(connection: HttpConnection, streaming: Streaming?, responseCallback: ResponseCallback) {
+        guard let unwrappedResponseString = connection.responseString else {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "handleContent - No data to handle")
+            return
+        }
+        if let unwrappedStreaming = streaming {
+            if (unwrappedStreaming.enabled == true) {
+                handleStreamingResponse(connection: connection, streaming: unwrappedStreaming, responseCallback: responseCallback)
+            } else {
+                responseCallback.onResponse(jsonResponse: unwrappedResponseString)
+            }
+        } else {
+            responseCallback.onResponse(jsonResponse: unwrappedResponseString)
+        }
+    }
+    
+    
+    /// Attempts to read the streamed response from the `connection` and return the content via the `responseCallback`
+    /// - Parameters:
+    ///   - connection: `HttpConnection` containing the response from the server
+    ///   - streaming: `Streaming` settings to be used to determine the record and line feed separators for the response
+    ///   - responseCallback: `ResponseCallback` that is invoked for each individual stream
+    func handleStreamingResponse(connection: HttpConnection, streaming: Streaming, responseCallback: ResponseCallback) {
+        
+        guard let unwrappedResponseString = connection.responseString else { return }
+        guard let recordSerapator: String = streaming.recordSeparator else { return }
+        guard let lineFeedDelimiter: String = streaming.lineFeed else { return }
+        guard let lineFeedCharacter: Character = convertToCharacter(separator: lineFeedDelimiter) else { return }
+        
+        let splitResult = unwrappedResponseString.split(separator: lineFeedCharacter)
+        
+        var trimmingChars = CharacterSet()
+        trimmingChars.insert(charactersIn: recordSerapator)
+        for jsonResult in splitResult {
+            let trimmedResult = jsonResult.trimmingCharacters(in: trimmingChars)
+            responseCallback.onResponse(jsonResponse: trimmedResult)
+        }
+    }
+    
+    /// Attempts to read the error response from the `connection` error response message and returns it in the
+    /// `ResponseCallback.onError(jsonError)` callback.
+    /// - Parameters:
+    ///   - connection: `HttpConnection` containing the response from the server
+    ///   - responseCallback: `ResponseCallback` that is invoked with the error message
+    func handleError(connection: HttpConnection, responseCallback: ResponseCallback) {
+        var errorJson: String? = nil
+        if connection.error != nil {
+            if let unwrappedResponseMessage = connection.responseMessage {
+                errorJson = composeGenericErrorAsJson(plainTextErrorMessage: unwrappedResponseMessage)
+            } else {
+                errorJson = composeGenericErrorAsJson(plainTextErrorMessage: nil)
+            }
+        } else {
+            errorJson = composeGenericErrorAsJson(plainTextErrorMessage: nil)
+        }
+        
+        if let unwrappedErrorJson  = errorJson {
+            responseCallback.onError(jsonError: unwrappedErrorJson)
+        }
+    }
+    
+    /// Composes a generic error (string with JSON format), containing generic namespace and the provided error message, after removing the leading and trailing spaces.
+    /// - Parameter plainTextErrorMessage: error message to be formatted; if nil/empty is provided, a default error message will be returned.
+    /// - Returns: the JSON formatted error as a String or nil if there was an error while serlizinging the error message
+    private func composeGenericErrorAsJson(plainTextErrorMessage: String?) -> String? {
+        var unwrappedErrorMessage = plainTextErrorMessage ?? defaultGenericErrorMessage
+        unwrappedErrorMessage = unwrappedErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
+        let errorDictionary = [ExperiencePlatformConstants.JsonKeys.Response.Error.message : unwrappedErrorMessage, ExperiencePlatformConstants.JsonKeys.Response.Error.namespace: defaultNamespace]
+        guard let json = try? JSONSerialization.data(withJSONObject: errorDictionary, options: []) else {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "composeGenericErrorAsJson - Failed to serialize the error message.")
+            return nil
+        }
+        guard let jsonString = String(data: json, encoding: String.Encoding.utf8) else {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "composeGenericErrorAsJson - Failed to serialize the error message.")
+            return nil
+        }
+        
+        return jsonString
+    }
+    
+    private func convertToCharacter(separator:String) -> Character? {
+        guard separator.count == 1 else {
+            return nil
+        }
+        guard let character = separator.first else {
+            return nil
+        }
+        return character
+    }
+}

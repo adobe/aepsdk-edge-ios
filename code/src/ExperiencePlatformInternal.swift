@@ -21,6 +21,7 @@ class ExperiencePlatformInternal : ACPExtension {
     typealias EventHandlerMapping = (event: ACPExtensionEvent, handler: (ACPExtensionEvent) -> (Bool))
     private let eventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal")
     private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
+    private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
     
     override init() {
         super.init()
@@ -132,8 +133,7 @@ class ExperiencePlatformInternal : ACPExtension {
         // Build Request object
         
         let requestBuilder = RequestBuilder()
-        requestBuilder.recordSeparator = ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator
-        requestBuilder.lineFeed = ExperiencePlatformConstants.Defaults.requestConfigLineFeed
+        requestBuilder.enableResponseStreaming(recordSeparator: ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator, lineFeed: ExperiencePlatformConstants.Defaults.requestConfigLineFeed)
         
         // get ECID
         if let identityState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Identity.stateOwner, event: event) {
@@ -150,15 +150,17 @@ class ExperiencePlatformInternal : ACPExtension {
             // NOTE: the order of these events need to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
             // todo: add waiting events in list
-            guard let url:URL = experiencePlatformNetworkService.buildUrl(requestType: RequestType.interact, configId: configId, requestId: requestId) else {
+            guard let url:URL = experiencePlatformNetworkService.buildUrl(requestType: ExperienceEdgeRequestType.interact, configId: configId, requestId: requestId) else {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to build the URL, skipping current event.")
                 return true
             }
             
-            let callback: ResponseCallback = NetworkResponseCallback()
+            let callback: ResponseCallback = NetworkResponseCallback(requestId: requestId, responseHandler: networkResponseHandler)
             
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request for config '\(configId)' and body: \(String(data: requestData, encoding: .utf8) ?? "failed to parse")")
-            experiencePlatformNetworkService.doConnectAsync(url: url, jsonBody: requestData, requestHeaders: [:], responseCallback: callback)
+            
+            experiencePlatformNetworkService.doRequest(url: url, jsonBody: requestData, requestHeaders: [:], responseCallback: callback, retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
+            
         }
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Finished processing and sending events to Platform.")

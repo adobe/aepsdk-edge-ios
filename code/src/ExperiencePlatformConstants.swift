@@ -29,10 +29,9 @@ struct ExperiencePlatformConstants {
     struct Defaults {
         private init() {}
         
-        static let networkRequestMaxRetries: Int = 5
-        
-        static let requestConfigRecordSeparator: Character = "\u{0000}"
-        static let requestConfigLineFeed: Character = "\n"
+        static let networkRequestMaxRetries: UInt = 5
+        static let requestConfigRecordSeparator: String = "\u{0000}"
+        static let requestConfigLineFeed: String = "\n"
     }
 
     struct EventDataKeys {
@@ -82,6 +81,29 @@ struct ExperiencePlatformConstants {
         static let ECID = "ECID"
         static let timestamp = "timestamp"
         static let eventId = "eventId"
+        
+        struct Response {
+            private init() {}
+            
+            static let handle = "handle"
+            static let errors = "errors"
+            static let warnings = "warnings"
+        
+            struct EventHandle {
+                private init() {}
+                
+                static let type = "type"
+                static let payload = "payload"
+                static let eventIndex = "eventIndex"
+            }
+            
+            struct Error {
+                private init() {}
+                
+                static let message = "message"
+                static let namespace = "namespace"
+            }
+        }
     }
     
     struct NetworkKeys {

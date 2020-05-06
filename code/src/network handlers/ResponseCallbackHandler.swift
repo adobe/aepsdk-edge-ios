@@ -13,23 +13,21 @@
 
 import Foundation
 
-class NetworkResponseCallback : ResponseCallback {
-    func onResponse(jsonResponse: String) {
-        // todo
+
+/// Use this class to register `ExperiencePlatformCallback`(s) for a specific event identifier
+/// and get notified once a response is received from the Experience Edge or when an error occurred
+class ResponseCallbackHandler {
+    static let shared = ResponseCallbackHandler()
+    
+    func registerCallback(uniqueEventId: String) {
+        // todo AMSDK-9555
     }
     
-    func onError(jsonError: String) {
-        // todo
+    func unregisterCallback(uniqueEventId: String) {
+        // todo AMSDK-9555
     }
     
-    func onComplete(shouldRetry: Retry) {
-        // todo
-        if shouldRetry == Retry.no {
-            // cleanup
-        } else {
-            // retry
-        }
+    func invokeResponseCallback(eventData: [String: Any]) {
+        // todo AMSDK-9555
     }
-    
-    
 }

@@ -18,10 +18,10 @@ class RequestBuilder {
     private let TAG = "RequestBuilder"
     
     /// Control charactor used before each response fragment. Response streaming is enabled when both `recoredSeparator` and `lineFeed` are non nil.
-    var recordSeparator: Character?
+    private var recordSeparator: String?
     
     /// Control character used at the end of each response fragment. Response streaming is enabled when both `recoredSeparator` and `lineFeed` are non nil.
-    var lineFeed: Character?
+    private var lineFeed: String?
     
     /// The Experiece Cloud ID to be sent with this request
     var experienceCloudId: String?
@@ -36,6 +36,15 @@ class RequestBuilder {
     
     init(dataStore:KeyValueStore) {
         storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
+    }
+    
+    /// Enables streaming of the Platform Edge Response.
+    /// - Parameters:
+    ///   - recordSeparator: the record separator used to delimit the start of a response chunk
+    ///   - lineFeed: the line feed used to delimit the end of a response chunk
+    func enableResponseStreaming(recordSeparator: String, lineFeed: String) {
+        self.recordSeparator = recordSeparator
+        self.lineFeed = lineFeed
     }
     
     /// Builds the request payload with all the provided parameters and events.
@@ -58,12 +67,14 @@ class RequestBuilder {
         var contextData: RequestContextData? = nil
         
         // set ECID if available
+        var identityMap = IdentityMap()
         if let ecid = experienceCloudId {
-            var identityMap = IdentityMap()
             identityMap.addItem(namespace: ExperiencePlatformConstants.JsonKeys.ECID, id: ecid)
-            contextData = RequestContextData(identityMap: identityMap)
         }
-        
+    
+        contextData = RequestContextData(identityMap: identityMap,
+                                         environment: buildEnvironmentData(),
+                                         device: buildDeviceData())
         let request = EdgeRequest(meta: requestMetadata,
                                   xdm: contextData,
                                   events: platformEvents)
@@ -113,4 +124,13 @@ class RequestBuilder {
         return platformEvents
     }
     
+    private func buildDeviceData() -> DeviceData? {
+        // TODO: AMSDK-9800 implement me
+        return nil
+    }
+    
+    private func buildEnvironmentData() -> EnvironmentData? {
+        // TODO: AMSDK-9800 implement me
+        return nil
+    }
 }

@@ -9,7 +9,6 @@
 // OF ANY KIND, either express or implied. See the License for the specific language
 // governing permissions and limitations under the License.
 //
-
 import Foundation
 
 /// Konductor configuration metadata.
@@ -22,10 +21,10 @@ struct KonductorConfig : Codable {
 /// Konductor configuration metadata to provide response fragments in a streaming fashion (HTTP 1.1/chunked, IETF RFC 7464).
 struct Streaming {
     /// Control charactor used before each response fragment.
-    let recordSeparator: Character?
+    let recordSeparator: String?
     
     /// Control character used at the end of each response fragment.
-    let lineFeed: Character?
+    let lineFeed: String?
     
     /// Getter to state whether response streaming is enabled.
     var enabled: Bool? {
@@ -49,28 +48,7 @@ extension Streaming : Codable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        recordSeparator = try? container.decode(Character.self, forKey: .recordSeparator)
-        lineFeed = try? container.decode(Character.self, forKey: .lineFeed)
+        recordSeparator = try? container.decode(String.self, forKey: .recordSeparator)
+        lineFeed = try? container.decode(String.self, forKey: .lineFeed)
     }
 }
-
-extension Character : Codable {
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-        try container.encode(String(self))
-    }
-    
-    public init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-        let string = try container.decode(String.self)
-        guard string.count == 1 else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unable to decode Character with multiple characters")
-        }
-        guard let character = string.first else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unable to decode empty Character")
-        }
-        self = character
-    }
-    
-}
-
