@@ -185,28 +185,6 @@ class ExperiencePlatformNetworkService {
         }
     }
     
-    /// Attempts to read the streamed response from the `connection` and return the content via the `responseCallback`
-    /// - Parameters:
-    ///   - connection: `HttpConnection` containing the response from the server
-    ///   - streaming: `Streaming` settings to be used to determine the record and line feed separators for the response
-    ///   - responseCallback: `ResponseCallback` that is invoked for each individual stream
-    func handleStreamingResponse(connection: HttpConnection, streaming: Streaming, responseCallback: ResponseCallback) {
-        
-        guard let unwrappedResponseString = connection.responseString else { return }
-        guard let recordSerapator: String = streaming.recordSeparator else { return }
-        guard let lineFeedDelimiter: String = streaming.lineFeed else { return }
-        guard let lineFeedCharacter: Character = convertToCharacter(string: lineFeedDelimiter) else { return }
-        
-        let splitResult = unwrappedResponseString.split(separator: lineFeedCharacter)
-        
-        var trimmingChars = CharacterSet()
-        trimmingChars.insert(charactersIn: recordSerapator)
-        for jsonResult in splitResult {
-            let trimmedResult = jsonResult.trimmingCharacters(in: trimmingChars)
-            responseCallback.onResponse(jsonResponse: trimmedResult)
-        }
-    }
-    
     /// Attempts to read the error response from the `connection` error response message and returns it in the
     /// `ResponseCallback.onError(jsonError)` callback.
     /// - Parameters:
@@ -226,6 +204,28 @@ class ExperiencePlatformNetworkService {
         
         if let unwrappedErrorJson  = errorJson {
             responseCallback.onError(jsonError: unwrappedErrorJson)
+        }
+    }
+    
+    /// Attempts to read the streamed response from the `connection` and return the content via the `responseCallback`
+    /// - Parameters:
+    ///   - connection: `HttpConnection` containing the response from the server
+    ///   - streaming: `Streaming` settings to be used to determine the record and line feed separators for the response
+    ///   - responseCallback: `ResponseCallback` that is invoked for each individual stream
+    private func handleStreamingResponse(connection: HttpConnection, streaming: Streaming, responseCallback: ResponseCallback) {
+        
+        guard let unwrappedResponseString = connection.responseString else { return }
+        guard let recordSerapator: String = streaming.recordSeparator else { return }
+        guard let lineFeedDelimiter: String = streaming.lineFeed else { return }
+        guard let lineFeedCharacter: Character = convertToCharacter(string: lineFeedDelimiter) else { return }
+        
+        let splitResult = unwrappedResponseString.split(separator: lineFeedCharacter)
+        
+        var trimmingChars = CharacterSet()
+        trimmingChars.insert(charactersIn: recordSerapator)
+        for jsonResult in splitResult {
+            let trimmedResult = jsonResult.trimmingCharacters(in: trimmingChars)
+            responseCallback.onResponse(jsonResponse: trimmedResult)
         }
     }
     
