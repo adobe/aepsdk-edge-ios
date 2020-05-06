@@ -22,8 +22,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        ACPCore.setLogLevel(ACPMobileLogLevel.debug)
+        ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
         ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with ACPExperiencePlatform v" + ACPExperiencePlatform.extensionVersion()))
+        ACPIdentity.registerExtension()
+        ACPExperiencePlatform.registerExtension()
+        ACPCore.start {
+            ACPCore.updateConfiguration(["global.privacy": "optedin",
+            "experienceCloud.org": "3E2A28175B8ED3720A495E23@AdobeOrg",
+            "experiencePlatform.configId": "fd4f4820-00e1-4226-bd71-49bf0b7e3150"])
+        }
         return true
     }
 

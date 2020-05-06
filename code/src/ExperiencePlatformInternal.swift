@@ -159,7 +159,9 @@ class ExperiencePlatformInternal : ACPExtension {
             
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request for config '\(configId)' and body: \(String(data: requestData, encoding: .utf8) ?? "failed to parse")")
             
-            experiencePlatformNetworkService.doRequest(url: url, jsonBody: requestData, requestHeaders: [:], responseCallback: callback, retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
+            // TODO: AMSDK-9659 Add griffon session id to headers
+            let requestHeaders:[String:String] = [:]
+            experiencePlatformNetworkService.doRequest(url: url, jsonBody: requestData, requestHeaders: requestHeaders, responseCallback: callback, retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
             
         }
         
@@ -175,7 +177,7 @@ class ExperiencePlatformInternal : ACPExtension {
     private func getSharedState(owner: String, event: ACPExtensionEvent) -> [AnyHashable : Any]? {
         let state: [AnyHashable : Any]?
         do {
-            state = try api.getSharedEventState(owner, event: event)
+            state = try api.getSharedEventState(owner, event: nil)
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to retrieve shared state \(owner): \(error.localizedDescription)")
             return nil // keep event in queue to process on next trigger

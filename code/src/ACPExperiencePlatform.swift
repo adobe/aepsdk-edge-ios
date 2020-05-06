@@ -24,12 +24,11 @@ public class ACPExperiencePlatform {
         return "1.0.0-alpha"
     }
     
+    /// For test purposes only - will remove once the public API changes are migrated to github
     public static func dispatchData(eventData: [String:Any]) {
-        do {
-            let event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
-            try ACPCore.dispatchEvent(event)
-        } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: "AEP", message:"Failed to dispatch the event due to an unexpected error: \(error).")
+        guard let event = try? ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData) else {
+            return
         }
+        try? ACPCore.dispatchEvent(event)
     }
 }

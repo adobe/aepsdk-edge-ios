@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 import ACPCore
 
@@ -51,10 +50,9 @@ class ExperiencePlatformNetworkService {
     private var defaultHeaders = [ExperiencePlatformConstants.NetworkKeys.headerKeyAccept: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson,
                         ExperiencePlatformConstants.NetworkKeys.headerKeyContentType: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson]
     
-    
-    /// Builds the URL required for connections to ExEdge with the provided `RequestType`
+    /// Builds the URL required for connections to ExEdge with the provided `ExperienceEdgeRequestType`
     /// - Parameters:
-    ///   - requestType: see `RequestType`
+    ///   - requestType: see `ExperienceEdgeRequestType`
     ///   - configId: blackbird configuration id
     ///   - requestId: batch request identifier
     /// - Returns: built URL or nil on error
@@ -114,9 +112,11 @@ class ExperiencePlatformNetworkService {
                                                            readTimeout: ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout);
         
         var shouldRetry: RetryNetworkRequest = RetryNetworkRequest.no
+        
+        // make sync call to process the response right away and retry if needed
         let semaphore = DispatchSemaphore(value: 0)
         
-        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest) { (connection:HttpConnection) in
+        AEPServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest) { (connection:HttpConnection) in
             if (connection.error != nil) {
                 // handle generic error
                 self.handleError(connection: connection, responseCallback: responseCallback)
@@ -129,9 +129,9 @@ class ExperiencePlatformNetworkService {
             shouldRetry = RetryNetworkRequest.no
             if let responseCode = connection.responseCode {
                 if (responseCode == HttpResponseCodes.ok.rawValue) {
-                    ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Interact connection to data platform successful.")
+                    ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Interact connection to ExEdge was successful.")
                     if let responseString = connection.responseString {
-                        ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Response message: " + responseString)
+                        ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Response message: \(responseString)")
                     }
                    
                     self.handleContent(connection: connection, streaming: edgeRequest.meta?.konductorConfig?.streaming, responseCallback: responseCallback)
@@ -141,14 +141,14 @@ class ExperiencePlatformNetworkService {
                     ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Collect connection to data platform successful.")
                    
                 } else if (self.recoverableNetworkErrorCodes.contains(responseCode)) {
-                    ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Connection to data platform returned recoverable error code \(responseCode)")
+                    ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Connection to ExEdge returned recoverable error code \(responseCode)")
                    shouldRetry = RetryNetworkRequest.yes
                } else {
                     ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unrecoverable error code \(responseCode)")
                     self.handleError(connection: connection, responseCallback: responseCallback)
                }
            } else {
-                ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unrecoverable error code")
+                ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unknown error")
                 self.handleError(connection: connection, responseCallback: responseCallback)
            }
            
@@ -162,7 +162,6 @@ class ExperiencePlatformNetworkService {
         
         return shouldRetry
     }
-    
     
     /// Attempts the read the response from the c`connection`and return the content via the `responseCallback`. This method should be used for handling 2xx server response.
     /// In the eventuality of an error, this method returns false and an error message will be logged.
@@ -186,7 +185,6 @@ class ExperiencePlatformNetworkService {
         }
     }
     
-    
     /// Attempts to read the streamed response from the `connection` and return the content via the `responseCallback`
     /// - Parameters:
     ///   - connection: `HttpConnection` containing the response from the server
@@ -197,7 +195,7 @@ class ExperiencePlatformNetworkService {
         guard let unwrappedResponseString = connection.responseString else { return }
         guard let recordSerapator: String = streaming.recordSeparator else { return }
         guard let lineFeedDelimiter: String = streaming.lineFeed else { return }
-        guard let lineFeedCharacter: Character = convertToCharacter(separator: lineFeedDelimiter) else { return }
+        guard let lineFeedCharacter: Character = convertToCharacter(string: lineFeedDelimiter) else { return }
         
         let splitResult = unwrappedResponseString.split(separator: lineFeedCharacter)
         
@@ -232,7 +230,7 @@ class ExperiencePlatformNetworkService {
     }
     
     /// Composes a generic error (string with JSON format), containing generic namespace and the provided error message, after removing the leading and trailing spaces.
-    /// - Parameter plainTextErrorMessage: error message to be formatted; if nil/empty is provided, a default error message will be returned.
+    /// - Parameter plainTextErrorMessage: error message to be formatted; if nil/empty is provided, a default error message is returned.
     /// - Returns: the JSON formatted error as a String or nil if there was an error while serlizinging the error message
     private func composeGenericErrorAsJson(plainTextErrorMessage: String?) -> String? {
         var unwrappedErrorMessage = plainTextErrorMessage ?? defaultGenericErrorMessage
@@ -242,7 +240,7 @@ class ExperiencePlatformNetworkService {
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "composeGenericErrorAsJson - Failed to serialize the error message.")
             return nil
         }
-        guard let jsonString = String(data: json, encoding: String.Encoding.utf8) else {
+        guard let jsonString = String(data: json, encoding: .utf8) else {
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "composeGenericErrorAsJson - Failed to serialize the error message.")
             return nil
         }
@@ -250,11 +248,16 @@ class ExperiencePlatformNetworkService {
         return jsonString
     }
     
-    private func convertToCharacter(separator:String) -> Character? {
-        guard separator.count == 1 else {
+    /// Converts a String to Character. The `string` needs to have only one Character and it should not be empty.
+    /// - Parameter string: String to be convert to Character
+    /// - Returns: the result Character or nil if the convertion failed
+    private func convertToCharacter(string:String) -> Character? {
+        guard string.count == 1 else {
+            ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Unable to decode Character with multiple characters")
             return nil
         }
-        guard let character = separator.first else {
+        guard let character = string.first else {
+            ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Unable to decode empty Character")
             return nil
         }
         return character
