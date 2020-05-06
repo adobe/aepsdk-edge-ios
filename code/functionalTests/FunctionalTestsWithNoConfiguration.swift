@@ -15,7 +15,10 @@ import XCTest
 import ACPCore
 @testable import ACPExperiencePlatform
 
-class ExperiencePlatformInternalFunctionalTests: XCTestCase {
+/// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
+/// This test suite cannot be run in same target as other tests which provide an SDK configuration to ACPCore
+/// as all the tests in the same target use the same ACPCore instance.
+class FunctionalTestsWithNoConfiguration: XCTestCase {
 
     override func setUp() {
         continueAfterFailure = false // fail so nil checks stop execution
