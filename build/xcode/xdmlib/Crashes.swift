@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.093782 -0700 PDT m=+1.758265393 by XDMTool
 
- Title			:	
+ Title			:	Crashes
  Description	:	Triggered when the application does not exit gracefully. Event is sent on application launch after a crash.
 ----
 */

@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.094446 -0700 PDT m=+1.758929751 by XDMTool
 
- Title			:	
+ Title			:	Launches
  Description	:	Launch of an application. Triggered on every run, including crashes and installs. Also triggered on a resume from background when the session timeout has been exceeded.
 ----
 */

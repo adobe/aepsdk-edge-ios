@@ -12,8 +12,8 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.093666 -0700 PDT m=+1.758148908 by XDMTool
 
- Title			:	
- Description	:	
+ Title			:	Items
+ Description	:	Items
 ----
 */
 

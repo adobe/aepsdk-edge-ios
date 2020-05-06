@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.094895 -0700 PDT m=+1.759378397 by XDMTool
 
- Title			:	
+ Title			:	Cart Abandons
  Description	:	A product list has been identified as no longer accessible or purchasable by the user.
 ----
 */

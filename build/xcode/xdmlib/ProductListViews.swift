@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.093856 -0700 PDT m=+1.758338824 by XDMTool
 
- Title			:	
+ Title			:	Product List Views
  Description	:	View or views of a product-list has occurred.
 ----
 */

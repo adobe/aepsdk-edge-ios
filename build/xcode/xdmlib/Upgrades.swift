@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.090704 -0700 PDT m=+1.755186926 by XDMTool
 
- Title			:	
+ Title			:	Upgrades
  Description	:	Upgrade of an application that has previously been installed. Triggered on first launch after upgrade.
 ----
 */

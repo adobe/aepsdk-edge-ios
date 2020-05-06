@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.094825 -0700 PDT m=+1.759307805 by XDMTool
 
- Title			:	
+ Title			:	Installs
  Description	:	Install of an application on a device where the specific install event is available.
 ----
 */

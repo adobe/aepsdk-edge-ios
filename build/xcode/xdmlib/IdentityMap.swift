@@ -12,8 +12,8 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.09408 -0700 PDT m=+1.758563570 by XDMTool
 
- Title			:	
- Description	:	
+ Title			:	Identity Map
+ Description	:	IdentityMap
 ----
 */
 

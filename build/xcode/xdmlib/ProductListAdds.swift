@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.091651 -0700 PDT m=+1.756134080 by XDMTool
 
- Title			:	
+ Title			:	Product List Adds
  Description	:	Addition of a product to the product list, for example a product is added to a shopping cart.
 ----
 */

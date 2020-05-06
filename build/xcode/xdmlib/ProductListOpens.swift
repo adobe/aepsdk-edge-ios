@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.090344 -0700 PDT m=+1.754827556 by XDMTool
 
- Title			:	
+ Title			:	Product List Opens
  Description	:	Initializations of a new product list, for example a shopping cart is created.
 ----
 */

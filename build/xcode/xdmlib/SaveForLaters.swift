@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.090044 -0700 PDT m=+1.754527260 by XDMTool
 
- Title			:	
+ Title			:	Save For Laters
  Description	:	Product list is saved for future use, for example a product wish list.
 ----
 */

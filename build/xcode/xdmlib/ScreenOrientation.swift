@@ -1,5 +1,5 @@
 /*
- Copyright 2019 Adobe. All rights reserved.
+ Copyright 2020 Adobe. All rights reserved.
 
  This file is licensed to you under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License. You may obtain a copy
@@ -11,8 +11,12 @@
 
 ----
  XDM Swift Enum Generated 2020-05-06 03:42:23.089111 -0700 PDT m=+1.753594421 by XDMTool
+
+ Title          :    Screen Orientation
+ Description    :    ScreenOrientation
 ----
 */
+
 import Foundation
 
 public enum ScreenOrientation:String, Encodable {

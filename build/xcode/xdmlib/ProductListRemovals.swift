@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.090424 -0700 PDT m=+1.754907064 by XDMTool
 
- Title			:	
+ Title			:	Product List Removals
  Description	:	Removal or removals of a product entry from a product list, for example a product is removed from a shopping cart.
 ----
 */

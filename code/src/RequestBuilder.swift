@@ -66,7 +66,7 @@ class RequestBuilder {
         
         let request = EdgeRequest(meta: requestMetadata,
                                   xdm: contextData,
-                                  events: platformEvents)
+                                  events: platformEvents)	
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]

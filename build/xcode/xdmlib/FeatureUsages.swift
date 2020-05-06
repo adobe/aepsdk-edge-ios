@@ -12,7 +12,7 @@
 ----
  XDM Property Swift Object Generated 2020-05-06 03:42:23.091538 -0700 PDT m=+1.756021108 by XDMTool
 
- Title			:	
+ Title			:	Feature Usages
  Description	:	Activation of an application feature that is being measured.
 ----
 */
