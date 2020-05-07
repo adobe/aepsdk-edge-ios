@@ -1,23 +1,19 @@
 //
-// ADOBE CONFIDENTIAL
+// Copyright 2020 Adobe. All rights reserved.
+// This file is licensed to you under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License. You may obtain a copy
+// of the License at http://www.apache.org/licenses/LICENSE-2.0
 //
-// Copyright 2020 Adobe
-// All Rights Reserved.
+// Unless required by applicable law or agreed to in writing, software distributed under
+// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+// OF ANY KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
 //
-// NOTICE: All information contained herein is, and remains
-// the property of Adobe and its suppliers, if any. The intellectual
-// and technical concepts contained herein are proprietary to Adobe
-// and its suppliers and are protected by all applicable intellectual
-// property laws, including trade secret and copyright laws.
-// Dissemination of this information or reproduction of this material
-// is strictly forbidden unless prior written permission is obtained
-// from Adobe.
-//
-
 
 import Foundation
 
-class XDMFormatters {
+
+public class XDMFormatters {
 
     /// Serialize the given Date to a string formatted to an ISO 8601 date-time as defined in
     /// <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>
@@ -25,7 +21,7 @@ class XDMFormatters {
     /// - Parameters:
     ///   - Date: A timestamp and it must not be null
     /// - Returns: The timestamp formatted to a string in the format of 'yyyy-MM-dd'T'HH:mm:ssXXX',
-    /// or an empty string if Date         is null
+    ///            or an empty string if Date  is null
     public static func dateToISO8601String(from: Date?) -> String? {
         if let unwrapped = from {
             return unwrapped.asISO8601String()
@@ -34,6 +30,13 @@ class XDMFormatters {
         }
     }
     
+    /// Serialize the given Date to a string formatted to an ISO 8601 date as defined in
+    /// <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>
+    /// For example, 2017-09-26
+    /// - Parameters:
+    ///   - Date:  A timestamp and it must not be null
+    /// - Returns: The timestamp formatted to a string in the format of 'yyyy-MM-dd',
+    ///            or an empty string if Date  is null
     public static func dateToFullDateString(from: Date?) -> String? {
         if let unwrapped = from {
             return unwrapped.asFullDate()

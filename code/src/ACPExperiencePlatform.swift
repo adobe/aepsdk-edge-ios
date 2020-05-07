@@ -1,17 +1,13 @@
 //
-// ADOBE CONFIDENTIAL
+// Copyright 2020 Adobe. All rights reserved.
+// This file is licensed to you under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License. You may obtain a copy
+// of the License at http://www.apache.org/licenses/LICENSE-2.0
 //
-// Copyright 2020 Adobe
-// All Rights Reserved.
-//
-// NOTICE: All information contained herein is, and remains
-// the property of Adobe and its suppliers, if any. The intellectual
-// and technical concepts contained herein are proprietary to Adobe
-// and its suppliers and are protected by all applicable intellectual
-// property laws, including trade secret and copyright laws.
-// Dissemination of this information or reproduction of this material
-// is strictly forbidden unless prior written permission is obtained
-// from Adobe.
+// Unless required by applicable law or agreed to in writing, software distributed under
+// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+// OF ANY KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
 //
 
 import ACPCore
@@ -21,6 +17,11 @@ private let LOG_TAG = "ACPExperiencePlatform"
 public class ACPExperiencePlatform {
 
     @available(*, unavailable) private init() {}
+    private static var responseCallbacksHandler: [String: ([String: Any]) -> Void] = [:]
+
+    private static func responseCallbacksHandlerClosure(eventId:String, completionHandler: @escaping ([String: Any]) -> Void) {
+        responseCallbacksHandler[eventId] = completionHandler
+    }
 
     /// Registers the ACPExperiencePlatform extension with the Mobile SDK. This method should be called only once in your application class
     /// from the AppDelegate's application:didFinishLaunchingWithOptions method. This call should be before any calls into ACPCore
@@ -29,73 +30,31 @@ public class ACPExperiencePlatform {
         
         do {
             try ACPCore.registerExtension(ExperiencePlatformInternal.self)
-            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Experience Platform Extention has been successfully registered")
+            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Extension has been successfully registered.")
         } catch {
-            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"Experience Platform Extension Registration has failed!")
+            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"Extension Registration has failed.")
         }
     }
 
-    /// Sends one event to Adobe Data Platform and registers a callback for responses coming from Data Platform
+    /// Sends an event to Adobe Data Platform and registers a callback for responses coming from Data Platform
     /// - Parameters:
     ///   - experiencePlatformEvent: Event to be sent to Adobe Data Platform
     ///   - responseCallback: Optional callback to be invoked when the response handles are received from
-    ///   Adobe Data Platform. It may be invoked on a different thread and may be invoked multiple times
+    ///                       Adobe Data Platform. It may be invoked on a different thread and may be invoked multiple times
     public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent, responseCallback: (([String: Any]) -> Void)?) {
-        let uniqueSequenceId = UUID().uuidString
-        if addDataPlatformEvent(experiencePlatformEvent: experiencePlatformEvent, uniqueSequenceId: uniqueSequenceId) {
-                dispatchSendAllEvent(uniqueSequenceId: uniqueSequenceId)
-        } else {
-                ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Unable to dispatch the event with id : \(uniqueSequenceId)." )
-        }
-    }
 
-    /// Deserialize the provided experiencePlatformEvent and dispatches a new event for the Experience platform extension with that data.
-    /// - Parameters:
-    ///   -  experiencePlatformEvent: The ExperiencePlatformEvent to be dispatched to the internal extension
-    ///   - uniqueSequenceId: Unique event sequence identifier, used to identify all the events from the same batch before being sent to Data Platform
-    /// - Returns: A Boolean indicating if the provided ExperiencePlatformEvent was dispatched
-    private static func addDataPlatformEvent(experiencePlatformEvent: ExperiencePlatformEvent, uniqueSequenceId: String) -> Bool {
-
-        var eventData = experiencePlatformEvent.getData()
-        eventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = AnyCodable(uniqueSequenceId)
-        
-
-        var event : ACPExtensionEvent
-        do {
-            event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
-            do {
-                 try ACPCore.dispatchEvent(event)
-             } catch {
-                 ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id \(uniqueSequenceId) due to an Unexpected error: \(error).")
-                 return false
-             }
-        } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch due to an Unexpected error: \(error)." )
-            return false
-        }
-          return true
-    }
-    
-    /// Dispatches the SendAll event for the Experience platform extension in order to start processing the queued events, prepare and initiate the network request.
-    /// - Parameters:
-    ///   - uniqueSequenceId: Unique event sequence identifier, used to identify all the events from the same batch before being sent to Data Platform
-    private static func dispatchSendAllEvent(uniqueSequenceId: String) {
-        var sendAllEventData = [String: Any]()
-        var sendAllEvent:ACPExtensionEvent
-        sendAllEventData[ExperiencePlatformConstants.EventDataKeys.send_all_events] = true
-        sendAllEventData[ExperiencePlatformConstants.EventDataKeys.uniqueSequenceId] = uniqueSequenceId
-        do {
-            sendAllEvent = try ACPExtensionEvent(name: "Send all events to Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: sendAllEventData)
-
-        } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id \(uniqueSequenceId) due to an Unexpected error: \(error).")
+        guard let eventData = experiencePlatformEvent.asDictionary() else {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"Failed to dispatch the event because the event data is nil.")
             return
         }
         do {
-            try ACPCore.dispatchEvent(sendAllEvent)
+            let event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
+            if let  responsecallback = responseCallback {
+                responseCallbacksHandlerClosure(eventId: event.eventUniqueIdentifier, completionHandler:responsecallback)
+            }
+            try ACPCore.dispatchEvent(event)
         } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event with id \(uniqueSequenceId) due to an Unexpected error: \(error).")
+            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event due to an unexpected error: \(error).")
         }
-     }
-    
+    }
 }

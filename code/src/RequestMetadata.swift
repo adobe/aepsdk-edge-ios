@@ -1,44 +1,21 @@
 //
-// ADOBE CONFIDENTIAL
+// Copyright 2020 Adobe. All rights reserved.
+// This file is licensed to you under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License. You may obtain a copy
+// of the License at http://www.apache.org/licenses/LICENSE-2.0
 //
-// Copyright 2020 Adobe
-// All Rights Reserved.
-//
-// NOTICE: All information contained herein is, and remains
-// the property of Adobe and its suppliers, if any. The intellectual
-// and technical concepts contained herein are proprietary to Adobe
-// and its suppliers and are protected by all applicable intellectual
-// property laws, including trade secret and copyright laws.
-// Dissemination of this information or reproduction of this material
-// is strictly forbidden unless prior written permission is obtained
-// from Adobe.
+// Unless required by applicable law or agreed to in writing, software distributed under
+// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+// OF ANY KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
 //
 
 
 import Foundation
 
-struct RequestMetadata {
-    var konductorConfig: KonductorConfig?
-    var state: StateMetadata?
-    
-    enum CodingKeys: String, CodingKey {
-        case konductorConfig = "konductorConfig"
-        case state = "state"
-    }
-}
-
-extension RequestMetadata : Encodable {
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        if let unwrapped = konductorConfig { try container.encode(unwrapped, forKey: .konductorConfig)}
-        if let unwrapped = state { try container.encode(unwrapped, forKey: .state)}
-    }
-}
-
-extension RequestMetadata : Decodable {
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        konductorConfig = try? container.decode(KonductorConfig.self, forKey: .konductorConfig)
-        state = try? container.decode(StateMetadata.self, forKey: .state)
-    }
+/// Metadata passed to solutions and even to Konductor itself with possibility of overriding at event level.
+/// Is contained within the `EdgeRequest` request property.
+struct RequestMetadata : Encodable {
+    let konductorConfig: KonductorConfig?
+    let state: StateMetadata?
 }

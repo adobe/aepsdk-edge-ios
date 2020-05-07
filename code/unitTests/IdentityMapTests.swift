@@ -168,7 +168,7 @@ class IdentityMapTests: XCTestCase {
               ]
             }
             """
-        let jsonString = String(data: data!, encoding: .utf8)        
+        let jsonString = String(data: data!, encoding: .utf8)
         XCTAssertEqual(expected, jsonString)
     }
     
