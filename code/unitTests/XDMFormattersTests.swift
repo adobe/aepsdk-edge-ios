@@ -53,13 +53,13 @@ class XDMFormattersTests: XCTestCase {
     }
     
     func testDateToISO8601String_onNil_returnsNil() {
-
+        
         let cal:Date? = nil
         XCTAssertNil(XDMFormatters.dateToISO8601String (from:cal))
     }
-
+    
     func testDateToFullDateString_onValidTimestamp_returnsFormattedString() {
-           
+        
         var dateComponents = DateComponents()
         dateComponents.year = 2019
         dateComponents.month = 9
@@ -70,15 +70,15 @@ class XDMFormattersTests: XCTestCase {
         dateComponents.second = 45
         let userCalendar = Calendar.current
         let cal = userCalendar.date(from: dateComponents)
-
+        
         let serializedDate: String = XDMFormatters.dateToFullDateString (from:cal)!
         var pattern: String
         pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}"
-
+        
         XCTAssertEqual("2019-09-23",serializedDate)
         XCTAssertEqual(NSMakeRange(0, 10), matches(regex: pattern, text: serializedDate))
-       }
-
+    }
+    
     func testDateToFullDateString_onNil_returnsNil() {
         
         let cal:Date? = nil

@@ -30,7 +30,7 @@ class RequestBuilderTests: XCTestCase {
         request.recordSeparator = "A"
         request.lineFeed = "B"
         request.experienceCloudId = "ecid"
-
+        
         
         let event = try? ACPExtensionEvent(name: "Request Test",
                                            type: "type",
@@ -66,9 +66,9 @@ class RequestBuilderTests: XCTestCase {
         var events: [ACPExtensionEvent] = []
         
         events.append(try! ACPExtensionEvent(name: "Request Test 1",
-                                           type: "type",
-                                           source: "source",
-                                           data: ["xdm":["application":["name":"myapp"]]]))
+                                             type: "type",
+                                             source: "source",
+                                             data: ["xdm":["application":["name":"myapp"]]]))
         
         events.append(try! ACPExtensionEvent(name: "Request Test 2",
                                              type: "type",
@@ -105,7 +105,7 @@ class RequestBuilderTests: XCTestCase {
         request.recordSeparator = "A"
         request.lineFeed = "B"
         request.experienceCloudId = "ecid"
-
+        
         
         let event = try? ACPExtensionEvent(name: "Request Test",
                                            type: "type",
@@ -136,7 +136,7 @@ class RequestBuilderTests: XCTestCase {
         request.recordSeparator = "A"
         request.lineFeed = "B"
         request.experienceCloudId = "ecid"
-
+        
         
         let event = try? ACPExtensionEvent(name: "Request Test",
                                            type: "type",

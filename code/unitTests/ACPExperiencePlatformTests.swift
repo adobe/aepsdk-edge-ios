@@ -23,45 +23,45 @@ class ExperiencePlatformTests: XCTestCase {
         xdm["testXdmKey2"] = "testXdmValue2"
         return xdm
     }
- 
-     func generateData()  -> [String : Any] {
-         var data = [String: Any]()
-          data["testDataKey1"] = "testDataValue1"
-          data["testDataKey2"] = "testDataValue2"
-          return data
+    
+    func generateData()  -> [String : Any] {
+        var data = [String: Any]()
+        data["testDataKey1"] = "testDataValue1"
+        data["testDataKey2"] = "testDataValue2"
+        return data
     }
-
+    
     struct MobileSDKSchema : XDMSchema {
         var schemaVersion : String
         var schemaIdentifier : String
         var datasetIdentifier : String
     }
     let generateXdmSchema = MobileSDKSchema(schemaVersion: "1.4", schemaIdentifier: "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", datasetIdentifier: "5dd603781b95cc18a83d42ce")
-
+    
     func testregisterExtension_registersWithoutAnyErrorOrCrash() {
         XCTAssertTrue(ACPExperiencePlatform.registerExtension() == ())
     }
     
     func testSendEvent_withNonNullXdmAndNonNullData_ExperiencePlatformEventData() {
-
+        
         func  completionHandler(_ s: [String: Any]) -> Void {
         }
         ACPExperiencePlatform.registerExtension()
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generateXdm(),data: generateData())
         XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseCallback: completionHandler) == ())
     }
-
-   func testSendEvent_withNonNullXdmAndNullData_ExperiencePlatformEventData() {
-
+    
+    func testSendEvent_withNonNullXdmAndNullData_ExperiencePlatformEventData() {
+        
         func  completionHandler(_ s: [String: Any]) -> Void {
         }
         ACPExperiencePlatform.registerExtension()
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generateXdm(),data: nil)
         XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseCallback: completionHandler) == ())
     }
-
+    
     func testSendEvent_withNonNullXdmSchemaAndNonNullData_ExperiencePlatformEventData() {
-
+        
         func  completionHandler(_ s: [String: Any]) -> Void {
         }
         ACPExperiencePlatform.registerExtension()

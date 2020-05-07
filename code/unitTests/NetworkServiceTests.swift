@@ -34,10 +34,10 @@ class NetworkServiceTests: XCTestCase {
     }
     
     // MARK: NetworkService tests
-
+    
     func testConnectAsync_returnsError_whenIncompleteUrl() {
         let expectation = XCTestExpectation(description: "Completion handler called")
-
+        
         let testUrl = URL(string: "https://")!
         let testBody = "test body"
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"])
@@ -104,7 +104,7 @@ class NetworkServiceTests: XCTestCase {
     
     func testConnectAsync_initiatesConnection_whenValidNetworkRequest() {
         let expectation = XCTestExpectation(description: "Completion handler called")
-
+        
         let testUrl = URL(string: "https://test.com")!
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"], connectTimeout: 2.0, readTimeout: 3.0)
         networkStub.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
@@ -127,7 +127,7 @@ class NetworkServiceTests: XCTestCase {
     
     func testConnectAsync_returnsTimeoutError_whenConnectionTimesOut() {
         let expectation = XCTestExpectation(description: "Completion handler called")
-
+        
         let testUrl = URL(string: "https://example.com:81")!
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"], connectTimeout: 1.0, readTimeout: 1.0)
         ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
@@ -178,9 +178,9 @@ class NetworkServiceTests: XCTestCase {
         let request2 = NetworkRequest(url: URL(string: "https://test2.com")!, httpMethod: HttpMethod.get, httpHeaders: ["Accept": "text/html"])
         let request3 = NetworkRequest(url: URL(string: "https://test3.com")!)
         let completionHandler : ((HttpConnection) -> Void) = { connection in
-           print("say hi")
+            print("say hi")
         }
-    
+        
         // test&verify
         NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
         ACPNetworkService.shared.connectAsync(networkRequest: request1, completionHandler: completionHandler)
@@ -254,7 +254,7 @@ class NetworkServiceTests: XCTestCase {
         XCTAssertEqual("test", testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
         XCTAssertEqual("ro-RO", testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept-Language"])
     }
-
+    
     func testReset_disablesOverride_whenCalled() {
         let testPerformerOverrider = MockPerformerOverrider()
         
