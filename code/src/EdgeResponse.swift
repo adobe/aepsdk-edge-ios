@@ -14,7 +14,7 @@ import Foundation
 
 /// A response from the Adobe Experience Edge server.
 /// An `EdgeResponse` is the top-level response object received from Konductor.
-struct EdgeResponse : Codable {
+struct EdgeResponse : Decodable {
     
     /// The request identifier associated with this response
     let requestId: String?
@@ -27,4 +27,5 @@ struct EdgeResponse : Codable {
     
     /// List of warnings received from Konductor
     let warnings: [[String : AnyCodable]]?
+    // TODO AMSDK-9555 check if handle, errors, warnings should be fully decodable
 }

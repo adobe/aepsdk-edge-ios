@@ -21,10 +21,10 @@ enum ExperienceEdgeRequestType: String {
    case collect = "collect"
 }
 
-/// Used to identify if a `NetworkRequest` should e retried or not
+/// Used to identify if a `NetworkRequest` should be retried or not
 enum RetryNetworkRequest: Int {
-   case yes = 1
-   case no = 0
+   case yes
+   case no
 }
 
 /// Convenience enum for the known error codes
