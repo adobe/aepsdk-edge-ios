@@ -286,6 +286,15 @@
 			path = util;
 			sourceTree = "<group>";
 		};
+		BF0C094C2465E66700892B5D /* functionalTestsConfig */ = {
+			isa = PBXGroup;
+			children = (
+				BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */,
+			);
+			name = functionalTestsConfig;
+			path = ../../code/functionalTests;
+			sourceTree = "<group>";
+		};
 		BF947F89243F9C9E0057A6CC /* util */ = {
 			isa = PBXGroup;
 			children = (
@@ -325,6 +334,7 @@
 				D4D5B4E9242EBB1600CAB6E4 /* src */,
 				D4D5B4F1242EBD2200CAB6E4 /* unitTests */,
 				D4D5B4F2242EBFAE00CAB6E4 /* functionalTests */,
+				BF0C094C2465E66700892B5D /* functionalTestsConfig */,
 				D4D5B5972433F9C300CAB6E4 /* AEPCommerceDemoApp */,
 				D4D5B57B2432977F00CAB6E4 /* AEPDemoAppSwiftUI */,
 				D4D5B4E8242EBB1600CAB6E4 /* Products */,
@@ -396,7 +406,6 @@
 				BF0C093B2462159400892B5D /* util */,
 				D4D5B53524325AB700CAB6E4 /* ExampleFunctionalTest.swift */,
 				D4D5B53724325AB700CAB6E4 /* Info.plist */,
-				BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */,
 			);
 			name = functionalTests;
 			path = ../../code/functionalTests;
