@@ -71,49 +71,4 @@ class FunctionalTestsWithNoConfiguration: XCTestCase {
         wait(for: [handleResponseEventExpectation], timeout: 1.0)
     }
 
-
-}
-
-class TestableExperiencePlatformInternal : ExperiencePlatformInternal {
-    
-    static public var processAddEventExpectation: XCTestExpectation? = nil
-    static public var processEventQueueExpectation: XCTestExpectation? = nil
-    static public var handleAddEventExpectation: XCTestExpectation? = nil
-    static public var processPlatformResponseEventExpectation: XCTestExpectation? = nil
-    static public var handleResponseEventExpectation: XCTestExpectation? = nil
-    
-    override func processAddEvent(_ event: ACPExtensionEvent) {
-        if let expectation = TestableExperiencePlatformInternal.processAddEventExpectation {
-            expectation.fulfill()
-        }
-        super.processAddEvent(event)
-    }
-    
-    override func processEventQueue(_ event: ACPExtensionEvent) {
-        if let expectation = TestableExperiencePlatformInternal.processEventQueueExpectation {
-            expectation.fulfill()
-        }
-        super.processEventQueue(event)
-    }
-    
-    override func handleAddEvent(event: ACPExtensionEvent) -> Bool {
-        if let expectation = TestableExperiencePlatformInternal.handleAddEventExpectation {
-            expectation.fulfill()
-        }
-        return super.handleAddEvent(event: event)
-    }
-    
-    override func processPlatformResponseEvent(_ event: ACPExtensionEvent){
-        if let expectation = TestableExperiencePlatformInternal.processPlatformResponseEventExpectation {
-            expectation.fulfill()
-        }
-        super.processPlatformResponseEvent(event)
-    }
-    
-    override func handleResponseEvent(event: ACPExtensionEvent) -> Bool {
-        if let expectation = TestableExperiencePlatformInternal.handleResponseEventExpectation {
-            expectation.fulfill()
-        }
-        return super.handleResponseEvent(event: event)
-    }
 }

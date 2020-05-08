@@ -21,6 +21,8 @@
 		BF0C09402462806100892B5D /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */; };
 		BF0C09452465382000892B5D /* MonitorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09442465382000892B5D /* MonitorExtension.swift */; };
 		BF0C09462465382000892B5D /* MonitorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09442465382000892B5D /* MonitorExtension.swift */; };
+		BF0C09482465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */; };
+		BF0C09492465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */; };
 		BF947F64243565CC0057A6CC /* ExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */; platformFilter = ios; };
 		BF947F65243565CC0057A6CC /* ExperiencePlatformConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */; platformFilter = ios; };
 		BF947F6824366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */; platformFilter = ios; };
@@ -135,6 +137,7 @@
 		BF0C09332461209900892B5D /* functionalTestsConfig.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsConfig.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestUtils.swift; sourceTree = "<group>"; };
 		BF0C09442465382000892B5D /* MonitorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorExtension.swift; sourceTree = "<group>"; };
+		BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestableExperiencePlatformInternal.swift; sourceTree = "<group>"; };
 		BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformInternal.swift; sourceTree = "<group>"; };
 		BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformConstants.swift; sourceTree = "<group>"; };
 		BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformExtensionRequestListener.swift; sourceTree = "<group>"; };
@@ -278,6 +281,7 @@
 			children = (
 				BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */,
 				BF0C09442465382000892B5D /* MonitorExtension.swift */,
+				BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -815,6 +819,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF0C09462465382000892B5D /* MonitorExtension.swift in Sources */,
+				BF0C09492465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */,
 				BF0C093E246215B000892B5D /* FunctionalTestUtils.swift in Sources */,
 				BF0C092A2461209900892B5D /* FunctionalTestsWithNoConfiguration.swift in Sources */,
 			);
@@ -879,6 +884,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF0C09452465382000892B5D /* MonitorExtension.swift in Sources */,
+				BF0C09482465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */,
 				BF0C09402462806100892B5D /* FunctionalTestUtils.swift in Sources */,
 				BF0C0935246120B200892B5D /* ExampleFunctionalTest.swift in Sources */,
 			);
