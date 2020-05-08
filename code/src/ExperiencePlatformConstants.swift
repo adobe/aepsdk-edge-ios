@@ -63,7 +63,7 @@ struct ExperiencePlatformConstants {
         struct Identity {
             private init() {}
             
-            static let stateOwner = "ccom.adobe.module.identity"
+            static let stateOwner = "com.adobe.module.identity"
             static let ecid = "mid"
         }
         

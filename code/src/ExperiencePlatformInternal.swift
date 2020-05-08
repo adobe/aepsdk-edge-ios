@@ -177,7 +177,7 @@ class ExperiencePlatformInternal : ACPExtension {
     private func getSharedState(owner: String, event: ACPExtensionEvent) -> [AnyHashable : Any]? {
         let state: [AnyHashable : Any]?
         do {
-            state = try api.getSharedEventState(owner, event: nil)
+            state = try api.getSharedEventState(owner, event: event)
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to retrieve shared state \(owner): \(error.localizedDescription)")
             return nil // keep event in queue to process on next trigger
