@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 import ACPCore
 
@@ -40,7 +39,6 @@ class NetworkResponseHandler {
             let decoder = JSONDecoder()
             let edgeResponse = try decoder.decode(EdgeResponse.self, from: data)
             
-            
             ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"processResponseOnSuccess - Received server response:\n \(jsonResponse)")
             
             // handle the event handles, errors and warnings coming from server
@@ -52,7 +50,6 @@ class NetworkResponseHandler {
             ACPCore.log(ACPMobileLogLevel.warning, tag:LOG_TAG,
                         message:"processResponseOnSuccess - The conversion to JSON failed for server response: \(jsonResponse), request id \(requestId) with error: \(error.localizedDescription)")
         }
-        
     }
     
     func processResponseOnError(jsonError:String, requestId:String) {
@@ -74,5 +71,4 @@ class NetworkResponseHandler {
     private func dispatchEventErrors(errorsArray : [[String: AnyCodable]]?, requestId: String, isError:Bool) {
         // TODO AMSDK-9555, AMSDK-9842
     }
-
 }

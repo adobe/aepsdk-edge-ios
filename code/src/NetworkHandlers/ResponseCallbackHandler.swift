@@ -10,9 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
-
 
 /// Use this class to register `ExperiencePlatformCallback`(s) for a specific event identifier
 /// and get notified once a response is received from the Experience Edge or when an error occurred

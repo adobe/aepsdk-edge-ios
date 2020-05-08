@@ -21,6 +21,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     private var networkService = ExperiencePlatformNetworkService()
     
     public override func setUp() {
+        continueAfterFailure = false
         self.mockResponseCallback = MockResponseCallback()
         self.mockNetworkService = MockNetworkServiceOverrider()
         AEPServiceProvider.shared.networkService = mockNetworkService

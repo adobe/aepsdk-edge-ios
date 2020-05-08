@@ -25,13 +25,11 @@ class NetworkResponseCallback : ResponseCallback {
         self.networkResponseHandler = responseHandler
     }
     
-    
     /// Processes the success responses
     /// - Parameter jsonResponse: success response from the server, JSON formatted
     func onResponse(jsonResponse: String) {
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
     }
-    
     
     /// Porcesses the error responses
     /// - Parameter jsonError: error response from the server or generic error if unknown, JSON formatted
@@ -48,6 +46,4 @@ class NetworkResponseCallback : ResponseCallback {
             ResponseCallbackHandler.shared.unregisterCallback(uniqueEventId: eventId)
         }
     }
-    
-    
 }
