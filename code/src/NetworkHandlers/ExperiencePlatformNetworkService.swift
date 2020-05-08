@@ -40,7 +40,7 @@ enum HttpResponseCodes: Int {
 /// Network service for requests to the Adobe Experience Edge
 class ExperiencePlatformNetworkService {
     private let TAG:String = "ExperiencePlatformNetworkService"
-    private let defaultGenericErrorMessage = "Request to Data platform failed with an unknown exception"
+    private let defaultGenericErrorMessage = "Request to ExEdge failed with an unknown exception"
     private let defaultNamespace = "global"
     private let recoverableNetworkErrorCodes:[Int] = [HttpResponseCodes.clientTimeout.rawValue,
                                                       HttpResponseCodes.tooManyRequests.rawValue,
@@ -199,7 +199,7 @@ class ExperiencePlatformNetworkService {
                 errorJson = composeGenericErrorAsJson(plainTextErrorMessage: nil)
             }
         } else {
-            errorJson = composeGenericErrorAsJson(plainTextErrorMessage: nil)
+            errorJson = composeGenericErrorAsJson(plainTextErrorMessage: connection.responseString)
         }
         
         if let unwrappedErrorJson  = errorJson {
@@ -233,8 +233,21 @@ class ExperiencePlatformNetworkService {
     /// - Parameter plainTextErrorMessage: error message to be formatted; if nil/empty is provided, a default error message is returned.
     /// - Returns: the JSON formatted error as a String or nil if there was an error while serlizinging the error message
     private func composeGenericErrorAsJson(plainTextErrorMessage: String?) -> String? {
+        if let unwrappedMessage = plainTextErrorMessage {
+            // check if this is a json error response from ExEdge, and if so passed unchanged
+            let data = Data(unwrappedMessage.utf8)
+            do {
+                if let _ = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    return plainTextErrorMessage
+                }
+            } catch {
+                // not a json, handle generic error
+            }
+        }
+        
         var unwrappedErrorMessage = plainTextErrorMessage ?? defaultGenericErrorMessage
         unwrappedErrorMessage = unwrappedErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         let errorDictionary = [ExperiencePlatformConstants.JsonKeys.Response.Error.message : unwrappedErrorMessage, ExperiencePlatformConstants.JsonKeys.Response.Error.namespace: defaultNamespace]
         guard let json = try? JSONSerialization.data(withJSONObject: errorDictionary, options: []) else {
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "composeGenericErrorAsJson - Failed to serialize the error message.")

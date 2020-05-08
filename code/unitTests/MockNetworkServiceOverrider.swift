@@ -18,12 +18,15 @@ class MockNetworkServiceOverrider : NetworkService {
     var connectAsyncCalled:Bool = false
     var connectAsyncCalledWithNetworkRequest:NetworkRequest?
     var connectAsyncCalledWithCompletionHandler: ((HttpConnection) -> Void)?
+    var connectAsyncCompletionHandlerReturnConnection: HttpConnection = HttpConnection(data: "{}".data(using: .utf8), response: nil, error: nil)
 
     func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         print("Do nothing \(networkRequest)")
         connectAsyncCalled = true
         connectAsyncCalledWithNetworkRequest = networkRequest
         connectAsyncCalledWithCompletionHandler = completionHandler
+        guard let unwrappedCompletionHandler = completionHandler else { return }
+        unwrappedCompletionHandler(connectAsyncCompletionHandlerReturnConnection)
     }
     
     func reset() {

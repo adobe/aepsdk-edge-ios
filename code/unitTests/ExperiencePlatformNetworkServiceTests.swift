@@ -27,48 +27,229 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         networkService = ExperiencePlatformNetworkService()
     }
     
-    func testStrings() {
-        let testStr : String = "\u{00A9}{\"some\":\"thing\\n\"}\u{00F8}" +
-        "\u{00A9}{" +
-        "  \"may\": {" +
-        "    \"include\": \"nested\"," +
-        "    \"objects\": [" +
-        "      \"and\"," +
-        "      \"arrays\"" +
-        "    ]" +
-        "  }" +
-        "}\u{00F8}";
-        let requestConfigRecordSeparator: Character = "\u{00A9}"
-        let requestConfigLineFeed: Character = "\u{00F8}"
-        // todo
-        
-    }
-    
     func testDoRequest_whenRequestHeadersAreEmpty_setsDefaultHeaders() {
-
         // setup
-        var jsonBody: Data = "{}".data(using: .utf8)!
-        var url: URL = URL(string: "https://test.com")!
-        var mockResponseCallback = MockResponseCallback()
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
 
         // test
-        let networkService = ExperiencePlatformNetworkService()
-        let retryResult = networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
+        networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
 
         // verify
-        // TODO: update network service and add assertions
+        XCTAssertTrue(mockNetworkService.connectAsyncCalled)
+        XCTAssertEqual(["accept":"application/json", "Content-Type":"application/json"], mockNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders)
     }
     
     func testDoRequest_whenRequestHeadersExist_RequestHeadersAppendedOnNetworkCall() {
-        
+        // setup
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
+        let headers: [String:String] = ["test":"header","accept":"application/json", "Content-Type":"application/json", "key":"value"]
+
+        // test
+        networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: headers, responseCallback: mockResponseCallback, retryTimes: 0)
+
+        // verify
+        XCTAssertTrue(mockNetworkService.connectAsyncCalled)
+        XCTAssertEqual(headers, mockNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders)
     }
     
     func testDoRequest_whenConnection_ResponseCode200_ReturnsRetryNo_AndCallsResponseCallback_AndNoErrorCallback() {
-        
+        // setup
+        let stringResponseBody = "{\"key\":\"value\"}"
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
+
+        // test
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
+
+        // verify
+        XCTAssertTrue(mockResponseCallback.onResponseCalled)
+        XCTAssertFalse(mockResponseCallback.onErrorCalled)
+        XCTAssertTrue(mockResponseCallback.onCompleteCalled)
+        XCTAssertEqual([stringResponseBody], mockResponseCallback.onResponseJsonResponse)
     }
     
     func testDoRequest_whenConnection_ResponseCode204_ReturnsRetryNo_AndNoResponseCallback_AndNoErrorCallback() {
+        // setup
+        let stringResponseBody = "OK"
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
+
+        // test
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 204, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
+
+        // verify
+        XCTAssertFalse(mockResponseCallback.onResponseCalled)
+        XCTAssertFalse(mockResponseCallback.onErrorCalled)
+        XCTAssertTrue(mockResponseCallback.onCompleteCalled)
+        XCTAssertEqual([], mockResponseCallback.onResponseJsonResponse)
+    }
+    
+    func testDoRequest_whenConnection_RecoverableResponseCode_ReturnsRetryYes_AndNoResponseCallback_AndNoErrorCallback() {
+        // setup
+        let stringResponseBody = "Service Unavailable"
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
         
+        // test
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let retryResult = networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback)
+
+        // verify
+        XCTAssertEqual(RetryNetworkRequest.yes, retryResult)
+        XCTAssertFalse(mockResponseCallback.onResponseCalled)
+        XCTAssertFalse(mockResponseCallback.onErrorCalled)
+        XCTAssertFalse(mockResponseCallback.onCompleteCalled)
+        XCTAssertEqual([], mockResponseCallback.onResponseJsonResponse)
+    }
+    
+    func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithError_ReturnFormattedError() {
+        // setup
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
+        let error:NSError = NSError(domain:NSURLErrorDomain, code:NSURLErrorAppTransportSecurityRequiresSecureConnection, userInfo:nil)
+        
+        // test
+        let mockHttpConnection = HttpConnection(data: nil, response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: error)
+        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let retryResult = networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback)
+
+        // verify
+        XCTAssertEqual(RetryNetworkRequest.no, retryResult)
+        XCTAssertFalse(mockResponseCallback.onResponseCalled)
+        XCTAssertTrue(mockResponseCallback.onErrorCalled)
+        XCTAssertEqual(1, mockResponseCallback.onErrorJsonError.capacity)
+        let errorJson = mockResponseCallback.onErrorJsonError[0]
+        XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
+        XCTAssertTrue(errorJson.contains("\"message\":\"service unavailable\""))
+    }
+    
+    func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithNilError_ShouldReturnGenericError() {
+        // setup
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
+        
+        // test
+        let mockHttpConnection = HttpConnection(data: nil, response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let retryResult = networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback)
+
+        // verify
+        XCTAssertEqual(RetryNetworkRequest.no, retryResult)
+        XCTAssertFalse(mockResponseCallback.onResponseCalled)
+        XCTAssertTrue(mockResponseCallback.onErrorCalled)
+        XCTAssertEqual(1, mockResponseCallback.onErrorJsonError.capacity)
+        let errorJson = mockResponseCallback.onErrorJsonError[0]
+        XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
+        XCTAssertTrue(errorJson.contains("\"message\":\"Request to ExEdge failed with an unknown exception\""))
+    }
+    
+    func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithInvalidJsonContent() {
+        // setup
+        let stringResponseBody = "Internal Server Error"
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
+        
+        // test
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let retryResult = networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback)
+
+        // verify
+        XCTAssertEqual(RetryNetworkRequest.no, retryResult)
+        XCTAssertFalse(mockResponseCallback.onResponseCalled)
+        XCTAssertTrue(mockResponseCallback.onErrorCalled)
+        XCTAssertEqual(1, mockResponseCallback.onErrorJsonError.capacity)
+        let errorJson = mockResponseCallback.onErrorJsonError[0]
+        XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
+        XCTAssertTrue(errorJson.contains("\"message\":\"Internal Server Error\""))
+    }
+    
+    func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithValidJsonContent() {
+        // setup
+        let stringResponseBody =  "{\n" +
+                                   "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+                                   "      \"handle\": [],\n" +
+                                   "      \"errors\": [\n" +
+                                   "        {\n" +
+                                   "          \"code\": \"global:0\",\n" +
+                                   "          \"namespace\": \"global\",\n" +
+                                   "          \"severity\": \"0\",\n" +
+                                   "          \"message\": \"Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases\"\n"
+                                   +
+                                   "        }\n" +
+                                   "      ]\n" +
+                                   "    }";
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
+        
+        // test
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let retryResult = networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback)
+
+        // verify
+        XCTAssertEqual(RetryNetworkRequest.no, retryResult)
+        XCTAssertFalse(mockResponseCallback.onResponseCalled)
+        XCTAssertTrue(mockResponseCallback.onErrorCalled)
+        XCTAssertEqual(1, mockResponseCallback.onErrorJsonError.capacity)
+        let errorJson = mockResponseCallback.onErrorJsonError[0]
+        XCTAssertTrue(errorJson.contains(stringResponseBody))
+    }
+    
+    func testDoRequest_whenRequestProcessed_CallsOnComplete() {
+        // setup
+        let stringResponseBody = "{\"key\":\"value\"}"
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
+
+        // test
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
+
+        // verify
+        XCTAssertTrue(mockResponseCallback.onResponseCalled)
+        XCTAssertFalse(mockResponseCallback.onErrorCalled)
+        XCTAssertTrue(mockResponseCallback.onCompleteCalled)
+    }
+    
+    func testDoRequest_whenRequestNotProcessed_NoCallOnComplete() {
+        // setup
+        let stringResponseBody = "Service Unavailable"
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
+        // test
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let _ = networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback)
+
+        // verify
+        XCTAssertFalse(mockResponseCallback.onResponseCalled)
+        XCTAssertFalse(mockResponseCallback.onErrorCalled)
+        XCTAssertFalse(mockResponseCallback.onCompleteCalled)
+    }
+    
+    func testDoRequest_whenRequestNotProcessed_noRetry_CallsOnComplete() {
+        // setup
+        let stringResponseBody = "Service Unavailable"
+        let jsonBody: Data = "{}".data(using: .utf8)!
+        let url: URL = URL(string: "https://test.com")!
+        // test
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        networkService.doRequest(url:url, jsonBody:jsonBody, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
+
+        // verify
+        XCTAssertFalse(mockResponseCallback.onResponseCalled)
+        XCTAssertFalse(mockResponseCallback.onErrorCalled)
+        XCTAssertTrue(mockResponseCallback.onCompleteCalled)
     }
     
     func testHandleStreamingResponse_nilSeparators_doesNotCrash() {
