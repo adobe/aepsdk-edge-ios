@@ -50,11 +50,9 @@ class RequestBuilder {
     /// Builds the request payload with all the provided parameters and events.
     /// - Parameter events: List of `ACPExtensionEvent` objects. Each event is expected to contain a serialized Experience Platform Event
     /// encoded in the `ACPExtensionEvent.eventData` property.
-    /// - Returns: A `Data` object of the JSON encoded request.
-    func getPayload(_ events: [ACPExtensionEvent]) -> Data? {
-        if (events.isEmpty) {
-            return nil
-        }
+    /// - Returns: A `EdgeRequest` object or nil if the events list is empty
+    func getRequestPayload(_ events: [ACPExtensionEvent]) -> EdgeRequest? {
+        guard !events.isEmpty else { return nil }
         
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
         let konductorConfig = KonductorConfig(streaming: streamingMetadata)
@@ -75,21 +73,8 @@ class RequestBuilder {
         contextData = RequestContextData(identityMap: identityMap,
                                          environment: buildEnvironmentData(),
                                          device: buildDeviceData())
-        let request = EdgeRequest(meta: requestMetadata,
-                                  xdm: contextData,
-                                  events: platformEvents)
         
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted]
-        
-        do {
-            // TODO return EdgeRequest here instead of encoded JSON Data?
-            return try encoder.encode(request)
-        } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to encode request to JSON with error '\(error.localizedDescription)'")
-        }
-        
-        return nil
+        return EdgeRequest(meta: requestMetadata, xdm: contextData, events: platformEvents)
     }
     
     /// Extract the Experience Platform Event from each `ACPExtensionEvent` and return as a list of maps. The timestamp for each

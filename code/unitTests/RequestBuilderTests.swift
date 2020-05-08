@@ -25,7 +25,7 @@ class RequestBuilderTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    func testGetPayload_allParameters_verifyMetadata() {
+    func testGetRequestPayload_allParameters_verifyMetadata() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
@@ -36,123 +36,82 @@ class RequestBuilderTests: XCTestCase {
                                            source: "source",
                                            data: ["data":["key":"value"]])
         
-        let data = request.getPayload([event!])
+        let requestPayload = request.getRequestPayload([event!])
         
-        XCTAssertNotNil(data)
-        
-        let json = try? JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String:Any]
-        
-        guard let dict = json else {
-            XCTFail("Failed to parse request payload to dictionary.")
+        XCTAssertEqual("A" , requestPayload?.meta?.konductorConfig?.streaming?.recordSeparator)
+        XCTAssertEqual("B", requestPayload?.meta?.konductorConfig?.streaming?.lineFeed)
+        XCTAssertTrue(requestPayload?.meta?.konductorConfig?.streaming?.enabled ?? false)
+        guard let ecid = requestPayload?.xdm?.identityMap?.getItemsFor(namespace: "ECID")?[0] else {
+            XCTFail("ECID missing")
             return
         }
-        
-        let flattenDict = flattenDictionary(dict: dict)
-        
-        XCTAssertEqual("A" , flattenDict[".meta.konductorConfig.streaming.recordSeparator"] as? String)
-        XCTAssertEqual("B", flattenDict[".meta.konductorConfig.streaming.lineFeed"] as? String)
-        XCTAssertTrue(flattenDict[".meta.konductorConfig.streaming.enabled"] as? Bool ?? false)
-        XCTAssertEqual("ecid", flattenDict[".xdm.identityMap.ECID[0].id"] as? String)
-        
+        XCTAssertEqual("ecid", ecid.id)
     }
     
-    func testGetPayload_withEventXdm_verifyEventId_verifyTimestamp() {
+    func testGetRequestPayload_withEventXdm_verifyEventId_verifyTimestamp() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
-        
+
         var events: [ACPExtensionEvent] = []
-        
+
         events.append(try! ACPExtensionEvent(name: "Request Test 1",
                                            type: "type",
                                            source: "source",
                                            data: ["xdm":["application":["name":"myapp"]]]))
-        
+
         events.append(try! ACPExtensionEvent(name: "Request Test 2",
                                              type: "type",
                                              source: "source",
                                              data: ["xdm":["environment":["type":"widget"]]]))
-        
-        let data = request.getPayload(events)
-        
-        XCTAssertNotNil(data)
-        
-        let json = try? JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String:Any]
-        
-        guard let dict = json else {
-            XCTFail("Failed to parse request payload to dictionary.")
-            return
-        }
-        
-        let flattenDict = flattenDictionary(dict: dict)
-        XCTAssertEqual("myapp", flattenDict[".events[0].xdm.application.name"] as? String)
-        XCTAssertEqual(events[0].eventUniqueIdentifier, flattenDict[".events[0].xdm.eventId"] as? String)
-        XCTAssertEqual(timestampToISO8601(events[0].eventTimestamp), flattenDict[".events[0].xdm.timestamp"] as? String)
-        
-        XCTAssertEqual("widget", flattenDict[".events[1].xdm.environment.type"] as? String)
-        XCTAssertEqual(events[1].eventUniqueIdentifier, flattenDict[".events[1].xdm.eventId"] as? String)
-        XCTAssertEqual(timestampToISO8601(events[1].eventTimestamp), flattenDict[".events[1].xdm.timestamp"] as? String)
+
+        let requestPayload = request.getRequestPayload(events)
+
+        let flattenEvent0 = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue as! [String : Any])
+        let flattenEvent1 = flattenDictionary(dict: requestPayload?.events?[1]["xdm"]?.dictionaryValue as! [String : Any])
+        XCTAssertEqual("myapp", flattenEvent0[".application.name"] as? String)
+        XCTAssertEqual(events[0].eventUniqueIdentifier, flattenEvent0[".eventId"] as? String)
+        XCTAssertEqual(timestampToISO8601(events[0].eventTimestamp), flattenEvent0[".timestamp"] as? String)
+
+        XCTAssertEqual("widget", flattenEvent1[".environment.type"] as? String)
+        XCTAssertEqual(events[1].eventUniqueIdentifier, flattenEvent1[".eventId"] as? String)
+        XCTAssertEqual(timestampToISO8601(events[1].eventTimestamp), flattenEvent1[".timestamp"] as? String)
     }
-    
-    func testGetPayload_withStorePayload_responseContainsStateEntries() {
+
+    func testGetRequestPayload_withStorePayload_responseContainsStateEntries() {
         let dataStore = MockKeyValueStore()
         let manager = StoreResponsePayloadManager(dataStore)
         manager.saveStorePayloads([StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600)])
-        
+
         let request = RequestBuilder(dataStore: dataStore)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
-        
         let event = try? ACPExtensionEvent(name: "Request Test",
                                            type: "type",
                                            source: "source",
                                            data: ["data":["key":"value"]])
-        
-        let data = request.getPayload([event!])
-        
-        XCTAssertNotNil(data)
-        
-        let json = try? JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String:Any]
-        
-        guard let dict = json else {
-            XCTFail("Failed to parse request payload to dictionary.")
-            return
-        }
-        
-        let flattenDict = flattenDictionary(dict: dict)
-        
-        XCTAssertEqual("key", flattenDict[".meta.state.entries[0].key"] as? String)
-        XCTAssertEqual("value" , flattenDict[".meta.state.entries[0].value"] as? String)
-        XCTAssertEqual(3600, flattenDict[".meta.state.entries[0].maxAge"] as? Int)
-        XCTAssertNil(flattenDict[".meta.state.entries[0].expiryDate"])
+
+        let requestPayload = request.getRequestPayload([event!])
+
+        XCTAssertEqual("key", requestPayload?.meta?.state?.entries?[0].key)
+        XCTAssertEqual(3600.0, requestPayload?.meta?.state?.entries?[0].maxAge)
+        XCTAssertEqual("value", requestPayload?.meta?.state?.entries?[0].value)
     }
-    
-    func testGetPayload_withoutStorePayload_responseDoesNotContainsStateEntries() {
+
+    func testGetRequestPayload_withoutStorePayload_responseDoesNotContainsStateEntries() {
         let request = RequestBuilder(dataStore: MockKeyValueStore())
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
-        
+
         let event = try? ACPExtensionEvent(name: "Request Test",
                                            type: "type",
                                            source: "source",
                                            data: ["data":["key":"value"]])
-        
-        let data = request.getPayload([event!])
-        
-        XCTAssertNotNil(data)
-        
-        let json = try? JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String:Any]
-        
-        guard let dict = json else {
-            XCTFail("Failed to parse request payload to dictionary.")
-            return
-        }
-        
-        let flattenDict = flattenDictionary(dict: dict)
-        
-        XCTAssertFalse(flattenDict.isEmpty)
-        XCTAssertNil(flattenDict[".meta.state"])
+
+        let requestPayload = request.getRequestPayload([event!])
+
+        XCTAssertNil(requestPayload?.meta?.state)
     }
 }

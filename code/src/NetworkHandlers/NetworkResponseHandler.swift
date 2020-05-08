@@ -35,20 +35,16 @@ class NetworkResponseHandler {
             return
         }
         
-        do {
-            let decoder = JSONDecoder()
-            let edgeResponse = try decoder.decode(EdgeResponse.self, from: data)
-            
-            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"processResponseOnSuccess - Received server response:\n \(jsonResponse)")
+        if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) {
+            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"processResponseOnSuccess - Received server response:\n \(jsonResponse), request id \(requestId)")
             
             // handle the event handles, errors and warnings coming from server
             dispatchEventHandles(handlesArray: edgeResponse.handle, requestId: requestId)
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId, isError: true)
             dispatchEventErrors(errorsArray: edgeResponse.warnings, requestId: requestId, isError: false)
-            
-        } catch {
+        } else {
             ACPCore.log(ACPMobileLogLevel.warning, tag:LOG_TAG,
-                        message:"processResponseOnSuccess - The conversion to JSON failed for server response: \(jsonResponse), request id \(requestId) with error: \(error.localizedDescription)")
+                    message:"processResponseOnSuccess - The conversion to JSON failed for server response: \(jsonResponse), request id \(requestId)")
         }
     }
     
@@ -57,13 +53,11 @@ class NetworkResponseHandler {
     }
     
     private func dispatchEventHandles(handlesArray: [[String: AnyCodable]]?, requestId: String) {
-        guard let unwrappedEventHandles = handlesArray else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"dispatchEventHandles - Received nil event handle array, nothing to handle")
+        guard let unwrappedEventHandles = handlesArray, !unwrappedEventHandles.isEmpty else {
+            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"dispatchEventHandles - Received nil/empty event handle array, nothing to handle")
             return
         }
         
-        guard unwrappedEventHandles.count > 0 else { return }
-
         ACPCore.log(ACPMobileLogLevel.verbose, tag:LOG_TAG, message:"dispatchEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
         // TODO AMSDK-9555, AMSDK-9842
     }

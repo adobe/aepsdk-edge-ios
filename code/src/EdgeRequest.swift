@@ -15,7 +15,7 @@ import Foundation
 
 /// A request for pushing events to the Adobe Data Platform.
 /// An `EdgeRequest` is the top-level request object sent to Konductor.
-struct EdgeRequest : Codable {
+struct EdgeRequest : Encodable {
     /// Metadata passed to solutions and even to Konductor itself with possiblity of overriding at event level
     let meta: RequestMetadata?
     

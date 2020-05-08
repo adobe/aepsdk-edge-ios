@@ -144,7 +144,7 @@ class ExperiencePlatformInternal : ACPExtension {
         
         // Build and send the network request to Konductor
         let listOfEvents: [ACPExtensionEvent] = [event]
-        if let requestData = requestBuilder.getPayload(listOfEvents) {
+        if let requestPayload = requestBuilder.getRequestPayload(listOfEvents) {
             let requestId:String = UUID.init().uuidString
             
             // NOTE: the order of these events need to be maintained as they were sent in the network request
@@ -157,11 +157,9 @@ class ExperiencePlatformInternal : ACPExtension {
             
             let callback: ResponseCallback = NetworkResponseCallback(requestId: requestId, responseHandler: networkResponseHandler)
             
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request for config '\(configId)' and body: \(String(data: requestData, encoding: .utf8) ?? "failed to parse")")
-            
             // TODO: AMSDK-9659 Add griffon session id to headers
             let requestHeaders:[String:String] = [:]
-            experiencePlatformNetworkService.doRequest(url: url, jsonBody: requestData, requestHeaders: requestHeaders, responseCallback: callback, retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
+            experiencePlatformNetworkService.doRequest(url: url, requestBody: requestPayload, requestHeaders: requestHeaders, responseCallback: callback, retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
             
         }
         
