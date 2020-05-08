@@ -10,14 +10,17 @@
 		2141891A2436663A00907D0A /* ACPNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214189182436663A00907D0A /* ACPNetworkService.swift */; };
 		490599ACF7DE3C0A0092BECC /* Pods_unitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED71717352BC28F3B63AF1C /* Pods_unitTests.framework */; };
 		68731D9E49F10F79248BE550 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CC57F9F0692D56FA85489EF /* Pods_AEPCommerceDemoApp.framework */; };
-		6ABE2134790901CF0445BACE /* Pods_functionalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B803FF967131F9FA944775CD /* Pods_functionalTests.framework */; };
+		6ABE2134790901CF0445BACE /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		73899DE74DC413D4346293B0 /* Pods_AEPDemoAppSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00E26DCA0284CBFDA951A1E0 /* Pods_AEPDemoAppSwiftUI.framework */; };
+		7D96ECCE79A4263EDED1357E /* Pods_functionalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B6EC1E1CB95AE462EC77CB /* Pods_functionalTests.framework */; };
 		97ED2776F18792FA4263423E /* Pods_ACPExperiencePlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B6956263FCE1C13E3298E6 /* Pods_ACPExperiencePlatform.framework */; };
 		BF0C092A2461209900892B5D /* FunctionalTestsWithNoConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */; };
 		BF0C092D2461209900892B5D /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
 		BF0C0935246120B200892B5D /* ExampleFunctionalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* ExampleFunctionalTest.swift */; };
 		BF0C093E246215B000892B5D /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */; };
 		BF0C09402462806100892B5D /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */; };
+		BF0C09452465382000892B5D /* MonitorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09442465382000892B5D /* MonitorExtension.swift */; };
+		BF0C09462465382000892B5D /* MonitorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09442465382000892B5D /* MonitorExtension.swift */; };
 		BF947F64243565CC0057A6CC /* ExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */; platformFilter = ios; };
 		BF947F65243565CC0057A6CC /* ExperiencePlatformConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */; platformFilter = ios; };
 		BF947F6824366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */; platformFilter = ios; };
@@ -131,6 +134,7 @@
 		BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestsWithNoConfiguration.swift; sourceTree = "<group>"; };
 		BF0C09332461209900892B5D /* functionalTestsConfig.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsConfig.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestUtils.swift; sourceTree = "<group>"; };
+		BF0C09442465382000892B5D /* MonitorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorExtension.swift; sourceTree = "<group>"; };
 		BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformInternal.swift; sourceTree = "<group>"; };
 		BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformConstants.swift; sourceTree = "<group>"; };
 		BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformExtensionRequestListener.swift; sourceTree = "<group>"; };
@@ -165,6 +169,7 @@
 		D42B86C3244900ED00A4E13B /* HttpConnectionPerformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpConnectionPerformer.swift; sourceTree = "<group>"; };
 		D42B86C52449013200A4E13B /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		D42B86C72449016300A4E13B /* NetworkServiceOverrider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceOverrider.swift; sourceTree = "<group>"; };
+		D4B6EC1E1CB95AE462EC77CB /* Pods_functionalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_functionalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACPExperiencePlatform.swift; sourceTree = "<group>"; };
 		D4D5B5212432599B00CAB6E4 /* unitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = unitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -229,7 +234,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4D5B53824325AB700CAB6E4 /* libACPExperiencePlatform.a in Frameworks */,
-				6ABE2134790901CF0445BACE /* Pods_functionalTests.framework in Frameworks */,
+				6ABE2134790901CF0445BACE /* (null) in Frameworks */,
+				7D96ECCE79A4263EDED1357E /* Pods_functionalTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,6 +268,7 @@
 				00E26DCA0284CBFDA951A1E0 /* Pods_AEPDemoAppSwiftUI.framework */,
 				7ED71717352BC28F3B63AF1C /* Pods_unitTests.framework */,
 				3C751A591165C4B689FA3840 /* Pods_functionalTestsConfig.framework */,
+				D4B6EC1E1CB95AE462EC77CB /* Pods_functionalTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -270,6 +277,7 @@
 			isa = PBXGroup;
 			children = (
 				BF0C093C246215B000892B5D /* FunctionalTestUtils.swift */,
+				BF0C09442465382000892B5D /* MonitorExtension.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -806,6 +814,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF0C09462465382000892B5D /* MonitorExtension.swift in Sources */,
 				BF0C093E246215B000892B5D /* FunctionalTestUtils.swift in Sources */,
 				BF0C092A2461209900892B5D /* FunctionalTestsWithNoConfiguration.swift in Sources */,
 			);
@@ -869,6 +878,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF0C09452465382000892B5D /* MonitorExtension.swift in Sources */,
 				BF0C09402462806100892B5D /* FunctionalTestUtils.swift in Sources */,
 				BF0C0935246120B200892B5D /* ExampleFunctionalTest.swift in Sources */,
 			);
