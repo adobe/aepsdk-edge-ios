@@ -89,7 +89,7 @@ class EdgeRequestTests: XCTestCase {
     }
     
     func testEncode_onlyRequestMetadata() {
-        let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
+        let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "Q", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
         let edgeRequest = EdgeRequest(meta: requestMetadata,
                                       xdm: nil,
