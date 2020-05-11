@@ -28,7 +28,7 @@ class RequestContextDataTests: XCTestCase {
     // MARK: encoder tests
     
     func testEncode_noParameters() {
-        let context = RequestContextData(identityMap: nil, environment: nil, device: nil)
+        let context = RequestContextData(identityMap: nil)
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -48,7 +48,7 @@ class RequestContextDataTests: XCTestCase {
     }
     
     func testEncode_paramIdentityMap() {
-        let context = RequestContextData(identityMap: IdentityMap(), environment: nil, device: nil)
+        let context = RequestContextData(identityMap: IdentityMap())
         
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
