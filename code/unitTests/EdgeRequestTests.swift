@@ -21,7 +21,7 @@ class EdgeRequestTests: XCTestCase {
     }
     
     func testEncode_allProperties() {
-        let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "C", lineFeed: "B"))
+        let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
