@@ -17,25 +17,4 @@ import Foundation
 /// Is contained within the `EdgeRequest` request property.
 struct RequestContextData : Encodable {
     let identityMap: IdentityMap?
-    let environment: EnvironmentData?
-    let device: DeviceData?
-}
-
-/// Property that holds the Environment information in XDM format
-struct EnvironmentData : Encodable {
-    let operatingSystem: String?
-    let operatingSystemVersion: String?
-    let operatingSystemVendor: String?
-}
-
-/// Property that holds the Device information in XDM format
-struct DeviceData: Encodable {
-    let manufacturer: String?
-    let model: String?
-    let modelNumber: String?
-    let screenHeight: Int?
-    let screenWidth: Int?
-    let screenOrientation: String?
-    let type: String?
-    let colorDepth: String?
 }

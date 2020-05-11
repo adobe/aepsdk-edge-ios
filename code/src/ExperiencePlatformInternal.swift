@@ -151,7 +151,7 @@ class ExperiencePlatformInternal : ACPExtension {
             // otherwise the response callback cannot be matched
             // todo: add waiting events in list
             guard let url:URL = experiencePlatformNetworkService.buildUrl(requestType: ExperienceEdgeRequestType.interact, configId: configId, requestId: requestId) else {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to build the URL, skipping current event.")
+                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to build the URL, skipping current event with id \(event.eventUniqueIdentifier).")
                 return true
             }
             

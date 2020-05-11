@@ -68,12 +68,12 @@ class ExperiencePlatformNetworkService {
     }
     
     /// Make a network request to the Experience Edge and handle the connection.
-      /// - Parameters:
-      ///   - url: request URL
-      ///   - requestBody: `EdgeRequest` containing the encoded events
-      ///   - requestHeaders: request HTTP headers
-      ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
-      ///   - retryTimes: number of retries required for this request in case the connection failed or a `recoverableNetworkErrorCodes` was encountered
+    /// - Parameters:
+    ///   - url: request URL
+    ///   - requestBody: `EdgeRequest` containing the encoded events
+    ///   - requestHeaders: request HTTP headers
+    ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
+    ///   - retryTimes: number of retries required for this request in case the connection failed or a `recoverableNetworkErrorCodes` was encountered
     func doRequest(url: URL, requestBody: EdgeRequest, requestHeaders: [String: String]? = [:], responseCallback: ResponseCallback, retryTimes: UInt = 0) {
         // AMSDK-8909 check if this network request fails and needs a retry. The retry will happen right away, repeatedly (if needed) for
         // maximum NETWORK_REQUEST_MAX_RETRIES times or until the request is accepted by the server.

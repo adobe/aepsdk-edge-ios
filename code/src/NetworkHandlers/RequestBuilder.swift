@@ -65,15 +65,12 @@ class RequestBuilder {
         var contextData: RequestContextData? = nil
         
         // set ECID if available
-        var identityMap = IdentityMap()
         if let ecid = experienceCloudId {
+            var identityMap = IdentityMap()
             identityMap.addItem(namespace: ExperiencePlatformConstants.JsonKeys.ECID, id: ecid)
+            contextData = RequestContextData(identityMap: identityMap)
         }
     
-        contextData = RequestContextData(identityMap: identityMap,
-                                         environment: buildEnvironmentData(),
-                                         device: buildDeviceData())
-        
         return EdgeRequest(meta: requestMetadata, xdm: contextData, events: platformEvents)
     }
     
@@ -107,15 +104,5 @@ class RequestBuilder {
         }
         
         return platformEvents
-    }
-    
-    private func buildDeviceData() -> DeviceData? {
-        // TODO: AMSDK-9800 implement me
-        return nil
-    }
-    
-    private func buildEnvironmentData() -> EnvironmentData? {
-        // TODO: AMSDK-9800 implement me
-        return nil
     }
 }
