@@ -11,21 +11,44 @@
 //
 
 import Foundation
+import ACPCore
 
-/// Use this class to register `ExperiencePlatformCallback`(s) for a specific event identifier
-/// and get notified once a response is received from the Experience Edge or when an error occurred
+/// Use this class to register `ExperiencePlatformResponseHandler`(s) for a specific event identifier
+/// and get notified once a response is received from the Experience Edge or when an error occurred.
 class ResponseCallbackHandler {
+    private let TAG = "ResponseCallbacksHandler"
+    private var responseHandlers = ThreadSafeDictionary<String, ExperiencePlatformResponseHandler>(identifier: "com.adobe.experiencePlaftorm.responseHandlers")
     static let shared = ResponseCallbackHandler()
     
-    func registerCallback(uniqueEventId: String) {
-        // todo AMSDK-9555
+    func registerResponseHandler(uniqueEventId: String, responseHandler: ExperiencePlatformResponseHandler?) {
+        guard let unwrappedResponseHandler = responseHandler else { return }
+        guard !uniqueEventId.isEmpty else {
+            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to register response handler because of empty unique event id.")
+            return
+        }
+        
+        ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Registering callback for Data platform response with unique id \(uniqueEventId).")
+        responseHandlers[uniqueEventId] = unwrappedResponseHandler
     }
     
-    func unregisterCallback(uniqueEventId: String) {
-        // todo AMSDK-9555
+    func unregisterResponseHandler(uniqueEventId: String) {
+        guard !uniqueEventId.isEmpty else { return }
+        if responseHandlers.removeValue(forKey: uniqueEventId) != nil {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Removing callback for Data platform response with unique id \(uniqueEventId).")
+        }
     }
     
-    func invokeResponseCallback(eventData: [String: Any]) {
-        // todo AMSDK-9555
+    func invokeResponseHandler(eventData: [String: Any]) {
+        let requestEventId: String? = eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] as? String
+        guard let unwrappedRequestEventId = requestEventId, !unwrappedRequestEventId.isEmpty else {
+            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to invoke the response handler because of unspecified requestEventId, data received \(eventData)")
+            return
+        }
+        
+        guard let responseHandler = responseHandlers[unwrappedRequestEventId] else { return }
+        
+        ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Invoking registered onResponse handler for requestEventId (\(unwrappedRequestEventId)) with data \(eventData)")
+        responseHandler.onResponse(data: eventData)
+        
     }
 }

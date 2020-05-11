@@ -37,7 +37,8 @@ struct ExperiencePlatformConstants {
     struct EventDataKeys {
         private init() {}
         
-        static let uniqueSequenceId = "uniquesequenceid"
+        static let edgeRequesId = "requestId"
+        static let requestEventId = "requestEventId"
     }
     
     struct DataStoreKeys {
