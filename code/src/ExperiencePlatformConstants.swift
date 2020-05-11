@@ -16,62 +16,61 @@ import Foundation
 struct ExperiencePlatformConstants {
     private init() {}
     
-    static let eventTypeExperiencePlatform: String = "com.adobe.eventType.experiencePlatform"
-    static let eventTypeAdobeHub: String = "com.adobe.eventType.hub"
+    static let eventTypeExperiencePlatform = "com.adobe.eventType.experiencePlatform"
+    static let eventTypeAdobeHub = "com.adobe.eventType.hub"
 
-    static let eventSourceAdobeSharedState: String = "com.adobe.eventSource.sharedState"
-    static let eventSourceExtensionRequestContent: String = "com.adobe.eventSource.requestContent"
-    static let eventSourceExtensionResponseContent: String = "com.adobe.eventSource.responseContent"
-    static let eventSourceExtensionErrorResponseContent: String = "com.adobe.eventSource.errorResponseContent"
+    static let eventSourceAdobeSharedState = "com.adobe.eventSource.sharedState"
+    static let eventSourceExtensionRequestContent = "com.adobe.eventSource.requestContent"
+    static let eventSourceExtensionResponseContent = "com.adobe.eventSource.responseContent"
+    static let eventSourceExtensionErrorResponseContent = "com.adobe.eventSource.errorResponseContent"
     
-    static let platformDataStorage: String = "PlatformExtensionDataStorage"
+    static let platformDataStorage = "PlatformExtensionDataStorage"
     
     struct Defaults {
         private init() {}
         
-        static let networkRequestMaxRetries: Int = 5
-        
-        static let requestConfigRecordSeparator = "\u{0000}"
-        static let requestConfigLineFeed = "\n"
+        static let networkRequestMaxRetries: UInt = 5
+        static let requestConfigRecordSeparator: String = "\u{0000}"
+        static let requestConfigLineFeed: String = "\n"
     }
 
     struct EventDataKeys {
         private init() {}
         
-        static let uniqueSequenceId: String = "uniquesequenceid"
+        static let uniqueSequenceId = "uniquesequenceid"
     }
     
     struct DataStoreKeys {
         private init() {}
         
-        static let storeName: String = "ACPExperiencePlatform"
-        static let storePayloads: String = "storePayloads"
+        static let storeName = "ACPExperiencePlatform"
+        static let storePayloads = "storePayloads"
     }
     
     struct SharedState {
         private init() {}
         
-        static let stateowner: String = "stateowner"
+        static let stateowner = "stateowner"
         
         struct Configuration {
             private init() {}
             
             static let stateOwner = "com.adobe.module.configuration"
-            static let experiencePlatformConfigId: String = "experiencePlatform.configId"
-            static let experienceCloudOrgId: String = "experienceCloud.org"
+            static let experiencePlatformConfigId = "experiencePlatform.configId"
+            static let experienceCloudOrgId = "experienceCloud.org"
         }
         
         struct Identity {
             private init() {}
             
-            static let stateOwner = "com.adobe.mobile.identity"
+            static let stateOwner = "com.adobe.module.identity"
             static let ecid = "mid"
         }
         
         struct Lifecycle {
             private init() {}
             
-            static let stateOwner = "com.adobe.mobile.lifecycle"
+            static let stateOwner = "com.adobe.module.lifecycle"
         }
     }
     
@@ -82,5 +81,30 @@ struct ExperiencePlatformConstants {
         static let ECID = "ECID"
         static let timestamp = "timestamp"
         static let eventId = "eventId"
+        
+        struct Response {
+            private init() {}
+            
+            struct Error {
+                private init() {}
+                
+                static let message = "message"
+                static let namespace = "namespace"
+            }
+        }
+    }
+    
+    struct NetworkKeys {
+        private init() {}
+        
+        static let edgeEndpoint = "https://edge.adobedc.net/ee/v1"
+        static let requestParamConfigId = "configId"
+        static let requestParamRequestId = "requestId"
+        static let defaultConnectTimeout: TimeInterval = 5
+        static let defaultReadTimeout: TimeInterval = 5
+        
+        static let headerKeyAccept = "accept"
+        static let headerKeyContentType = "Content-Type"
+        static let headerValueApplicationJson = "application/json"
     }
 }

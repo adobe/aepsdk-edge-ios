@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import XCTest
 @testable import ACPExperiencePlatform
 
@@ -21,17 +20,12 @@ class EdgeRequestTests: XCTestCase {
         continueAfterFailure = false // fail so nil checks stop execution
     }
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    
     func testEncode_allProperties() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
-        let requestContext = RequestContextData(identityMap: identityMap)
+        let requestContext = RequestContextData(identityMap: identityMap, environment: nil, device: nil)
         
         let events: [[String : AnyCodable]] = [
         [
@@ -129,7 +123,7 @@ class EdgeRequestTests: XCTestCase {
     func testEncode_onlyRequestContext() {
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
-        let requestContext = RequestContextData(identityMap: identityMap)
+        let requestContext = RequestContextData(identityMap: identityMap, environment: nil, device: nil)
         let edgeRequest = EdgeRequest(meta: nil,
                                       xdm: requestContext,
                                       events: nil)

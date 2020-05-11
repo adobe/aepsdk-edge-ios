@@ -9,8 +9,6 @@
 // OF ANY KIND, either express or implied. See the License for the specific language
 // governing permissions and limitations under the License.
 //
-
-
 import Foundation
 
 /// This enum includes custom errors that can be returned by the SDK when using the `NetworkService` with completion handler.
@@ -18,41 +16,32 @@ public enum NetworkServiceError: Error {
     case invalidUrl
 }
 
-public class ACPNetworkService: NetworkService {
+class AEPNetworkService: NetworkService {
   
-    // TODO: use ThreadSafeDictionary when moving to core
     private var sessions = [String:URLSession]()
-    public static let shared = ACPNetworkService()
     
     public func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         
         if !networkRequest.url.absoluteString.starts(with: "https") {
-            print("NetworkService - Network request for (\( networkRequest.url.absoluteString)) could not be created, only https requests are accepted.")
+            print("AEPNetworkService - Network request for (\( networkRequest.url.absoluteString)) could not be created, only https requests are accepted.")
             if let closure = completionHandler {
                 closure(HttpConnection(data: nil, response: nil, error: NetworkServiceError.invalidUrl))
             }
             return
         }
         
-        if let overridePerformer = NetworkServiceOverrider.shared.performer, overridePerformer.shouldOverride(url: networkRequest.url, httpMethod: networkRequest.httpMethod) {
-            // TODO: AMSDK-9800 should the default headers be injected in the network request even when networkOverride is enabled
-            print("NetworkService - Initiated (\(networkRequest.httpMethod.toString())) network request to (\(networkRequest.url.absoluteString)) using the NetworkServiceOverrider.")
-            overridePerformer.connectAsync(networkRequest: networkRequest, completionHandler: completionHandler)
-        } else {
-            // using the default network service
-            let urlRequest = createURLRequest(networkRequest: networkRequest)
-            let urlSession = createURLSession(networkRequest: networkRequest)
-            
-            // initiate the network request
-            print("NetworkService - Initiated (\(networkRequest.httpMethod.toString())) network request to (\(networkRequest.url.absoluteString)).")
-            let task = urlSession.dataTask(with: urlRequest, completionHandler: { (data, response, error) in
-                if let closure = completionHandler {
-                    let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse , error: error)
-                    closure(httpConnection)
-                }
-            })
-            task.resume()
-        }
+        let urlRequest = createURLRequest(networkRequest: networkRequest)
+        let urlSession = createURLSession(networkRequest: networkRequest)
+        
+        // initiate the network request
+        print("AEPNetworkService - Initiated (\(networkRequest.httpMethod.toString())) network request to (\(networkRequest.url.absoluteString)).")
+        let task = urlSession.dataTask(with: urlRequest, completionHandler: { (data, response, error) in
+            if let closure = completionHandler {
+                let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse , error: error)
+                closure(httpConnection)
+            }
+        })
+        task.resume()
     }
     
     /// Check if a session is already created for the specified URL, readTimeout, connectTimeout or create a new one with a new `URLSessionConfiguration`

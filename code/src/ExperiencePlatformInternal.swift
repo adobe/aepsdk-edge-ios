@@ -20,6 +20,8 @@ class ExperiencePlatformInternal : ACPExtension {
     
     typealias EventHandlerMapping = (event: ACPExtensionEvent, handler: (ACPExtensionEvent) -> (Bool))
     private let eventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal")
+    private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
+    private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
     
     override init() {
         super.init()
@@ -131,8 +133,7 @@ class ExperiencePlatformInternal : ACPExtension {
         // Build Request object
         
         let requestBuilder = RequestBuilder()
-        requestBuilder.recordSeparator = ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator
-        requestBuilder.lineFeed = ExperiencePlatformConstants.Defaults.requestConfigLineFeed
+        requestBuilder.enableResponseStreaming(recordSeparator: ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator, lineFeed: ExperiencePlatformConstants.Defaults.requestConfigLineFeed)
         
         // get ECID
         if let identityState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Identity.stateOwner, event: event) {
@@ -141,11 +142,25 @@ class ExperiencePlatformInternal : ACPExtension {
             }
         }
         
-        if let requestData = requestBuilder.getPayload([event]) {
-            // TODO AMSDK-9555, send network request
+        // Build and send the network request to Konductor
+        let listOfEvents: [ACPExtensionEvent] = [event]
+        if let requestPayload = requestBuilder.getRequestPayload(listOfEvents) {
+            let requestId:String = UUID.init().uuidString
             
-            // DEBUG
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request for config '\(configId)' and body: \(String(data: requestData, encoding: .utf8) ?? "failed to parse")")
+            // NOTE: the order of these events need to be maintained as they were sent in the network request
+            // otherwise the response callback cannot be matched
+            // todo: add waiting events in list
+            guard let url:URL = experiencePlatformNetworkService.buildUrl(requestType: ExperienceEdgeRequestType.interact, configId: configId, requestId: requestId) else {
+                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to build the URL, skipping current event with id \(event.eventUniqueIdentifier).")
+                return true
+            }
+            
+            let callback: ResponseCallback = NetworkResponseCallback(requestId: requestId, responseHandler: networkResponseHandler)
+            
+            // TODO: AMSDK-9659 Add griffon session id to headers
+            let requestHeaders:[String:String] = [:]
+            experiencePlatformNetworkService.doRequest(url: url, requestBody: requestPayload, requestHeaders: requestHeaders, responseCallback: callback, retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
+            
         }
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Finished processing and sending events to Platform.")

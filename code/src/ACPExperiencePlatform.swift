@@ -16,11 +16,19 @@ public class ACPExperiencePlatform {
     @available(*, unavailable) private init() {}
     
     public static func registerExtension() {
-        // TODO: implement me
+        try? ACPCore.registerExtension(ExperiencePlatformInternal.self)
     }
     
     public static func extensionVersion() -> String {
         // TODO: implement me
         return "1.0.0-alpha"
+    }
+    
+    /// For test purposes only - will remove once the public API changes are migrated to github
+    public static func dispatchData(eventData: [String:Any]) {
+        guard let event = try? ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData) else {
+            return
+        }
+        try? ACPCore.dispatchEvent(event)
     }
 }
