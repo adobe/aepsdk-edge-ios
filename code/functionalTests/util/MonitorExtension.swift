@@ -14,6 +14,8 @@
 import Foundation
 import ACPCore
 
+/// A functional test helper extension which may be used to gather SDK state such as extenions shared states or events . Use this extension as you wish by
+/// adding additional functionality to it.
 class MonitorExtension : ACPExtension {
     static let eventType = "com.adobe.eventType.MonitorExtension"
     static let eventSourceSharedState = "com.adobe.eventSource.requestState"
@@ -51,7 +53,7 @@ class MonitorExtension : ACPExtension {
     
     // MARK: Public APIs
     
-    /// Get the shared state for the specified `stateOwner`
+    /// Synchronous call to get the shared state for the specified `stateOwner`
     /// - Parameter stateOwner: the owner of the shared state (typically the name of the extension)
     /// - Returns: latest shared state of the given `stateOwner` or nil if no shared state was found
     public static func getSharedStateFor(_ stateOwner:String) -> [AnyHashable : Any]? {
