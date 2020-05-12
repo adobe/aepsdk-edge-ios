@@ -5,6 +5,10 @@ version: 2.1
 
 jobs:
   build:
+    branches:
+      only:
+        - ci-test
+        - circleci-project-setup
 
     macos:
       xcode: 11.0.0 # Specify the Xcode version to use
