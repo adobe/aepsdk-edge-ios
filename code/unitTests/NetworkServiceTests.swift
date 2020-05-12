@@ -11,14 +11,13 @@
 //
 
 import XCTest
-
 @testable import ACPExperiencePlatform
 
 let testBody = "{\"test\": \"json\"\"}"
 let jsonData = testBody.data(using: .utf8)
 var mockSession : MockURLSession = MockURLSession(data: jsonData, urlResponse: nil, error: nil)
 
-class StubACPNetworkService : ACPNetworkService {
+class StubACPNetworkService : AEPNetworkService {
     
     override func createURLSession(networkRequest: NetworkRequest) -> URLSession {
         return mockSession
@@ -36,12 +35,13 @@ class NetworkServiceTests: XCTestCase {
     // MARK: NetworkService tests
 
     func testConnectAsync_returnsError_whenIncompleteUrl() {
+        let defaultNetworkService = AEPNetworkService()
         let expectation = XCTestExpectation(description: "Completion handler called")
 
         let testUrl = URL(string: "https://")!
         let testBody = "test body"
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"])
-        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
+        defaultNetworkService.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertNil(connection.data)
             XCTAssertNil(connection.response)
             XCTAssertEqual("Could not connect to the server.", connection.error?.localizedDescription)
@@ -53,11 +53,12 @@ class NetworkServiceTests: XCTestCase {
     }
     
     func testConnectAsync_returnsError_whenInsecureUrl() {
+        let defaultNetworkService = AEPNetworkService()
         let expectation = XCTestExpectation(description: "Completion handler called")
         let testUrl = URL(string: "http://www.adobe.com")!
         let networkRequest = NetworkRequest(url: testUrl)
         // test&verify
-        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
+        defaultNetworkService.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertNil(connection.data)
             XCTAssertNil(connection.response)
             guard let resultError = connection.error else {
@@ -78,11 +79,12 @@ class NetworkServiceTests: XCTestCase {
     }
     
     func testConnectAsync_returnsError_whenInvalidUrl() {
+        let defaultNetworkService = AEPNetworkService()
         let expectation = XCTestExpectation(description: "Completion handler called")
         let testUrl = URL(string: "invalid.url")!
         let networkRequest = NetworkRequest(url: testUrl)
         // test&verify
-        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
+        defaultNetworkService.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertNil(connection.data)
             XCTAssertNil(connection.response)
             guard let resultError = connection.error else {
@@ -126,11 +128,12 @@ class NetworkServiceTests: XCTestCase {
     }
     
     func testConnectAsync_returnsTimeoutError_whenConnectionTimesOut() {
+        let defaultNetworkService = AEPNetworkService()
         let expectation = XCTestExpectation(description: "Completion handler called")
 
         let testUrl = URL(string: "https://example.com:81")!
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"], connectTimeout: 1.0, readTimeout: 1.0)
-        ACPNetworkService.shared.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
+        defaultNetworkService.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
             XCTAssertNil(connection.data)
             XCTAssertNil(connection.response)
             XCTAssertEqual("The request timed out.", connection.error?.localizedDescription)
@@ -152,28 +155,12 @@ class NetworkServiceTests: XCTestCase {
         XCTAssertTrue(mockSession.dataTaskWithCompletionHandlerCalled)
     }
     
-    // MARK: NetworkServiceOverrider tests
-    
-    func testShouldOverride_calledWithValidUrls_whenMultipleRequests() {
-        let testPerformerOverrider = MockPerformerOverrider()
-        
-        // test
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "schema://test2.com")!))
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "http://test3.com")!))
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "invalid.url")!))
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test3.com?param=val&second=param")!))
-        
-        // verify
-        // the url is checked if valid before calling the overrider
-        XCTAssertEqual(2, testPerformerOverrider.shouldOverrideCalledWithUrls.count)
-        XCTAssertEqual("https://test1.com", testPerformerOverrider.shouldOverrideCalledWithUrls[0].absoluteString)
-        XCTAssertEqual("https://test3.com?param=val&second=param", testPerformerOverrider.shouldOverrideCalledWithUrls[1].absoluteString)
-    }
+    // MARK: NetworkService overrider tests
     
     func testOverridenConnectAsync_called_whenMultipleRequests() {
-        let testPerformerOverrider = MockPerformerOverrider()
+        let testNetworkService = MockNetworkServiceOverrider();
+        AEPServiceProvider.shared.networkService = testNetworkService
+        
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!, httpMethod: HttpMethod.post, connectPayload: "test body", httpHeaders: ["Accept": "text/html"], connectTimeout: 2.0, readTimeout: 3.0)
         let request2 = NetworkRequest(url: URL(string: "https://test2.com")!, httpMethod: HttpMethod.get, httpHeaders: ["Accept": "text/html"])
         let request3 = NetworkRequest(url: URL(string: "https://test3.com")!)
@@ -182,152 +169,87 @@ class NetworkServiceTests: XCTestCase {
         }
     
         // test&verify
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        ACPNetworkService.shared.connectAsync(networkRequest: request1, completionHandler: completionHandler)
-        XCTAssertEqual(request1.url, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.url)
-        XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithCompletionHandler)
-        testPerformerOverrider.reset()
+        AEPServiceProvider.shared.networkService.connectAsync(networkRequest: request1, completionHandler: completionHandler)
+        XCTAssertEqual(request1.url, testNetworkService.connectAsyncCalledWithNetworkRequest?.url)
+        XCTAssertNotNil(testNetworkService.connectAsyncCalledWithCompletionHandler)
+        testNetworkService.reset()
         
-        ACPNetworkService.shared.connectAsync(networkRequest: request2, completionHandler: nil)
-        XCTAssertEqual(request2.url, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.url)
-        XCTAssertNil(testPerformerOverrider.connectAsyncCalledWithCompletionHandler)
-        testPerformerOverrider.reset()
+        AEPServiceProvider.shared.networkService.connectAsync(networkRequest: request2, completionHandler: nil)
+        XCTAssertEqual(request2.url, testNetworkService.connectAsyncCalledWithNetworkRequest?.url)
+        XCTAssertNil(testNetworkService.connectAsyncCalledWithCompletionHandler)
+        testNetworkService.reset()
         
-        ACPNetworkService.shared.connectAsync(networkRequest: request3)
-        XCTAssertEqual(request3.url, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.url)
-        XCTAssertNil(testPerformerOverrider.connectAsyncCalledWithCompletionHandler)
+        testNetworkService.connectAsync(networkRequest: request3)
+        XCTAssertEqual(request3.url, testNetworkService.connectAsyncCalledWithNetworkRequest?.url)
+        XCTAssertNil(testNetworkService.connectAsyncCalledWithCompletionHandler)
     }
-    
-    func testOverridenConnectAsync_calledOnlyWhenShouldOverride_whenMultipleRequests() {
-        let testPerformerOverrider = MockPerformerOverrider(overrideUrls: [URL(string: "https://test2.com")!])
-        
-        // test&verify
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertFalse(testPerformerOverrider.connectAsyncCalled)
-        testPerformerOverrider.reset()
-        
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test2.com")!))
-        XCTAssertEqual("https://test2.com", testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.url.absoluteString)
-        XCTAssertNil(testPerformerOverrider.connectAsyncCalledWithCompletionHandler)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
-    }
-    
+
     // TODO: enable for AMSDK-9800
     func disable_testOverridenConnectAsync_addsDefaultHeaders_whenCalledWithHeaders() {
-        let testPerformerOverrider = MockPerformerOverrider()
+        let testNetworkService = MockNetworkServiceOverrider()
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!, httpMethod: HttpMethod.post, connectPayload: "test body", httpHeaders: ["Accept": "text/html"], connectTimeout: 2.0, readTimeout: 3.0)
         
         // test&verify
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        ACPNetworkService.shared.connectAsync(networkRequest: request1)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
-        XCTAssertEqual(3, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
-        XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept"])
-        XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
-        XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept-Language"])
+        testNetworkService.connectAsync(networkRequest: request1, completionHandler: nil)
+        XCTAssertTrue(testNetworkService.connectAsyncCalled)
+        XCTAssertEqual(3, testNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
+        XCTAssertNotNil(testNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept"])
+        XCTAssertNotNil(testNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
+        XCTAssertNotNil(testNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept-Language"])
     }
     
     // TODO: enable for AMSDK-9800
     func disable_testOverridenConnectAsync_addsDefaultHeaders_whenCalledWithoutHeaders() {
-        let testPerformerOverrider = MockPerformerOverrider()
+        let testNetworkService = MockNetworkServiceOverrider()
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!)
         
         // test&verify
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        ACPNetworkService.shared.connectAsync(networkRequest: request1)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
-        XCTAssertEqual(2, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
-        XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
-        XCTAssertNotNil(testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept-Language"])
+        testNetworkService.connectAsync(networkRequest: request1, completionHandler: nil)
+        XCTAssertTrue(testNetworkService.connectAsyncCalled)
+        XCTAssertEqual(2, testNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
+        XCTAssertNotNil(testNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
+        XCTAssertNotNil(testNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept-Language"])
     }
     
     func testOverridenConnectAsync_doesNotOverrideHeaders_whenCalledWithDefaultHeaders() {
-        let testPerformerOverrider = MockPerformerOverrider()
+        let testNetworkService = MockNetworkServiceOverrider()
+        AEPServiceProvider.shared.networkService = testNetworkService
+        
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!, httpMethod: HttpMethod.get, httpHeaders: ["User-Agent": "test", "Accept-Language": "ro-RO"], connectTimeout: 2.0, readTimeout: 3.0)
         
         // test&verify
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        ACPNetworkService.shared.connectAsync(networkRequest: request1)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
-        XCTAssertEqual(2, testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
-        XCTAssertEqual("test", testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
-        XCTAssertEqual("ro-RO", testPerformerOverrider.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept-Language"])
-    }
-
-    func testReset_disablesOverride_whenCalled() {
-        let testPerformerOverrider = MockPerformerOverrider()
-        
-        // test&verify
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
-        testPerformerOverrider.reset()
-        
-        NetworkServiceOverrider.shared.reset()
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertFalse(testPerformerOverrider.shouldOverrideCalled)
-        XCTAssertFalse(testPerformerOverrider.connectAsyncCalled)
-        testPerformerOverrider.reset()
+        AEPServiceProvider.shared.networkService.connectAsync(networkRequest: request1, completionHandler: nil)
+        XCTAssertTrue(testNetworkService.connectAsyncCalled)
+        XCTAssertEqual(2, testNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
+        XCTAssertEqual("test", testNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders["User-Agent"])
+        XCTAssertEqual("ro-RO", testNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders["Accept-Language"])
     }
     
-    func testEnableOverrideAndReset_work_whenCalledMultipleTimes() {
-        let testPerformerOverrider = MockPerformerOverrider()
-        
-        // test&verify
-        // enable overrider
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
-        testPerformerOverrider.reset()
-        
-        // disable overrider
-        NetworkServiceOverrider.shared.reset()
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertFalse(testPerformerOverrider.shouldOverrideCalled)
-        XCTAssertFalse(testPerformerOverrider.connectAsyncCalled)
-        testPerformerOverrider.reset()
-        
-        // re-enable overrider
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider)
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider.shouldOverrideCalled)
-        XCTAssertTrue(testPerformerOverrider.connectAsyncCalled)
-    }
-    
-    func testEnableOverride_work_whenCalledWithTwoOverriders() {
-        let testPerformerOverrider1 = MockPerformerOverrider(overrideUrls:[URL(string: "https://test1.com")!])
-        let testPerformerOverrider2 = MockPerformerOverrider(overrideUrls:[URL(string: "https://test2.com")!])
-        let testPerformerOverrider3 = MockPerformerOverrider()
+    func testEnableOverride_work_whenCalledWithMultipleOverriders() {
+        let testNetworkServiceOverrider1 = MockNetworkServiceOverrider()
+        let testNetworkServiceOverrider2 = MockNetworkServiceOverrider()
+        let testNetworkServiceOverrider3 = MockNetworkServiceOverrider()
         
         // test&verify
         // set first overrider
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider1)
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider1.shouldOverrideCalled)
-        XCTAssertTrue(testPerformerOverrider1.connectAsyncCalled)
-        testPerformerOverrider1.reset()
+        AEPServiceProvider.shared.networkService = testNetworkServiceOverrider1
+        AEPServiceProvider.shared.networkService.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!), completionHandler: nil)
+        XCTAssertTrue(testNetworkServiceOverrider1.connectAsyncCalled)
+        testNetworkServiceOverrider1.reset()
         
         // set second overrider, the first one should not be called anymore
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider2)
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider2.shouldOverrideCalled)
-        XCTAssertFalse(testPerformerOverrider2.connectAsyncCalled)
-        XCTAssertFalse(testPerformerOverrider1.shouldOverrideCalled)
-        XCTAssertFalse(testPerformerOverrider1.connectAsyncCalled)
-        testPerformerOverrider1.reset()
-        testPerformerOverrider2.reset()
+        AEPServiceProvider.shared.networkService = testNetworkServiceOverrider2
+        AEPServiceProvider.shared.networkService.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test12.com")!), completionHandler: nil)
+        XCTAssertFalse(testNetworkServiceOverrider1.connectAsyncCalled)
+        XCTAssertTrue(testNetworkServiceOverrider2.connectAsyncCalled)
+        testNetworkServiceOverrider1.reset()
+        testNetworkServiceOverrider2.reset()
         
         // set third overrider, the other two should not be called anymore
-        NetworkServiceOverrider.shared.enableOverride(with:testPerformerOverrider3)
-        ACPNetworkService.shared.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test1.com")!))
-        XCTAssertTrue(testPerformerOverrider3.shouldOverrideCalled)
-        XCTAssertTrue(testPerformerOverrider3.connectAsyncCalled)
-        XCTAssertFalse(testPerformerOverrider1.shouldOverrideCalled)
-        XCTAssertFalse(testPerformerOverrider1.connectAsyncCalled)
-        XCTAssertFalse(testPerformerOverrider2.shouldOverrideCalled)
-        XCTAssertFalse(testPerformerOverrider2.connectAsyncCalled)
+        AEPServiceProvider.shared.networkService = testNetworkServiceOverrider3
+        AEPServiceProvider.shared.networkService.connectAsync(networkRequest: NetworkRequest(url: URL(string: "https://test123.com")!), completionHandler: nil)
+        XCTAssertFalse(testNetworkServiceOverrider1.connectAsyncCalled)
+        XCTAssertFalse(testNetworkServiceOverrider2.connectAsyncCalled)
+        XCTAssertTrue(testNetworkServiceOverrider3.connectAsyncCalled)
     }
 }

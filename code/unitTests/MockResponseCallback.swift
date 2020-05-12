@@ -11,21 +11,26 @@
 //
 
 import Foundation
+@testable import ACPExperiencePlatform
 
-class MockTask: URLSessionDataTask {
-    private let data: Data?
-    private let urlResponse: URLResponse?
-    private let _error: Error?
-    var completionHandler: ((Data?, URLResponse?, Error?) -> Void)? // set by MockURLSession
-
-    init(data: Data?, urlResponse: URLResponse?, error: Error?) {
-        self.data = data
-        self.urlResponse = urlResponse
-        self._error = error
+class MockResponseCallback : ResponseCallback {
+    var onResponseCalled: Bool = false
+    var onResponseJsonResponse:[String] = []
+    var onErrorCalled: Bool = false
+    var onErrorJsonError:[String] = []
+    var onCompleteCalled: Bool = false
+    
+    func onResponse(jsonResponse: String) {
+        onResponseCalled = true
+        onResponseJsonResponse.append(jsonResponse)
     }
     
-    override func resume() {
-        guard let unwrappedCompletionHandler = completionHandler else { return }
-        unwrappedCompletionHandler(self.data, self.urlResponse, self._error)
+    func onError(jsonError: String) {
+        onErrorCalled = true
+        onErrorJsonError.append(jsonError)
+    }
+    
+    func onComplete() {
+        onCompleteCalled = true
     }
 }

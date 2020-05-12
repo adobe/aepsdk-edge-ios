@@ -18,10 +18,10 @@ class RequestBuilder {
     private let TAG = "RequestBuilder"
     
     /// Control charactor used before each response fragment. Response streaming is enabled when both `recoredSeparator` and `lineFeed` are non nil.
-    var recordSeparator: String?
+    private var recordSeparator: String?
     
     /// Control character used at the end of each response fragment. Response streaming is enabled when both `recoredSeparator` and `lineFeed` are non nil.
-    var lineFeed: String?
+    private var lineFeed: String?
     
     /// The Experiece Cloud ID to be sent with this request
     var experienceCloudId: String?
@@ -38,14 +38,21 @@ class RequestBuilder {
         storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
     }
     
+    /// Enables streaming of the Platform Edge Response.
+    /// - Parameters:
+    ///   - recordSeparator: the record separator used to delimit the start of a response chunk
+    ///   - lineFeed: the line feed used to delimit the end of a response chunk
+    func enableResponseStreaming(recordSeparator: String, lineFeed: String) {
+        self.recordSeparator = recordSeparator
+        self.lineFeed = lineFeed
+    }
+    
     /// Builds the request payload with all the provided parameters and events.
     /// - Parameter events: List of `ACPExtensionEvent` objects. Each event is expected to contain a serialized Experience Platform Event
     /// encoded in the `ACPExtensionEvent.eventData` property.
-    /// - Returns: A `Data` object of the JSON encoded request.
-    func getPayload(_ events: [ACPExtensionEvent]) -> Data? {
-        if (events.isEmpty) {
-            return nil
-        }
+    /// - Returns: A `EdgeRequest` object or nil if the events list is empty
+    func getRequestPayload(_ events: [ACPExtensionEvent]) -> EdgeRequest? {
+        guard !events.isEmpty else { return nil }
         
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
         let konductorConfig = KonductorConfig(streaming: streamingMetadata)
@@ -63,22 +70,8 @@ class RequestBuilder {
             identityMap.addItem(namespace: ExperiencePlatformConstants.JsonKeys.ECID, id: ecid)
             contextData = RequestContextData(identityMap: identityMap)
         }
-        
-        let request = EdgeRequest(meta: requestMetadata,
-                                  xdm: contextData,
-                                  events: platformEvents)
-        
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted]
-        
-        do {
-            // TODO return EdgeRequest here instead of encoded JSON Data?
-            return try encoder.encode(request)
-        } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to encode request to JSON with error '\(error.localizedDescription)'")
-        }
-        
-        return nil
+    
+        return EdgeRequest(meta: requestMetadata, xdm: contextData, events: platformEvents)
     }
     
     /// Extract the Experience Platform Event from each `ACPExtensionEvent` and return as a list of maps. The timestamp for each
@@ -112,5 +105,4 @@ class RequestBuilder {
         
         return platformEvents
     }
-    
 }

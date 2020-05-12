@@ -12,20 +12,20 @@
 
 import Foundation
 
-class MockTask: URLSessionDataTask {
-    private let data: Data?
-    private let urlResponse: URLResponse?
-    private let _error: Error?
-    var completionHandler: ((Data?, URLResponse?, Error?) -> Void)? // set by MockURLSession
-
-    init(data: Data?, urlResponse: URLResponse?, error: Error?) {
-        self.data = data
-        self.urlResponse = urlResponse
-        self._error = error
+/// Use this class to register `ExperiencePlatformCallback`(s) for a specific event identifier
+/// and get notified once a response is received from the Experience Edge or when an error occurred
+class ResponseCallbackHandler {
+    static let shared = ResponseCallbackHandler()
+    
+    func registerCallback(uniqueEventId: String) {
+        // todo AMSDK-9555
     }
     
-    override func resume() {
-        guard let unwrappedCompletionHandler = completionHandler else { return }
-        unwrappedCompletionHandler(self.data, self.urlResponse, self._error)
+    func unregisterCallback(uniqueEventId: String) {
+        // todo AMSDK-9555
+    }
+    
+    func invokeResponseCallback(eventData: [String: Any]) {
+        // todo AMSDK-9555
     }
 }

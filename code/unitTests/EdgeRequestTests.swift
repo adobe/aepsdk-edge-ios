@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import XCTest
 @testable import ACPExperiencePlatform
 
@@ -20,11 +19,6 @@ class EdgeRequestTests: XCTestCase {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false // fail so nil checks stop execution
     }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
     
     func testEncode_allProperties() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
