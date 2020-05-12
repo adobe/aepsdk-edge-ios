@@ -15,19 +15,44 @@ import ACPCore
 
 class NetworkResponseHandler {
     private let LOG_TAG = "NetworkResponseHandler"
+    private let queue = DispatchQueue(label: "com.adobe.experiencePlatform.eventsDictionary")
     
+    // the order of the request events matter for matching them with the response events
+    private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [String]>()
+    
+    /// Adds the requestId in the internal `sentEventsWaitingResponse` with the associated list of events.
+    /// This list should maintain the order of the received events for matching with the response event index.
+    /// If the same requestId was stored before, the new list will replace the existing events.
+    /// - Parameters:
+    ///   - requestId: batch request id
+    ///   - batchedEvents: batched events sent to ExEdge
     func addWaitingEvents(requestId:String, batchedEvents: [ACPExtensionEvent]) {
-        // TODO AMSDK-9842
+        guard !requestId.isEmpty, !batchedEvents.isEmpty else { return }
+        
+        let eventIds = batchedEvents.map { $0.eventUniqueIdentifier }
+        queue.sync {
+            if sentEventsWaitingResponse[requestId] != nil {
+                ACPCore.log(ACPMobileLogLevel.warning, tag:LOG_TAG, message:"Name collision for requestId \(requestId), events list is overwritten.")
+            }
+            
+            sentEventsWaitingResponse[requestId] = eventIds
+        }
     }
     
-    func removeWaitingEvents(requestId: String) -> [String] {
-        // TODO AMSDK-9842
-        return []
+    /// Remove the requestId in the internal {@code sentEventsWaitingResponse} along with the associated list of events.
+    /// - Parameter requestId: batch request id
+    /// - Returns: the list of unique event ids associated with the requestId that were removed
+    func removeWaitingEvents(requestId: String) -> [String]? {
+        guard !requestId.isEmpty else { return nil }
+        return sentEventsWaitingResponse.removeValue(forKey: requestId)
     }
     
-    func getWaitingEvents(requestId: String) -> [String] {
-        // TODO AMSDK-9842
-        return []
+    /// Returns the list of unique event ids associated with the provided requestId or empty if not found.
+    /// - Parameter requestId: batch request id
+    /// - Returns: the list of unique event ids associated with the requestId or nil if none found
+    func getWaitingEvents(requestId: String) -> [String]? {
+        guard !requestId.isEmpty else { return nil }
+        return sentEventsWaitingResponse[requestId]
     }
     
     func processResponseOnSuccess(jsonResponse:String, requestId:String) {
