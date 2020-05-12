@@ -48,6 +48,16 @@
                ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BF0C09252461209900892B5D"
+               BuildableName = "functionalTestsConfig.xctest"
+               BlueprintName = "functionalTestsConfig"
+               ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
