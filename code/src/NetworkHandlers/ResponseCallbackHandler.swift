@@ -14,12 +14,18 @@ import Foundation
 import ACPCore
 
 /// Use this class to register `ExperiencePlatformResponseHandler`(s) for a specific event identifier
-/// and get notified once a response is received from the Experience Edge or when an error occurred.
+/// and get notified once a response is received from the Experience Edge or when an error occurred. This class uses a `ThreadSafeDictionary` for the internal mapping.
 class ResponseCallbackHandler {
     private let TAG = "ResponseCallbacksHandler"
     private var responseHandlers = ThreadSafeDictionary<String, ExperiencePlatformResponseHandler>(identifier: "com.adobe.experiencePlaftorm.responseHandlers")
     static let shared = ResponseCallbackHandler()
     
+    /// Registers a `ExperiencePlatformResponseHandler` for the specified `uniqueEventId`. This handler will
+    /// be invoked whenever a response event for the same uniqueEventId was seen.
+    ///
+    /// - Parameters:
+    ///   - uniqueEventId: unique event identifier for which the response callback is registered; should not be empty
+    ///   - responseHandler: the `ExperiencePlatformResponseHandler` that needs to be registered, should not be nil
     func registerResponseHandler(uniqueEventId: String, responseHandler: ExperiencePlatformResponseHandler?) {
         guard let unwrappedResponseHandler = responseHandler else { return }
         guard !uniqueEventId.isEmpty else {
@@ -31,6 +37,9 @@ class ResponseCallbackHandler {
         responseHandlers[uniqueEventId] = unwrappedResponseHandler
     }
     
+    /// Unregisters a `ExperiencePlatformResponseHandler` for the specified `uniqueEventId`. After this operation,
+    /// the associated response handler will not be invoked anymore for any ExEdge response events.
+    /// - Parameter uniqueEventId: unique event identifier for data platform events; should not be empty
     func unregisterResponseHandler(uniqueEventId: String) {
         guard !uniqueEventId.isEmpty else { return }
         if responseHandlers.removeValue(forKey: uniqueEventId) != nil {
@@ -38,6 +47,8 @@ class ResponseCallbackHandler {
         }
     }
     
+    /// Invokes the response handler for the unique event identifier (if any callback was previously registered for this id).
+    /// - Parameter eventData: data received from an ExEdge response event, containing the event handle payload and the request event identifier
     func invokeResponseHandler(eventData: [String: Any]) {
         let requestEventId: String? = eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] as? String
         guard let unwrappedRequestEventId = requestEventId, !unwrappedRequestEventId.isEmpty else {
