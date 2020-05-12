@@ -12,3 +12,11 @@
 
 
 import Foundation
+import ACPExperiencePlatform
+
+class DemoResponseHandler : ExperiencePlatformResponseHandler {
+    
+    func onResponse(data: [String : Any]) {
+        print("Received data from ACPExperiencePlatform \(data)")
+    }
+}

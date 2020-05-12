@@ -14,7 +14,7 @@ import XCTest
 import ACPCore
 @testable import ACPExperiencePlatform
 
-class RequestCallbackHandlerTests: XCTestCase {
+class ResponseCallbackHandlerTests: XCTestCase {
     private let requestEventId = "requestEventId"
     
     override func setUp() {

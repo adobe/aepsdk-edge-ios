@@ -55,7 +55,7 @@ class ExperiencePlatformInternal : ACPExtension {
     }
     
     override func name() -> String? {
-        "com.adobe.experiencePlatform"
+        "com.adobe.ExperiencePlatform"
     }
     
     override func version() -> String? {

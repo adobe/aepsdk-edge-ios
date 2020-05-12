@@ -58,6 +58,7 @@
 		D46553EF246A046800A150E2 /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553EE246A046800A150E2 /* ThreadSafeDictionary.swift */; };
 		D46553F1246A123900A150E2 /* RequestCallbackHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F0246A123900A150E2 /* RequestCallbackHandlerTests.swift */; };
 		D46553F3246A138800A150E2 /* MockExperiencePlatformResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F2246A138800A150E2 /* MockExperiencePlatformResponseHandler.swift */; };
+		D46553F5246A2C7900A150E2 /* DemoResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F4246A2C7900A150E2 /* DemoResponseHandler.swift */; };
 		D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */; platformFilter = ios; };
 		D4D5B5262432599B00CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
 		D4D5B53624325AB700CAB6E4 /* ExampleFunctionalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* ExampleFunctionalTest.swift */; platformFilter = ios; };
@@ -171,6 +172,7 @@
 		D46553EE246A046800A150E2 /* ThreadSafeDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSafeDictionary.swift; sourceTree = "<group>"; };
 		D46553F0246A123900A150E2 /* RequestCallbackHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestCallbackHandlerTests.swift; sourceTree = "<group>"; };
 		D46553F2246A138800A150E2 /* MockExperiencePlatformResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockExperiencePlatformResponseHandler.swift; sourceTree = "<group>"; };
+		D46553F4246A2C7900A150E2 /* DemoResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoResponseHandler.swift; sourceTree = "<group>"; };
 		D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACPExperiencePlatform.swift; sourceTree = "<group>"; };
 		D4D5B5212432599B00CAB6E4 /* unitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = unitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -406,6 +408,7 @@
 				D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */,
 				D4D5B57E2432977F00CAB6E4 /* SceneDelegate.swift */,
 				D4D5B5802432977F00CAB6E4 /* ContentView.swift */,
+				D46553F4246A2C7900A150E2 /* DemoResponseHandler.swift */,
 				D4D5B5822432977F00CAB6E4 /* Assets.xcassets */,
 				D4D5B5872432977F00CAB6E4 /* LaunchScreen.storyboard */,
 				D4D5B58A2432977F00CAB6E4 /* Info.plist */,
@@ -842,6 +845,7 @@
 			files = (
 				D4D5B57D2432977F00CAB6E4 /* AppDelegate.swift in Sources */,
 				D4D5B57F2432977F00CAB6E4 /* SceneDelegate.swift in Sources */,
+				D46553F5246A2C7900A150E2 /* DemoResponseHandler.swift in Sources */,
 				D4D5B5812432977F00CAB6E4 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

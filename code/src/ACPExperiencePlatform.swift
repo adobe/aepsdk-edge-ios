@@ -25,10 +25,12 @@ public class ACPExperiencePlatform {
     }
     
     /// For test purposes only - will remove once the public API changes are migrated to github
-    public static func dispatchData(eventData: [String:Any]) {
+    public static func dispatchData(eventData: [String:Any], responseHandler: ExperiencePlatformResponseHandler? = nil) {
         guard let event = try? ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData) else {
             return
         }
+        
+        ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: event.eventUniqueIdentifier, responseHandler: responseHandler)
         try? ACPCore.dispatchEvent(event)
     }
 }
