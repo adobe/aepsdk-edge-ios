@@ -10,14 +10,5 @@
 // governing permissions and limitations under the License.
 //
 
-import Foundation
 
-/// Protocol that can be implemented in order to receive response(s) from the Adobe Experience Edge in the mobile application when
-/// `ExperiencePlatformEvent`s are sent through the `ACPExperiencePlatform`.
-public protocol ExperiencePlatformResponseHandler {
-    
-    /// This method is called when the response was successfully fetched from the Adobe Experience Edge for an associated event;
-    /// this method may be call multiple times for the same event, based on the data coming from the server.
-    /// - Parameter data: response from the server
-    func onResponse(data: [String: Any])
-}
+import Foundation
