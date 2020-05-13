@@ -189,7 +189,6 @@
 		D42B86BF244900A100A4E13B /* HttpConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpConnection.swift; sourceTree = "<group>"; };
 		D42B86C1244900C700A4E13B /* NetworkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkRequest.swift; sourceTree = "<group>"; };
 		D42B86C52449013200A4E13B /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
-		D4B6EC1E1CB95AE462EC77CB /* Pods_functionalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_functionalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D42FB8D124610A0000E9321C /* ResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallback.swift; sourceTree = "<group>"; };
 		D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallbackHandler.swift; sourceTree = "<group>"; };
 		D42FB8DA246261E600E9321C /* EdgeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeResponse.swift; sourceTree = "<group>"; };
@@ -203,6 +202,7 @@
 		D46553F6246A384900A150E2 /* NetworkResponseHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseHandlerTests.swift; sourceTree = "<group>"; };
 		D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventHandle.swift; sourceTree = "<group>"; };
 		D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventError.swift; sourceTree = "<group>"; };
+		D4B6EC1E1CB95AE462EC77CB /* Pods_functionalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_functionalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACPExperiencePlatform.swift; sourceTree = "<group>"; };
 		D4D5B5212432599B00CAB6E4 /* unitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = unitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -361,11 +361,15 @@
 		D42FB8D02461086200E9321C /* NetworkHandlers */ = {
 			isa = PBXGroup;
 			children = (
+				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
+				D42FB8DA246261E600E9321C /* EdgeResponse.swift */,
+				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
+				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
 				D4000F322459E2300052C536 /* ExperiencePlatformNetworkService.swift */,
-				D42FB8D124610A0000E9321C /* ResponseCallback.swift */,
 				D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */,
 				D4000F302459E2080052C536 /* NetworkResponseHandler.swift */,
 				BF947F7B243E75E60057A6CC /* RequestBuilder.swift */,
+				D42FB8D124610A0000E9321C /* ResponseCallback.swift */,
 				D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */,
 			);
 			path = NetworkHandlers;
@@ -416,13 +420,9 @@
 				BF947F89243F9C9E0057A6CC /* util */,
 				D42FB8D02461086200E9321C /* NetworkHandlers */,
 				BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */,
-				BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */,
 				BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */,
 				BF947F75243BDECA0057A6CC /* ExperiencePlatformExtensionResponseListener.swift */,
-				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
-				D42FB8DA246261E600E9321C /* EdgeResponse.swift */,
-				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
-				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
+				BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */,
 				BF947F7F243EF79D0057A6CC /* IdentityMap.swift */,
 				BF947F71243BA0BA0057A6CC /* KonductorConfig.swift */,
 				BF947F83243F0D8A0057A6CC /* RequestContextData.swift */,
