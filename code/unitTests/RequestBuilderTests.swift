@@ -81,7 +81,7 @@ class RequestBuilderTests: XCTestCase {
     func testGetRequestPayload_withStorePayload_responseContainsStateEntries() {
         let dataStore = MockKeyValueStore()
         let manager = StoreResponsePayloadManager(dataStore)
-        manager.saveStorePayloads([StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600)])
+        manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))])
 
         let request = RequestBuilder(dataStore: dataStore)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
