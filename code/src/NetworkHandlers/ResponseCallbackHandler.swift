@@ -56,7 +56,10 @@ class ResponseCallbackHandler {
             return
         }
         
-        guard let responseHandler = responseHandlers[unwrappedRequestEventId] else { return }
+        guard let responseHandler = responseHandlers[unwrappedRequestEventId] else {
+            ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Unable to find response handler for requestEventId (\(unwrappedRequestEventId)), not invoked")
+            return
+        }
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Invoking registered onResponse handler for requestEventId (\(unwrappedRequestEventId)) with data \(eventData)")
         responseHandler.onResponse(data: eventData)
