@@ -18,11 +18,15 @@ struct ExperiencePlatformConstants {
     
     static let eventTypeExperiencePlatform = "com.adobe.eventType.experiencePlatform"
     static let eventTypeAdobeHub = "com.adobe.eventType.hub"
-
+    
     static let eventSourceAdobeSharedState = "com.adobe.eventSource.sharedState"
     static let eventSourceExtensionRequestContent = "com.adobe.eventSource.requestContent"
     static let eventSourceExtensionResponseContent = "com.adobe.eventSource.responseContent"
     static let eventSourceExtensionErrorResponseContent = "com.adobe.eventSource.errorResponseContent"
+    
+    static let eventNameRequestContent = "AEP Request Event"
+    static let eventNameResponseContent = "AEP Response Event Handle"
+    static let eventNameErrorResponseContent = "AEP Error Response"
     
     static let platformDataStorage = "PlatformExtensionDataStorage"
     
@@ -33,7 +37,7 @@ struct ExperiencePlatformConstants {
         static let requestConfigRecordSeparator: String = "\u{0000}"
         static let requestConfigLineFeed: String = "\n"
     }
-
+    
     struct EventDataKeys {
         private init() {}
         
@@ -85,6 +89,8 @@ struct ExperiencePlatformConstants {
         
         struct Response {
             private init() {}
+            
+            static let eventHandleStoreType = "state:store"
             
             struct Error {
                 private init() {}

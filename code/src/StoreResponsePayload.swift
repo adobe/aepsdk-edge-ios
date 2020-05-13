@@ -28,9 +28,9 @@ struct StoreResponsePayload : Codable {
         return Date() >= expiryDate
     }
     
-    init(key: String, value: String, maxAgeSeconds: TimeInterval) {
-        payload = StorePayload(key: key, value: value, maxAge: maxAgeSeconds)
-        expiryDate = Date(timeIntervalSinceNow: maxAgeSeconds)
+    init(payload: StorePayload) {
+        self.payload = payload
+        expiryDate = Date(timeIntervalSinceNow: payload.maxAge)
     }
 }
 

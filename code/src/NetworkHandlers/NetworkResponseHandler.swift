@@ -56,9 +56,7 @@ class NetworkResponseHandler {
     }
     
     func processResponseOnSuccess(jsonResponse:String, requestId:String) {
-        guard let data = jsonResponse.data(using: .utf8) else {
-            return
-        }
+        guard let data = jsonResponse.data(using: .utf8) else { return }
         
         if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) {
             ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"processResponseOnSuccess - Received server response:\n \(jsonResponse), request id \(requestId)")
@@ -69,25 +67,145 @@ class NetworkResponseHandler {
             dispatchEventErrors(errorsArray: edgeResponse.warnings, requestId: requestId, isError: false)
         } else {
             ACPCore.log(ACPMobileLogLevel.warning, tag:LOG_TAG,
-                    message:"processResponseOnSuccess - The conversion to JSON failed for server response: \(jsonResponse), request id \(requestId)")
+                        message:"processResponseOnSuccess - The conversion to JSON failed for server response: \(jsonResponse), request id \(requestId)")
         }
     }
     
     func processResponseOnError(jsonError:String, requestId:String) {
-        // TODO AMSDK-9555, AMSDK-9842
-    }
-    
-    private func dispatchEventHandles(handlesArray: [[String: AnyCodable]]?, requestId: String) {
-        guard let unwrappedEventHandles = handlesArray, !unwrappedEventHandles.isEmpty else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"dispatchEventHandles - Received nil/empty event handle array, nothing to handle")
+        guard let data = jsonError.data(using: .utf8) else { return }
+        
+        guard let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) else {
+            ACPCore.log(ACPMobileLogLevel.warning, tag:LOG_TAG,
+                        message:"processResponseOnError - The conversion to JSON failed for server error response: \(jsonError), request id \(requestId)")
             return
         }
         
-        ACPCore.log(ACPMobileLogLevel.verbose, tag:LOG_TAG, message:"dispatchEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
-        // TODO AMSDK-9555, AMSDK-9842
+        ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"processResponseOnError - Processing server error response:\n \(jsonError), request id \(requestId)")
+        
+        // Note: if the Konductor error doesn't have an eventIndex it means that this error is a generic request error,
+        // otherwise it is an event specific error. There can be multiple errors returned for the same event
+        if let _ = edgeErrorResponse.errors {
+            // this is an error coming from Konductor, read the error from the errors node
+            dispatchEventErrors(errorsArray: edgeErrorResponse.errors, requestId: requestId, isError: true)
+        } else {
+            guard
+                let responseEventData = try? JSONDecoder().decode([String:AnyCodable].self, from: data),
+                let responseEvent: ACPExtensionEvent = try? ACPExtensionEvent(name: ExperiencePlatformConstants.eventNameErrorResponseContent,
+                                                                              type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                                                                              source: ExperiencePlatformConstants.eventSourceExtensionErrorResponseContent,
+                                                                              data: responseEventData),
+                let _ = try? ACPCore.dispatchEvent(responseEvent) else {
+                    ACPCore.log(ACPMobileLogLevel.warning, tag:LOG_TAG,
+                                message:"processResponseOnError - An error occurred while dispatching platform response event with data: \(jsonError), request id \(requestId)")
+                    return
+            }
+        }
     }
     
-    private func dispatchEventErrors(errorsArray : [[String: AnyCodable]]?, requestId: String, isError:Bool) {
-        // TODO AMSDK-9555, AMSDK-9842
+    
+    /// Dispatches each event handle in the provided `handlesArray` as a separate event through the Event Hub
+    /// - Parameters:
+    ///   - handlesArray: `[EdgeEventHandle]` containing all the event handles to be processed
+    ///   - requestId: the request identifier, used for logging and to identify the request events associated with this response
+    private func dispatchEventHandles(handlesArray: [EdgeEventHandle]?, requestId: String) {
+        guard let unwrappedEventHandles = handlesArray, !unwrappedEventHandles.isEmpty else {
+            ACPCore.log(ACPMobileLogLevel.verbose, tag:LOG_TAG, message:"dispatchEventHandles - Received nil/empty event handle array, nothing to handle")
+            return
+        }
+        
+        let requestEventIdsList = getWaitingEvents(requestId: requestId)
+        ACPCore.log(ACPMobileLogLevel.verbose, tag:LOG_TAG, message:"dispatchEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
+        for eventHandle in unwrappedEventHandles {
+            handleStoreEventHandle(handle: eventHandle)
+            
+            guard let eventHandleAsDictionary = try? eventHandle.asDictionary() else { return }
+            // set eventRequestId and edge requestId on the response event and dispatch data
+            let eventData = addEventAndRequestIdToDictionary(eventHandleAsDictionary, requestEventIdsList: requestEventIdsList, index: eventHandle.eventIndex, requestId: requestId)
+            guard !eventData.isEmpty else { return }
+            dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: false)
+        }
+    }
+    
+    private func dispatchEventErrors(errorsArray : [EdgeEventError]?, requestId: String, isError:Bool) {
+        guard let unwrappedErrors = errorsArray, !unwrappedErrors.isEmpty else {
+            ACPCore.log(ACPMobileLogLevel.verbose, tag:LOG_TAG, message:"dispatchEventErrors - Received nil/empty errors array, nothing to handle")
+            return
+        }
+        
+        let requestEventIdsList = getWaitingEvents(requestId: requestId)
+        ACPCore.log(ACPMobileLogLevel.verbose, tag:LOG_TAG, message:"dispatchEventErrors - Processing \(unwrappedErrors.count) errors(s) for request id: \(requestId)")
+        for error in unwrappedErrors {
+            logErrorMessage(error, isError: isError, requestId: requestId)
+            
+            if let errorAsDictionary = try? error.asDictionary() {
+                
+                // set eventRequestId and edge requestId on the response event and dispatch data
+                let eventData = addEventAndRequestIdToDictionary(errorAsDictionary, requestEventIdsList: requestEventIdsList, index: error.eventIndex, requestId: requestId)
+                guard !eventData.isEmpty else { return }
+                dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true)
+                
+            }
+        }
+    }
+    
+    private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool) {
+        var responseEvent:ACPExtensionEvent? = nil
+        if isErrorResponseEvent {
+            responseEvent = try? ACPExtensionEvent(name: ExperiencePlatformConstants.eventNameErrorResponseContent,
+                                                   type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                                                   source: ExperiencePlatformConstants.eventSourceExtensionErrorResponseContent,
+                                                   data: eventData as [AnyHashable : Any])
+        } else {
+            responseEvent = try? ACPExtensionEvent(name: ExperiencePlatformConstants.eventNameResponseContent,
+                                                   type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                                                   source: ExperiencePlatformConstants.eventSourceExtensionResponseContent,
+                                                   data: eventData as [AnyHashable : Any])
+        }
+        
+        guard let unwrappedResponseEvent = responseEvent else { return }
+        guard let _ = try? ACPCore.dispatchEvent(unwrappedResponseEvent) else {
+            ACPCore.log(ACPMobileLogLevel.warning, tag:LOG_TAG, message:"dispatchResponseEvent - An error occurred while dispatching platform response event for request id: \(requestId)")
+            return
+        }
+    }
+    
+    /// Extracts the event unique id corresponding to the eventIndex from `EventHandle` and returns the corresponding event data
+    /// - Parameters:
+    ///   - dictionary: data coming from server (an event handle or error or warning), which will be enhanced with eventUniqueId
+    ///   - requestEventIdsList: waiting events list for current `requestId`
+    ///   - index: the request event index associated with this event handle/error
+    ///   - requestId: current request id to be added to data
+    private func addEventAndRequestIdToDictionary(_ dictionary: [String: Any], requestEventIdsList: [String]?, index: Int?, requestId: String) -> [String: Any] {
+        var eventData : [String: Any] = dictionary
+        eventData[ExperiencePlatformConstants.EventDataKeys.edgeRequesId] = requestId
+        
+        guard let unwrappedEventIds = requestEventIdsList, let unwrappedIndex = index, unwrappedIndex > 0, unwrappedIndex < unwrappedEventIds.count else { return eventData }
+        eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] = unwrappedEventIds[unwrappedIndex]
+        return eventData
+    }
+    
+    /// If handle is of type "state:store" persist it to Data Store
+    /// - Parameter handle: current `EventHandle` to store
+    private func handleStoreEventHandle(handle: EdgeEventHandle) {
+        guard let type = handle.type, ExperiencePlatformConstants.JsonKeys.Response.eventHandleStoreType == type.lowercased() else { return }
+        guard let payload: [[String: AnyCodable]] = handle.payload else { return }
+        
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        
+        var storeResponsePayloads : [StoreResponsePayload] = []
+        for storeElement in payload {
+            if let data = try? encoder.encode(storeElement), let storePayload = try? JSONDecoder().decode(StorePayload.self, from: data) {
+                storeResponsePayloads.append(StoreResponsePayload(payload: storePayload))
+            }
+        }
+        
+        let dataStore = NamedUserDefaultsStore(name: ExperiencePlatformConstants.DataStoreKeys.storeName)
+        let storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
+        storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
+    }
+    
+    private func logErrorMessage(_ error: EdgeEventError, isError: Bool, requestId: String) {
+        // todo
     }
 }

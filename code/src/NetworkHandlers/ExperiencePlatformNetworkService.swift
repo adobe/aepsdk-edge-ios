@@ -17,14 +17,14 @@ import ACPCore
 ///     - interact - makes request and expects a response
 ///     - collect - makes request without expecting a response
 enum ExperienceEdgeRequestType: String {
-   case interact = "interact"
-   case collect = "collect"
+    case interact = "interact"
+    case collect = "collect"
 }
 
 /// Used to identify if a `NetworkRequest` should be retried or not
 enum RetryNetworkRequest: Int {
-   case yes
-   case no
+    case yes
+    case no
 }
 
 /// Convenience enum for the known error codes
@@ -48,7 +48,7 @@ class ExperiencePlatformNetworkService {
                                                       HttpResponseCodes.gatewayTimeout.rawValue]
     private let waitTimeout:TimeInterval = max(ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout, ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout) + 1
     private var defaultHeaders = [ExperiencePlatformConstants.NetworkKeys.headerKeyAccept: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson,
-                        ExperiencePlatformConstants.NetworkKeys.headerKeyContentType: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson]
+                                  ExperiencePlatformConstants.NetworkKeys.headerKeyContentType: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson]
     
     /// Builds the URL required for connections to ExEdge with the provided `ExperienceEdgeRequestType`
     /// - Parameters:
@@ -138,28 +138,24 @@ class ExperiencePlatformNetworkService {
             if let responseCode = connection.responseCode {
                 if responseCode == HttpResponseCodes.ok.rawValue {
                     ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Interact connection to ExEdge was successful.")
-                    if let responseString = connection.responseString {
-                        ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Response message: \(responseString)")
-                    }
-                   
                     self.handleContent(connection: connection, streaming: requestBody.meta?.konductorConfig?.streaming, responseCallback: responseCallback)
-                   
-               } else if responseCode == HttpResponseCodes.noContent.rawValue {
-                   // Successful collect requests do not return content
+                    
+                } else if responseCode == HttpResponseCodes.noContent.rawValue {
+                    // Successful collect requests do not return content
                     ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Collect connection to data platform successful.")
-                   
+                    
                 } else if self.recoverableNetworkErrorCodes.contains(responseCode) {
                     ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Connection to ExEdge returned recoverable error code \(responseCode)")
-                   shouldRetry = RetryNetworkRequest.yes
-               } else {
+                    shouldRetry = RetryNetworkRequest.yes
+                } else {
                     ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unrecoverable error code \(responseCode)")
                     self.handleError(connection: connection, responseCallback: responseCallback)
-               }
-           } else {
+                }
+            } else {
                 ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unknown error")
                 self.handleError(connection: connection, responseCallback: responseCallback)
-           }
-           
+            }
+            
             semaphore.signal()
         }
         
@@ -226,6 +222,8 @@ class ExperiencePlatformNetworkService {
         guard let recordSerapator: String = streaming.recordSeparator else { return }
         guard let lineFeedDelimiter: String = streaming.lineFeed else { return }
         guard let lineFeedCharacter: Character = lineFeedDelimiter.convertToCharacter() else { return }
+        
+        ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "handleStreamingResponse - Handle server response with streaming enabled")
         
         let splitResult = unwrappedResponseString.split(separator: lineFeedCharacter)
         
