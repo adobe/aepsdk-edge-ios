@@ -43,7 +43,7 @@ class NetworkResponseCallback : ResponseCallback {
         
         // unregister currently known response callbacks
         for eventId in removedWaitingEvents {
-            ResponseCallbackHandler.shared.unregisterCallback(uniqueEventId: eventId)
+            ResponseCallbackHandler.shared.unregisterResponseHandler(uniqueEventId: eventId)
         }
     }
 }

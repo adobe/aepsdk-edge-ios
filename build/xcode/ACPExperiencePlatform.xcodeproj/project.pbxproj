@@ -65,6 +65,11 @@
 		D42FB8DB246261E600E9321C /* EdgeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8DA246261E600E9321C /* EdgeResponse.swift */; };
 		D42FB8DF24635B6200E9321C /* AEPServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8DE24635B6200E9321C /* AEPServiceProvider.swift */; };
 		D42FB8E124635FA200E9321C /* MockResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8E024635FA200E9321C /* MockResponseCallback.swift */; };
+		D46553ED2469FBE100A150E2 /* ExperiencePlatformResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553EC2469FBE100A150E2 /* ExperiencePlatformResponseHandler.swift */; };
+		D46553EF246A046800A150E2 /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553EE246A046800A150E2 /* ThreadSafeDictionary.swift */; };
+		D46553F1246A123900A150E2 /* RequestCallbackHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F0246A123900A150E2 /* RequestCallbackHandlerTests.swift */; };
+		D46553F3246A138800A150E2 /* MockExperiencePlatformResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F2246A138800A150E2 /* MockExperiencePlatformResponseHandler.swift */; };
+		D46553F5246A2C7900A150E2 /* DemoResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F4246A2C7900A150E2 /* DemoResponseHandler.swift */; };
 		D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */; platformFilter = ios; };
 		D4D5B5262432599B00CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
 		D4D5B53824325AB700CAB6E4 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; platformFilter = ios; };
@@ -187,6 +192,11 @@
 		D42FB8DA246261E600E9321C /* EdgeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeResponse.swift; sourceTree = "<group>"; };
 		D42FB8DE24635B6200E9321C /* AEPServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEPServiceProvider.swift; sourceTree = "<group>"; };
 		D42FB8E024635FA200E9321C /* MockResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockResponseCallback.swift; sourceTree = "<group>"; };
+		D46553EC2469FBE100A150E2 /* ExperiencePlatformResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformResponseHandler.swift; sourceTree = "<group>"; };
+		D46553EE246A046800A150E2 /* ThreadSafeDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSafeDictionary.swift; sourceTree = "<group>"; };
+		D46553F0246A123900A150E2 /* RequestCallbackHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestCallbackHandlerTests.swift; sourceTree = "<group>"; };
+		D46553F2246A138800A150E2 /* MockExperiencePlatformResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockExperiencePlatformResponseHandler.swift; sourceTree = "<group>"; };
+		D46553F4246A2C7900A150E2 /* DemoResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoResponseHandler.swift; sourceTree = "<group>"; };
 		D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACPExperiencePlatform.swift; sourceTree = "<group>"; };
 		D4D5B5212432599B00CAB6E4 /* unitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = unitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -314,6 +324,7 @@
 			children = (
 				BF947F8A243F9CCE0057A6CC /* AnyCodable.swift */,
 				BF947F8C244029040057A6CC /* OperationQueue.swift */,
+				D46553EE246A046800A150E2 /* ThreadSafeDictionary.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -358,6 +369,7 @@
 			isa = PBXGroup;
 			children = (
 				D4D5B4EA242EBB1600CAB6E4 /* ACPExperiencePlatform.swift */,
+				D46553EC2469FBE100A150E2 /* ExperiencePlatformResponseHandler.swift */,
 			);
 			name = public;
 			sourceTree = "<group>";
@@ -422,15 +434,16 @@
 				D4D5B5252432599B00CAB6E4 /* Info.plist */,
 				D4F74FE4244633B000379258 /* NetworkServiceTests.swift */,
 				BF947F9F244569190057A6CC /* EdgeRequestTests.swift */,
+				D4000F34245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift */,
 				BF947F81243F05BF0057A6CC /* IdentityMapTests.swift */,
 				BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */,
 				BF947F7D243EA1300057A6CC /* RequestBuilderTests.swift */,
+				D46553F0246A123900A150E2 /* RequestCallbackHandlerTests.swift */,
 				BF947FA5244619E80057A6CC /* RequestContextDataTests.swift */,
 				BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */,
 				BF947F902440F6660057A6CC /* StateMetadataTests.swift */,
 				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */,
-				D4000F34245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift */,
 			);
 			name = unitTests;
 			path = ../../code/unitTests;
@@ -453,6 +466,7 @@
 				D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */,
 				D4D5B57E2432977F00CAB6E4 /* SceneDelegate.swift */,
 				D4D5B5802432977F00CAB6E4 /* ContentView.swift */,
+				D46553F4246A2C7900A150E2 /* DemoResponseHandler.swift */,
 				D4D5B5822432977F00CAB6E4 /* Assets.xcassets */,
 				D4D5B5872432977F00CAB6E4 /* LaunchScreen.storyboard */,
 				D4D5B58A2432977F00CAB6E4 /* Info.plist */,
@@ -494,6 +508,7 @@
 				BF947F9C244181FF0057A6CC /* MockKeyValueStore.swift */,
 				BF947FA1244587520057A6CC /* TestUtils.swift */,
 				D42FB8E024635FA200E9321C /* MockResponseCallback.swift */,
+				D46553F2246A138800A150E2 /* MockExperiencePlatformResponseHandler.swift */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -877,6 +892,7 @@
 			files = (
 				BF947F8B243F9CCE0057A6CC /* AnyCodable.swift in Sources */,
 				BF947F72243BA0BB0057A6CC /* KonductorConfig.swift in Sources */,
+				D46553EF246A046800A150E2 /* ThreadSafeDictionary.swift in Sources */,
 				BF947F84243F0D8A0057A6CC /* RequestContextData.swift in Sources */,
 				BF947F6824366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift in Sources */,
 				D4000F312459E2080052C536 /* NetworkResponseHandler.swift in Sources */,
@@ -901,6 +917,7 @@
 				BF947F78243BE16C0057A6CC /* EdgeRequest.swift in Sources */,
 				D42B86BE2449007500A4E13B /* HttpMethod.swift in Sources */,
 				D42B86C62449013200A4E13B /* NetworkService.swift in Sources */,
+				D46553ED2469FBE100A150E2 /* ExperiencePlatformResponseHandler.swift in Sources */,
 				2141891A2436663A00907D0A /* AEPNetworkService.swift in Sources */,
 				D42B86C0244900A100A4E13B /* HttpConnection.swift in Sources */,
 				D42FB8D424610F3C00E9321C /* ResponseCallbackHandler.swift in Sources */,
@@ -913,12 +930,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF947F912440F6660057A6CC /* StateMetadataTests.swift in Sources */,
+				D46553F1246A123900A150E2 /* RequestCallbackHandlerTests.swift in Sources */,
 				BF947F9D244181FF0057A6CC /* MockKeyValueStore.swift in Sources */,
 				BF947FA0244569190057A6CC /* EdgeRequestTests.swift in Sources */,
 				BF947F82243F05BF0057A6CC /* IdentityMapTests.swift in Sources */,
 				BF947FA2244587520057A6CC /* TestUtils.swift in Sources */,
 				D42FB8E124635FA200E9321C /* MockResponseCallback.swift in Sources */,
 				BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */,
+				D46553F3246A138800A150E2 /* MockExperiencePlatformResponseHandler.swift in Sources */,
 				BF947F7E243EA1300057A6CC /* RequestBuilderTests.swift in Sources */,
 				BF947F88243F2EF70057A6CC /* StoreResponsePayloadTests.swift in Sources */,
 				BF947F9E244182B30057A6CC /* StoreResponsePayloadManagerTests.swift in Sources */,
@@ -949,6 +968,7 @@
 			files = (
 				D4D5B57D2432977F00CAB6E4 /* AppDelegate.swift in Sources */,
 				D4D5B57F2432977F00CAB6E4 /* SceneDelegate.swift in Sources */,
+				D46553F5246A2C7900A150E2 /* DemoResponseHandler.swift in Sources */,
 				D4D5B5812432977F00CAB6E4 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
