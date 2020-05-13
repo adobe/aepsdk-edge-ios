@@ -85,7 +85,7 @@ struct ExperiencePlatformConstants {
         static let xdm = "xdm"
         static let ECID = "ECID"
         static let timestamp = "timestamp"
-        static let eventId = "eventId"
+        static let eventId = "_id"
         
         struct Response {
             private init() {}
