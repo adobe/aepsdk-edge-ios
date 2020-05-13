@@ -31,5 +31,5 @@ workflows:
             branches:
               only:
                 - ci-test
-                - ci-test-.*
+                - /ci-test-.*/
                 - circleci-project-setup
