@@ -181,7 +181,7 @@ class NetworkResponseHandler {
         var eventData: [String: Any] = dictionary
         eventData[ExperiencePlatformConstants.EventDataKeys.edgeRequesId] = requestId
         
-        guard let unwrappedEventIds = requestEventIdsList, let unwrappedIndex = index, unwrappedIndex > 0, unwrappedIndex < unwrappedEventIds.count else { return eventData }
+        guard let unwrappedEventIds = requestEventIdsList, let unwrappedIndex = index, unwrappedIndex >= 0, unwrappedIndex < unwrappedEventIds.count else { return eventData }
         eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] = unwrappedEventIds[unwrappedIndex]
         return eventData
     }

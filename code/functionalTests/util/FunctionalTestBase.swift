@@ -48,8 +48,8 @@ class FunctionalTestBase : XCTestCase {
     
     public override func tearDown() {
         InstrumentedWildcardListener.receivedEvents = []
+        InstrumentedWildcardListener.expectations.removeAll()
     }
-    
     
     /// Sets an expectation for a specific event type and source and how many times the event should be dispatched
     /// - Parameters:

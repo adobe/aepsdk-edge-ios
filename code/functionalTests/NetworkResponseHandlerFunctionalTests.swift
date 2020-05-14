@@ -132,13 +132,116 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnError_WhenUnknownEventIndex_doesNotCrash() {
+        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 1)
+        let requestId = "123"
+        let jsonError =  "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [],\n" +
+            "      \"errors\": [\n" +
+            "        {\n" +
+            "          \"code\": \"personalization:100\",\n" +
+            "          \"namespace\": \"personalization\",\n" +
+            "          \"message\": \"Button color not found\",\n" +
+            "           \"eventIndex\": 10\n" +
+            "        }\n" +
+            "      ]\n" +
+        "    }"
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
+        networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
+        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        XCTAssertEqual(1, dispatchEvents.count)
         
+        guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
+            XCTFail("Invalid event data")
+            return
+        }
+        
+        let flattenReceivedData: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData)
+        XCTAssertEqual(5, flattenReceivedData.count)
+        XCTAssertEqual("personalization", flattenReceivedData["namespace"] as? String)
+        XCTAssertEqual("personalization:100", flattenReceivedData["code"] as? String)
+        XCTAssertEqual("Button color not found", flattenReceivedData["message"] as? String)
+        XCTAssertEqual(10, flattenReceivedData["eventIndex"] as? Int)
+        XCTAssertEqual(requestId, flattenReceivedData["requestId"] as? String)
     }
     func testProcessResponseOnError_WhenUnknownRequestId_doesNotCrash() {
+        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 1)
+        let requestId = "123"
+        let jsonError =  "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [],\n" +
+            "      \"errors\": [\n" +
+            "        {\n" +
+            "          \"code\": \"personalization:100\",\n" +
+            "          \"namespace\": \"personalization\",\n" +
+            "          \"message\": \"Button color not found\",\n" +
+            "           \"eventIndex\": 0\n" +
+            "        }\n" +
+            "      ]\n" +
+        "    }"
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
+        networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "567")
+        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        XCTAssertEqual(1, dispatchEvents.count)
         
+        guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
+            XCTFail("Invalid event data")
+            return
+        }
+        
+        let flattenReceivedData: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData)
+        XCTAssertEqual(5, flattenReceivedData.count)
+        XCTAssertEqual("personalization", flattenReceivedData["namespace"] as? String)
+        XCTAssertEqual("personalization:100", flattenReceivedData["code"] as? String)
+        XCTAssertEqual("Button color not found", flattenReceivedData["message"] as? String)
+        XCTAssertEqual(0, flattenReceivedData["eventIndex"] as? Int)
+        XCTAssertEqual("567", flattenReceivedData["requestId"] as? String)
     }
     func testProcessResponseOnError_WhenTwoEventJsonError_dispatchesTwoEvents() {
+        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 2)
+        let requestId = "123"
+        let jsonError =  "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [],\n" +
+            "      \"errors\": [\n" +
+            "        {\n" +
+            "          \"code\": \"global:0\",\n" +
+            "          \"namespace\": \"global\",\n" +
+            "          \"message\": \"Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases\"\n"
+            +
+            "        },\n" +
+            "        {\n" +
+            "          \"code\": \"personalization:2003\",\n" +
+            "          \"namespace\": \"personalization\",\n" +
+            "          \"message\": \"Failed to process personalization event\"\n" +
+            "        }\n" +
+            "      ]\n" +
+        "    }"
+        networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
+        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        XCTAssertEqual(2, dispatchEvents.count)
         
+        guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
+            XCTFail("Invalid event data for event 1")
+            return
+        }
+        let flattenReceivedData1: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData1)
+        XCTAssertEqual(4, flattenReceivedData1.count)
+        XCTAssertEqual("global:0", flattenReceivedData1["code"] as? String)
+        XCTAssertEqual("global", flattenReceivedData1["namespace"] as? String)
+        XCTAssertEqual("Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases", flattenReceivedData1["message"] as? String)
+        XCTAssertEqual(requestId, flattenReceivedData1["requestId"] as? String)
+        
+        guard let receivedData2 = dispatchEvents[1].eventData as? [String: Any] else {
+            XCTFail("Invalid event data for event 2")
+            return
+        }
+        let flattenReceivedData2: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData2)
+        XCTAssertEqual(4, flattenReceivedData2.count)
+        XCTAssertEqual("personalization:2003", flattenReceivedData2["code"] as? String)
+        XCTAssertEqual("personalization", flattenReceivedData2["namespace"] as? String)
+        XCTAssertEqual("Failed to process personalization event", flattenReceivedData2["message"] as? String)
+        XCTAssertEqual(requestId, flattenReceivedData2["requestId"] as? String)
     }
     // MARK: processResponseOnSuccess
     
@@ -241,7 +344,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         let flattenReceivedData2: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData2)
-        XCTAssertEqual(4, flattenReceivedData1.count)
+        XCTAssertEqual(4, flattenReceivedData2.count)
         XCTAssertEqual("identity:persist", flattenReceivedData2["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
         XCTAssertEqual("29068398647607325310376254630528178721", flattenReceivedData2["payload[0].id"] as? String)
@@ -482,5 +585,4 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(10, flattenReceivedData2["eventIndex"] as? Int)
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
     }
-    
 }
