@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 public class FunctionalTestUtils {
@@ -22,5 +21,44 @@ public class FunctionalTestUtils {
         dictionary.keys.forEach { key in
             defaults.removeObject(forKey: key)
         }
+    }
+    
+    public static func flattenDictionary(dict: [String : Any]) -> [String : Any] {
+        var result: [String : Any] = [:]
+        
+        func recursive(dict: [String : Any], out: inout [String : Any], currentKey: String = "") {
+            if dict.isEmpty {
+                out[currentKey] = "isEmpty"
+                return
+            }
+            for (key, val) in dict {
+                let resultKey = currentKey.isEmpty ? key : currentKey + "." + key
+                process(value: val, out: &out, key: resultKey)
+            }
+        }
+        
+        func recursive(list: [Any], out: inout [String : Any], currentKey: String) {
+            if list.isEmpty {
+                out[currentKey] = "isEmpty"
+                return
+            }
+            for (index, value) in list.enumerated() {
+                let resultKey = currentKey + "[\(index)]"
+                process(value: value, out: &out, key: resultKey)
+            }
+        }
+        
+        func process(value: Any, out: inout [String : Any], key: String) {
+            if let value = value as? [String : Any] {
+                recursive(dict: value, out: &out, currentKey: key)
+            } else if let value = value as? [Any] {
+                recursive(list: value, out: &out, currentKey: key)
+            } else {
+                out[key] = value
+            }
+        }
+        
+        recursive(dict: dict, out: &result)
+        return result
     }
 }
