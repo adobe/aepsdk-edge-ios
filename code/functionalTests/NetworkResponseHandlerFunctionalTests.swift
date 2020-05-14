@@ -14,7 +14,7 @@ import XCTest
 import ACPCore
 @testable import ACPExperiencePlatform
 
-class ExampleFunctionalTest: FunctionalTestBase {
+class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     private let EVENT_TYPE_PLATFORM = "com.adobe.eventType.experiencePlatform"
     private let EVENT_SOURCE_RESPONSE_CONTENT = "com.adobe.eventSource.responseContent"
     private let EVENT_SOURCE_ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
@@ -482,11 +482,5 @@ class ExampleFunctionalTest: FunctionalTestBase {
         XCTAssertEqual(10, flattenReceivedData2["eventIndex"] as? Int)
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
     }
-    
-    func testProcessResponseOnSuccess_WhenErrorAndWarning_logsTheTwoEvents() {
-        
-    }
-    
-    // MARK: processResponseOnError
     
 }
