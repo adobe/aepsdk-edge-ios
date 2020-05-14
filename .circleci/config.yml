@@ -33,3 +33,4 @@ workflows:
                 - ci-test
                 - /ci-test-.*/
                 - circleci-project-setup
+                - /pull\/.*/
