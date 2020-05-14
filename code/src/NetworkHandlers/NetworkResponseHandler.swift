@@ -122,6 +122,13 @@ class NetworkResponseHandler {
         }
     }
     
+    
+    /// Iterates over the provided `errorsArray` and dispatches a new error event to the Event Hub.
+    /// It also logs each error/warning json with the log level set based of `isError`
+    /// - Parameters:
+    ///   - errorsArray: `EdgeEventError` array containing all the event errors to be processed
+    ///   - requestId: the event request identifier, used for logging
+    ///   - isError: boolean indicating if this is an error message
     private func dispatchEventErrors(errorsArray: [EdgeEventError]?, requestId: String, isError:Bool) {
         guard let unwrappedErrors = errorsArray, !unwrappedErrors.isEmpty else {
             ACPCore.log(ACPMobileLogLevel.verbose, tag:LOG_TAG, message:"dispatchEventErrors - Received nil/empty errors array, nothing to handle")
