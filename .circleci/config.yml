@@ -11,7 +11,37 @@ jobs:
 
     steps:
       - checkout
-      - run: make setup # Install CocoaPods dependencies
+
+    # restore pods related caches
+      - restore_cache:
+          keys:
+            - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "build/xcode/Podfile.lock" }}
+            - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}
+            - cocoapods-cache-v1
+            - 1-gems-{{ checksum "Gemfile.lock" }}
+
+      # make sure we're on the right version of cocoapods
+      - run:
+          name: Verify Cocoapods Version
+          command: bundle check || bundle install --path vendor/bundle
+
+      # save cocoapods version gem data
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+      # update CocoaPods
+      - run: make setup
+
+      # save pods related files
+      - save_cache:
+          key: cocoapods-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "build/xcode/Podfile.lock" }}
+          paths:
+            - ./build/xcode/Pods
+            - ~/.cocoapods
+
+
       - run: make test # Run tests using Fastlane
 
       # Collect XML test results data to show in the UI, and save the same XML
