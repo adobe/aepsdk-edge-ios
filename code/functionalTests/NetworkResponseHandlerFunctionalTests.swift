@@ -58,7 +58,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         
-        let flattenReceivedData: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData)
+        let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
         XCTAssertEqual(3, flattenReceivedData.count)
         XCTAssertEqual("global", flattenReceivedData["namespace"] as? String)
         XCTAssertEqual("Request to Data platform failed with an unknown exception", flattenReceivedData["message"] as? String)
@@ -88,7 +88,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         
-        let flattenReceivedData: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData)
+        let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
         XCTAssertEqual(4, flattenReceivedData.count)
         XCTAssertEqual("global", flattenReceivedData["namespace"] as? String)
         XCTAssertEqual("global:0", flattenReceivedData["code"] as? String)
@@ -121,7 +121,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         
-        let flattenReceivedData: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData)
+        let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
         XCTAssertEqual(6, flattenReceivedData.count)
         XCTAssertEqual("personalization", flattenReceivedData["namespace"] as? String)
         XCTAssertEqual("personalization:100", flattenReceivedData["code"] as? String)
@@ -156,7 +156,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         
-        let flattenReceivedData: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData)
+        let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
         XCTAssertEqual(5, flattenReceivedData.count)
         XCTAssertEqual("personalization", flattenReceivedData["namespace"] as? String)
         XCTAssertEqual("personalization:100", flattenReceivedData["code"] as? String)
@@ -189,7 +189,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         
-        let flattenReceivedData: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData)
+        let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
         XCTAssertEqual(5, flattenReceivedData.count)
         XCTAssertEqual("personalization", flattenReceivedData["namespace"] as? String)
         XCTAssertEqual("personalization:100", flattenReceivedData["code"] as? String)
@@ -225,7 +225,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 1")
             return
         }
-        let flattenReceivedData1: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData1)
+        let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
         XCTAssertEqual(4, flattenReceivedData1.count)
         XCTAssertEqual("global:0", flattenReceivedData1["code"] as? String)
         XCTAssertEqual("global", flattenReceivedData1["namespace"] as? String)
@@ -236,7 +236,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 2")
             return
         }
-        let flattenReceivedData2: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData2)
+        let flattenReceivedData2: [String: Any] = flattenDictionary(dict: receivedData2)
         XCTAssertEqual(4, flattenReceivedData2.count)
         XCTAssertEqual("personalization:2003", flattenReceivedData2["code"] as? String)
         XCTAssertEqual("personalization", flattenReceivedData2["namespace"] as? String)
@@ -285,7 +285,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         
-        let flattenReceivedData: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData)
+        let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
         XCTAssertEqual(5, flattenReceivedData.count)
         XCTAssertEqual("state:store", flattenReceivedData["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData["requestId"] as? String)
@@ -330,7 +330,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 1")
             return
         }
-        let flattenReceivedData1: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData1)
+        let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
         XCTAssertEqual(5, flattenReceivedData1.count)
         XCTAssertEqual("state:store", flattenReceivedData1["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
@@ -343,7 +343,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 2")
             return
         }
-        let flattenReceivedData2: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData2)
+        let flattenReceivedData2: [String: Any] = flattenDictionary(dict: receivedData2)
         XCTAssertEqual(4, flattenReceivedData2.count)
         XCTAssertEqual("identity:persist", flattenReceivedData2["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
@@ -387,7 +387,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 1")
             return
         }
-        let flattenReceivedData1: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData1)
+        let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
         XCTAssertEqual(5, flattenReceivedData1.count)
         XCTAssertEqual("state:store", flattenReceivedData1["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
@@ -400,7 +400,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 2")
             return
         }
-        let flattenReceivedData2: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData2)
+        let flattenReceivedData2: [String: Any] = flattenDictionary(dict: receivedData2)
         XCTAssertEqual(5, flattenReceivedData2.count)
         XCTAssertEqual("pairedeventexample", flattenReceivedData2["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
@@ -436,7 +436,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 1")
             return
         }
-        let flattenReceivedData1: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData1)
+        let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
         XCTAssertEqual(4, flattenReceivedData1.count)
         XCTAssertEqual("pairedeventexample", flattenReceivedData1["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
@@ -471,7 +471,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 1")
             return
         }
-        let flattenReceivedData1: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData1)
+        let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
         XCTAssertEqual(4, flattenReceivedData1.count)
         XCTAssertEqual("pairedeventexample", flattenReceivedData1["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
@@ -514,7 +514,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 1")
             return
         }
-        let flattenReceivedData1: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData1)
+        let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
         XCTAssertEqual(5, flattenReceivedData1.count)
         XCTAssertEqual("state:store", flattenReceivedData1["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
@@ -529,7 +529,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         
-        let flattenReceivedData2: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData2)
+        let flattenReceivedData2: [String: Any] = flattenDictionary(dict: receivedData2)
         XCTAssertEqual(4, flattenReceivedData2.count)
         XCTAssertEqual("personalization", flattenReceivedData2["namespace"] as? String)
         XCTAssertEqual("personalization:2003", flattenReceivedData2["code"] as? String)
@@ -567,7 +567,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 1")
             return
         }
-        let flattenReceivedData1: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData1)
+        let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
         XCTAssertEqual(4, flattenReceivedData1.count)
         XCTAssertEqual("personalization:2003", flattenReceivedData1["code"] as? String)
         XCTAssertEqual("Failed to process personalization event", flattenReceivedData1["message"] as? String)
@@ -578,7 +578,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data for event 2")
             return
         }
-        let flattenReceivedData2: [String: Any] = FunctionalTestUtils.flattenDictionary(dict: receivedData2)
+        let flattenReceivedData2: [String: Any] = flattenDictionary(dict: receivedData2)
         XCTAssertEqual(4, flattenReceivedData2.count)
         XCTAssertEqual("activation:98", flattenReceivedData2["code"] as? String)
         XCTAssertEqual("Some Informative stuff here", flattenReceivedData2["message"] as? String)
