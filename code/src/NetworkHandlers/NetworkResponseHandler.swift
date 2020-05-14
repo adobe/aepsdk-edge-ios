@@ -88,17 +88,14 @@ class NetworkResponseHandler {
             // this is an error coming from Konductor, read the error from the errors node
             dispatchEventErrors(errorsArray: edgeErrorResponse.errors, requestId: requestId, isError: true)
         } else {
-            guard
-                let responseEventData = try? JSONDecoder().decode([String:AnyCodable].self, from: data),
-                let responseEvent: ACPExtensionEvent = try? ACPExtensionEvent(name: ExperiencePlatformConstants.eventNameErrorResponseContent,
-                                                                              type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                                                              source: ExperiencePlatformConstants.eventSourceExtensionErrorResponseContent,
-                                                                              data: responseEventData),
-                let _ = try? ACPCore.dispatchEvent(responseEvent) else {
-                    ACPCore.log(ACPMobileLogLevel.warning, tag:LOG_TAG,
-                                message:"processResponseOnError - An error occurred while dispatching platform response event with data: \(jsonError), request id \(requestId)")
-                    return
+            // generic server error, return the error as is
+            guard let genericErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) else {
+                ACPCore.log(ACPMobileLogLevel.warning, tag:LOG_TAG,
+                            message:"processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), request id \(requestId)")
+                return
             }
+            
+            dispatchEventErrors(errorsArray: [genericErrorResponse], requestId: requestId, isError: true)
         }
     }
     
@@ -147,7 +144,13 @@ class NetworkResponseHandler {
         }
     }
     
+    /// Dispatched a new event with the provided `eventData` as responseContent or as errorResponseContent based on the `isErrorResponseEvent` setting
+    /// - Parameters:
+    ///   - eventData: Event data to be dispatched, should not be empty
+    ///   - requestId: The request identifier associated with this response event, used for logging
+    ///   - isErrorResponseEvent: indicates if this should be dispatched as an error or regular response content event
     private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool) {
+        guard eventData.count > 0 else { return }
         var responseEvent:ACPExtensionEvent? = nil
         if isErrorResponseEvent {
             responseEvent = try? ACPExtensionEvent(name: ExperiencePlatformConstants.eventNameErrorResponseContent,

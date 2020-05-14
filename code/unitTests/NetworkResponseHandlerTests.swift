@@ -25,6 +25,7 @@ class NetworkResponseHandlerTests: XCTestCase {
         networkResponseHandler = NetworkResponseHandler()
     }
     
+    // MARK: addWaitingEvents, getWaitingEvents, removeWaitingEvents
     func testAddWaitingEvents_addsNewList_happy() {
         let requestId = "test"
         let eventsList: [ACPExtensionEvent] = [e1, e2]
@@ -124,7 +125,7 @@ class NetworkResponseHandlerTests: XCTestCase {
             if rand % 2 == 0 {
                 dispatchQueue.async { [weak self] in
                     guard let self = self else {
-                      return
+                        return
                     }
                     XCTAssertNoThrow(self.networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [self.e1, self.e2]))
                     expectation.fulfill()
@@ -132,7 +133,7 @@ class NetworkResponseHandlerTests: XCTestCase {
             } else {
                 dispatchQueue.async { [weak self] in
                     guard let self = self else {
-                      return
+                        return
                     }
                     XCTAssertNoThrow(self.networkResponseHandler.removeWaitingEvents(requestId: requestId))
                     expectation.fulfill()

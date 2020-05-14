@@ -21,8 +21,11 @@ struct EdgeEventError : Codable {
     /// Error message
     let message: String?
     
-    /// Error code namespace info
+    /// Error code info
     let code: String?
+    
+    /// Error namespace info
+    let namespace: String?
 }
 
 extension Encodable {
