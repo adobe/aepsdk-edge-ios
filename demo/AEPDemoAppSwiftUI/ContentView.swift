@@ -32,7 +32,7 @@ struct ContentView: View {
         }.padding()
         
         Button(action: {
-                ACPExperiencePlatform.dispatchData(eventData: ["data":["test":"data"]])
+                ACPExperiencePlatform.dispatchData(eventData: ["data":["test":"data"]], responseHandler: DemoResponseHandler())
             }) {
                 Text("Ping to ExEdge")
             }

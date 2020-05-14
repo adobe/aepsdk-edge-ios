@@ -19,13 +19,15 @@ class ExperiencePlatformInternal : ACPExtension {
     private let TAG = "ExperiencePlatformInternal"
     
     typealias EventHandlerMapping = (event: ACPExtensionEvent, handler: (ACPExtensionEvent) -> (Bool))
-    private let eventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal")
+    private let requestEventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal Requests")
+    private let responseEventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal Responses")
     private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
     
     override init() {
         super.init()
-        eventQueue.setHandler({ return $0.handler($0.event) })
+        requestEventQueue.setHandler({ return $0.handler($0.event) })
+        responseEventQueue.setHandler({ return $0.handler($0.event) })
         
         do {
             try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
@@ -51,7 +53,8 @@ class ExperiencePlatformInternal : ACPExtension {
             ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension response content events: \(error.localizedDescription)")
         }
         
-        eventQueue.start()
+        requestEventQueue.start()
+        responseEventQueue.start()
     }
     
     override func name() -> String? {
@@ -78,7 +81,7 @@ class ExperiencePlatformInternal : ACPExtension {
      /// Adds an event to the event queue and starts processing the queue.  Events with no event data are ignored.
      /// - Parameter event: the event to add to the event queue for processing
     func processAddEvent(_ event: ACPExtensionEvent) {
-        eventQueue.add((event, handleAddEvent(event:)))
+        requestEventQueue.add((event, handleAddEvent(event:)))
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) added to queue.")
     }
     
@@ -86,7 +89,7 @@ class ExperiencePlatformInternal : ACPExtension {
     /// - Parameter event: the event which triggered processing of the event queue
     func processEventQueue(_ event: ACPExtensionEvent) {
         // Trigger processing of queue
-        eventQueue.start()
+        requestEventQueue.start()
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) requested event queue kick.")
     }
     
@@ -104,7 +107,7 @@ class ExperiencePlatformInternal : ACPExtension {
     /// Handle Konductor response by calling response callback. Called by event listener.
     /// - Parameter event: the response event to add to the queue
     func processPlatformResponseEvent(_ event: ACPExtensionEvent){
-        eventQueue.add((event, handleResponseEvent(event:)))
+        responseEventQueue.add((event, handleResponseEvent(event:)))
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) added to queue.")
     }
     
