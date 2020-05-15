@@ -18,7 +18,7 @@ struct ExperiencePlatformConstants {
     
     static let eventTypeExperiencePlatform: String = "com.adobe.eventType.experiencePlatform"
     static let eventTypeAdobeHub: String = "com.adobe.eventType.hub"
-
+    
     static let eventSourceAdobeSharedState: String = "com.adobe.eventSource.sharedState"
     static let eventSourceExtensionRequestContent: String = "com.adobe.eventSource.requestContent"
     static let eventSourceExtensionResponseContent: String = "com.adobe.eventSource.responseContent"
@@ -34,7 +34,7 @@ struct ExperiencePlatformConstants {
         static let requestConfigRecordSeparator = "\u{0000}"
         static let requestConfigLineFeed = "\n"
     }
-
+    
     struct DataStoreKeys {
         private init() {}
         

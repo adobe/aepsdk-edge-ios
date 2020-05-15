@@ -13,9 +13,9 @@
 import Foundation
 
 public struct ExperiencePlatformEvent {
-
+    
     private let LOG_TAG = "ExperiencePlatformEvent"
-
+    
     public let xdm: [String: Any]?
     public let data: [String: Any]?
     
@@ -27,7 +27,7 @@ public struct ExperiencePlatformEvent {
         self.xdm = xdm
         self.data = data
     }
-
+    
     /// Initialize an Experience Platform Event with the provided event data
     /// - Parameters:
     ///   - xdm: Solution specific XDM event data pased as an XDMSchema
@@ -41,15 +41,15 @@ public struct ExperiencePlatformEvent {
         }
         self.data = data
     }
-
+    
     internal func asDictionary() -> [String : Any]? {
         var dataDict: [String: Any] = [:]
-         if let unwrappedXdm = xdm {
+        if let unwrappedXdm = xdm {
             dataDict = [ExperiencePlatformConstants.JsonKeys.xdm: unwrappedXdm as Any]
         }
         if let unwrappedData = data {
             dataDict[ExperiencePlatformConstants.JsonKeys.data] = unwrappedData
         }
         return dataDict.isEmpty ? nil : dataDict
-}
+    }
 }
