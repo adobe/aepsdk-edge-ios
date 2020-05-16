@@ -12,23 +12,29 @@
 
 import UIKit
 
+extension String {
+    func frontPadding(toLength length: Int, withPad pad: String, startingAt index: Int) -> String {
+        return String(String(self.reversed()).padding(toLength: length, withPad: pad, startingAt: index).reversed())
+    }
+}
+
 class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet var appTitle: UILabel!
     @IBOutlet var productList: UITableView!
-    @IBOutlet var cartImage: UIImageView!
-    @IBOutlet var griffonImage: UIImageView!
+    @IBOutlet var cartBtn: UIButton!
+    @IBOutlet var griffonBtn: UIButton!
+    @IBOutlet var appTitleLbl: UILabel!
     
     let productData = ProductDataLoader().productData
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.hidesBackButton = true
+        appTitleLbl.text = AEPDemoConstants.Strings.APP_NAME
         
-        cartImage.layer.cornerRadius = cartImage.frame.size.width/3
-        cartImage.clipsToBounds = true
-        
-        let productData = ProductDataLoader().productData
-        print(productData)
+        cartBtn.layer.cornerRadius = 0.5 * cartBtn.bounds.size.width
+        cartBtn.clipsToBounds = true
         productList.reloadData()
         productList.delegate = self
         productList.dataSource = self
@@ -39,11 +45,17 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        
+
+        let name = productData[indexPath.row].name
+        let currency = productData[indexPath.row].currency
+        let price = String(productData[indexPath.row].price)
+        let textContent = String(format: "%@ %@ %@",  name.padding(toLength: 8, withPad: " ", startingAt: 0), currency, price.frontPadding(toLength: 10, withPad: " ", startingAt: 0)  )
         let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
         cell.backgroundView?.backgroundColor = .black
         cell.imageView?.image = UIImage(named: "\((productData[indexPath.row].imageSmall))")
-        cell.textLabel?.text = productData[indexPath.row].name + "     " + productData[indexPath.row].currency + "  \((productData[indexPath.row].price))"
-        
+        cell.textLabel?.text = textContent
         return cell
     }
     
@@ -62,13 +74,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    @IBAction func CartBtn(_ sender: UIButton) {
-        print("Cart Button Clicked....: \(adbMobileShoppingCart.total)" )
+    @IBAction func gotoCartPage(_ sender: UIButton) {
         self.performSegue(withIdentifier: "showShoppingCartPage", sender: self)
     }
     
-    @IBAction func GriffonBtn(_ sender: UIButton) {
-        print("Griffon Connect Btn has been clicked....")
+    @IBAction func gotoGriffonConnectPage(_ sender: UIButton) {
         self.performSegue(withIdentifier: "showGriffonPage", sender: self)
     }
 }

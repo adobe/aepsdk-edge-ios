@@ -23,27 +23,23 @@ extension ShoppingCart {
         items.removeAll()
     }
     
-    func listTheContentOfCart() {
-        for item in items {
-            print(item)
-        }
-    }
-    
     func add(product: Product) {
         
-        print("Product added into Cart : \(product)")
         let item = items.filter { $0.product == product }
         if let unwrappedItem = item.first {
             unwrappedItem.product.quantity += product.quantity
-            print("Item exists in the cart. So, Quantity has been increased ....")
         } else {
             items.append(CartItem(product: product))
-            print("Item Not found - So, added to the cart as a new item....")
         }
     }
     
+    func remove(product: Product) {
+        guard let index = items.firstIndex(where: { $0.product == product }) else { return}
+        items.remove(at: index)
+    }
+    
     var totalQuantity : Float {
-           return items.reduce(0) { value, item in
+        return items.reduce(0) { value, item in
             value + Float(item.product.quantity)
         }
     }

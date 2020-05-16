@@ -23,16 +23,23 @@ class ProductViewController: UIViewController {
     @IBOutlet var productCurrency: UILabel!
     @IBOutlet var productPrice: UILabel!
     @IBOutlet var productQty: UIPickerView!
-    
-    // let adbMobileShoppingCart = ShoppingCart()
+    @IBOutlet var appNameLbl: UILabel!
+    @IBOutlet var itemListLbl: UILabel!
+    @IBOutlet var quantityLbl: UILabel!
+    @IBOutlet var priceLbl: UILabel!
+    @IBOutlet var addToCartBtn: UIButton!
     
     var productData:ProductData?
     var qtyOrdered: Int = 1
-    private let qtySource = [1,2,3,4,5]
+    private var qtySource: [Int] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("\((productData?.imageSmall)!)")
+        appNameLbl.text = AEPDemoConstants.Strings.APP_NAME
+        /// itemListLbl.text = AEPDemoConstants.Strings.TITLE_ITEM_DETAIL
+        quantityLbl.text = AEPDemoConstants.Strings.QUANTITY
+        priceLbl.text = AEPDemoConstants.Strings.PRICE
+        addToCartBtn.setTitle(AEPDemoConstants.Strings.ADD_TO_CART, for: .normal)
         productImage.image = UIImage(named: "\((productData?.imageSmall)!)")
         productImage.layer.cornerRadius = 30
         productImage.clipsToBounds = true
@@ -41,20 +48,21 @@ class ProductViewController: UIViewController {
         productDetails.text = productData?.details
         productCurrency.text = productData?.currency
         productPrice.text = "\((productData?.price)!)"
+        for index in AEPDemoConstants.Numbers.MIN_QTY...AEPDemoConstants.Numbers.MAX_QTY {
+            qtySource.append(index)
+        }
         productQty.dataSource = self
         productQty.delegate = self
         productQty.setValue(UIColor.white, forKey: "textColor")
-        
     }
     
     @IBAction func AddToCartBtn(_ sender: UIButton) {
         
-        print("Add To Cart Button has been clicked....")
-        
         if let unwrappedproductData = productData {
             let product = Product(imageLarge:unwrappedproductData.imageLarge, sku:unwrappedproductData.sku, name: unwrappedproductData.name, price: unwrappedproductData.price, quantity:qtyOrdered )
             adbMobileShoppingCart.add(product: product)
-            adbMobileShoppingCart.listTheContentOfCart()
+            let message  = "\(product.quantity) quantities of " + product.name + AEPDemoConstants.Strings.ITEM_ADDED_MSG
+            Snackbar(message : message)
         }
         // Todo : Send this Event to Platform
         
@@ -72,7 +80,6 @@ extension ProductViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         qtyOrdered = qtySource[row]
-        print("From pickerView : qtyOrdered = \(qtyOrdered)")
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
