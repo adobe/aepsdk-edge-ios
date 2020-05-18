@@ -16,6 +16,12 @@ import ACPCore
 @testable import ACPExperiencePlatform
 
 class ExperiencePlatformTests: XCTestCase {
+    var mockResponseHandler : MockResponseHandler?
+    
+    override func setUp() {
+        continueAfterFailure = false
+        mockResponseHandler = MockResponseHandler()
+    }
     
     func generateXdm() -> [String : Any] {
         var xdm = [String: Any]()
@@ -43,29 +49,20 @@ class ExperiencePlatformTests: XCTestCase {
     }
     
     func testSendEvent_withNonNullXdmAndNonNullData_ExperiencePlatformEventData() {
-        
-        func  completionHandler(_ s: [String: Any]) -> Void {
-        }
         ACPExperiencePlatform.registerExtension()
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generateXdm(),data: generateData())
-        XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseCallback: completionHandler) == ())
+        XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
     }
     
     func testSendEvent_withNonNullXdmAndNullData_ExperiencePlatformEventData() {
-        
-        func  completionHandler(_ s: [String: Any]) -> Void {
-        }
         ACPExperiencePlatform.registerExtension()
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generateXdm(),data: nil)
-        XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseCallback: completionHandler) == ())
+        XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
     }
     
     func testSendEvent_withNonNullXdmSchemaAndNonNullData_ExperiencePlatformEventData() {
-        
-        func  completionHandler(_ s: [String: Any]) -> Void {
-        }
         ACPExperiencePlatform.registerExtension()
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generateXdmSchema,data: generateData())
-        XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseCallback: completionHandler) == ())
+        XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
     }
 }

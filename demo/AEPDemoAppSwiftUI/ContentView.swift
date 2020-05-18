@@ -17,22 +17,23 @@ import ACPExperiencePlatform
 struct ContentView: View {
     var body: some View {
         VStack {
-        Button(action: {
-            let networkRequest1:NetworkRequest = NetworkRequest(url: URL(string: "https://www.adobe.com")!, httpMethod: HttpMethod.get, connectPayload: "test", httpHeaders: [:],
-                                                                connectTimeout: 5, readTimeout: 5)
-        
-            AEPServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest1, completionHandler: {connection in
-                                               // function body goes here
-                print(connection.responseHttpHeader(forKey: "Content-Type") ?? "no content-type header")
-                print(connection.responseCode ?? "no response code")
-                print(connection.responseMessage ?? "no response message")
-            })
-        }) {
-            Text("Network Service ping")
-        }.padding()
-        
-        Button(action: {
-                ACPExperiencePlatform.dispatchData(eventData: ["data":["test":"data"]], responseHandler: DemoResponseHandler())
+            Button(action: {
+                let networkRequest1:NetworkRequest = NetworkRequest(url: URL(string: "https://www.adobe.com")!, httpMethod: HttpMethod.get, connectPayload: "test", httpHeaders: [:],
+                                                                    connectTimeout: 5, readTimeout: 5)
+                
+                AEPServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest1, completionHandler: {connection in
+                    // function body goes here
+                    print(connection.responseHttpHeader(forKey: "Content-Type") ?? "no content-type header")
+                    print(connection.responseCode ?? "no response code")
+                    print(connection.responseMessage ?? "no response message")
+                })
+            }) {
+                Text("Network Service ping")
+            }.padding()
+            
+            Button(action: {
+                let experienceEvent = ExperiencePlatformEvent(xdm: [:], data: ["data":["test":"data"]])
+                ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent, responseHandler: DemoResponseHandler())
             }) {
                 Text("Ping to ExEdge")
             }
