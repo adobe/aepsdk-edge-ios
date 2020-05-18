@@ -10,16 +10,22 @@
 // governing permissions and limitations under the License.
 //
 
-
 import UIKit
 
-class ViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
+class ShoppingItemCell: UITableViewCell {
+    
+    @IBOutlet var productImageView: UIImageView!
+    @IBOutlet var productNameLbl: UILabel!
+    @IBOutlet var productUnitPriceLbl: UILabel!
+    @IBOutlet var productQtyLbl: UILabel!
+    @IBOutlet var productPriceLbl: UILabel!
+    
+    func setProduct(product: Product) {
+        
+        productImageView.image = UIImage(named:product.imageLarge)
+        productNameLbl.text = product.name
+        productUnitPriceLbl.text  = String(format: "%.2f", product.price)
+        productQtyLbl.text = String(Int(product.quantity))
+        productPriceLbl.text = String(format: "%.2f", product.subtotal)
     }
-
-
 }
-

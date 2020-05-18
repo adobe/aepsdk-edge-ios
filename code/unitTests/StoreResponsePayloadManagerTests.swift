@@ -25,7 +25,7 @@ class StoreResponsePayloadManagerTests: XCTestCase {
     }
     
     // MARK:
-
+    
     func testGetActiveStores_isCorrect_whenRecordsInDataStore() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads(buildStorePayloads())
@@ -71,17 +71,17 @@ class StoreResponsePayloadManagerTests: XCTestCase {
     func testSaveStorePayloads_overwritesPayloads_whenDuplicateKeysAndNewValues() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads(buildStorePayloads())
-
+        
         let originalPayloads = manager.getActiveStores()
         
         // new payloads use same keys as original payloads
         var newPayloads: [StoreResponsePayload] = []
         newPayloads.append(StoreResponsePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout",
-                                             value: "general=false",
-                                            maxAgeSeconds: 8000))
+                                                value: "general=false",
+                                                maxAgeSeconds: 8000))
         newPayloads.append(StoreResponsePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin",
-                                             value: "newValue",
-                                             maxAgeSeconds: 10))
+                                                value: "newValue",
+                                                maxAgeSeconds: 10))
         
         // overwrite and update
         manager.saveStorePayloads(newPayloads)
@@ -113,11 +113,11 @@ class StoreResponsePayloadManagerTests: XCTestCase {
         
         payloads.append(StoreResponsePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout",
                                              value: "general=true",
-                                            maxAgeSeconds: 7200))
+                                             maxAgeSeconds: 7200))
         payloads.append(StoreResponsePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin",
                                              value: "",
                                              maxAgeSeconds: 2))
         return payloads
     }
-
+    
 }

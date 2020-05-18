@@ -79,31 +79,32 @@ struct ExperiencePlatformConstants {
         private init() {}
         
         static let xdm = "xdm"
+        static let data = "data"
         static let ECID = "ECID"
         static let timestamp = "timestamp"
         static let eventId = "eventId"
-        
+
         struct Response {
             private init() {}
-            
+
             struct Error {
                 private init() {}
-                
+
                 static let message = "message"
                 static let namespace = "namespace"
             }
         }
     }
-    
+
     struct NetworkKeys {
         private init() {}
-        
+
         static let edgeEndpoint = "https://edge.adobedc.net/ee/v1"
         static let requestParamConfigId = "configId"
         static let requestParamRequestId = "requestId"
         static let defaultConnectTimeout: TimeInterval = 5
         static let defaultReadTimeout: TimeInterval = 5
-        
+
         static let headerKeyAccept = "accept"
         static let headerKeyContentType = "Content-Type"
         static let headerValueApplicationJson = "application/json"
