@@ -78,8 +78,8 @@ class ExperiencePlatformInternal : ACPExtension {
         ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Oh snap! An unexpected error occured: \(error.localizedDescription)")
     }
     
-     /// Adds an event to the event queue and starts processing the queue.  Events with no event data are ignored.
-     /// - Parameter event: the event to add to the event queue for processing
+    /// Adds an event to the event queue and starts processing the queue.  Events with no event data are ignored.
+    /// - Parameter event: the event to add to the event queue for processing
     func processAddEvent(_ event: ACPExtensionEvent) {
         requestEventQueue.add((event, handleAddEvent(event:)))
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) added to queue.")
@@ -116,16 +116,16 @@ class ExperiencePlatformInternal : ACPExtension {
         return true
     }
     
-     /// Processes the events in the event queue in the order they were received.
-     ///
-     /// A valid Configuration shared state is required for processing events and if one is not available, processing the queue is halted without removing events from
-     /// the queue. If a valid Configuration shared state is available but no `experiencePlatform.configId ` is found, the event is dropped.
+    /// Processes the events in the event queue in the order they were received.
+    ///
+    /// A valid Configuration shared state is required for processing events and if one is not available, processing the queue is halted without removing events from
+    /// the queue. If a valid Configuration shared state is available but no `experiencePlatform.configId ` is found, the event is dropped.
     func handleSendEvent(_ event: ACPExtensionEvent) -> Bool {
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Processing handleSendEvent for event with id \(event.eventUniqueIdentifier).")
         
         guard let configSharedState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
                                                      event: event) else {
-            return false // keep event in queue to process on next trigger
+                                                        return false // keep event in queue to process on next trigger
         }
         
         guard let configId = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String else {
@@ -191,5 +191,5 @@ class ExperiencePlatformInternal : ACPExtension {
         
         return unwrappedState
     }
-
+    
 }

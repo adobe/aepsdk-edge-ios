@@ -19,7 +19,7 @@ class EdgeRequestTests: XCTestCase {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false // fail so nil checks stop execution
     }
-    
+
     func testEncode_allProperties() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
@@ -28,17 +28,17 @@ class EdgeRequestTests: XCTestCase {
         let requestContext = RequestContextData(identityMap: identityMap)
         
         let events: [[String : AnyCodable]] = [
-        [
-            "data" : [
-                "key" : "value"
-            ],
-            "xdm" : [
-                "device" :[
-                    "manufacturer" : "Atari",
-                    "type" : "mobile"
+            [
+                "data" : [
+                    "key" : "value"
+                ],
+                "xdm" : [
+                    "device" :[
+                        "manufacturer" : "Atari",
+                        "type" : "mobile"
+                    ]
                 ]
-            ]
-        ]]
+            ]]
         let edgeRequest = EdgeRequest(meta: requestMetadata, xdm: requestContext, events: events)
         
         let encoder = JSONEncoder()
@@ -155,27 +155,27 @@ class EdgeRequestTests: XCTestCase {
     
     func testEncode_onlyEvents() {
         let events: [[String : AnyCodable]] = [
-        [
-            "data" : [
-                "key" : "value"
+            [
+                "data" : [
+                    "key" : "value"
+                ],
+                "xdm" : [
+                    "device" :[
+                        "manufacturer" : "Atari",
+                        "type" : "mobile"
+                    ]
+                ]
             ],
-            "xdm" : [
-                "device" :[
-                    "manufacturer" : "Atari",
-                    "type" : "mobile"
+            [
+                "xdm" : [
+                    "test" : [
+                        "true" : true,
+                        "false" : false,
+                        "one" : 1,
+                        "zero" : 0,
+                    ]
                 ]
-            ]
-        ],
-        [
-            "xdm" : [
-                "test" : [
-                    "true" : true,
-                    "false" : false,
-                    "one" : 1,
-                    "zero" : 0,
-                ]
-            ]
-        ]]
+            ]]
         let edgeRequest = EdgeRequest(meta: nil,
                                       xdm: nil,
                                       events: events)

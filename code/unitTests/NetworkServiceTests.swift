@@ -160,14 +160,14 @@ class NetworkServiceTests: XCTestCase {
     func testOverridenConnectAsync_called_whenMultipleRequests() {
         let testNetworkService = MockNetworkServiceOverrider();
         AEPServiceProvider.shared.networkService = testNetworkService
-        
+
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!, httpMethod: HttpMethod.post, connectPayload: "test body", httpHeaders: ["Accept": "text/html"], connectTimeout: 2.0, readTimeout: 3.0)
         let request2 = NetworkRequest(url: URL(string: "https://test2.com")!, httpMethod: HttpMethod.get, httpHeaders: ["Accept": "text/html"])
         let request3 = NetworkRequest(url: URL(string: "https://test3.com")!)
         let completionHandler : ((HttpConnection) -> Void) = { connection in
-           print("say hi")
+            print("say hi")
         }
-    
+
         // test&verify
         AEPServiceProvider.shared.networkService.connectAsync(networkRequest: request1, completionHandler: completionHandler)
         XCTAssertEqual(request1.url, testNetworkService.connectAsyncCalledWithNetworkRequest?.url)
@@ -214,7 +214,7 @@ class NetworkServiceTests: XCTestCase {
     func testOverridenConnectAsync_doesNotOverrideHeaders_whenCalledWithDefaultHeaders() {
         let testNetworkService = MockNetworkServiceOverrider()
         AEPServiceProvider.shared.networkService = testNetworkService
-        
+
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!, httpMethod: HttpMethod.get, httpHeaders: ["User-Agent": "test", "Accept-Language": "ro-RO"], connectTimeout: 2.0, readTimeout: 3.0)
         
         // test&verify
@@ -229,7 +229,7 @@ class NetworkServiceTests: XCTestCase {
         let testNetworkServiceOverrider1 = MockNetworkServiceOverrider()
         let testNetworkServiceOverrider2 = MockNetworkServiceOverrider()
         let testNetworkServiceOverrider3 = MockNetworkServiceOverrider()
-        
+
         // test&verify
         // set first overrider
         AEPServiceProvider.shared.networkService = testNetworkServiceOverrider1

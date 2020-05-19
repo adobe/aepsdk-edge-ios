@@ -30,7 +30,7 @@ struct Streaming {
     var enabled: Bool? {
         return recordSeparator != nil && lineFeed != nil
     }
-
+    
     enum CodingKeys: String, CodingKey {
         case recordSeparator = "recordSeparator"
         case lineFeed = "lineFeed"

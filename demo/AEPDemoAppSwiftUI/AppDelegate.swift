@@ -22,8 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
-        ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with ACPExperiencePlatform v" + ACPExperiencePlatform.extensionVersion()))
+        ACPCore.setLogLevel(ACPMobileLogLevel.debug)
+        ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with ACPExperiencePlatform."))
         ACPIdentity.registerExtension()
         ACPExperiencePlatform.registerExtension()
         ACPCore.start {

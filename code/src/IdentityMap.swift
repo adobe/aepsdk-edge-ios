@@ -31,9 +31,9 @@ struct IdentityMap {
     ///   - authenticationState: The state this identity is authenticated as for this observed ExperienceEvent.
     ///   - primary: Indicates this identity is the preferred identity. Is used as a hint to help systems better organize how identities are queried.
     mutating func addItem(namespace: String,
-                 id: String,
-                 authenticationState: AuthenticationState? = nil,
-                 primary: Bool? = nil) {
+                          id: String,
+                          authenticationState: AuthenticationState? = nil,
+                          primary: Bool? = nil) {
         let item = IdentityItem(id: id, authenticationState: authenticationState, primary: primary)
         
         if var namespaceItems = items[namespace] {

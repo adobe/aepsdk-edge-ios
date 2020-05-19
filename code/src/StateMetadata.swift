@@ -17,7 +17,7 @@ import Foundation
 /// A property in the `RequestMetadata` object.
 struct StateMetadata : Encodable {
     let entries: [StorePayload]?
-
+    
     init(payload: [StorePayload]) {
         entries = payload.isEmpty ? nil : payload
     }
