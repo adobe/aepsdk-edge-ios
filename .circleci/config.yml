@@ -18,12 +18,12 @@ jobs:
           command: xcrun instruments -w "iPhone 8 (10.0) [" || true
 
       # restore pods related caches
-        - restore_cache:
-            keys:
-              - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "build/xcode/Podfile.lock" }}
-              - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}
-              - cocoapods-cache-v1
-              - 1-gems-{{ checksum "Gemfile.lock" }}
+      - restore_cache:
+          keys:
+            - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "build/xcode/Podfile.lock" }}
+            - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}
+            - cocoapods-cache-v1
+            - 1-gems-{{ checksum "Gemfile.lock" }}
 
       # make sure we're on the right version of cocoapods
       - run:
