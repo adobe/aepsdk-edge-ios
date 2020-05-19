@@ -12,6 +12,11 @@ jobs:
     steps:
       - checkout
 
+      # pre-start the simulator to prevent timeouts
+      - run:
+          name: Pre-start Simulator
+          command: xcrun instruments -w "iPhone 8 (10.0) [" || true
+
     # restore pods related caches
       - restore_cache:
           keys:
