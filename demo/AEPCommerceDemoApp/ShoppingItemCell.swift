@@ -12,6 +12,10 @@
 
 import UIKit
 
+protocol CartDelegate {
+    func remove(cell: ShoppingItemCell)
+}
+
 class ShoppingItemCell: UITableViewCell {
     
     @IBOutlet var productImageView: UIImageView!
@@ -19,6 +23,9 @@ class ShoppingItemCell: UITableViewCell {
     @IBOutlet var productUnitPriceLbl: UILabel!
     @IBOutlet var productQtyLbl: UILabel!
     @IBOutlet var productPriceLbl: UILabel!
+    @IBOutlet var deleteProduct: UIButton!
+    
+    var delegate: CartDelegate?
     
     func setProduct(product: Product) {
         
@@ -27,5 +34,9 @@ class ShoppingItemCell: UITableViewCell {
         productUnitPriceLbl.text  = String(format: "%.2f", product.price)
         productQtyLbl.text = String(Int(product.quantity))
         productPriceLbl.text = String(format: "%.2f", product.subtotal)
+    }
+    
+    @IBAction func deleteAProduct(_ sender: UIButton) {
+        self.delegate?.remove(cell: self)
     }
 }
