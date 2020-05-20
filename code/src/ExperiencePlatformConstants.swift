@@ -114,4 +114,11 @@ struct ExperiencePlatformConstants {
         static let headerKeyContentType = "Content-Type"
         static let headerValueApplicationJson = "application/json"
     }
+    
+    struct Error {
+        private init() {}
+        
+        static let encodingErrorDomain = "EncodingError"
+        static let encodingErrorCode = 1
+    }
 }

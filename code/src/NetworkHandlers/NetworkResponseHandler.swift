@@ -15,7 +15,7 @@ import ACPCore
 
 class NetworkResponseHandler {
     private let LOG_TAG = "NetworkResponseHandler"
-    private let queue = DispatchQueue(label: "com.adobe.experiencePlatform.eventsDictionary")
+    private let serialQueue = DispatchQueue(label: "com.adobe.experiencePlatform.eventsDictionary") // serial queue for atomic operations
     
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [String]>()
@@ -30,12 +30,12 @@ class NetworkResponseHandler {
         guard !requestId.isEmpty, !batchedEvents.isEmpty else { return }
         
         let eventIds = batchedEvents.map { $0.eventUniqueIdentifier }
-        queue.sync {
-            if sentEventsWaitingResponse[requestId] != nil {
-                ACPCore.log(ACPMobileLogLevel.warning, tag:LOG_TAG, message:"Name collision for requestId \(requestId), events list is overwritten.")
+        serialQueue.sync {
+            if self.sentEventsWaitingResponse[requestId] != nil {
+                ACPCore.log(ACPMobileLogLevel.warning, tag:self.LOG_TAG, message:"Name collision for requestId \(requestId), events list is overwritten.")
             }
             
-            sentEventsWaitingResponse[requestId] = eventIds
+            self.sentEventsWaitingResponse[requestId] = eventIds
         }
     }
     
@@ -157,7 +157,7 @@ class NetworkResponseHandler {
     ///   - requestId: The request identifier associated with this response event, used for logging
     ///   - isErrorResponseEvent: indicates if this should be dispatched as an error or regular response content event
     private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool) {
-        guard eventData.count > 0 else { return }
+        guard !eventData.isEmpty else { return }
         var responseEvent:ACPExtensionEvent? = nil
         if isErrorResponseEvent {
             responseEvent = try? ACPExtensionEvent(name: ExperiencePlatformConstants.eventNameErrorResponseContent,
@@ -227,7 +227,7 @@ class NetworkResponseHandler {
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.prettyPrinted]
         guard let data = try? encoder.encode(error) else { return }
-        let errorString = String(decoding: data, as: UTF8.self)
-        ACPCore.log(loggingMode, tag: LOG_TAG, message: "Received event error for request id (\(requestId)), error details:\n\(errorString)")
+        let errorString = String(data: data, encoding: .utf8)
+        ACPCore.log(loggingMode, tag: LOG_TAG, message: "Received event error for request id (\(requestId)), error details:\n\(errorString ?? "unable to encode")")
     }
 }

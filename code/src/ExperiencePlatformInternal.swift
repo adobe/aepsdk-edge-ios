@@ -111,7 +111,7 @@ class ExperiencePlatformInternal : ACPExtension {
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) added to queue.")
     }
     
-    /// Calls `ResponseCallbackHandler` and Invokes the response handler associated with this response event, if any
+    /// Calls `ResponseCallbackHandler` and invokes the response handler associated with this response event, if any
     /// - Parameter event: the `ACPExtensionEvent` to process, event data should not be nil and it should contain a requestEventId
     /// - Returns: `Bool` indicating if the response event was processed or not
     func handleResponseEvent(event: ACPExtensionEvent) -> Bool {

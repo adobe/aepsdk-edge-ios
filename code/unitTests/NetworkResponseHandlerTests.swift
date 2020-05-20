@@ -115,15 +115,16 @@ class NetworkResponseHandlerTests: XCTestCase {
     
     func testAddRemoveWaitingEvents_noConcurrencyCrash_whenCalledFromDifferentThreads() {
         let requestId = "test"
-        let dispatchQueue = DispatchQueue(label: "test.queue", attributes: .concurrent)
-        let expectation = XCTestExpectation(description: "Add/Remove multithreaded calls")
+        let dispatchQueue1 = DispatchQueue(label: "test.queue1", attributes: .concurrent)
+        let dispatchQueue2 = DispatchQueue(label: "test.queue2", attributes: .concurrent)
+        let expectation = self.expectation(description: "Add/Remove multithreaded calls")
         expectation.expectedFulfillmentCount = 100
         expectation.assertForOverFulfill = true
         
         for _ in 1...100 {
             let rand = Int.random(in: 1..<100)
             if rand % 2 == 0 {
-                dispatchQueue.async { [weak self] in
+                dispatchQueue1.async { [weak self] in
                     guard let self = self else {
                         return
                     }
@@ -131,7 +132,7 @@ class NetworkResponseHandlerTests: XCTestCase {
                     expectation.fulfill()
                 }
             } else {
-                dispatchQueue.async { [weak self] in
+                dispatchQueue2.async { [weak self] in
                     guard let self = self else {
                         return
                     }
@@ -141,6 +142,10 @@ class NetworkResponseHandlerTests: XCTestCase {
             }
         }
         
-        wait(for: [expectation], timeout: 2.0) // Wait until the expectation is fulfilled, timeout of 2 seconds
+        waitForExpectations(timeout: 2) { (error: Error?) in
+            if (error != nil) {
+                XCTFail("Test timed out before all expectations were fullfilled")
+            }
+        }
     }
 }
