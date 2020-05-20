@@ -17,42 +17,43 @@ class CartViewController: UIViewController {
     
     @IBOutlet var shoppingCartTableView: UITableView!
     @IBOutlet var orderTotalLbl: UILabel!
+    @IBOutlet var checkoutBtn: UIButton!
+    @IBOutlet var appNameLbl: UILabel!
+    @IBOutlet var shoppingCartHeadingLbl: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        print("Shopping Cart Page has been loaded...: \(adbMobileShoppingCart.total)" )
+        appNameLbl.text = AEPDemoConstants.Strings.APP_NAME
+        shoppingCartHeadingLbl.text = AEPDemoConstants.Strings.TITLE_CART_LIST
         shoppingCartTableView.delegate = self
         shoppingCartTableView.dataSource = self
-        orderTotalLbl.text = "Order Total $ " + String(format: "%.2f", adbMobileShoppingCart.total)
+        shoppingCartTableView.reloadData()
+        orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + " $ " + String(format: "%.2f", adbMobileShoppingCart.total)
+    }
+    
+    @IBAction func gotoCheckoutPage(_ sender: UIButton) {
+        
+        if adbMobileShoppingCart.items.isEmpty {
+            Snackbar(message : AEPDemoConstants.Strings.CART_EMPTY_ERROR_MSG)
+        } else {
+            self.performSegue(withIdentifier: "gotoCheckoutPage", sender: self)
+        }
     }
     
     @IBAction func SCartCancelBtn(_ sender: UIButton) {
-        print("Shopping Cart Cancel Button has been clicked....")
-        clearCart()
-    }
-    
-    @IBAction func SCartOrderNowBtn(_ sender: UIButton) {
-        print("Shopping Cart Order Now Button has been clicked....")
-        
         if adbMobileShoppingCart.items.isEmpty {
-            print("Sorry, No item in the shopping cart to place an order.So, add atleast one item to place an order.")
+            Snackbar(message : AEPDemoConstants.Strings.CART_EMPTY_MSG)
         } else {
-            for item in adbMobileShoppingCart.items {
-                print(" Sku : " + item.product.sku +  ", Name : " +  item.product.name +  ", Qty : \(item.product.quantity), UnitPrice : \(item.product.price),  Subtotal : \(Float(item.product.quantity)*item.product.price)")
-            }
-            print("Total Cost : \(adbMobileShoppingCart.total)")
-            
-            // Todo : Send this Event to Platform - and then clean the cart
-            // Call sendEvent()
-            // clearCart()
+            clearCart()
+            Snackbar(message : AEPDemoConstants.Strings.CART_CLEARING_MSG)
         }
     }
     
     func clearCart() {
+        
         adbMobileShoppingCart.clearCart()
         shoppingCartTableView.reloadData()
-        orderTotalLbl.text = "Order Total $ " + String(format: "%.2f", adbMobileShoppingCart.total)
+        orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)
     }
 }
 
@@ -66,6 +67,19 @@ extension CartViewController: UITableViewDataSource, UITableViewDelegate {
         let product = adbMobileShoppingCart.items[indexPath.row].product
         let cell = tableView.dequeueReusableCell(withIdentifier: "ProductCell") as! ShoppingItemCell
         cell.setProduct(product:product)
+        cell.delegate = self
         return cell
+    }
+}
+
+extension CartViewController: CartDelegate {
+    
+    // MARK: - CartDelegate
+    func remove(cell: ShoppingItemCell) {
+        guard let indexPath = shoppingCartTableView.indexPath(for: cell) else { return }
+        let product = adbMobileShoppingCart.items[indexPath.row]
+        adbMobileShoppingCart.remove(product: product.product)
+        shoppingCartTableView.reloadData()
+        orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)
     }
 }
