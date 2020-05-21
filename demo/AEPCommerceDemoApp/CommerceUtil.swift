@@ -54,7 +54,7 @@ class CommerceUtil {
     /// shopping cart.
     /// See <a href="https://github.com/adobe/xdm/blob/master/docs/reference/context/experienceevent.schema.md#xdmeventtype">Experience Event</a>
     private static let EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS: String   = "commerce.productListRemovals"
-
+    
     /// An action during a checkout process of a product list, there can be more than one checkout
     /// event if there are multiple steps in a checkout process. If there are multiple steps the
     /// event time information and referenced page or experience is used to identify the step
@@ -155,7 +155,7 @@ class CommerceUtil {
             createAndSendEvent(itemsList: itemsList,eventType: EVENT_TYPE_COMMERCE_CHECKOUTS)
         }
     }
-
+    
     /// Creates and sends a cart purchase event to the Adobe Data Platform.
     /// A commerce.purchases} event is a Commerce} object with
     /// Commerce#setPurchases(Purchases)} and Commerce#setOrder(Order)}
@@ -210,7 +210,7 @@ class CommerceUtil {
             xdmData.productListItems = itemsList
             
             let event = ExperiencePlatformEvent(xdm:xdmData,data:nil)
-            ACPExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseCallback: nil)
+            ACPExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: nil)
         }
     }
     
@@ -267,7 +267,7 @@ class CommerceUtil {
         xdmData.commerce  = commerce
         xdmData.productListItems = itemsList
         let event = ExperiencePlatformEvent(xdm:xdmData,data:nil)
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseCallback: nil)
+        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: nil)
     }
     
     /// Helper method to convert an com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem} to an
