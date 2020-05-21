@@ -39,7 +39,7 @@ class NetworkResponseHandler {
         }
     }
     
-    /// Remove the requestId in the internal {@code sentEventsWaitingResponse} along with the associated list of events.
+    /// Remove the requestId in the internal `sentEventsWaitingResponse` along with the associated list of events.
     /// - Parameter requestId: batch request id
     /// - Returns: the list of unique event ids associated with the requestId that were removed
     func removeWaitingEvents(requestId: String) -> [String]? {
@@ -55,6 +55,10 @@ class NetworkResponseHandler {
         return sentEventsWaitingResponse[requestId]
     }
     
+    /// Decodes the response as `EdgeResponse` and handles the event handles, errors and warnings received from the server
+    /// - Parameters:
+    ///   - jsonResponse: JSON formatted response received from the server
+    ///   - requestId: request id associated with current response
     func processResponseOnSuccess(jsonResponse:String, requestId:String) {
         guard let data = jsonResponse.data(using: .utf8) else { return }
         
@@ -71,6 +75,11 @@ class NetworkResponseHandler {
         }
     }
     
+    /// Decodes the response as `EdgeResponse` and extracts the errors if possible, otherwise decodes it as `EdgeEventError` and dispatches error events for the errors/warnings
+    /// received from the server.
+    /// - Parameters:
+    ///   - jsonError: JSON formatted error response received from the server
+    ///   - requestId: request id associated with current response
     func processResponseOnError(jsonError:String, requestId:String) {
         guard let data = jsonError.data(using: .utf8) else { return }
         
@@ -99,10 +108,12 @@ class NetworkResponseHandler {
         }
     }
     
-    /// Dispatches each event handle in the provided `handlesArray` as a separate event through the Event Hub
+    /// Dispatches each event handle in the provided `handlesArray` as a separate event through the Event Hub and processes
+    /// the store event handles (if any).
     /// - Parameters:
     ///   - handlesArray: `[EdgeEventHandle]` containing all the event handles to be processed
     ///   - requestId: the request identifier, used for logging and to identify the request events associated with this response
+    /// - See also: handleStoreEventHandle(handle: EdgeEventHandle)
     private func dispatchEventHandles(handlesArray: [EdgeEventHandle]?, requestId: String) {
         guard let unwrappedEventHandles = handlesArray, !unwrappedEventHandles.isEmpty else {
             ACPCore.log(ACPMobileLogLevel.verbose, tag:LOG_TAG, message:"dispatchEventHandles - Received nil/empty event handle array, nothing to handle")
@@ -122,13 +133,13 @@ class NetworkResponseHandler {
         }
     }
     
-    
     /// Iterates over the provided `errorsArray` and dispatches a new error event to the Event Hub.
     /// It also logs each error/warning json with the log level set based of `isError`
     /// - Parameters:
     ///   - errorsArray: `EdgeEventError` array containing all the event errors to be processed
     ///   - requestId: the event request identifier, used for logging
     ///   - isError: boolean indicating if this is an error message
+    /// - See Also: `logErrorMessage(_ error: [String: Any], isError: Bool, requestId: String)`
     private func dispatchEventErrors(errorsArray: [EdgeEventError]?, requestId: String, isError:Bool) {
         guard let unwrappedErrors = errorsArray, !unwrappedErrors.isEmpty else {
             ACPCore.log(ACPMobileLogLevel.verbose, tag:LOG_TAG, message:"dispatchEventErrors - Received nil/empty errors array, nothing to handle")
@@ -138,15 +149,14 @@ class NetworkResponseHandler {
         let requestEventIdsList = getWaitingEvents(requestId: requestId)
         ACPCore.log(ACPMobileLogLevel.verbose, tag:LOG_TAG, message:"dispatchEventErrors - Processing \(unwrappedErrors.count) errors(s) for request id: \(requestId)")
         for error in unwrappedErrors {
-            logErrorMessage(error, isError: isError, requestId: requestId)
             
             if let errorAsDictionary = try? error.asDictionary() {
+                logErrorMessage(errorAsDictionary, isError: isError, requestId: requestId)
                 
                 // set eventRequestId and edge requestId on the response event and dispatch data
                 let eventData = addEventAndRequestIdToDictionary(errorAsDictionary, requestEventIdsList: requestEventIdsList, index: error.eventIndex, requestId: requestId)
                 guard !eventData.isEmpty else { return }
                 dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true)
-                
             }
         }
     }
@@ -199,12 +209,12 @@ class NetworkResponseHandler {
         guard let type = handle.type, ExperiencePlatformConstants.JsonKeys.Response.eventHandleStoreType == type.lowercased() else { return }
         guard let payload: [[String: AnyCodable]] = handle.payload else { return }
         
+        var storeResponsePayloads: [StoreResponsePayload] = []
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
-        
-        var storeResponsePayloads: [StoreResponsePayload] = []
+        let jsonDecoder = JSONDecoder()
         for storeElement in payload {
-            if let data = try? encoder.encode(storeElement), let storePayload = try? JSONDecoder().decode(StorePayload.self, from: data) {
+            if let data = try? encoder.encode(storeElement), let storePayload = try? jsonDecoder.decode(StorePayload.self, from: data) {
                 storeResponsePayloads.append(StoreResponsePayload(payload: storePayload))
             }
         }
@@ -212,22 +222,20 @@ class NetworkResponseHandler {
         let dataStore = NamedUserDefaultsStore(name: ExperiencePlatformConstants.DataStoreKeys.storeName)
         let storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
         storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
+        if !storeResponsePayloads.isEmpty {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: "Processed \(storeResponsePayloads.count) store response payload(s)")
+        }
     }
     
     /// Logs the provided `error` message with the log level set based of `isError`, as follows:
     /// - If isError is true, the message is logged as error.
     /// - If isError is false, the message is logged as warning.
     /// - Parameters:
-    ///   - error: `EdgeEventError` containing the event error/warning coming from server
+    ///   - error: `EdgeEventError` encoded as [String: Any] containing the event error/warning coming from server
     ///   - isError: boolean indicating if this is an error message
     ///   - requestId: the event request identifier, used for logging
-    private func logErrorMessage(_ error: EdgeEventError, isError: Bool, requestId: String) {
+    private func logErrorMessage(_ error: [String: Any], isError: Bool, requestId: String) {
         let loggingMode = isError ? ACPMobileLogLevel.error : ACPMobileLogLevel.warning
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        encoder.outputFormatting = [.prettyPrinted]
-        guard let data = try? encoder.encode(error) else { return }
-        let errorString = String(data: data, encoding: .utf8)
-        ACPCore.log(loggingMode, tag: LOG_TAG, message: "Received event error for request id (\(requestId)), error details:\n\(errorString ?? "unable to encode")")
+        ACPCore.log(loggingMode, tag: LOG_TAG, message: "Received event error for request id (\(requestId)), error details:\n\(error as AnyObject)")
     }
 }

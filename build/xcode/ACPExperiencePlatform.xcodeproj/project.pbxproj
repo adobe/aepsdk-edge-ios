@@ -144,6 +144,7 @@
 		D4D5B5A02433F9C300CAB6E4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B59E2433F9C300CAB6E4 /* Main.storyboard */; };
 		D4D5B5A22433F9C400CAB6E4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5A12433F9C400CAB6E4 /* Assets.xcassets */; };
 		D4D5B5A52433F9C400CAB6E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5A32433F9C400CAB6E4 /* LaunchScreen.storyboard */; };
+		D4D5D7D52477397700CC317E /* EdgeEventEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */; };
 		D4F06FD52475FDE1003FFEF2 /* NetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F06FD32475FCFD003FFEF2 /* NetworkServiceTests.swift */; };
 		D4F74FE72447A8B800379258 /* MockNetworkServiceOverrider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE62447A8B800379258 /* MockNetworkServiceOverrider.swift */; };
 		D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE82447A92800379258 /* MockURLSession.swift */; };
@@ -361,6 +362,7 @@
 		D4D5B5A12433F9C400CAB6E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D4D5B5A42433F9C400CAB6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D4D5B5A62433F9C400CAB6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventEncodable.swift; sourceTree = "<group>"; };
 		D4F06FD32475FCFD003FFEF2 /* NetworkServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkServiceTests.swift; sourceTree = "<group>"; };
 		D4F74FE4244633B000379258 /* NetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceTests.swift; sourceTree = "<group>"; };
 		D4F74FE62447A8B800379258 /* MockNetworkServiceOverrider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkServiceOverrider.swift; sourceTree = "<group>"; };
@@ -569,6 +571,7 @@
 				D42FB8DA246261E600E9321C /* EdgeResponse.swift */,
 				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
 				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
+				D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */,
 				D4000F322459E2300052C536 /* ExperiencePlatformNetworkService.swift */,
 				D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */,
 				D4000F302459E2080052C536 /* NetworkResponseHandler.swift */,
@@ -1221,6 +1224,7 @@
 				D4D5B4EB242EBB1600CAB6E4 /* ACPExperiencePlatform.swift in Sources */,
 				BF947F8F2440F0940057A6CC /* StateMetadata.swift in Sources */,
 				BF947F65243565CC0057A6CC /* ExperiencePlatformConstants.swift in Sources */,
+				D4D5D7D52477397700CC317E /* EdgeEventEncodable.swift in Sources */,
 				BF947F76243BDECA0057A6CC /* ExperiencePlatformExtensionResponseListener.swift in Sources */,
 				BF947F9724414F890057A6CC /* NamedUserDefaultsStore.swift in Sources */,
 				BF947F78243BE16C0057A6CC /* EdgeRequest.swift in Sources */,
