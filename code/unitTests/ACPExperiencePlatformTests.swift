@@ -15,12 +15,12 @@ import ACPCore
 
 @testable import ACPExperiencePlatform
 
-class ExperiencePlatformTests: XCTestCase {
-    var mockResponseHandler : MockResponseHandler?
+class ACPExperiencePlatformTests: XCTestCase {
+    private var mockResponseHandler: MockExperiencePlatformResponseHandler? = nil
     
     override func setUp() {
         continueAfterFailure = false
-        mockResponseHandler = MockResponseHandler()
+        mockResponseHandler = MockExperiencePlatformResponseHandler()
     }
     
     func generateXdm() -> [String : Any] {

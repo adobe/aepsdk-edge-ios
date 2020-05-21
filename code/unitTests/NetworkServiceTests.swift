@@ -33,11 +33,11 @@ class NetworkServiceTests: XCTestCase {
     }
     
     // MARK: NetworkService tests
-
+    
     func testConnectAsync_returnsError_whenIncompleteUrl() {
         let defaultNetworkService = AEPNetworkService()
         let expectation = XCTestExpectation(description: "Completion handler called")
-
+        
         let testUrl = URL(string: "https://")!
         let testBody = "test body"
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"])
@@ -106,7 +106,7 @@ class NetworkServiceTests: XCTestCase {
     
     func testConnectAsync_initiatesConnection_whenValidNetworkRequest() {
         let expectation = XCTestExpectation(description: "Completion handler called")
-
+        
         let testUrl = URL(string: "https://test.com")!
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"], connectTimeout: 2.0, readTimeout: 3.0)
         networkStub.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
@@ -130,7 +130,7 @@ class NetworkServiceTests: XCTestCase {
     func testConnectAsync_returnsTimeoutError_whenConnectionTimesOut() {
         let defaultNetworkService = AEPNetworkService()
         let expectation = XCTestExpectation(description: "Completion handler called")
-
+        
         let testUrl = URL(string: "https://example.com:81")!
         let networkRequest = NetworkRequest(url: testUrl, httpMethod: HttpMethod.post, connectPayload: testBody, httpHeaders: ["Accept": "text/html"], connectTimeout: 1.0, readTimeout: 1.0)
         defaultNetworkService.connectAsync(networkRequest: networkRequest, completionHandler: {connection in
@@ -160,14 +160,14 @@ class NetworkServiceTests: XCTestCase {
     func testOverridenConnectAsync_called_whenMultipleRequests() {
         let testNetworkService = MockNetworkServiceOverrider();
         AEPServiceProvider.shared.networkService = testNetworkService
-
+        
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!, httpMethod: HttpMethod.post, connectPayload: "test body", httpHeaders: ["Accept": "text/html"], connectTimeout: 2.0, readTimeout: 3.0)
         let request2 = NetworkRequest(url: URL(string: "https://test2.com")!, httpMethod: HttpMethod.get, httpHeaders: ["Accept": "text/html"])
         let request3 = NetworkRequest(url: URL(string: "https://test3.com")!)
         let completionHandler : ((HttpConnection) -> Void) = { connection in
             print("say hi")
         }
-
+        
         // test&verify
         AEPServiceProvider.shared.networkService.connectAsync(networkRequest: request1, completionHandler: completionHandler)
         XCTAssertEqual(request1.url, testNetworkService.connectAsyncCalledWithNetworkRequest?.url)
@@ -183,7 +183,7 @@ class NetworkServiceTests: XCTestCase {
         XCTAssertEqual(request3.url, testNetworkService.connectAsyncCalledWithNetworkRequest?.url)
         XCTAssertNil(testNetworkService.connectAsyncCalledWithCompletionHandler)
     }
-
+    
     // TODO: enable for AMSDK-9800
     func disable_testOverridenConnectAsync_addsDefaultHeaders_whenCalledWithHeaders() {
         let testNetworkService = MockNetworkServiceOverrider()
@@ -214,7 +214,7 @@ class NetworkServiceTests: XCTestCase {
     func testOverridenConnectAsync_doesNotOverrideHeaders_whenCalledWithDefaultHeaders() {
         let testNetworkService = MockNetworkServiceOverrider()
         AEPServiceProvider.shared.networkService = testNetworkService
-
+        
         let request1 = NetworkRequest(url: URL(string: "https://test1.com")!, httpMethod: HttpMethod.get, httpHeaders: ["User-Agent": "test", "Accept-Language": "ro-RO"], connectTimeout: 2.0, readTimeout: 3.0)
         
         // test&verify
@@ -229,7 +229,7 @@ class NetworkServiceTests: XCTestCase {
         let testNetworkServiceOverrider1 = MockNetworkServiceOverrider()
         let testNetworkServiceOverrider2 = MockNetworkServiceOverrider()
         let testNetworkServiceOverrider3 = MockNetworkServiceOverrider()
-
+        
         // test&verify
         // set first overrider
         AEPServiceProvider.shared.networkService = testNetworkServiceOverrider1
