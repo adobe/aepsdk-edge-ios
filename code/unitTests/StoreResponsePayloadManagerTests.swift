@@ -25,7 +25,7 @@ class StoreResponsePayloadManagerTests: XCTestCase {
     }
     
     // MARK:
-    
+
     func testGetActiveStores_isCorrect_whenRecordsInDataStore() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads(buildStorePayloads())
@@ -71,7 +71,7 @@ class StoreResponsePayloadManagerTests: XCTestCase {
     func testSaveStorePayloads_overwritesPayloads_whenDuplicateKeysAndNewValues() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads(buildStorePayloads())
-        
+
         let originalPayloads = manager.getActiveStores()
         
         // new payloads use same keys as original payloads

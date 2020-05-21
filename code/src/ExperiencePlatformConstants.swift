@@ -18,7 +18,7 @@ struct ExperiencePlatformConstants {
     
     static let eventTypeExperiencePlatform = "com.adobe.eventType.experiencePlatform"
     static let eventTypeAdobeHub = "com.adobe.eventType.hub"
-    
+
     static let eventSourceAdobeSharedState = "com.adobe.eventSource.sharedState"
     static let eventSourceExtensionRequestContent = "com.adobe.eventSource.requestContent"
     static let eventSourceExtensionResponseContent = "com.adobe.eventSource.responseContent"
@@ -27,7 +27,7 @@ struct ExperiencePlatformConstants {
     static let eventNameRequestContent = "AEP Request Event"
     static let eventNameResponseContent = "AEP Response Event Handle"
     static let eventNameErrorResponseContent = "AEP Error Response"
-    
+
     static let platformDataStorage = "PlatformExtensionDataStorage"
     
     struct Defaults {
@@ -37,7 +37,7 @@ struct ExperiencePlatformConstants {
         static let requestConfigRecordSeparator: String = "\u{0000}"
         static let requestConfigLineFeed: String = "\n"
     }
-    
+
     struct EventDataKeys {
         private init() {}
         
@@ -83,15 +83,16 @@ struct ExperiencePlatformConstants {
         private init() {}
         
         static let xdm = "xdm"
+        static let data = "data"
         static let ECID = "ECID"
         static let timestamp = "timestamp"
         static let eventId = "_id"
         
         struct Response {
             private init() {}
-            
+
             static let eventHandleStoreType = "state:store"
-            
+
             struct Error {
                 private init() {}
                 
@@ -114,10 +115,10 @@ struct ExperiencePlatformConstants {
         static let headerKeyContentType = "Content-Type"
         static let headerValueApplicationJson = "application/json"
     }
-    
+
     struct Error {
         private init() {}
-        
+
         static let encodingErrorDomain = "EncodingError"
         static let encodingErrorCode = 1
     }
