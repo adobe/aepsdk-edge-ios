@@ -23,12 +23,12 @@ public class ProductDataLoader {
     
     func loadProducts() {
         
-        if let jsonFileLocation = Bundle.main.url(forResource: "product_list_colors", withExtension: "json") {
+        if let jsonFileLocation = Bundle.main.url(forResource: AEPDemoConstants.Strings.PRODUCT_LIST_FILENAME , withExtension: "json") {
             let data = try? Data(contentsOf: jsonFileLocation)
             let jsonDecoder = JSONDecoder()
             if let unwrappedData = data {
                 if let unwrappedProductDataFromJson = try? jsonDecoder.decode([ProductData].self, from: unwrappedData) {
-                        self.productData = unwrappedProductDataFromJson
+                    self.productData = unwrappedProductDataFromJson
                 }
             }
         }
