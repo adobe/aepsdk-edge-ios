@@ -18,27 +18,43 @@ import ACPGriffon
 class GriffonViewController: UIViewController {
     
     @IBOutlet var griffonSessionURL: UITextField!
+    @IBOutlet var appNameLbl: UILabel!
+    
     var isConnected: Bool = false
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        appNameLbl.text = AEPDemoConstants.Strings.APP_NAME
+    }
     
     @IBAction func GriffonConnectBtn(_ sender: UIButton) {
         if !isConnected {
-            if let url = URL(string: griffonSessionURL.text ?? "") {
-                print("Griffon Session URL : \(url)")
-                ACPGriffon.startSession(url)
-                isConnected = true
+            guard let griffonURLText = griffonSessionURL.text else {
+                return
+            }
+            if  griffonURLText.contains(AEPDemoConstants.Strings.GRIFFON_URL_VALIDATION_STRING) {
+                if let url = URL(string: griffonURLText) {
+                    isConnected = true
+                    ACPGriffon.startSession(url)
+                } else
+                {
+                    Snackbar(message : AEPDemoConstants.Strings.GRIFFON_URL_INVALID)
+                }
+            } else {
+                Snackbar(message : AEPDemoConstants.Strings.GRIFFON_URL_INVALID)
             }
         } else {
-            print("Connection to a Griffon Session is already active. To connect to another Griffon Session, disconnect before trying to connect...")
+            Snackbar(message : AEPDemoConstants.Strings.GRIFFON_SESSION_ACTIVE)
         }
     }
     
     @IBAction func GriffonDisconnectBtn(_ sender: UIButton) {
         if isConnected {
             ACPGriffon.endSession()
-            print("Griffon Session has been disconnected")
+            Snackbar(message : AEPDemoConstants.Strings.GRIFFON_SESSION_DISCONNECTED)
             isConnected = false
         } else {
-            print("Griffon Session is not active...")
+            Snackbar(message : AEPDemoConstants.Strings.GRIFFON_SESSION_NOT_ACTIVE)
         }
     }
 }

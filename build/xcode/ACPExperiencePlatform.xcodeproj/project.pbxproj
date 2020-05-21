@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		08EE08DDEF3AEDD66F2AF1F5 /* Pods_AEPDemoAppSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E86839D247B892A9E7009E14 /* Pods_AEPDemoAppSwiftUI.framework */; };
 		18CA4103E169F16CBD0D72C6 /* Pods_unitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62805643391CBF791F1E5668 /* Pods_unitTests.framework */; };
+		1C107BFA2470319A009582FA /* CheckOutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C107BF82470319A009582FA /* CheckOutViewController.swift */; };
+		1C107BFC2472ED1A009582FA /* UIViewControllerSnackBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C107BFB2472ED1A009582FA /* UIViewControllerSnackBar.swift */; };
+		1C107C0024737FA1009582FA /* AEPDemoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C107BFF24737FA1009582FA /* AEPDemoConstants.swift */; };
+		1C107C05247436A6009582FA /* GriffonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA50BB9244E07DB00683A8E /* GriffonViewController.swift */; };
 		1CA50BAF244D32C000683A8E /* ShoppingCart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA50BAD244D32C000683A8E /* ShoppingCart.swift */; };
 		1CA50BB2244D337F00683A8E /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA50BB0244D337F00683A8E /* Product.swift */; };
 		1CA50BB5244D36C500683A8E /* CartItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA50BB3244D36C500683A8E /* CartItem.swift */; };
@@ -56,7 +60,6 @@
 		1CB57E062464C818000B2DA5 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA50AC4244B3E9C00683A8E /* ProductViewController.swift */; };
 		1CB57E072464C818000B2DA5 /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA50BB6244E00CF00683A8E /* CartViewController.swift */; };
 		1CB57E082464C818000B2DA5 /* ShoppingItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C12455FC3500E912B2 /* ShoppingItemCell.swift */; };
-		1CB57E092464C818000B2DA5 /* GriffonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA50BB9244E07DB00683A8E /* GriffonViewController.swift */; };
 		1CCD27C62458CB2300E912B2 /* ExperiencePlatformEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C52458CB2300E912B2 /* ExperiencePlatformEvent.swift */; };
 		1CCD27D424592B2800E912B2 /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */; };
 		1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */; };
@@ -208,6 +211,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C107BF82470319A009582FA /* CheckOutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOutViewController.swift; sourceTree = "<group>"; };
+		1C107BFB2472ED1A009582FA /* UIViewControllerSnackBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerSnackBar.swift; sourceTree = "<group>"; };
+		1C107BFF24737FA1009582FA /* AEPDemoConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEPDemoConstants.swift; sourceTree = "<group>"; };
 		1CA50AB5244B254B00683A8E /* ProductData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductData.swift; sourceTree = "<group>"; };
 		1CA50AB6244B254B00683A8E /* ProductDataLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductDataLoader.swift; sourceTree = "<group>"; };
 		1CA50AC1244B292E00683A8E /* product_list_colors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = product_list_colors.json; path = Assets/product_list_colors.json; sourceTree = "<group>"; };
@@ -327,7 +333,7 @@
 		D46553F2246A138800A150E2 /* MockExperiencePlatformResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockExperiencePlatformResponseHandler.swift; sourceTree = "<group>"; };
 		D46553F4246A2C7900A150E2 /* DemoResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoResponseHandler.swift; sourceTree = "<group>"; };
 		D465540E24730E3900A150E2 /* IdentityMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IdentityMap.swift; sourceTree = "<group>"; };
-		D46554112473129F00A150E2 /* NetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NetworkServiceTests.swift; path = ../../code/unitTests/NetworkServiceTests.swift; sourceTree = "<group>"; };
+		D46554112473129F00A150E2 /* NetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceTests.swift; sourceTree = "<group>"; };
 		D46554132473131400A150E2 /* MockResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockResponseHandler.swift; sourceTree = "<group>"; };
 		D4BB7B8EB065D088F6C0F397 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -576,7 +582,6 @@
 		D4D5B4DE242EBB1600CAB6E4 = {
 			isa = PBXGroup;
 			children = (
-				D46554112473129F00A150E2 /* NetworkServiceTests.swift */,
 				D4D5B4E9242EBB1600CAB6E4 /* src */,
 				D4D5B4F1242EBD2200CAB6E4 /* unitTests */,
 				D4D5B4F2242EBFAE00CAB6E4 /* functionalTests */,
@@ -635,6 +640,7 @@
 			isa = PBXGroup;
 			children = (
 				D4F74FEC2447A95400379258 /* utils */,
+				D46554112473129F00A150E2 /* NetworkServiceTests.swift */,
 				D4D5B5252432599B00CAB6E4 /* Info.plist */,
 				BF947F9F244569190057A6CC /* EdgeRequestTests.swift */,
 				D4000F34245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift */,
@@ -702,6 +708,7 @@
 				1CA50AC4244B3E9C00683A8E /* ProductViewController.swift */,
 				1CA50BB6244E00CF00683A8E /* CartViewController.swift */,
 				1CCD27C12455FC3500E912B2 /* ShoppingItemCell.swift */,
+				1C107BF82470319A009582FA /* CheckOutViewController.swift */,
 				1CA50BB9244E07DB00683A8E /* GriffonViewController.swift */,
 				D4D5B59E2433F9C300CAB6E4 /* Main.storyboard */,
 				D4D5B5A12433F9C400CAB6E4 /* Assets.xcassets */,
@@ -710,6 +717,8 @@
 				1CA50BAD244D32C000683A8E /* ShoppingCart.swift */,
 				1CA50BB0244D337F00683A8E /* Product.swift */,
 				1CA50BB3244D36C500683A8E /* CartItem.swift */,
+				1C107BFB2472ED1A009582FA /* UIViewControllerSnackBar.swift */,
+				1C107BFF24737FA1009582FA /* AEPDemoConstants.swift */,
 			);
 			name = AEPCommerceDemoApp;
 			path = ../../demo/AEPCommerceDemoApp;
@@ -1269,15 +1278,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C107BFA2470319A009582FA /* CheckOutViewController.swift in Sources */,
 				1CB57E082464C818000B2DA5 /* ShoppingItemCell.swift in Sources */,
-				1CB57E092464C818000B2DA5 /* GriffonViewController.swift in Sources */,
 				1CB57E042464C818000B2DA5 /* AppDelegate.swift in Sources */,
 				1CA50BB5244D36C500683A8E /* CartItem.swift in Sources */,
+				1C107C05247436A6009582FA /* GriffonViewController.swift in Sources */,
 				1CA50BB2244D337F00683A8E /* Product.swift in Sources */,
 				1CA50BAF244D32C000683A8E /* ShoppingCart.swift in Sources */,
 				1CB57E022464C818000B2DA5 /* ProductData.swift in Sources */,
 				1CB57E052464C818000B2DA5 /* HomeViewController.swift in Sources */,
 				1CB57E062464C818000B2DA5 /* ProductViewController.swift in Sources */,
+				1C107C0024737FA1009582FA /* AEPDemoConstants.swift in Sources */,
+				1C107BFC2472ED1A009582FA /* UIViewControllerSnackBar.swift in Sources */,
 				1CB57E072464C818000B2DA5 /* CartViewController.swift in Sources */,
 				1CB57E032464C818000B2DA5 /* ProductDataLoader.swift in Sources */,
 			);

@@ -28,15 +28,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ACPIdentity.registerExtension()
         ACPLifecycle.registerExtension()
         ACPSignal.registerExtension()
-        
         ACPExperiencePlatform.registerExtension()
-
+        
         // Option 1 : Configuration : Inline
         // var config = [String: String]()
         // config["global.privacy"] = "optedin"
         // config["experienceCloud.org"] = "3E2A28175B8ED3720A495E23@AdobeOrg"
         // config["experiencePlatform.configId"] = "fd4f4820-00e1-4226-bd71-49bf0b7e3150"
-
+        
         // Option 2 : Configuration : From a Launch property
         // ACPCore.configure(withAppId: "94f571f308d5/e3fc566f21d5/launch-a7a05abd3c78-development")
         
@@ -47,8 +46,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ACPIdentity.registerExtension()
         ACPLifecycle.registerExtension()
         ACPCore.start({
-           //   ACPCore.updateConfiguration(config)
-                ACPCore.lifecycleStart(nil)
+            //   ACPCore.updateConfiguration(config)
+            ACPCore.lifecycleStart(nil)
         })
         return true
     }
