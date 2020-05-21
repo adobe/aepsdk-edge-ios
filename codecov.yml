@@ -17,6 +17,7 @@ coverage:
     - "./code/unitTests/.*"
     - "./code/functionalTests/**/*"
     - "./code/functionalTests/.*"
+    - "./demo"
 
 parsers:
   gcov:

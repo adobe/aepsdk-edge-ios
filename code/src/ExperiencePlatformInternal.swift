@@ -145,6 +145,14 @@ class ExperiencePlatformInternal : ACPExtension {
             }
         }
         
+        // get Griffon integration id and include it in to the requestHeaders
+        var requestHeaders:[String:String] = [:]
+        if let griffonSharedState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Griffon.stateOwner, event: event) {
+            if let griffonIntegrationId = griffonSharedState[ExperiencePlatformConstants.SharedState.Griffon.integrationId] as? String {
+                requestHeaders = [ExperiencePlatformConstants.NetworkKeys.headerKeyAEPValidationToken :  griffonIntegrationId]
+            }
+        }
+        
         // Build and send the network request to Konductor
         let listOfEvents: [ACPExtensionEvent] = [event]
         if let requestPayload = requestBuilder.getRequestPayload(listOfEvents) {
@@ -159,11 +167,7 @@ class ExperiencePlatformInternal : ACPExtension {
             }
             
             let callback: ResponseCallback = NetworkResponseCallback(requestId: requestId, responseHandler: networkResponseHandler)
-            
-            // TODO: AMSDK-9659 Add griffon session id to headers
-            let requestHeaders:[String:String] = [:]
             experiencePlatformNetworkService.doRequest(url: url, requestBody: requestPayload, requestHeaders: requestHeaders, responseCallback: callback, retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
-            
         }
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Finished processing and sending events to Platform.")
