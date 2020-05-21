@@ -17,6 +17,11 @@ private let LOG_TAG = "ACPExperiencePlatform"
 public class ACPExperiencePlatform {
     
     @available(*, unavailable) private init() {}
+    private static var responseCallbacksHandler: [String: ([String: Any]) -> Void] = [:]
+    
+    private static func responseCallbacksHandlerClosure(eventId:String, completionHandler: @escaping ([String: Any]) -> Void) {
+        responseCallbacksHandler[eventId] = completionHandler
+    }
     
     /// Registers the ACPExperiencePlatform extension with the Mobile SDK. This method should be called only once in your application class
     /// from the AppDelegate's application:didFinishLaunchingWithOptions method. This call should be before any calls into ACPCore
@@ -31,21 +36,23 @@ public class ACPExperiencePlatform {
         }
     }
     
-    /// Sends an event to Adobe Data Platform and registers a handler for responses coming from Data Platform
+    /// Sends an event to Adobe Data Platform and registers a callback for responses coming from Data Platform
     /// - Parameters:
     ///   - experiencePlatformEvent: Event to be sent to Adobe Data Platform
-    ///   - responseHandler: Optional callback to be invoked when the response handles are received from
-    ///                     Adobe Data Platform. It may be invoked on a different thread and may be invoked multiple times
-    public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent, responseHandler: ExperiencePlatformResponseHandler? = nil) {
-        
+    ///   - responseCallback: Optional callback to be invoked when the response handles are received from
+    ///                       Adobe Data Platform. It may be invoked on a different thread and may be invoked multiple times
+    public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent, responseCallback: (([String: Any]) -> Void)?) {
         guard let eventData = experiencePlatformEvent.asDictionary() else {
             ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"Failed to dispatch the event because the event data is nil.")
             return
         }
         do {
             let event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
-            ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId:event.eventUniqueIdentifier, responseHandler: responseHandler)
+            if let  responsecallback = responseCallback {
+                responseCallbacksHandlerClosure(eventId: event.eventUniqueIdentifier, completionHandler:responsecallback)
+            }
             try ACPCore.dispatchEvent(event)
+
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event due to an unexpected error: \(error).")
         }

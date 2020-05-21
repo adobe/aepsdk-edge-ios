@@ -51,6 +51,10 @@ class CartViewController: UIViewController {
     
     func clearCart() {
         
+        for item in adbMobileShoppingCart.items {
+            let prodData:ProductData = ProductData(sku: item.product.sku, name: item.product.name, details: item.product.description, price: item.product.price, currency: item.product.currency, imageLarge: item.product.imageLarge, imageSmall: item.product.imageSmall)
+            CommerceUtil.sendProductListRemoveXdmEvent(productData: prodData, quantity: item.product.quantity)
+        }
         adbMobileShoppingCart.clearCart()
         shoppingCartTableView.reloadData()
         orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)
@@ -79,7 +83,9 @@ extension CartViewController: CartDelegate {
         guard let indexPath = shoppingCartTableView.indexPath(for: cell) else { return }
         let product = adbMobileShoppingCart.items[indexPath.row]
         adbMobileShoppingCart.remove(product: product.product)
+        
+        let prodData:ProductData = ProductData(sku: product.product.sku, name: product.product.name, details: product.product.description, price: product.product.price, currency: product.product.currency, imageLarge: product.product.imageLarge, imageSmall: product.product.imageSmall)
+        CommerceUtil.sendProductListRemoveXdmEvent(productData: prodData, quantity: product.product.quantity)
         shoppingCartTableView.reloadData()
-        orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)
-    }
+        orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)    }
 }

@@ -37,6 +37,7 @@ class CheckOutViewController: UIViewController {
         super.viewDidLoad()
         paymentMethod.delegate = self
         paymentMethod.dataSource = self
+        CommerceUtil.sendCheckoutXdmEvent()
         totalPriceTextLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE
         selectPaymentMethodlbl.text = AEPDemoConstants.Strings.SELECT_PAYMENT_METHOD
         totalPriceLbl.text = String(format: "%.2f", adbMobileShoppingCart.total)
@@ -49,19 +50,13 @@ class CheckOutViewController: UIViewController {
         if adbMobileShoppingCart.items.isEmpty {
             Snackbar(message : AEPDemoConstants.Strings.CART_EMPTY_ERROR_MSG)
         } else {
-            
-            
-            // Todo : Send this Event to Platform - and then clean the cart
-            // Call sendEvent()
-            
+            CommerceUtil.sendPurchaseXdmEvent()
             adbMobileShoppingCart.clearCart()
             totalPriceLbl.text = "\(adbMobileShoppingCart.total)"
             self.performSegue(withIdentifier: "gotoProductListPage", sender: self)
             Snackbar(message : AEPDemoConstants.Strings.PURCHASE_COMPLETE_MSG)
-            
         }
     }
-    
 }
 
 extension CheckOutViewController: UIPickerViewDelegate, UIPickerViewDataSource {

@@ -16,11 +16,13 @@ struct Product: Codable, Equatable, CustomStringConvertible {
     var description: String {
         return("Image : \(imageLarge): Sku: \(sku) : Name : \(name) : Unit Price :  \(price)")
     }
-    var imageLarge: String
     var sku: String
     var name: String
     var price: Float
     var quantity : Int = 1
+    var currency: String
+    var imageSmall: String
+    var imageLarge: String
     var subtotal: Float { return price * Float(quantity) }
 }
 
