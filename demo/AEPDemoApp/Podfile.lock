@@ -1,0 +1,34 @@
+PODS:
+  - ACPCore (2.6.1):
+    - ACPCore/iOS (= 2.6.1)
+  - ACPCore/iOS (2.6.1)
+  - ACPExperiencePlatform (1.0.0-alpha):
+    - ACPCore (>= 2.6.1)
+    - ACPExperiencePlatform/iOS (= 1.0.0-alpha)
+  - ACPExperiencePlatform/iOS (1.0.0-alpha):
+    - ACPCore (>= 2.6.1)
+
+DEPENDENCIES:
+  - ACPExperiencePlatform (from `https://github.com/kevinlind/platform-extension-ios`, branch `amsdk-9772-ci-publish`)
+
+SPEC REPOS:
+  trunk:
+    - ACPCore
+
+EXTERNAL SOURCES:
+  ACPExperiencePlatform:
+    :branch: amsdk-9772-ci-publish
+    :git: https://github.com/kevinlind/platform-extension-ios
+
+CHECKOUT OPTIONS:
+  ACPExperiencePlatform:
+    :commit: ddf73c0d3e446617eaa617a10a43af18601a4dbf
+    :git: https://github.com/kevinlind/platform-extension-ios
+
+SPEC CHECKSUMS:
+  ACPCore: e2f2ff66174350cdc00387a2ca74ac4f77ea3ba0
+  ACPExperiencePlatform: 44003faf019eef652e8a405f32d20e548571cda2
+
+PODFILE CHECKSUM: 99fbc54df90439bd16498f910df5022d6dce2b9e
+
+COCOAPODS: 1.9.1
