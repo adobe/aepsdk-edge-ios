@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 import ACPCore
 
@@ -149,7 +148,7 @@ class ExperiencePlatformInternal : ACPExtension {
         var requestHeaders:[String:String] = [:]
         if let griffonSharedState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Griffon.stateOwner, event: event) {
             if let griffonIntegrationId = griffonSharedState[ExperiencePlatformConstants.SharedState.Griffon.integrationId] as? String {
-                requestHeaders = [ExperiencePlatformConstants.NetworkKeys.headerKeyAEPValidationToken :  griffonIntegrationId]
+                requestHeaders[ExperiencePlatformConstants.NetworkKeys.headerKeyAEPValidationToken] = griffonIntegrationId
             }
         }
         
@@ -192,8 +191,6 @@ class ExperiencePlatformInternal : ACPExtension {
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Shared state for \(owner) is pending.")
             return nil // keep event in queue to process on next trigger
         }
-        
         return unwrappedState
     }
-    
 }
