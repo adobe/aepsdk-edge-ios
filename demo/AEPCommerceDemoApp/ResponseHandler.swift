@@ -11,12 +11,14 @@
 //
 
 import Foundation
+import ACPCore
 import ACPExperiencePlatform
 
 class ResponseHandler : ExperiencePlatformResponseHandler {
     var onResponseCalled: Bool = false
     
     func onResponse(data: [String : Any]) {
-        self.onResponseCalled = true
+    self.onResponseCalled = true
+    ACPCore.log(ACPMobileLogLevel.debug, tag:"ResponseHandler", message:"Platform response has been recieved...")
     }
 }

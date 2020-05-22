@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 import ACPExperiencePlatform
 import ACPCore
@@ -95,9 +94,6 @@ class CommerceUtil  {
     }
     
     /// Creates and sends a product view event to the Adobe Data Platform.
-    /// A commerce.productViews} event is a Commerce} object with Commerce#setProductViews(ProductViews)}
-    /// set, along with a ProductListItemsItem} list containing the details of the
-    /// viewed product.
     /// This method should be called when a product details are viewed.
     /// - Parameters:
     ///    - productData : The product details of the com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem} item which was viewed
@@ -114,10 +110,6 @@ class CommerceUtil  {
     }
     
     /// Creates and sends a product list add event to the Adobe Data Platform.
-    /// A commerce.productListAdds} event is a Commerce} object with
-    /// Commerce#setProductListAdds(ProductListAdds)}
-    /// set, along with a ProductListItemsItem} list containing the details of the
-    /// added product.
     /// This method should be called when a product is added to a shopping cart.
     /// - Parameters:
     ///    - productData : The product details of the com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem} item which was added into the shopping cart.
@@ -135,10 +127,6 @@ class CommerceUtil  {
     }
     
     /// Creates and sends a product list remove event to the Adobe Data Platform.
-    /// A commerce.productListAdds} event is a Commerce} object with
-    /// Commerce#setProductListRemovals(ProductListRemovals)}
-    /// set, along with a ProductListItemsItem} list containing the details of the
-    /// removed product.
     /// This method should be called when a product is removed from a shopping cart.
     /// - Parameters:
     ///    - productData : The product details of the com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem} item which was removed from the shopping cart.
@@ -156,10 +144,6 @@ class CommerceUtil  {
     }
 
     /// Creates and sends a cart checkout event to the Adobe Data Platform.
-    /// A commerce.checkouts} event is a Commerce} object with
-    /// Commerce#setCheckouts(Checkouts)}
-    /// set, along with a ProductListItemsItem} list containing the details of all the
-    /// products in the shopping cart.
     /// This method should be called when an action during the shopping cart checkout process is taken.
     /// There may be more than one checkout events if there are multiple steps in the checkout process.
     static func sendCheckoutXdmEvent() {
@@ -171,13 +155,20 @@ class CommerceUtil  {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCheckoutXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_CHECKOUTS + "' event as given product item is null.")
             }
         }
+
+    /// Creates and sends a cart clean event to the Adobe Data Platform.
+    /// This method should be called when an action during the shopping cart is being cleared.
+    static func sendCartClearXdmEvent() {
     
+        ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCartClearXdmEvent")
+        if let itemsList = prepareProductList() {
+                createAndSendEvent(itemsList: itemsList, eventType: EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS)
+            } else {
+                ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCartClearXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS + "' event as given product item is null.")
+            }
+        }
     
     /// Creates and sends a cart purchase event to the Adobe Data Platform.
-    /// A commerce.purchases} event is a Commerce} object with
-    /// Commerce#setPurchases(Purchases)} and Commerce#setOrder(Order)}
-    /// set, along with a ProductListItemsItem} list containing the details of all the
-    /// products in the shopping cart. The Order} details the total cost and payment of the purchase.
     /// This method should be called when a final purchase is made of a shopping cart.
     static func sendPurchaseXdmEvent() {
         
@@ -210,12 +201,9 @@ class CommerceUtil  {
             xdmData.commerce = commerce
             xdmData.productListItems = itemsList
             
-            let event = ExperiencePlatformEvent(xdm:xdmData,data:nil)
+            let event = ExperiencePlatformEvent(xdm:xdmData)
             let responseHandler = ResponseHandler()
             ACPExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
-            if responseHandler.onResponseCalled {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: String("Platform response has been recieved..."))
-            }
         } else {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendPurchaseXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PURCHASES + "' as no items were found in cart.")
         }
@@ -268,34 +256,29 @@ class CommerceUtil  {
         xdmData.eventType = eventType
         xdmData.commerce  = commerce
         xdmData.productListItems = itemsList
-        let event = ExperiencePlatformEvent(xdm:xdmData,data:nil)
+        let event = ExperiencePlatformEvent(xdm:xdmData)
         let responseHandler = ResponseHandler()
         ACPExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
-        if responseHandler.onResponseCalled {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"Platform response has been recieved...")
-        }
     }
     
-    /// Helper method to convert an com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem} to an
-    /// ProductListItemsItem} object.
-    /// If quantity} is zero, then only the name} and sku} are added to the ProductItem}.
+    /// Helper method to convert an com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem  to an
+    /// ProductListItemsItem object.
+    /// If quantity is zero, then only the name  and sku  are added to the ProductItem.
     /// - Parameters :
-    ///     - productData          : Information about a com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem}.
-    ///     -  quantity                : The specified quantity of ProductListItemsItem}. If zero, quantity, price, and currency data are not added to the result.
+    ///     -  productData          : Information about a Product.
+    ///     -  quantity                : The specified quantity of Product. If zero, quantity, price, and currency data are not added to the result.
     /// - Returns:
     ///     - ProductListItemsItem : A list of products populated from the given com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem},
     /// or null if item} is null
-    static func createProductListItemsItem(productData : ProductData?, quantity: Int) -> ProductListItemsItem? {
+    static func createProductListItemsItem(productData : ProductData, quantity: Int) -> ProductListItemsItem? {
         
         var productItem = ProductListItemsItem()
-        if let productData = productData {
-            productItem.name = productData.name
-            productItem.SKU  = productData.sku
-            if(quantity > 0) {
-                productItem.currencyCode = productData.currency
-                productItem.quantity     = Int64(quantity)
-                productItem.priceTotal   = computeTotal(price: productData.price, quantity:quantity)
-            }
+        productItem.name = productData.name
+        productItem.SKU  = productData.sku
+        if(quantity > 0) {
+            productItem.currencyCode = productData.currency
+            productItem.quantity     = Int64(quantity)
+            productItem.priceTotal   = computeTotal(price: productData.price, quantity:quantity)
         }
         return productItem
     }

@@ -44,8 +44,7 @@ class ProductViewController: UIViewController {
                print("Not a valid product!")
                return
            }
-        let prodData:ProductData = ProductData(sku: productData.sku, name: productData.name, details: productData.details, price: productData.price, currency: productData.currency, imageLarge: productData.imageLarge, imageSmall: productData.imageSmall)
-        
+        let prodData =  ProductData(sku: productData.sku, name: productData.name, details: productData.details, price: productData.price, currency: productData.currency, imageLarge: productData.imageLarge, imageSmall: productData.imageSmall)
         productImage.image = UIImage(named: "\((prodData.imageSmall))")
         productImage.layer.cornerRadius = 30
         productImage.clipsToBounds = true

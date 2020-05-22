@@ -52,10 +52,7 @@ class CartViewController: UIViewController {
     
     func clearCart() {
         
-        for item in adbMobileShoppingCart.items {
-            let prodData:ProductData = ProductData(sku: item.product.sku, name: item.product.name, details: item.product.description, price: item.product.price, currency: item.product.currency, imageLarge: item.product.imageLarge, imageSmall: item.product.imageSmall)
-            CommerceUtil.sendProductListRemoveXdmEvent(productData: prodData, quantity: item.product.quantity)
-        }
+        CommerceUtil.sendCartClearXdmEvent()
         adbMobileShoppingCart.clearCart()
         shoppingCartTableView.reloadData()
         orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)
