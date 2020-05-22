@@ -69,16 +69,10 @@ class ProductViewController: UIViewController {
             return
         }
         let prodData:ProductData = ProductData(sku: productData.sku, name: productData.name, details: productData.details, price: productData.price, currency: productData.currency, imageLarge: productData.imageLarge, imageSmall: productData.imageSmall)
-        let product = Product(  sku:prodData.sku,
-                                name: prodData.name,
-                                price: prodData.price,
-                                quantity:qtyOrdered,
-                                currency:prodData.currency,
-                                imageSmall:prodData.imageSmall,
-                                imageLarge:prodData.imageLarge)
+        let product = Product(productData: prodData, quantity: qtyOrdered)
         adbMobileShoppingCart.add(product: product)
         
-        let message  = "\(product.quantity) quantities of " + product.name + AEPDemoConstants.Strings.ITEM_ADDED_MSG
+        let message  = "\(product.quantity) quantities of " + product.productData.name + AEPDemoConstants.Strings.ITEM_ADDED_MSG
         Snackbar(message : message)
         CommerceUtil.sendProductListAddXdmEvent(productData: prodData, quantity: qtyOrdered)
     }

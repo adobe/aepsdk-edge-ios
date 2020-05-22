@@ -46,7 +46,7 @@ extension ShoppingCart {
     
     var total: Float {
         return items.reduce(0.0) { value, item in
-            value + Float(item.product.quantity)*item.product.price
+            value + Float(item.product.quantity)*item.product.productData.price
         }
     }
 }

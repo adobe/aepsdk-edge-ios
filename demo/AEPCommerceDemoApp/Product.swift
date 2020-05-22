@@ -12,22 +12,14 @@
 
 import Foundation
 
-struct Product: Codable, Equatable, CustomStringConvertible {
-    var description: String {
-        return("Image : \(imageLarge): Sku: \(sku) : Name : \(name) : Unit Price :  \(price)")
-    }
-    var sku: String
-    var name: String
-    var price: Float
-    var quantity : Int = 1
-    var currency: String
-    var imageSmall: String
-    var imageLarge: String
-    var subtotal: Float { return price * Float(quantity) }
+struct Product: Equatable {
+    var productData : ProductData
+    var quantity : Int
+    var subtotal: Float { return productData.price * Float(quantity) }
 }
 
 extension Product {
     static func ==(lhs: Product, rhs: Product) -> Bool {
-        return lhs.sku == rhs.sku
+        return lhs.productData.sku == rhs.productData.sku
     }
 }

@@ -82,7 +82,7 @@ class CommerceUtil  {
         
         var itemsList: [ProductListItemsItem] = []
         for item in adbMobileShoppingCart.items {
-            let prodData:ProductData = ProductData(sku: item.product.sku, name: item.product.name, details: item.product.description, price: item.product.price, currency: item.product.currency, imageLarge: item.product.imageLarge, imageSmall: item.product.imageSmall)
+            let prodData:ProductData = ProductData(sku: item.product.productData.sku, name: item.product.productData.name, details: item.product.productData.details, price: item.product.productData.price, currency: item.product.productData.currency, imageLarge: item.product.productData.imageLarge, imageSmall: item.product.productData.imageSmall)
             let productItem  = createProductListItemsItem(productData: prodData, quantity: item.product.quantity)
             if let unwrappedProductItem = productItem {
                 itemsList.append(unwrappedProductItem)
