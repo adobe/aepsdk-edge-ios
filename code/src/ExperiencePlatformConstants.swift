@@ -18,7 +18,7 @@ struct ExperiencePlatformConstants {
     
     static let eventTypeExperiencePlatform = "com.adobe.eventType.experiencePlatform"
     static let eventTypeAdobeHub = "com.adobe.eventType.hub"
-
+    
     static let eventSourceAdobeSharedState = "com.adobe.eventSource.sharedState"
     static let eventSourceExtensionRequestContent = "com.adobe.eventSource.requestContent"
     static let eventSourceExtensionResponseContent = "com.adobe.eventSource.responseContent"
@@ -33,7 +33,7 @@ struct ExperiencePlatformConstants {
         static let requestConfigRecordSeparator: String = "\u{0000}"
         static let requestConfigLineFeed: String = "\n"
     }
-
+    
     struct EventDataKeys {
         private init() {}
         
@@ -67,6 +67,12 @@ struct ExperiencePlatformConstants {
             static let stateOwner = "com.adobe.module.identity"
             static let ecid = "mid"
         }
+        struct Griffon {
+            private init() {}
+            
+            static let stateOwner = "com.adobe.ACPGriffon"
+            static let integrationId = "integrationid"
+        }
         
         struct Lifecycle {
             private init() {}
@@ -83,30 +89,32 @@ struct ExperiencePlatformConstants {
         static let ECID = "ECID"
         static let timestamp = "timestamp"
         static let eventId = "eventId"
-
+        
         struct Response {
             private init() {}
-
+            
             struct Error {
                 private init() {}
-
+                
                 static let message = "message"
                 static let namespace = "namespace"
             }
         }
     }
-
+    
     struct NetworkKeys {
         private init() {}
-
+        
         static let edgeEndpoint = "https://edge.adobedc.net/ee/v1"
         static let requestParamConfigId = "configId"
         static let requestParamRequestId = "requestId"
         static let defaultConnectTimeout: TimeInterval = 5
         static let defaultReadTimeout: TimeInterval = 5
-
+        
         static let headerKeyAccept = "accept"
         static let headerKeyContentType = "Content-Type"
         static let headerValueApplicationJson = "application/json"
+        static let headerKeyAEPValidationToken = "X-Adobe-AEP-Validation-Token"
+        
     }
 }
