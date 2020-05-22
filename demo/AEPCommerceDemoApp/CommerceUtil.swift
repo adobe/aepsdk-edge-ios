@@ -36,11 +36,9 @@ class CommerceUtil  {
     private static let LOG_TAG: String = "CommerceUtil"
     
     /// US dollar currency code
-    
     private static let CURRENCY_CODE_USD: String = "USD"
     
     /// Default payment type
-    
     private static let PAYMENT_TYPE: String = "Cash"
     
     /// View(s) of a product has occurred.
@@ -68,6 +66,34 @@ class CommerceUtil  {
     /// See <a href="https://github.com/adobe/xdm/blob/master/docs/reference/context/experienceevent.schema.md#xdmeventtype">Experience Event</a>
     private static let EVENT_TYPE_COMMERCE_PURCHASES: String = "commerce.purchases"
     
+    /// Helper Method : Computes the total cost of a number of items.
+    /// - Parameters :
+    ///     - price              : The price of the product item.
+    ///     - quantity      : The quantity of the items.
+    /// - Returns:
+    ///     - TotalCost         :   The total cost of the items
+    private static func computeTotal(price :Float, quantity: Int) -> Float {
+        return price * Float(quantity)
+    }
+    
+    /// Helper Method :  Creates and returns the list of items added into the shoppring cart .
+    /// - Returns:
+    ///     -  [ProductListItemsItem] :   The lift of products added into the shopping cart
+    private static func prepareProductList() -> [ProductListItemsItem]? {
+        
+        var itemsList: [ProductListItemsItem] = []
+        for item in adbMobileShoppingCart.items {
+            let prodData:ProductData = ProductData(sku: item.product.sku, name: item.product.name, details: item.product.description, price: item.product.price, currency: item.product.currency, imageLarge: item.product.imageLarge, imageSmall: item.product.imageSmall)
+            let productItem  = createProductListItemsItem(productData: prodData, quantity: item.product.quantity)
+            if let unwrappedProductItem = productItem {
+                itemsList.append(unwrappedProductItem)
+            } else {
+                ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendPurchaseXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PURCHASES + "' event as given product item is null.")
+            }
+        }
+        return itemsList
+    }
+    
     /// Creates and sends a product view event to the Adobe Data Platform.
     /// A commerce.productViews} event is a Commerce} object with Commerce#setProductViews(ProductViews)}
     /// set, along with a ProductListItemsItem} list containing the details of the
@@ -76,17 +102,15 @@ class CommerceUtil  {
     /// - Parameters:
     ///    - productData : The product details of the com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem} item which was viewed
     static func sendProductViewXdmEvent(productData:ProductData) {
-
+        
         ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: "sendProductViewXdmEvent with item '" + productData.name + "'")
         let productItem  = createProductListItemsItem(productData: productData, quantity: 0)
         
-        guard let unwrappedProductItem = productItem else {
+        if let unwrappedProductItem = productItem {
+            createAndSendEvent(itemsList: [unwrappedProductItem], eventType: EVENT_TYPE_COMMERCE_PRODUCT_VIEWS)
+        } else {
             ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: "sendProductViewXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PRODUCT_VIEWS + "' event as given product item is null.")
-            return;
         }
-        var itemsList: [ProductListItemsItem] = []
-        itemsList.append(unwrappedProductItem)
-        createAndSendEvent(itemsList: itemsList,eventType: EVENT_TYPE_COMMERCE_PRODUCT_VIEWS)
     }
     
     /// Creates and sends a product list add event to the Adobe Data Platform.
@@ -103,13 +127,11 @@ class CommerceUtil  {
         ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: "sendProductListAddXdmEvent with item '" + productData.name + "'")
         let productItem  = createProductListItemsItem(productData: productData, quantity: quantity)
         
-        guard let unwrappedProductItem = productItem else {
+        if let unwrappedProductItem = productItem {
+            createAndSendEvent(itemsList: [unwrappedProductItem], eventType: EVENT_TYPE_COMMERCE_PRODUCT_LIST_ADDS)
+        } else {
             ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendProductListAddXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PRODUCT_LIST_ADDS + "' event as given product item is null.")
-            return;
         }
-        var itemsList: [ProductListItemsItem] = []
-        itemsList.append(unwrappedProductItem)
-        createAndSendEvent(itemsList: itemsList,eventType: EVENT_TYPE_COMMERCE_PRODUCT_LIST_ADDS)
     }
     
     /// Creates and sends a product list remove event to the Adobe Data Platform.
@@ -126,15 +148,13 @@ class CommerceUtil  {
         ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendProductListRemoveXdmEvent with item '" + productData.name + "'")
         let productItem  = createProductListItemsItem(productData: productData, quantity: quantity)
         
-        guard let unwrappedProductItem = productItem else {
+        if let unwrappedProductItem = productItem {
+            createAndSendEvent(itemsList: [unwrappedProductItem], eventType: EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS)
+        } else {
             ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendProductListRemoveXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS + "' event as given product item is null.")
-            return;
         }
-        var itemsList: [ProductListItemsItem] = []
-        itemsList.append(unwrappedProductItem)
-        createAndSendEvent(itemsList: itemsList,eventType: EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS)
     }
-    
+
     /// Creates and sends a cart checkout event to the Adobe Data Platform.
     /// A commerce.checkouts} event is a Commerce} object with
     /// Commerce#setCheckouts(Checkouts)}
@@ -143,19 +163,15 @@ class CommerceUtil  {
     /// This method should be called when an action during the shopping cart checkout process is taken.
     /// There may be more than one checkout events if there are multiple steps in the checkout process.
     static func sendCheckoutXdmEvent() {
+    
         ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCheckoutXdmEvent")
-        var itemsList: [ProductListItemsItem] = []
-        for item in adbMobileShoppingCart.items {
-            let prodData:ProductData = ProductData(sku: item.product.sku, name: item.product.name, details: item.product.description, price: item.product.price, currency: item.product.currency, imageLarge: item.product.imageLarge, imageSmall: item.product.imageSmall)
-            let productItem  = createProductListItemsItem(productData: prodData, quantity: item.product.quantity)
-            guard let unwrappedProductItem = productItem else {
+        if let itemsList = prepareProductList() {
+                createAndSendEvent(itemsList: itemsList, eventType: EVENT_TYPE_COMMERCE_CHECKOUTS)
+            } else {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCheckoutXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_CHECKOUTS + "' event as given product item is null.")
-                return;
             }
-            itemsList.append(unwrappedProductItem)
-            createAndSendEvent(itemsList: itemsList,eventType: EVENT_TYPE_COMMERCE_CHECKOUTS)
         }
-    }
+    
     
     /// Creates and sends a cart purchase event to the Adobe Data Platform.
     /// A commerce.purchases} event is a Commerce} object with
@@ -164,22 +180,9 @@ class CommerceUtil  {
     /// products in the shopping cart. The Order} details the total cost and payment of the purchase.
     /// This method should be called when a final purchase is made of a shopping cart.
     static func sendPurchaseXdmEvent() {
-        ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendPurchaseXdmEvent")
-        var itemsList: [ProductListItemsItem] = []
-        for item in adbMobileShoppingCart.items {
-            let prodData:ProductData = ProductData(sku: item.product.sku, name: item.product.name, details: item.product.description, price: item.product.price, currency: item.product.currency, imageLarge: item.product.imageLarge, imageSmall: item.product.imageSmall)
-            let productItem  = createProductListItemsItem(productData: prodData, quantity: item.product.quantity)
-            guard let unwrappedProductItem = productItem else {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendPurchaseXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PURCHASES + "' event as given product item is null.")
-                return;
-            }
-            itemsList.append(unwrappedProductItem)
-        }
         
-        if(itemsList.isEmpty) {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendPurchaseXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PURCHASES + "' as no items were found in cart.")
-            return
-        } else {
+        ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendPurchaseXdmEvent")
+        if let itemsList = prepareProductList() {
             
             /// Create PaymentItem which details the method of payment
             var paymentsItem = PaymentsItem()
@@ -187,14 +190,11 @@ class CommerceUtil  {
             paymentsItem.paymentAmount = adbMobileShoppingCart.total
             paymentsItem.paymentType = PAYMENT_TYPE
             
-            var paymentsItemList = [PaymentsItem]()
-            paymentsItemList.append(paymentsItem)
-            
             /// Create the Order
             var order = Order()
             order.currencyCode = CURRENCY_CODE_USD
             order.priceTotal = adbMobileShoppingCart.total
-            order.payments = paymentsItemList
+            order.payments = [paymentsItem]
             
             /// Create Purchases action
             var purchases = Purchases()
@@ -216,19 +216,18 @@ class CommerceUtil  {
             if responseHandler.onResponseCalled {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: String("Platform response has been recieved..."))
             }
+        } else {
+                ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendPurchaseXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PURCHASES + "' as no items were found in cart.")
         }
     }
-
-   
     
     /// Helper method to construct and send the ExperiencePlatformEvent} to the Experience Platform Extension.
     /// - Parameters:
     ///    - itemsList   : The  list of ProductListItemsItem}s associated with this commerce event.
     ///    - eventType   : event type for the given commerce event.
-    private static func createAndSendEvent(itemsList: [ProductListItemsItem], eventType: String) {
+    static func createAndSendEvent(itemsList: [ProductListItemsItem], eventType: String) {
         
         var commerce = Commerce()
-        
         switch eventType {
         case EVENT_TYPE_COMMERCE_CHECKOUTS:
             print(EVENT_TYPE_COMMERCE_CHECKOUTS)
@@ -286,29 +285,18 @@ class CommerceUtil  {
     /// - Returns:
     ///     - ProductListItemsItem : A list of products populated from the given com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem},
     /// or null if item} is null
-    private static func createProductListItemsItem(productData : ProductData?, quantity: Int) -> ProductListItemsItem? {
+    static func createProductListItemsItem(productData : ProductData?, quantity: Int) -> ProductListItemsItem? {
         
         var productItem = ProductListItemsItem()
-        guard let productData = productData else {
-            return productItem
-        }
-        productItem.name = productData.name
-        productItem.sKU  = productData.sku
-        if(quantity > 0) {
-            productItem.currencyCode = productData.currency
-            productItem.quantity     = Int64(quantity)
-            productItem.priceTotal   = computeTotal(price: productData.price, quantity:quantity)
+        if let productData = productData {
+            productItem.name = productData.name
+            productItem.SKU  = productData.sku
+            if(quantity > 0) {
+                productItem.currencyCode = productData.currency
+                productItem.quantity     = Int64(quantity)
+                productItem.priceTotal   = computeTotal(price: productData.price, quantity:quantity)
+            }
         }
         return productItem
-    }
-    
-    /// Computes the total cost of a number of items.
-    /// - Parameters :
-    ///     - price              : The price of the product item.
-    ///     - quantity      : The quantity of the items.
-    /// - Returns:
-    ///     - TotalCost         :   The total cost of the items
-    private static func computeTotal(price :Float, quantity: Int) -> Float {
-        return price * Float(quantity)
     }
 }
