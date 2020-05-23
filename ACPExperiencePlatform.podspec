@@ -15,11 +15,12 @@ Pod::Spec.new do |s|
                        The Experience Platform extension enables sending data to the Adobe Experience Platform from a mobile device using the v5 Adobe Experience Cloud SDK.
                        DESC
 
-  s.homepage         = "https://github.com/adobe/platform-extension-ios.git"
+  s.homepage         = "https://github.com/kevinlind/platform-extension-ios.git"
   s.license          = { :type => "Apache License, Version 2.0", :file => "LICENSE" }
   s.author           = "Adobe Experience Platform SDK Team"
-  s.source           = { :git => "https://github.com/adobe/platform-extension-ios.git", :tag => "v#{s.version}-#{s.name}" }
+  s.source           = { :git => "https://github.com/kevinlind/platform-extension-ios.git", :tag => "v#{s.version}-#{s.name}" }
   s.platform = :ios, "10.0"
+  s.swift_version = '5.0'
   s.requires_arc = true
   s.static_framework = true
   
