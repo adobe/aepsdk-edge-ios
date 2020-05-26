@@ -13,6 +13,9 @@
 import Foundation
 import ACPCore
 
+/// This class is used to process the ExEdge network responses when the ResponseCallback is invoked with a response or error message. The response processing consists in parsing
+/// the server response message and dispatching response content and/or error response content events and storing the response payload (if needed).
+/// - See also: `EdgeResponse` and  `NetworkResponseCallback`
 class NetworkResponseHandler {
     private let LOG_TAG = "NetworkResponseHandler"
     private let serialQueue = DispatchQueue(label: "com.adobe.experiencePlatform.eventsDictionary") // serial queue for atomic operations

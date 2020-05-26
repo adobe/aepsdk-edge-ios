@@ -570,22 +570,29 @@
 			path = NetworkService;
 			sourceTree = "<group>";
 		};
-		D42FB8D02461086200E9321C /* NetworkHandlers */ = {
+		D42FB8D02461086200E9321C /* EdgeNetworkHandlers */ = {
 			isa = PBXGroup;
 			children = (
+				D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */,
+				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
+				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
 				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
 				D42FB8DA246261E600E9321C /* EdgeResponse.swift */,
-				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
-				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
-				D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */,
 				D4000F322459E2300052C536 /* ExperiencePlatformNetworkService.swift */,
+				BF947F7F243EF79D0057A6CC /* IdentityMap.swift */,
+				BF947F71243BA0BA0057A6CC /* KonductorConfig.swift */,
 				D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */,
 				D4000F302459E2080052C536 /* NetworkResponseHandler.swift */,
 				BF947F7B243E75E60057A6CC /* RequestBuilder.swift */,
+				BF947F83243F0D8A0057A6CC /* RequestContextData.swift */,
+				BF947F79243BE3C00057A6CC /* RequestMetadata.swift */,
 				D42FB8D124610A0000E9321C /* ResponseCallback.swift */,
 				D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */,
+				BF947F8E2440F0940057A6CC /* StateMetadata.swift */,
+				BF947F85243F24570057A6CC /* StoreResponsePayload.swift */,
+				BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */,
 			);
-			path = NetworkHandlers;
+			path = EdgeNetworkHandlers;
 			sourceTree = "<group>";
 		};
 		D42FB8D52462159300E9321C /* public */ = {
@@ -645,18 +652,11 @@
 				D42FB8D52462159300E9321C /* public */,
 				BF947F9A2441811E0057A6CC /* services */,
 				BF947F89243F9C9E0057A6CC /* util */,
-				D42FB8D02461086200E9321C /* NetworkHandlers */,
+				D42FB8D02461086200E9321C /* EdgeNetworkHandlers */,
 				BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */,
 				BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */,
 				BF947F75243BDECA0057A6CC /* ExperiencePlatformExtensionResponseListener.swift */,
 				BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */,
-				BF947F7F243EF79D0057A6CC /* IdentityMap.swift */,
-				BF947F71243BA0BA0057A6CC /* KonductorConfig.swift */,
-				BF947F83243F0D8A0057A6CC /* RequestContextData.swift */,
-				BF947F79243BE3C00057A6CC /* RequestMetadata.swift */,
-				BF947F8E2440F0940057A6CC /* StateMetadata.swift */,
-				BF947F85243F24570057A6CC /* StoreResponsePayload.swift */,
-				BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */,
 			);
 			name = src;
 			path = ../../code/src;
