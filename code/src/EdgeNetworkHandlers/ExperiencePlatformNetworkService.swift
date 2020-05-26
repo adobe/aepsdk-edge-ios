@@ -119,7 +119,7 @@ class ExperiencePlatformNetworkService {
                                                            httpHeaders: headers,
                                                            connectTimeout: ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout,
                                                            readTimeout: ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout);
-        ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request to URL \(url.absoluteString) with body: \n\(payload)")
+        ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request to URL \(url.absoluteString) with header: \(headers) and body: \n\(payload)")
         
         // make sync call to process the response right away and retry if needed
         let semaphore = DispatchSemaphore(value: 0)
@@ -139,11 +139,11 @@ class ExperiencePlatformNetworkService {
                 if responseCode == HttpResponseCodes.ok.rawValue {
                     ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Interact connection to ExEdge was successful.")
                     self.handleContent(connection: connection, streaming: requestBody.meta?.konductorConfig?.streaming, responseCallback: responseCallback)
-                    
+
                 } else if responseCode == HttpResponseCodes.noContent.rawValue {
                     // Successful collect requests do not return content
                     ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Collect connection to data platform successful.")
-                    
+
                 } else if self.recoverableNetworkErrorCodes.contains(responseCode) {
                     ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Connection to ExEdge returned recoverable error code \(responseCode)")
                     shouldRetry = RetryNetworkRequest.yes
@@ -155,7 +155,7 @@ class ExperiencePlatformNetworkService {
                 ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unknown error")
                 self.handleError(connection: connection, responseCallback: responseCallback)
             }
-            
+
             semaphore.signal()
         }
         
@@ -224,7 +224,7 @@ class ExperiencePlatformNetworkService {
         guard let lineFeedCharacter: Character = lineFeedDelimiter.convertToCharacter() else { return }
         
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "handleStreamingResponse - Handle server response with streaming enabled")
-        
+
         let splitResult = unwrappedResponseString.split(separator: lineFeedCharacter)
         
         var trimmingChars = CharacterSet()
