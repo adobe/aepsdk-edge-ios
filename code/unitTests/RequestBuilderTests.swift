@@ -69,19 +69,19 @@ class RequestBuilderTests: XCTestCase {
 
         let flattenEvent0 = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue as! [String : Any])
         let flattenEvent1 = flattenDictionary(dict: requestPayload?.events?[1]["xdm"]?.dictionaryValue as! [String : Any])
-        XCTAssertEqual("myapp", flattenEvent0[".application.name"] as? String)
-        XCTAssertEqual(events[0].eventUniqueIdentifier, flattenEvent0[".eventId"] as? String)
-        XCTAssertEqual(timestampToISO8601(events[0].eventTimestamp), flattenEvent0[".timestamp"] as? String)
+        XCTAssertEqual("myapp", flattenEvent0["application.name"] as? String)
+        XCTAssertEqual(events[0].eventUniqueIdentifier, flattenEvent0["_id"] as? String)
+        XCTAssertEqual(timestampToISO8601(events[0].eventTimestamp), flattenEvent0["timestamp"] as? String)
 
-        XCTAssertEqual("widget", flattenEvent1[".environment.type"] as? String)
-        XCTAssertEqual(events[1].eventUniqueIdentifier, flattenEvent1[".eventId"] as? String)
-        XCTAssertEqual(timestampToISO8601(events[1].eventTimestamp), flattenEvent1[".timestamp"] as? String)
+        XCTAssertEqual("widget", flattenEvent1["environment.type"] as? String)
+        XCTAssertEqual(events[1].eventUniqueIdentifier, flattenEvent1["_id"] as? String)
+        XCTAssertEqual(timestampToISO8601(events[1].eventTimestamp), flattenEvent1["timestamp"] as? String)
     }
 
     func testGetRequestPayload_withStorePayload_responseContainsStateEntries() {
         let dataStore = MockKeyValueStore()
         let manager = StoreResponsePayloadManager(dataStore)
-        manager.saveStorePayloads([StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600)])
+        manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))])
 
         let request = RequestBuilder(dataStore: dataStore)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")

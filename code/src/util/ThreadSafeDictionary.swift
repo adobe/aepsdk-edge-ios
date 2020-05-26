@@ -35,18 +35,17 @@ final class ThreadSafeDictionary<K: Hashable, V> {
             return queue.sync { return self.dictionary[key] }
          }
          set {
-            queue.async(flags: .barrier) {
+            queue.sync(flags: .barrier) {
                 self.dictionary[key] = newValue
              }
          }
      }
     
-    
     /// Removes the value for the provided key (if any)
     /// - Parameter forKey: the key to be removed from the dictionary
     /// - Returns: the removed value associated with the key or nil if not found
     public func removeValue(forKey: K) -> V? {
-        return queue.sync { return self.dictionary.removeValue(forKey: forKey) }
+        return queue.sync(flags: .barrier) { return self.dictionary.removeValue(forKey: forKey) }
     }
     
     @inlinable public func first(where predicate: (Element) throws -> Bool) rethrows -> Element? {

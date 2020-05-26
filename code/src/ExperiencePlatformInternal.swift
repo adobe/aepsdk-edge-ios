@@ -110,8 +110,12 @@ class ExperiencePlatformInternal : ACPExtension {
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) added to queue.")
     }
     
+    /// Calls `ResponseCallbackHandler` and invokes the response handler associated with this response event, if any
+    /// - Parameter event: the `ACPExtensionEvent` to process, event data should not be nil and it should contain a requestEventId
+    /// - Returns: `Bool` indicating if the response event was processed or not
     func handleResponseEvent(event: ACPExtensionEvent) -> Bool {
-        // TODO implement me in AMSDK-9555
+        guard let eventData = event.eventData as? [String: Any], let _ = eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] else { return false }
+        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: eventData)
         return true
     }
     
@@ -159,7 +163,7 @@ class ExperiencePlatformInternal : ACPExtension {
             
             // NOTE: the order of these events need to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
-            // todo: add waiting events in list
+            networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: listOfEvents)
             guard let url:URL = experiencePlatformNetworkService.buildUrl(requestType: ExperienceEdgeRequestType.interact, configId: configId, requestId: requestId) else {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to build the URL, skipping current event with id \(event.eventUniqueIdentifier).")
                 return true

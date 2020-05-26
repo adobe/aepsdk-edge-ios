@@ -138,16 +138,12 @@ class ExperiencePlatformNetworkService {
             if let responseCode = connection.responseCode {
                 if responseCode == HttpResponseCodes.ok.rawValue {
                     ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Interact connection to ExEdge was successful.")
-                    if let responseString = connection.responseString {
-                        ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Response message: \(responseString)")
-                    }
-                    
                     self.handleContent(connection: connection, streaming: requestBody.meta?.konductorConfig?.streaming, responseCallback: responseCallback)
-                    
+
                 } else if responseCode == HttpResponseCodes.noContent.rawValue {
                     // Successful collect requests do not return content
                     ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Collect connection to data platform successful.")
-                    
+
                 } else if self.recoverableNetworkErrorCodes.contains(responseCode) {
                     ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Connection to ExEdge returned recoverable error code \(responseCode)")
                     shouldRetry = RetryNetworkRequest.yes
@@ -159,7 +155,7 @@ class ExperiencePlatformNetworkService {
                 ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unknown error")
                 self.handleError(connection: connection, responseCallback: responseCallback)
             }
-            
+
             semaphore.signal()
         }
         
@@ -227,6 +223,8 @@ class ExperiencePlatformNetworkService {
         guard let lineFeedDelimiter: String = streaming.lineFeed else { return }
         guard let lineFeedCharacter: Character = lineFeedDelimiter.convertToCharacter() else { return }
         
+        ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "handleStreamingResponse - Handle server response with streaming enabled")
+
         let splitResult = unwrappedResponseString.split(separator: lineFeedCharacter)
         
         var trimmingChars = CharacterSet()
