@@ -217,31 +217,26 @@ class CommerceUtil  {
         var commerce = Commerce()
         switch eventType {
         case EVENT_TYPE_COMMERCE_CHECKOUTS:
-            print(EVENT_TYPE_COMMERCE_CHECKOUTS)
             var checkouts = Checkouts()
             checkouts.value = 1
             commerce.checkouts = checkouts
             
         case EVENT_TYPE_COMMERCE_PRODUCT_VIEWS:
-            print(EVENT_TYPE_COMMERCE_PRODUCT_VIEWS)
             var productViews = ProductViews()
             productViews.value = 1
             commerce.productViews = productViews
             
         case EVENT_TYPE_COMMERCE_PRODUCT_LIST_ADDS:
-            print(EVENT_TYPE_COMMERCE_PRODUCT_LIST_ADDS)
             var productListAdds = ProductListAdds()
             productListAdds.value = 1
             commerce.productListAdds = productListAdds
             
         case EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS:
-            print(EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS)
             var productListRemovals = ProductListRemovals()
             productListRemovals.value = 1
             commerce.productListRemovals = productListRemovals
             
         case EVENT_TYPE_COMMERCE_PURCHASES:
-            print(EVENT_TYPE_COMMERCE_PURCHASES)
             var purchases = Purchases()
             purchases.value = 1
             commerce.purchases = purchases
