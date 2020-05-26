@@ -62,7 +62,7 @@ class ExperiencePlatformInternal : ACPExtension {
     }
     
     override func version() -> String? {
-        "1.0.0-alpha-2"
+        "1.0.0-alpha"
     }
     
     override func onUnregister() {
