@@ -82,8 +82,7 @@ class CommerceUtil  {
         
         var itemsList: [ProductListItemsItem] = []
         for item in adbMobileShoppingCart.items {
-            let prodData:ProductData = ProductData(sku: item.product.productData.sku, name: item.product.productData.name, details: item.product.productData.details, price: item.product.productData.price, currency: item.product.productData.currency, imageLarge: item.product.productData.imageLarge, imageSmall: item.product.productData.imageSmall)
-            let productItem  = createProductListItemsItem(productData: prodData, quantity: item.product.quantity)
+            let productItem  = createProductListItemsItem(productData: item.product.productData, quantity: item.product.quantity)
             if let unwrappedProductItem = productItem {
                 itemsList.append(unwrappedProductItem)
             } else {
@@ -142,31 +141,31 @@ class CommerceUtil  {
             ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendProductListRemoveXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS + "' event as given product item is null.")
         }
     }
-
+    
     /// Creates and sends a cart checkout event to the Adobe Data Platform.
     /// This method should be called when an action during the shopping cart checkout process is taken.
     /// There may be more than one checkout events if there are multiple steps in the checkout process.
     static func sendCheckoutXdmEvent() {
-    
+        
         ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCheckoutXdmEvent")
         if let itemsList = prepareProductList() {
-                createAndSendEvent(itemsList: itemsList, eventType: EVENT_TYPE_COMMERCE_CHECKOUTS)
-            } else {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCheckoutXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_CHECKOUTS + "' event as given product item is null.")
-            }
+            createAndSendEvent(itemsList: itemsList, eventType: EVENT_TYPE_COMMERCE_CHECKOUTS)
+        } else {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCheckoutXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_CHECKOUTS + "' event as given product item is null.")
         }
-
+    }
+    
     /// Creates and sends a cart clean event to the Adobe Data Platform.
     /// This method should be called when an action during the shopping cart is being cleared.
     static func sendCartClearXdmEvent() {
-    
+        
         ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCartClearXdmEvent")
         if let itemsList = prepareProductList() {
-                createAndSendEvent(itemsList: itemsList, eventType: EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS)
-            } else {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCartClearXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS + "' event as given product item is null.")
-            }
+            createAndSendEvent(itemsList: itemsList, eventType: EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS)
+        } else {
+            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendCartClearXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PRODUCT_LIST_REMOVALS + "' event as given product item is null.")
         }
+    }
     
     /// Creates and sends a cart purchase event to the Adobe Data Platform.
     /// This method should be called when a final purchase is made of a shopping cart.
@@ -205,7 +204,7 @@ class CommerceUtil  {
             let responseHandler = ResponseHandler()
             ACPExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
         } else {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendPurchaseXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PURCHASES + "' as no items were found in cart.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendPurchaseXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PURCHASES + "' as no items were found in cart.")
         }
     }
     

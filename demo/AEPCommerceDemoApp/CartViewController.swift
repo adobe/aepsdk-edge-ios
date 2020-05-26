@@ -79,11 +79,10 @@ extension CartViewController: CartDelegate {
     // MARK: - CartDelegate
     func remove(cell: ShoppingItemCell) {
         guard let indexPath = shoppingCartTableView.indexPath(for: cell) else { return }
-        let product = adbMobileShoppingCart.items[indexPath.row]
-        adbMobileShoppingCart.remove(product: product.product)
-        
-        let prodData:ProductData = ProductData(sku: product.product.productData.sku, name: product.product.productData.name, details: product.product.productData.details, price: product.product.productData.price, currency: product.product.productData.currency, imageLarge: product.product.productData.imageLarge, imageSmall: product.product.productData.imageSmall)
-        CommerceUtil.sendProductListRemoveXdmEvent(productData: prodData, quantity: product.product.quantity)
+        let cartItem = adbMobileShoppingCart.items[indexPath.row]
+        adbMobileShoppingCart.remove(product: cartItem.product)
+        CommerceUtil.sendProductListRemoveXdmEvent(productData: cartItem.product.productData, quantity: cartItem.product.quantity)
         shoppingCartTableView.reloadData()
         orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)    }
 }
+
