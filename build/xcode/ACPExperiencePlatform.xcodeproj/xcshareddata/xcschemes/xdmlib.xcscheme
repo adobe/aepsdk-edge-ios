@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B5952433F9C300CAB6E4"
-               BuildableName = "AEPCommerceDemoApp.app"
-               BlueprintName = "AEPCommerceDemoApp"
+               BlueprintIdentifier = "1CB579D0245DFA81000B2DA5"
+               BuildableName = "libxdmlib.a"
+               BlueprintName = "xdmlib"
                ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,16 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B53224325AB700CAB6E4"
-               BuildableName = "functionalTests.xctest"
-               BlueprintName = "functionalTests"
-               ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference
@@ -60,23 +50,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D4D5B5952433F9C300CAB6E4"
-            BuildableName = "AEPCommerceDemoApp.app"
-            BlueprintName = "AEPCommerceDemoApp"
-            ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "OS_ACTIVITY_MODE"
-            value = "disable"
-            isEnabled = "NO">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -84,16 +57,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D4D5B5952433F9C300CAB6E4"
-            BuildableName = "AEPCommerceDemoApp.app"
-            BlueprintName = "AEPCommerceDemoApp"
+            BlueprintIdentifier = "1CB579D0245DFA81000B2DA5"
+            BuildableName = "libxdmlib.a"
+            BlueprintName = "xdmlib"
             ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

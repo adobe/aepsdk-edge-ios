@@ -18,12 +18,16 @@ struct ExperiencePlatformConstants {
     
     static let eventTypeExperiencePlatform = "com.adobe.eventType.experiencePlatform"
     static let eventTypeAdobeHub = "com.adobe.eventType.hub"
-    
+
     static let eventSourceAdobeSharedState = "com.adobe.eventSource.sharedState"
     static let eventSourceExtensionRequestContent = "com.adobe.eventSource.requestContent"
     static let eventSourceExtensionResponseContent = "com.adobe.eventSource.responseContent"
     static let eventSourceExtensionErrorResponseContent = "com.adobe.eventSource.errorResponseContent"
     
+    static let eventNameRequestContent = "AEP Request Event"
+    static let eventNameResponseContent = "AEP Response Event Handle"
+    static let eventNameErrorResponseContent = "AEP Error Response"
+
     static let platformDataStorage = "PlatformExtensionDataStorage"
     
     struct Defaults {
@@ -33,7 +37,7 @@ struct ExperiencePlatformConstants {
         static let requestConfigRecordSeparator: String = "\u{0000}"
         static let requestConfigLineFeed: String = "\n"
     }
-    
+
     struct EventDataKeys {
         private init() {}
         
@@ -69,11 +73,11 @@ struct ExperiencePlatformConstants {
         }
         struct Griffon {
             private init() {}
-            
+
             static let stateOwner = "com.adobe.ACPGriffon"
             static let integrationId = "integrationid"
         }
-        
+
         struct Lifecycle {
             private init() {}
             
@@ -88,33 +92,42 @@ struct ExperiencePlatformConstants {
         static let data = "data"
         static let ECID = "ECID"
         static let timestamp = "timestamp"
-        static let eventId = "eventId"
-        
+        static let eventId = "_id"
+
         struct Response {
             private init() {}
-            
+
+            static let eventHandleStoreType = "state:store"
+
             struct Error {
                 private init() {}
-                
+
                 static let message = "message"
                 static let namespace = "namespace"
             }
         }
     }
-    
+
     struct NetworkKeys {
         private init() {}
-        
+
         static let edgeEndpoint = "https://edge.adobedc.net/ee/v1"
         static let requestParamConfigId = "configId"
         static let requestParamRequestId = "requestId"
         static let defaultConnectTimeout: TimeInterval = 5
         static let defaultReadTimeout: TimeInterval = 5
-        
+
         static let headerKeyAccept = "accept"
         static let headerKeyContentType = "Content-Type"
         static let headerValueApplicationJson = "application/json"
         static let headerKeyAEPValidationToken = "X-Adobe-AEP-Validation-Token"
-        
+
+    }
+
+    struct Error {
+        private init() {}
+
+        static let encodingErrorDomain = "EncodingError"
+        static let encodingErrorCode = 1
     }
 }

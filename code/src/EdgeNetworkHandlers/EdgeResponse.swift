@@ -12,14 +12,19 @@
 
 import Foundation
 
-public class FunctionalTestUtils {
+/// A response from the Adobe Experience Edge server.
+/// An `EdgeResponse` is the top-level response object received from Konductor.
+struct EdgeResponse : Decodable {
     
-    /// Removes all User Defaults
-    public static func resetUserDefaults() {
-        let defaults = UserDefaults.standard
-        let dictionary = defaults.dictionaryRepresentation()
-        dictionary.keys.forEach { key in
-            defaults.removeObject(forKey: key)
-        }
-    }
+    /// The request identifier associated with this response
+    let requestId: String?
+    
+    /// List of event handles received from the Adobe solutions
+    let handle: [EdgeEventHandle]?
+    
+    /// List of errors received from Konductor
+    let errors: [EdgeEventError]?
+    
+    /// List of warnings received from Konductor
+    let warnings: [EdgeEventError]?
 }

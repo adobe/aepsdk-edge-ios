@@ -24,7 +24,7 @@ func flattenDictionary(dict: [String : Any]) -> [String : Any] {
             return
         }
         for (key, val) in dict {
-            let resultKey = currentKey + "." + key
+            let resultKey = !currentKey.isEmpty ? currentKey + "." + key : key
             process(value: val, out: &out, key: resultKey)
         }
     }

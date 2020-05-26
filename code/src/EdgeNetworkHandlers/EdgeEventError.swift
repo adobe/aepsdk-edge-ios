@@ -10,14 +10,21 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
-@testable import ACPExperiencePlatform
 
-class MockResponseHandler : ExperiencePlatformResponseHandler {
-    var onResponseCalled: Bool = false
+/// Error or warning information for a sent EdgeRequest
+struct EdgeEventError : Codable {
     
-    func onResponse(data: [String : Any]) {
-        self.onResponseCalled = true
-    }
+    /// Encodes the event to which this error/warning is attached as the index in the events array in EdgeRequest
+    let eventIndex: Int?
+    
+    /// Error message
+    let message: String?
+    
+    /// Error code info
+    let code: String?
+    
+    /// Error namespace info
+    let namespace: String?
 }
+

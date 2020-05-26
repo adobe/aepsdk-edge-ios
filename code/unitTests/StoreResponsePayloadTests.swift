@@ -27,7 +27,7 @@ class StoreResponsePayloadTests: XCTestCase {
     // MARK: encoder tests
 
     func testEncode() {
-        let payload = StoreResponsePayload(key: "key", value: "value", maxAgeSeconds: 3600)
+        let payload = StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]

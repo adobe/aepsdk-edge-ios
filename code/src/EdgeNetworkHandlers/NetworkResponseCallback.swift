@@ -39,7 +39,7 @@ class NetworkResponseCallback : ResponseCallback {
     
     /// Removes waiting events for current `requestId` and unregisters their corresponding callbacks
     func onComplete() {
-        let removedWaitingEvents:[String] = self.networkResponseHandler.removeWaitingEvents(requestId: requestId)
+        guard let removedWaitingEvents:[String] = self.networkResponseHandler.removeWaitingEvents(requestId: requestId) else { return }
         
         // unregister currently known response callbacks
         for eventId in removedWaitingEvents {
