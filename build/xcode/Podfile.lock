@@ -2,6 +2,11 @@ PODS:
   - ACPCore (2.6.1):
     - ACPCore/iOS (= 2.6.1)
   - ACPCore/iOS (2.6.1)
+  - ACPExperiencePlatform (1.0.0-alpha):
+    - ACPCore (>= 2.6.1)
+    - ACPExperiencePlatform/iOS (= 1.0.0-alpha)
+  - ACPExperiencePlatform/iOS (1.0.0-alpha):
+    - ACPCore (>= 2.6.1)
   - ACPGriffon (1.1.0):
     - ACPCore
     - ACPGriffon/iOS (= 1.1.0)
@@ -10,6 +15,7 @@ PODS:
 
 DEPENDENCIES:
   - ACPCore (~> 2.0)
+  - ACPExperiencePlatform (from `https://github.com/adobe/platform-extension-ios`, branch `dev`)
   - ACPGriffon (~> 1.0)
 
 SPEC REPOS:
@@ -17,10 +23,21 @@ SPEC REPOS:
     - ACPCore
     - ACPGriffon
 
+EXTERNAL SOURCES:
+  ACPExperiencePlatform:
+    :branch: dev
+    :git: https://github.com/adobe/platform-extension-ios
+
+CHECKOUT OPTIONS:
+  ACPExperiencePlatform:
+    :commit: 4f6505316e389f1faccb386a2d87bf95027f9b76
+    :git: https://github.com/adobe/platform-extension-ios
+
 SPEC CHECKSUMS:
   ACPCore: e2f2ff66174350cdc00387a2ca74ac4f77ea3ba0
+  ACPExperiencePlatform: 3aa9a1243b721ced0f732dafc71ae000e44af9ed
   ACPGriffon: a3ecd40d9643fbade90096d6d5f16551463e5187
 
-PODFILE CHECKSUM: fb37d8058e98b9fafb620bb4124a70b135e788bd
+PODFILE CHECKSUM: aaf0009757dd247e88e74b3f5fd8c2d93bd0f028
 
 COCOAPODS: 1.9.1

@@ -40,6 +40,14 @@ target 'AEPDemoAppSwiftUI' do
   pod 'ACPGriffon', '~> 1.0'
 end
 
+target 'AEPDemoAppSwiftUIFromPod' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  pod 'ACPExperiencePlatform', :git => "https://github.com/adobe/platform-extension-ios", :branch => "dev"
+  pod 'ACPGriffon', '~> 1.0'
+end
+
 target 'AEPCommerceDemoApp' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
