@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ACPSignal.registerExtension()
         ACPGriffon.registerExtension()
         ACPExperiencePlatform.registerExtension()
-        
+        ACPGriffon.registerExtension()
         // Option 1 : Configuration : Inline
         // var config = [String: String]()
         // config["global.privacy"] = "optedin"

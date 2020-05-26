@@ -40,32 +40,41 @@ class ProductViewController: UIViewController {
         quantityLbl.text = AEPDemoConstants.Strings.QUANTITY
         priceLbl.text = AEPDemoConstants.Strings.PRICE
         addToCartBtn.setTitle(AEPDemoConstants.Strings.ADD_TO_CART, for: .normal)
-        productImage.image = UIImage(named: "\((productData?.imageSmall)!)")
+        guard let productData = productData else {
+               print("Not a valid product!")
+               return
+           }
+        let prodData =  ProductData(sku: productData.sku, name: productData.name, details: productData.details, price: productData.price, currency: productData.currency, imageLarge: productData.imageLarge, imageSmall: productData.imageSmall)
+        productImage.image = UIImage(named: "\((prodData.imageSmall))")
         productImage.layer.cornerRadius = 30
         productImage.clipsToBounds = true
-        productSku.text = productData?.sku
-        productName.text = productData?.name
-        productDetails.text = productData?.details
-        productCurrency.text = productData?.currency
-        productPrice.text = "\((productData?.price)!)"
-        for index in AEPDemoConstants.Numbers.MIN_QTY...AEPDemoConstants.Numbers.MAX_QTY {
+        productSku.text = prodData.sku
+        productName.text = prodData.name
+        productDetails.text = prodData.details
+        productCurrency.text = prodData.currency
+        productPrice.text = "\((prodData.price))"
+        for  index in 1...25 {
             qtySource.append(index)
         }
         productQty.dataSource = self
         productQty.delegate = self
         productQty.setValue(UIColor.white, forKey: "textColor")
+        CommerceUtil.sendProductViewXdmEvent(productData: prodData)
     }
     
     @IBAction func AddToCartBtn(_ sender: UIButton) {
         
-        if let unwrappedproductData = productData {
-            let product = Product(imageLarge:unwrappedproductData.imageLarge, sku:unwrappedproductData.sku, name: unwrappedproductData.name, price: unwrappedproductData.price, quantity:qtyOrdered )
-            adbMobileShoppingCart.add(product: product)
-            let message  = "\(product.quantity) quantities of " + product.name + AEPDemoConstants.Strings.ITEM_ADDED_MSG
-            Snackbar(message : message)
+        guard let productData = productData else {
+            print("Not a valid product!")
+            return
         }
-        // Todo : Send this Event to Platform
+        let prodData:ProductData = ProductData(sku: productData.sku, name: productData.name, details: productData.details, price: productData.price, currency: productData.currency, imageLarge: productData.imageLarge, imageSmall: productData.imageSmall)
+        let product = Product(productData: prodData, quantity: qtyOrdered)
+        adbMobileShoppingCart.add(product: product)
         
+        let message  = "\(product.quantity) quantities of " + product.productData.name + AEPDemoConstants.Strings.ITEM_ADDED_MSG
+        Snackbar(message : message)
+        CommerceUtil.sendProductListAddXdmEvent(productData: prodData, quantity: qtyOrdered)
     }
 }
 

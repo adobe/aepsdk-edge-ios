@@ -11,15 +11,14 @@
 //
 
 import Foundation
+import ACPCore
+import ACPExperiencePlatform
 
-struct Product: Equatable {
-    var productData : ProductData
-    var quantity : Int
-    var subtotal: Float { return productData.price * Float(quantity) }
-}
-
-extension Product {
-    static func ==(lhs: Product, rhs: Product) -> Bool {
-        return lhs.productData.sku == rhs.productData.sku
+class ResponseHandler : ExperiencePlatformResponseHandler {
+    var onResponseCalled: Bool = false
+    
+    func onResponse(data: [String : Any]) {
+    self.onResponseCalled = true
+    ACPCore.log(ACPMobileLogLevel.debug, tag:"ResponseHandler", message:"Platform response has been recieved...")
     }
 }

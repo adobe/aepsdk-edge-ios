@@ -29,9 +29,9 @@ class ShoppingItemCell: UITableViewCell {
     
     func setProduct(product: Product) {
         
-        productImageView.image = UIImage(named:product.imageLarge)
-        productNameLbl.text = product.name
-        productUnitPriceLbl.text  = String(format: "%.2f", product.price)
+        productImageView.image = UIImage(named:product.productData.imageLarge)
+        productNameLbl.text = product.productData.name
+        productUnitPriceLbl.text  = String(format: "%.2f", product.productData.price)
         productQtyLbl.text = String(Int(product.quantity))
         productPriceLbl.text = String(format: "%.2f", product.subtotal)
     }

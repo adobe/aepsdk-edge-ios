@@ -29,7 +29,7 @@ public struct ProductListItemsItem {
 	public var product: String?
 	public var productAddMethod: String?
 	public var quantity: Int64?
-	public var sKU: String?
+	public var SKU: String?
 
 	enum CodingKeys: String, CodingKey {
 		case currencyCode = "currencyCode"
@@ -38,7 +38,7 @@ public struct ProductListItemsItem {
 		case product = "product"
 		case productAddMethod = "productAddMethod"
 		case quantity = "quantity"
-		case sKU = "SKU"
+		case SKU = "SKU"
 	}	
 }
 
@@ -51,6 +51,6 @@ extension ProductListItemsItem:Encodable {
 		if let unwrapped = product { try container.encode(unwrapped, forKey: .product) }
 		if let unwrapped = productAddMethod { try container.encode(unwrapped, forKey: .productAddMethod) }
 		if let unwrapped = quantity { try container.encode(unwrapped, forKey: .quantity) }
-		if let unwrapped = sKU { try container.encode(unwrapped, forKey: .sKU) }
+		if let unwrapped = SKU { try container.encode(unwrapped, forKey: .SKU) }
 	}
 }

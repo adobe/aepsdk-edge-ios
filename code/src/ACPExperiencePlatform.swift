@@ -17,6 +17,7 @@ private let LOG_TAG = "ACPExperiencePlatform"
 public class ACPExperiencePlatform {
     
     @available(*, unavailable) private init() {}
+    private static var responseCallbacksHandlers: [String: ([String: Any]) -> Void] = [:]
     
     /// Registers the ACPExperiencePlatform extension with the Mobile SDK. This method should be called only once in your application class
     /// from the AppDelegate's application:didFinishLaunchingWithOptions method. This call should be before any calls into ACPCore

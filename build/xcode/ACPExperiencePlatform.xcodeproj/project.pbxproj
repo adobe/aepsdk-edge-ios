@@ -66,6 +66,8 @@
 		1CCD27DC245A240F00E912B2 /* ExperiencePlatformEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C82458CB8000E912B2 /* ExperiencePlatformEventTests.swift */; };
 		1CCD27DE245A254D00E912B2 /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */; };
 		1CE2B0852468619F00B4F36A /* ADBMobileConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = 1CE2B0842468619E00B4F36A /* ADBMobileConfig.json */; };
+		1CF50432247646CA00DD2632 /* CommerceUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF504302476464F00DD2632 /* CommerceUtil.swift */; };
+		1CF5043524784CFF00DD2632 /* ResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF5043324784CBC00DD2632 /* ResponseHandler.swift */; };
 		2141891A2436663A00907D0A /* AEPNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214189182436663A00907D0A /* AEPNetworkService.swift */; };
 		4C7AFF5EDBE1DEEC5D6E959E /* Pods_ACPExperiencePlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B477A1BB4F9729DF13F86322 /* Pods_ACPExperiencePlatform.framework */; };
 		6D748A730E070AC21AC0B81C /* Pods_functionalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A9F51B938A1963977636559 /* Pods_functionalTests.framework */; };
@@ -273,6 +275,8 @@
 		1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMFormatters.swift; sourceTree = "<group>"; };
 		1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMProtocols.swift; sourceTree = "<group>"; };
 		1CE2B0842468619E00B4F36A /* ADBMobileConfig.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = ADBMobileConfig.json; path = Assets/ADBMobileConfig.json; sourceTree = "<group>"; };
+		1CF504302476464F00DD2632 /* CommerceUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceUtil.swift; sourceTree = "<group>"; };
+		1CF5043324784CBC00DD2632 /* ResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseHandler.swift; sourceTree = "<group>"; };
 		214189182436663A00907D0A /* AEPNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEPNetworkService.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		27992B07DDD37DD414AAABBB /* Pods-functionalTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTests.release.xcconfig"; path = "Target Support Files/Pods-functionalTests/Pods-functionalTests.release.xcconfig"; sourceTree = "<group>"; };
 		299B2D94D89996E19291215F /* Pods_functionalTestsConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_functionalTestsConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -729,6 +733,7 @@
 				1CE2B0842468619E00B4F36A /* ADBMobileConfig.json */,
 				1CA50AC1244B292E00683A8E /* product_list_colors.json */,
 				1CA50AB5244B254B00683A8E /* ProductData.swift */,
+				1CA50BB0244D337F00683A8E /* Product.swift */,
 				1CA50AB6244B254B00683A8E /* ProductDataLoader.swift */,
 				D4D5B5982433F9C300CAB6E4 /* AppDelegate.swift */,
 				D4D5B59C2433F9C300CAB6E4 /* HomeViewController.swift */,
@@ -742,10 +747,11 @@
 				D4D5B5A32433F9C400CAB6E4 /* LaunchScreen.storyboard */,
 				D4D5B5A62433F9C400CAB6E4 /* Info.plist */,
 				1CA50BAD244D32C000683A8E /* ShoppingCart.swift */,
-				1CA50BB0244D337F00683A8E /* Product.swift */,
 				1CA50BB3244D36C500683A8E /* CartItem.swift */,
 				1C107BFB2472ED1A009582FA /* UIViewControllerSnackBar.swift */,
 				1C107BFF24737FA1009582FA /* AEPDemoConstants.swift */,
+				1CF504302476464F00DD2632 /* CommerceUtil.swift */,
+				1CF5043324784CBC00DD2632 /* ResponseHandler.swift */,
 			);
 			name = AEPCommerceDemoApp;
 			path = ../../demo/AEPCommerceDemoApp;
@@ -1313,6 +1319,7 @@
 				1C107BFA2470319A009582FA /* CheckOutViewController.swift in Sources */,
 				1CB57E082464C818000B2DA5 /* ShoppingItemCell.swift in Sources */,
 				1CB57E042464C818000B2DA5 /* AppDelegate.swift in Sources */,
+				1CF50432247646CA00DD2632 /* CommerceUtil.swift in Sources */,
 				1CA50BB5244D36C500683A8E /* CartItem.swift in Sources */,
 				1C107C05247436A6009582FA /* GriffonViewController.swift in Sources */,
 				1CA50BB2244D337F00683A8E /* Product.swift in Sources */,
@@ -1322,6 +1329,7 @@
 				1CB57E062464C818000B2DA5 /* ProductViewController.swift in Sources */,
 				1C107C0024737FA1009582FA /* AEPDemoConstants.swift in Sources */,
 				1C107BFC2472ED1A009582FA /* UIViewControllerSnackBar.swift in Sources */,
+				1CF5043524784CFF00DD2632 /* ResponseHandler.swift in Sources */,
 				1CB57E072464C818000B2DA5 /* CartViewController.swift in Sources */,
 				1CB57E032464C818000B2DA5 /* ProductDataLoader.swift in Sources */,
 			);

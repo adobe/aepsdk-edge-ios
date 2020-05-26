@@ -12,6 +12,7 @@
 
 import Foundation
 import UIKit
+import ACPExperiencePlatform
 
 class CartViewController: UIViewController {
     
@@ -51,6 +52,7 @@ class CartViewController: UIViewController {
     
     func clearCart() {
         
+        CommerceUtil.sendCartClearXdmEvent()
         adbMobileShoppingCart.clearCart()
         shoppingCartTableView.reloadData()
         orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)
@@ -77,9 +79,10 @@ extension CartViewController: CartDelegate {
     // MARK: - CartDelegate
     func remove(cell: ShoppingItemCell) {
         guard let indexPath = shoppingCartTableView.indexPath(for: cell) else { return }
-        let product = adbMobileShoppingCart.items[indexPath.row]
-        adbMobileShoppingCart.remove(product: product.product)
+        let cartItem = adbMobileShoppingCart.items[indexPath.row]
+        adbMobileShoppingCart.remove(product: cartItem.product)
+        CommerceUtil.sendProductListRemoveXdmEvent(productData: cartItem.product.productData, quantity: cartItem.product.quantity)
         shoppingCartTableView.reloadData()
-        orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)
-    }
+        orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)    }
 }
+
