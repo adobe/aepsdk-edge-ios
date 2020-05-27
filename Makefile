@@ -4,7 +4,7 @@ export OUT_DIR = out
 PROJECT_NAME = $(EXTENSION_NAME)
 
 setup:
-	(cd build/xcode && pod install)
+	(cd build/xcode && pod install --repo-update)
 
 update:
 	(cd build/xcode && pod repo update && pod update)
