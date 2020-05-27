@@ -4,7 +4,7 @@
 version: 2.1
 
 jobs:
-  build:
+  build-and-test:
 
     macos:
       xcode: 11.0.0 # Specify the Xcode version to use
@@ -59,9 +59,52 @@ jobs:
           name: Upload Code Coverage Report
           command: bash <(curl -s https://codecov.io/bash) -c -D "./build/xcode/ACPExperiencePlatform/out" -J "unitTests" -J "functionalTests" -J "functionalTestsConfig" -t ${CODECOV_TOKEN}
 
+  deploy:
+    macos:
+      xcode: 11.0.0
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - 1-gems-{{ checksum "Gemfile.lock" }}
+
+      # make sure we're on the right version of cocoapods
+      - run:
+          name: Verify Cocoapods Version
+          command: bundle check || bundle install --path vendor/bundle
+
+      # save cocoapods version gem data
+      - save_cache:
+          name: Saving Gemfile Cache
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+      - run:
+          name: Install CocoaPods
+          command: |
+            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+            make setup
+
+      - run:
+          name: Build All
+          command: make build-all
+
+      - store_artifacts:
+          path: out
+
 workflows:
   version: 2
-  build-test:
+  build-test-deploy:
     jobs:
-      - build
+      - build-and-test
+      - deploy:
+          requires:
+            - build-and-test
+          #filters:
+          #  branches:
+          #    only: master
+
 
