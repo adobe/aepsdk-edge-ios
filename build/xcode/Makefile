@@ -35,6 +35,7 @@ XCODEBUILD_COMPATIBLE = $(shell [[ $(XCODEBUILD_VERSION_MAJOR) -gt 10  ||  ($(XC
 
 # directories
 BIN_DIR = $(ROOT_DIR)/bin/iOS/
+OUT_DIR = $(ROOT_DIR)/out
 BUILD_DIR = Build/
 BUILD_TEMP_DIR = $(BIN_DIR)build_temp/
 DEV_BUILD_DIR = devbuild
@@ -175,7 +176,7 @@ copy-files:
 	@echo "### Copying files"
 	@echo "######################################################################"
 
-	mv $(BIN_DIR)$(LIB_BASE_NAME).a $(BIN_DIR)/$(LIB_BASE_NAME).a
+	mv $(BIN_DIR)$(LIB_BASE_NAME).a $(OUT_DIR)/$(LIB_BASE_NAME).a
 	#cp -r $(INCLUDE_DIR) $(BIN_DIR)/include
 	rm -rf $(BIN_DIR)/build_temp
 
