@@ -83,10 +83,8 @@ jobs:
             - vendor/bundle
 
       - run:
-          name: Install CocoaPods
-          command: |
-            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-            make setup
+          name: Project Setup
+          command: make setup
 
       - run:
           name: Build All
