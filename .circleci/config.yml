@@ -7,10 +7,14 @@ jobs:
   build-and-test:
 
     macos:
-      xcode: 11.0.0 # Specify the Xcode version to use
+      xcode: 11.2.0 # Specify the Xcode version to use
 
     steps:
       - checkout
+
+      - run:
+          name: Set Ruby Version
+          command: echo 'chruby ruby-2.6' >> ~/.bash_profile
 
       # pre-start the simulator to prevent timeouts
       - run:
@@ -39,8 +43,10 @@ jobs:
 
       # update CocoaPods
       - run: 
-          name: Project Setup
-          command: make setup
+          name: Install CocoaPods
+          command: |
+            cd build/xcode
+            bundle exec pod install
 
       # save pods related files
       - save_cache:
@@ -61,10 +67,14 @@ jobs:
 
   deploy:
     macos:
-      xcode: 11.0.0
+      xcode: 11.2.0
 
     steps:
       - checkout
+
+      - run:
+          name: Set Ruby Version
+          command: echo 'chruby ruby-2.6' >> ~/.bash_profile
 
       - restore_cache:
           keys:
@@ -83,8 +93,10 @@ jobs:
             - vendor/bundle
 
       - run:
-          name: Project Setup
-          command: make setup
+          name: Install CocoaPods
+          command: |
+            cd build/xcode
+            bundle exec pod install
 
       - run:
           name: Build All
