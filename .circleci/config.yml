@@ -19,7 +19,7 @@ jobs:
       # pre-start the simulator to prevent timeouts
       - run:
           name: Pre-start Simulator
-          command: xcrun instruments -w "iPhone 8 (13.0) [" || true
+          command: xcrun instruments -w "iPhone 8 (12.2) [" || true
 
       # restore pods related caches
       - restore_cache:
@@ -28,6 +28,13 @@ jobs:
             - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}
             - cocoapods-cache-v1
             - 1-gems-{{ checksum "Gemfile.lock" }}
+
+      - run:
+          name: Configure Bundler
+          command: |
+             echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+             source $BASH_ENV
+             gem install bundler
 
       # make sure we're on the right version of cocoapods
       - run:
