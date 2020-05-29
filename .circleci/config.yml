@@ -3,19 +3,21 @@
 
 version: 2.1
 
-jobs:
-  build:
+# Workflows orchestrate a set of jobs to be run;
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - build-and-test
 
+jobs:
+
+  build-and-test:
     macos:
       xcode: 11.0.0 # Specify the Xcode version to use
 
     steps:
       - checkout
-
-      # pre-start the simulator to prevent timeouts
-      - run:
-          name: Pre-start Simulator
-          command: xcrun instruments -w "iPhone 8 (13.0) [" || true
 
       # restore pods related caches
       - restore_cache:
@@ -50,6 +52,11 @@ jobs:
             - ./build/xcode/Pods
             - ~/.cocoapods
 
+      # pre-start the simulator to prevent timeouts
+      - run:
+          name: Pre-start Simulator
+          command: xcrun instruments -w "iPhone 8 (13.0) [" || true
+
       - run: 
           name: Run Tests
           command: make test
@@ -59,9 +66,14 @@ jobs:
           name: Upload Code Coverage Report
           command: bash <(curl -s https://codecov.io/bash) -c -D "./build/xcode/ACPExperiencePlatform/out" -J "unitTests" -J "functionalTests" -J "functionalTestsConfig" -t ${CODECOV_TOKEN}
 
-workflows:
-  version: 2
-  build-test:
-    jobs:
-      - build
+      - deploy:
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              make build-all
+            fi
+
+      - store_artifacts:
+          path: out
+
+
 

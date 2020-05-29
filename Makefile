@@ -1,5 +1,6 @@
 
 export EXTENSION_NAME = ACPExperiencePlatform
+export OUT_DIR = out
 PROJECT_NAME = $(EXTENSION_NAME)
 
 setup:
@@ -13,29 +14,29 @@ open:
 
 clean:
 	(rm -rf bin)
-	(rm -rf out)
+	(rm -rf ${OUT_DIR})
 	(make -C build/xcode clean)
 	(rm -rf build/xcode/${PROJECT_NAME}/out)
 
 build: clean _create-out
-	(set -o pipefail && make -C build/xcode build-shallow 2>&1 | tee -a out/build.log)
+	(set -o pipefail && make -C build/xcode build-shallow 2>&1 | tee -a ${OUT_DIR}/build.log)
 
 build-all: clean _create-out
-	(set -o pipefail && make -C build/xcode all 2>&1 | tee -a out/build.log)
+	(set -o pipefail && make -C build/xcode all 2>&1 | tee -a ${OUT_DIR}/build.log)
 
 test: unit-test
 
 unit-test: _create-out
-	(mkdir -p out/unitTest)
+	(mkdir -p ${OUT_DIR}/unitTest)
 	(make -C build/xcode unit-test)
 
 ci-coverage: _create-out
 	(make -C build/xcode coverage)
 
 functional-test: _create-out
-	(mkdir -p out/functionalTest)
+	(mkdir -p ${OUT_DIR}/functionalTest)
 	(make -C build/xcode functional-test)
 
 _create-out:
-	(mkdir -p out)
+	(mkdir -p ${OUT_DIR})
 
