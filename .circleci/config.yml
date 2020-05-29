@@ -3,19 +3,43 @@
 
 version: 2.1
 
-jobs:
-  build-and-test:
+references:
+  workspace_root: &workspace_root
+    ~/acpexperienceplatform-workspace
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
 
+
+# Workflows orchestrate a set of jobs to be run;
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - setup_workspace
+      - test-and-coverage:
+          requires:
+            - setup_workspace
+      - deploy-artifact:
+          requires:
+            - setup_workspace
+            - test-and-coverage
+          #filters:
+          #  branches:
+          #    only: master
+
+
+jobs:
+
+  # Pulls GitHub repo, restores CocoaPods from cache, installs CocoaPods for project, saves any changes to cache, and saves workspace for downstream projects
+  setup_workspace:
     macos:
       xcode: 11.0.0 # Specify the Xcode version to use
 
+    working_directory: *workspace_root
+
     steps:
       - checkout
-
-      # pre-start the simulator to prevent timeouts
-      - run:
-          name: Pre-start Simulator
-          command: xcrun instruments -w "iPhone 8 (13.0) [" || true
 
       # restore pods related caches
       - restore_cache:
@@ -50,6 +74,25 @@ jobs:
             - ./build/xcode/Pods
             - ~/.cocoapods
 
+      - persist_to_workspace: # store the built files into the workspace for other jobs.
+          root: *workspace_root
+          paths:
+            - .
+
+  # Runs tests and uploads coverage report to Codecov
+  test-and-coverage:
+
+    macos:
+      xcode: 11.0.0 # Specify the Xcode version to use
+
+    steps:
+      - *attach_workspace
+
+      # pre-start the simulator to prevent timeouts
+      - run:
+          name: Pre-start Simulator
+          command: xcrun instruments -w "iPhone 8 (13.0) [" || true
+
       - run: 
           name: Run Tests
           command: make test
@@ -59,34 +102,13 @@ jobs:
           name: Upload Code Coverage Report
           command: bash <(curl -s https://codecov.io/bash) -c -D "./build/xcode/ACPExperiencePlatform/out" -J "unitTests" -J "functionalTests" -J "functionalTestsConfig" -t ${CODECOV_TOKEN}
 
-  deploy:
+  # Builds universal library and stores as artifact
+  deploy-artifact:
     macos:
       xcode: 11.0.0
 
     steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-            - 1-gems-{{ checksum "Gemfile.lock" }}
-
-      # make sure we're on the right version of cocoapods
-      - run:
-          name: Verify Cocoapods Version
-          command: bundle check || bundle install --path vendor/bundle
-
-      # save cocoapods version gem data
-      - save_cache:
-          name: Saving Gemfile Cache
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
-
-      - run:
-          name: Install CocoaPods
-          command: |
-            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-            make setup
+      - *attach_workspace
 
       - run:
           name: Build All
@@ -95,16 +117,5 @@ jobs:
       - store_artifacts:
           path: out
 
-workflows:
-  version: 2
-  build-test-deploy:
-    jobs:
-      - build-and-test
-      - deploy:
-          requires:
-            - build-and-test
-          #filters:
-          #  branches:
-          #    only: master
 
 
