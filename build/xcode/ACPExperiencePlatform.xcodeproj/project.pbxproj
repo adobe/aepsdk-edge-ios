@@ -495,7 +495,8 @@
 				1CB57DD82464C5A5000B2DA5 /* Type.swift */,
 				1CB57DC32464C5A4000B2DA5 /* Upgrades.swift */,
 			);
-			path = xdmlib;
+			name = xdmlib;
+			path = ../../demo/xdmlib;
 			sourceTree = "<group>";
 		};
 		1CCD27CD24592B2800E912B2 /* xdm */ = {
