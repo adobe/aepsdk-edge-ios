@@ -68,7 +68,7 @@ jobs:
 
       - deploy:
           command: |
-            if [ "${CIRCLE_BRANCH}" == "pull/29" ]; then
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
               make build-all
             fi
 
