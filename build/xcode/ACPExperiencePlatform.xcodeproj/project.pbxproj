@@ -732,10 +732,10 @@
 			children = (
 				1CE2B0842468619E00B4F36A /* ADBMobileConfig.json */,
 				1CA50AC1244B292E00683A8E /* product_list_colors.json */,
+				D4D5B5982433F9C300CAB6E4 /* AppDelegate.swift */,
 				1CA50AB5244B254B00683A8E /* ProductData.swift */,
 				1CA50BB0244D337F00683A8E /* Product.swift */,
 				1CA50AB6244B254B00683A8E /* ProductDataLoader.swift */,
-				D4D5B5982433F9C300CAB6E4 /* AppDelegate.swift */,
 				D4D5B59C2433F9C300CAB6E4 /* HomeViewController.swift */,
 				1CA50AC4244B3E9C00683A8E /* ProductViewController.swift */,
 				1CA50BB6244E00CF00683A8E /* CartViewController.swift */,

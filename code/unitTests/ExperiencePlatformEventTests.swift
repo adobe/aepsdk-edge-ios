@@ -14,6 +14,9 @@ import XCTest
 @testable import ACPExperiencePlatform
 
 class ExperiencePlatformEventTests: XCTestCase {
+    private let DATASET_ID = "datasetId"
+    private let XDM = "xdm"
+    private let DATA = "data"
     
     func generateXdm() -> [String : Any] {
         var xdm = [String: Any]()
@@ -43,8 +46,8 @@ class ExperiencePlatformEventTests: XCTestCase {
         let expectedData = generateData()
         
         var expectedEventData: [String : Any] = [:]
-        expectedEventData["xdm"] = expectedXdm
-        expectedEventData["data"] = expectedData
+        expectedEventData[XDM] = expectedXdm
+        expectedEventData[DATA] = expectedData
         
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:expectedXdm,data:expectedData)
         if let actualEventData = experiencePlatformEvent.asDictionary() {
@@ -57,8 +60,8 @@ class ExperiencePlatformEventTests: XCTestCase {
         let expectedXdm = generateXdm()
         
         var expectedEventData: [String : Any] = [:]
-        expectedEventData["xdm"] = expectedXdm
-        expectedEventData["data"] = nil
+        expectedEventData[XDM] = expectedXdm
+        expectedEventData[DATA] = nil
         
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:expectedXdm,data:nil)
         if let actualEventData = experiencePlatformEvent.asDictionary() {
@@ -66,12 +69,45 @@ class ExperiencePlatformEventTests: XCTestCase {
         }
     }
     
+    func testAsDictionary_withNonNullXdmNonNullDatasetId_ExperiencePlatformEventData() {
+        
+        let expectedXdm = generateXdm()
+        
+        var expectedEventData: [String : Any] = [:]
+        expectedEventData[XDM] = expectedXdm
+        expectedEventData[DATA] = nil
+        expectedEventData[DATASET_ID] = "testDatasetId"
+        
+        let experiencePlatformEvent = ExperiencePlatformEvent(xdm:expectedXdm, data:nil, datasetIdentifier: "testDatasetId")
+        if let actualEventData = experiencePlatformEvent.asDictionary() {
+            XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+        }
+    }
+    
+    func testAsDictionary_withNonNullXdmEmptyDatasetId_ExperiencePlatformEventData() {
+        
+        let expectedXdm = generateXdm()
+        
+        var expectedEventData: [String : Any] = [:]
+        expectedEventData[XDM] = expectedXdm
+        expectedEventData[DATA] = nil
+        expectedEventData[DATASET_ID] = ""
+        
+        let experiencePlatformEvent = ExperiencePlatformEvent(xdm:expectedXdm, data:nil, datasetIdentifier: "")
+        if let actualEventData = experiencePlatformEvent.asDictionary() {
+            XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+        }
+    }
+    
+    
     func testAsDictionary_withNonNullXdmSchemsAndNonNullData_ExperiencePlatformEventData() {
         
         let expectedData = generateData()
         var expectedEventData: [String : Any] = [:]
-        expectedEventData["xdm"] = expectedXdmSchema
-        expectedEventData["data"] = expectedData
+        expectedEventData[XDM] = expectedXdmSchema
+        expectedEventData[DATA] = expectedData
+        expectedEventData[DATASET_ID] = "5dd603781b95cc18a83d42ce"
+        
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generatedXdmSchema,data:expectedData)
         if let actualEventData = experiencePlatformEvent.asDictionary() {
             XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
@@ -81,8 +117,10 @@ class ExperiencePlatformEventTests: XCTestCase {
     func testAsDictionary_withNonNullXdmSchemsAndNullData_ExperiencePlatformEventData() {
         
         var expectedEventData: [String : Any] = [:]
-        expectedEventData["xdm"] = expectedXdmSchema
-        expectedEventData["data"] = nil
+        expectedEventData[XDM] = expectedXdmSchema
+        expectedEventData[DATA] = nil
+        expectedEventData[DATASET_ID] = "5dd603781b95cc18a83d42ce"
+        
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generatedXdmSchema,data:nil)
         if let actualEventData = experiencePlatformEvent.asDictionary() {
             XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
