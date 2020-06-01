@@ -33,14 +33,12 @@ extension EventSpec : Hashable {
 }
 
 class FunctionalTestBase : XCTestCase {
-    private static let DEFAULT_EVENTS_WAIT_TIMEOUT:TimeInterval = 1.0
-    private static let DEFAULT_WAIT_TIMEOUT:UInt32 = 1 // used when no expectation was set
+    static var debugEnabled = false
     
-    public override func setUp() {
-        super.setUp()
+    public class override func setUp() {
         ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
         guard let _ = try? ACPCore.registerExtension(InstrumentedExtension.self) else {
-            print("Unable to register InstrumentedExtension")
+            log("Unable to register the InstrumentedExtension")
             return
         }
         ACPCore.start()
@@ -49,6 +47,21 @@ class FunctionalTestBase : XCTestCase {
     public override func tearDown() {
         InstrumentedWildcardListener.receivedEvents = []
         InstrumentedWildcardListener.expectations.removeAll()
+    }
+    
+    func unregisterInstrumentedExtension() {
+        guard let event = try? ACPExtensionEvent(name: "Unregister Instrumented Extension",
+                                                 type: FunctionalTestConst.EventType.instrumentedExtension,
+                                                 source: FunctionalTestConst.EventSource.unregisterExtension,
+                                                 data: nil) else {
+                                                    log("Failed to create unregisterExtension event")
+                                                    return
+        }
+        
+        guard let _ = try? ACPCore.dispatchEvent(event) else {
+            log("Unable to unregister the InstrumentedExtension")
+            return
+        }
     }
     
     /// Sets an expectation for a specific event type and source and how many times the event should be dispatched
@@ -72,7 +85,7 @@ class FunctionalTestBase : XCTestCase {
     ///   - source: the event source as in the expectation
     ///   - timeout: how long should this method wait for the expected event, in seconds; by default it waits up to 1 second
     /// - Returns: list of events with the provided `type` and `source`, or empty if none was dispatched
-    func getDispatchedEventsWith(type: String, source: String, timeout: TimeInterval = DEFAULT_EVENTS_WAIT_TIMEOUT) -> [ACPExtensionEvent] {
+    func getDispatchedEventsWith(type: String, source: String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitEventTimeout) -> [ACPExtensionEvent] {
         if let expectation = InstrumentedWildcardListener.expectations[EventSpec(type: type, source: source)] {
             wait(for: [expectation], timeout: timeout)
         } else {
@@ -82,6 +95,52 @@ class FunctionalTestBase : XCTestCase {
         let matchingEvents = InstrumentedWildcardListener.receivedEvents.filter{ $0.eventType.lowercased() == type.lowercased() &&
             $0.eventSource.lowercased() == source.lowercased() }
         return matchingEvents
+    }
+    
+    /// Synchronous call to get the shared state for the specified `stateOwner`.
+    /// - Parameter stateOwner: the owner of the shared state (typically the name of the extension)
+    /// - Parameter timeout: how long should this method wait for the requested shared state, in seconds; by default it waits up to 3 second
+    /// - Returns: latest shared state of the given `stateOwner` or nil if no shared state was found
+    static func getSharedStateFor(_ stateOwner:String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitSharedStateTimeout) -> [AnyHashable : Any]? {
+        log("GetSharedState for \(stateOwner)")
+        guard let event = try? ACPExtensionEvent(name: "Get Shared State",
+                                                 type: FunctionalTestConst.EventType.instrumentedExtension,
+                                                 source: FunctionalTestConst.EventSource.sharedStateRequest,
+                                                 data: ["stateowner" : stateOwner]) else {
+                                                    log("GetSharedState failed to create request event.")
+                                                    return nil
+        }
+        
+        var returnedState: [AnyHashable:Any]? = nil
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        try? ACPCore.dispatchEvent(withResponseCallback: event) { (event) in
+            
+            if let eventData = event.eventData {
+                returnedState = eventData["state"] as? [AnyHashable:Any]
+            }
+            semaphore.signal()
+        }
+        
+        let timeoutResult = semaphore.wait(timeout: .now() + timeout)
+        log("GetSharedState timeout result was (\(timeoutResult)).")
+        return returnedState
+    }
+    
+    /// Print message to console if `FunctionalTestBase.debug` is true
+    /// - Parameter message: message to log to console
+    private func log(_ message: String) {
+        if FunctionalTestBase.debugEnabled {
+            print("FunctionalTestBase - \(message)")
+        }
+    }
+    
+    /// Print message to console if `FunctionalTestBase.debug` is true
+    /// - Parameter message: message to log to console
+    static func log(_ message: String) {
+        if debugEnabled {
+            print("FunctionalTestBase - \(message)")
+        }
     }
 }
 

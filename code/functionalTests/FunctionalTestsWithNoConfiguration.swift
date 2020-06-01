@@ -18,15 +18,15 @@ import ACPCore
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
 /// This test suite cannot be run in same target as other tests which provide an SDK configuration to ACPCore
 /// as all the tests in the same target use the same ACPCore instance.
-class FunctionalTestsWithNoConfiguration: XCTestCase {
+class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
 
     override func setUp() {
+        super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
         FunctionalTestUtils.resetUserDefaults()
         
         do {
-            MonitorExtension.debug = false
-            try ACPCore.registerExtension(MonitorExtension.self)
+            FunctionalTestBase.debugEnabled = false
             try ACPCore.registerExtension(TestableExperiencePlatformInternal.self)
             ACPCore.start(nil)
         } catch {
@@ -36,7 +36,7 @@ class FunctionalTestsWithNoConfiguration: XCTestCase {
 
     func testHandleResponseEvent_withPendingConfigurationState_expectResponseEventHandled() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
-        let configState = MonitorExtension.getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
+        let configState = FunctionalTestBase.getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
         XCTAssertNil(configState)
         
         let handleAddEventExpectation = XCTestExpectation(description: "Handle Add Event Called")
