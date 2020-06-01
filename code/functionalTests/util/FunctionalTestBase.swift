@@ -49,6 +49,8 @@ class FunctionalTestBase : XCTestCase {
         InstrumentedWildcardListener.expectations.removeAll()
     }
     
+    
+    /// Unregisters the `InstrumentedExtension` from the Event Hub. This method executes asynchronous.
     func unregisterInstrumentedExtension() {
         guard let event = try? ACPExtensionEvent(name: "Unregister Instrumented Extension",
                                                  type: FunctionalTestConst.EventType.instrumentedExtension,
@@ -97,11 +99,11 @@ class FunctionalTestBase : XCTestCase {
         return matchingEvents
     }
     
-    /// Synchronous call to get the shared state for the specified `stateOwner`.
+    /// Synchronous call to get the shared state for the specified `stateOwner`. This API throws an assertion failure in case of timeout.
     /// - Parameter stateOwner: the owner of the shared state (typically the name of the extension)
     /// - Parameter timeout: how long should this method wait for the requested shared state, in seconds; by default it waits up to 3 second
     /// - Returns: latest shared state of the given `stateOwner` or nil if no shared state was found
-    static func getSharedStateFor(_ stateOwner:String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitSharedStateTimeout) -> [AnyHashable : Any]? {
+    func getSharedStateFor(_ stateOwner:String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitSharedStateTimeout) -> [AnyHashable : Any]? {
         log("GetSharedState for \(stateOwner)")
         guard let event = try? ACPExtensionEvent(name: "Get Shared State",
                                                  type: FunctionalTestConst.EventType.instrumentedExtension,
@@ -112,35 +114,32 @@ class FunctionalTestBase : XCTestCase {
         }
         
         var returnedState: [AnyHashable:Any]? = nil
-        let semaphore = DispatchSemaphore(value: 0)
         
+        let expectation = XCTestExpectation(description: "Shared state data returned")
         try? ACPCore.dispatchEvent(withResponseCallback: event) { (event) in
             
             if let eventData = event.eventData {
                 returnedState = eventData["state"] as? [AnyHashable:Any]
             }
-            semaphore.signal()
+            expectation.fulfill()
         }
         
-        let timeoutResult = semaphore.wait(timeout: .now() + timeout)
-        log("GetSharedState timeout result was (\(timeoutResult)).")
+        wait(for: [expectation], timeout: timeout)
         return returnedState
     }
     
     /// Print message to console if `FunctionalTestBase.debug` is true
     /// - Parameter message: message to log to console
-    private func log(_ message: String) {
-        if FunctionalTestBase.debugEnabled {
-            print("FunctionalTestBase - \(message)")
-        }
+    func log(_ message: String) {
+        FunctionalTestBase.log(message)
+        
     }
     
     /// Print message to console if `FunctionalTestBase.debug` is true
     /// - Parameter message: message to log to console
-    static func log(_ message: String) {
-        if debugEnabled {
-            print("FunctionalTestBase - \(message)")
-        }
+    private static func log(_ message: String) {
+        guard !message.isEmpty && FunctionalTestBase.debugEnabled else { return }
+        print("FunctionalTestBase - \(message)")
     }
 }
 

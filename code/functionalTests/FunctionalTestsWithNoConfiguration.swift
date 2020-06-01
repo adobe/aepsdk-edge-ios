@@ -24,9 +24,9 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
         FunctionalTestUtils.resetUserDefaults()
+        FunctionalTestBase.debugEnabled = false
         
         do {
-            FunctionalTestBase.debugEnabled = false
             try ACPCore.registerExtension(TestableExperiencePlatformInternal.self)
             ACPCore.start(nil)
         } catch {
@@ -36,7 +36,7 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
 
     func testHandleResponseEvent_withPendingConfigurationState_expectResponseEventHandled() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
-        let configState = FunctionalTestBase.getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
+        let configState = getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
         XCTAssertNil(configState)
         
         let handleAddEventExpectation = XCTestExpectation(description: "Handle Add Event Called")
