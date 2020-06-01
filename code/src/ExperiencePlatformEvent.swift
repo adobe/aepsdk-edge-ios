@@ -29,7 +29,7 @@ public struct ExperiencePlatformEvent {
     /// - Parameters:
     ///   - xdm:  Solution specific XDM event data for this event, passed as a raw XDM Schema data dictionary.
     ///   - data: Any free form data in a [String : Any] dictionary structure.
-    ///   - datasetIdentifier: The Data Platform datased identifier where this event should be sent to; if not provided, the default dataset identifier set in the Blackbird configuration is used
+    ///   - datasetIdentifier: The Data Platform dataset identifier where this event should be sent to; if not provided, the default dataset identifier set in the Blackbird configuration is used
     public init(xdm: [String : Any], data: [String : Any]? = nil, datasetIdentifier: String? = nil) {
         self.xdm = xdm
         self.data = data
