@@ -43,6 +43,7 @@ struct ExperiencePlatformConstants {
         
         static let edgeRequesId = "requestId"
         static let requestEventId = "requestEventId"
+        static let datasetId = "datasetId"
     }
     
     struct DataStoreKeys {
@@ -93,6 +94,14 @@ struct ExperiencePlatformConstants {
         static let ECID = "ECID"
         static let timestamp = "timestamp"
         static let eventId = "_id"
+        static let meta = "meta"
+        
+        struct CollectMetadata {
+            private init() {}
+            
+            static let collect = "collect"
+            static let datasetId = "datasetId"
+        }
 
         struct Response {
             private init() {}

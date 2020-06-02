@@ -14,6 +14,9 @@ import XCTest
 @testable import ACPExperiencePlatform
 
 class ExperiencePlatformEventTests: XCTestCase {
+    private let datasetId = "datasetId"
+    private let xdm = "xdm"
+    private let data = "data"
     
     func generateXdm() -> [String : Any] {
         var xdm = [String: Any]()
@@ -37,55 +40,102 @@ class ExperiencePlatformEventTests: XCTestCase {
     let generatedXdmSchema = MobileSDKSchema(schemaVersion: "1.4", schemaIdentifier: "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", datasetIdentifier: "5dd603781b95cc18a83d42ce")
     let expectedXdmSchema =  ["schemaVersion": "1.4", "schemaIdentifier": "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", "datasetIdentifier": "5dd603781b95cc18a83d42ce"]
     
-    func testAsDictionary_withNonNullXdmAndNonNullData_ExperiencePlatformEventData() {
+    func testAsDictionary_withXdmAndData() {
         
         let expectedXdm = generateXdm()
         let expectedData = generateData()
         
         var expectedEventData: [String : Any] = [:]
-        expectedEventData["xdm"] = expectedXdm
-        expectedEventData["data"] = expectedData
+        expectedEventData[xdm] = expectedXdm
+        expectedEventData[data] = expectedData
         
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:expectedXdm,data:expectedData)
-        if let actualEventData = experiencePlatformEvent.asDictionary() {
-            XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+            XCTFail("Failed to retrieve platform event asDictionary")
+            return
         }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
     }
     
-    func testAsDictionary_withNonNullXdmAndNullData_ExperiencePlatformEventData() {
+    func testAsDictionary_withNilXdmAndNilData() {
         
         let expectedXdm = generateXdm()
         
         var expectedEventData: [String : Any] = [:]
-        expectedEventData["xdm"] = expectedXdm
-        expectedEventData["data"] = nil
+        expectedEventData[xdm] = expectedXdm
+        expectedEventData[data] = nil
         
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:expectedXdm,data:nil)
-        if let actualEventData = experiencePlatformEvent.asDictionary() {
-            XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+            XCTFail("Failed to retrieve platform event asDictionary")
+            return
         }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
     }
     
-    func testAsDictionary_withNonNullXdmSchemsAndNonNullData_ExperiencePlatformEventData() {
+    func testAsDictionary_withXdmAndDatasetId() {
+        
+        let expectedXdm = generateXdm()
+        
+        var expectedEventData: [String : Any] = [:]
+        expectedEventData[xdm] = expectedXdm
+        expectedEventData[data] = nil
+        expectedEventData[datasetId] = "testDatasetId"
+        
+        let experiencePlatformEvent = ExperiencePlatformEvent(xdm:expectedXdm, data:nil, datasetIdentifier: "testDatasetId")
+        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+            XCTFail("Failed to retrieve platform event asDictionary")
+            return
+        }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+    }
+    
+    func testAsDictionary_withXdmAndEmptyDatasetId() {
+        
+        let expectedXdm = generateXdm()
+        
+        var expectedEventData: [String : Any] = [:]
+        expectedEventData[xdm] = expectedXdm
+        expectedEventData[data] = nil
+        expectedEventData[datasetId] = ""
+        
+        let experiencePlatformEvent = ExperiencePlatformEvent(xdm:expectedXdm, data:nil, datasetIdentifier: "")
+        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+            XCTFail("Failed to retrieve platform event asDictionary")
+            return
+        }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+    }
+    
+    
+    func testAsDictionary_withXdmSchemaAndData() {
         
         let expectedData = generateData()
         var expectedEventData: [String : Any] = [:]
-        expectedEventData["xdm"] = expectedXdmSchema
-        expectedEventData["data"] = expectedData
+        expectedEventData[xdm] = expectedXdmSchema
+        expectedEventData[data] = expectedData
+        expectedEventData[datasetId] = "5dd603781b95cc18a83d42ce"
+        
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generatedXdmSchema,data:expectedData)
-        if let actualEventData = experiencePlatformEvent.asDictionary() {
-            XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+            XCTFail("Failed to retrieve platform event asDictionary")
+            return
         }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
     }
     
-    func testAsDictionary_withNonNullXdmSchemsAndNullData_ExperiencePlatformEventData() {
+    func testAsDictionary_withXdmSchemaAndNilData() {
         
         var expectedEventData: [String : Any] = [:]
-        expectedEventData["xdm"] = expectedXdmSchema
-        expectedEventData["data"] = nil
+        expectedEventData[xdm] = expectedXdmSchema
+        expectedEventData[data] = nil
+        expectedEventData[datasetId] = "5dd603781b95cc18a83d42ce"
+        
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generatedXdmSchema,data:nil)
-        if let actualEventData = experiencePlatformEvent.asDictionary() {
-            XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+            XCTFail("Failed to retrieve platform event asDictionary")
+            return
         }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
     }
 }
