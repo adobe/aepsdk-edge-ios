@@ -33,6 +33,7 @@ extension EventSpec : Hashable {
 }
 
 class FunctionalTestBase : XCTestCase {
+    /// Use this setting to enable debug mode logging in the `FunctionalTestBase`
     static var debugEnabled = false
     
     public class override func setUp() {
@@ -45,10 +46,8 @@ class FunctionalTestBase : XCTestCase {
     }
     
     public override func tearDown() {
-        InstrumentedWildcardListener.receivedEvents = []
-        InstrumentedWildcardListener.expectations.removeAll()
+        InstrumentedWildcardListener.reset()
     }
-    
     
     /// Unregisters the `InstrumentedExtension` from the Event Hub. This method executes asynchronous.
     func unregisterInstrumentedExtension() {
@@ -72,12 +71,59 @@ class FunctionalTestBase : XCTestCase {
     ///   - source: the event source as a `String`, should not be empty
     ///   - count: the number of times this event should be dispatched, but default it is set to 1
     func setEventExpectation(type: String, source: String, count: Int = 1) {
-        guard count > 0, !type.isEmpty, !source.isEmpty else { return }
+        guard count > 0 else {
+            assertionFailure("setEventExpectation - Expected event count should be greater than 0")
+            return
+        }
+        guard !type.isEmpty, !source.isEmpty else {
+            assertionFailure("setEventExpectation - Expected event type and source should be non-empty trings")
+            return
+        }
         
-        let newExpectation = XCTestExpectation(description: "Expect \(String(describing: count)) event(s) dispatched with type \(type) and source \(source)")
-        newExpectation.expectedFulfillmentCount = count
+        InstrumentedWildcardListener.expectedEvents[EventSpec(type: type, source: source)] = count
+    }
+    
+    
+    /// Asserts if any unexpected event was received. Use this method to verify the received events are correct when setting event expectations.
+    /// - See also: setEventExpectation(type: source: count:)
+    func assertUnexpectedEvents(file: StaticString = #file, line: UInt = #line) {
+        wait()
+        var unexpectedEventsReceivedCount = 0
+        for receivedEvent in InstrumentedWildcardListener.receivedEvents {
+            if InstrumentedWildcardListener.expectedEvents[EventSpec(type: receivedEvent.key.type, source: receivedEvent.key.source)] == nil {
+                unexpectedEventsReceivedCount += 1
+                log("Received unexpected event with type: \(receivedEvent.key.type) source: \(receivedEvent.key.source)")
+            }
+        }
         
-        InstrumentedWildcardListener.expectations[EventSpec(type: type, source: source)] = newExpectation
+        XCTAssertEqual(0, unexpectedEventsReceivedCount, "Received \(unexpectedEventsReceivedCount) unexpected event(s)", file: file, line: line)
+    }
+    
+    /// Asserts if all the expected events were received and fails if an unexpected event was seen
+    /// - Parameters:
+    ///   - ignoreUnexpectedEvents: if set on false, an assertion is made on unexpected events, otherwise the unexpected events are ignored
+    /// - See also:
+    ///   - setEventExpectation(type: source: count:)
+    ///   - assertUnexpectedEvents()
+    func assertExpectedEvents(ignoreUnexpectedEvents: Bool = false, file: StaticString = #file, line: UInt = #line) {
+        wait()
+        
+        for expectedEvent in InstrumentedWildcardListener.expectedEvents {
+            guard let receivedEvents = InstrumentedWildcardListener.receivedEvents[expectedEvent.key] else {
+                XCTFail("Expected \(expectedEvent.value) event(s) of type \(expectedEvent.key.type) and source \(expectedEvent.key.source), but none was received.", file: file, line: line)
+                return
+            }
+            
+            XCTAssertEqual(expectedEvent.value, receivedEvents.count, "Expected \(expectedEvent.value) event(s) of type \(expectedEvent.key.type) and source \(expectedEvent.key.source), but received \(receivedEvents.count)", file: file, line: line)
+        }
+        
+        guard ignoreUnexpectedEvents == false else { return }
+        assertUnexpectedEvents(file: file, line: line)
+    }
+    
+    /// To be revisited once AMSDK-10169 is implemented
+    func wait(timeout: UInt32? = FunctionalTestConst.Defaults.waitTimeout) {
+        sleep(timeout!)
     }
     
     /// Returned the `ACPExtensionEvent`(s) dispatched through the Event Hub, or empty if none was found.
@@ -88,27 +134,20 @@ class FunctionalTestBase : XCTestCase {
     ///   - timeout: how long should this method wait for the expected event, in seconds; by default it waits up to 1 second
     /// - Returns: list of events with the provided `type` and `source`, or empty if none was dispatched
     func getDispatchedEventsWith(type: String, source: String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitEventTimeout) -> [ACPExtensionEvent] {
-        if let expectation = InstrumentedWildcardListener.expectations[EventSpec(type: type, source: source)] {
-            wait(for: [expectation], timeout: timeout)
-        } else {
-            sleep(1)
-        }
-        
-        let matchingEvents = InstrumentedWildcardListener.receivedEvents.filter{ $0.eventType.lowercased() == type.lowercased() &&
-            $0.eventSource.lowercased() == source.lowercased() }
-        return matchingEvents
+        wait()
+        return InstrumentedWildcardListener.receivedEvents[EventSpec(type: type, source: source)] ?? []
     }
     
     /// Synchronous call to get the shared state for the specified `stateOwner`. This API throws an assertion failure in case of timeout.
-    /// - Parameter stateOwner: the owner of the shared state (typically the name of the extension)
+    /// - Parameter ownerExtension: the owner extension of the shared state (typically the name of the extension)
     /// - Parameter timeout: how long should this method wait for the requested shared state, in seconds; by default it waits up to 3 second
     /// - Returns: latest shared state of the given `stateOwner` or nil if no shared state was found
-    func getSharedStateFor(_ stateOwner:String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitSharedStateTimeout) -> [AnyHashable : Any]? {
-        log("GetSharedState for \(stateOwner)")
+    func getSharedStateFor(_ ownerExtension:String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitSharedStateTimeout) -> [AnyHashable : Any]? {
+        log("GetSharedState for \(ownerExtension)")
         guard let event = try? ACPExtensionEvent(name: "Get Shared State",
                                                  type: FunctionalTestConst.EventType.instrumentedExtension,
                                                  source: FunctionalTestConst.EventSource.sharedStateRequest,
-                                                 data: ["stateowner" : stateOwner]) else {
+                                                 data: ["stateowner" : ownerExtension]) else {
                                                     log("GetSharedState failed to create request event.")
                                                     return nil
         }
