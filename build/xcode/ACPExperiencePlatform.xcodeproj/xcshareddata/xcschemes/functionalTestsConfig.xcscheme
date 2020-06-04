@@ -33,26 +33,6 @@
                ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B5202432599B00CAB6E4"
-               BuildableName = "unitTests.xctest"
-               BlueprintName = "unitTests"
-               ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B53224325AB700CAB6E4"
-               BuildableName = "functionalTests.xctest"
-               BlueprintName = "functionalTests"
-               ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
