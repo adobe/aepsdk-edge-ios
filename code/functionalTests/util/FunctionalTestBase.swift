@@ -122,7 +122,7 @@ class FunctionalTestBase : XCTestCase {
     }
     
     /// To be revisited once AMSDK-10169 is implemented
-    func wait(timeout: UInt32? = FunctionalTestConst.Defaults.waitTimeout) {
+    func wait(_ timeout: UInt32? = FunctionalTestConst.Defaults.waitTimeout) {
         sleep(timeout!)
     }
     
@@ -133,8 +133,8 @@ class FunctionalTestBase : XCTestCase {
     ///   - source: the event source as in the expectation
     ///   - timeout: how long should this method wait for the expected event, in seconds; by default it waits up to 1 second
     /// - Returns: list of events with the provided `type` and `source`, or empty if none was dispatched
-    func getDispatchedEventsWith(type: String, source: String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitEventTimeout) -> [ACPExtensionEvent] {
-        wait()
+    func getDispatchedEventsWith(type: String, source: String, timeout: UInt32? = FunctionalTestConst.Defaults.waitTimeout) -> [ACPExtensionEvent] {
+        wait(timeout)
         return InstrumentedWildcardListener.receivedEvents[EventSpec(type: type, source: source)] ?? []
     }
     
