@@ -21,6 +21,7 @@ class FunctionalSampleTest: FunctionalTestBase {
     
     override func setUp() {
         super.setUp()
+        FunctionalTestUtils.resetUserDefaults()
         FunctionalTestBase.debugEnabled = true
         continueAfterFailure = false
     }
@@ -37,7 +38,7 @@ class FunctionalSampleTest: FunctionalTestBase {
         assertUnexpectedEvents()
     }
     
-     func testSample_AssertExpectedEvents() {
+    func testSample_AssertExpectedEvents() {
         setEventExpectation(type: "eventType", source: "eventSource", count: 2)
         try? ACPCore.dispatchEvent(e1)
         try? ACPCore.dispatchEvent(e1)
@@ -57,9 +58,9 @@ class FunctionalSampleTest: FunctionalTestBase {
         
         XCTAssertEqual(2, dispatchedEvents.count)
         guard let event2data = dispatchedEvents[1].eventData as? [String: Any] else {
-           XCTFail("Invalid event data for event 2")
-           return
-       }
+            XCTFail("Invalid event data for event 2")
+            return
+        }
         XCTAssertEqual(1, flattenDictionary(dict: event2data).count)
     }
 }

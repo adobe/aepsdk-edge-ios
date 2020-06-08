@@ -18,7 +18,7 @@ class InstrumentedWildcardListener : ACPExtensionListener {
     private let logTag = "InstrumentedWildcardListener"
     
     // Expected events Dictionary - key: EventSpec, value: the expected count
-    static var expectedEvents: Dictionary<EventSpec, Int> = Dictionary<EventSpec, Int>()
+    static var expectedEvents: Dictionary<EventSpec, CountDownLatch> = Dictionary<EventSpec, CountDownLatch>()
     
     // All the events seen by this listener that are not of type instrumentedExtension
     static var receivedEvents: Dictionary<EventSpec, [ACPExtensionEvent]> = Dictionary<EventSpec, [ACPExtensionEvent]>()
@@ -39,12 +39,17 @@ class InstrumentedWildcardListener : ACPExtensionListener {
             return
         }
         
-        if var previousReceivedEvents = InstrumentedWildcardListener.receivedEvents[EventSpec(type: event.eventType, source: event.eventSource)] {
+        // save this event in the receivedEvents dictionary
+        if let _ = InstrumentedWildcardListener.receivedEvents[EventSpec(type: event.eventType, source: event.eventSource)] {
             InstrumentedWildcardListener.receivedEvents[EventSpec(type: event.eventType, source: event.eventSource)]?.append(event)
         } else {
             InstrumentedWildcardListener.receivedEvents[EventSpec(type: event.eventType, source: event.eventSource)] = [event]
         }
         
+        // count down if this is an expected event
+        if let _ = InstrumentedWildcardListener.expectedEvents[EventSpec(type: event.eventType, source: event.eventSource)] {
+            InstrumentedWildcardListener.expectedEvents[EventSpec(type: event.eventType, source: event.eventSource)]?.countDown()
+        }
         
         ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "Received event with type \(event.eventType) and source \(event.eventSource)")
     }

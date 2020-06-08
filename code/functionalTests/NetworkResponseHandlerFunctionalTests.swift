@@ -47,7 +47,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "\"message\": \"Request to Data platform failed with an unknown exception\"" +
         "\n}"
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
-        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, timeout: 5)
         XCTAssertEqual(1, dispatchEvents.count)
         
         guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {

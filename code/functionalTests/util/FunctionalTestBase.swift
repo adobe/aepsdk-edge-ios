@@ -70,7 +70,7 @@ class FunctionalTestBase : XCTestCase {
     ///   - type: the event type as a `String`, should not be empty
     ///   - source: the event source as a `String`, should not be empty
     ///   - count: the number of times this event should be dispatched, but default it is set to 1
-    func setEventExpectation(type: String, source: String, count: Int = 1) {
+    func setEventExpectation(type: String, source: String, count: Int32 = 1) {
         guard count > 0 else {
             assertionFailure("setEventExpectation - Expected event count should be greater than 0")
             return
@@ -80,7 +80,7 @@ class FunctionalTestBase : XCTestCase {
             return
         }
         
-        InstrumentedWildcardListener.expectedEvents[EventSpec(type: type, source: source)] = count
+        InstrumentedWildcardListener.expectedEvents[EventSpec(type: type, source: source)] = CountDownLatch(count)
     }
     
     
@@ -89,14 +89,24 @@ class FunctionalTestBase : XCTestCase {
     func assertUnexpectedEvents(file: StaticString = #file, line: UInt = #line) {
         wait()
         var unexpectedEventsReceivedCount = 0
+        var unexpectedEventsAsString = ""
         for receivedEvent in InstrumentedWildcardListener.receivedEvents {
-            if InstrumentedWildcardListener.expectedEvents[EventSpec(type: receivedEvent.key.type, source: receivedEvent.key.source)] == nil {
-                unexpectedEventsReceivedCount += 1
+            
+            // check if event is expected and it is over the expected count
+            if let expectedEvent = InstrumentedWildcardListener.expectedEvents[EventSpec(type: receivedEvent.key.type, source: receivedEvent.key.source)] {
+                let expectedCount: Int32 = expectedEvent.getInitialCount()
+                let receivedCount: Int32 = expectedEvent.getInitialCount() - expectedEvent.getCurrentCount()
+                XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) events of type \(receivedEvent.key.type) and source \(receivedEvent.key.source), but received \(receivedCount)", file: file, line: line)
+            }
+                // check for events that don't have expectations set
+            else {
+                unexpectedEventsReceivedCount += receivedEvent.value.count
+                unexpectedEventsAsString.append("(\(receivedEvent.key.type), \(receivedEvent.key.source), \(receivedEvent.value.count)),")
                 log("Received unexpected event with type: \(receivedEvent.key.type) source: \(receivedEvent.key.source)")
             }
         }
         
-        XCTAssertEqual(0, unexpectedEventsReceivedCount, "Received \(unexpectedEventsReceivedCount) unexpected event(s)", file: file, line: line)
+        XCTAssertEqual(0, unexpectedEventsReceivedCount, "Received \(unexpectedEventsReceivedCount) unexpected event(s): \(unexpectedEventsAsString)", file: file, line: line)
     }
     
     /// Asserts if all the expected events were received and fails if an unexpected event was seen
@@ -107,14 +117,12 @@ class FunctionalTestBase : XCTestCase {
     ///   - assertUnexpectedEvents()
     func assertExpectedEvents(ignoreUnexpectedEvents: Bool = false, file: StaticString = #file, line: UInt = #line) {
         wait()
-        
         for expectedEvent in InstrumentedWildcardListener.expectedEvents {
-            guard let receivedEvents = InstrumentedWildcardListener.receivedEvents[expectedEvent.key] else {
-                XCTFail("Expected \(expectedEvent.value) event(s) of type \(expectedEvent.key.type) and source \(expectedEvent.key.source), but none was received.", file: file, line: line)
-                return
-            }
-            
-            XCTAssertEqual(expectedEvent.value, receivedEvents.count, "Expected \(expectedEvent.value) event(s) of type \(expectedEvent.key.type) and source \(expectedEvent.key.source), but received \(receivedEvents.count)", file: file, line: line)
+            let waitResult = expectedEvent.value.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
+            let expectedCount: Int32 = expectedEvent.value.getInitialCount()
+            let receivedCount: Int32 = expectedEvent.value.getInitialCount() - expectedEvent.value.getCurrentCount()
+            XCTAssertFalse(waitResult ==  DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(expectedEvent.key.type) and source \(expectedEvent.key.source), expected \(expectedCount), but received \(receivedCount)", file: file, line: line)
+            XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) event(s) of type \(expectedEvent.key.type) and source \(expectedEvent.key.source), but received \(receivedCount)", file: file, line: line)
         }
         
         guard ignoreUnexpectedEvents == false else { return }
@@ -133,8 +141,13 @@ class FunctionalTestBase : XCTestCase {
     ///   - source: the event source as in the expectation
     ///   - timeout: how long should this method wait for the expected event, in seconds; by default it waits up to 1 second
     /// - Returns: list of events with the provided `type` and `source`, or empty if none was dispatched
-    func getDispatchedEventsWith(type: String, source: String, timeout: UInt32? = FunctionalTestConst.Defaults.waitTimeout) -> [ACPExtensionEvent] {
-        wait(timeout)
+    func getDispatchedEventsWith(type: String, source: String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitEventTimeout, file: StaticString = #file, line: UInt = #line) -> [ACPExtensionEvent] {
+        if let _ = InstrumentedWildcardListener.expectedEvents[EventSpec(type: type, source: source)] {
+            let waitResult = InstrumentedWildcardListener.expectedEvents[EventSpec(type: type, source: source)]?.await(timeout: timeout)
+            XCTAssertFalse(waitResult ==  DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(type) and source \(source)", file: file, line: line)
+        } else {
+            wait(FunctionalTestConst.Defaults.waitTimeout)
+        }
         return InstrumentedWildcardListener.receivedEvents[EventSpec(type: type, source: source)] ?? []
     }
     
