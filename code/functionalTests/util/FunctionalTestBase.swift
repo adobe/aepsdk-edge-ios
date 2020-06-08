@@ -11,6 +11,7 @@
 //
 
 import Foundation
+@testable import ACPExperiencePlatform
 import ACPCore
 import XCTest
 
@@ -33,11 +34,16 @@ extension EventSpec : Hashable {
 }
 
 class FunctionalTestBase : XCTestCase {
+    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService()
+    
     /// Use this setting to enable debug mode logging in the `FunctionalTestBase`
     static var debugEnabled = false
     
+    
     public class override func setUp() {
         ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
+        networkService = FunctionalTestNetworkService()
+        AEPServiceProvider.shared.networkService = networkService
         guard let _ = try? ACPCore.registerExtension(InstrumentedExtension.self) else {
             log("Unable to register the InstrumentedExtension")
             return
@@ -47,6 +53,7 @@ class FunctionalTestBase : XCTestCase {
     
     public override func tearDown() {
         InstrumentedWildcardListener.reset()
+        FunctionalTestBase.networkService.reset()
     }
     
     /// Unregisters the `InstrumentedExtension` from the Event Hub. This method executes asynchronous.
@@ -64,6 +71,8 @@ class FunctionalTestBase : XCTestCase {
             return
         }
     }
+    
+    // MARK: Expected/Unexpected events assertions
     
     /// Sets an expectation for a specific event type and source and how many times the event should be dispatched
     /// - Parameters:
@@ -116,6 +125,11 @@ class FunctionalTestBase : XCTestCase {
     ///   - setEventExpectation(type: source: count:)
     ///   - assertUnexpectedEvents()
     func assertExpectedEvents(ignoreUnexpectedEvents: Bool = false, file: StaticString = #file, line: UInt = #line) {
+        guard InstrumentedWildcardListener.expectedEvents.count > 0 else {
+            XCTFail("There are no event expectations set, use this API after calling setEventExpectation", file: file, line: line)
+            return
+        }
+        
         wait()
         for expectedEvent in InstrumentedWildcardListener.expectedEvents {
             let waitResult = expectedEvent.value.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
@@ -180,6 +194,75 @@ class FunctionalTestBase : XCTestCase {
         return returnedState
     }
     
+    // MARK: Network Service helpers
+    
+    func setMockNetworkResponseFor(url: String, httpMethod: HttpMethod, responseHttpConnection: HttpConnection?) {
+        guard let requestUrl = URL(string: url) else {
+            assertionFailure("Unable to convert the provided string \(url) to URL")
+            return
+        }
+        
+        FunctionalTestBase.networkService.responseMatchers[NetworkRequest(url: requestUrl, httpMethod: httpMethod)] = responseHttpConnection
+    }
+    
+    func setNetworkRequestExpectation(url: String, httpMethod: HttpMethod, count: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
+        guard count > 0 else {
+            assertionFailure("setEventExpectation - Expected event count should be greater than 0")
+            return
+        }
+        
+        guard let requestUrl = URL(string: url) else {
+            assertionFailure("Unable to convert the provided string \(url) to URL")
+            return
+        }
+        
+        FunctionalTestBase.networkService.expectedNetworkRequests[NetworkRequest(url: requestUrl, httpMethod: httpMethod)] = CountDownLatch(count)
+    }
+    
+    func getNetworkRequests(url: String, httpMethod: HttpMethod, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
+        guard FunctionalTestBase.networkService.expectedNetworkRequests.count > 0 else {
+            assertionFailure("There are no network expectations set, use this API after calling setNetworkRequestExpectation")
+            return []
+        }
+        
+        guard let requestUrl = URL(string: url) else {
+            assertionFailure("Unable to convert the provided string \(url) to URL")
+            return []
+        }
+        
+        let networkRequest = NetworkRequest(url: requestUrl, httpMethod: httpMethod)
+        if let expectedRequest = FunctionalTestBase.networkService.expectedNetworkRequests[networkRequest] {
+            let waitResult = expectedRequest.await(timeout: 5)
+            let expectedCount: Int32 = expectedRequest.getInitialCount()
+            let receivedCount: Int32 = expectedRequest.getInitialCount() - expectedRequest.getCurrentCount()
+            XCTAssertFalse(waitResult ==  DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(url) and HTTPMethod \(httpMethod.toString()), expected \(expectedCount) but received \(receivedCount)", file: file, line: line)
+        } else {
+            XCTFail("There are no network expectation set for URL \(url) and HTTPMethod \(httpMethod.toString()), use this API after calling setNetworkRequestExpectation", file: file, line: line)
+            return []
+        }
+        
+        return FunctionalTestBase.networkService.receivedNetworkRequests[networkRequest] ?? []
+    }
+    
+    func getNetworkRequestsCount(url: String, httpMethod: HttpMethod, file: StaticString = #file, line: UInt = #line) -> Int {
+        return getNetworkRequests(url: url, httpMethod: httpMethod, file: file, line: line).count
+    }
+    
+    func getFlattenNetworkRequestBody(_ networkRequest: NetworkRequest, file: StaticString = #file, line: UInt = #line) -> [String: Any] {
+        
+        if !networkRequest.connectPayload.isEmpty {
+            let data = Data(networkRequest.connectPayload.utf8)
+            if let payloadAsDictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                return flattenDictionary(dict: payloadAsDictionary)
+            } else {
+                XCTFail("Failed to parse networkRequest.connectionPayload to JSON", file: file, line: line)
+            }
+        }
+        
+        log("Connection payload is empty for network request with URL \(networkRequest.url.absoluteString), HTTPMethod \(networkRequest.httpMethod.toString())")
+        return [:]
+    }
+    
     /// Print message to console if `FunctionalTestBase.debug` is true
     /// - Parameter message: message to log to console
     func log(_ message: String) {
@@ -189,7 +272,7 @@ class FunctionalTestBase : XCTestCase {
     
     /// Print message to console if `FunctionalTestBase.debug` is true
     /// - Parameter message: message to log to console
-    private static func log(_ message: String) {
+    static func log(_ message: String) {
         guard !message.isEmpty && FunctionalTestBase.debugEnabled else { return }
         print("FunctionalTestBase - \(message)")
     }
