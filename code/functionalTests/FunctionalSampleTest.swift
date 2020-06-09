@@ -19,36 +19,36 @@ import XCTest
 class FunctionalSampleTest: FunctionalTestBase {
     private let e1 = try! ACPExtensionEvent(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let e2 = try! ACPExtensionEvent(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private static var firstRun : Bool = false
-    
+    private static var firstRun : Bool = true
+
     public class override func setUp() {
         super.setUp()
-        firstRun = true
-        FunctionalTestUtils.resetUserDefaults()
+       // FunctionalTestUtils.resetUserDefaults()
         FunctionalTestBase.debugEnabled = true
         ACPIdentity.registerExtension()
         ACPExperiencePlatform.registerExtension()
     }
-    
+
     override func setUp() {
         super.setUp()
         continueAfterFailure = false
-        
+
         setExpectationEvent(type: "com.adobe.eventType.configuration", source: "com.adobe.eventSource.requestContent", count: 2)
-        setExpectationEvent(type: "com.adobe.eventType.configuration", source: "com.adobe.eventSource.responseContent", count: FunctionalSampleTest.firstRun ? 3 : 2)
-        
+        setExpectationEvent(type: "com.adobe.eventType.configuration", source: "com.adobe.eventSource.responseContent", count: 2)
+        setExpectationEvent(type: "com.adobe.eventType.hub", source: "com.adobe.eventSource.sharedState", count:1)
+
         ACPCore.updateConfiguration(["global.privacy": "optedin",
                                      "experienceCloud.org": "3E2A28175B8ED3720A495E23@AdobeOrg",
                                      "experiencePlatform.configId": "fd4f4820-00e1-4226-bd71-49bf0b7e3150"])
-        
+
         let configExpectation = XCTestExpectation(description: "Expect configuration is set")
         ACPCore.getPrivacyStatus { (ACPMobilePrivacyStatus) in
             configExpectation.fulfill()
         }
-        
+
         wait(for:[configExpectation], timeout: 2)
-        
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
         reset()
         FunctionalSampleTest.firstRun = false
     }
@@ -66,6 +66,7 @@ class FunctionalSampleTest: FunctionalTestBase {
     func testSample_AssertExpectedEvents() {
         setExpectationEvent(type: "eventType", source: "eventSource", count: 2)
         try? ACPCore.dispatchEvent(e1)
+        try? ACPCore.dispatchEvent(try! ACPExtensionEvent(name: "e1", type: "unexpectedType", source: "unexpectedSource", data: ["test":"withdata"]))
         try? ACPCore.dispatchEvent(e1)
         
         // assert all expected events were received and ignore any unexpected events
@@ -88,20 +89,20 @@ class FunctionalSampleTest: FunctionalTestBase {
         }
         XCTAssertEqual(1, flattenDictionary(dict: event2data).count)
     }
-    
+
     func testSample_AssertNetworkRequestsCount() {
         let url = "https://edge.adobedc.net/ee/v1/interact"
         let responseBody = "{\"test\": \"json\"}"
         let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 2)
         setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
-        
+
         ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
         ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test2": "xdm"], data: nil))
-        
+
         assertNetworkRequestsCount()
     }
-    
+
     func testSample_AssertNetworkRequestAndResponseEvent() {
         setExpectationEvent(type: "com.adobe.eventType.experiencePlatform", source: "com.adobe.eventSource.requestContent", count: 1)
         setExpectationEvent(type: "com.adobe.eventType.experiencePlatform", source: "com.adobe.eventSource.responseContent", count: 1)
@@ -110,15 +111,15 @@ class FunctionalSampleTest: FunctionalTestBase {
         let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
         setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
-        
+
         ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
-        
+
         let requests = getNetworkRequestsWith(url: url, httpMethod: HttpMethod.post)
-        
+
         XCTAssertEqual(1, requests.count)
         let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])
         XCTAssertEqual("testType", flattenRequestBody["events[0].xdm.eventType"] as? String)
-        
+
         assertExpectedEvents(ignoreUnexpectedEvents: true)
     }
 }

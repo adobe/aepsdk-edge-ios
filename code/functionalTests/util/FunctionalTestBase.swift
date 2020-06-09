@@ -34,13 +34,13 @@ extension EventSpec : Hashable {
 }
 
 class FunctionalTestBase : XCTestCase {
+    private static var firstRun = true
     private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService()
-    
     /// Use this setting to enable debug mode logging in the `FunctionalTestBase`
     static var debugEnabled = false
     
-    
     public class override func setUp() {
+        super.setUp()
         ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
         networkService = FunctionalTestNetworkService()
         AEPServiceProvider.shared.networkService = networkService
@@ -51,9 +51,22 @@ class FunctionalTestBase : XCTestCase {
         ACPCore.start()
     }
     
+    public override func setUp() {
+        super.setUp()
+        if FunctionalTestBase.firstRun {
+            setExpectationEvent(type: "com.adobe.eventType.hub", source: "com.adobe.eventSource.booted", count: 1)
+            setExpectationEvent(type: "com.adobe.eventType.hub", source: "com.adobe.eventSource.sharedState", count: 1)
+            assertExpectedEvents(ignoreUnexpectedEvents: false)
+            InstrumentedWildcardListener.reset()
+        }
+        FunctionalTestBase.firstRun = false
+        
+    }
+    
     public override func tearDown() {
+        super.tearDown()
         reset()
-    }    
+    }
     
     /// Reset event and network request expectations and drop the items received until this point
     func reset() {
@@ -111,7 +124,6 @@ class FunctionalTestBase : XCTestCase {
             return
         }
         
-        wait()
         for expectedEvent in InstrumentedWildcardListener.expectedEvents {
             let waitResult = expectedEvent.value.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
             let expectedCount: Int32 = expectedEvent.value.getInitialCount()
@@ -134,6 +146,7 @@ class FunctionalTestBase : XCTestCase {
             
             // check if event is expected and it is over the expected count
             if let expectedEvent = InstrumentedWildcardListener.expectedEvents[EventSpec(type: receivedEvent.key.type, source: receivedEvent.key.source)] {
+                let _ = expectedEvent.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
                 let expectedCount: Int32 = expectedEvent.getInitialCount()
                 let receivedCount: Int32 = expectedEvent.getInitialCount() - expectedEvent.getCurrentCount()
                 XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) events of type \(receivedEvent.key.type) and source \(receivedEvent.key.source), but received \(receivedCount)", file: file, line: line)
