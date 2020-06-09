@@ -84,19 +84,45 @@ class FunctionalTestBase : XCTestCase {
     ///   - type: the event type as a `String`, should not be empty
     ///   - source: the event source as a `String`, should not be empty
     ///   - count: the number of times this event should be dispatched, but default it is set to 1
+    /// - See also:
+    ///   - assertExpectedEvents(ignoreUnexpectedEvents:)
     func setExpectationEvent(type: String, source: String, count: Int32 = 1) {
         guard count > 0 else {
-            assertionFailure("setExpectationEvent - Expected event count should be greater than 0")
+            assertionFailure("Expected event count should be greater than 0")
             return
         }
         guard !type.isEmpty, !source.isEmpty else {
-            assertionFailure("setExpectationEvent - Expected event type and source should be non-empty trings")
+            assertionFailure("Expected event type and source should be non-empty trings")
             return
         }
         
         InstrumentedWildcardListener.expectedEvents[EventSpec(type: type, source: source)] = CountDownLatch(count)
     }
     
+    /// Asserts if all the expected events were received and fails if an unexpected event was seen
+    /// - Parameters:
+    ///   - ignoreUnexpectedEvents: if set on false, an assertion is made on unexpected events, otherwise the unexpected events are ignored
+    /// - See also:
+    ///   - setExpectationEvent(type: source: count:)
+    ///   - assertUnexpectedEvents()
+    func assertExpectedEvents(ignoreUnexpectedEvents: Bool = false, file: StaticString = #file, line: UInt = #line) {
+        guard InstrumentedWildcardListener.expectedEvents.count > 0 else {
+            assertionFailure("There are no event expectations set, use this API after calling setExpectationEvent", file: file, line: line)
+            return
+        }
+        
+        wait()
+        for expectedEvent in InstrumentedWildcardListener.expectedEvents {
+            let waitResult = expectedEvent.value.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
+            let expectedCount: Int32 = expectedEvent.value.getInitialCount()
+            let receivedCount: Int32 = expectedEvent.value.getInitialCount() - expectedEvent.value.getCurrentCount()
+            XCTAssertFalse(waitResult ==  DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(expectedEvent.key.type) and source \(expectedEvent.key.source), expected \(expectedCount), but received \(receivedCount)", file: file, line: line)
+            XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) event(s) of type \(expectedEvent.key.type) and source \(expectedEvent.key.source), but received \(receivedCount)", file: file, line: line)
+        }
+        
+        guard ignoreUnexpectedEvents == false else { return }
+        assertUnexpectedEvents(file: file, line: line)
+    }
     
     /// Asserts if any unexpected event was received. Use this method to verify the received events are correct when setting event expectations.
     /// - See also: setExpectationEvent(type: source: count:)
@@ -123,37 +149,12 @@ class FunctionalTestBase : XCTestCase {
         XCTAssertEqual(0, unexpectedEventsReceivedCount, "Received \(unexpectedEventsReceivedCount) unexpected event(s): \(unexpectedEventsAsString)", file: file, line: line)
     }
     
-    /// Asserts if all the expected events were received and fails if an unexpected event was seen
-    /// - Parameters:
-    ///   - ignoreUnexpectedEvents: if set on false, an assertion is made on unexpected events, otherwise the unexpected events are ignored
-    /// - See also:
-    ///   - setExpectationEvent(type: source: count:)
-    ///   - assertUnexpectedEvents()
-    func assertExpectedEvents(ignoreUnexpectedEvents: Bool = false, file: StaticString = #file, line: UInt = #line) {
-        guard InstrumentedWildcardListener.expectedEvents.count > 0 else {
-            XCTFail("There are no event expectations set, use this API after calling setExpectationEvent", file: file, line: line)
-            return
-        }
-        
-        wait()
-        for expectedEvent in InstrumentedWildcardListener.expectedEvents {
-            let waitResult = expectedEvent.value.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
-            let expectedCount: Int32 = expectedEvent.value.getInitialCount()
-            let receivedCount: Int32 = expectedEvent.value.getInitialCount() - expectedEvent.value.getCurrentCount()
-            XCTAssertFalse(waitResult ==  DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(expectedEvent.key.type) and source \(expectedEvent.key.source), expected \(expectedCount), but received \(receivedCount)", file: file, line: line)
-            XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) event(s) of type \(expectedEvent.key.type) and source \(expectedEvent.key.source), but received \(receivedCount)", file: file, line: line)
-        }
-        
-        guard ignoreUnexpectedEvents == false else { return }
-        assertUnexpectedEvents(file: file, line: line)
-    }
-    
     /// To be revisited once AMSDK-10169 is implemented
     func wait(_ timeout: UInt32? = FunctionalTestConst.Defaults.waitTimeout) {
         sleep(timeout!)
     }
     
-    /// Returned the `ACPExtensionEvent`(s) dispatched through the Event Hub, or empty if none was found.
+    /// Returns the `ACPExtensionEvent`(s) dispatched through the Event Hub, or empty if none was found.
     /// Use this API after calling `setExpectationEvent(type:source:count:)` to wait for the right amount of time
     /// - Parameters:
     ///   - type: the event type as in the exectation
@@ -201,7 +202,13 @@ class FunctionalTestBase : XCTestCase {
     
     // MARK: Network Service helpers
     
-    func setMockNetworkResponseFor(url: String, httpMethod: HttpMethod, responseHttpConnection: HttpConnection?) {
+    /// Set a custom network response to a network request
+    /// - Parameters:
+    ///   - url: The URL for which to return the response
+    ///   - httpMethod: The `HttpMethod` for which to return the response, along with the `url`
+    ///   - responseHttpConnection: `HttpConnection` to be returned when a `NetworkRequest` with the specified `url` and `httpMethod` is seen; when nil  is provided the default
+    ///                             `HttpConnection` is returned
+    func setNetworkResponseFor(url: String, httpMethod: HttpMethod, responseHttpConnection: HttpConnection?) {
         guard let requestUrl = URL(string: url) else {
             assertionFailure("Unable to convert the provided string \(url) to URL")
             return
@@ -210,6 +217,15 @@ class FunctionalTestBase : XCTestCase {
         FunctionalTestBase.networkService.responseMatchers[NetworkRequest(url: requestUrl, httpMethod: httpMethod)] = responseHttpConnection
     }
     
+    /// Set  a network request expectation.
+    ///
+    /// - Parameters:
+    ///   - url: The URL for which to set the expectation
+    ///   - httpMethod: the `HttpMethod` for which to set the expectation, along with the `url`
+    ///   - count: how many times a request with this url and httpMethod is expected to be sent, by default it is set to 1
+    /// - See also:
+    ///     - assertNetworkRequestsCount()
+    ///     - getNetworkRequestsWith(url:httpMethod:)
     func setExpectationNetworkRequest(url: String, httpMethod: HttpMethod, count: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
         guard count > 0 else {
             assertionFailure("Expected event count should be greater than 0")
@@ -224,7 +240,34 @@ class FunctionalTestBase : XCTestCase {
         FunctionalTestBase.networkService.expectedNetworkRequests[NetworkRequest(url: requestUrl, httpMethod: httpMethod)] = CountDownLatch(count)
     }
     
-    func getNetworkRequests(url: String, httpMethod: HttpMethod, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
+    /// Asserts that the correct number of network requests were being sent, based on the previously set expectations.
+    /// - See also:
+    ///     - setExpectationNetworkRequest(url:httpMethod:)
+    func assertNetworkRequestsCount(file: StaticString = #file, line: UInt = #line) {
+        guard FunctionalTestBase.networkService.expectedNetworkRequests.count > 0 else {
+            assertionFailure("There are no network request expectations set, use this API after calling setExpectationNetworkRequest")
+            return
+        }
+        
+        for expectedRequest in FunctionalTestBase.networkService.expectedNetworkRequests {
+            let waitResult = expectedRequest.value.await(timeout: 2)
+            let expectedCount: Int32 = expectedRequest.value.getInitialCount()
+            let receivedCount: Int32 = expectedRequest.value.getInitialCount() - expectedRequest.value.getCurrentCount()
+            XCTAssertFalse(waitResult ==  DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(expectedRequest.key.url.absoluteString) and HTTPMethod \(expectedRequest.key.httpMethod.toString()), expected \(expectedCount) but received \(receivedCount)", file: file, line: line)
+            XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) network request(s) for URL \(expectedRequest.key.url.absoluteString) and HTTPMethod \(expectedRequest.key.httpMethod.toString()), but received \(receivedCount)", file: file, line: line)
+        }
+    }
+    
+    /// Returns the `NetworkRequest`(s) sent through the Core NetworkService, or empty if none was found.
+    /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
+    /// - Parameters:
+    ///   - url: The URL for which to retrieved the network requests sent, should be a valid URL
+    ///   - httpMethod: the `HttpMethod` for which to retrieve the network requests, along with the `url`
+    ///   - timeout: how long should this method wait for the expected network requests, in seconds; by default it waits up to 1 second
+    /// - Returns: list of network requests with the provided `url` and `httpMethod`, or empty if none was dispatched
+    /// - See also:
+    ///     - setExpectationNetworkRequest(url:httpMethod:)
+    func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = FunctionalTestConst.Defaults.waitNetworkRequestTimeout, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
         guard FunctionalTestBase.networkService.expectedNetworkRequests.count > 0 else {
             assertionFailure("There are no network expectations set, use this API after calling setNetworkRequestExpectation")
             return []
@@ -237,22 +280,20 @@ class FunctionalTestBase : XCTestCase {
         
         let networkRequest = NetworkRequest(url: requestUrl, httpMethod: httpMethod)
         if let expectedRequest = FunctionalTestBase.networkService.expectedNetworkRequests[networkRequest] {
-            let waitResult = expectedRequest.await(timeout: 5)
-            let expectedCount: Int32 = expectedRequest.getInitialCount()
-            let receivedCount: Int32 = expectedRequest.getInitialCount() - expectedRequest.getCurrentCount()
-            XCTAssertFalse(waitResult ==  DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(url) and HTTPMethod \(httpMethod.toString()), expected \(expectedCount) but received \(receivedCount)", file: file, line: line)
+            let waitResult = expectedRequest.await(timeout: timeout)
+            XCTAssertFalse(waitResult ==  DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(url) and HTTPMethod \(httpMethod.toString())", file: file, line: line)
         } else {
-            XCTFail("There are no network expectation set for URL \(url) and HTTPMethod \(httpMethod.toString()), use this API after calling setNetworkRequestExpectation", file: file, line: line)
-            return []
+            wait(FunctionalTestConst.Defaults.waitTimeout)
         }
         
         return FunctionalTestBase.networkService.receivedNetworkRequests[networkRequest] ?? []
     }
     
-    func getNetworkRequestsCount(url: String, httpMethod: HttpMethod, file: StaticString = #file, line: UInt = #line) -> Int {
-        return getNetworkRequests(url: url, httpMethod: httpMethod, file: file, line: line).count
-    }
-    
+    /// Use this API for JSON formatted `NetworkRequest` body in order to retrieve a flattened dictionary containing its data.
+    /// This API fails the assertion if the request body cannot be parsed as JSON.
+    /// - Parameters:
+    ///   - networkRequest: the NetworkRequest to parse
+    /// - Returns: The JSON request body represented as a flatten dictionary
     func getFlattenNetworkRequestBody(_ networkRequest: NetworkRequest, file: StaticString = #file, line: UInt = #line) -> [String: Any] {
         
         if !networkRequest.connectPayload.isEmpty {

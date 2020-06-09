@@ -89,17 +89,17 @@ class FunctionalSampleTest: FunctionalTestBase {
         XCTAssertEqual(1, flattenDictionary(dict: event2data).count)
     }
     
-    func testSample_MockNetworkResponse() {
+    func testSample_AssertNetworkRequestsCount() {
         let url = "https://edge.adobedc.net/ee/v1/interact"
         let responseBody = "{\"test\": \"json\"}"
         let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-        setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
-        setMockNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 2)
+        setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test": "xdm"], data: nil))
+        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
+        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test2": "xdm"], data: nil))
         
-        let requests = getNetworkRequests(url: url, httpMethod: HttpMethod.post)
-        XCTAssertEqual(1, requests.count)
+        assertNetworkRequestsCount()
     }
     
     func testSample_AssertNetworkRequestAndResponseEvent() {
@@ -109,11 +109,11 @@ class FunctionalSampleTest: FunctionalTestBase {
         let responseBody = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}}]}]}\n"
         let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
-        setMockNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         
         ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
         
-        let requests = getNetworkRequests(url: url, httpMethod: HttpMethod.post)
+        let requests = getNetworkRequestsWith(url: url, httpMethod: HttpMethod.post)
         
         XCTAssertEqual(1, requests.count)
         let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])

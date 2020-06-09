@@ -16,7 +16,7 @@ import Foundation
 
 // NetworkRequest extension used for compares in Dictionaries where NetworkRequest is the key
 extension NetworkRequest : Hashable {
-
+    
     /// Equals compare based on host, scheme and URL path. Query params are not taken into consideration
     public static func == (lhs: NetworkRequest, rhs: NetworkRequest) -> Bool {
         return lhs.url.host?.lowercased() == rhs.url.host?.lowercased() && lhs.url.scheme?.lowercased() == rhs.url.scheme?.lowercased() && lhs.url.path.lowercased() == rhs.url.path.lowercased() && lhs.httpMethod.rawValue == rhs.httpMethod.rawValue
@@ -30,11 +30,12 @@ extension NetworkRequest : Hashable {
     }
 }
 
+/// Overriding NetworkService used for functional tests when extending the FunctionalTestBase
 class FunctionalTestNetworkService : NetworkService {
     var receivedNetworkRequests : Dictionary<NetworkRequest, [NetworkRequest]> = Dictionary<NetworkRequest, [NetworkRequest]>()
     var responseMatchers : Dictionary<NetworkRequest, HttpConnection> = Dictionary<NetworkRequest, HttpConnection>()
     var expectedNetworkRequests : Dictionary<NetworkRequest, CountDownLatch> = Dictionary<NetworkRequest, CountDownLatch>()
-
+    
     func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         FunctionalTestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
         if var requests = receivedNetworkRequests[networkRequest] {

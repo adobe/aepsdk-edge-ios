@@ -41,6 +41,7 @@ struct FunctionalTestConst {
     struct Defaults {
         static let waitEventTimeout:TimeInterval = 2
         static let waitSharedStateTimeout:TimeInterval = 3
+        static let waitNetworkRequestTimeout:TimeInterval = 2
         static let waitTimeout:UInt32 = 1 // used when no expectation was set
     }
 }
