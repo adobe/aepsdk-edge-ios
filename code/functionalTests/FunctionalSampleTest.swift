@@ -19,14 +19,24 @@ import XCTest
 class FunctionalSampleTest: FunctionalTestBase {
     private let e1 = try! ACPExtensionEvent(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let e2 = try! ACPExtensionEvent(name: "e2", type: "eventType", source: "eventSource", data: nil)
+    private static var firstRun : Bool = false
+    
+    public class override func setUp() {
+        super.setUp()
+        firstRun = true
+        FunctionalTestUtils.resetUserDefaults()
+        FunctionalTestBase.debugEnabled = true
+        ACPIdentity.registerExtension()
+        ACPExperiencePlatform.registerExtension()
+    }
     
     override func setUp() {
         super.setUp()
-        FunctionalTestUtils.resetUserDefaults()
-        FunctionalTestBase.debugEnabled = true
         continueAfterFailure = false
-        ACPIdentity.registerExtension()
-        ACPExperiencePlatform.registerExtension()
+        
+        setExpectationEvent(type: "com.adobe.eventType.configuration", source: "com.adobe.eventSource.requestContent", count: 2)
+        setExpectationEvent(type: "com.adobe.eventType.configuration", source: "com.adobe.eventSource.responseContent", count: FunctionalSampleTest.firstRun ? 3 : 2)
+        
         ACPCore.updateConfiguration(["global.privacy": "optedin",
                                      "experienceCloud.org": "3E2A28175B8ED3720A495E23@AdobeOrg",
                                      "experiencePlatform.configId": "fd4f4820-00e1-4226-bd71-49bf0b7e3150"])
@@ -37,13 +47,15 @@ class FunctionalSampleTest: FunctionalTestBase {
         }
         
         wait(for:[configExpectation], timeout: 2)
+        
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        reset()
+        FunctionalSampleTest.firstRun = false
     }
     
     func testSample_AssertUnexpectedEvents() {
         // set event expectations specifying the event type, source and the count (count should be > 0)
-        setEventExpectation(type: "eventType", source: "eventSource", count: 2)
-        //setEventExpectation(type: "com.adobe.eventType.hub", source: "com.adobe.eventSource.booted", count: 1)
-        setEventExpectation(type: "com.adobe.eventType.hub", source: "com.adobe.eventSource.sharedState", count: 1)
+        setExpectationEvent(type: "eventType", source: "eventSource", count: 2)
         try? ACPCore.dispatchEvent(e1)
         try? ACPCore.dispatchEvent(e1)
         
@@ -52,7 +64,7 @@ class FunctionalSampleTest: FunctionalTestBase {
     }
     
     func testSample_AssertExpectedEvents() {
-        setEventExpectation(type: "eventType", source: "eventSource", count: 2)
+        setExpectationEvent(type: "eventType", source: "eventSource", count: 2)
         try? ACPCore.dispatchEvent(e1)
         try? ACPCore.dispatchEvent(e1)
         
@@ -81,7 +93,7 @@ class FunctionalSampleTest: FunctionalTestBase {
         let url = "https://edge.adobedc.net/ee/v1/interact"
         let responseBody = "{\"test\": \"json\"}"
         let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-        setNetworkRequestExpectation(url: url, httpMethod: HttpMethod.post, count: 1)
+        setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
         setMockNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         
         ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test": "xdm"], data: nil))
@@ -91,12 +103,12 @@ class FunctionalSampleTest: FunctionalTestBase {
     }
     
     func testSample_AssertNetworkRequestAndResponseEvent() {
-        setEventExpectation(type: "com.adobe.eventType.experiencePlatform", source: "com.adobe.eventSource.requestContent", count: 1)
-        setEventExpectation(type: "com.adobe.eventType.experiencePlatform", source: "com.adobe.eventSource.responseContent", count: 1)
+        setExpectationEvent(type: "com.adobe.eventType.experiencePlatform", source: "com.adobe.eventSource.requestContent", count: 1)
+        setExpectationEvent(type: "com.adobe.eventType.experiencePlatform", source: "com.adobe.eventSource.responseContent", count: 1)
         let url = "https://edge.adobedc.net/ee/v1/interact"
         let responseBody = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}}]}]}\n"
         let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-        setNetworkRequestExpectation(url: url, httpMethod: HttpMethod.post, count: 1)
+        setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
         setMockNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         
         ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))

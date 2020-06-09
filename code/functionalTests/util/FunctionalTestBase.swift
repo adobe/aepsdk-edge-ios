@@ -52,6 +52,11 @@ class FunctionalTestBase : XCTestCase {
     }
     
     public override func tearDown() {
+        reset()
+    }    
+    
+    /// Reset event and network request expectations and drop the items received until this point
+    func reset() {
         InstrumentedWildcardListener.reset()
         FunctionalTestBase.networkService.reset()
     }
@@ -79,13 +84,13 @@ class FunctionalTestBase : XCTestCase {
     ///   - type: the event type as a `String`, should not be empty
     ///   - source: the event source as a `String`, should not be empty
     ///   - count: the number of times this event should be dispatched, but default it is set to 1
-    func setEventExpectation(type: String, source: String, count: Int32 = 1) {
+    func setExpectationEvent(type: String, source: String, count: Int32 = 1) {
         guard count > 0 else {
-            assertionFailure("setEventExpectation - Expected event count should be greater than 0")
+            assertionFailure("setExpectationEvent - Expected event count should be greater than 0")
             return
         }
         guard !type.isEmpty, !source.isEmpty else {
-            assertionFailure("setEventExpectation - Expected event type and source should be non-empty trings")
+            assertionFailure("setExpectationEvent - Expected event type and source should be non-empty trings")
             return
         }
         
@@ -94,7 +99,7 @@ class FunctionalTestBase : XCTestCase {
     
     
     /// Asserts if any unexpected event was received. Use this method to verify the received events are correct when setting event expectations.
-    /// - See also: setEventExpectation(type: source: count:)
+    /// - See also: setExpectationEvent(type: source: count:)
     func assertUnexpectedEvents(file: StaticString = #file, line: UInt = #line) {
         wait()
         var unexpectedEventsReceivedCount = 0
@@ -122,11 +127,11 @@ class FunctionalTestBase : XCTestCase {
     /// - Parameters:
     ///   - ignoreUnexpectedEvents: if set on false, an assertion is made on unexpected events, otherwise the unexpected events are ignored
     /// - See also:
-    ///   - setEventExpectation(type: source: count:)
+    ///   - setExpectationEvent(type: source: count:)
     ///   - assertUnexpectedEvents()
     func assertExpectedEvents(ignoreUnexpectedEvents: Bool = false, file: StaticString = #file, line: UInt = #line) {
         guard InstrumentedWildcardListener.expectedEvents.count > 0 else {
-            XCTFail("There are no event expectations set, use this API after calling setEventExpectation", file: file, line: line)
+            XCTFail("There are no event expectations set, use this API after calling setExpectationEvent", file: file, line: line)
             return
         }
         
@@ -149,7 +154,7 @@ class FunctionalTestBase : XCTestCase {
     }
     
     /// Returned the `ACPExtensionEvent`(s) dispatched through the Event Hub, or empty if none was found.
-    /// Use this API after calling `setEventExpectation(type:source:count:)` to wait for the right amount of time
+    /// Use this API after calling `setExpectationEvent(type:source:count:)` to wait for the right amount of time
     /// - Parameters:
     ///   - type: the event type as in the exectation
     ///   - source: the event source as in the expectation
@@ -205,9 +210,9 @@ class FunctionalTestBase : XCTestCase {
         FunctionalTestBase.networkService.responseMatchers[NetworkRequest(url: requestUrl, httpMethod: httpMethod)] = responseHttpConnection
     }
     
-    func setNetworkRequestExpectation(url: String, httpMethod: HttpMethod, count: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
+    func setExpectationNetworkRequest(url: String, httpMethod: HttpMethod, count: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
         guard count > 0 else {
-            assertionFailure("setEventExpectation - Expected event count should be greater than 0")
+            assertionFailure("Expected event count should be greater than 0")
             return
         }
         
