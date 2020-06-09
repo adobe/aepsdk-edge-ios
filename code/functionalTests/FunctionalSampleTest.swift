@@ -29,8 +29,6 @@ class FunctionalSampleTest: FunctionalTestBase {
     func testSample_AssertUnexpectedEvents() {
         // set event expectations specifying the event type, source and the count (count should be > 0)
         setEventExpectation(type: "eventType", source: "eventSource", count: 2)
-        setEventExpectation(type: "com.adobe.eventType.hub", source: "com.adobe.eventSource.booted", count: 1)
-        setEventExpectation(type: "com.adobe.eventType.hub", source: "com.adobe.eventSource.sharedState", count: 1)
         try? ACPCore.dispatchEvent(e1)
         try? ACPCore.dispatchEvent(e1)
         
@@ -41,6 +39,7 @@ class FunctionalSampleTest: FunctionalTestBase {
     func testSample_AssertExpectedEvents() {
         setEventExpectation(type: "eventType", source: "eventSource", count: 2)
         try? ACPCore.dispatchEvent(e1)
+        try? ACPCore.dispatchEvent(try! ACPExtensionEvent(name: "e1", type: "unexpectedType", source: "unexpectedSource", data: ["test":"withdata"]))
         try? ACPCore.dispatchEvent(e1)
         
         // assert all expected events were received and ignore any unexpected events

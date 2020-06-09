@@ -41,7 +41,7 @@ class CountDownLatch {
     }
     
     func await(timeout: TimeInterval = 1) -> DispatchTimeoutResult {
-        return waitSemaphore.wait(timeout: (DispatchTime.now() + timeout))
+        return count > 0 ? waitSemaphore.wait(timeout: (DispatchTime.now() + timeout)) : DispatchTimeoutResult.success
     }
     
     func countDown() {
