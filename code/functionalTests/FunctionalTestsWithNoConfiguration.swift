@@ -19,7 +19,7 @@ import ACPCore
 /// This test suite cannot be run in same target as other tests which provide an SDK configuration to ACPCore
 /// as all the tests in the same target use the same ACPCore instance.
 class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
-
+    
     override func setUp() {
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
@@ -28,12 +28,11 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
         
         do {
             try ACPCore.registerExtension(TestableExperiencePlatformInternal.self)
-            ACPCore.start(nil)
         } catch {
             XCTFail("Failed test setUp: \(error.localizedDescription)")
         }
     }
-
+    
     func testHandleResponseEvent_withPendingConfigurationState_expectResponseEventHandled() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
         let configState = getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
@@ -70,5 +69,4 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
         // Expected handleResponseEvent is called
         wait(for: [handleResponseEventExpectation], timeout: 1.0)
     }
-
 }

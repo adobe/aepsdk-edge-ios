@@ -19,7 +19,10 @@ extension NetworkRequest : Hashable {
     
     /// Equals compare based on host, scheme and URL path. Query params are not taken into consideration
     public static func == (lhs: NetworkRequest, rhs: NetworkRequest) -> Bool {
-        return lhs.url.host?.lowercased() == rhs.url.host?.lowercased() && lhs.url.scheme?.lowercased() == rhs.url.scheme?.lowercased() && lhs.url.path.lowercased() == rhs.url.path.lowercased() && lhs.httpMethod.rawValue == rhs.httpMethod.rawValue
+        return lhs.url.host?.lowercased() == rhs.url.host?.lowercased()
+            && lhs.url.scheme?.lowercased() == rhs.url.scheme?.lowercased()
+            && lhs.url.path.lowercased() == rhs.url.path.lowercased()
+            && lhs.httpMethod.rawValue == rhs.httpMethod.rawValue
     }
     
     public func hash(into hasher: inout Hasher) {
