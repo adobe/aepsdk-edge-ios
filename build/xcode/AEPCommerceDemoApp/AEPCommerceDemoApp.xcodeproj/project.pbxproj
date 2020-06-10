@@ -12,22 +12,8 @@
 		BF5EEAB324904A3800C72622 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA9024904A3600C72622 /* ProductViewController.swift */; };
 		BF5EEAB424904A3800C72622 /* GriffonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA9124904A3600C72622 /* GriffonViewController.swift */; };
 		BF5EEAB524904A3800C72622 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9224904A3600C72622 /* Assets.xcassets */; };
-		BF5EEAB624904A3800C72622 /* shopping_cart.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9424904A3700C72622 /* shopping_cart.png */; };
-		BF5EEAB724904A3800C72622 /* aepappicon6060.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9524904A3700C72622 /* aepappicon6060.png */; };
-		BF5EEAB824904A3800C72622 /* AEP_featured.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9624904A3700C72622 /* AEP_featured.png */; };
-		BF5EEAB924904A3800C72622 /* aep.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9724904A3700C72622 /* aep.png */; };
 		BF5EEABA24904A3800C72622 /* product_list_colors.json in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9824904A3700C72622 /* product_list_colors.json */; };
 		BF5EEABB24904A3800C72622 /* ADBMobileConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9924904A3700C72622 /* ADBMobileConfig.json */; };
-		BF5EEABC24904A3800C72622 /* yellow_small.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9A24904A3700C72622 /* yellow_small.png */; };
-		BF5EEABD24904A3800C72622 /* green_small.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9B24904A3700C72622 /* green_small.png */; };
-		BF5EEABE24904A3800C72622 /* default_small.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9C24904A3700C72622 /* default_small.png */; };
-		BF5EEABF24904A3800C72622 /* red_small.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9D24904A3700C72622 /* red_small.png */; };
-		BF5EEAC024904A3800C72622 /* aepappicon8787.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9E24904A3700C72622 /* aepappicon8787.png */; };
-		BF5EEAC124904A3800C72622 /* blue_small.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9F24904A3700C72622 /* blue_small.png */; };
-		BF5EEAC224904A3800C72622 /* aepappicon.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEAA024904A3700C72622 /* aepappicon.png */; };
-		BF5EEAC324904A3800C72622 /* aepappicon180180.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEAA124904A3700C72622 /* aepappicon180180.png */; };
-		BF5EEAC424904A3800C72622 /* orange_small.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEAA224904A3700C72622 /* orange_small.png */; };
-		BF5EEAC524904A3800C72622 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEAA324904A3700C72622 /* Info.plist */; };
 		BF5EEAC624904A3800C72622 /* ShoppingItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAA424904A3700C72622 /* ShoppingItemCell.swift */; };
 		BF5EEAC724904A3800C72622 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAA524904A3700C72622 /* Product.swift */; };
 		BF5EEAC824904A3800C72622 /* UIViewControllerSnackBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAA624904A3700C72622 /* UIViewControllerSnackBar.swift */; };
@@ -77,6 +63,7 @@
 		BF5EEB4624904BA100C72622 /* ProductListReopens.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAF524904AE100C72622 /* ProductListReopens.swift */; };
 		BF5EEB4724904BA100C72622 /* Installs.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAF624904AE100C72622 /* Installs.swift */; };
 		BF5EEB4924904C7300C72622 /* libxdmlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF5EEB1E24904B8200C72622 /* libxdmlib.a */; };
+		F7BB30F5C623D4EA5A0FCB77 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1EC58FA19E154C122573FD8D /* Pods_AEPCommerceDemoApp.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -92,6 +79,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1EC58FA19E154C122573FD8D /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		38D10062D570E23F89330CC3 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		BF5EE93F249039FE00C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5EEA8E24904A3600C72622 /* CartItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartItem.swift; sourceTree = "<group>"; };
 		BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEPDemoConstants.swift; sourceTree = "<group>"; };
@@ -163,6 +152,9 @@
 		BF5EEAF524904AE100C72622 /* ProductListReopens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductListReopens.swift; sourceTree = "<group>"; };
 		BF5EEAF624904AE100C72622 /* Installs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Installs.swift; sourceTree = "<group>"; };
 		BF5EEB1E24904B8200C72622 /* libxdmlib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libxdmlib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF5EEB4A24904D3700C72622 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF5EEB4C24904D6100C72622 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F47F7FD7A0AD738373CF14D9 /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,6 +163,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF5EEB4924904C7300C72622 /* libxdmlib.a in Frameworks */,
+				F7BB30F5C623D4EA5A0FCB77 /* Pods_AEPCommerceDemoApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,6 +177,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5B26B126C778F2ED76C8B5C3 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F47F7FD7A0AD738373CF14D9 /* Pods-AEPCommerceDemoApp.debug.xcconfig */,
+				38D10062D570E23F89330CC3 /* Pods-AEPCommerceDemoApp.release.xcconfig */,
+			);
+			name = Pods;
+			path = ../Pods;
+			sourceTree = "<group>";
+		};
 		BF5EE936249039FE00C72622 = {
 			isa = PBXGroup;
 			children = (
@@ -191,6 +194,7 @@
 				BF5EE941249039FE00C72622 /* AEPCommerceDemoApp */,
 				BF5EE940249039FE00C72622 /* Products */,
 				BF5EEB4824904C7300C72622 /* Frameworks */,
+				5B26B126C778F2ED76C8B5C3 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -297,6 +301,9 @@
 		BF5EEB4824904C7300C72622 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF5EEB4C24904D6100C72622 /* libACPExperiencePlatform.a */,
+				BF5EEB4A24904D3700C72622 /* libACPExperiencePlatform.a */,
+				1EC58FA19E154C122573FD8D /* Pods_AEPCommerceDemoApp.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -308,6 +315,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF5EE95324903A0000C72622 /* Build configuration list for PBXNativeTarget "AEPCommerceDemoApp" */;
 			buildPhases = (
+				0C533666F466BBAB84AE5E7D /* [CP] Check Pods Manifest.lock */,
 				BF5EE93B249039FE00C72622 /* Sources */,
 				BF5EE93C249039FE00C72622 /* Frameworks */,
 				BF5EE93D249039FE00C72622 /* Resources */,
@@ -381,27 +389,38 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF5EEAC124904A3800C72622 /* blue_small.png in Resources */,
-				BF5EEAB824904A3800C72622 /* AEP_featured.png in Resources */,
-				BF5EEABF24904A3800C72622 /* red_small.png in Resources */,
 				BF5EEABA24904A3800C72622 /* product_list_colors.json in Resources */,
-				BF5EEAC024904A3800C72622 /* aepappicon8787.png in Resources */,
 				BF5EEAB524904A3800C72622 /* Assets.xcassets in Resources */,
 				BF5EEABB24904A3800C72622 /* ADBMobileConfig.json in Resources */,
-				BF5EEAC424904A3800C72622 /* orange_small.png in Resources */,
-				BF5EEAC224904A3800C72622 /* aepappicon.png in Resources */,
-				BF5EEAC324904A3800C72622 /* aepappicon180180.png in Resources */,
-				BF5EEAC524904A3800C72622 /* Info.plist in Resources */,
-				BF5EEAB624904A3800C72622 /* shopping_cart.png in Resources */,
-				BF5EEAB724904A3800C72622 /* aepappicon6060.png in Resources */,
-				BF5EEAB924904A3800C72622 /* aep.png in Resources */,
-				BF5EEABE24904A3800C72622 /* default_small.png in Resources */,
-				BF5EEABC24904A3800C72622 /* yellow_small.png in Resources */,
-				BF5EEABD24904A3800C72622 /* green_small.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0C533666F466BBAB84AE5E7D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AEPCommerceDemoApp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BF5EE93B249039FE00C72622 /* Sources */ = {
@@ -589,6 +608,7 @@
 		};
 		BF5EE95424903A0000C72622 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F47F7FD7A0AD738373CF14D9 /* Pods-AEPCommerceDemoApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -610,6 +630,7 @@
 		};
 		BF5EE95524903A0000C72622 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 38D10062D570E23F89330CC3 /* Pods-AEPCommerceDemoApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

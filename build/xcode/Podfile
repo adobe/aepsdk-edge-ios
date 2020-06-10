@@ -41,9 +41,12 @@ target 'AEPDemoAppSwiftUI' do
 end
 
 target 'AEPCommerceDemoApp' do
+  workspace 'ACPExperiencePlatform'
+  project 'AEPCommerceDemoApp/AEPCommerceDemoApp.xcodeproj'
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
+  pod 'ACPExperiencePlatform', :path => '../..'
   pod 'ACPCore', '~> 2.0'
   pod 'ACPGriffon', '~> 1.0'
 
