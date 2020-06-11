@@ -42,7 +42,7 @@ jobs:
       # update CocoaPods
       - run: 
           name: Project Setup
-          command: make setup
+          command: make update
 
       # save pods related files
       - save_cache:
