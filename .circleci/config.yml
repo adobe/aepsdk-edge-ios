@@ -39,10 +39,10 @@ jobs:
           paths:
             - vendor/bundle
 
-      # update CocoaPods
+      # install CocoaPods
       - run: 
-          name: Project Setup
-          command: make pod-install
+          name: Repo Update & Install CocoaPods
+          command: (bundle exec pod repo update && bundle exec pod install)
 
       # save pods related files
       - save_cache:
