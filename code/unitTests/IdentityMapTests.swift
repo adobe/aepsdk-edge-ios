@@ -20,10 +20,6 @@ class IdentityMapTests: XCTestCase {
         continueAfterFailure = false // fail so nil checks stop execution
     }
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-    
     // MARK: getItemsFor tests
     
     func testGetItemsFor() {
@@ -92,24 +88,15 @@ class IdentityMapTests: XCTestCase {
         identityMap.addItem(namespace: "space", id: "id", authenticationState: AuthenticationState.ambiguous, primary: false)
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         
         let data = try? encoder.encode(identityMap)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-            {
-              "space" : [
-                {
-                  "authenticationState" : "ambiguous",
-                  "id" : "id",
-                  "primary" : false
-                }
-              ]
-            }
-            """
-        let jsonString = String(data: data!, encoding: .utf8)
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] =
+            [ "space[0].id": "id",
+              "space[0].authenticationState": "ambiguous",
+              "space[0].primary": false]
+        assertEqual(expectedResult, actualResult)
     }
     
     func testEncode_twoItems() {
@@ -118,29 +105,16 @@ class IdentityMapTests: XCTestCase {
         identityMap.addItem(namespace: "A", id: "123")
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         
         let data = try? encoder.encode(identityMap)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-            {
-              "A" : [
-                {
-                  "id" : "123"
-                }
-              ],
-              "space" : [
-                {
-                  "authenticationState" : "ambiguous",
-                  "id" : "id",
-                  "primary" : false
-                }
-              ]
-            }
-            """
-        let jsonString = String(data: data!, encoding: .utf8)
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] =
+            [ "A[0].id": "123",
+              "space[0].id": "id",
+              "space[0].authenticationState": "ambiguous",
+              "space[0].primary": false]
+        assertEqual(expectedResult, actualResult)
     }
     
     func testEncode_twoItemsSameNamespace() {
@@ -149,27 +123,16 @@ class IdentityMapTests: XCTestCase {
         identityMap.addItem(namespace: "space", id: "123")
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         
         let data = try? encoder.encode(identityMap)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-            {
-              "space" : [
-                {
-                  "authenticationState" : "ambiguous",
-                  "id" : "id",
-                  "primary" : false
-                },
-                {
-                  "id" : "123"
-                }
-              ]
-            }
-            """
-        let jsonString = String(data: data!, encoding: .utf8)
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] =
+            [ "space[0].id": "id",
+              "space[0].authenticationState": "ambiguous",
+              "space[0].primary": false,
+              "space[1].id": "123"]
+        assertEqual(expectedResult, actualResult)
     }
     
     // MARK: decoder tests

@@ -20,7 +20,10 @@ func flattenDictionary(dict: [String : Any]) -> [String : Any] {
     
     func recursive(dict: [String : Any], out: inout [String : Any], currentKey: String = "") {
         if dict.isEmpty {
-            out[currentKey] = "isEmpty"
+            if currentKey.isEmpty {
+                out = [:]
+            } else {
+                out[currentKey] = "isEmpty"}
             return
         }
         for (key, val) in dict {
@@ -59,4 +62,19 @@ func flattenDictionary(dict: [String : Any]) -> [String : Any] {
 func timestampToISO8601(_ timestamp: Int) -> String {
     let date = Date(timeIntervalSince1970: TimeInterval(timestamp/1000))
     return ISO8601DateFormatter().string(from: date)
+}
+
+/// Attempts to convert provided data to [String: Any] using JSONSerialization.
+/// - Parameter data: data to be converted to [String: Any]
+/// - Returns: `data` as [String: Any] or empty if an error occured
+func asFlattenDictionary(data: Data?) -> [String: Any] {
+    guard let unwrappedData = data else {
+        return [:]
+    }
+    guard let dataAsDictionary = try? JSONSerialization.jsonObject(with: unwrappedData, options: []) as? [String: Any] else {
+        print("asFlattenDictionary - Unable to convert to [String: Any], data: \(String(data: unwrappedData, encoding: .utf8) ?? "")")
+        return [:]
+    }
+    
+    return flattenDictionary(dict: dataAsDictionary)
 }

@@ -31,7 +31,7 @@ class RequestContextDataTests: XCTestCase {
         let context = RequestContextData(identityMap: nil)
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(context)
@@ -51,7 +51,7 @@ class RequestContextDataTests: XCTestCase {
         let context = RequestContextData(identityMap: IdentityMap())
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(context)
