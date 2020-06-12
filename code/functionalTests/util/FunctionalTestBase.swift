@@ -49,9 +49,9 @@ class FunctionalTestBase : XCTestCase {
     public override func setUp() {
         super.setUp()
         if FunctionalTestBase.firstRun {
-            setExpectationEvent(type: "com.adobe.eventType.hub", source: "com.adobe.eventSource.booted", count: 1)
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
             // event hub shared state containing registered versions
-            setExpectationEvent(type: "com.adobe.eventType.hub", source: "com.adobe.eventSource.sharedState", count: 1)
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 1)
             guard let _ = try? ACPCore.registerExtension(InstrumentedExtension.self) else {
                 log("Unable to register the InstrumentedExtension")
                 return
@@ -59,7 +59,7 @@ class FunctionalTestBase : XCTestCase {
             ACPCore.start()
             
             assertExpectedEvents(ignoreUnexpectedEvents: false)
-            reset()
+            resetTestExpectations()
         }
         FunctionalTestBase.firstRun = false
         
@@ -67,11 +67,11 @@ class FunctionalTestBase : XCTestCase {
     
     public override func tearDown() {
         super.tearDown()
-        reset()
+        resetTestExpectations()
     }
     
     /// Reset event and network request expectations and drop the items received until this point
-    func reset() {
+    func resetTestExpectations() {
         log("Resetting functional test expectations for events and network requests")
         InstrumentedWildcardListener.reset()
         FunctionalTestBase.networkService.reset()
