@@ -26,11 +26,14 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
         FunctionalTestUtils.resetUserDefaults()
         FunctionalTestBase.debugEnabled = false
         
+        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count:1)
         do {
             try ACPCore.registerExtension(TestableExperiencePlatformInternal.self)
         } catch {
             XCTFail("Failed test setUp: \(error.localizedDescription)")
         }
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+        resetTestExpectations()
     }
     
     func testHandleResponseEvent_withPendingConfigurationState_expectResponseEventHandled() {

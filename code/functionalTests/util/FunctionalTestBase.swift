@@ -41,6 +41,7 @@ class FunctionalTestBase : XCTestCase {
     
     public class override func setUp() {
         super.setUp()
+        FunctionalTestUtils.resetUserDefaults()
         ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
         networkService = FunctionalTestNetworkService()
         AEPServiceProvider.shared.networkService = networkService
