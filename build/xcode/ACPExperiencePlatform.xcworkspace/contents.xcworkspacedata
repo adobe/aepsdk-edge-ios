@@ -5,9 +5,9 @@
       location = "group:ACPExperiencePlatform.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Pods/Pods.xcodeproj">
+      location = "group:../../demo/AEPCommerceDemoApp/AEPCommerceDemoApp.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:AEPCommerceDemoApp/AEPCommerceDemoApp.xcodeproj">
+      location = "group:Pods/Pods.xcodeproj">
    </FileRef>
 </Workspace>

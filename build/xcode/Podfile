@@ -42,7 +42,7 @@ end
 
 target 'AEPCommerceDemoApp' do
   workspace 'ACPExperiencePlatform'
-  project 'AEPCommerceDemoApp/AEPCommerceDemoApp.xcodeproj'
+  project '../../demo/AEPCommerceDemoApp/AEPCommerceDemoApp.xcodeproj'
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 

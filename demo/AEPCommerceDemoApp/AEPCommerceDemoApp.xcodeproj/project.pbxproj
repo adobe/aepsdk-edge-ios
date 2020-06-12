@@ -82,7 +82,7 @@
 
 /* Begin PBXFileReference section */
 		1EC58FA19E154C122573FD8D /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		38D10062D570E23F89330CC3 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		38D10062D570E23F89330CC3 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "../../build/xcode/Pods/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		BF5EE93F249039FE00C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5EEA8E24904A3600C72622 /* CartItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartItem.swift; sourceTree = "<group>"; };
 		BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEPDemoConstants.swift; sourceTree = "<group>"; };
@@ -158,7 +158,7 @@
 		BF5EEB4C24904D6100C72622 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5EEB592490703A00C72622 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BF5EEB5B2490703A00C72622 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		F47F7FD7A0AD738373CF14D9 /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
+		F47F7FD7A0AD738373CF14D9 /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "../../build/xcode/Pods/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,8 +166,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF5EEB4924904C7300C72622 /* libxdmlib.a in Frameworks */,
 				F7BB30F5C623D4EA5A0FCB77 /* Pods_AEPCommerceDemoApp.framework in Frameworks */,
+				BF5EEB4924904C7300C72622 /* libxdmlib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

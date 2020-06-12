@@ -109,20 +109,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		BF5EE95A24903A0100C72622 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BF5EE95624903A0000C72622 /* AEPCommerceDemoApp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BF5EE93F249039FE00C72622;
-			remoteInfo = AEPCommerceDemoApp;
-		};
-		BF5EEB50249054F600C72622 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BF5EE95624903A0000C72622 /* AEPCommerceDemoApp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BF5EEB1E24904B8200C72622;
-			remoteInfo = xdmlib;
-		};
 		D465540D24730DC500A150E2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
@@ -230,7 +216,6 @@
 		BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestsWithNoConfiguration.swift; sourceTree = "<group>"; };
 		BF0C09332461209900892B5D /* functionalTestsConfig.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsConfig.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestableExperiencePlatformInternal.swift; sourceTree = "<group>"; };
-		BF5EE95624903A0000C72622 /* AEPCommerceDemoApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AEPCommerceDemoApp.xcodeproj; path = AEPCommerceDemoApp/AEPCommerceDemoApp.xcodeproj; sourceTree = "<group>"; };
 		BF947F62243565CC0057A6CC /* ExperiencePlatformInternal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformInternal.swift; sourceTree = "<group>"; };
 		BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformConstants.swift; sourceTree = "<group>"; };
 		BF947F6724366A210057A6CC /* ExperiencePlatformExtensionRequestListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformExtensionRequestListener.swift; sourceTree = "<group>"; };
@@ -466,15 +451,6 @@
 			path = ../../code/functionalTests;
 			sourceTree = "<group>";
 		};
-		BF5EE95724903A0000C72622 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				BF5EE95B24903A0100C72622 /* AEPCommerceDemoApp.app */,
-				BF5EEB51249054F600C72622 /* libxdmlib.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		BF947F89243F9C9E0057A6CC /* util */ = {
 			isa = PBXGroup;
 			children = (
@@ -555,7 +531,6 @@
 		D4D5B4DE242EBB1600CAB6E4 = {
 			isa = PBXGroup;
 			children = (
-				BF5EE95624903A0000C72622 /* AEPCommerceDemoApp.xcodeproj */,
 				D4D5B4E9242EBB1600CAB6E4 /* src */,
 				D4D5B4F1242EBD2200CAB6E4 /* unitTests */,
 				D4D5B4F2242EBFAE00CAB6E4 /* functionalTests */,
@@ -853,12 +828,6 @@
 			mainGroup = D4D5B4DE242EBB1600CAB6E4;
 			productRefGroup = D4D5B4E8242EBB1600CAB6E4 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = BF5EE95724903A0000C72622 /* Products */;
-					ProjectRef = BF5EE95624903A0000C72622 /* AEPCommerceDemoApp.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				D4D5B4E6242EBB1600CAB6E4 /* ACPExperiencePlatform */,
@@ -869,23 +838,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		BF5EE95B24903A0100C72622 /* AEPCommerceDemoApp.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = AEPCommerceDemoApp.app;
-			remoteRef = BF5EE95A24903A0100C72622 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BF5EEB51249054F600C72622 /* libxdmlib.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libxdmlib.a;
-			remoteRef = BF5EEB50249054F600C72622 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BF0C092F2461209900892B5D /* Resources */ = {
