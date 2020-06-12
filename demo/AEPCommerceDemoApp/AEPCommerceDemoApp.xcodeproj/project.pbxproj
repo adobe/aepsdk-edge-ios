@@ -65,6 +65,7 @@
 		BF5EEB4924904C7300C72622 /* libxdmlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF5EEB1E24904B8200C72622 /* libxdmlib.a */; };
 		BF5EEB5C2490703A00C72622 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEB582490703A00C72622 /* LaunchScreen.storyboard */; };
 		BF5EEB5D2490703A00C72622 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEB5A2490703A00C72622 /* Main.storyboard */; };
+		CD0E2F518263AB8832A67C58 /* Pods_xdmlib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD976B6C1EE578CB118A28BA /* Pods_xdmlib.framework */; };
 		F7BB30F5C623D4EA5A0FCB77 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1EC58FA19E154C122573FD8D /* Pods_AEPCommerceDemoApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +84,8 @@
 /* Begin PBXFileReference section */
 		1EC58FA19E154C122573FD8D /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D10062D570E23F89330CC3 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "../../build/xcode/Pods/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		7B7B8BCB711A079CC7F3A765 /* Pods-xdmlib.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-xdmlib.release.xcconfig"; path = "../../build/xcode/Pods/Target Support Files/Pods-xdmlib/Pods-xdmlib.release.xcconfig"; sourceTree = "<group>"; };
+		A365ACC3E95D9FA5870A2F01 /* Pods-xdmlib.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-xdmlib.debug.xcconfig"; path = "../../build/xcode/Pods/Target Support Files/Pods-xdmlib/Pods-xdmlib.debug.xcconfig"; sourceTree = "<group>"; };
 		BF5EE93F249039FE00C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5EEA8E24904A3600C72622 /* CartItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartItem.swift; sourceTree = "<group>"; };
 		BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEPDemoConstants.swift; sourceTree = "<group>"; };
@@ -158,6 +161,7 @@
 		BF5EEB4C24904D6100C72622 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5EEB592490703A00C72622 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BF5EEB5B2490703A00C72622 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		DD976B6C1EE578CB118A28BA /* Pods_xdmlib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_xdmlib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F47F7FD7A0AD738373CF14D9 /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "../../build/xcode/Pods/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -175,6 +179,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD0E2F518263AB8832A67C58 /* Pods_xdmlib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,6 +191,8 @@
 			children = (
 				F47F7FD7A0AD738373CF14D9 /* Pods-AEPCommerceDemoApp.debug.xcconfig */,
 				38D10062D570E23F89330CC3 /* Pods-AEPCommerceDemoApp.release.xcconfig */,
+				A365ACC3E95D9FA5870A2F01 /* Pods-xdmlib.debug.xcconfig */,
+				7B7B8BCB711A079CC7F3A765 /* Pods-xdmlib.release.xcconfig */,
 			);
 			name = Pods;
 			path = ../Pods;
@@ -310,6 +317,7 @@
 				BF5EEB4C24904D6100C72622 /* libACPExperiencePlatform.a */,
 				BF5EEB4A24904D3700C72622 /* libACPExperiencePlatform.a */,
 				1EC58FA19E154C122573FD8D /* Pods_AEPCommerceDemoApp.framework */,
+				DD976B6C1EE578CB118A28BA /* Pods_xdmlib.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -339,6 +347,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF5EEB2224904B8200C72622 /* Build configuration list for PBXNativeTarget "xdmlib" */;
 			buildPhases = (
+				E7404C78AFDC9E57923383AA /* [CP] Check Pods Manifest.lock */,
 				BF5EEB1A24904B8200C72622 /* Sources */,
 				BF5EEB1B24904B8200C72622 /* Frameworks */,
 				BF5EEB1C24904B8200C72622 /* CopyFiles */,
@@ -422,6 +431,28 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-AEPCommerceDemoApp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E7404C78AFDC9E57923383AA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-xdmlib-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -678,10 +709,11 @@
 		};
 		BF5EEB2324904B8200C72622 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A365ACC3E95D9FA5870A2F01 /* Pods-xdmlib.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FKGEE875K4;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -691,10 +723,11 @@
 		};
 		BF5EEB2424904B8200C72622 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7B7B8BCB711A079CC7F3A765 /* Pods-xdmlib.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FKGEE875K4;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
