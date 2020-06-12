@@ -63,6 +63,8 @@
 		BF5EEB4624904BA100C72622 /* ProductListReopens.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAF524904AE100C72622 /* ProductListReopens.swift */; };
 		BF5EEB4724904BA100C72622 /* Installs.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAF624904AE100C72622 /* Installs.swift */; };
 		BF5EEB4924904C7300C72622 /* libxdmlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF5EEB1E24904B8200C72622 /* libxdmlib.a */; };
+		BF5EEB5C2490703A00C72622 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEB582490703A00C72622 /* LaunchScreen.storyboard */; };
+		BF5EEB5D2490703A00C72622 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEB5A2490703A00C72622 /* Main.storyboard */; };
 		F7BB30F5C623D4EA5A0FCB77 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1EC58FA19E154C122573FD8D /* Pods_AEPCommerceDemoApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -154,6 +156,8 @@
 		BF5EEB1E24904B8200C72622 /* libxdmlib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libxdmlib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5EEB4A24904D3700C72622 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5EEB4C24904D6100C72622 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libACPExperiencePlatform.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF5EEB592490703A00C72622 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BF5EEB5B2490703A00C72622 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F47F7FD7A0AD738373CF14D9 /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -221,6 +225,8 @@
 				BF5EEA9124904A3600C72622 /* GriffonViewController.swift */,
 				BF5EEAAF24904A3800C72622 /* HomeViewController.swift */,
 				BF5EEAA324904A3700C72622 /* Info.plist */,
+				BF5EEB582490703A00C72622 /* LaunchScreen.storyboard */,
+				BF5EEB5A2490703A00C72622 /* Main.storyboard */,
 				BF5EEAA524904A3700C72622 /* Product.swift */,
 				BF5EEAA724904A3700C72622 /* ProductData.swift */,
 				BF5EEAAD24904A3800C72622 /* ProductDataLoader.swift */,
@@ -390,6 +396,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF5EEABA24904A3800C72622 /* product_list_colors.json in Resources */,
+				BF5EEB5D2490703A00C72622 /* Main.storyboard in Resources */,
+				BF5EEB5C2490703A00C72622 /* LaunchScreen.storyboard in Resources */,
 				BF5EEAB524904A3800C72622 /* Assets.xcassets in Resources */,
 				BF5EEABB24904A3800C72622 /* ADBMobileConfig.json in Resources */,
 			);
@@ -490,6 +498,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		BF5EEB582490703A00C72622 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BF5EEB592490703A00C72622 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		BF5EEB5A2490703A00C72622 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BF5EEB5B2490703A00C72622 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		BF5EE95124903A0000C72622 /* Debug */ = {
