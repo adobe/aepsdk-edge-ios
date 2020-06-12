@@ -20,29 +20,19 @@ class StateMetadataTests: XCTestCase {
         continueAfterFailure = false // fail so nil checks stop execution
     }
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-    
     // MARK: Encoder tests
     
     func testInit_withEmptyMap_doesNotEncodeEntries() {
         let state = StateMetadata(payload: [])
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(state)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-        {
-
-        }
-        """
-        let jsonString = String(data: data!, encoding: .utf8)
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] = [:]
+        assertEqual(expectedResult, actualResult)
     }
     
     func testEncode_singlePayload() {
@@ -50,25 +40,16 @@ class StateMetadataTests: XCTestCase {
         let state = StateMetadata(payload: payload)
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(state)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-        {
-          "entries" : [
-            {
-              "key" : "key",
-              "maxAge" : 3600,
-              "value" : "value"
-            }
-          ]
-        }
-        """
-        let jsonString = String(data: data!, encoding: .utf8)
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] =
+            ["entries[0].key" : "key",
+             "entries[0].maxAge" : 3600,
+             "entries[0].value" : "value"]
+        assertEqual(expectedResult, actualResult)
     }
     
     func testEncode_multiplePayloads() {
@@ -81,26 +62,14 @@ class StateMetadataTests: XCTestCase {
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(state)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-        {
-          "entries" : [
-            {
-              "key" : "key",
-              "value" : "value",
-              "maxAge" : 3600
-            },
-            {
-              "key" : "key2",
-              "value" : "value2",
-              "maxAge" : 5
-            }
-          ]
-        }
-        """
-        let jsonString = String(data: data!, encoding: .utf8)
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] =
+            ["entries[0].key" : "key",
+             "entries[0].maxAge" : 3600,
+             "entries[0].value" : "value",
+             "entries[1].key" : "key2",
+             "entries[1].maxAge" : 5,
+             "entries[1].value" : "value2"]
+        assertEqual(expectedResult, actualResult)
     }
-    
 }

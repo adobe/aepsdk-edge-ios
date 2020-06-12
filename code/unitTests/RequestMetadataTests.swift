@@ -21,31 +21,19 @@ class RequestMetadataTests: XCTestCase {
         continueAfterFailure = false // fail so nil checks stop execution
     }
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-    
     // MARK: encoder tests
     
     func testEncode_noParameters() {
         let metadata = RequestMetadata(konductorConfig: nil, state: nil)
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(metadata)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-            {
-
-            }
-            """
-        let jsonString = String(data: data!, encoding: .utf8)
-        print(jsonString!)
-        
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] = [:]
+        assertEqual(expectedResult, actualResult)
     }
     
     func testEncode_paramKonductorConfig() {
@@ -53,23 +41,13 @@ class RequestMetadataTests: XCTestCase {
                                        state: nil)
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(metadata)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-            {
-              "konductorConfig" : {
-
-              }
-            }
-            """
-        let jsonString = String(data: data!, encoding: .utf8)
-        print(jsonString!)
-        
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] = ["konductorConfig" : "isEmpty"]
+        assertEqual(expectedResult, actualResult)
     }
     
     func testEncode_paramStateMetadata() {
@@ -77,29 +55,16 @@ class RequestMetadataTests: XCTestCase {
         let metadata = RequestMetadata(konductorConfig: nil, state: StateMetadata(payload: [payload]))
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(metadata)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-            {
-              "state" : {
-                "entries" : [
-                  {
-                    "key" : "key",
-                    "maxAge" : 3600,
-                    "value" : "value"
-                  }
-                ]
-              }
-            }
-            """
-        let jsonString = String(data: data!, encoding: .utf8)
-        print(jsonString!)
-        
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] =
+            ["state.entries[0].key" : "key",
+             "state.entries[0].maxAge" : 3600,
+             "state.entries[0].value" : "value"]
+        assertEqual(expectedResult, actualResult)
     }
     
     func testEncode_paramKonductorConfig_paramStateMetadata() {
@@ -108,32 +73,17 @@ class RequestMetadataTests: XCTestCase {
                                        state: StateMetadata(payload: [payload]))
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(metadata)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-            {
-              "konductorConfig" : {
-
-              },
-              "state" : {
-                "entries" : [
-                  {
-                    "key" : "key",
-                    "maxAge" : 3600,
-                    "value" : "value"
-                  }
-                ]
-              }
-            }
-            """
-        let jsonString = String(data: data!, encoding: .utf8)
-        print(jsonString!)
-        
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] =
+            ["state.entries[0].key" : "key",
+             "state.entries[0].maxAge" : 3600,
+             "state.entries[0].value" : "value",
+             "konductorConfig": "isEmpty"]
+        assertEqual(expectedResult, actualResult)
     }
     
 }
