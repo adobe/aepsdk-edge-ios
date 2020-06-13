@@ -19,6 +19,10 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: Remove cocoapods master
+          command: (bundle exec pod repo remove master)
+
       # restore pods related caches
       - restore_cache:
           keys:
@@ -32,10 +36,6 @@ jobs:
           name: Verify Cocoapods Version
           command: bundle check || bundle install --path vendor/bundle
 
-      - run:
-          name: Get Pod repo
-          command: (bundle exec pod repo list)
-
       # save cocoapods version gem data
       - save_cache:
           name: Saving Gemfile Cache
@@ -43,10 +43,14 @@ jobs:
           paths:
             - vendor/bundle
 
-      # install CocoaPods
+      # install CocoaPods - using default CocoaPods version, not the bundle
       - run: 
           name: Repo Update & Install CocoaPods
           command: make pod-install
+
+      - run:
+          name: Get pod repo
+          command: (bundle exec pod repo list)
 
       # save pods related files
       - save_cache:
