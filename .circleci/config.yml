@@ -32,6 +32,10 @@ jobs:
           name: Verify Cocoapods Version
           command: bundle check || bundle install --path vendor/bundle
 
+      - run:
+          name: Remove cocoapods master
+          command: (bundle exec pod repo remove master)
+
       # save cocoapods version gem data
       - save_cache:
           name: Saving Gemfile Cache
@@ -43,6 +47,10 @@ jobs:
       - run: 
           name: Repo Update & Install CocoaPods
           command: make pod-install
+
+      - run:
+          name: Get pod repo
+          command: (bundle exec pod repo list)
 
       # save pods related files
       - save_cache:
