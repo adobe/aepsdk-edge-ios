@@ -30,9 +30,6 @@ unit-test: _create-out
 	(mkdir -p ${OUT_DIR}/unitTest)
 	(make -C build/xcode unit-test)
 
-ci-coverage: _create-out
-	(make -C build/xcode coverage)
-
 functional-test: _create-out
 	(mkdir -p ${OUT_DIR}/functionalTest)
 	(make -C build/xcode functional-test)

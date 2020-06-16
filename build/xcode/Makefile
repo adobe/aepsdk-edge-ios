@@ -48,6 +48,9 @@ RELEASE_DIR_SIMULATOR = $(BUILD_DIR)$(PRODUCTS_DIR)Release-$(SDK_IOS_SIMULATOR)/
 ROOT_DIR = $(shell git rev-parse --show-toplevel)
 
 LIB_VERSION = $(shell grep 'private static let version' $(ROOT_DIR)/code/src/ExperiencePlatformInternal.swift | sed 's/.*private static let version.*=.*\"\(.*\)\".*/\1/')
+APP_NAME = AEPCommerceDemoApp
+DEMO_DIR = $(ROOT_DIR)/demo
+APP_DIR = $(DEMO_DIR)/$(APP_NAME)
 
 # environments
 WORKSPACE_NAME = $(EXTENSION_NAME).xcworkspace
@@ -79,9 +82,9 @@ else
 	$(error Failed to run make, incompatible xcodebuild version (requires 10.2 or higher))
 endif
 
-all: check-xcode-version clean arm64 armv7s armv7 x86_64 i386 lipo copy-files
+all: check-xcode-version clean arm64 armv7s armv7 x86_64 i386 lipo copy-files archive-app
 
-all-no-clean: check-xcode-version arm64 armv7s armv7 i386 x86_64 lipo copy-files
+all-no-clean: check-xcode-version arm64 armv7s armv7 i386 x86_64 lipo copy-files archive-app
 
 build-shallow: check-xcode-version x86_64
 
@@ -200,7 +203,21 @@ copy-files:
 		$(OUT_DIR)/$(EXTENSION_NAME)-$(LIB_VERSION).swiftmodule
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_I386).swiftmodule/* \
 		$(OUT_DIR)/$(EXTENSION_NAME)-$(LIB_VERSION).swiftmodule
-	#rm -rf $(BIN_DIR)/build_temp
+	rm -rf $(BIN_DIR)/build_temp
+
+archive-app:
+	@echo "######################################################################"
+	@echo "### Zip Demo App"
+	@echo "######################################################################"
+
+	cd $(DEMO_DIR) && zip -r -9 $(OUT_DIR)/$(APP_NAME)-$(LIB_VERSION).zip \
+		$(APP_NAME)/$(APP_NAME) \
+		$(APP_NAME)/$(APP_NAME).xcodeproj \
+		$(APP_NAME)/$(APP_NAME).xcworkspace \
+		$(APP_NAME)/xdmlib \
+		$(APP_NAME)/Podfile \
+		$(APP_NAME)/libs \
+		-x *xcuserdata* *.gitignore* *.a *.swiftmodule*
 
 unit-test:
 	@echo "######################################################################"
