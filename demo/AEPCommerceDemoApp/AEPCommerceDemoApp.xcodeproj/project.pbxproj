@@ -65,6 +65,7 @@
 		BF5EEBD9249834FC00C72622 /* ScreenOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEADD24904AE100C72622 /* ScreenOrientation.swift */; };
 		BF5EEBDA249834FC00C72622 /* Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEADF24904AE100C72622 /* Type.swift */; };
 		BF5EEBDB249834FC00C72622 /* Upgrades.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAD524904AE100C72622 /* Upgrades.swift */; };
+		D8D1AEC01060BDC1B4F6AA2F /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3A88074A8D55B1FE435411 /* Pods_AEPCommerceDemoApp.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -129,6 +130,7 @@
 		BF5EEB592490703A00C72622 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BF5EEB5B2490703A00C72622 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BF5EEB7A249448DD00C72622 /* libACPExperiencePlatform.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libACPExperiencePlatform.a; sourceTree = "<group>"; };
+		CE3A88074A8D55B1FE435411 /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F47F7FD7A0AD738373CF14D9 /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "../AEPCommerceDemoApp/Pods/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -138,6 +140,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF5EEB862497F4D700C72622 /* libACPExperiencePlatform.a in Frameworks */,
+				D8D1AEC01060BDC1B4F6AA2F /* Pods_AEPCommerceDemoApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +260,7 @@
 			isa = PBXGroup;
 			children = (
 				BF5EEB792494482A00C72622 /* libs */,
+				CE3A88074A8D55B1FE435411 /* Pods_AEPCommerceDemoApp.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
