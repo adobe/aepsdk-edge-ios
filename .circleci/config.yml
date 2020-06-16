@@ -66,15 +66,18 @@ jobs:
           name: Upload Code Coverage Report
           command: bash <(curl -s https://codecov.io/bash) -c -D "./build/xcode/ACPExperiencePlatform/out" -J "unitTests" -J "functionalTests" -J "functionalTestsConfig" -t ${CODECOV_TOKEN}
 
+      - run:
+          name: Build Universal Library
+          command: make build-all
+
       # verify demo app builds, no need to archive built app
       - run:
-          name: Build Commerce Demo App
+          name: Build Demo App
           command: make build-app
 
-      - deploy:
-          command: |
-              make build-all
-              make archive-app
+      - run:
+          name: Zip Demo App
+          command: make archive-app
 
       - store_artifacts:
           path: out
