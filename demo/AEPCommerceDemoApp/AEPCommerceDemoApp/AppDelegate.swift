@@ -14,7 +14,6 @@ import UIKit
 import ACPExperiencePlatform
 import ACPCore
 import ACPGriffon
-import xdmlib
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        ACPCore.setLogLevel(ACPMobileLogLevel.debug)
+        ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
         ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with ACPExperiencePlatform."))
         ACPIdentity.registerExtension()
         ACPLifecycle.registerExtension()

@@ -13,7 +13,6 @@
 import Foundation
 import ACPExperiencePlatform
 import ACPCore
-import xdmlib
 
 /// This CommerceUtil Class encapsulates logic for creating Commerce objects and sending as
 /// ExperiencePlatformEvents to the Experience Platform Extension.
