@@ -47,6 +47,8 @@ RELEASE_DIR_IPHONE = $(BUILD_DIR)$(PRODUCTS_DIR)Release-$(SDK_IOS)/
 RELEASE_DIR_SIMULATOR = $(BUILD_DIR)$(PRODUCTS_DIR)Release-$(SDK_IOS_SIMULATOR)/
 ROOT_DIR = $(shell git rev-parse --show-toplevel)
 
+LIB_VERSION = $(shell grep 'private static let version' $(ROOT_DIR)/code/src/ExperiencePlatformInternal.swift | sed 's/.*private static let version.*=.*\"\(.*\)\".*/\1/')
+
 # environments
 WORKSPACE_NAME = $(EXTENSION_NAME).xcworkspace
 PROJECT_FILE = $(EXTENSION_NAME).xcodeproj
@@ -96,6 +98,8 @@ armv7:
 		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME)-$(ARCH_ARMV7).a
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME).swiftmodule \
+		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7).swiftmodule
 
 armv7s:
 	@echo "######################################################################"
@@ -110,6 +114,8 @@ armv7s:
 		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME)-$(ARCH_ARMV7S).a
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME).swiftmodule \
+		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7S).swiftmodule
 
 arm64:
 	@echo "######################################################################"
@@ -124,6 +130,8 @@ arm64:
 		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME)-$(ARCH_ARM64).a
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME).swiftmodule \
+		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARM64).swiftmodule
 
 i386:
 	@echo "######################################################################"
@@ -138,6 +146,8 @@ i386:
 		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME)-$(ARCH_I386).a
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME).swiftmodule \
+		$(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_I386).swiftmodule
 
 x86_64:
 	@echo "######################################################################"
@@ -152,6 +162,8 @@ x86_64:
 		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME)-$(ARCH_X86_64).a
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME).swiftmodule \
+		$(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_X86_64).swiftmodule
 
 lipo:
 	@echo "######################################################################"
@@ -176,9 +188,19 @@ copy-files:
 	@echo "### Copying files"
 	@echo "######################################################################"
 
-	mv $(BIN_DIR)$(LIB_BASE_NAME).a $(OUT_DIR)/$(LIB_BASE_NAME).a
-	#cp -r $(INCLUDE_DIR) $(BIN_DIR)/include
-	rm -rf $(BIN_DIR)/build_temp
+	mv $(BIN_DIR)$(LIB_BASE_NAME).a $(OUT_DIR)/$(LIB_BASE_NAME)-$(LIB_VERSION).a
+	mkdir $(OUT_DIR)/$(EXTENSION_NAME)-$(LIB_VERSION).swiftmodule
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7).swiftmodule/* \
+		$(OUT_DIR)/$(EXTENSION_NAME)-$(LIB_VERSION).swiftmodule
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7S).swiftmodule/* \
+		$(OUT_DIR)/$(EXTENSION_NAME)-$(LIB_VERSION).swiftmodule
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARM64).swiftmodule/* \
+		$(OUT_DIR)/$(EXTENSION_NAME)-$(LIB_VERSION).swiftmodule
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_X86_64).swiftmodule/* \
+		$(OUT_DIR)/$(EXTENSION_NAME)-$(LIB_VERSION).swiftmodule
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_I386).swiftmodule/* \
+		$(OUT_DIR)/$(EXTENSION_NAME)-$(LIB_VERSION).swiftmodule
+	#rm -rf $(BIN_DIR)/build_temp
 
 unit-test:
 	@echo "######################################################################"
