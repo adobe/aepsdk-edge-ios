@@ -73,10 +73,8 @@ jobs:
 
       - deploy:
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
               make build-all
               make archive-app
-            fi
 
       - store_artifacts:
           path: out
