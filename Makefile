@@ -3,11 +3,17 @@ export EXTENSION_NAME = ACPExperiencePlatform
 export OUT_DIR = out
 PROJECT_NAME = $(EXTENSION_NAME)
 
-setup:
+setup: 
 	(cd build/xcode && pod install)
 
-update:
-	(cd build/xcode && pod repo update && pod update)
+pod-repo-update:
+	(cd build/xcode && pod repo update)
+
+pod-install: pod-repo-update
+	(cd build/xcode && pod install)
+
+pod-update: pod-repo-update
+	(cd build/xcode && pod update)
 
 open:
 	open ./build/xcode/*.xcworkspace

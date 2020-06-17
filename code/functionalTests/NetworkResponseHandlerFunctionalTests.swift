@@ -41,7 +41,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnError_WhenGenericJsonError_dispatchesEvent() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let jsonError = "{\n" +
             "\"namespace\": \"global\",\n" +
             "\"message\": \"Request to Data platform failed with an unknown exception\"" +
@@ -63,7 +63,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnError_WhenOneEventJsonError_dispatchesEvent() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let jsonError = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [],\n" +
@@ -94,7 +94,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnError_WhenValidEventIndex_dispatchesPairedEvent() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let requestId = "123"
         let jsonError =  "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -129,7 +129,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnError_WhenUnknownEventIndex_doesNotCrash() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let requestId = "123"
         let jsonError =  "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -162,7 +162,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(requestId, flattenReceivedData["requestId"] as? String)
     }
     func testProcessResponseOnError_WhenUnknownRequestId_doesNotCrash() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let requestId = "123"
         let jsonError =  "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -195,7 +195,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("567", flattenReceivedData["requestId"] as? String)
     }
     func testProcessResponseOnError_WhenTwoEventJsonError_dispatchesTwoEvents() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 2)
         let requestId = "123"
         let jsonError =  "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -257,7 +257,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenOneEventHandle_dispatchesEvent() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [" +
@@ -292,7 +292,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenTwoEventHandles_dispatchesTwoEvents() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 2)
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [" +
@@ -349,7 +349,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenEventHandleWithEventIndex_dispatchesEventWithRequestEventId() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 2)
         let requestId = "123"
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -407,7 +407,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenEventHandleWithUnknownEventIndex_dispatchesUnpairedEvent() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
         let requestId = "123"
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -442,7 +442,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenUnknownRequestId_doesNotCrash() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
         let requestId = "123"
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -479,8 +479,8 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     // MARK: processResponseOnSuccess with mixed event handles, errors, warnings
     
     func testProcessResponseOnSuccess_WhenEventHandleAndError_dispatchesTwoEvents() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let requestId = "123"
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -535,7 +535,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenErrorAndWarning_dispatchesTwoEvents() {
-        setEventExpectation(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 2)
         let requestId = "123"
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
