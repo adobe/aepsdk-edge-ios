@@ -20,7 +20,7 @@ XCODEBUILD = xcodebuild
 
 # directories
 BIN_DIR = $(ROOT_DIR)/bin/iOS/
-OUT_DIR = $(ROOT_DIR)/out
+OUT_DIR = $(ROOT_DIR)/out/
 BUILD_DIR = Build/
 BUILD_TEMP_DIR = $(BIN_DIR)appbuild/
 DOC_DIR = $(ROOT_DIR)/doc
@@ -33,11 +33,11 @@ ROOT_DIR = $(shell git rev-parse --show-toplevel)
 LIB_VERSION = $(shell grep 'private static let version' $(ROOT_DIR)/code/src/ExperiencePlatformInternal.swift | sed 's/.*private static let version.*=.*\"\(.*\)\".*/\1/')
 APP_NAME = AEPCommerceDemoApp
 EXTENSION_NAME = ACPExperiencePlatform
-DEMO_DIR = $(ROOT_DIR)/demo
-APP_DIR = $(DEMO_DIR)/$(APP_NAME)
-LIBS_DIR = $(APP_DIR)/libs
-LIB_NAME = lib$(EXTENSION_NAME)-$(LIB_VERSION).a
-LIB_SWIFT_MODULE_NAME = $(EXTENSION_NAME)-$(LIB_VERSION).swiftmodule
+DEMO_DIR = $(ROOT_DIR)/demo/
+APP_DIR = $(DEMO_DIR)$(APP_NAME)/
+LIBS_DIR = $(APP_DIR)libs/
+LIB_NAME = lib$(EXTENSION_NAME).a
+LIB_SWIFT_MODULE_NAME = $(EXTENSION_NAME).swiftmodule
 
 # environments
 WORKSPACE_NAME = $(APP_NAME).xcworkspace
@@ -69,7 +69,7 @@ archive-app:
 	@echo "### Zip Demo App"
 	@echo "######################################################################"
 
-	cd $(DEMO_DIR) && zip -r -9 $(OUT_DIR)/$(APP_NAME)-$(LIB_VERSION).zip \
+	cd $(DEMO_DIR) && zip -r -9 $(OUT_DIR)$(APP_NAME)-$(LIB_VERSION).zip \
 		$(APP_NAME)/$(APP_NAME) \
 		$(APP_NAME)/$(APP_NAME).xcodeproj \
 		$(APP_NAME)/$(APP_NAME).xcworkspace \
@@ -83,16 +83,16 @@ clean-libs:
 	@echo "### Clean Demo App Libs"
 	@echo "######################################################################"
 
-	rm -f $(LIBS_DIR)/lib$(EXTENSION_NAME).a
-	rm -rf $(LIBS_DIR)/$(EXTENSION_NAME).swiftmodule
+	rm -f $(LIBS_DIR)$(LIB_NAME)
+	rm -rf $(LIBS_DIR)$(LIB_SWIFT_MODULE_NAME)
 
 copy-libs: clean-libs
 	@echo "######################################################################"
 	@echo "### Copy Demo App Libs"
 	@echo "######################################################################"
 
-	cp -R $(OUT_DIR)/$(LIB_SWIFT_MODULE_NAME) $(LIBS_DIR)/$(EXTENSION_NAME).swiftmodule
-	cp $(OUT_DIR)/$(LIB_NAME) $(LIBS_DIR)/lib$(EXTENSION_NAME).a
+	cp -R $(BIN_DIR)$(LIB_SWIFT_MODULE_NAME) $(LIBS_DIR)$(LIB_SWIFT_MODULE_NAME)
+	cp $(BIN_DIR)$(LIB_NAME) $(LIBS_DIR)$(LIB_NAME)
 
 clean:
 	@echo "######################################################################"
