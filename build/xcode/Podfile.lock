@@ -1,7 +1,7 @@
 PODS:
-  - ACPCore (2.6.2):
-    - ACPCore/iOS (= 2.6.2)
-  - ACPCore/iOS (2.6.2)
+  - ACPCore (2.7.0):
+    - ACPCore/main (= 2.7.0)
+  - ACPCore/main (2.7.0)
   - ACPGriffon (1.1.2):
     - ACPCore
     - ACPGriffon/iOS (= 1.1.2)
@@ -18,9 +18,9 @@ SPEC REPOS:
     - ACPGriffon
 
 SPEC CHECKSUMS:
-  ACPCore: ffa0f1b849bb19becac78587e18721c278e34857
+  ACPCore: 40d5fe9163306fa7a83fa0ae4392d7b308a77426
   ACPGriffon: 6d50ff5f16766bce985000242412bcf327f2343f
 
-PODFILE CHECKSUM: ef8ecb3e5e06e734203a702c61fd52137551bdaa
+PODFILE CHECKSUM: fb37d8058e98b9fafb620bb4124a70b135e788bd
 
 COCOAPODS: 1.9.1
