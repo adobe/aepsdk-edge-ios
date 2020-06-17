@@ -3,12 +3,19 @@ export EXTENSION_NAME = ACPExperiencePlatform
 export OUT_DIR = out
 PROJECT_NAME = $(EXTENSION_NAME)
 
-setup:
+setup: 
 	(cd build/xcode && pod install)
 	(cd demo/AEPCommerceDemoApp && pod install)
 
-update:
-	pod repo update
+pod-repo-update:
+	(cd build/xcode && pod repo update)
+	(cd demo/AEPCommerceDemoApp && pod repo update)
+
+pod-install: pod-repo-update
+	(cd build/xcode && pod install)
+	(cd demo/AEPCommerceDemoApp && pod install)
+
+pod-update: pod-repo-update
 	(cd build/xcode && pod update)
 	(cd demo/AEPCommerceDemoApp && pod update)
 
