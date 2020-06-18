@@ -188,16 +188,11 @@ copy-swiftmodule:
 	@echo "### Copying Swfitmodule for Universal Lib"
 	@echo "######################################################################"
 	mkdir $(BIN_DIR)$(EXTENSION_NAME).swiftmodule
-	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7).swiftmodule/* \
-		$(BIN_DIR)$(EXTENSION_NAME).swiftmodule
-	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7S).swiftmodule/* \
-		$(BIN_DIR)$(EXTENSION_NAME).swiftmodule
-	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARM64).swiftmodule/* \
-		$(BIN_DIR)$(EXTENSION_NAME).swiftmodule
-	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_X86_64).swiftmodule/* \
-		$(BIN_DIR)$(EXTENSION_NAME).swiftmodule
-	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_I386).swiftmodule/* \
-		$(BIN_DIR)$(EXTENSION_NAME).swiftmodule
+	(cd $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7).swiftmodule && tar c .) | (cd $(BIN_DIR)$(EXTENSION_NAME).swiftmodule && tar xf -)
+	(cd $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7S).swiftmodule && tar c .) | (cd $(BIN_DIR)$(EXTENSION_NAME).swiftmodule && tar xf -)
+	(cd $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARM64).swiftmodule && tar c .) | (cd $(BIN_DIR)$(EXTENSION_NAME).swiftmodule && tar xf -)
+	(cd $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_X86_64).swiftmodule && tar c .) | (cd $(BIN_DIR)$(EXTENSION_NAME).swiftmodule && tar xf -)
+	(cd $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_I386).swiftmodule && tar c .) | (cd $(BIN_DIR)$(EXTENSION_NAME).swiftmodule && tar xf -)
 
 copy-files:
 	@echo "######################################################################"

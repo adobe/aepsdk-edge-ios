@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8A63D7A4F24DC50C9842A182 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26FA933AB67D0A085572165E /* Pods_AEPCommerceDemoApp.framework */; };
 		BF5EEAB124904A3800C72622 /* CartItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA8E24904A3600C72622 /* CartItem.swift */; };
 		BF5EEAB224904A3800C72622 /* AEPDemoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */; };
 		BF5EEAB324904A3800C72622 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA9024904A3600C72622 /* ProductViewController.swift */; };
@@ -68,6 +69,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		26FA933AB67D0A085572165E /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D10062D570E23F89330CC3 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "../AEPCommerceDemoApp/Pods/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		BF5EE93F249039FE00C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5EEA8E24904A3600C72622 /* CartItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartItem.swift; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF5EEB862497F4D700C72622 /* libACPExperiencePlatform.a in Frameworks */,
+				8A63D7A4F24DC50C9842A182 /* Pods_AEPCommerceDemoApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +260,7 @@
 			isa = PBXGroup;
 			children = (
 				BF5EEB792494482A00C72622 /* libs */,
+				26FA933AB67D0A085572165E /* Pods_AEPCommerceDemoApp.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
