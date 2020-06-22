@@ -1609,6 +1609,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7BAF171DCE2EB9148D635DC4 /* Pods-ACPExperiencePlatform.debug.xcconfig */;
 			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				INSTALL_PATH = "$(SRCROOT)";
@@ -1626,6 +1627,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DCA2D877658C8938048344E5 /* Pods-ACPExperiencePlatform.release.xcconfig */;
 			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				INSTALL_PATH = "$(SRCROOT)";
