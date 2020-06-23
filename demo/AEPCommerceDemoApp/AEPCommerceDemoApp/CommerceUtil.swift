@@ -11,7 +11,7 @@
 //
 
 import Foundation
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 import ACPCore
 
 /// This CommerceUtil Class encapsulates logic for creating Commerce objects and sending as

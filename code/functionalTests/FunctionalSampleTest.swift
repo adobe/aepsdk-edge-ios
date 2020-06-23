@@ -12,7 +12,7 @@
 
 import Foundation
 import ACPCore
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 import XCTest
 
 /// This Test class is an example of usages of the FunctionalTestBase APIs

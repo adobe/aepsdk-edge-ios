@@ -11,7 +11,7 @@
 //
 
 import Foundation
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 import ACPCore
 import XCTest
 

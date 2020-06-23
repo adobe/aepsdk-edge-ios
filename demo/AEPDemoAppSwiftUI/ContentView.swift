@@ -12,7 +12,7 @@
 
 
 import SwiftUI
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 
 struct ContentView: View {
     var body: some View {

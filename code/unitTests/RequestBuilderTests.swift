@@ -12,7 +12,7 @@
 
 import XCTest
 import ACPCore
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 class RequestBuilderTests: XCTestCase {
     

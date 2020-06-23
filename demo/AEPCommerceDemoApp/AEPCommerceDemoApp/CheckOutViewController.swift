@@ -12,7 +12,7 @@
 
 
 import UIKit
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 
 class CheckOutViewController: UIViewController {
     

@@ -19,7 +19,7 @@ public class ExperiencePlatform {
     @available(*, unavailable) private init() {}
     private static var responseCallbacksHandlers: [String: ([String: Any]) -> Void] = [:]
     
-    /// Registers the ACPExperiencePlatform extension with the Mobile SDK. This method should be called only once in your application class
+    /// Registers the AEPExperiencePlatform extension with the Mobile SDK. This method should be called only once in your application class
     /// from the AppDelegate's application:didFinishLaunchingWithOptions method. This call should be before any calls into ACPCore
     /// interface except setLogLevel.
     public static func registerExtension() {

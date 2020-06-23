@@ -11,7 +11,7 @@
 //
 
 import UIKit
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 import ACPCore
 import ACPGriffon
 
@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
-        ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with ACPExperiencePlatform."))
+        ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with AEPExperiencePlatform."))
         ACPIdentity.registerExtension()
         ACPLifecycle.registerExtension()
         ACPSignal.registerExtension()
