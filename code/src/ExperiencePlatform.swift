@@ -12,9 +12,9 @@
 
 import ACPCore
 
-private let LOG_TAG = "ACPExperiencePlatform"
+private let LOG_TAG = "ExperiencePlatform"
 
-public class ACPExperiencePlatform {
+public class ExperiencePlatform {
     
     @available(*, unavailable) private init() {}
     private static var responseCallbacksHandlers: [String: ([String: Any]) -> Void] = [:]

@@ -45,24 +45,24 @@ class ACPExperiencePlatformTests: XCTestCase {
     let generateXdmSchema = MobileSDKSchema(schemaVersion: "1.4", schemaIdentifier: "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", datasetIdentifier: "5dd603781b95cc18a83d42ce")
     
     func testregisterExtension_registersWithoutAnyErrorOrCrash() {
-        XCTAssertTrue(ACPExperiencePlatform.registerExtension() == ())
+        XCTAssertTrue(ExperiencePlatform.registerExtension() == ())
     }
     
     func testSendEvent_withNonNullXdmAndNonNullData_ExperiencePlatformEventData() {
-        ACPExperiencePlatform.registerExtension()
+        ExperiencePlatform.registerExtension()
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generateXdm(),data: generateData())
-        XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
+        XCTAssertTrue(ExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
     }
     
     func testSendEvent_withNonNullXdmAndNullData_ExperiencePlatformEventData() {
-        ACPExperiencePlatform.registerExtension()
+        ExperiencePlatform.registerExtension()
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generateXdm(),data: nil)
-        XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
+        XCTAssertTrue(ExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
     }
     
     func testSendEvent_withNonNullXdmSchemaAndNonNullData_ExperiencePlatformEventData() {
-        ACPExperiencePlatform.registerExtension()
+        ExperiencePlatform.registerExtension()
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm:generateXdmSchema,data: generateData())
-        XCTAssertTrue(ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
+        XCTAssertTrue(ExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
     }
 }

@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ACPLifecycle.registerExtension()
         ACPSignal.registerExtension()
         ACPGriffon.registerExtension()
-        ACPExperiencePlatform.registerExtension()
+        ExperiencePlatform.registerExtension()
         ACPGriffon.registerExtension()
         // Option 1 : Configuration : Inline
         // var config = [String: String]()

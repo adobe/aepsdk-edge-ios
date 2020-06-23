@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ACPCore.setLogLevel(ACPMobileLogLevel.debug)
         ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with ACPExperiencePlatform."))
         ACPIdentity.registerExtension()
-        ACPExperiencePlatform.registerExtension()
+        ExperiencePlatform.registerExtension()
         ACPCore.start {
             ACPCore.updateConfiguration(["global.privacy": "optedin",
                                          "experienceCloud.org": "3E2A28175B8ED3720A495E23@AdobeOrg",

@@ -40,7 +40,7 @@ class FunctionalSampleTest: FunctionalTestBase {
             setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
             
             ACPIdentity.registerExtension()
-            ACPExperiencePlatform.registerExtension()
+            ExperiencePlatform.registerExtension()
             ACPCore.updateConfiguration(["global.privacy": "optedin",
                                          "experienceCloud.org": "testOrg@AdobeOrg",
                                          "experiencePlatform.configId": "12345-example"])
@@ -98,8 +98,8 @@ class FunctionalSampleTest: FunctionalTestBase {
         setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 2)
         setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test2": "xdm"], data: nil))
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test2": "xdm"], data: nil))
         
         assertNetworkRequestsCount()
     }
@@ -113,7 +113,7 @@ class FunctionalSampleTest: FunctionalTestBase {
         setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
         setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
         
         let requests = getNetworkRequestsWith(url: url, httpMethod: HttpMethod.post)
         

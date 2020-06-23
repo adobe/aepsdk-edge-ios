@@ -201,7 +201,7 @@ class CommerceUtil  {
             
             let event = ExperiencePlatformEvent(xdm:xdmData)
             let responseHandler = ResponseHandler()
-            ACPExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
+            ExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
         } else {
             ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"sendPurchaseXdmEvent - Cannot create '" + EVENT_TYPE_COMMERCE_PURCHASES + "' as no items were found in cart.")
         }
@@ -251,7 +251,7 @@ class CommerceUtil  {
         xdmData.productListItems = itemsList
         let event = ExperiencePlatformEvent(xdm:xdmData)
         let responseHandler = ResponseHandler()
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
     }
     
     /// Helper method to convert an com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem  to an
