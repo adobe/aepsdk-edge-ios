@@ -32,7 +32,7 @@ ROOT_DIR = $(shell git rev-parse --show-toplevel)
 
 LIB_VERSION = $(shell grep 'private static let version' $(ROOT_DIR)/code/src/ExperiencePlatformInternal.swift | sed 's/.*private static let version.*=.*\"\(.*\)\".*/\1/')
 APP_NAME = AEPCommerceDemoApp
-EXTENSION_NAME = ACPExperiencePlatform
+EXTENSION_NAME = AEPExperiencePlatform
 DEMO_DIR = $(ROOT_DIR)/demo/
 APP_DIR = $(DEMO_DIR)$(APP_NAME)/
 LIBS_DIR = $(APP_DIR)libs/
