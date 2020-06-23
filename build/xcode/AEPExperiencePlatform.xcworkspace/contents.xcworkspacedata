@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/lind/git/mobile/experience-platform/public/platform-extension-ios/build/xcode/AEPExperiencePlatform.xcodeproj">
+      location = "group:AEPExperiencePlatform.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1140"
+   LastUpgradeVersion = "1130"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B5792432977F00CAB6E4"
-               BuildableName = "AEPDemoAppSwiftUI.app"
-               BlueprintName = "AEPDemoAppSwiftUI"
-               ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
+               BlueprintIdentifier = "BF5EECD424983AE000C72622"
+               BuildableName = "AEPCommerceDemoApp.app"
+               BlueprintName = "AEPCommerceDemoApp"
+               ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -28,26 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B5202432599B00CAB6E4"
-               BuildableName = "unitTests.xctest"
-               BlueprintName = "unitTests"
-               ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B53224325AB700CAB6E4"
-               BuildableName = "functionalTests.xctest"
-               BlueprintName = "functionalTests"
-               ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -64,10 +44,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D4D5B5792432977F00CAB6E4"
-            BuildableName = "AEPDemoAppSwiftUI.app"
-            BlueprintName = "AEPDemoAppSwiftUI"
-            ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
+            BlueprintIdentifier = "BF5EECD424983AE000C72622"
+            BuildableName = "AEPCommerceDemoApp.app"
+            BlueprintName = "AEPCommerceDemoApp"
+            ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -81,10 +61,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D4D5B5792432977F00CAB6E4"
-            BuildableName = "AEPDemoAppSwiftUI.app"
-            BlueprintName = "AEPDemoAppSwiftUI"
-            ReferencedContainer = "container:ACPExperiencePlatform.xcodeproj">
+            BlueprintIdentifier = "BF5EECD424983AE000C72622"
+            BuildableName = "AEPCommerceDemoApp.app"
+            BlueprintName = "AEPCommerceDemoApp"
+            ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
