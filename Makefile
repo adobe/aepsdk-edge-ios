@@ -12,9 +12,10 @@ pod-repo-update:
 	(cd build/xcode && pod repo update)
 	(cd demo/$(APP_NAME) && pod repo update)
 
-pod-install: pod-repo-update
-	(cd build/xcode && pod install)
-	(cd demo/$(APP_NAME) && pod install)
+# pod repo update may fail if there is no repo (issue fixed in v1.8.4). Use pod install --repo-update instead
+pod-install:
+	(cd build/xcode && pod install --repo-update)
+	(cd demo/$(APP_NAME) && pod install --repo-update)
 
 pod-update: pod-repo-update
 	(cd build/xcode && pod update)
