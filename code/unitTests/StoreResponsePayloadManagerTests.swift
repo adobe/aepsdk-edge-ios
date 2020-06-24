@@ -11,7 +11,7 @@
 //
 
 import XCTest
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 class StoreResponsePayloadManagerTests: XCTestCase {
     

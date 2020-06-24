@@ -13,7 +13,7 @@
 
 import XCTest
 import ACPCore
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 /// Spy  class used for testing and inspecting `ExperiencePlatformInternal`.
 class TestableExperiencePlatformInternal : ExperiencePlatformInternal {

@@ -12,7 +12,7 @@
 
 
 import Foundation
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 // NetworkRequest extension used for compares in Dictionaries where NetworkRequest is the key
 extension NetworkRequest : Hashable {

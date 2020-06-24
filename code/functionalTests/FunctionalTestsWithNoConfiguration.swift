@@ -13,7 +13,7 @@
 
 import XCTest
 import ACPCore
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
 /// This test suite cannot be run in same target as other tests which provide an SDK configuration to ACPCore

@@ -11,10 +11,9 @@
 //
 
 import UIKit
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 import ACPCore
 import ACPGriffon
-import xdmlib
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,13 +22,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        ACPCore.setLogLevel(ACPMobileLogLevel.debug)
-        ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with ACPExperiencePlatform."))
+        ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
+        ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with AEPExperiencePlatform."))
         ACPIdentity.registerExtension()
         ACPLifecycle.registerExtension()
         ACPSignal.registerExtension()
         ACPGriffon.registerExtension()
-        ACPExperiencePlatform.registerExtension()
+        ExperiencePlatform.registerExtension()
         ACPGriffon.registerExtension()
         // Option 1 : Configuration : Inline
         // var config = [String: String]()

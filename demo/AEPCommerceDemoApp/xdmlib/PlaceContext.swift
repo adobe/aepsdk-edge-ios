@@ -18,7 +18,7 @@
 */
 
 import Foundation
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 
 public struct PlaceContext {
 	public init() {}

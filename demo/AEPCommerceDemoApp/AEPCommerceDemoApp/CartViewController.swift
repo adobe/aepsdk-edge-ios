@@ -12,7 +12,7 @@
 
 import Foundation
 import UIKit
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 
 class CartViewController: UIViewController {
     

@@ -23,7 +23,7 @@
 */
 
 import Foundation
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 
 public struct MobileSDKPlatformEventSchema : XDMSchema {
 	public let schemaVersion = "1.4"

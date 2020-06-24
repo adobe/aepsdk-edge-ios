@@ -12,7 +12,7 @@
 
 import Foundation
 import ACPCore
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 
 class ResponseHandler : ExperiencePlatformResponseHandler {
     var onResponseCalled: Bool = false
