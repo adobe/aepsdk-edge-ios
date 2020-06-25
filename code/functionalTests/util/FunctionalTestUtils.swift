@@ -11,6 +11,7 @@
 //
 
 import Foundation
+@testable import ACPExperiencePlatform
 
 public class FunctionalTestUtils {
     
@@ -19,9 +20,15 @@ public class FunctionalTestUtils {
         let defaults = UserDefaults.standard
         let dictionary = defaults.dictionaryRepresentation()
         dictionary.keys.forEach { key in
+            print("resetUserDefaults - removing key \(key)")
             defaults.removeObject(forKey: key)
         }
         
+        let store = NamedUserDefaultsStore(name: "com.adobe.mobile.datastore.ACPExperiencePlatform")
+        store.removeAll()
+        store.setDictionary(key: "storePayloads", value:[:])
+        //store.remove(key: "storePayloads")
+        //defaults.removeSuite(named:"com.adobe.mobile.datastore.ACPExperiencePlatform")
         print("resetUserDefaults - Removed all user defaults")
     }
 }

@@ -134,6 +134,7 @@
 		D4655408246DF6DB00A150E2 /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655406246DF6DB00A150E2 /* FunctionalTestUtils.swift */; };
 		D465540F24730E3900A150E2 /* IdentityMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = D465540E24730E3900A150E2 /* IdentityMap.swift */; };
 		D465541024730ED200A150E2 /* libACPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libACPExperiencePlatform.a */; };
+		D48CBD2224A17EEA00A24BD8 /* TestXDMSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48CBD2124A17EEA00A24BD8 /* TestXDMSchema.swift */; };
 		D4A473C1248585BE00D31710 /* InstrumentedWildcardListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A473C0248585BE00D31710 /* InstrumentedWildcardListener.swift */; };
 		D4A473C22485928A00D31710 /* FunctionalTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */; };
 		D4A473C32485929000D31710 /* InstrumentedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */; };
@@ -362,6 +363,7 @@
 		D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentedExtension.swift; sourceTree = "<group>"; };
 		D4655406246DF6DB00A150E2 /* FunctionalTestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestUtils.swift; sourceTree = "<group>"; };
 		D465540E24730E3900A150E2 /* IdentityMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IdentityMap.swift; sourceTree = "<group>"; };
+		D48CBD2124A17EEA00A24BD8 /* TestXDMSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestXDMSchema.swift; sourceTree = "<group>"; };
 		D4A473C0248585BE00D31710 /* InstrumentedWildcardListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentedWildcardListener.swift; sourceTree = "<group>"; };
 		D4A473C52485938D00D31710 /* FunctionalTestConst.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestConst.swift; sourceTree = "<group>"; };
 		D4A473CF2485B86D00D31710 /* FunctionalSampleTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalSampleTest.swift; sourceTree = "<group>"; };
@@ -719,6 +721,7 @@
 				D4D5B53524325AB700CAB6E4 /* NetworkResponseHandlerFunctionalTests.swift */,
 				D4D5B53724325AB700CAB6E4 /* Info.plist */,
 				D4A473CF2485B86D00D31710 /* FunctionalSampleTest.swift */,
+				D48CBD2124A17EEA00A24BD8 /* TestXDMSchema.swift */,
 			);
 			name = functionalTests;
 			path = ../../code/functionalTests;
@@ -1327,6 +1330,7 @@
 				D4A473C1248585BE00D31710 /* InstrumentedWildcardListener.swift in Sources */,
 				D4A473D02485B86D00D31710 /* FunctionalSampleTest.swift in Sources */,
 				D4655402246CD0B000A150E2 /* InstrumentedExtension.swift in Sources */,
+				D48CBD2224A17EEA00A24BD8 /* TestXDMSchema.swift in Sources */,
 				D4EED36C2489ACE200D4815C /* FunctionalTestNetworkService.swift in Sources */,
 				D4655407246DF6DB00A150E2 /* FunctionalTestUtils.swift in Sources */,
 				BF0C0935246120B200892B5D /* NetworkResponseHandlerFunctionalTests.swift in Sources */,

@@ -289,11 +289,6 @@ class FunctionalTestBase : XCTestCase {
     /// - See also:
     ///     - setExpectationNetworkRequest(url:httpMethod:)
     func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = FunctionalTestConst.Defaults.waitNetworkRequestTimeout, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
-        guard FunctionalTestBase.networkService.expectedNetworkRequests.count > 0 else {
-            assertionFailure("There are no network expectations set, use this API after calling setNetworkRequestExpectation")
-            return []
-        }
-        
         guard let requestUrl = URL(string: url) else {
             assertionFailure("Unable to convert the provided string \(url) to URL")
             return []
