@@ -10,32 +10,35 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.501205 -0700 PDT m=+1.943444452 by XDMTool
+ XDM Property Swift Object Generated 2020-06-25 16:18:51.497141 -0700 PDT m=+1.939381139 by XDMTool
 
- Title			:	ProductListReopens
- Description	:	A product list that was no longer accessible (abandoned) has been re-activated by the user. Example via a re-marketing activity.
+ Title			:	Implementation details
+ Description	:	The details of the software used to collect the ExperienceEvent.
 ----
 */
 
 import Foundation
 
 
-public struct ProductListReopens {
+public struct ImplementationDetails {
 	public init() {}
 
-	public var id: String?
-	public var value: Float?
+	public var environment: Environment?
+	public var name: String?
+	public var version: String?
 
 	enum CodingKeys: String, CodingKey {
-		case id = "id"
-		case value = "value"
+		case environment = "environment"
+		case name = "name"
+		case version = "version"
 	}	
 }
 
-extension ProductListReopens:Encodable {
+extension ImplementationDetails:Encodable {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
-		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
-		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }
+		if let unwrapped = environment { try container.encode(unwrapped, forKey: .environment) }
+		if let unwrapped = name { try container.encode(unwrapped, forKey: .name) }
+		if let unwrapped = version { try container.encode(unwrapped, forKey: .version) }
 	}
 }

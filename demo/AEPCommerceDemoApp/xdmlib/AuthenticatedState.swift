@@ -10,13 +10,9 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Swift Enum Generated 2020-05-06 03:42:23.089653 -0700 PDT m=+1.754136362 by XDMTool
-
- Title            :    Authenticated State
- Description      :    AuthenticatedState
+ XDM Swift Enum Generated 2020-06-25 16:18:51.496884 -0700 PDT m=+1.939123891 by XDMTool
 ----
 */
-
 import Foundation
 
 public enum AuthenticatedState:String, Encodable {

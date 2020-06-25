@@ -10,9 +10,9 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-06 03:42:23.091651 -0700 PDT m=+1.756134080 by XDMTool
+ XDM Property Swift Object Generated 2020-06-25 16:18:51.501126 -0700 PDT m=+1.943365717 by XDMTool
 
- Title			:	Product List Adds
+ Title			:	ProductListAdds
  Description	:	Addition of a product to the product list, for example a product is added to a shopping cart.
 ----
 */

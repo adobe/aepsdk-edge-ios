@@ -10,9 +10,9 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-06 03:42:23.094895 -0700 PDT m=+1.759378397 by XDMTool
+ XDM Property Swift Object Generated 2020-06-25 16:18:51.501052 -0700 PDT m=+1.943292354 by XDMTool
 
- Title			:	Cart Abandons
+ Title			:	CartAbandons
  Description	:	A product list has been identified as no longer accessible or purchasable by the user.
 ----
 */

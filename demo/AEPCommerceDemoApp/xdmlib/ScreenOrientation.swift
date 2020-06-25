@@ -10,13 +10,9 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Swift Enum Generated 2020-05-06 03:42:23.089111 -0700 PDT m=+1.753594421 by XDMTool
-
- Title          :    Screen Orientation
- Description    :    ScreenOrientation
+ XDM Swift Enum Generated 2020-06-25 16:18:51.496942 -0700 PDT m=+1.939182220 by XDMTool
 ----
 */
-
 import Foundation
 
 public enum ScreenOrientation:String, Encodable {

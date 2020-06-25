@@ -10,10 +10,10 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-06 03:42:23.093934 -0700 PDT m=+1.758417629 by XDMTool
+ XDM Property Swift Object Generated 2020-06-25 16:18:51.502322 -0700 PDT m=+1.944562300 by XDMTool
 
- Title			:	Payments Item
- Description	:	PaymentsItem
+ Title			:	PaymentsItem
+ Description	:	
 ----
 */
 

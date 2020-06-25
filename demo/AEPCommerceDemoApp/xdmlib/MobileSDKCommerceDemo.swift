@@ -10,25 +10,25 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Schema Swift Object Generated 2020-05-06 03:42:23.088254 -0700 PDT m=+1.752737713 by XDMTool
+ XDM Schema Swift Object Generated 2020-06-25 16:18:51.496212 -0700 PDT m=+1.938452303 by XDMTool
 
- Title			:	Mobile SDK Platform Event Schema
- Version		:	1.4
- Description	:	Platform Event Schema used by Mobile SDK
- ID				:	https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae
- Alt ID			:	_acopprod1.schemas.e1af53c26439f963fbfebe50330323ae
+ Title			:	Mobile SDK Commerce Demo
+ Version		:	1.0
+ Description	:	Schema used by Mobile SDK Commerce Demo application
+ ID				:	https://ns.adobe.com/acopprod3/schemas/3391dbaead444a0ee50b27c864f62a5899ee4c3e54c3992d
+ Alt ID			:	_acopprod3.schemas.3391dbaead444a0ee50b27c864f62a5899ee4c3e54c3992d
  Type			:	schemas
- IMS Org		:	3E2A28175B8ED3720A495E23@AdobeOrg
+ IMS Org		:	FAF554945B90342F0A495E2C@AdobeOrg
 ----
 */
 
 import Foundation
 import AEPExperiencePlatform
 
-public struct MobileSDKPlatformEventSchema : XDMSchema {
-	public let schemaVersion = "1.4"
-	public let schemaIdentifier = "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae"
-	public let datasetIdentifier = "5dd603781b95cc18a83d42ce"
+public struct MobileSDKCommerceDemo : XDMSchema {
+	public let schemaVersion = "1.0"
+	public let schemaIdentifier = "https://ns.adobe.com/acopprod3/schemas/3391dbaead444a0ee50b27c864f62a5899ee4c3e54c3992d"
+	public let datasetIdentifier = "5ef40faffdf5591915bdb967"
 	
 	public init() {}
 
@@ -39,6 +39,7 @@ public struct MobileSDKPlatformEventSchema : XDMSchema {
 	public var eventMergeId: String?
 	public var eventType: String?
 	public var identityMap: IdentityMap?
+	public var implementationDetails: ImplementationDetails?
 	public var placeContext: PlaceContext?
 	public var productListItems: Array<ProductListItemsItem?>?
 	public var timestamp: Date?
@@ -51,13 +52,14 @@ public struct MobileSDKPlatformEventSchema : XDMSchema {
 		case eventMergeId = "eventMergeId"
 		case eventType = "eventType"
 		case identityMap = "identityMap"
+		case implementationDetails = "implementationDetails"
 		case placeContext = "placeContext"
 		case productListItems = "productListItems"
 		case timestamp = "timestamp"
 	}	
 }
 
-extension MobileSDKPlatformEventSchema {
+extension MobileSDKCommerceDemo {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = application { try container.encode(unwrapped, forKey: .application) }
@@ -67,6 +69,7 @@ extension MobileSDKPlatformEventSchema {
 		if let unwrapped = eventMergeId { try container.encode(unwrapped, forKey: .eventMergeId) }
 		if let unwrapped = eventType { try container.encode(unwrapped, forKey: .eventType) }
 		if let unwrapped = identityMap { try container.encode(unwrapped, forKey: .identityMap) }
+		if let unwrapped = implementationDetails { try container.encode(unwrapped, forKey: .implementationDetails) }
 		if let unwrapped = placeContext { try container.encode(unwrapped, forKey: .placeContext) }
 		if let unwrapped = productListItems { try container.encode(unwrapped, forKey: .productListItems) }
 		if let unwrapped = XDMFormatters.dateToISO8601String(from: timestamp) { try container.encode(unwrapped, forKey: .timestamp) }

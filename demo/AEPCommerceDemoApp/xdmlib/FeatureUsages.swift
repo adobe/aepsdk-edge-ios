@@ -10,9 +10,9 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-06 03:42:23.091538 -0700 PDT m=+1.756021108 by XDMTool
+ XDM Property Swift Object Generated 2020-06-25 16:18:51.502475 -0700 PDT m=+1.944715401 by XDMTool
 
- Title			:	Feature Usages
+ Title			:	FeatureUsages
  Description	:	Activation of an application feature that is being measured.
 ----
 */
