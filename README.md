@@ -15,7 +15,7 @@ The Experience Platform Mobile extension for iOS is currently in Alpha developme
 The first time you clone or download the project, you should run the following from the root directory to setup the environment:
 
 ~~~
-make setup
+make pod-install
 ~~~
 
 Subsequently, you can make sure your environment is updated by running the following:
