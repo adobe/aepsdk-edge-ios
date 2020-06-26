@@ -10,10 +10,10 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-06 03:42:23.09459 -0700 PDT m=+1.759073242 by XDMTool
+ XDM Property Swift Object Generated 2020-06-25 16:18:51.499814 -0700 PDT m=+1.942054229 by XDMTool
 
- Title			:	Product List Items Item
- Description	:	ProductListItemsItem
+ Title			:	ProductListItemsItem
+ Description	:	
 ----
 */
 
@@ -29,7 +29,7 @@ public struct ProductListItemsItem {
 	public var product: String?
 	public var productAddMethod: String?
 	public var quantity: Int64?
-	public var SKU: String?
+	public var sKU: String?
 
 	enum CodingKeys: String, CodingKey {
 		case currencyCode = "currencyCode"
@@ -38,7 +38,7 @@ public struct ProductListItemsItem {
 		case product = "product"
 		case productAddMethod = "productAddMethod"
 		case quantity = "quantity"
-		case SKU = "SKU"
+		case sKU = "SKU"
 	}	
 }
 
@@ -51,6 +51,6 @@ extension ProductListItemsItem:Encodable {
 		if let unwrapped = product { try container.encode(unwrapped, forKey: .product) }
 		if let unwrapped = productAddMethod { try container.encode(unwrapped, forKey: .productAddMethod) }
 		if let unwrapped = quantity { try container.encode(unwrapped, forKey: .quantity) }
-		if let unwrapped = SKU { try container.encode(unwrapped, forKey: .SKU) }
+		if let unwrapped = sKU { try container.encode(unwrapped, forKey: .sKU) }
 	}
 }

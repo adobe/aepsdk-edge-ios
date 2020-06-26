@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ExperiencePlatform.registerExtension()
         ACPCore.start {
             ACPCore.updateConfiguration(["global.privacy": "optedin",
-                                         "experienceCloud.org": "3E2A28175B8ED3720A495E23@AdobeOrg",
+                                         "experienceCloud.org": "FAF554945B90342F0A495E2C@AdobeOrg",
                                          "experiencePlatform.configId": "d3d079e7-130e-4ec1-88d7-c328eb9815c4"])
         }
         return true

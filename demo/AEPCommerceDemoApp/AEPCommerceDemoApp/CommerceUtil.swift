@@ -194,7 +194,7 @@ class CommerceUtil  {
             commerce.order = order
             commerce.purchases = purchases
             
-            var xdmData = MobileSDKPlatformEventSchema()
+            var xdmData = MobileSDKCommerceDemo()
             xdmData.eventType = EVENT_TYPE_COMMERCE_PURCHASES
             xdmData.commerce = commerce
             xdmData.productListItems = itemsList
@@ -245,7 +245,7 @@ class CommerceUtil  {
             return
         }
         
-        var xdmData = MobileSDKPlatformEventSchema()
+        var xdmData = MobileSDKCommerceDemo()
         xdmData.eventType = eventType
         xdmData.commerce  = commerce
         xdmData.productListItems = itemsList
@@ -267,7 +267,7 @@ class CommerceUtil  {
         
         var productItem = ProductListItemsItem()
         productItem.name = productData.name
-        productItem.SKU  = productData.sku
+        productItem.sKU  = productData.sku
         if(quantity > 0) {
             productItem.currencyCode = productData.currency
             productItem.quantity     = Int64(quantity)

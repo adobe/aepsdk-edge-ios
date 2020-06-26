@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Option 1 : Configuration : Inline
         // var config = [String: String]()
         // config["global.privacy"] = "optedin"
-        // config["experienceCloud.org"] = "3E2A28175B8ED3720A495E23@AdobeOrg"
+        // config["experienceCloud.org"] = "FAF554945B90342F0A495E2C@AdobeOrg"
         // config["experiencePlatform.configId"] = "d3d079e7-130e-4ec1-88d7-c328eb9815c4"
         
         // Option 2 : Configuration : From a Launch property

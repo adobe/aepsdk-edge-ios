@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8A63D7A4F24DC50C9842A182 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26FA933AB67D0A085572165E /* Pods_AEPCommerceDemoApp.framework */; };
 		BF2916B624A2A437009038A8 /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2916B524A2A437009038A8 /* libAEPExperiencePlatform.a */; };
+		BF2916BA24A5660B009038A8 /* MobileSDKCommerceDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2916B824A5660B009038A8 /* MobileSDKCommerceDemo.swift */; };
+		BF2916BB24A5660B009038A8 /* ImplementationDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2916B924A5660B009038A8 /* ImplementationDetails.swift */; };
 		BF5EEAB124904A3800C72622 /* CartItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA8E24904A3600C72622 /* CartItem.swift */; };
 		BF5EEAB224904A3800C72622 /* AEPDemoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */; };
 		BF5EEAB324904A3800C72622 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA9024904A3600C72622 /* ProductViewController.swift */; };
@@ -50,7 +52,6 @@
 		BF5EEBC9249834FC00C72622 /* InStorePurchase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAD824904AE100C72622 /* InStorePurchase.swift */; };
 		BF5EEBCA249834FC00C72622 /* Items.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAD624904AE100C72622 /* Items.swift */; };
 		BF5EEBCB249834FC00C72622 /* Launches.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAE724904AE100C72622 /* Launches.swift */; };
-		BF5EEBCC249834FC00C72622 /* MobileSDKPlatformEventSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAEB24904AE100C72622 /* MobileSDKPlatformEventSchema.swift */; };
 		BF5EEBCD249834FC00C72622 /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAE024904AE100C72622 /* Order.swift */; };
 		BF5EEBCE249834FC00C72622 /* PaymentsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAE824904AE100C72622 /* PaymentsItem.swift */; };
 		BF5EEBCF249834FC00C72622 /* PlaceContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAE624904AE100C72622 /* PlaceContext.swift */; };
@@ -72,6 +73,8 @@
 		26FA933AB67D0A085572165E /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D10062D570E23F89330CC3 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "../AEPCommerceDemoApp/Pods/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		BF2916B524A2A437009038A8 /* libAEPExperiencePlatform.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAEPExperiencePlatform.a; sourceTree = "<group>"; };
+		BF2916B824A5660B009038A8 /* MobileSDKCommerceDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileSDKCommerceDemo.swift; sourceTree = "<group>"; };
+		BF2916B924A5660B009038A8 /* ImplementationDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImplementationDetails.swift; sourceTree = "<group>"; };
 		BF5EE93F249039FE00C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5EEA8E24904A3600C72622 /* CartItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartItem.swift; sourceTree = "<group>"; };
 		BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEPDemoConstants.swift; sourceTree = "<group>"; };
@@ -117,7 +120,6 @@
 		BF5EEAE824904AE100C72622 /* PaymentsItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsItem.swift; sourceTree = "<group>"; };
 		BF5EEAE924904AE100C72622 /* IdentityMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IdentityMap.swift; sourceTree = "<group>"; };
 		BF5EEAEA24904AE100C72622 /* ProductListItemsItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductListItemsItem.swift; sourceTree = "<group>"; };
-		BF5EEAEB24904AE100C72622 /* MobileSDKPlatformEventSchema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileSDKPlatformEventSchema.swift; sourceTree = "<group>"; };
 		BF5EEAEC24904AE100C72622 /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		BF5EEAED24904AE100C72622 /* Commerce.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Commerce.swift; sourceTree = "<group>"; };
 		BF5EEAEE24904AE100C72622 /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
@@ -232,11 +234,12 @@
 				BF5EEAEF24904AE100C72622 /* FirstLaunches.swift */,
 				BF5EEAF024904AE100C72622 /* Geo.swift */,
 				BF5EEAE924904AE100C72622 /* IdentityMap.swift */,
+				BF2916B924A5660B009038A8 /* ImplementationDetails.swift */,
 				BF5EEAF624904AE100C72622 /* Installs.swift */,
 				BF5EEAD824904AE100C72622 /* InStorePurchase.swift */,
 				BF5EEAD624904AE100C72622 /* Items.swift */,
 				BF5EEAE724904AE100C72622 /* Launches.swift */,
-				BF5EEAEB24904AE100C72622 /* MobileSDKPlatformEventSchema.swift */,
+				BF2916B824A5660B009038A8 /* MobileSDKCommerceDemo.swift */,
 				BF5EEAE024904AE100C72622 /* Order.swift */,
 				BF5EEAE824904AE100C72622 /* PaymentsItem.swift */,
 				BF5EEAE624904AE100C72622 /* PlaceContext.swift */,
@@ -392,7 +395,6 @@
 				BF5EEBC9249834FC00C72622 /* InStorePurchase.swift in Sources */,
 				BF5EEBCA249834FC00C72622 /* Items.swift in Sources */,
 				BF5EEBCB249834FC00C72622 /* Launches.swift in Sources */,
-				BF5EEBCC249834FC00C72622 /* MobileSDKPlatformEventSchema.swift in Sources */,
 				BF5EEBCD249834FC00C72622 /* Order.swift in Sources */,
 				BF5EEBCE249834FC00C72622 /* PaymentsItem.swift in Sources */,
 				BF5EEBCF249834FC00C72622 /* PlaceContext.swift in Sources */,
@@ -402,6 +404,7 @@
 				BF5EEBD3249834FC00C72622 /* ProductListRemovals.swift in Sources */,
 				BF5EEBD4249834FC00C72622 /* ProductListReopens.swift in Sources */,
 				BF5EEBD5249834FC00C72622 /* ProductListViews.swift in Sources */,
+				BF2916BB24A5660B009038A8 /* ImplementationDetails.swift in Sources */,
 				BF5EEBD6249834FC00C72622 /* ProductViews.swift in Sources */,
 				BF5EEBD7249834FC00C72622 /* Purchases.swift in Sources */,
 				BF5EEBD8249834FC00C72622 /* SaveForLaters.swift in Sources */,
@@ -410,6 +413,7 @@
 				BF5EEBDB249834FC00C72622 /* Upgrades.swift in Sources */,
 				BF5EEAD224904A3800C72622 /* CheckOutViewController.swift in Sources */,
 				BF5EEAC624904A3800C72622 /* ShoppingItemCell.swift in Sources */,
+				BF2916BA24A5660B009038A8 /* MobileSDKCommerceDemo.swift in Sources */,
 				BF5EEAB424904A3800C72622 /* GriffonViewController.swift in Sources */,
 				BF5EEACA24904A3800C72622 /* ResponseHandler.swift in Sources */,
 				BF5EEAB324904A3800C72622 /* ProductViewController.swift in Sources */,

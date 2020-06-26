@@ -10,9 +10,9 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-06 03:42:23.093856 -0700 PDT m=+1.758338824 by XDMTool
+ XDM Property Swift Object Generated 2020-06-25 16:18:51.500057 -0700 PDT m=+1.942296972 by XDMTool
 
- Title			:	Product List Views
+ Title			:	ProductListViews
  Description	:	View or views of a product-list has occurred.
 ----
 */

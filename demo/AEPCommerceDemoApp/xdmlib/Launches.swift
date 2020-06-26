@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-05-06 03:42:23.094446 -0700 PDT m=+1.758929751 by XDMTool
+ XDM Property Swift Object Generated 2020-06-25 16:18:51.501357 -0700 PDT m=+1.943596729 by XDMTool
 
  Title			:	Launches
  Description	:	Launch of an application. Triggered on every run, including crashes and installs. Also triggered on a resume from background when the session timeout has been exceeded.
