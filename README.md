@@ -21,7 +21,7 @@ make setup
 Subsequently, you can make sure your environment is updated by running the following:
 
 ~~~
-make update
+make pod-update
 ~~~
 
 #### Open the Xcode workspace
@@ -38,16 +38,35 @@ From command line you can build the project for a simulator by running the follo
 make build
 ~~~
 
-To build the project for release, run the following command and find the lib under `bin/iOS/libACPExperiencePlatform.a`:
+To build the project for release, run the following command and find the lib and .swiftmodule files under `out/AEPExperiencePlatform-<version>.zip`:
 
 ~~~
 make build-all
+~~~
+
+To bundle the Commerce Demo application, run the following command and find the archive under `out/AEPCommerceDemoApp-<version>.zip`:
+
+~~~
+make archive-app
 ~~~
 
 You can also run the unit test suite from command line:
 
 ~~~
 make test
+~~~
+
+### Setup Demo Application
+The AEP Commerce Demo application is a sample Swift application which demonstrates using the Adobe Experience Platform Mobile Extension to send commerce data to the Adobe Experience Platform.
+
+Follow the command line instructions above to build the project and bundle the demo application. With both `AEPCommerceDemoApp-<version>.zip` and `AEPExperiencePlatform-<version>.zip` in the same folder, run the following commands:
+
+~~~
+unzip AEPCommerceDemoApp-<version>.zip
+unzip AEPExperiencePlatform-<version>.zip -d AEPCommerceDemoApp/libs
+cd AEPCommerceDemoApp
+pod install
+open AEPCommerceDemoApp.xcworkspace
 ~~~
 
 ### Contributing
