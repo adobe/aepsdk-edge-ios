@@ -57,9 +57,9 @@ make test
 ~~~
 
 ### Setup Demo Application
-The AEP Commerce Demo application is a sample Swift application which demonstrates using the Adobe Experience Platform Mobile Extension to send commerce data to the Adobe Experience Platform.
+The AEP Commerce Demo application is a sample app which demonstrates how to send commerce data to Adobe Experience Platform by using the Adobe Experience Platform Mobile Extension.
 
-Follow the command line instructions above to build the project and bundle the demo application. With both `AEPCommerceDemoApp-<version>.zip` and `AEPExperiencePlatform-<version>.zip` in the same folder, run the following commands:
+Follow the command line instructions above to build the project and bundle the demo application. With both `AEPCommerceDemoApp-<version>.zip` and `AEPExperiencePlatform-<version>.zip` in the same folder, run the following commands in a terminal:
 
 ~~~
 unzip AEPCommerceDemoApp-<version>.zip
