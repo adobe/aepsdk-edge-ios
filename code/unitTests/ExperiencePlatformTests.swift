@@ -15,7 +15,7 @@ import ACPCore
 
 @testable import AEPExperiencePlatform
 
-class AEPExperiencePlatformTests: XCTestCase {
+class ExperiencePlatformTests: XCTestCase {
     private var mockResponseHandler: MockExperiencePlatformResponseHandler? = nil
     
     override func setUp() {
