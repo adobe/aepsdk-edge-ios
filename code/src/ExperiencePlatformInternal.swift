@@ -14,6 +14,8 @@ import Foundation
 import ACPCore
 
 class ExperiencePlatformInternal : ACPExtension {
+    private static let version = "1.0.0-alpha"
+    
     // Tag for logging
     private let TAG = "ExperiencePlatformInternal"
     
@@ -61,7 +63,7 @@ class ExperiencePlatformInternal : ACPExtension {
     }
     
     override func version() -> String? {
-        "1.0.0-alpha"
+        return ExperiencePlatformInternal.version
     }
     
     override func onUnregister() {

@@ -12,7 +12,7 @@
 
 import XCTest
 
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 class ExperiencePlatformNetworkServiceTests: XCTestCase {
     

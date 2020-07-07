@@ -35,7 +35,7 @@ XCODEBUILD_COMPATIBLE = $(shell [[ $(XCODEBUILD_VERSION_MAJOR) -gt 10  ||  ($(XC
 
 # directories
 BIN_DIR = $(ROOT_DIR)/bin/iOS/
-OUT_DIR = $(ROOT_DIR)/out
+OUT_DIR = $(ROOT_DIR)/out/
 BUILD_DIR = Build/
 BUILD_TEMP_DIR = $(BIN_DIR)build_temp/
 DEV_BUILD_DIR = devbuild
@@ -46,6 +46,8 @@ PRODUCTS_DIR = Products/
 RELEASE_DIR_IPHONE = $(BUILD_DIR)$(PRODUCTS_DIR)Release-$(SDK_IOS)/
 RELEASE_DIR_SIMULATOR = $(BUILD_DIR)$(PRODUCTS_DIR)Release-$(SDK_IOS_SIMULATOR)/
 ROOT_DIR = $(shell git rev-parse --show-toplevel)
+
+LIB_VERSION = $(shell grep 'private static let version' $(ROOT_DIR)/code/src/ExperiencePlatformInternal.swift | sed 's/.*private static let version.*=.*\"\(.*\)\".*/\1/')
 
 # environments
 WORKSPACE_NAME = $(EXTENSION_NAME).xcworkspace
@@ -77,9 +79,9 @@ else
 	$(error Failed to run make, incompatible xcodebuild version (requires 10.2 or higher))
 endif
 
-all: check-xcode-version clean arm64 armv7s armv7 x86_64 i386 lipo copy-files
+all: check-xcode-version clean arm64 armv7s armv7 x86_64 i386 lipo copy-swiftmodule archive-lib
 
-all-no-clean: check-xcode-version arm64 armv7s armv7 i386 x86_64 lipo copy-files
+all-no-clean: check-xcode-version arm64 armv7s armv7 i386 x86_64 lipo copy-swiftmodule archive-lib
 
 build-shallow: check-xcode-version x86_64
 
@@ -96,6 +98,8 @@ armv7:
 		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME)-$(ARCH_ARMV7).a
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME).swiftmodule \
+		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7).swiftmodule
 
 armv7s:
 	@echo "######################################################################"
@@ -110,6 +114,8 @@ armv7s:
 		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME)-$(ARCH_ARMV7S).a
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME).swiftmodule \
+		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7S).swiftmodule
 
 arm64:
 	@echo "######################################################################"
@@ -124,6 +130,8 @@ arm64:
 		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS_BITCODE) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(LIB_BASE_NAME)-$(ARCH_ARM64).a
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME).swiftmodule \
+		$(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARM64).swiftmodule
 
 i386:
 	@echo "######################################################################"
@@ -138,6 +146,8 @@ i386:
 		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME)-$(ARCH_I386).a
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME).swiftmodule \
+		$(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_I386).swiftmodule
 
 x86_64:
 	@echo "######################################################################"
@@ -152,6 +162,8 @@ x86_64:
 		$(BUILD_IOS_TARGET_VERSION) $(BUILDFLAGS)
 	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME).a \
 		$(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(LIB_BASE_NAME)-$(ARCH_X86_64).a
+	mv $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME).swiftmodule \
+		$(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_X86_64).swiftmodule
 
 lipo:
 	@echo "######################################################################"
@@ -171,14 +183,34 @@ lipo:
 	lipo -info $(BIN_DIR)$(LIB_BASE_NAME).a
 	@echo "============================================================"
 
+copy-swiftmodule:
+	@echo "######################################################################"
+	@echo "### Copying Swfitmodule for Universal Lib"
+	@echo "######################################################################"
+	mkdir $(BIN_DIR)$(EXTENSION_NAME).swiftmodule
+	(cd $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7).swiftmodule && tar c .) | (cd $(BIN_DIR)$(EXTENSION_NAME).swiftmodule && tar xf -)
+	(cd $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARMV7S).swiftmodule && tar c .) | (cd $(BIN_DIR)$(EXTENSION_NAME).swiftmodule && tar xf -)
+	(cd $(BUILD_TEMP_DIR)$(RELEASE_DIR_IPHONE)$(EXTENSION_NAME)-$(ARCH_ARM64).swiftmodule && tar c .) | (cd $(BIN_DIR)$(EXTENSION_NAME).swiftmodule && tar xf -)
+	(cd $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_X86_64).swiftmodule && tar c .) | (cd $(BIN_DIR)$(EXTENSION_NAME).swiftmodule && tar xf -)
+	(cd $(BUILD_TEMP_DIR)$(RELEASE_DIR_SIMULATOR)$(EXTENSION_NAME)-$(ARCH_I386).swiftmodule && tar c .) | (cd $(BIN_DIR)$(EXTENSION_NAME).swiftmodule && tar xf -)
+
 copy-files:
 	@echo "######################################################################"
 	@echo "### Copying files"
 	@echo "######################################################################"
 
-	mv $(BIN_DIR)$(LIB_BASE_NAME).a $(OUT_DIR)/$(LIB_BASE_NAME).a
-	#cp -r $(INCLUDE_DIR) $(BIN_DIR)/include
+	mv $(BIN_DIR)$(LIB_BASE_NAME).a $(OUT_DIR)$(LIB_BASE_NAME)-$(LIB_VERSION).a
+	mv $(BIN_DIR)$(EXTENSION_NAME).swiftmodule $(OUT_DIR)$(EXTENSION_NAME)-$(LIB_VERSION).swiftmodule
 	rm -rf $(BIN_DIR)/build_temp
+
+archive-lib:
+	@echo "######################################################################"
+	@echo "### Zip Lib and Swfitmodule"
+	@echo "######################################################################"
+
+	cd $(BIN_DIR) && zip -r -9 $(OUT_DIR)/$(EXTENSION_NAME)-$(LIB_VERSION).zip \
+		$(EXTENSION_NAME).swiftmodule \
+		$(LIB_BASE_NAME).a
 
 unit-test:
 	@echo "######################################################################"

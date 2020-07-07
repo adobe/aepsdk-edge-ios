@@ -24,6 +24,12 @@ public struct HttpConnection {
     
     /// The error associated with the request failure or nil on success
     public let error: Error?
+    
+    public init(data: Data?, response: HTTPURLResponse?, error: Error?) {
+        self.data = data
+        self.response = response
+        self.error = error
+    }
 }
 
 public extension HttpConnection {

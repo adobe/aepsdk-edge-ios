@@ -11,7 +11,7 @@
 //
 
 import XCTest
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 class EdgeRequestTests: XCTestCase {
     
@@ -19,7 +19,7 @@ class EdgeRequestTests: XCTestCase {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false // fail so nil checks stop execution
     }
-
+    
     func testEncode_allProperties() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
@@ -42,50 +42,20 @@ class EdgeRequestTests: XCTestCase {
         let edgeRequest = EdgeRequest(meta: requestMetadata, xdm: requestContext, events: events)
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(edgeRequest)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-        {
-          "events" : [
-            {
-              "data" : {
-                "key" : "value"
-              },
-              "xdm" : {
-                "device" : {
-                  "manufacturer" : "Atari",
-                  "type" : "mobile"
-                }
-              }
-            }
-          ],
-          "meta" : {
-            "konductorConfig" : {
-              "streaming" : {
-                "enabled" : true,
-                "lineFeed" : "B",
-                "recordSeparator" : "A"
-              }
-            }
-          },
-          "xdm" : {
-            "identityMap" : {
-              "email" : [
-                {
-                  "id" : "example@adobe.com"
-                }
-              ]
-            }
-          }
-        }
-        """
-        let jsonString = String(data: data!, encoding: .utf8)
-        print(jsonString!)
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] =
+            [ "events[0].data.key": "value",
+              "events[0].xdm.device.manufacturer": "Atari",
+              "events[0].xdm.device.type": "mobile",
+              "meta.konductorConfig.streaming.enabled": true,
+              "meta.konductorConfig.streaming.recordSeparator": "A",
+              "meta.konductorConfig.streaming.lineFeed": "B",
+              "xdm.identityMap.email[0].id": "example@adobe.com"]
+        assertEqual(expectedResult, actualResult)
     }
     
     func testEncode_onlyRequestMetadata() {
@@ -96,28 +66,16 @@ class EdgeRequestTests: XCTestCase {
                                       events: nil)
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(edgeRequest)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-        {
-          "meta" : {
-            "konductorConfig" : {
-              "streaming" : {
-                "enabled" : true,
-                "lineFeed" : "B",
-                "recordSeparator" : "A"
-              }
-            }
-          }
-        }
-        """
-        let jsonString = String(data: data!, encoding: .utf8)
-        print(jsonString!)
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] =
+            ["meta.konductorConfig.streaming.enabled": true,
+             "meta.konductorConfig.streaming.recordSeparator": "A",
+             "meta.konductorConfig.streaming.lineFeed": "B"]
+        assertEqual(expectedResult, actualResult)
     }
     
     func testEncode_onlyRequestContext() {
@@ -129,28 +87,14 @@ class EdgeRequestTests: XCTestCase {
                                       events: nil)
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(edgeRequest)
         
-        XCTAssertNotNil(data)
-        let expected = """
-        {
-          "xdm" : {
-            "identityMap" : {
-              "email" : [
-                {
-                  "id" : "example@adobe.com"
-                }
-              ]
-            }
-          }
-        }
-        """
-        let jsonString = String(data: data!, encoding: .utf8)
-        print(jsonString!)
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] = ["xdm.identityMap.email[0].id": "example@adobe.com"]
+        assertEqual(expectedResult, actualResult)
     }
     
     func testEncode_onlyEvents() {
@@ -181,44 +125,19 @@ class EdgeRequestTests: XCTestCase {
                                       events: events)
         
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
         
         let data = try? encoder.encode(edgeRequest)
-        
-        XCTAssertNotNil(data)
-        let expected = """
-        {
-          "events" : [
-            {
-              "data" : {
-                "key" : "value"
-              },
-              "xdm" : {
-                "device" : {
-                  "manufacturer" : "Atari",
-                  "type" : "mobile"
-                }
-              }
-            },
-            {
-              "xdm" : {
-                "test" : {
-                  "false" : false,
-                  "one" : 1,
-                  "true" : true,
-                  "zero" : 0
-                }
-              }
-            }
-          ]
-        }
-        """
-        let jsonString = String(data: data!, encoding: .utf8)
-        print(jsonString!)
-        XCTAssertEqual(expected, jsonString)
+        let actualResult = asFlattenDictionary(data: data)
+        let expectedResult : [String: Any] =
+            [ "events[0].data.key": "value",
+              "events[0].xdm.device.manufacturer": "Atari",
+              "events[0].xdm.device.type": "mobile",
+              "events[1].xdm.test.false": false,
+              "events[1].xdm.test.true": true,
+              "events[1].xdm.test.one": 1,
+              "events[1].xdm.test.zero": 0]
+        assertEqual(expectedResult, actualResult)
     }
-    
-    
 }
-

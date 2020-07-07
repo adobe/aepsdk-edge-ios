@@ -12,7 +12,7 @@
 
 
 import SwiftUI
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 
 struct ContentView: View {
     var body: some View {
@@ -33,7 +33,7 @@ struct ContentView: View {
             
             Button(action: {
                 let experienceEvent = ExperiencePlatformEvent(xdm: [:], data: ["data":["test":"data"]])
-                ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent, responseHandler: DemoResponseHandler())
+                ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent, responseHandler: DemoResponseHandler())
             }) {
                 Text("Ping to ExEdge")
             }

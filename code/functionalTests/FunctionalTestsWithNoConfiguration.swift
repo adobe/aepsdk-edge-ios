@@ -13,30 +13,32 @@
 
 import XCTest
 import ACPCore
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
 /// This test suite cannot be run in same target as other tests which provide an SDK configuration to ACPCore
 /// as all the tests in the same target use the same ACPCore instance.
-class FunctionalTestsWithNoConfiguration: XCTestCase {
-
+class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
+    
     override func setUp() {
+        super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
         FunctionalTestUtils.resetUserDefaults()
+        FunctionalTestBase.debugEnabled = false
         
+        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count:1)
         do {
-            MonitorExtension.debug = false
-            try ACPCore.registerExtension(MonitorExtension.self)
             try ACPCore.registerExtension(TestableExperiencePlatformInternal.self)
-            ACPCore.start(nil)
         } catch {
             XCTFail("Failed test setUp: \(error.localizedDescription)")
         }
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+        resetTestExpectations()
     }
-
+    
     func testHandleResponseEvent_withPendingConfigurationState_expectResponseEventHandled() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
-        let configState = MonitorExtension.getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
+        let configState = getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
         XCTAssertNil(configState)
         
         let handleAddEventExpectation = XCTestExpectation(description: "Handle Add Event Called")
@@ -70,5 +72,4 @@ class FunctionalTestsWithNoConfiguration: XCTestCase {
         // Expected handleResponseEvent is called
         wait(for: [handleResponseEventExpectation], timeout: 1.0)
     }
-
 }
