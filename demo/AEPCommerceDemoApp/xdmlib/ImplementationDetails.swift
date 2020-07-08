@@ -10,10 +10,10 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.497141 -0700 PDT m=+1.939381139 by XDMTool
+ XDM Property Swift Object Generated 2020-07-07 16:48:02.665198 -0700 PDT m=+1.814282669 by XDMTool
 
- Title			:	Implementation details
- Description	:	The details of the software used to collect the ExperienceEvent.
+ Title			:	Implementation Details
+ Description	:	
 ----
 */
 

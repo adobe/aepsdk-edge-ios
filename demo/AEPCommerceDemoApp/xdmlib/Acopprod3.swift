@@ -10,32 +10,29 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-07 16:48:02.665593 -0700 PDT m=+1.814677120 by XDMTool
+ XDM Property Swift Object Generated 2020-07-07 16:48:21.241804 -0700 PDT m=+1.762580678 by XDMTool
 
- Title			:	Launches
- Description	:	Launch of an application. Triggered on every run, including crashes and installs. Also triggered on a resume from background when the session timeout has been exceeded.
+ Title			:	Acopprod3
+ Description	:	
 ----
 */
 
 import Foundation
 
 
-public struct Launches {
+public struct Acopprod3 {
 	public init() {}
 
-	public var id: String?
-	public var value: Float?
+	public var placeContext: PlaceContext?
 
 	enum CodingKeys: String, CodingKey {
-		case id = "id"
-		case value = "value"
+		case placeContext = "placeContext"
 	}	
 }
 
-extension Launches:Encodable {
+extension Acopprod3:Encodable {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
-		if let unwrapped = id { try container.encode(unwrapped, forKey: .id) }
-		if let unwrapped = value { try container.encode(unwrapped, forKey: .value) }
+		if let unwrapped = placeContext { try container.encode(unwrapped, forKey: .placeContext) }
 	}
 }

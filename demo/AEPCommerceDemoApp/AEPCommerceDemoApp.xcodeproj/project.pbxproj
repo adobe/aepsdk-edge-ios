@@ -8,8 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		8A63D7A4F24DC50C9842A182 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26FA933AB67D0A085572165E /* Pods_AEPCommerceDemoApp.framework */; };
+		BF0249FB24B54208002131E9 /* MobileSDKCommerceSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0249F724B54208002131E9 /* MobileSDKCommerceSchema.swift */; };
+		BF0249FC24B54208002131E9 /* MobileSDKLifecycleSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0249F824B54208002131E9 /* MobileSDKLifecycleSchema.swift */; };
+		BF0249FD24B54208002131E9 /* Acopprod3.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0249F924B54208002131E9 /* Acopprod3.swift */; };
+		BF0249FE24B54208002131E9 /* MobileSDKPlacesSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0249FA24B54208002131E9 /* MobileSDKPlacesSchema.swift */; };
 		BF2916B624A2A437009038A8 /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2916B524A2A437009038A8 /* libAEPExperiencePlatform.a */; };
-		BF2916BA24A5660B009038A8 /* MobileSDKCommerceDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2916B824A5660B009038A8 /* MobileSDKCommerceDemo.swift */; };
 		BF2916BB24A5660B009038A8 /* ImplementationDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2916B924A5660B009038A8 /* ImplementationDetails.swift */; };
 		BF5EEAB124904A3800C72622 /* CartItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA8E24904A3600C72622 /* CartItem.swift */; };
 		BF5EEAB224904A3800C72622 /* AEPDemoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */; };
@@ -72,8 +75,11 @@
 /* Begin PBXFileReference section */
 		26FA933AB67D0A085572165E /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D10062D570E23F89330CC3 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "../AEPCommerceDemoApp/Pods/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		BF0249F724B54208002131E9 /* MobileSDKCommerceSchema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileSDKCommerceSchema.swift; sourceTree = "<group>"; };
+		BF0249F824B54208002131E9 /* MobileSDKLifecycleSchema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileSDKLifecycleSchema.swift; sourceTree = "<group>"; };
+		BF0249F924B54208002131E9 /* Acopprod3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Acopprod3.swift; sourceTree = "<group>"; };
+		BF0249FA24B54208002131E9 /* MobileSDKPlacesSchema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileSDKPlacesSchema.swift; sourceTree = "<group>"; };
 		BF2916B524A2A437009038A8 /* libAEPExperiencePlatform.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAEPExperiencePlatform.a; sourceTree = "<group>"; };
-		BF2916B824A5660B009038A8 /* MobileSDKCommerceDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileSDKCommerceDemo.swift; sourceTree = "<group>"; };
 		BF2916B924A5660B009038A8 /* ImplementationDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImplementationDetails.swift; sourceTree = "<group>"; };
 		BF5EE93F249039FE00C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5EEA8E24904A3600C72622 /* CartItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartItem.swift; sourceTree = "<group>"; };
@@ -219,6 +225,7 @@
 		BF5EEAD324904AE100C72622 /* xdmlib */ = {
 			isa = PBXGroup;
 			children = (
+				BF0249F924B54208002131E9 /* Acopprod3.swift */,
 				BF5EEAEE24904AE100C72622 /* Application.swift */,
 				BF5EEAE424904AE100C72622 /* ApplicationCloses.swift */,
 				BF5EEAE524904AE100C72622 /* AuthenticatedState.swift */,
@@ -239,7 +246,9 @@
 				BF5EEAD824904AE100C72622 /* InStorePurchase.swift */,
 				BF5EEAD624904AE100C72622 /* Items.swift */,
 				BF5EEAE724904AE100C72622 /* Launches.swift */,
-				BF2916B824A5660B009038A8 /* MobileSDKCommerceDemo.swift */,
+				BF0249F724B54208002131E9 /* MobileSDKCommerceSchema.swift */,
+				BF0249F824B54208002131E9 /* MobileSDKLifecycleSchema.swift */,
+				BF0249FA24B54208002131E9 /* MobileSDKPlacesSchema.swift */,
 				BF5EEAE024904AE100C72622 /* Order.swift */,
 				BF5EEAE824904AE100C72622 /* PaymentsItem.swift */,
 				BF5EEAE624904AE100C72622 /* PlaceContext.swift */,
@@ -378,18 +387,22 @@
 			files = (
 				BF5EEBB9249834FB00C72622 /* Application.swift in Sources */,
 				BF5EEBBA249834FB00C72622 /* ApplicationCloses.swift in Sources */,
+				BF0249FD24B54208002131E9 /* Acopprod3.swift in Sources */,
 				BF5EEBBB249834FB00C72622 /* AuthenticatedState.swift in Sources */,
 				BF5EEBBC249834FB00C72622 /* BrowserDetails.swift in Sources */,
 				BF5EEBBD249834FB00C72622 /* CartAbandons.swift in Sources */,
 				BF5EEBBE249834FC00C72622 /* Checkouts.swift in Sources */,
 				BF5EEBBF249834FC00C72622 /* Commerce.swift in Sources */,
 				BF5EEBC0249834FC00C72622 /* ConnectionType.swift in Sources */,
+				BF0249FC24B54208002131E9 /* MobileSDKLifecycleSchema.swift in Sources */,
 				BF5EEBC1249834FC00C72622 /* Crashes.swift in Sources */,
 				BF5EEBC2249834FC00C72622 /* Device.swift in Sources */,
 				BF5EEBC3249834FC00C72622 /* Environment.swift in Sources */,
 				BF5EEBC4249834FC00C72622 /* FeatureUsages.swift in Sources */,
 				BF5EEBC5249834FC00C72622 /* FirstLaunches.swift in Sources */,
+				BF0249FB24B54208002131E9 /* MobileSDKCommerceSchema.swift in Sources */,
 				BF5EEBC6249834FC00C72622 /* Geo.swift in Sources */,
+				BF0249FE24B54208002131E9 /* MobileSDKPlacesSchema.swift in Sources */,
 				BF5EEBC7249834FC00C72622 /* IdentityMap.swift in Sources */,
 				BF5EEBC8249834FC00C72622 /* Installs.swift in Sources */,
 				BF5EEBC9249834FC00C72622 /* InStorePurchase.swift in Sources */,
@@ -413,7 +426,6 @@
 				BF5EEBDB249834FC00C72622 /* Upgrades.swift in Sources */,
 				BF5EEAD224904A3800C72622 /* CheckOutViewController.swift in Sources */,
 				BF5EEAC624904A3800C72622 /* ShoppingItemCell.swift in Sources */,
-				BF2916BA24A5660B009038A8 /* MobileSDKCommerceDemo.swift in Sources */,
 				BF5EEAB424904A3800C72622 /* GriffonViewController.swift in Sources */,
 				BF5EEACA24904A3800C72622 /* ResponseHandler.swift in Sources */,
 				BF5EEAB324904A3800C72622 /* ProductViewController.swift in Sources */,

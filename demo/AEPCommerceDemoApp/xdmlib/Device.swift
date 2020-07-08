@@ -10,10 +10,10 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.498442 -0700 PDT m=+1.940682219 by XDMTool
+ XDM Property Swift Object Generated 2020-07-07 16:48:02.664157 -0700 PDT m=+1.813240970 by XDMTool
 
  Title			:	Device
- Description	:	An identified device, application or device browser instance that is trackable across sessions, normally by cookies.
+ Description	:	
 ----
 */
 
@@ -25,25 +25,25 @@ public struct Device {
 
 	public var colorDepth: Int64?
 	public var manufacturer: String?
-	public var model: String?
 	public var modelNumber: String?
+	public var model: String?
 	public var screenHeight: Int64?
 	public var screenOrientation: ScreenOrientation?
 	public var screenWidth: Int64?
-	public var typeID: String?
 	public var typeIDService: String?
+	public var typeID: String?
 	public var type: String?
 
 	enum CodingKeys: String, CodingKey {
 		case colorDepth = "colorDepth"
 		case manufacturer = "manufacturer"
-		case model = "model"
 		case modelNumber = "modelNumber"
+		case model = "model"
 		case screenHeight = "screenHeight"
 		case screenOrientation = "screenOrientation"
 		case screenWidth = "screenWidth"
-		case typeID = "typeID"
 		case typeIDService = "typeIDService"
+		case typeID = "typeID"
 		case type = "type"
 	}	
 }
@@ -53,13 +53,13 @@ extension Device:Encodable {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = colorDepth { try container.encode(unwrapped, forKey: .colorDepth) }
 		if let unwrapped = manufacturer { try container.encode(unwrapped, forKey: .manufacturer) }
-		if let unwrapped = model { try container.encode(unwrapped, forKey: .model) }
 		if let unwrapped = modelNumber { try container.encode(unwrapped, forKey: .modelNumber) }
+		if let unwrapped = model { try container.encode(unwrapped, forKey: .model) }
 		if let unwrapped = screenHeight { try container.encode(unwrapped, forKey: .screenHeight) }
 		if let unwrapped = screenOrientation { try container.encode(unwrapped, forKey: .screenOrientation) }
 		if let unwrapped = screenWidth { try container.encode(unwrapped, forKey: .screenWidth) }
-		if let unwrapped = typeID { try container.encode(unwrapped, forKey: .typeID) }
 		if let unwrapped = typeIDService { try container.encode(unwrapped, forKey: .typeIDService) }
+		if let unwrapped = typeID { try container.encode(unwrapped, forKey: .typeID) }
 		if let unwrapped = type { try container.encode(unwrapped, forKey: .type) }
 	}
 }

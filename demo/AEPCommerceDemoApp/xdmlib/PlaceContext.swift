@@ -10,10 +10,10 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.497469 -0700 PDT m=+1.939708820 by XDMTool
+ XDM Property Swift Object Generated 2020-07-07 16:48:21.241881 -0700 PDT m=+1.762658019 by XDMTool
 
- Title			:	Place context
- Description	:	The transient circumstances related to the observation. Examples include locale specific information such as weather, local time, traffic, day of the week, workday vs. holiday, and working hours.
+ Title			:	Place Context
+ Description	:	
 ----
 */
 

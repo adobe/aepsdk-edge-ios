@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.50179 -0700 PDT m=+1.944030340 by XDMTool
+ XDM Property Swift Object Generated 2020-07-07 16:48:02.663862 -0700 PDT m=+1.812945954 by XDMTool
 
  Title			:	Crashes
  Description	:	Triggered when the application does not exit gracefully. Event is sent on application launch after a crash.
