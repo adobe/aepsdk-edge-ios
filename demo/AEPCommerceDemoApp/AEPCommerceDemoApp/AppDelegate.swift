@@ -21,14 +21,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
         ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
         ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with AEPExperiencePlatform."))
-        ACPIdentity.registerExtension()
-        ACPLifecycle.registerExtension()
-        ACPSignal.registerExtension()
-        ACPGriffon.registerExtension()
-        ExperiencePlatform.registerExtension()
+
         // Option 1 : Configuration : Inline
         // var config = [String: String]()
         // config["global.privacy"] = "optedin"
@@ -44,11 +39,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         ACPIdentity.registerExtension()
         ACPLifecycle.registerExtension()
+        ACPSignal.registerExtension()
+        ACPGriffon.registerExtension()
+        ExperiencePlatform.registerExtension()
         ACPCore.start({
             //   ACPCore.updateConfiguration(config)
-            ACPCore.lifecycleStart(nil)
         })
+        
+        // only start lifecycle if the application is not in the background
+        if (application.applicationState != .background ) {
+            ACPCore.lifecycleStart(nil)
+        }
         return true
+    }
+    
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        ACPCore.lifecycleStart(nil)
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        ACPCore.lifecyclePause()
     }
 }
 
