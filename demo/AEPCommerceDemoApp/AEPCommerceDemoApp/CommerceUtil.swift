@@ -275,33 +275,4 @@ class CommerceUtil  {
         }
         return productItem
     }
-    
-    static func sendLifecycleData() {
-        var application = Application()
-        application.name = "AEPCommerceDemoApp"
-        application.version = "1.0.0-alpha"
-        var launches = Launches()
-        launches.value = 1
-        application.launches = launches
-        
-        var device = Device()
-        device.manufacturer = "Apple"
-        device.model = "iPhone 11 Pro Max"
-        
-        var environment = Environment()
-        //environment.language = Locale.autoupdatingCurrent.identifier
-        environment.operatingSystem = "iOS"
-        environment.operatingSystemVendor = "Apple"
-        environment.operatingSystemVersion = "iOS 13.3"
-        environment.type = Type.application
-        
-        var lifcycle = MobileSDKLifecycleSchema()
-        lifcycle.application = application
-        lifcycle.device = device
-        lifcycle.environment = environment
-        lifcycle.eventType = "lifecycle.start"
-        let event = ExperiencePlatformEvent(xdm: lifcycle)
-        let responseHandler = ResponseHandler()
-        ExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
-    }
 }
