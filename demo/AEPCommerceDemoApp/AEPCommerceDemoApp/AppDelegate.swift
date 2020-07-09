@@ -47,6 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ACPCore.start({
             //   ACPCore.updateConfiguration(config)
             ACPCore.lifecycleStart(nil)
+            CommerceUtil.sendLifecycleData()
         })
         return true
     }
