@@ -11,7 +11,7 @@
 //
 
 import XCTest
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 let testBody = "{\"test\": \"json\"\"}"
 let jsonData = testBody.data(using: .utf8)

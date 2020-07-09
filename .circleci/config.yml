@@ -14,7 +14,7 @@ jobs:
 
   build-and-test:
     macos:
-      xcode: 11.4.1 # Specify the Xcode version to use
+      xcode: 11.1.0 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -22,22 +22,9 @@ jobs:
       # restore pods related caches
       - restore_cache:
           keys:
-            - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "build/xcode/Podfile.lock" }}
-            - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}
-            - cocoapods-cache-v1
-            - 1-gems-{{ checksum "Gemfile.lock" }}
-
-      # make sure we're on the right version of cocoapods
-      - run:
-          name: Verify Cocoapods Version
-          command: bundle check || bundle install --path vendor/bundle
-
-      # save cocoapods version gem data
-      - save_cache:
-          name: Saving Gemfile Cache
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
+            - cocoapods-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "build/xcode/Podfile.lock" }}
+            - cocoapods-cache-v2-{{ arch }}-{{ .Branch }}
+            - cocoapods-cache-v2
 
       # install CocoaPods - using default CocoaPods version, not the bundle
       - run: 
@@ -47,7 +34,7 @@ jobs:
       # save pods related files
       - save_cache:
           name: Saving CocoaPods Cache
-          key: cocoapods-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "build/xcode/Podfile.lock" }}
+          key: cocoapods-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "build/xcode/Podfile.lock" }}
           paths:
             - ./build/xcode/Pods
             - ~/.cocoapods
@@ -55,7 +42,7 @@ jobs:
       # pre-start the simulator to prevent timeouts
       - run:
           name: Pre-start Simulator
-          command: xcrun instruments -w "iPhone 8 (13.0) [" || true
+          command: xcrun instruments -w "iPhone 8 (13.1) [" || true
 
       - run: 
           name: Run Tests
@@ -64,12 +51,22 @@ jobs:
       # code coverage
       - run:
           name: Upload Code Coverage Report
-          command: bash <(curl -s https://codecov.io/bash) -c -D "./build/xcode/ACPExperiencePlatform/out" -J "unitTests" -J "functionalTests" -J "functionalTestsConfig" -t ${CODECOV_TOKEN}
+          command: bash <(curl -s https://codecov.io/bash) -v -X s3 -c -D "./build/xcode/AEPExperiencePlatform/out" -J "unitTests" -J "functionalTests" -J "functionalTestsConfig" -t ${CODECOV_TOKEN}
 
-      - deploy:
+      - run:
+          name: Build Universal Library
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               make build-all
+            fi
+
+      # verify demo app builds, must build lib before this step
+      - run:
+          name: Build Demo App
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              make build-app
+              make archive-app
             fi
 
       - store_artifacts:

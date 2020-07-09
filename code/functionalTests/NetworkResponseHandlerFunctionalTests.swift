@@ -12,7 +12,7 @@
 
 import XCTest
 import ACPCore
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     private let e1 = try! ACPExtensionEvent(name: "e1", type: "eventType", source: "eventSource", data: nil)
