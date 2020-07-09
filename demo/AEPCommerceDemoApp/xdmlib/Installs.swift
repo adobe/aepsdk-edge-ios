@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-07 16:48:02.664534 -0700 PDT m=+1.813618764 by XDMTool
+ XDM Property Swift Object Generated 2020-07-08 17:42:27.773085 -0700 PDT m=+1.896400680 by XDMTool
 
  Title			:	Installs
  Description	:	Install of an application on a device where the specific install event is available.

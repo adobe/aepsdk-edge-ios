@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-07 16:48:35.83042 -0700 PDT m=+1.828532240 by XDMTool
+ XDM Property Swift Object Generated 2020-07-08 17:45:26.156802 -0700 PDT m=+2.012732112 by XDMTool
 
  Title			:	Items
  Description	:	

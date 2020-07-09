@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-07 16:48:35.829424 -0700 PDT m=+1.827535399 by XDMTool
+ XDM Property Swift Object Generated 2020-07-08 17:45:26.156961 -0700 PDT m=+2.012890802 by XDMTool
 
  Title			:	InStorePurchase
  Description	:	'inStore' purchase is saved for analytics use.

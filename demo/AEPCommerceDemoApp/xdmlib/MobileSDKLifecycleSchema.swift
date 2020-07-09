@@ -10,10 +10,10 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Schema Swift Object Generated 2020-07-07 16:48:02.661709 -0700 PDT m=+1.810793336 by XDMTool
+ XDM Schema Swift Object Generated 2020-07-08 17:42:27.77059 -0700 PDT m=+1.893905593 by XDMTool
 
  Title			:	Mobile SDK Lifecycle Schema
- Version		:	1.0
+ Version		:	1.1
  Description	:	
  ID				:	https://ns.adobe.com/acopprod3/schemas/711b0b9afc7162017bfe022cda7af34a15232797b4a69107
  Alt ID			:	_acopprod3.schemas.711b0b9afc7162017bfe022cda7af34a15232797b4a69107
@@ -26,23 +26,29 @@ import Foundation
 import AEPExperiencePlatform
 
 public struct MobileSDKLifecycleSchema : XDMSchema {
-	public let schemaVersion = "1.0"
+	public let schemaVersion = "1.1"
 	public let schemaIdentifier = "https://ns.adobe.com/acopprod3/schemas/711b0b9afc7162017bfe022cda7af34a15232797b4a69107"
 	public let datasetIdentifier = "5f05094a112ea71914bd169c"
 	
 	public init() {}
 
-	public var Acopprod3: Acopprod3?
+	public var application: Application?
+	public var device: Device?
+	public var environment: Environment?
 	public var eventMergeId: String?
 	public var eventType: String?
 	public var identityMap: IdentityMap?
+	public var placeContext: PlaceContext?
 	public var timestamp: Date?
 
 	enum CodingKeys: String, CodingKey {
-		case Acopprod3 = "_acopprod3"
+		case application = "application"
+		case device = "device"
+		case environment = "environment"
 		case eventMergeId = "eventMergeId"
 		case eventType = "eventType"
 		case identityMap = "identityMap"
+		case placeContext = "placeContext"
 		case timestamp = "timestamp"
 	}	
 }
@@ -50,10 +56,13 @@ public struct MobileSDKLifecycleSchema : XDMSchema {
 extension MobileSDKLifecycleSchema {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
-		if let unwrapped = Acopprod3 { try container.encode(unwrapped, forKey: .Acopprod3) }
+		if let unwrapped = application { try container.encode(unwrapped, forKey: .application) }
+		if let unwrapped = device { try container.encode(unwrapped, forKey: .device) }
+		if let unwrapped = environment { try container.encode(unwrapped, forKey: .environment) }
 		if let unwrapped = eventMergeId { try container.encode(unwrapped, forKey: .eventMergeId) }
 		if let unwrapped = eventType { try container.encode(unwrapped, forKey: .eventType) }
 		if let unwrapped = identityMap { try container.encode(unwrapped, forKey: .identityMap) }
+		if let unwrapped = placeContext { try container.encode(unwrapped, forKey: .placeContext) }
 		if let unwrapped = XDMFormatters.dateToISO8601String(from: timestamp) { try container.encode(unwrapped, forKey: .timestamp) }
 	}
 }

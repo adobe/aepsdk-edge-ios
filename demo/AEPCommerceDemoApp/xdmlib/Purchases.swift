@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-07 16:48:35.830279 -0700 PDT m=+1.828391076 by XDMTool
+ XDM Property Swift Object Generated 2020-07-08 17:45:26.159871 -0700 PDT m=+2.015800621 by XDMTool
 
  Title			:	Purchases
  Description	:	An order has been accepted. Purchase is the only required action in a commerce conversion. Purchase must have a product list referenced.

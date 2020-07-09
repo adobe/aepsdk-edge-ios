@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-07 16:48:35.82883 -0700 PDT m=+1.826941999 by XDMTool
+ XDM Property Swift Object Generated 2020-07-08 17:45:26.158421 -0700 PDT m=+2.014351130 by XDMTool
 
  Title			:	ProductListRemovals
  Description	:	Removal or removals of a product entry from a product list, for example a product is removed from a shopping cart.

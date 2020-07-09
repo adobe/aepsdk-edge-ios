@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-07 16:48:35.829525 -0700 PDT m=+1.827636926 by XDMTool
+ XDM Property Swift Object Generated 2020-07-08 17:45:26.157601 -0700 PDT m=+2.013531205 by XDMTool
 
  Title			:	Order
  Description	:	The placed order for one or more products.

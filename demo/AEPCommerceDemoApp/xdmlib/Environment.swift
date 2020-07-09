@@ -10,10 +10,10 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-07 16:48:02.664625 -0700 PDT m=+1.813709306 by XDMTool
+ XDM Property Swift Object Generated 2020-07-08 17:42:27.773527 -0700 PDT m=+1.896842115 by XDMTool
 
  Title			:	Environment
- Description	:	
+ Description	:	Information about the surrounding situation the event observation occurred in, specifically detailing transitory information such as the network or software versions.
 ----
 */
 
@@ -32,9 +32,9 @@ public struct Environment {
 	public var ipV4: String?
 	public var ipV6: String?
 	public var language: String?
+	public var operatingSystem: String?
 	public var operatingSystemVendor: String?
 	public var operatingSystemVersion: String?
-	public var operatingSystem: String?
 	public var type: Type?
 	public var viewportHeight: Int64?
 	public var viewportWidth: Int64?
@@ -49,9 +49,9 @@ public struct Environment {
 		case ipV4 = "ipV4"
 		case ipV6 = "ipV6"
 		case language = "language"
+		case operatingSystem = "operatingSystem"
 		case operatingSystemVendor = "operatingSystemVendor"
 		case operatingSystemVersion = "operatingSystemVersion"
-		case operatingSystem = "operatingSystem"
 		case type = "type"
 		case viewportHeight = "viewportHeight"
 		case viewportWidth = "viewportWidth"
@@ -70,9 +70,9 @@ extension Environment:Encodable {
 		if let unwrapped = ipV4 { try container.encode(unwrapped, forKey: .ipV4) }
 		if let unwrapped = ipV6 { try container.encode(unwrapped, forKey: .ipV6) }
 		if let unwrapped = language { try container.encode(unwrapped, forKey: .language) }
+		if let unwrapped = operatingSystem { try container.encode(unwrapped, forKey: .operatingSystem) }
 		if let unwrapped = operatingSystemVendor { try container.encode(unwrapped, forKey: .operatingSystemVendor) }
 		if let unwrapped = operatingSystemVersion { try container.encode(unwrapped, forKey: .operatingSystemVersion) }
-		if let unwrapped = operatingSystem { try container.encode(unwrapped, forKey: .operatingSystem) }
 		if let unwrapped = type { try container.encode(unwrapped, forKey: .type) }
 		if let unwrapped = viewportHeight { try container.encode(unwrapped, forKey: .viewportHeight) }
 		if let unwrapped = viewportWidth { try container.encode(unwrapped, forKey: .viewportWidth) }

@@ -10,10 +10,10 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-07 16:48:02.664157 -0700 PDT m=+1.813240970 by XDMTool
+ XDM Property Swift Object Generated 2020-07-08 17:42:27.772602 -0700 PDT m=+1.895917544 by XDMTool
 
  Title			:	Device
- Description	:	
+ Description	:	An identified device, application or device browser instance that is trackable across sessions, normally by cookies.
 ----
 */
 
@@ -30,8 +30,8 @@ public struct Device {
 	public var screenHeight: Int64?
 	public var screenOrientation: ScreenOrientation?
 	public var screenWidth: Int64?
-	public var typeIDService: String?
 	public var typeID: String?
+	public var typeIDService: String?
 	public var type: String?
 
 	enum CodingKeys: String, CodingKey {
@@ -42,8 +42,8 @@ public struct Device {
 		case screenHeight = "screenHeight"
 		case screenOrientation = "screenOrientation"
 		case screenWidth = "screenWidth"
-		case typeIDService = "typeIDService"
 		case typeID = "typeID"
+		case typeIDService = "typeIDService"
 		case type = "type"
 	}	
 }
@@ -58,8 +58,8 @@ extension Device:Encodable {
 		if let unwrapped = screenHeight { try container.encode(unwrapped, forKey: .screenHeight) }
 		if let unwrapped = screenOrientation { try container.encode(unwrapped, forKey: .screenOrientation) }
 		if let unwrapped = screenWidth { try container.encode(unwrapped, forKey: .screenWidth) }
-		if let unwrapped = typeIDService { try container.encode(unwrapped, forKey: .typeIDService) }
 		if let unwrapped = typeID { try container.encode(unwrapped, forKey: .typeID) }
+		if let unwrapped = typeIDService { try container.encode(unwrapped, forKey: .typeIDService) }
 		if let unwrapped = type { try container.encode(unwrapped, forKey: .type) }
 	}
 }

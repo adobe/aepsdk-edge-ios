@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-07 16:48:35.830549 -0700 PDT m=+1.828661114 by XDMTool
+ XDM Property Swift Object Generated 2020-07-08 17:45:26.157292 -0700 PDT m=+2.013222037 by XDMTool
 
  Title			:	ProductListReopens
  Description	:	A product list that was no longer accessible (abandoned) has been re-activated by the user. Example via a re-marketing activity.
