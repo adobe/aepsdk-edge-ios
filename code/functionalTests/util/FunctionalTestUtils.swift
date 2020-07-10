@@ -11,7 +11,7 @@
 //
 
 import Foundation
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 public class FunctionalTestUtils {
     
@@ -24,11 +24,14 @@ public class FunctionalTestUtils {
             defaults.removeObject(forKey: key)
         }
         
-        let store = NamedUserDefaultsStore(name: "com.adobe.mobile.datastore.ACPExperiencePlatform")
+        defaults.set(nil, forKey: "Adobe.AdobeMobile_ConfigState.config.overridden.map")
+        
+        let store = NamedUserDefaultsStore(name: "AEPExperiencePlatform")
         store.removeAll()
         store.setDictionary(key: "storePayloads", value:[:])
         //store.remove(key: "storePayloads")
-        //defaults.removeSuite(named:"com.adobe.mobile.datastore.ACPExperiencePlatform")
+        defaults.removeSuite(named:"com.adobe.mobile.datastore.ACPExperiencePlatform")
         print("resetUserDefaults - Removed all user defaults")
+        UserDefaults.standard.removeSuite(named: "com.adobe.mobile.datastore.AEPExperiencePlatform")
     }
 }

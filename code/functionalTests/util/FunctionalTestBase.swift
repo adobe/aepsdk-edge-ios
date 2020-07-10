@@ -49,6 +49,7 @@ class FunctionalTestBase : XCTestCase {
     
     public override func setUp() {
         super.setUp()
+        continueAfterFailure = false
         if FunctionalTestBase.firstRun {
             let startLatch: CountDownLatch = CountDownLatch(1)
             setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)

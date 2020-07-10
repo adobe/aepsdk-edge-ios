@@ -23,6 +23,24 @@ class FunctionalSampleTest: FunctionalTestBase {
     private let exEdgeInteractUrl = "https://edge.adobedc.net/ee/v1/interact"
     private let responseBody = "{\"test\": \"json\"}"
     
+    class TestResponseHandler : ExperiencePlatformResponseHandler {
+        var onResponseReceivedData : [String:Any] = [:] // latest data received in the onResponse callback
+        var countDownLatch : CountDownLatch?
+        
+        init(expectedCount: Int32) {
+            countDownLatch = CountDownLatch(expectedCount)
+        }
+        
+        func onResponse(data: [String : Any]) {
+            onResponseReceivedData = data
+            countDownLatch?.countDown()
+        }
+        
+        func await() {
+            countDownLatch?.await()
+        }
+    }
+    
     public class override func setUp() {
         super.setUp()
         FunctionalTestUtils.resetUserDefaults()
@@ -54,6 +72,10 @@ class FunctionalSampleTest: FunctionalTestBase {
         }
         
         FunctionalSampleTest.firstRun = false
+    }
+    
+    override func tearDown() {
+        super.tearDown()
     }
     
     /// MARK sample tests for the FunctionalTest framework usage
@@ -140,7 +162,7 @@ class FunctionalSampleTest: FunctionalTestBase {
                                                             "testDouble": 12.89,
                                                             "testArray": ["arrayElem1", 2, true],
                                                             "testDictionary": ["key":"val"]])
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
@@ -166,7 +188,7 @@ class FunctionalSampleTest: FunctionalTestBase {
                                                                                         "testDataDouble": 13.66,
                                                                                         "testDataArray": ["arrayElem1", 2, true],
                                                                                         "testDataDictionary": ["key":"val"]])
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
@@ -188,7 +210,7 @@ class FunctionalSampleTest: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
         
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString":"xdm"], data: nil)
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
@@ -200,7 +222,7 @@ class FunctionalSampleTest: FunctionalTestBase {
     
     func testSendEvent_withEmptyXDMDataAndNilData_DoesNotSendRequestEvent() {
         let experienceEvent = ExperiencePlatformEvent(xdm: [:], data: nil)
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         assertUnexpectedEvents()
@@ -208,7 +230,7 @@ class FunctionalSampleTest: FunctionalTestBase {
     
     func testSendEvent_withEmptyXDMSchema_DoesNotSendRequestEvent() {
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema())
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         assertUnexpectedEvents()
@@ -227,7 +249,7 @@ class FunctionalSampleTest: FunctionalTestBase {
                                                             "testDouble": 12.89,
                                                             "testArray": ["arrayElem1", 2, true],
                                                             "testDictionary": ["key":"val"]])
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         assertNetworkRequestsCount()
@@ -266,7 +288,7 @@ class FunctionalSampleTest: FunctionalTestBase {
                                                                                         "testDataDouble": 13.66,
                                                                                         "testDataArray": ["arrayElem1", 2, true],
                                                                                         "testDataDictionary": ["key":"val"]])
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         assertNetworkRequestsCount()
@@ -310,7 +332,7 @@ class FunctionalSampleTest: FunctionalTestBase {
         xdmSchema.xdmObject = xdmObject
         
         let experienceEvent = ExperiencePlatformEvent(xdm: xdmSchema)
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         assertNetworkRequestsCount()
@@ -340,7 +362,7 @@ class FunctionalSampleTest: FunctionalTestBase {
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema())
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
@@ -352,7 +374,7 @@ class FunctionalSampleTest: FunctionalTestBase {
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema(), data: [:])
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
@@ -364,10 +386,154 @@ class FunctionalSampleTest: FunctionalTestBase {
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema(), data: nil)
-        ACPExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
         
         // verify
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
         XCTAssertEqual(0, resultNetworkRequests.count)
+    }
+    
+    // MARK: Client-side store
+    func testSendEvent_twoConsecutiveCalls_appendsReceivedClientSideStore() {
+        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
+        let storeResponseBody = "\u{0000}{\"requestId\": \"0000-4a4e-1111-bf5c-abcd\",\"handle\": [{\"payload\": [{\"key\": \"kndctr_testOrg_AdobeOrg_identity\",\"value\": \"CiY4OTgzOTEzMzE0NDAwMjUyOTA2NzcwMTY0NDE3Nzc4MzUwMTUzMFINCJHdjrCzLhAAGAEgB6ABnd2OsLMuqAGV8N6h277mkagB8AGR3Y6wsy4=\",\"maxAge\": 34128000},{\"key\": \"kndctr_testOrg_AdobeOrg_consent_check\",\"value\": \"1\",\"maxAge\": 7200},{\"key\": \"expired_key\",\"value\": \"1\",\"maxAge\": 0}],\"type\": \"state:store\"}]}\n"
+        let responseConnection : HttpConnection = HttpConnection(data: storeResponseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        
+        let experienceEvent = ExperiencePlatformEvent(xdm: ["testString":"xdm"], data: nil)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        
+        // first network call, no stored data
+        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
+        var resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        XCTAssertEqual(7, requestBody.count)
+        resetTestExpectations()
+        
+        // send a new event, should contain previously stored store data
+        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
+        
+        resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        XCTAssertEqual(13, requestBody.count)
+        
+        guard let firstStore = requestBody["meta.state.entries[0].key"] as? String, let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
+            XCTFail("Client-side store not found")
+            return
+        }
+        XCTAssertEqual("kndctr_testOrg_AdobeOrg_identity", requestBody["meta.state.entries[\(Int(index))].key"] as? String)
+        XCTAssertEqual("CiY4OTgzOTEzMzE0NDAwMjUyOTA2NzcwMTY0NDE3Nzc4MzUwMTUzMFINCJHdjrCzLhAAGAEgB6ABnd2OsLMuqAGV8N6h277mkagB8AGR3Y6wsy4=", requestBody["meta.state.entries[\(Int(index))].value"] as? String)
+        XCTAssertEqual(34128000, requestBody["meta.state.entries[\(Int(index))].maxAge"] as? Int)
+        XCTAssertEqual("kndctr_testOrg_AdobeOrg_consent_check", requestBody["meta.state.entries[\(Int(!index))].key"] as? String)
+        XCTAssertEqual("1", requestBody["meta.state.entries[\(Int(!index))].value"] as? String)
+        XCTAssertEqual(7200, requestBody["meta.state.entries[\(Int(!index))].maxAge"] as? Int)
+        
+        let requestUrl = resultNetworkRequests[0].url
+        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrl))
+        XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
+        XCTAssertNotNil(requestUrl.queryParam("requestId"))
+    }
+    
+    // MARK: Paired request-response events
+    func testSendEvent_receivesResponseEventHandle_sendsResponseEvent_pairedWithTheRequestEventId() {
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        let url = "https://edge.adobedc.net/ee/v1/interact"
+        let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
+        let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"], data: nil))
+        
+        assertNetworkRequestsCount()
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let requestId = resultNetworkRequests[0].url.queryParam("requestId")
+        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
+        let requestEventUUID = requestEvents[0].eventUniqueIdentifier
+        let responseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
+        let eventData = flattenDictionary(dict: responseEvents[0].eventData as! [String: Any])
+        XCTAssertEqual(8, eventData.count)
+        XCTAssertEqual("personalization:decisions", eventData["type"] as? String)
+        XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", eventData["payload[0].id"] as? String)
+        XCTAssertEqual("#D41DBA", eventData["payload[0].items[0].data.content.value"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/personalization/json-content-item", eventData["payload[0].items[0].schema"] as? String)
+        XCTAssertEqual("buttonColor", eventData["payload[0].scope"] as? String)
+        XCTAssertEqual(0, eventData["eventIndex"] as? Int)
+        XCTAssertEqual("buttonColor", eventData["payload[0].scope"] as? String)
+        XCTAssertEqual(requestId, eventData["requestId"] as? String)
+        XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
+    }
+    
+    func testSendEvent_receivesResponseEventWarning_sendsErrorResponseEvent_pairedWithTheRequestEventId() {
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
+        let url = "https://edge.adobedc.net/ee/v1/interact"
+        let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [],\"warnings\": [{\"eventIndex\": 0,\"code\": \"personalization:0\",\"message\": \"Failed due to unrecoverable system error\"}]}\n"
+        let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"], data: nil))
+        
+        assertNetworkRequestsCount()
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let requestId = resultNetworkRequests[0].url.queryParam("requestId")
+        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
+        let requestEventUUID = requestEvents[0].eventUniqueIdentifier
+        let errorResponseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
+        let eventData = flattenDictionary(dict: errorResponseEvents[0].eventData as! [String: Any])
+        XCTAssertEqual(5, eventData.count)
+        XCTAssertEqual("personalization:0", eventData["code"] as? String)
+        XCTAssertEqual("Failed due to unrecoverable system error", eventData["message"] as? String)
+        XCTAssertEqual(0, eventData["eventIndex"] as? Int)
+        XCTAssertEqual(requestId, eventData["requestId"] as? String)
+        XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
+    }
+    
+    // TODO: Failing due to AMSDK-10295, re-enable after the bug fix is released
+    func disable_testSendEvent_receivesResponseEventHandle_callsResponseHandler() {
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        let url = "https://edge.adobedc.net/ee/v1/interact"
+        let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
+        let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        let responseHandler = TestResponseHandler(expectedCount: 1)
+        
+        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"], data: nil), responseHandler: responseHandler)
+        
+        assertNetworkRequestsCount()
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        responseHandler.await()
+        
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let requestId = resultNetworkRequests[0].url.queryParam("requestId")
+        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
+        let requestEventUUID = requestEvents[0].eventUniqueIdentifier
+        let data = flattenDictionary(dict: responseHandler.onResponseReceivedData)
+        XCTAssertEqual(8, data.count)
+        XCTAssertEqual("personalization:decisions", data["type"] as? String)
+        XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", data["payload[0].id"] as? String)
+        XCTAssertEqual("#D41DBA", data["payload[0].items[0].data.content.value"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/personalization/json-content-item", data["payload[0].items[0].schema"] as? String)
+        XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
+        XCTAssertEqual(0, data["eventIndex"] as? Int)
+        XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
+        XCTAssertEqual(requestId, data["requestId"] as? String)
+        XCTAssertEqual(requestEventUUID, data["requestEventId"] as? String)
+    }
+}
+
+extension Int {
+    init(_ val:Bool) {
+        self = val ? 1 : 0
     }
 }

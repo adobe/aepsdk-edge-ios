@@ -12,7 +12,7 @@
 
 
 import Foundation
-import ACPExperiencePlatform
+import AEPExperiencePlatform
 
 struct TestXDMObject {
     public init() {}
