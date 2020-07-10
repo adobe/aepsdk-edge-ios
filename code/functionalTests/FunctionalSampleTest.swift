@@ -31,8 +31,11 @@ class FunctionalSampleTest: FunctionalTestBase {
         super.setUp()
         continueAfterFailure = false
         if FunctionalSampleTest.firstRun {
-            // hub shared state update for 2 extension versions, Identity and Config shared state updates
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count:4)
+            let startLatch: CountDownLatch = CountDownLatch(1)
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
+            
+            // hub shared state update for 1 extension versions, Identity and Config shared state updates
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count:3)
             setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count:2)
             
             // expectations for update config request&response events
@@ -41,14 +44,18 @@ class FunctionalSampleTest: FunctionalTestBase {
             
             ACPIdentity.registerExtension()
             ExperiencePlatform.registerExtension()
-            ACPCore.updateConfiguration(["global.privacy": "optedin",
-                                         "experienceCloud.org": "testOrg@AdobeOrg",
-                                         "experiencePlatform.configId": "12345-example"])
             
+            
+            ACPCore.start {
+                ACPCore.updateConfiguration(["global.privacy": "optedin",
+                                             "experienceCloud.org": "testOrg@AdobeOrg",
+                                             "experiencePlatform.configId": "12345-example"])
+                startLatch.countDown()
+            }
+            
+            XCTAssertEqual(DispatchTimeoutResult.success, startLatch.await(timeout: 2))
             assertExpectedEvents(ignoreUnexpectedEvents: false)
             resetTestExpectations()
-            
-            // Note: core already started in the FunctionalTestBase
         }
         
         FunctionalSampleTest.firstRun = false
