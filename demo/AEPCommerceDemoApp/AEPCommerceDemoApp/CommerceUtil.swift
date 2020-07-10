@@ -194,7 +194,7 @@ class CommerceUtil  {
             commerce.order = order
             commerce.purchases = purchases
             
-            var xdmData = MobileSDKCommerceDemo()
+            var xdmData = MobileSDKCommerceSchema()
             xdmData.eventType = EVENT_TYPE_COMMERCE_PURCHASES
             xdmData.commerce = commerce
             xdmData.productListItems = itemsList
@@ -245,7 +245,7 @@ class CommerceUtil  {
             return
         }
         
-        var xdmData = MobileSDKCommerceDemo()
+        var xdmData = MobileSDKCommerceSchema()
         xdmData.eventType = eventType
         xdmData.commerce  = commerce
         xdmData.productListItems = itemsList

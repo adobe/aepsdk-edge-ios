@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Swift Enum Generated 2020-06-25 16:18:51.496971 -0700 PDT m=+1.939211407 by XDMTool
+ XDM Swift Enum Generated 2020-07-10 12:46:29.537198 -0700 PDT m=+2.253036315 by XDMTool
 ----
 */
 import Foundation

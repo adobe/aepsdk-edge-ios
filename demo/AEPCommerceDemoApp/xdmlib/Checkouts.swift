@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.501435 -0700 PDT m=+1.943675169 by XDMTool
+ XDM Property Swift Object Generated 2020-07-10 12:46:35.395454 -0700 PDT m=+1.997186710 by XDMTool
 
  Title			:	Checkouts
  Description	:	An action during a checkout process of a product list, there can be more than one checkout event if there are multiple steps in a checkout process. If there are multiple steps the event time information and referenced page or experience is used to identify the step individual events represent in order.
