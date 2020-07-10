@@ -21,5 +21,7 @@ public class FunctionalTestUtils {
         dictionary.keys.forEach { key in
             defaults.removeObject(forKey: key)
         }
+        
+        print("resetUserDefaults - Removed all user defaults")
     }
 }

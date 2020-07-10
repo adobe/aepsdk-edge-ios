@@ -11,7 +11,7 @@
 //
 
 import Foundation
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 class MockExperiencePlatformResponseHandler : ExperiencePlatformResponseHandler {
     var onResponseReceivedData : [String:Any] = [:] // latest data received in the onResponse callback
