@@ -15,13 +15,13 @@ The Experience Platform Mobile extension for iOS is currently in Alpha developme
 The first time you clone or download the project, you should run the following from the root directory to setup the environment:
 
 ~~~
-make setup
+make pod-install
 ~~~
 
 Subsequently, you can make sure your environment is updated by running the following:
 
 ~~~
-make update
+make pod-update
 ~~~
 
 #### Open the Xcode workspace
@@ -38,16 +38,35 @@ From command line you can build the project for a simulator by running the follo
 make build
 ~~~
 
-To build the project for release, run the following command and find the lib under `bin/iOS/libACPExperiencePlatform.a`:
+To build the project for release, run the following command and find the lib and .swiftmodule files under `out/AEPExperiencePlatform-<version>.zip`:
 
 ~~~
 make build-all
+~~~
+
+To bundle the Commerce Demo application, run the following command and find the archive under `out/AEPCommerceDemoApp-<version>.zip`:
+
+~~~
+make archive-app
 ~~~
 
 You can also run the unit test suite from command line:
 
 ~~~
 make test
+~~~
+
+### Setup Demo Application
+The AEP Commerce Demo application is a sample app which demonstrates how to send commerce data to Adobe Experience Platform by using the Adobe Experience Platform Mobile Extension.
+
+Follow the command line instructions above to build the project and bundle the demo application. With both `AEPCommerceDemoApp-<version>.zip` and `AEPExperiencePlatform-<version>.zip` in the same folder, run the following commands in a terminal:
+
+~~~
+unzip AEPCommerceDemoApp-<version>.zip
+unzip AEPExperiencePlatform-<version>.zip -d AEPCommerceDemoApp/libs
+cd AEPCommerceDemoApp
+pod install
+open AEPCommerceDemoApp.xcworkspace
 ~~~
 
 ### Contributing

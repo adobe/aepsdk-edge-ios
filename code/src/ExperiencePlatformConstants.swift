@@ -49,7 +49,7 @@ struct ExperiencePlatformConstants {
     struct DataStoreKeys {
         private init() {}
         
-        static let storeName = "ACPExperiencePlatform"
+        static let storeName = "AEPExperiencePlatform"
         static let storePayloads = "storePayloads"
     }
     

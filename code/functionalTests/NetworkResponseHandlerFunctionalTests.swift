@@ -12,12 +12,9 @@
 
 import XCTest
 import ACPCore
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
-    private let EVENT_TYPE_PLATFORM = "com.adobe.eventType.experiencePlatform"
-    private let EVENT_SOURCE_RESPONSE_CONTENT = "com.adobe.eventSource.responseContent"
-    private let EVENT_SOURCE_ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
     private let e1 = try! ACPExtensionEvent(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let e2 = try! ACPExtensionEvent(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let networkResponseHandler = NetworkResponseHandler()
@@ -32,25 +29,25 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     func testProcessResponseOnError_WhenEmptyJsonError_doesNotHandleError() {
         let jsonError = ""
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(0, dispatchEvents.count)
     }
     
     func testProcessResponseOnError_WhenInvalidJsonError_doesNotHandleError() {
         let jsonError = "{ ivalid json }"
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(0, dispatchEvents.count)
     }
     
     func testProcessResponseOnError_WhenGenericJsonError_dispatchesEvent() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let jsonError = "{\n" +
             "\"namespace\": \"global\",\n" +
             "\"message\": \"Request to Data platform failed with an unknown exception\"" +
         "\n}"
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, timeout: 5)
         XCTAssertEqual(1, dispatchEvents.count)
         
         guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
@@ -66,7 +63,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnError_WhenOneEventJsonError_dispatchesEvent() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let jsonError = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [],\n" +
@@ -80,7 +77,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "      ]\n" +
         "    }"
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
         
         guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
@@ -97,7 +94,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnError_WhenValidEventIndex_dispatchesPairedEvent() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let requestId = "123"
         let jsonError =  "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -113,7 +110,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         "    }"
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
         
         guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
@@ -132,7 +129,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnError_WhenUnknownEventIndex_doesNotCrash() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let requestId = "123"
         let jsonError =  "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -148,7 +145,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         "    }"
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
         
         guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
@@ -165,7 +162,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(requestId, flattenReceivedData["requestId"] as? String)
     }
     func testProcessResponseOnError_WhenUnknownRequestId_doesNotCrash() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let requestId = "123"
         let jsonError =  "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -181,7 +178,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         "    }"
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "567")
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
         
         guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
@@ -198,7 +195,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("567", flattenReceivedData["requestId"] as? String)
     }
     func testProcessResponseOnError_WhenTwoEventJsonError_dispatchesTwoEvents() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 2)
         let requestId = "123"
         let jsonError =  "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -218,7 +215,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "      ]\n" +
         "    }"
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(2, dispatchEvents.count)
         
         guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
@@ -248,19 +245,19 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     func testProcessResponseOnSuccess_WhenEmptyJsonResponse_doesNotDispatchEvent() {
         let jsonResponse = ""
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(0, dispatchEvents.count)
     }
     
     func testProcessResponseOnSuccess_WhenInvalidJsonResponse_doesNotDispatchEvent() {
         let jsonResponse = "{ ivalid json }"
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(0, dispatchEvents.count)
     }
     
     func testProcessResponseOnSuccess_WhenOneEventHandle_dispatchesEvent() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [" +
@@ -278,7 +275,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         "    }"
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
         
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(1, dispatchEvents.count)
         guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
             XCTFail("Invalid event data")
@@ -295,7 +292,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenTwoEventHandles_dispatchesTwoEvents() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 2)
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [" +
@@ -323,7 +320,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         "    }"
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
         
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(2, dispatchEvents.count)
         // verify event 1
         guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
@@ -352,7 +349,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenEventHandleWithEventIndex_dispatchesEventWithRequestEventId() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 2)
         let requestId = "123"
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -381,7 +378,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
         
         // verify event 1
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(2, dispatchEvents.count)
         guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
             XCTFail("Invalid event data for event 1")
@@ -410,7 +407,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenEventHandleWithUnknownEventIndex_dispatchesUnpairedEvent() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
         let requestId = "123"
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -430,7 +427,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
         
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(1, dispatchEvents.count)
         guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
             XCTFail("Invalid event data for event 1")
@@ -445,7 +442,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenUnknownRequestId_doesNotCrash() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
         let requestId = "123"
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -465,7 +462,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         networkResponseHandler.addWaitingEvents(requestId: "567", batchedEvents: [e1, e2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
         
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(1, dispatchEvents.count)
         guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
             XCTFail("Invalid event data for event 1")
@@ -482,8 +479,8 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     // MARK: processResponseOnSuccess with mixed event handles, errors, warnings
     
     func testProcessResponseOnSuccess_WhenEventHandleAndError_dispatchesTwoEvents() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT, count: 1)
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
         let requestId = "123"
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -508,7 +505,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
         
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(1, dispatchEvents.count)
         guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
             XCTFail("Invalid event data for event 1")
@@ -522,7 +519,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("MCMID|29068398647607325310376254630528178721", flattenReceivedData1["payload[0].value"] as? String)
         XCTAssertEqual(15552000, flattenReceivedData1["payload[0].maxAge"] as? Int)
         
-        let dispatchErrorEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        let dispatchErrorEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchErrorEvents.count)
         guard let receivedData2 = dispatchErrorEvents[0].eventData as? [String: Any] else {
             XCTFail("Invalid event data for event 2")
@@ -538,7 +535,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
     
     func testProcessResponseOnSuccess_WhenErrorAndWarning_dispatchesTwoEvents() {
-        setEventExpectation(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 2)
         let requestId = "123"
         let jsonResponse = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -561,7 +558,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
         
-        let dispatchEvents = getDispatchedEventsWith(type: EVENT_TYPE_PLATFORM, source: EVENT_SOURCE_ERROR_RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(2, dispatchEvents.count)
         guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
             XCTFail("Invalid event data for event 1")

@@ -12,7 +12,7 @@
 
 import Foundation
 
-@testable import ACPExperiencePlatform
+@testable import AEPExperiencePlatform
 
 class MockKeyValueStore : KeyValueStore {
     
