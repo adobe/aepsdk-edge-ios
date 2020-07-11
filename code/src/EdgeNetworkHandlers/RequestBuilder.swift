@@ -70,7 +70,7 @@ class RequestBuilder {
             identityMap.addItem(namespace: ExperiencePlatformConstants.JsonKeys.ECID, id: ecid)
             contextData = RequestContextData(identityMap: identityMap)
         }
-    
+        
         return EdgeRequest(meta: requestMetadata, xdm: contextData, events: platformEvents)
     }
     
@@ -97,6 +97,15 @@ class RequestBuilder {
                 xdm[ExperiencePlatformConstants.JsonKeys.timestamp] = ISO8601DateFormatter().string(from: date)
                 xdm[ExperiencePlatformConstants.JsonKeys.eventId] = event.eventUniqueIdentifier
                 eventData[ExperiencePlatformConstants.JsonKeys.xdm] = xdm
+            }
+            
+            // enable collect override if a valid dataset is provided
+            if let datasetId = eventData[ExperiencePlatformConstants.EventDataKeys.datasetId] as? String {
+                let trimmedDatasetId = datasetId.trimmingCharacters(in: CharacterSet.whitespaces)
+                if !trimmedDatasetId.isEmpty {
+                    eventData[ExperiencePlatformConstants.JsonKeys.meta] = [ExperiencePlatformConstants.JsonKeys.CollectMetadata.collect: [ExperiencePlatformConstants.JsonKeys.CollectMetadata.datasetId: trimmedDatasetId]]
+                }
+                eventData.removeValue(forKey: ExperiencePlatformConstants.EventDataKeys.datasetId)
             }
             
             platformEvents.append(AnyCodable.from(dictionary: eventData))

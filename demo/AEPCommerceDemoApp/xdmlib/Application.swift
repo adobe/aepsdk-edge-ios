@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.49892 -0700 PDT m=+1.941159917 by XDMTool
+ XDM Property Swift Object Generated 2020-07-10 12:46:29.539706 -0700 PDT m=+2.255544437 by XDMTool
 
  Title			:	Application
  Description	:	This mixin is used to capture application information related to an ExperienceEvent, including the name of the application, app version, installs, launches, crashes, and closures. It could be either the application targeted by the event like the send of a push notification or the application originating the event such as a click, or a login.

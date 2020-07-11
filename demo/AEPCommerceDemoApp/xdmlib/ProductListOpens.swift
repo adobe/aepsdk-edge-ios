@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.500906 -0700 PDT m=+1.943146123 by XDMTool
+ XDM Property Swift Object Generated 2020-07-10 12:46:35.394962 -0700 PDT m=+1.996695471 by XDMTool
 
  Title			:	ProductListOpens
  Description	:	Initializations of a new product list, for example a shopping cart is created.

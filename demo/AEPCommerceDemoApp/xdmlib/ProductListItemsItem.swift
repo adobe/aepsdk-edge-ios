@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.499814 -0700 PDT m=+1.942054229 by XDMTool
+ XDM Property Swift Object Generated 2020-07-10 12:46:35.394568 -0700 PDT m=+1.996300670 by XDMTool
 
  Title			:	ProductListItemsItem
  Description	:	
@@ -26,8 +26,8 @@ public struct ProductListItemsItem {
 	public var currencyCode: String?
 	public var name: String?
 	public var priceTotal: Float?
-	public var product: String?
 	public var productAddMethod: String?
+	public var product: String?
 	public var quantity: Int64?
 	public var sKU: String?
 
@@ -35,8 +35,8 @@ public struct ProductListItemsItem {
 		case currencyCode = "currencyCode"
 		case name = "name"
 		case priceTotal = "priceTotal"
-		case product = "product"
 		case productAddMethod = "productAddMethod"
+		case product = "product"
 		case quantity = "quantity"
 		case sKU = "SKU"
 	}	
@@ -48,8 +48,8 @@ extension ProductListItemsItem:Encodable {
 		if let unwrapped = currencyCode { try container.encode(unwrapped, forKey: .currencyCode) }
 		if let unwrapped = name { try container.encode(unwrapped, forKey: .name) }
 		if let unwrapped = priceTotal { try container.encode(unwrapped, forKey: .priceTotal) }
-		if let unwrapped = product { try container.encode(unwrapped, forKey: .product) }
 		if let unwrapped = productAddMethod { try container.encode(unwrapped, forKey: .productAddMethod) }
+		if let unwrapped = product { try container.encode(unwrapped, forKey: .product) }
 		if let unwrapped = quantity { try container.encode(unwrapped, forKey: .quantity) }
 		if let unwrapped = sKU { try container.encode(unwrapped, forKey: .sKU) }
 	}

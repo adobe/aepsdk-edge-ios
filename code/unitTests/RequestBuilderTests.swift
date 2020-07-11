@@ -100,14 +100,112 @@ class RequestBuilderTests: XCTestCase {
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
         
+        guard let event = try? ACPExtensionEvent(name: "Request Test",
+                                                 type: "type",
+                                                 source: "source",
+                                                 data: ["data":["key":"value"]]) else {
+                                                    XCTFail("Failed to create event without store payload")
+                                                    return
+        }
         
-        let event = try? ACPExtensionEvent(name: "Request Test",
-                                           type: "type",
-                                           source: "source",
-                                           data: ["data":["key":"value"]])
-        
-        let requestPayload = request.getRequestPayload([event!])
+        let requestPayload = request.getRequestPayload([event])
         
         XCTAssertNil(requestPayload?.meta?.state)
+    }
+    
+    func testGetRequestPayload_withDatasetId_responseContainsCollectMeta() {
+        let request = RequestBuilder(dataStore: MockKeyValueStore())
+        
+        guard let event = try? ACPExtensionEvent(name: "Request Test",
+                                                 type: "type",
+                                                 source: "source",
+                                                 data: ["data":["key":"value"],
+                                                        "xdm":["application":["name":"myapp"]],
+                                                        "datasetId": "customDatasetId"]) else {
+                                                            XCTFail("Failed to create event with dataset id")
+                                                            return
+        }
+        
+        let requestPayload = request.getRequestPayload([event])
+        
+        let flattenEventMeta = flattenDictionary(dict: requestPayload?.events?[0]["meta"]?.dictionaryValue as! [String : Any])
+        XCTAssertEqual(1, flattenEventMeta.count)
+        XCTAssertEqual("customDatasetId", flattenEventMeta["collect.datasetId"] as? String)
+        XCTAssertNil(requestPayload?.events?[0]["datasetId"])
+        XCTAssertNotNil(requestPayload?.events?[0]["xdm"])
+        XCTAssertNotNil(requestPayload?.events?[0]["data"])
+        
+        XCTAssertNil(requestPayload?.meta?.state)
+    }
+    
+    func testGetRequestPayload_withoutDatasetId_responseDoesNotContainCollectMeta() {
+        let request = RequestBuilder(dataStore: MockKeyValueStore())
+        
+        guard let event = try? ACPExtensionEvent(name: "Request Test",
+                                                 type: "type",
+                                                 source: "source",
+                                                 data: ["data":["key":"value"],
+                                                        "xdm":["application":["name":"myapp"]]]) else {
+                                                            XCTFail("Failed to create event without dataset id")
+                                                            return
+        }
+        
+        let requestPayload = request.getRequestPayload([event])
+        
+        XCTAssertNil(requestPayload?.events?[0]["meta"])
+        XCTAssertNotNil(requestPayload?.events?[0]["xdm"])
+        XCTAssertNotNil(requestPayload?.events?[0]["data"])
+    }
+    
+    func testGetRequestPayload_withNilOrEmptyDatasetId_responseDoesNotContainCollectMeta() {
+        let request = RequestBuilder(dataStore: MockKeyValueStore())
+        
+        guard let event1 = try? ACPExtensionEvent(name: "Request Test1",
+                                                  type: "type",
+                                                  source: "source",
+                                                  data: ["xdm":["application":["name":"myapp"]],
+                                                         "datasetId": ""]) else {
+                                                            XCTFail("Failed to create event with empty dataset id")
+                                                            return
+        }
+        
+        guard let event2 = try? ACPExtensionEvent(name: "Request Test2",
+                                                  type: "type",
+                                                  source: "source",
+                                                  data: ["data":["key":"value"],
+                                                         "datasetId": "        "]) else {
+                                                            XCTFail("Failed to create event with dataset id which whitespaces only")
+                                                            return
+        }
+        
+        var eventData : [AnyHashable: Any] = [:]
+        eventData["data"] = ["key":"value"]
+        eventData["xdm"] = ["application":["name":"myapp"]]
+        eventData["datasetId"] = nil
+        guard let event3 = try? ACPExtensionEvent(name: "Request Test3",
+                                                  type: "type",
+                                                  source: "source",
+                                                  data: eventData) else {
+                                                    XCTFail("Failed to create event with nil dataset id")
+                                                    return
+        }
+        
+        let requestPayload = request.getRequestPayload([event1, event2, event3])
+        
+        XCTAssertEqual(3, requestPayload?.events?.count)
+        XCTAssertNil(requestPayload?.events?[0]["meta"])
+        XCTAssertNil(requestPayload?.events?[0]["datasetId"])
+        XCTAssertNotNil(requestPayload?.events?[0]["xdm"])
+        XCTAssertNil(requestPayload?.events?[0]["data"])
+        
+        XCTAssertNil(requestPayload?.events?[1]["meta"])
+        XCTAssertNil(requestPayload?.events?[1]["datasetId"])
+        XCTAssertNotNil(requestPayload?.events?[1]["xdm"])
+        XCTAssertNotNil(requestPayload?.events?[1]["data"])
+        
+        XCTAssertNil(requestPayload?.events?[2]["meta"])
+        XCTAssertNil(requestPayload?.events?[2]["datasetId"])
+        XCTAssertNotNil(requestPayload?.events?[2]["xdm"])
+        XCTAssertNotNil(requestPayload?.events?[2]["data"])
     }
 }
