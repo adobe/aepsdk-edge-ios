@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.500748 -0700 PDT m=+1.942987557 by XDMTool
+ XDM Property Swift Object Generated 2020-07-10 12:46:29.537368 -0700 PDT m=+2.253205618 by XDMTool
 
  Title			:	ApplicationCloses
  Description	:	Graceful termination of an application.

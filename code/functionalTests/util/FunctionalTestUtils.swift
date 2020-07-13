@@ -20,18 +20,16 @@ public class FunctionalTestUtils {
         let defaults = UserDefaults.standard
         let dictionary = defaults.dictionaryRepresentation()
         dictionary.keys.forEach { key in
-            print("resetUserDefaults - removing key \(key)")
             defaults.removeObject(forKey: key)
         }
         
+        // force reset overridden config
         defaults.set(nil, forKey: "Adobe.AdobeMobile_ConfigState.config.overridden.map")
-        
+
+        // remove from suites
         let store = NamedUserDefaultsStore(name: "AEPExperiencePlatform")
         store.removeAll()
-        store.setDictionary(key: "storePayloads", value:[:])
-        //store.remove(key: "storePayloads")
-        defaults.removeSuite(named:"com.adobe.mobile.datastore.ACPExperiencePlatform")
+
         print("resetUserDefaults - Removed all user defaults")
-        UserDefaults.standard.removeSuite(named: "com.adobe.mobile.datastore.AEPExperiencePlatform")
     }
 }

@@ -51,21 +51,10 @@ class FunctionalTestBase : XCTestCase {
         super.setUp()
         continueAfterFailure = false
         if FunctionalTestBase.firstRun {
-            let startLatch: CountDownLatch = CountDownLatch(1)
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
-            // event hub shared state containing registered versions
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 1)
             guard let _ = try? ACPCore.registerExtension(InstrumentedExtension.self) else {
                 log("Unable to register the InstrumentedExtension")
                 return
             }
-            ACPCore.start {
-                startLatch.countDown()
-            }
-            
-            XCTAssertEqual(DispatchTimeoutResult.success, startLatch.await(timeout: 2))
-            assertExpectedEvents(ignoreUnexpectedEvents: false)
-            resetTestExpectations()
         }
         FunctionalTestBase.firstRun = false
         

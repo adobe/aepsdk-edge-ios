@@ -26,9 +26,11 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
         FunctionalTestUtils.resetUserDefaults()
         FunctionalTestBase.debugEnabled = false
         
+        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count:1)
         do {
             try ACPCore.registerExtension(TestableExperiencePlatformInternal.self)
+            ACPCore.start(nil)
         } catch {
             XCTFail("Failed test setUp: \(error.localizedDescription)")
         }

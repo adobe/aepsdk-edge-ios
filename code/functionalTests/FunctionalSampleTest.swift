@@ -22,25 +22,25 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     private static var firstRun : Bool = true
     private let exEdgeInteractUrl = "https://edge.adobedc.net/ee/v1/interact"
     private let responseBody = "{\"test\": \"json\"}"
-    
+
     class TestResponseHandler : ExperiencePlatformResponseHandler {
         var onResponseReceivedData : [String:Any] = [:] // latest data received in the onResponse callback
         var countDownLatch : CountDownLatch?
-        
+
         init(expectedCount: Int32) {
             countDownLatch = CountDownLatch(expectedCount)
         }
-        
+
         func onResponse(data: [String : Any]) {
             onResponseReceivedData = data
             countDownLatch?.countDown()
         }
-        
+
         func await() {
             countDownLatch?.await()
         }
     }
-    
+
     public class override func setUp() {
         super.setUp()
         FunctionalTestBase.debugEnabled = true
@@ -51,8 +51,11 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         FunctionalTestUtils.resetUserDefaults()
         continueAfterFailure = false
         if AEPExperiencePlatformFunctionalTests.firstRun {
-            // hub shared state update for 2 extension versions, Identity and Config shared state updates
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count:4)
+            let startLatch: CountDownLatch = CountDownLatch(1)
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
+
+            // hub shared state update for 1 extension versions, Identity and Config shared state updates
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count:3)
             setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count:2)
             
             // expectations for update config request&response events
@@ -61,28 +64,32 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
             
             ACPIdentity.registerExtension()
             ExperiencePlatform.registerExtension()
-            ACPCore.updateConfiguration(["global.privacy": "optedin",
-                                         "experienceCloud.org": "testOrg@AdobeOrg",
-                                         "experiencePlatform.configId": "12345-example"])
+
+
+            ACPCore.start {
+                ACPCore.updateConfiguration(["global.privacy": "optedin",
+                                             "experienceCloud.org": "testOrg@AdobeOrg",
+                                             "experiencePlatform.configId": "12345-example"])
+                startLatch.countDown()
+            }
             
+            XCTAssertEqual(DispatchTimeoutResult.success, startLatch.await(timeout: 2))
             assertExpectedEvents(ignoreUnexpectedEvents: false)
             resetTestExpectations()
-            
-            // Note: core already started in the FunctionalTestBase
         }
         
         AEPExperiencePlatformFunctionalTests.firstRun = false
     }
-    
+
     override func tearDown() {
         // to revisit when AMSDK-10169 is available
         // wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
         usleep(200000)
         super.tearDown()
     }
-    
+
     /// MARK sample tests for the FunctionalTest framework usage
-    
+
     func testSample_AssertUnexpectedEvents() {
         // set event expectations specifying the event type, source and the count (count should be > 0)
         setExpectationEvent(type: "eventType", source: "eventSource", count: 2)
@@ -152,13 +159,13 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         
         assertExpectedEvents(ignoreUnexpectedEvents: true)
     }
-    
+
     /// Keeping these tests in here because there is no way to currently reset the core in between tests
     /// MARK test request event format
-    
+
     func testSendEvent_withXDMData_sendsCorrectRequestEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
-        
+
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString":"xdm",
                                                             "testInt": 10,
                                                             "testBool": false,
@@ -166,7 +173,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
                                                             "testArray": ["arrayElem1", 2, true],
                                                             "testDictionary": ["key":"val"]])
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
@@ -181,10 +188,10 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(true, eventData["xdm.testArray[2]"] as? Bool)
         XCTAssertEqual("val", eventData["xdm.testDictionary.key"] as? String)
     }
-    
+
     func testSendEvent_withXDMDataAndCustomData_sendsCorrectRequestEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
-        
+
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString":"xdm"], data: ["testDataString": "stringValue",
                                                                                         "testDataInt": 101,
                                                                                         "testDataBool": true,
@@ -192,7 +199,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
                                                                                         "testDataArray": ["arrayElem1", 2, true],
                                                                                         "testDataDictionary": ["key":"val"]])
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
@@ -208,13 +215,13 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(true, eventData["data.testDataArray[2]"] as? Bool)
         XCTAssertEqual("val", eventData["data.testDataDictionary.key"] as? String)
     }
-    
+
     func testSendEvent_withXDMDataAndNilData_sendsCorrectRequestEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
-        
+
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString":"xdm"], data: nil)
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
@@ -222,30 +229,30 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(1, eventData.count)
         XCTAssertEqual("xdm", eventData["xdm.testString"] as? String)
     }
-    
+
     func testSendEvent_withEmptyXDMDataAndNilData_DoesNotSendRequestEvent() {
         let experienceEvent = ExperiencePlatformEvent(xdm: [:], data: nil)
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         assertUnexpectedEvents()
     }
-    
+
     func testSendEvent_withEmptyXDMSchema_DoesNotSendRequestEvent() {
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema())
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         assertUnexpectedEvents()
     }
-    
+
     /// MARK test network request format
-    
+
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest() {
         let responseConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        
+
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString":"xdm",
                                                             "testInt": 10,
                                                             "testBool": false,
@@ -253,7 +260,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
                                                             "testArray": ["arrayElem1", 2, true],
                                                             "testDictionary": ["key":"val"]])
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
@@ -273,18 +280,18 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(2, requestBody["events[0].xdm.testArray[1]"] as? Int)
         XCTAssertEqual(true, requestBody["events[0].xdm.testArray[2]"] as? Bool)
         XCTAssertEqual("val", requestBody["events[0].xdm.testDictionary.key"] as? String)
-        
+
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrl))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
-    
+
     func testSendEvent_withXDMDataAndCustomData_sendsExEdgeNetworkRequest() {
         let responseConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        
+
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString":"xdm"], data: ["testDataString": "stringValue",
                                                                                         "testDataInt": 101,
                                                                                         "testDataBool": true,
@@ -292,7 +299,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
                                                                                         "testDataArray": ["arrayElem1", 2, true],
                                                                                         "testDataDictionary": ["key":"val"]])
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
@@ -313,18 +320,18 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(2, requestBody["events[0].data.testDataArray[1]"] as? Int)
         XCTAssertEqual(true, requestBody["events[0].data.testDataArray[2]"] as? Bool)
         XCTAssertEqual("val", requestBody["events[0].data.testDataDictionary.key"] as? String)
-        
+
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrl))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
-    
+
     func testSendEvent_withXDMSchema_sendsExEdgeNetworkRequest() {
         let responseConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        
+
         var xdmObject = TestXDMObject()
         xdmObject.innerKey = "testInnerObject"
         var xdmSchema = TestXDMSchema()
@@ -333,10 +340,10 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         xdmSchema.stringObject = "testWithXdmSchema"
         xdmSchema.doubleObject = 3.42
         xdmSchema.xdmObject = xdmObject
-        
+
         let experienceEvent = ExperiencePlatformEvent(xdm: xdmSchema)
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
@@ -353,75 +360,75 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("testWithXdmSchema", requestBody["events[0].xdm.stringObject"] as? String)
         XCTAssertEqual(3.42, requestBody["events[0].xdm.doubleObject"] as? Double)
         XCTAssertEqual("testInnerObject", requestBody["events[0].xdm.xdmObject.innerKey"] as? String)
-        
+
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrl))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
-    
+
     func testSendEvent_withEmptyXDMSchema_doesNotSendExEdgeNetworkRequest() {
         let responseConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        
+
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema())
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
         XCTAssertEqual(0, resultNetworkRequests.count)
     }
-    
+
     func testSendEvent_withEmptyXDMSchemaAndEmptyData_doesNotSendExEdgeNetworkRequest() {
         let responseConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        
+
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema(), data: [:])
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
         XCTAssertEqual(0, resultNetworkRequests.count)
     }
-    
+
     func testSendEvent_withEmptyXDMSchemaAndNilData_doesNotSendExEdgeNetworkRequest() {
         let responseConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        
+
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema(), data: nil)
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // verify
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
         XCTAssertEqual(0, resultNetworkRequests.count)
     }
-    
+
     // MARK: Client-side store
     func testSendEvent_twoConsecutiveCalls_appendsReceivedClientSideStore() {
         setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
         let storeResponseBody = "\u{0000}{\"requestId\": \"0000-4a4e-1111-bf5c-abcd\",\"handle\": [{\"payload\": [{\"key\": \"kndctr_testOrg_AdobeOrg_identity\",\"value\": \"CiY4OTgzOTEzMzE0NDAwMjUyOTA2NzcwMTY0NDE3Nzc4MzUwMTUzMFINCJHdjrCzLhAAGAEgB6ABnd2OsLMuqAGV8N6h277mkagB8AGR3Y6wsy4=\",\"maxAge\": 34128000},{\"key\": \"kndctr_testOrg_AdobeOrg_consent_check\",\"value\": \"1\",\"maxAge\": 7200},{\"key\": \"expired_key\",\"value\": \"1\",\"maxAge\": 0}],\"type\": \"state:store\"}]}\n"
         let responseConnection : HttpConnection = HttpConnection(data: storeResponseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        
+
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString":"xdm"], data: nil)
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         // first network call, no stored data
         setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
         var resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(7, requestBody.count)
         resetTestExpectations()
-        
+
         // send a new event, should contain previously stored store data
         setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
-        
+
         resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
         requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(13, requestBody.count)
-        
+
         guard let firstStore = requestBody["meta.state.entries[0].key"] as? String, let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
             XCTFail("Client-side store not found")
             return
@@ -432,13 +439,13 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("kndctr_testOrg_AdobeOrg_consent_check", requestBody["meta.state.entries[\(Int(!index))].key"] as? String)
         XCTAssertEqual("1", requestBody["meta.state.entries[\(Int(!index))].value"] as? String)
         XCTAssertEqual(7200, requestBody["meta.state.entries[\(Int(!index))].maxAge"] as? Int)
-        
+
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrl))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
-    
+
     // MARK: Paired request-response events
     func testSendEvent_receivesResponseEventHandle_sendsResponseEvent_pairedWithTheRequestEventId() {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
@@ -448,12 +455,12 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
         setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
-        
+
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"], data: nil))
-        
+
         assertNetworkRequestsCount()
         assertExpectedEvents(ignoreUnexpectedEvents: true)
-        
+
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
         let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
@@ -471,7 +478,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(requestId, eventData["requestId"] as? String)
         XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
     }
-    
+
     func testSendEvent_receivesResponseEventWarning_sendsErrorResponseEvent_pairedWithTheRequestEventId() {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, count: 1)
@@ -480,12 +487,12 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         let httpConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: url)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
         setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
-        
+
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"], data: nil))
-        
+
         assertNetworkRequestsCount()
         assertExpectedEvents(ignoreUnexpectedEvents: true)
-        
+
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
         let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
@@ -499,7 +506,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(requestId, eventData["requestId"] as? String)
         XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
     }
-    
+
     // TODO: Failing due to AMSDK-10295, re-enable after the bug fix is released
     func disable_testSendEvent_receivesResponseEventHandle_callsResponseHandler() {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
@@ -510,13 +517,13 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: url, httpMethod: HttpMethod.post, count: 1)
         setNetworkResponseFor(url: url, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         let responseHandler = TestResponseHandler(expectedCount: 1)
-        
+
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"], data: nil), responseHandler: responseHandler)
-        
+
         assertNetworkRequestsCount()
         assertExpectedEvents(ignoreUnexpectedEvents: true)
         responseHandler.await()
-        
+
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
         let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
