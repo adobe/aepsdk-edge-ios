@@ -172,6 +172,8 @@ class FunctionalTestBase : XCTestCase {
     }
     
     /// To be revisited once AMSDK-10169 is implemented
+    /// - Parameters:
+    ///   - timeout:how long should this method wait, in seconds; by default it waits up to 1 second
     func wait(_ timeout: UInt32? = FunctionalTestConst.Defaults.waitTimeout) {
         sleep(timeout!)
     }

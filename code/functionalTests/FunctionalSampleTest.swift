@@ -43,12 +43,12 @@ class FunctionalSampleTest: FunctionalTestBase {
     
     public class override func setUp() {
         super.setUp()
-        FunctionalTestUtils.resetUserDefaults()
         FunctionalTestBase.debugEnabled = true
     }
     
     override func setUp() {
         super.setUp()
+        FunctionalTestUtils.resetUserDefaults()
         continueAfterFailure = false
         if FunctionalSampleTest.firstRun {
             // hub shared state update for 2 extension versions, Identity and Config shared state updates
