@@ -51,8 +51,11 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         FunctionalTestUtils.resetUserDefaults()
         continueAfterFailure = false
         if AEPExperiencePlatformFunctionalTests.firstRun {
-            // hub shared state update for 2 extension versions, Identity and Config shared state updates
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count:4)
+            let startLatch: CountDownLatch = CountDownLatch(1)
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
+            
+            // hub shared state update for 1 extension versions, Identity and Config shared state updates
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count:3)
             setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count:2)
             
             // expectations for update config request&response events
@@ -61,9 +64,15 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
             
             ACPIdentity.registerExtension()
             ExperiencePlatform.registerExtension()
-            ACPCore.updateConfiguration(["global.privacy": "optedin",
-                                         "experienceCloud.org": "testOrg@AdobeOrg",
-                                         "experiencePlatform.configId": "12345-example"])
+            
+            ACPCore.start {
+                ACPCore.updateConfiguration(["global.privacy": "optedin",
+                                             "experienceCloud.org": "testOrg@AdobeOrg",
+                                             "experiencePlatform.configId": "12345-example"])
+                startLatch.countDown()
+            }
+            
+            XCTAssertEqual(DispatchTimeoutResult.success, startLatch.await(timeout: 2))
             
             assertExpectedEvents(ignoreUnexpectedEvents: false)
             resetTestExpectations()
@@ -341,7 +350,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(11, requestBody.count)
+        XCTAssertEqual(12, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
@@ -353,6 +362,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("testWithXdmSchema", requestBody["events[0].xdm.stringObject"] as? String)
         XCTAssertEqual(3.42, requestBody["events[0].xdm.doubleObject"] as? Double)
         XCTAssertEqual("testInnerObject", requestBody["events[0].xdm.xdmObject.innerKey"] as? String)
+        XCTAssertEqual("abc123def", requestBody["events[0].meta.collect.datasetId"] as? String)
         
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrl))
