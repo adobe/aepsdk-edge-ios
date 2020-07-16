@@ -14,7 +14,7 @@ import Foundation
 
 public struct ExperiencePlatformEvent {
 
-    private let LOG_TAG = "ExperiencePlatformEvent"
+    private let logTag = "ExperiencePlatformEvent"
 
     /// XDM formatted data, use an `XDMSchema` implementation for a better XDM data injestion and format control
     public let xdm: [String: Any]?

@@ -17,7 +17,7 @@ import Foundation
 /// the server response message and dispatching response content and/or error response content events and storing the response payload (if needed).
 /// - See also: `EdgeResponse` and  `NetworkResponseCallback`
 class NetworkResponseHandler {
-    private let LOG_TAG = "NetworkResponseHandler"
+    private let logTag = "NetworkResponseHandler"
     private let serialQueue = DispatchQueue(label: "com.adobe.experiencePlatform.eventsDictionary") // serial queue for atomic operations
 
     // the order of the request events matter for matching them with the response events
@@ -35,7 +35,7 @@ class NetworkResponseHandler {
         let eventIds = batchedEvents.map { $0.eventUniqueIdentifier }
         serialQueue.sync {
             if self.sentEventsWaitingResponse[requestId] != nil {
-                ACPCore.log(ACPMobileLogLevel.warning, tag: self.LOG_TAG, message: "Name collision for requestId \(requestId), events list is overwritten.")
+                ACPCore.log(ACPMobileLogLevel.warning, tag: self.logTag, message: "Name collision for requestId \(requestId), events list is overwritten.")
             }
 
             self.sentEventsWaitingResponse[requestId] = eventIds
@@ -66,14 +66,14 @@ class NetworkResponseHandler {
         guard let data = jsonResponse.data(using: .utf8) else { return }
 
         if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: "processResponseOnSuccess - Received server response:\n \(jsonResponse), request id \(requestId)")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "processResponseOnSuccess - Received server response:\n \(jsonResponse), request id \(requestId)")
 
             // handle the event handles, errors and warnings coming from server
             dispatchEventHandles(handlesArray: edgeResponse.handle, requestId: requestId)
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId, isError: true)
             dispatchEventErrors(errorsArray: edgeResponse.warnings, requestId: requestId, isError: false)
         } else {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG,
+            ACPCore.log(ACPMobileLogLevel.warning, tag: logTag,
                         message: "processResponseOnSuccess - The conversion to JSON failed for server response: \(jsonResponse), request id \(requestId)")
         }
     }
@@ -87,12 +87,12 @@ class NetworkResponseHandler {
         guard let data = jsonError.data(using: .utf8) else { return }
 
         guard let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) else {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG,
+            ACPCore.log(ACPMobileLogLevel.warning, tag: logTag,
                         message: "processResponseOnError - The conversion to JSON failed for server error response: \(jsonError), request id \(requestId)")
             return
         }
 
-        ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: "processResponseOnError - Processing server error response:\n \(jsonError), request id \(requestId)")
+        ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "processResponseOnError - Processing server error response:\n \(jsonError), request id \(requestId)")
 
         // Note: if the Konductor error doesn't have an eventIndex it means that this error is a generic request error,
         // otherwise it is an event specific error. There can be multiple errors returned for the same event
@@ -102,7 +102,7 @@ class NetworkResponseHandler {
         } else {
             // generic server error, return the error as is
             guard let genericErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) else {
-                ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG,
+                ACPCore.log(ACPMobileLogLevel.warning, tag: logTag,
                             message: "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), request id \(requestId)")
                 return
             }
@@ -119,12 +119,12 @@ class NetworkResponseHandler {
     /// - See also: handleStoreEventHandle(handle: EdgeEventHandle)
     private func dispatchEventHandles(handlesArray: [EdgeEventHandle]?, requestId: String) {
         guard let unwrappedEventHandles = handlesArray, !unwrappedEventHandles.isEmpty else {
-            ACPCore.log(ACPMobileLogLevel.verbose, tag: LOG_TAG, message: "dispatchEventHandles - Received nil/empty event handle array, nothing to handle")
+            ACPCore.log(ACPMobileLogLevel.verbose, tag: logTag, message: "dispatchEventHandles - Received nil/empty event handle array, nothing to handle")
             return
         }
 
         let requestEventIdsList = getWaitingEvents(requestId: requestId)
-        ACPCore.log(ACPMobileLogLevel.verbose, tag: LOG_TAG, message: "dispatchEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
+        ACPCore.log(ACPMobileLogLevel.verbose, tag: logTag, message: "dispatchEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
         for eventHandle in unwrappedEventHandles {
             handleStoreEventHandle(handle: eventHandle)
 
@@ -145,12 +145,12 @@ class NetworkResponseHandler {
     /// - See Also: `logErrorMessage(_ error: [String: Any], isError: Bool, requestId: String)`
     private func dispatchEventErrors(errorsArray: [EdgeEventError]?, requestId: String, isError: Bool) {
         guard let unwrappedErrors = errorsArray, !unwrappedErrors.isEmpty else {
-            ACPCore.log(ACPMobileLogLevel.verbose, tag: LOG_TAG, message: "dispatchEventErrors - Received nil/empty errors array, nothing to handle")
+            ACPCore.log(ACPMobileLogLevel.verbose, tag: logTag, message: "dispatchEventErrors - Received nil/empty errors array, nothing to handle")
             return
         }
 
         let requestEventIdsList = getWaitingEvents(requestId: requestId)
-        ACPCore.log(ACPMobileLogLevel.verbose, tag: LOG_TAG, message: "dispatchEventErrors - Processing \(unwrappedErrors.count) errors(s) for request id: \(requestId)")
+        ACPCore.log(ACPMobileLogLevel.verbose, tag: logTag, message: "dispatchEventErrors - Processing \(unwrappedErrors.count) errors(s) for request id: \(requestId)")
         for error in unwrappedErrors {
 
             if let errorAsDictionary = try? error.asDictionary() {
@@ -186,7 +186,7 @@ class NetworkResponseHandler {
 
         guard let unwrappedResponseEvent = responseEvent else { return }
         guard let _ = try? ACPCore.dispatchEvent(unwrappedResponseEvent) else {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message: "dispatchResponseEvent - An error occurred while dispatching platform response event for request id: \(requestId)")
+            ACPCore.log(ACPMobileLogLevel.warning, tag: logTag, message: "dispatchResponseEvent - An error occurred while dispatching platform response event for request id: \(requestId)")
             return
         }
     }
@@ -226,7 +226,7 @@ class NetworkResponseHandler {
         let storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
         storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
         if !storeResponsePayloads.isEmpty {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: "Processed \(storeResponsePayloads.count) store response payload(s)")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "Processed \(storeResponsePayloads.count) store response payload(s)")
         }
     }
 
@@ -239,6 +239,6 @@ class NetworkResponseHandler {
     ///   - requestId: the event request identifier, used for logging
     private func logErrorMessage(_ error: [String: Any], isError: Bool, requestId: String) {
         let loggingMode = isError ? ACPMobileLogLevel.error : ACPMobileLogLevel.warning
-        ACPCore.log(loggingMode, tag: LOG_TAG, message: "Received event error for request id (\(requestId)), error details:\n\(error as AnyObject)")
+        ACPCore.log(loggingMode, tag: logTag, message: "Received event error for request id (\(requestId)), error details:\n\(error as AnyObject)")
     }
 }

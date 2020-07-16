@@ -172,7 +172,11 @@ class ExperiencePlatformInternal: ACPExtension {
             }
 
             let callback: ResponseCallback = NetworkResponseCallback(requestId: requestId, responseHandler: networkResponseHandler)
-            experiencePlatformNetworkService.doRequest(url: url, requestBody: requestPayload, requestHeaders: requestHeaders, responseCallback: callback, retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
+            experiencePlatformNetworkService.doRequest(url: url,
+                                                       requestBody: requestPayload,
+                                                       requestHeaders: requestHeaders,
+                                                       responseCallback: callback,
+                                                       retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
         }
 
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Finished processing and sending events to Platform.")

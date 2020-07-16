@@ -12,7 +12,7 @@
 
 import ACPCore
 
-private let LOG_TAG = "ExperiencePlatform"
+private let logTag = "ExperiencePlatform"
 
 public class ExperiencePlatform {
 
@@ -26,9 +26,9 @@ public class ExperiencePlatform {
 
         do {
             try ACPCore.registerExtension(ExperiencePlatformInternal.self)
-            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: "Extension has been successfully registered.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "Extension has been successfully registered.")
         } catch {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: "Extension Registration has failed.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "Extension Registration has failed.")
         }
     }
 
@@ -40,16 +40,20 @@ public class ExperiencePlatform {
     public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent, responseHandler: ExperiencePlatformResponseHandler? = nil) {
 
         guard let eventData = experiencePlatformEvent.asDictionary() else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message: "Failed to dispatch the event because the event data is nil.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "Failed to dispatch the event because the event data is nil.")
             return
         }
         do {
-            let event = try ACPExtensionEvent(name: "AEP Request Event", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
+            let event = try ACPExtensionEvent(name: "AEP Request Event",
+                                              type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                                              source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,
+                                              data: eventData)
+
             ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: event.eventUniqueIdentifier, responseHandler: responseHandler)
 
             try ACPCore.dispatchEvent(event)
         } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message: "Failed to dispatch the event due to an unexpected error: \(error).")
+            ACPCore.log(ACPMobileLogLevel.warning, tag: logTag, message: "Failed to dispatch the event due to an unexpected error: \(error).")
         }
     }
 }

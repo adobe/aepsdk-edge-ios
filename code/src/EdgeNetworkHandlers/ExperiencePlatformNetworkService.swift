@@ -114,11 +114,11 @@ class ExperiencePlatformNetworkService {
         let payload = String(decoding: data, as: UTF8.self)
 
         let networkRequest: NetworkRequest = NetworkRequest(url: url,
-                                                           httpMethod: HttpMethod.post,
-                                                           connectPayload: payload,
-                                                           httpHeaders: headers,
-                                                           connectTimeout: ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout,
-                                                           readTimeout: ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout)
+                                                            httpMethod: HttpMethod.post,
+                                                            connectPayload: payload,
+                                                            httpHeaders: headers,
+                                                            connectTimeout: ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout,
+                                                            readTimeout: ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout)
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request to URL \(url.absoluteString) with header: \(headers) and body: \n\(payload)")
 
         // make sync call to process the response right away and retry if needed
