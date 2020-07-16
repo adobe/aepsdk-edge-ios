@@ -13,15 +13,15 @@
 import Foundation
 
 struct AEPDemoConstants {
-    
+
     struct Numbers {
-        
+
         static let MIN_QTY = 1
         static let MAX_QTY = 25
     }
-    
+
     struct Strings {
-        
+
         // Commerce App : Labels of UI Components
         static let APP_NAME = "AEP Extension Demo"
         static let TITLE_ITEM_LIST = "Items"
@@ -38,18 +38,18 @@ struct AEPDemoConstants {
         static let SELECT_PAYMENT_METHOD = "Select Payment Method"
         static let TOTAL_PRICE = "Total Price $ "
         static let PRODUCT_LIST_FILENAME = "product_list_colors"
-        
+
         // Commerce App : Snackbar messages
         static let ITEM_ADDED_MSG = " item added to shopping cart."
         static let PURCHASE_COMPLETE_MSG = "Thank you for your purchase!"
         static let CART_EMPTY_ERROR_MSG  = "Sorry!, No item in the shopping cart to place an order. Add at least one item to place an order."
         static let CART_EMPTY_MSG = "There are no item in the shopping cart to clear."
         static let CART_CLEARING_MSG = "Sure!, all the selected items are removed from the Shopping Cart."
-        
+
         // Griffon : Labels of UI Components
         static let GRIFFON_CONNECT = "Connect"
         static let GRIFFON_DISCONNECT = "Disconnect"
-        
+
         // Griffon : Snackbar messages
         static let GRIFFON_URL_INVALID = "Enter a valid URL of the Griffon Session"
         static let GRIFFON_SESSION_ACTIVE = "Connection to a Griffon Session is already active or in progress. Disconnect before trying to connect..."
@@ -58,4 +58,3 @@ struct AEPDemoConstants {
         static let GRIFFON_URL_VALIDATION_STRING = "adb_validation_sessionid"
     }
 }
-

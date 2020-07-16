@@ -10,18 +10,18 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPExperiencePlatform
 import Foundation
 import UIKit
-import AEPExperiencePlatform
 
 class CartViewController: UIViewController {
-    
+
     @IBOutlet var shoppingCartTableView: UITableView!
     @IBOutlet var orderTotalLbl: UILabel!
     @IBOutlet var checkoutBtn: UIButton!
     @IBOutlet var appNameLbl: UILabel!
     @IBOutlet var shoppingCartHeadingLbl: UILabel!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         appNameLbl.text = AEPDemoConstants.Strings.APP_NAME
@@ -31,27 +31,27 @@ class CartViewController: UIViewController {
         shoppingCartTableView.reloadData()
         orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + " $ " + String(format: "%.2f", adbMobileShoppingCart.total)
     }
-    
+
     @IBAction func gotoCheckoutPage(_ sender: UIButton) {
-        
+
         if adbMobileShoppingCart.items.isEmpty {
-            Snackbar(message : AEPDemoConstants.Strings.CART_EMPTY_ERROR_MSG)
+            Snackbar(message: AEPDemoConstants.Strings.CART_EMPTY_ERROR_MSG)
         } else {
             self.performSegue(withIdentifier: "gotoCheckoutPage", sender: self)
         }
     }
-    
+
     @IBAction func SCartCancelBtn(_ sender: UIButton) {
         if adbMobileShoppingCart.items.isEmpty {
-            Snackbar(message : AEPDemoConstants.Strings.CART_EMPTY_MSG)
+            Snackbar(message: AEPDemoConstants.Strings.CART_EMPTY_MSG)
         } else {
             clearCart()
-            Snackbar(message : AEPDemoConstants.Strings.CART_CLEARING_MSG)
+            Snackbar(message: AEPDemoConstants.Strings.CART_CLEARING_MSG)
         }
     }
-    
+
     func clearCart() {
-        
+
         CommerceUtil.sendCartClearXdmEvent()
         adbMobileShoppingCart.clearCart()
         shoppingCartTableView.reloadData()
@@ -60,22 +60,22 @@ class CartViewController: UIViewController {
 }
 
 extension CartViewController: UITableViewDataSource, UITableViewDelegate {
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return adbMobileShoppingCart.items.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let product = adbMobileShoppingCart.items[indexPath.row].product
         let cell = tableView.dequeueReusableCell(withIdentifier: "ProductCell") as! ShoppingItemCell
-        cell.setProduct(product:product)
+        cell.setProduct(product: product)
         cell.delegate = self
         return cell
     }
 }
 
 extension CartViewController: CartDelegate {
-    
+
     // MARK: - CartDelegate
     func remove(cell: ShoppingItemCell) {
         guard let indexPath = shoppingCartTableView.indexPath(for: cell) else { return }
@@ -85,4 +85,3 @@ extension CartViewController: CartDelegate {
         shoppingCartTableView.reloadData()
         orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)    }
 }
-

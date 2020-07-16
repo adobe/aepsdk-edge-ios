@@ -10,23 +10,23 @@
 // governing permissions and limitations under the License.
 //
 
-import Foundation
-import UIKit
 import ACPCore
 import ACPGriffon
+import Foundation
+import UIKit
 
 class GriffonViewController: UIViewController {
-    
+
     @IBOutlet var griffonSessionURL: UITextField!
     @IBOutlet var appNameLbl: UILabel!
-    
+
     var isConnected: Bool = false
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         appNameLbl.text = AEPDemoConstants.Strings.APP_NAME
     }
-    
+
     @IBAction func GriffonConnectBtn(_ sender: UIButton) {
         if !isConnected {
             guard let griffonURLText = griffonSessionURL.text else {
@@ -36,25 +36,24 @@ class GriffonViewController: UIViewController {
                 if let url = URL(string: griffonURLText) {
                     isConnected = true
                     ACPGriffon.startSession(url)
-                } else
-                {
-                    Snackbar(message : AEPDemoConstants.Strings.GRIFFON_URL_INVALID)
+                } else {
+                    Snackbar(message: AEPDemoConstants.Strings.GRIFFON_URL_INVALID)
                 }
             } else {
-                Snackbar(message : AEPDemoConstants.Strings.GRIFFON_URL_INVALID)
+                Snackbar(message: AEPDemoConstants.Strings.GRIFFON_URL_INVALID)
             }
         } else {
-            Snackbar(message : AEPDemoConstants.Strings.GRIFFON_SESSION_ACTIVE)
+            Snackbar(message: AEPDemoConstants.Strings.GRIFFON_SESSION_ACTIVE)
         }
     }
-    
+
     @IBAction func GriffonDisconnectBtn(_ sender: UIButton) {
         if isConnected {
             ACPGriffon.endSession()
-            Snackbar(message : AEPDemoConstants.Strings.GRIFFON_SESSION_DISCONNECTED)
+            Snackbar(message: AEPDemoConstants.Strings.GRIFFON_SESSION_DISCONNECTED)
             isConnected = false
         } else {
-            Snackbar(message : AEPDemoConstants.Strings.GRIFFON_SESSION_NOT_ACTIVE)
+            Snackbar(message: AEPDemoConstants.Strings.GRIFFON_SESSION_NOT_ACTIVE)
         }
     }
 }
