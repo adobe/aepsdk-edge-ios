@@ -4,10 +4,6 @@ export APP_NAME = AEPCommerceDemoApp
 export OUT_DIR = out
 PROJECT_NAME = $(EXTENSION_NAME)
 
-GITHOOK_PATH = .git/hooks/
-HOOKS_PATH = tools/hooks/
-PRECOMMIT_FILENAME = pre-commit
-
 setup: 
 	(cd build/xcode && pod install)
 	(cd demo/$(APP_NAME) && pod install)
@@ -68,20 +64,7 @@ _install-swiftlint:
 	brew install swiftlint && brew cleanup swiftlint
 
 _install-githook:
-	@# note ifeq must be on same level as Makefile target (i.e. no tabs)
-ifeq (,$(wildcard $(GITHOOK_PATH)$(PRECOMMIT_FILENAME)))
-	@echo "### Git pre-commit hook does not exist, adding one."
-	cp $(HOOKS_PATH)$(PRECOMMIT_FILENAME) $(GITHOOK_PATH)$(PRECOMMIT_FILENAME)
-else
-ifeq ($(shell cmp $(HOOKS_PATH)$(PRECOMMIT_FILENAME) $(GITHOOK_PATH)$(PRECOMMIT_FILENAME)),)
-	@echo "### Git pre-commit hook is up to date, no change needed."
-else
-	@echo "### Git pre-commit hook exists but is different from current."
-	@echo "### Saving current pre-commit hook as pre-commit.sav and adding new hook."
-	mv -f $(GITHOOK_PATH)$(PRECOMMIT_FILENAME) $(GITHOOK_PATH)$(PRECOMMIT_FILENAME).sav
-	cp $(HOOKS_PATH)$(PRECOMMIT_FILENAME) $(GITHOOK_PATH)$(PRECOMMIT_FILENAME)
-endif
-endif
+	./tools/git-hooks/setup.sh
 	
 
 
