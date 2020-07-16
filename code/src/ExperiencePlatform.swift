@@ -44,7 +44,7 @@ public class ExperiencePlatform {
             return
         }
         do {
-            let event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
+            let event = try ACPExtensionEvent(name: "AEP Request Event", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
             ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId:event.eventUniqueIdentifier, responseHandler: responseHandler)
             try ACPCore.dispatchEvent(event)
         } catch {
