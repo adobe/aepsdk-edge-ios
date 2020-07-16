@@ -102,7 +102,8 @@ class RequestBuilder {
             if let datasetId = eventData[ExperiencePlatformConstants.EventDataKeys.datasetId] as? String {
                 let trimmedDatasetId = datasetId.trimmingCharacters(in: CharacterSet.whitespaces)
                 if !trimmedDatasetId.isEmpty {
-                    eventData[ExperiencePlatformConstants.JsonKeys.meta] = [ExperiencePlatformConstants.JsonKeys.CollectMetadata.collect: [ExperiencePlatformConstants.JsonKeys.CollectMetadata.datasetId: trimmedDatasetId]]
+                    eventData[ExperiencePlatformConstants.JsonKeys.meta] =
+                        [ExperiencePlatformConstants.JsonKeys.CollectMetadata.collect: [ExperiencePlatformConstants.JsonKeys.CollectMetadata.datasetId: trimmedDatasetId]]
                 }
                 eventData.removeValue(forKey: ExperiencePlatformConstants.EventDataKeys.datasetId)
             }
