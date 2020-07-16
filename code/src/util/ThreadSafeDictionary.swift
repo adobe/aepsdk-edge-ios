@@ -17,18 +17,18 @@ final class ThreadSafeDictionary<K: Hashable, V> {
     typealias Element = Dictionary<K, V>.Element
     private var dictionary = [K: V]()
     private let queue: DispatchQueue
-    
+
     /// Creates a new thread safe dictionary
     /// - Parameter identifier: A unique identifier for this dictionary, a reverse-DNS naming style (com.example.myqueue) is recommended
     init(identifier: String = "com.adobe.threadsafedictionary.queue") {
         queue = DispatchQueue(label: identifier, attributes: .concurrent)
     }
-    
+
     /// How many key pair values are preset in the dictionary
     public var count: Int {
         return queue.sync { return self.dictionary.keys.count }
     }
-        
+
     // MARK: Subscript
      public subscript(key: K) -> V? {
          get {
@@ -37,17 +37,17 @@ final class ThreadSafeDictionary<K: Hashable, V> {
          set {
             queue.sync(flags: .barrier) {
                 self.dictionary[key] = newValue
-             }
+            }
          }
      }
-    
+
     /// Removes the value for the provided key (if any)
     /// - Parameter forKey: the key to be removed from the dictionary
     /// - Returns: the removed value associated with the key or nil if not found
     public func removeValue(forKey: K) -> V? {
         return queue.sync(flags: .barrier) { return self.dictionary.removeValue(forKey: forKey) }
     }
-    
+
     @inlinable public func first(where predicate: (Element) throws -> Bool) rethrows -> Element? {
         return queue.sync { return try? self.dictionary.first(where: predicate) }
     }

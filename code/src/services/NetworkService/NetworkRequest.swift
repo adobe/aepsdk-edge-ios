@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 /// NetworkRequest struct to be used by the NetworkService and the HttpConnectionPerformer when initiating network calls
@@ -21,7 +20,7 @@ public struct NetworkRequest {
     public let httpHeaders: [String: String]
     public let connectTimeout: TimeInterval
     public let readTimeout: TimeInterval
-    
+
     /// Initialize the `NetworkRequest`
     /// - Parameters:
     ///   - url: URL used to initiate the network connection, should use https scheme
