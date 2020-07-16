@@ -14,21 +14,10 @@
 import Foundation
 import AEPExperiencePlatform
 
-struct TestXDMObject {
+struct TestXDMObject : Encodable {
     public init() {}
     
     public var innerKey: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case innerKey = "innerKey"
-    }
-}
-
-extension TestXDMObject: Encodable {
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        if let unwrapped = innerKey { try container.encode(unwrapped, forKey: .innerKey) }
-    }
 }
 
 struct TestXDMSchema : XDMSchema {

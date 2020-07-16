@@ -25,7 +25,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     
     class TestResponseHandler : ExperiencePlatformResponseHandler {
         var onResponseReceivedData : [String:Any] = [:] // latest data received in the onResponse callback
-        var countDownLatch : CountDownLatch?
+        var countDownLatch : CountDownLatch
         
         init(expectedCount: Int32) {
             countDownLatch = CountDownLatch(expectedCount)
@@ -33,11 +33,11 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         
         func onResponse(data: [String : Any]) {
             onResponseReceivedData = data
-            countDownLatch?.countDown()
+            countDownLatch.countDown()
         }
         
         func await() {
-            countDownLatch?.await()
+            countDownLatch.await()
         }
     }
     
@@ -90,7 +90,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         super.tearDown()
     }
     
-    /// MARK sample tests for the FunctionalTest framework usage
+    // MARK: sample tests for the FunctionalTest framework usage
     
     func testSample_AssertUnexpectedEvents() {
         // set event expectations specifying the event type, source and the count (count should be > 0)
@@ -163,7 +163,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     }
     
     /// Keeping these tests in here because there is no way to currently reset the core in between tests
-    /// MARK test request event format
+    // MARK: test request event format
     
     func testSendEvent_withXDMData_sendsCorrectRequestEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
@@ -248,7 +248,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         assertUnexpectedEvents()
     }
     
-    /// MARK test network request format
+    // MARK: test network request format
     
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest() {
         let responseConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
