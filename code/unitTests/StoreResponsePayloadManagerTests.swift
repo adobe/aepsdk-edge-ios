@@ -10,28 +10,28 @@
 // governing permissions and limitations under the License.
 //
 
-import XCTest
 @testable import AEPExperiencePlatform
+import XCTest
 
 class StoreResponsePayloadManagerTests: XCTestCase {
-    
+
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false // fail so nil checks stop execution
     }
-    
+
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-    
-    // MARK:
+
+    // MARK: 
 
     func testGetActiveStores_isCorrect_whenRecordsInDataStore() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
     }
-    
+
     func testGetActiveStores_evictsExpiredKey_whenCurrentDatePassesExpiry() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads(buildStorePayloads())
@@ -39,27 +39,27 @@ class StoreResponsePayloadManagerTests: XCTestCase {
         sleep(3)
         XCTAssertEqual(1, manager.getActiveStores().count)
     }
-    
+
     func testGetActivePayloadList_returnsList_whenRecordsInDataStore() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads(buildStorePayloads())
         let payloads = manager.getActivePayloadList()
         XCTAssertEqual(2, payloads.count)
     }
-    
+
     func testSaveStorePayloads_savesPayloads_whenValid() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
     }
-    
+
     func testSaveStorePayloads_overwritesPayloads_whenDuplicateKeys() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads(buildStorePayloads())
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
     }
-    
+
     func testSaveStorePayloads_maxAgeLessThanOne_isRemoved() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))])
@@ -67,13 +67,13 @@ class StoreResponsePayloadManagerTests: XCTestCase {
         manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: -1))])
         XCTAssertEqual(0, manager.getActiveStores().count)
     }
-    
+
     func testSaveStorePayloads_overwritesPayloads_whenDuplicateKeysAndNewValues() {
         let manager = StoreResponsePayloadManager(MockKeyValueStore())
         manager.saveStorePayloads(buildStorePayloads())
 
         let originalPayloads = manager.getActiveStores()
-        
+
         // new payloads use same keys as original payloads
         var newPayloads: [StoreResponsePayload] = []
         newPayloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout",
@@ -82,13 +82,13 @@ class StoreResponsePayloadManagerTests: XCTestCase {
         newPayloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin",
                                                                       value: "newValue",
                                                                       maxAge: 10)))
-        
+
         // overwrite and update
         manager.saveStorePayloads(newPayloads)
-        
+
         let activePayloads = manager.getActiveStores()
         XCTAssertEqual(2, activePayloads.count)
-        
+
         if let p1 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout"] {
             XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout", p1.payload.key)
             XCTAssertEqual("general=false", p1.payload.value)
@@ -97,7 +97,7 @@ class StoreResponsePayloadManagerTests: XCTestCase {
         } else {
             XCTFail("Failed to get payload with key kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout from active stores.")
         }
-        
+
         if let p2 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin"] {
             XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin", p2.payload.key)
             XCTAssertEqual("newValue", p2.payload.value)
@@ -107,10 +107,10 @@ class StoreResponsePayloadManagerTests: XCTestCase {
             XCTFail("Failed to get payload with key kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin from active stores.")
         }
     }
-    
+
     func buildStorePayloads() -> [StoreResponsePayload] {
         var payloads: [StoreResponsePayload] = []
-        
+
         payloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout",
                                                                    value: "general=true",
                                                                    maxAge: 7200)))

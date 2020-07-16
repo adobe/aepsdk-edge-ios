@@ -10,15 +10,14 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 /// Flatten a multi-level dictionary to a single level where each key is a dotted notation of each nested key.
 /// - Parameter dict: the dictionary to flatten
-func flattenDictionary(dict: [String : Any]) -> [String : Any] {
-    var result: [String : Any] = [:]
-    
-    func recursive(dict: [String : Any], out: inout [String : Any], currentKey: String = "") {
+func flattenDictionary(dict: [String: Any]) -> [String: Any] {
+    var result: [String: Any] = [:]
+
+    func recursive(dict: [String: Any], out: inout [String: Any], currentKey: String = "") {
         if dict.isEmpty {
             if currentKey.isEmpty {
                 out = [:]
@@ -31,8 +30,8 @@ func flattenDictionary(dict: [String : Any]) -> [String : Any] {
             process(value: val, out: &out, key: resultKey)
         }
     }
-    
-    func recursive(list: [Any], out: inout [String : Any], currentKey: String) {
+
+    func recursive(list: [Any], out: inout [String: Any], currentKey: String) {
         if list.isEmpty {
             out[currentKey] = "isEmpty"
             return
@@ -42,9 +41,9 @@ func flattenDictionary(dict: [String : Any]) -> [String : Any] {
             process(value: value, out: &out, key: resultKey)
         }
     }
-    
-    func process(value: Any, out: inout [String : Any], key: String) {
-        if let value = value as? [String : Any] {
+
+    func process(value: Any, out: inout [String: Any], key: String) {
+        if let value = value as? [String: Any] {
             recursive(dict: value, out: &out, currentKey: key)
         } else if let value = value as? [Any] {
             recursive(list: value, out: &out, currentKey: key)
@@ -52,7 +51,7 @@ func flattenDictionary(dict: [String : Any]) -> [String : Any] {
             out[key] = value
         }
     }
-    
+
     recursive(dict: dict, out: &result)
     return result
 }
@@ -60,7 +59,7 @@ func flattenDictionary(dict: [String : Any]) -> [String : Any] {
 /// Convert an timestamp in miliseconds since Linux epoch to an iso 8601 formatted date string.
 /// - Parameter timestamp: miliseconds since epoch
 func timestampToISO8601(_ timestamp: Int) -> String {
-    let date = Date(timeIntervalSince1970: TimeInterval(timestamp/1000))
+    let date = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
     return ISO8601DateFormatter().string(from: date)
 }
 
@@ -75,6 +74,6 @@ func asFlattenDictionary(data: Data?) -> [String: Any] {
         print("asFlattenDictionary - Unable to convert to [String: Any], data: \(String(data: unwrappedData, encoding: .utf8) ?? "")")
         return [:]
     }
-    
+
     return flattenDictionary(dict: dataAsDictionary)
 }

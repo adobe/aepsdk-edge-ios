@@ -23,7 +23,7 @@ class MockTask: URLSessionDataTask {
         self.urlResponse = urlResponse
         self._error = error
     }
-    
+
     override func resume() {
         guard let unwrappedCompletionHandler = completionHandler else { return }
         unwrappedCompletionHandler(self.data, self.urlResponse, self._error)

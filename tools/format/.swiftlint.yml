@@ -21,6 +21,8 @@ excluded: # paths to ignore during linting
 - Carthage
 - Pods
 
+empty_count: 
+    severity: warning
 force_cast: warning
 force_try: warning
 identifier_name:
