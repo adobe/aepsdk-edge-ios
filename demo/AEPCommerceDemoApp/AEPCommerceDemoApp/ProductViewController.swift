@@ -50,7 +50,7 @@ class ProductViewController: UIViewController {
                                    currency: productData.currency,
                                    imageLarge: productData.imageLarge,
                                    imageSmall: productData.imageSmall)
-        
+
         productImage.image = UIImage(named: "\((prodData.imageSmall))")
         productImage.layer.cornerRadius = 30
         productImage.clipsToBounds = true
@@ -81,7 +81,7 @@ class ProductViewController: UIViewController {
                                                 currency: productData.currency,
                                                 imageLarge: productData.imageLarge,
                                                 imageSmall: productData.imageSmall)
-        
+
         let product = Product(productData: prodData, quantity: qtyOrdered)
         adbMobileShoppingCart.add(product: product)
 

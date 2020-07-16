@@ -22,7 +22,7 @@ struct AEPDemoConstants {
 
     struct Strings {
 
-        /// MARK: Commerce App : Labels of UI Components
+        // MARK: Commerce App : Labels of UI Components
         static let appName = "AEP Extension Demo"
         static let titleItemList = "Items"
         static let titleItemDetail = "Item Detail"
@@ -39,18 +39,18 @@ struct AEPDemoConstants {
         static let totalPrice = "Total Price $ "
         static let productListFilename = "product_list_colors"
 
-        /// MARK:  Commerce App : Snackbar messages
+        // MARK: Commerce App : Snackbar messages
         static let itemAddedMsg = " item added to shopping cart."
         static let purchaseCompleteMsg = "Thank you for your purchase!"
         static let cartEmptyErrorMsg  = "Sorry!, No item in the shopping cart to place an order. Add at least one item to place an order."
         static let cartEmptyMsg = "There are no item in the shopping cart to clear."
         static let cartClearMsg = "Sure!, all the selected items are removed from the Shopping Cart."
 
-        /// MARK:  Griffon : Labels of UI Components
+        // MARK: Griffon : Labels of UI Components
         static let griffonConnect = "Connect"
         static let griffonDisconnect = "Disconnect"
 
-        /// MARK:  Griffon : Snackbar messages
+        // MARK: Griffon : Snackbar messages
         static let griffonUrlInvalid = "Enter a valid URL of the Griffon Session"
         static let griffonSessonActive = "Connection to a Griffon Session is already active or in progress. Disconnect before trying to connect..."
         static let griffonSessionDisconnected = "Griffon Session has been disconnected"

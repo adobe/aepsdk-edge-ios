@@ -484,4 +484,3 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         XCTAssertEqual([responseStr], mockResponseCallback.onResponseJsonResponse)
     }
 }
-
