@@ -24,36 +24,36 @@ class GriffonViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        appNameLbl.text = AEPDemoConstants.Strings.APP_NAME
+        appNameLbl.text = AEPDemoConstants.Strings.appName
     }
 
-    @IBAction func GriffonConnectBtn(_ sender: UIButton) {
+    @IBAction func griffonConnectBtn(_ sender: UIButton) {
         if !isConnected {
             guard let griffonURLText = griffonSessionURL.text else {
                 return
             }
-            if  griffonURLText.contains(AEPDemoConstants.Strings.GRIFFON_URL_VALIDATION_STRING) {
+            if  griffonURLText.contains(AEPDemoConstants.Strings.griffonUrlValidationString) {
                 if let url = URL(string: griffonURLText) {
                     isConnected = true
                     ACPGriffon.startSession(url)
                 } else {
-                    Snackbar(message: AEPDemoConstants.Strings.GRIFFON_URL_INVALID)
+                    snackbar(message: AEPDemoConstants.Strings.griffonUrlInvalid)
                 }
             } else {
-                Snackbar(message: AEPDemoConstants.Strings.GRIFFON_URL_INVALID)
+                snackbar(message: AEPDemoConstants.Strings.griffonUrlInvalid)
             }
         } else {
-            Snackbar(message: AEPDemoConstants.Strings.GRIFFON_SESSION_ACTIVE)
+            snackbar(message: AEPDemoConstants.Strings.griffonSessonActive)
         }
     }
 
-    @IBAction func GriffonDisconnectBtn(_ sender: UIButton) {
+    @IBAction func griffonDisconnectBtn(_ sender: UIButton) {
         if isConnected {
             ACPGriffon.endSession()
-            Snackbar(message: AEPDemoConstants.Strings.GRIFFON_SESSION_DISCONNECTED)
+            snackbar(message: AEPDemoConstants.Strings.griffonSessionDisconnected)
             isConnected = false
         } else {
-            Snackbar(message: AEPDemoConstants.Strings.GRIFFON_SESSION_NOT_ACTIVE)
+            snackbar(message: AEPDemoConstants.Strings.griffonSessionNotActive)
         }
     }
 }

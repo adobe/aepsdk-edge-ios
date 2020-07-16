@@ -15,7 +15,7 @@ import UIKit
 
 extension UIViewController {
 
-    func Snackbar(message: String) {
+    func snackbar(message: String) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .actionSheet)
         alert.view.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.5)
         alert.view.alpha = 1

@@ -24,18 +24,18 @@ class CartViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        appNameLbl.text = AEPDemoConstants.Strings.APP_NAME
-        shoppingCartHeadingLbl.text = AEPDemoConstants.Strings.TITLE_CART_LIST
+        appNameLbl.text = AEPDemoConstants.Strings.appName
+        shoppingCartHeadingLbl.text = AEPDemoConstants.Strings.titleCartList
         shoppingCartTableView.delegate = self
         shoppingCartTableView.dataSource = self
         shoppingCartTableView.reloadData()
-        orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + " $ " + String(format: "%.2f", adbMobileShoppingCart.total)
+        orderTotalLbl.text = AEPDemoConstants.Strings.totalPrice + " $ " + String(format: "%.2f", adbMobileShoppingCart.total)
     }
 
     @IBAction func gotoCheckoutPage(_ sender: UIButton) {
 
         if adbMobileShoppingCart.items.isEmpty {
-            Snackbar(message: AEPDemoConstants.Strings.CART_EMPTY_ERROR_MSG)
+            snackbar(message: AEPDemoConstants.Strings.cartEmptyErrorMsg)
         } else {
             self.performSegue(withIdentifier: "gotoCheckoutPage", sender: self)
         }
@@ -43,10 +43,10 @@ class CartViewController: UIViewController {
 
     @IBAction func SCartCancelBtn(_ sender: UIButton) {
         if adbMobileShoppingCart.items.isEmpty {
-            Snackbar(message: AEPDemoConstants.Strings.CART_EMPTY_MSG)
+            snackbar(message: AEPDemoConstants.Strings.cartEmptyMsg)
         } else {
             clearCart()
-            Snackbar(message: AEPDemoConstants.Strings.CART_CLEARING_MSG)
+            snackbar(message: AEPDemoConstants.Strings.cartClearMsg)
         }
     }
 
@@ -55,7 +55,7 @@ class CartViewController: UIViewController {
         CommerceUtil.sendCartClearXdmEvent()
         adbMobileShoppingCart.clearCart()
         shoppingCartTableView.reloadData()
-        orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)
+        orderTotalLbl.text = AEPDemoConstants.Strings.totalPrice + String(format: "%.2f", adbMobileShoppingCart.total)
     }
 }
 
@@ -83,5 +83,5 @@ extension CartViewController: CartDelegate {
         adbMobileShoppingCart.remove(product: cartItem.product)
         CommerceUtil.sendProductListRemoveXdmEvent(productData: cartItem.product.productData, quantity: cartItem.product.quantity)
         shoppingCartTableView.reloadData()
-        orderTotalLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE + String(format: "%.2f", adbMobileShoppingCart.total)    }
+        orderTotalLbl.text = AEPDemoConstants.Strings.totalPrice + String(format: "%.2f", adbMobileShoppingCart.total)    }
 }

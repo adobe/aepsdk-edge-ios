@@ -31,7 +31,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
-        appTitleLbl.text = AEPDemoConstants.Strings.APP_NAME
+        appTitleLbl.text = AEPDemoConstants.Strings.appName
 
         cartBtn.layer.cornerRadius = 0.5 * cartBtn.bounds.size.width
         cartBtn.clipsToBounds = true

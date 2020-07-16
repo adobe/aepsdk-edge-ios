@@ -23,12 +23,12 @@ class CheckOutViewController: UIViewController {
 
     @IBOutlet var totalPriceTextLbl: UILabel!
     @IBOutlet var selectPaymentMethodlbl: UILabel!
-    enum paymentMethods: String, CaseIterable {
-        case Cash = "Cash"
-        case Visa = "Visa"
-        case Master = "Master"
-        case Amex = "Amex"
-        static let allValues = [Cash, Visa, Master, Amex]
+    enum PaymentMethods: String, CaseIterable {
+        case cash = "Cash"
+        case visa = "Visa"
+        case master = "Master"
+        case amex = "Amex"
+        static let allValues = [cash, visa, master, amex]
     }
 
     private var selectedPaymentMethod: String  = "Cash"
@@ -38,23 +38,23 @@ class CheckOutViewController: UIViewController {
         paymentMethod.delegate = self
         paymentMethod.dataSource = self
         CommerceUtil.sendCheckoutXdmEvent()
-        totalPriceTextLbl.text = AEPDemoConstants.Strings.TOTAL_PRICE
-        selectPaymentMethodlbl.text = AEPDemoConstants.Strings.SELECT_PAYMENT_METHOD
+        totalPriceTextLbl.text = AEPDemoConstants.Strings.totalPrice
+        selectPaymentMethodlbl.text = AEPDemoConstants.Strings.selectPaymentMethod
         totalPriceLbl.text = String(format: "%.2f", adbMobileShoppingCart.total)
-        appNameLbl.text = AEPDemoConstants.Strings.APP_NAME
+        appNameLbl.text = AEPDemoConstants.Strings.appName
 
     }
 
     @IBAction func purchaseNowBtn(_ sender: UIButton) {
 
         if adbMobileShoppingCart.items.isEmpty {
-            Snackbar(message: AEPDemoConstants.Strings.CART_EMPTY_ERROR_MSG)
+            snackbar(message: AEPDemoConstants.Strings.cartEmptyErrorMsg)
         } else {
             CommerceUtil.sendPurchaseXdmEvent()
             adbMobileShoppingCart.clearCart()
             totalPriceLbl.text = "\(adbMobileShoppingCart.total)"
             self.performSegue(withIdentifier: "gotoProductListPage", sender: self)
-            Snackbar(message: AEPDemoConstants.Strings.PURCHASE_COMPLETE_MSG)
+            snackbar(message: AEPDemoConstants.Strings.purchaseCompleteMsg)
         }
     }
 }
@@ -65,14 +65,14 @@ extension CheckOutViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return paymentMethods.allValues.count
+        return PaymentMethods.allValues.count
     }
 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedPaymentMethod = String(describing: paymentMethods.allCases[row])
+        selectedPaymentMethod = String(describing: PaymentMethods.allCases[row])
     }
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return String(describing: paymentMethods.allCases[row])
+        return String(describing: PaymentMethods.allCases[row])
     }
 }

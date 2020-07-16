@@ -22,7 +22,7 @@ public class ProductDataLoader {
 
     func loadProducts() {
 
-        if let jsonFileLocation = Bundle.main.url(forResource: AEPDemoConstants.Strings.PRODUCT_LIST_FILENAME, withExtension: "json") {
+        if let jsonFileLocation = Bundle.main.url(forResource: AEPDemoConstants.Strings.productListFilename, withExtension: "json") {
             let data = try? Data(contentsOf: jsonFileLocation)
             let jsonDecoder = JSONDecoder()
             if let unwrappedData = data {

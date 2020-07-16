@@ -16,45 +16,45 @@ struct AEPDemoConstants {
 
     struct Numbers {
 
-        static let MIN_QTY = 1
-        static let MAX_QTY = 25
+        static let minQty = 1
+        static let maxQty = 25
     }
 
     struct Strings {
 
-        // Commerce App : Labels of UI Components
-        static let APP_NAME = "AEP Extension Demo"
-        static let TITLE_ITEM_LIST = "Items"
-        static let TITLE_ITEM_DETAIL = "Item Detail"
-        static let PRODUCT_IMAGE = "Product Image"
-        static let QUANTITY = "Quantity:"
-        static let PRICE = "Price"
-        static let ADD_TO_CART = "Add to Cart"
-        static let TITLE_CART_LIST = "Shopping Cart"
-        static let REMOVE = "Remove"
-        static let SAVE_FOR_LATER = "Save for later"
-        static let CHECKOUT = "Checkout"
-        static let PURCHASE = "Purchase"
-        static let SELECT_PAYMENT_METHOD = "Select Payment Method"
-        static let TOTAL_PRICE = "Total Price $ "
-        static let PRODUCT_LIST_FILENAME = "product_list_colors"
+        /// MARK: Commerce App : Labels of UI Components
+        static let appName = "AEP Extension Demo"
+        static let titleItemList = "Items"
+        static let titleItemDetail = "Item Detail"
+        static let productImage = "Product Image"
+        static let quantity = "Quantity:"
+        static let price = "Price"
+        static let addToCart = "Add to Cart"
+        static let titleCartList = "Shopping Cart"
+        static let remove = "Remove"
+        static let saveForLater = "Save for later"
+        static let checkout = "Checkout"
+        static let purchase = "Purchase"
+        static let selectPaymentMethod = "Select Payment Method"
+        static let totalPrice = "Total Price $ "
+        static let productListFilename = "product_list_colors"
 
-        // Commerce App : Snackbar messages
-        static let ITEM_ADDED_MSG = " item added to shopping cart."
-        static let PURCHASE_COMPLETE_MSG = "Thank you for your purchase!"
-        static let CART_EMPTY_ERROR_MSG  = "Sorry!, No item in the shopping cart to place an order. Add at least one item to place an order."
-        static let CART_EMPTY_MSG = "There are no item in the shopping cart to clear."
-        static let CART_CLEARING_MSG = "Sure!, all the selected items are removed from the Shopping Cart."
+        /// MARK:  Commerce App : Snackbar messages
+        static let itemAddedMsg = " item added to shopping cart."
+        static let purchaseCompleteMsg = "Thank you for your purchase!"
+        static let cartEmptyErrorMsg  = "Sorry!, No item in the shopping cart to place an order. Add at least one item to place an order."
+        static let cartEmptyMsg = "There are no item in the shopping cart to clear."
+        static let cartClearMsg = "Sure!, all the selected items are removed from the Shopping Cart."
 
-        // Griffon : Labels of UI Components
-        static let GRIFFON_CONNECT = "Connect"
-        static let GRIFFON_DISCONNECT = "Disconnect"
+        /// MARK:  Griffon : Labels of UI Components
+        static let griffonConnect = "Connect"
+        static let griffonDisconnect = "Disconnect"
 
-        // Griffon : Snackbar messages
-        static let GRIFFON_URL_INVALID = "Enter a valid URL of the Griffon Session"
-        static let GRIFFON_SESSION_ACTIVE = "Connection to a Griffon Session is already active or in progress. Disconnect before trying to connect..."
-        static let GRIFFON_SESSION_DISCONNECTED = "Griffon Session has been disconnected"
-        static let GRIFFON_SESSION_NOT_ACTIVE = "Griffon Session is not active..."
-        static let GRIFFON_URL_VALIDATION_STRING = "adb_validation_sessionid"
+        /// MARK:  Griffon : Snackbar messages
+        static let griffonUrlInvalid = "Enter a valid URL of the Griffon Session"
+        static let griffonSessonActive = "Connection to a Griffon Session is already active or in progress. Disconnect before trying to connect..."
+        static let griffonSessionDisconnected = "Griffon Session has been disconnected"
+        static let griffonSessionNotActive = "Griffon Session is not active..."
+        static let griffonUrlValidationString = "adb_validation_sessionid"
     }
 }
