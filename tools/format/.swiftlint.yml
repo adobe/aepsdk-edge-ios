@@ -1,5 +1,5 @@
 disabled_rules: # rule identifiers to exclude from running
-
+- nesting
 opt_in_rules: # some rules are opt-in only
 - closure_end_indentation
 - convenience_type
@@ -20,6 +20,14 @@ opt_in_rules: # some rules are opt-in only
 excluded: # paths to ignore during linting
 - Carthage
 - Pods
+
+force_cast: warning
+force_try: warning
+identifier_name:
+    excluded:
+        - id
+        - no
+        - ok
 line_length:
     warning: 150
     error: 200
