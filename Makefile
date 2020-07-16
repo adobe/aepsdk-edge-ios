@@ -5,7 +5,7 @@ export OUT_DIR = out
 PROJECT_NAME = $(EXTENSION_NAME)
 
 GITHOOK_PATH = .git/hooks/
-HOOKS_PATH = hooks/
+HOOKS_PATH = tools/hooks/
 PRECOMMIT_FILENAME = pre-commit
 
 setup: 

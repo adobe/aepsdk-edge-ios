@@ -1,6 +1,7 @@
 #!/bin/bash
 if which swiftlint >/dev/null; then
-	swiftlint lint
+	swiftlint autocorrect --config ../tools/format/.swiftlint.yml --path code/
+	swiftlint autocorrect --config ../tools/format/.swiftlint.yml --path demo/
 	git diff --cached --name-only --diff-filter=d | while read filename; do git add "$filename"; done
 else
 	echo "warning: SwiftLint not installed, please run 'make install-swiftlint'"
