@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:29.537511 -0700 PDT m=+2.253348535 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:20.616132 -0700 PDT m=+2.254340056 by XDMTool
 
  Title			:	Launches
  Description	:	Launch of an application. Triggered on every run, including crashes and installs. Also triggered on a resume from background when the session timeout has been exceeded.
@@ -24,7 +24,7 @@ public struct Launches {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"

@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:29.539248 -0700 PDT m=+2.255086048 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:20.616213 -0700 PDT m=+2.254421874 by XDMTool
 
  Title			:	FeatureUsages
  Description	:	Activation of an application feature that is being measured.
@@ -24,7 +24,7 @@ public struct FeatureUsages {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"

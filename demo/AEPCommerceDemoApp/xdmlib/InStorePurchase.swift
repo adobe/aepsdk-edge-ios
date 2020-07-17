@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:35.396529 -0700 PDT m=+1.998262005 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:38.21829 -0700 PDT m=+2.051728413 by XDMTool
 
  Title			:	InStorePurchase
  Description	:	'inStore' purchase is saved for analytics use.
@@ -24,7 +24,7 @@ public struct InStorePurchase {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"
