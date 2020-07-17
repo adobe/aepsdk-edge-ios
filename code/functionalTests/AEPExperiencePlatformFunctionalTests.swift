@@ -19,7 +19,6 @@ import XCTest
 class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     private let e1 = try! ACPExtensionEvent(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let e2 = try! ACPExtensionEvent(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private static var firstRun : Bool = true
     private let exEdgeInteractUrl = "https://edge.adobedc.net/ee/v1/interact"
     private let responseBody = "{\"test\": \"json\"}"
     
@@ -50,7 +49,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         super.setUp()
         FunctionalTestUtils.resetUserDefaults()
         continueAfterFailure = false
-        if AEPExperiencePlatformFunctionalTests.firstRun {
+        if FunctionalTestBase.isFirstRun {
             let startLatch: CountDownLatch = CountDownLatch(1)
             setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
             
@@ -76,11 +75,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
             
             assertExpectedEvents(ignoreUnexpectedEvents: false)
             resetTestExpectations()
-            
-            // Note: core already started in the FunctionalTestBase
         }
-        
-        AEPExperiencePlatformFunctionalTests.firstRun = false
     }
     
     override func tearDown() {

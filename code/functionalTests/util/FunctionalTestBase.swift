@@ -34,7 +34,8 @@ extension EventSpec : Hashable {
 }
 
 class FunctionalTestBase : XCTestCase {
-    private static var firstRun = true
+    /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
+    private(set) static var isFirstRun: Bool = true
     private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService()
     /// Use this setting to enable debug mode logging in the `FunctionalTestBase`
     static var debugEnabled = false
@@ -50,19 +51,18 @@ class FunctionalTestBase : XCTestCase {
     public override func setUp() {
         super.setUp()
         continueAfterFailure = false
-        if FunctionalTestBase.firstRun {
+        if FunctionalTestBase.isFirstRun {
             guard let _ = try? ACPCore.registerExtension(InstrumentedExtension.self) else {
                 log("Unable to register the InstrumentedExtension")
                 return
             }
         }
-        FunctionalTestBase.firstRun = false
-        
     }
     
     public override func tearDown() {
         super.tearDown()
         resetTestExpectations()
+        FunctionalTestBase.isFirstRun = false
     }
     
     /// Reset event and network request expectations and drop the items received until this point
