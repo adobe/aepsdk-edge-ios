@@ -70,8 +70,8 @@ class CommerceUtil  {
     ///     - quantity      : The quantity of the items.
     /// - Returns:
     ///     - TotalCost         :   The total cost of the items
-    private static func computeTotal(price :Float, quantity: Int) -> Float {
-        return price * Float(quantity)
+    private static func computeTotal(price :Double, quantity: Int) -> Double {
+        return price * Double(quantity)
     }
     
     /// Helper Method :  Creates and returns the list of items added into the shoppring cart .
