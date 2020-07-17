@@ -8,7 +8,7 @@ setup:
 	(cd build/xcode && pod install)
 	(cd demo/$(APP_NAME) && pod install)
 
-setup-lint-tool: _install-swiftlint _install-githook
+setup-tools: _install-swiftlint _install-githook
 
 pod-repo-update:
 	(cd build/xcode && pod repo update)
