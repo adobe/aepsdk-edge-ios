@@ -12,7 +12,7 @@
 
 import UIKit
 
-protocol CartDelegate: class {
+protocol CartDelegate: AnyObject {
     func remove(cell: ShoppingItemCell)
 }
 
