@@ -168,18 +168,18 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithValidJsonContent() {
         // setup
         let stringResponseBody =  "{\n" +
-                                   "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
-                                   "      \"handle\": [],\n" +
-                                   "      \"errors\": [\n" +
-                                   "        {\n" +
-                                   "          \"code\": \"global:0\",\n" +
-                                   "          \"namespace\": \"global\",\n" +
-                                   "          \"severity\": \"0\",\n" +
-                                   "          \"message\": \"Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases\"\n"
-                                   +
-                                   "        }\n" +
-                                   "      ]\n" +
-                                   "    }"
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [],\n" +
+            "      \"errors\": [\n" +
+            "        {\n" +
+            "          \"code\": \"global:0\",\n" +
+            "          \"namespace\": \"global\",\n" +
+            "          \"severity\": \"0\",\n" +
+            "          \"message\": \"Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases\"\n"
+            +
+            "        }\n" +
+            "      ]\n" +
+        "    }"
         let url: URL = URL(string: "https://test.com")!
 
         // test
@@ -271,15 +271,15 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testHandleStreamingResponse_nonCharacterSeparators_doesNotHandleContent() {
         let responseStr: String =
             "<RS>{\"some\":\"thing\\n\"}<LF>" +
-            "<RS>{\n" +
-            "  \"may\": {\n" +
-            "    \"include\": \"nested\",\n" +
-            "    \"objects\": [\n" +
-            "      \"and\",\n" +
-            "      \"arrays\"\n" +
-            "    ]\n" +
-            "  }\n" +
-            "}<LF>"
+                "<RS>{\n" +
+                "  \"may\": {\n" +
+                "    \"include\": \"nested\",\n" +
+                "    \"objects\": [\n" +
+                "      \"and\",\n" +
+                "      \"arrays\"\n" +
+                "    ]\n" +
+                "  }\n" +
+        "}<LF>"
 
         let streamingSettings = Streaming(recordSeparator: "<RS>", lineFeed: "<LF>")
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
@@ -294,15 +294,15 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testHandleStreamingResponse_SimpleStreamingResponse2() {
         let responseStr: String =
             "\u{00A9}{\"some\":\"thing\\n\"}\u{00F8}" +
-            "\u{00A9}{\n" +
-            "  \"may\": {\n" +
-            "    \"include\": \"nested\",\n" +
-            "    \"objects\": [\n" +
-            "      \"and\",\n" +
-            "      \"arrays\"\n" +
-            "    ]\n" +
-            "  }\n" +
-            "}\u{00F8}"
+                "\u{00A9}{\n" +
+                "  \"may\": {\n" +
+                "    \"include\": \"nested\",\n" +
+                "    \"objects\": [\n" +
+                "      \"and\",\n" +
+                "      \"arrays\"\n" +
+                "    ]\n" +
+                "  }\n" +
+        "}\u{00F8}"
         var expectedResponse: [String] = []
         expectedResponse.append("{\"some\":\"thing\\n\"}")
         expectedResponse.append("{\n" +
@@ -327,15 +327,15 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testHandleStreamingResponse_SimpleStreamingResponse3() {
         let responseStr: String =
             "\u{00A9}{\"some\":\"thing\\n\"}\u{00FF}" +
-            "\u{00A9}{\n" +
-            "  \"may\": {\n" +
-            "    \"include\": \"nested\",\n" +
-            "    \"objects\": [\n" +
-            "      \"and\",\n" +
-            "      \"arrays\"\n" +
-            "    ]\n" +
-            "  }\n" +
-            "}\u{00FF}"
+                "\u{00A9}{\n" +
+                "  \"may\": {\n" +
+                "    \"include\": \"nested\",\n" +
+                "    \"objects\": [\n" +
+                "      \"and\",\n" +
+                "      \"arrays\"\n" +
+                "    ]\n" +
+                "  }\n" +
+        "}\u{00FF}"
         var expectedResponse: [String] = []
         expectedResponse.append("{\"some\":\"thing\\n\"}")
         expectedResponse.append("{\n" +
@@ -402,15 +402,15 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
 
     func testHandleNonStreamingResponse_WhenValidJson_ShouldReturnEntireResponse() {
         let responseStr: String = "{\"some\":\"thing\"}," +
-                                    "{" +
-                                    "  \"may\": {" +
-                                    "    \"include\": \"nested\"," +
-                                    "    \"objects\": [" +
-                                    "      \"and\"," +
-                                    "      \"arrays\"" +
-                                    "    ]" +
-                                    "  }" +
-                                    "}"
+            "{" +
+            "  \"may\": {" +
+            "    \"include\": \"nested\"," +
+            "    \"objects\": [" +
+            "      \"and\"," +
+            "      \"arrays\"" +
+            "    ]" +
+            "  }" +
+        "}"
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 
@@ -422,15 +422,15 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
 
     func testHandleNonStreamingResponse_WhenValidJsonWithNewLine_ShouldReturnResponse() {
         let responseStr: String =  "{\"some\":\"thing\"},\n" +
-                                    "{" +
-                                    "  \"may\": {" +
-                                    "    \"include\": \"nested\"," +
-                                    "    \"objects\": [" +
-                                    "      \"and\"," +
-                                    "      \"arrays\"" +
-                                    "    ]" +
-                                    "  }" +
-                                    "}\n"
+            "{" +
+            "  \"may\": {" +
+            "    \"include\": \"nested\"," +
+            "    \"objects\": [" +
+            "      \"and\"," +
+            "      \"arrays\"" +
+            "    ]" +
+            "  }" +
+        "}\n"
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 

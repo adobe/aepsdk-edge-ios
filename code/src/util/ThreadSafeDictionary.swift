@@ -30,16 +30,16 @@ final class ThreadSafeDictionary<K: Hashable, V> {
     }
 
     // MARK: Subscript
-     public subscript(key: K) -> V? {
-         get {
+    public subscript(key: K) -> V? {
+        get {
             return queue.sync { return self.dictionary[key] }
-         }
-         set {
+        }
+        set {
             queue.sync(flags: .barrier) {
                 self.dictionary[key] = newValue
             }
-         }
-     }
+        }
+    }
 
     /// Removes the value for the provided key (if any)
     /// - Parameter forKey: the key to be removed from the dictionary

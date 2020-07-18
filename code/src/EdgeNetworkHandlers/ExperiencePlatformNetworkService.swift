@@ -43,9 +43,9 @@ class ExperiencePlatformNetworkService {
     private let defaultGenericErrorMessage = "Request to ExEdge failed with an unknown exception"
     private let defaultNamespace = "global"
     private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.clientTimeout.rawValue,
-                                                      HttpResponseCodes.tooManyRequests.rawValue,
-                                                      HttpResponseCodes.serviceUnavailable.rawValue,
-                                                      HttpResponseCodes.gatewayTimeout.rawValue]
+                                                       HttpResponseCodes.tooManyRequests.rawValue,
+                                                       HttpResponseCodes.serviceUnavailable.rawValue,
+                                                       HttpResponseCodes.gatewayTimeout.rawValue]
     private let waitTimeout: TimeInterval = max(ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout, ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout) + 1
     private var defaultHeaders = [ExperiencePlatformConstants.NetworkKeys.headerKeyAccept: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson,
                                   ExperiencePlatformConstants.NetworkKeys.headerKeyContentType: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson]

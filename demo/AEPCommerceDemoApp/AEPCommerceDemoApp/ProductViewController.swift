@@ -40,9 +40,9 @@ class ProductViewController: UIViewController {
         priceLbl.text = AEPDemoConstants.Strings.price
         addToCartBtn.setTitle(AEPDemoConstants.Strings.addToCart, for: .normal)
         guard let productData = productData else {
-               print("Not a valid product!")
-               return
-           }
+            print("Not a valid product!")
+            return
+        }
         let prodData = ProductData(sku: productData.sku,
                                    name: productData.name,
                                    details: productData.details,
