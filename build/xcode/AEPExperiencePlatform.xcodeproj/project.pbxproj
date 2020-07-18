@@ -1184,7 +1184,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config ../../tools/format/.swiftlint.yml --path ../../code/unitTests --lenient\n    swiftlint lint --config ../../tools/format/.swiftlint.yml --path ../../code/testUtilsShared --lenient\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config ../../tools/format/.swiftlint.yml --lenient ../../code/unitTests/ ../../code/testUtilsShared/\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		BF024B7624C01D02002131E9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
