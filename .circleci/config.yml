@@ -45,7 +45,7 @@ jobs:
 
       - run:
           name: Lint Source Code
-          command: lint-format
+          command: make lint-format
 
       # pre-start the simulator to prevent timeouts
       - run:

@@ -58,7 +58,7 @@ functional-test: _create-out
 	(make -C build/xcode functional-test)
 
 install-swiftlint:
-	brew install swiftlint && brew cleanup swiftlint
+	HOMEBREW_NO_AUTO_UPDATE=1 brew install swiftlint && brew cleanup swiftlint
 
 install-githook:
 	./tools/git-hooks/setup.sh
