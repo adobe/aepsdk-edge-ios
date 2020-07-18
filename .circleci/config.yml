@@ -41,11 +41,11 @@ jobs:
 
       - run:
           name: Install SwiftLint
-          command: brew install swiftlint && brew cleanup swiftlint
+          command: make install-swiftlint
 
       - run:
           name: Lint Source Code
-          comment: swiftlint lint --config tools/format/.swiftlint-ci.yml
+          command: lint-format
 
       # pre-start the simulator to prevent timeouts
       - run:

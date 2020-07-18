@@ -8,7 +8,7 @@ setup:
 	(cd build/xcode && pod install)
 	(cd demo/$(APP_NAME) && pod install)
 
-setup-tools: _install-swiftlint _install-githook
+setup-tools: install-swiftlint install-githook
 
 pod-repo-update:
 	(cd build/xcode && pod repo update)
@@ -57,14 +57,22 @@ functional-test: _create-out
 	(mkdir -p $(OUT_DIR)/functionalTest)
 	(make -C build/xcode functional-test)
 
+install-swiftlint:
+	brew install swiftlint && brew cleanup swiftlint
+
+install-githook:
+	./tools/git-hooks/setup.sh
+
+autocorrect_format:
+	(swiftlint autocorrect --config tools/format/.swiftlint.yml --format)
+
+lint_format:
+	(swiftlint lint --config tools/format/.swiftlint-ci.yml)
+
 _create-out:
 	(mkdir -p $(OUT_DIR))
 
-_install-swiftlint:
-	brew install swiftlint && brew cleanup swiftlint
 
-_install-githook:
-	./tools/git-hooks/setup.sh
 	
 
 
