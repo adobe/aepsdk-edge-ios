@@ -17,11 +17,11 @@ public enum NetworkServiceError: Error {
 }
 
 class AEPNetworkService: NetworkService {
-  
-    private var sessions = [String:URLSession]()
-    
+
+    private var sessions = [String: URLSession]()
+
     public func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
-        
+
         if !networkRequest.url.absoluteString.starts(with: "https") {
             print("AEPNetworkService - Network request for (\( networkRequest.url.absoluteString)) could not be created, only https requests are accepted.")
             if let closure = completionHandler {
@@ -29,21 +29,21 @@ class AEPNetworkService: NetworkService {
             }
             return
         }
-        
+
         let urlRequest = createURLRequest(networkRequest: networkRequest)
         let urlSession = createURLSession(networkRequest: networkRequest)
-        
+
         // initiate the network request
         print("AEPNetworkService - Initiated (\(networkRequest.httpMethod.toString())) network request to (\(networkRequest.url.absoluteString)).")
-        let task = urlSession.dataTask(with: urlRequest, completionHandler: { (data, response, error) in
+        let task = urlSession.dataTask(with: urlRequest, completionHandler: { data, response, error in
             if let closure = completionHandler {
-                let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse , error: error)
+                let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse, error: error)
                 closure(httpConnection)
             }
         })
         task.resume()
     }
-    
+
     /// Check if a session is already created for the specified URL, readTimeout, connectTimeout or create a new one with a new `URLSessionConfiguration`
     /// - Parameter networkRequest: current network request
     func createURLSession(networkRequest: NetworkRequest) -> URLSession {
@@ -54,31 +54,31 @@ class AEPNetworkService: NetworkService {
             config.urlCache = nil
             config.timeoutIntervalForRequest = networkRequest.readTimeout
             config.timeoutIntervalForResource = networkRequest.connectTimeout
-            
-            let newSession:URLSession = URLSession(configuration: config)
+
+            let newSession: URLSession = URLSession(configuration: config)
             self.sessions[sessionId] = newSession
             return newSession
         }
-        
-        return session;
+
+        return session
     }
-    
+
     /// Creates an `URLRequest` with the provided parameters and adds the SDK default headers. The cache policy used is reloadIgnoringLocalCacheData.
     /// - Parameter networkRequest: `NetworkRequest`
     private func createURLRequest(networkRequest: NetworkRequest) -> URLRequest {
         var request = URLRequest(url: networkRequest.url)
         request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpMethod = networkRequest.httpMethod.toString()
-        
+
         if !networkRequest.connectPayload.isEmpty && networkRequest.httpMethod == .post {
             request.httpBody = networkRequest.connectPayload.data(using: .utf8)
         }
-        
+
         // TODO: AMSDK-9800 Set default user agent from system info service
         for (key, val) in networkRequest.httpHeaders {
             request.setValue(val, forHTTPHeaderField: key)
         }
-        
-        return request;
+
+        return request
     }
 }

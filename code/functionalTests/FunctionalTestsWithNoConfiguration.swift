@@ -10,16 +10,15 @@
 // governing permissions and limitations under the License.
 //
 
-
-import XCTest
 import ACPCore
 @testable import AEPExperiencePlatform
+import XCTest
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
 /// This test suite cannot be run in same target as other tests which provide an SDK configuration to ACPCore
 /// as all the tests in the same target use the same ACPCore instance.
 class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
-    
+
     override func setUp() {
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
@@ -37,40 +36,40 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
     }
-    
+
     func testHandleResponseEvent_withPendingConfigurationState_expectResponseEventHandled() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
         let configState = getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
         XCTAssertNil(configState)
-        
+
         let handleAddEventExpectation = XCTestExpectation(description: "Handle Add Event Called")
         TestableExperiencePlatformInternal.handleAddEventExpectation = handleAddEventExpectation
-        
+
         let handleResponseEventExpectation = XCTestExpectation(description: "Handle Response Event Called")
         TestableExperiencePlatformInternal.handleResponseEventExpectation = handleResponseEventExpectation
-        
+
         // Dispatch request event which will block request queue as Configuration state is nil
         let requestEvent = try? ACPExtensionEvent(name: "Request Test",
                                                   type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
                                                   source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,
-                                                  data: ["key" : "value"])
-        
+                                                  data: ["key": "value"])
+
         XCTAssertNotNil(requestEvent)
-        
+
         XCTAssertNotNil(try? ACPCore.dispatchEvent(requestEvent!))
-        
+
         // Expected handleAddEvent is called
         wait(for: [handleAddEventExpectation], timeout: 1.0)
-        
+
         // Dispatch response event which will get processed in separate response queue
         let responseEvent = try? ACPExtensionEvent(name: "Response Test",
                                                    type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
                                                    source: ExperiencePlatformConstants.eventSourceExtensionResponseContent,
-                                                   data: ["key" : "value"])
+                                                   data: ["key": "value"])
         XCTAssertNotNil(responseEvent)
-        
+
         XCTAssertNotNil(try? ACPCore.dispatchEvent(responseEvent!))
-        
+
         // Expected handleResponseEvent is called
         wait(for: [handleResponseEventExpectation], timeout: 1.0)
     }

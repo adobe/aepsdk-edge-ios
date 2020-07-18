@@ -20,11 +20,11 @@ protocol ResponseCallback {
     /// data coming from the server
     /// - Parameter jsonResponse: response from the server as JSON formatted string
     func onResponse(jsonResponse: String)
-    
+
     /// This method is called when the  Experience Edge server returns an error for the associated event
     /// - Parameter jsonError: error from server as JSON formatted string
     func onError(jsonError: String)
-    
+
     /// This method is called when the network connection was closed and there is no more stream
     /// pending for marking a network request as complete. This can be used for running cleanup jobs
     /// after a network response is received.

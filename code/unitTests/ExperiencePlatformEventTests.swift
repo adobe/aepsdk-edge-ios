@@ -10,8 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import XCTest
 @testable import AEPExperiencePlatform
+import XCTest
 
 class ExperiencePlatformEventTests: XCTestCase {
     private let datasetId = "datasetId"
@@ -24,18 +24,18 @@ class ExperiencePlatformEventTests: XCTestCase {
         xdm["testXdmKey2"] = "testXdmValue2"
         return xdm
     }
-    
-    func generateData()  -> [String : Any] {
+
+    func generateData() -> [String: Any] {
         var data = [String: Any]()
         data["testDataKey1"] = "testDataValue1"
         data["testDataKey2"] = "testDataValue2"
         return data
     }
-    
-    struct MobileSDKSchema : XDMSchema {
-        var schemaVersion : String
-        var schemaIdentifier : String
-        var datasetIdentifier : String
+
+    struct MobileSDKSchema: XDMSchema {
+        var schemaVersion: String
+        var schemaIdentifier: String
+        var datasetIdentifier: String
     }
     let generatedXdmSchema = MobileSDKSchema(schemaVersion: "1.4", schemaIdentifier: "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", datasetIdentifier: "5dd603781b95cc18a83d42ce")
     let expectedXdmSchema =  ["schemaVersion": "1.4", "schemaIdentifier": "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", "datasetIdentifier": "5dd603781b95cc18a83d42ce"]

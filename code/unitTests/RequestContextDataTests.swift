@@ -10,32 +10,31 @@
 // governing permissions and limitations under the License.
 //
 
-
-import XCTest
 @testable import AEPExperiencePlatform
+import XCTest
 
 class RequestContextDataTests: XCTestCase {
-    
+
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false // fail so nil checks stop execution
     }
-    
+
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-    
+
     // MARK: encoder tests
-    
+
     func testEncode_noParameters() {
         let context = RequestContextData(identityMap: nil)
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
-        
+
         let data = try? encoder.encode(context)
-        
+
         XCTAssertNotNil(data)
         let expected = """
             {
@@ -43,19 +42,19 @@ class RequestContextDataTests: XCTestCase {
             }
             """
         let jsonString = String(data: data!, encoding: .utf8)
-        
+
         XCTAssertEqual(expected, jsonString)
     }
-    
+
     func testEncode_paramIdentityMap() {
         let context = RequestContextData(identityMap: IdentityMap())
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
-        
+
         let data = try? encoder.encode(context)
-        
+
         XCTAssertNotNil(data)
         let expected = """
             {
@@ -65,8 +64,8 @@ class RequestContextDataTests: XCTestCase {
             }
             """
         let jsonString = String(data: data!, encoding: .utf8)
-        
+
         XCTAssertEqual(expected, jsonString)
     }
-    
+
 }

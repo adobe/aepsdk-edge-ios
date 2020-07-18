@@ -19,53 +19,51 @@ extension String {
 }
 
 class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    
+
     @IBOutlet var appTitle: UILabel!
     @IBOutlet var productList: UITableView!
     @IBOutlet var cartBtn: UIButton!
     @IBOutlet var griffonBtn: UIButton!
     @IBOutlet var appTitleLbl: UILabel!
-    
+
     let productData = ProductDataLoader().productData
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
-        appTitleLbl.text = AEPDemoConstants.Strings.APP_NAME
-        
+        appTitleLbl.text = AEPDemoConstants.Strings.appName
+
         cartBtn.layer.cornerRadius = 0.5 * cartBtn.bounds.size.width
         cartBtn.clipsToBounds = true
         productList.reloadData()
         productList.delegate = self
         productList.dataSource = self
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return productData.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        
 
         let name = productData[indexPath.row].name
         let currency = productData[indexPath.row].currency
         let price = String(productData[indexPath.row].price)
-        let textContent = String(format: "%@ %@ %@",  name.padding(toLength: 8, withPad: " ", startingAt: 0), currency, price.frontPadding(toLength: 10, withPad: " ", startingAt: 0)  )
+        let textContent = String(format: "%@ %@ %@", name.padding(toLength: 8, withPad: " ", startingAt: 0), currency, price.frontPadding(toLength: 10, withPad: " ", startingAt: 0)  )
         let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
         cell.backgroundView?.backgroundColor = .black
         cell.imageView?.image = UIImage(named: "\((productData[indexPath.row].imageSmall))")
         cell.textLabel?.text = textContent
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+
         // Todo : Send this Event to Platform - and then performSegue
         performSegue(withIdentifier: "showProductDetailsPage", sender: self)
         tableView.deselectRow(at: indexPath, animated: true)
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destination = segue.destination as? ProductViewController {
             if let unwrappedIndexPathForSelectedRow = productList.indexPathForSelectedRow {
@@ -73,11 +71,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
     }
-    
+
     @IBAction func gotoCartPage(_ sender: UIButton) {
         self.performSegue(withIdentifier: "showShoppingCartPage", sender: self)
     }
-    
+
     @IBAction func gotoGriffonConnectPage(_ sender: UIButton) {
         self.performSegue(withIdentifier: "showGriffonPage", sender: self)
     }

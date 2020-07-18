@@ -10,13 +10,13 @@
 // governing permissions and limitations under the License.
 //
 
-import Foundation
 @testable import AEPExperiencePlatform
+import Foundation
 
-class MockNetworkServiceOverrider : NetworkService {
-    
-    var connectAsyncCalled:Bool = false
-    var connectAsyncCalledWithNetworkRequest:NetworkRequest?
+class MockNetworkServiceOverrider: NetworkService {
+
+    var connectAsyncCalled: Bool = false
+    var connectAsyncCalledWithNetworkRequest: NetworkRequest?
     var connectAsyncCalledWithCompletionHandler: ((HttpConnection) -> Void)?
     var connectAsyncCompletionHandlerReturnConnection: HttpConnection = HttpConnection(data: "{}".data(using: .utf8), response: nil, error: nil)
 
@@ -28,7 +28,7 @@ class MockNetworkServiceOverrider : NetworkService {
         guard let unwrappedCompletionHandler = completionHandler else { return }
         unwrappedCompletionHandler(connectAsyncCompletionHandlerReturnConnection)
     }
-    
+
     func reset() {
         connectAsyncCalled = false
         connectAsyncCalledWithNetworkRequest = nil

@@ -10,14 +10,13 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 /// Client side stored information.
 /// A property in the `RequestMetadata` object.
-struct StateMetadata : Encodable {
+struct StateMetadata: Encodable {
     let entries: [StorePayload]?
-    
+
     init(payload: [StorePayload]) {
         entries = payload.isEmpty ? nil : payload
     }

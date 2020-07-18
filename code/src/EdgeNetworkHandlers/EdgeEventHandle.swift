@@ -13,14 +13,14 @@
 import Foundation
 
 /// Details and results for a sent EdgeRequest
-struct EdgeEventHandle : Codable {
-    
+struct EdgeEventHandle: Codable {
+
     /// Encodes the event to which this handle is attached as the index in the events array in EdgeRequest
     let eventIndex: Int?
-    
+
     /// Payload type
     let type: String?
-    
+
     /// Event payload
     let payload: [[String: AnyCodable]]?
 }
