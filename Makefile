@@ -63,10 +63,10 @@ install-swiftlint:
 install-githook:
 	./tools/git-hooks/setup.sh
 
-autocorrect_format:
+autocorrect-format:
 	(swiftlint autocorrect --config tools/format/.swiftlint.yml --format)
 
-lint_format:
+lint-format:
 	(swiftlint lint --config tools/format/.swiftlint-ci.yml)
 
 _create-out:
