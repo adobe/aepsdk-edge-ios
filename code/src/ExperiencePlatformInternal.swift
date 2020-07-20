@@ -151,7 +151,7 @@ class ExperiencePlatformInternal: ACPExtension {
         if let ecid = identityState[ExperiencePlatformConstants.SharedState.Identity.ecid] as? String {
             requestBuilder.experienceCloudId = ecid
         } else {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "handleSendEvent - An unexpected error has occured, ECID is null.")
+            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "handleSendEvent - An unexpected error has occurred, ECID is null.")
         }
 
         // get Griffon integration id and include it in to the requestHeaders
