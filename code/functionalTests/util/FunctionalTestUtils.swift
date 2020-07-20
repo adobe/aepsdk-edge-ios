@@ -14,7 +14,7 @@ import Foundation
 @testable import AEPExperiencePlatform
 
 public class FunctionalTestUtils {
-    
+
     /// Removes all User Defaults
     public static func resetUserDefaults() {
         let defaults = UserDefaults.standard

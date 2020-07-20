@@ -12,26 +12,26 @@
 
 import ACPCore
 
-private let LOG_TAG = "ExperiencePlatform"
+private let logTag = "ExperiencePlatform"
 
 public class ExperiencePlatform {
-    
+
     @available(*, unavailable) private init() {}
     private static var responseCallbacksHandlers: [String: ([String: Any]) -> Void] = [:]
-    
+
     /// Registers the AEPExperiencePlatform extension with the Mobile SDK. This method should be called only once in your application class
     /// from the AppDelegate's application:didFinishLaunchingWithOptions method. This call should be before any calls into ACPCore
     /// interface except setLogLevel.
     public static func registerExtension() {
-        
+
         do {
             try ACPCore.registerExtension(ExperiencePlatformInternal.self)
-            ACPCore.log(ACPMobileLogLevel.debug,tag:LOG_TAG, message:"Extension has been successfully registered.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "Extension has been successfully registered.")
         } catch {
-            ACPCore.log(ACPMobileLogLevel.debug, tag:LOG_TAG, message:"Extension Registration has failed.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "Extension Registration has failed.")
         }
     }
-    
+
     /// Sends an event to Adobe Data Platform and registers a handler for responses coming from Data Platform
     /// - Parameters:
     ///   - experiencePlatformEvent: Event to be sent to Adobe Data Platform
@@ -40,15 +40,20 @@ public class ExperiencePlatform {
     public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent, responseHandler: ExperiencePlatformResponseHandler? = nil) {
         
         guard let xdmData = experiencePlatformEvent.xdm, !xdmData.isEmpty, let eventData = experiencePlatformEvent.asDictionary() else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: LOG_TAG, message:"Failed to dispatch the platform event because the XDM data was nil/empty.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message:"Failed to dispatch the platform event because the XDM data was nil/empty.")
             return
         }
         do {
-            let event = try ACPExtensionEvent(name: "Add event for Data Platform", type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: ExperiencePlatformConstants.eventSourceExtensionRequestContent, data: eventData)
-            ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId:event.eventUniqueIdentifier, responseHandler: responseHandler)
+            let event = try ACPExtensionEvent(name: "AEP Request Event",
+                                              type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                                              source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,
+                                              data: eventData)
+
+            ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: event.eventUniqueIdentifier, responseHandler: responseHandler)
+
             try ACPCore.dispatchEvent(event)
         } catch {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: LOG_TAG, message:"Failed to dispatch the event due to an unexpected error: \(error).")
+            ACPCore.log(ACPMobileLogLevel.warning, tag: logTag, message: "Failed to dispatch the event due to an unexpected error: \(error).")
         }
     }
 }

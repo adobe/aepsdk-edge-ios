@@ -10,22 +10,22 @@
 // governing permissions and limitations under the License.
 //
 
-import XCTest
 import ACPCore
+import XCTest
 
 /// Wildcard listener that monitors all the events dispatched in current test session. Use it along with `FunctionalTestBase`
-class InstrumentedWildcardListener : ACPExtensionListener {
+class InstrumentedWildcardListener: ACPExtensionListener {
     private let logTag = "InstrumentedWildcardListener"
-    
+
     // Expected events Dictionary - key: EventSpec, value: the expected count
-    static var expectedEvents: Dictionary<EventSpec, CountDownLatch> = Dictionary<EventSpec, CountDownLatch>()
-    
+    static var expectedEvents: [EventSpec: CountDownLatch] = [EventSpec: CountDownLatch]()
+
     // All the events seen by this listener that are not of type instrumentedExtension
-    static var receivedEvents: Dictionary<EventSpec, [ACPExtensionEvent]> = Dictionary<EventSpec, [ACPExtensionEvent]>()
-    
+    static var receivedEvents: [EventSpec: [ACPExtensionEvent]] = [EventSpec: [ACPExtensionEvent]]()
+
     override func hear(_ event: ACPExtensionEvent) {
         guard let parentExtension = self.extension as? InstrumentedExtension else { return }
-        
+
         if event.eventType.lowercased() == FunctionalTestConst.EventType.instrumentedExtension.lowercased() {
             // process the shared state request event
             if event.eventSource.lowercased() == FunctionalTestConst.EventSource.sharedStateRequest.lowercased() {
@@ -35,25 +35,25 @@ class InstrumentedWildcardListener : ACPExtensionListener {
             else if event.eventSource.lowercased() == FunctionalTestConst.EventSource.unregisterExtension.lowercased() {
                 parentExtension.unregisterExtension()
             }
-            
+
             return
         }
-        
+
         // save this event in the receivedEvents dictionary
         if let _ = InstrumentedWildcardListener.receivedEvents[EventSpec(type: event.eventType, source: event.eventSource)] {
             InstrumentedWildcardListener.receivedEvents[EventSpec(type: event.eventType, source: event.eventSource)]?.append(event)
         } else {
             InstrumentedWildcardListener.receivedEvents[EventSpec(type: event.eventType, source: event.eventSource)] = [event]
         }
-        
+
         // count down if this is an expected event
         if let _ = InstrumentedWildcardListener.expectedEvents[EventSpec(type: event.eventType, source: event.eventSource)] {
             InstrumentedWildcardListener.expectedEvents[EventSpec(type: event.eventType, source: event.eventSource)]?.countDown()
         }
-        
+
         ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "Received event with type \(event.eventType) and source \(event.eventSource)")
     }
-    
+
     static func reset() {
         receivedEvents.removeAll()
         expectedEvents.removeAll()

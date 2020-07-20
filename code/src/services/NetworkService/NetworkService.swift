@@ -13,7 +13,7 @@
 import Foundation
 
 public protocol NetworkService {
-    
+
     /// Initiates an asynchronous network connection to the specified NetworkRequest.url. This API uses `URLRequest.CachePolicy.reloadIgnoringLocalCache`.
     /// - Parameters:
     ///   - networkRequest: the `NetworkRequest` used for this connection

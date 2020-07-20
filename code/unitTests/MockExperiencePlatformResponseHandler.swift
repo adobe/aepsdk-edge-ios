@@ -10,14 +10,14 @@
 // governing permissions and limitations under the License.
 //
 
-import Foundation
 @testable import AEPExperiencePlatform
+import Foundation
 
-class MockExperiencePlatformResponseHandler : ExperiencePlatformResponseHandler {
-    var onResponseReceivedData : [String:Any] = [:] // latest data received in the onResponse callback
+class MockExperiencePlatformResponseHandler: ExperiencePlatformResponseHandler {
+    var onResponseReceivedData: [String: Any] = [:] // latest data received in the onResponse callback
     var onResponseCalledTimes = 0 // the number of times onResponse was called
-    
-    func onResponse(data: [String : Any]) {
+
+    func onResponse(data: [String: Any]) {
         onResponseCalledTimes += 1
         onResponseReceivedData = data
     }

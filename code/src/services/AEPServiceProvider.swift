@@ -14,7 +14,7 @@ import Foundation
 
 public class AEPServiceProvider {
     public static let shared = AEPServiceProvider()
-    
+
     // Provide thread safety on the getters and setters
     private let barrierQueue = DispatchQueue(label: "AEPServiceProvider.barrierQueue", attributes: .concurrent)
 

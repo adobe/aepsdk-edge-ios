@@ -10,44 +10,44 @@
 // governing permissions and limitations under the License.
 //
 
-import XCTest
 @testable import AEPExperiencePlatform
+import XCTest
 
 class EdgeRequestTests: XCTestCase {
-    
+
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false // fail so nil checks stop execution
     }
-    
+
     func testEncode_allProperties() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
         let requestContext = RequestContextData(identityMap: identityMap)
-        
-        let events: [[String : AnyCodable]] = [
+
+        let events: [[String: AnyCodable]] = [
             [
-                "data" : [
-                    "key" : "value"
+                "data": [
+                    "key": "value"
                 ],
-                "xdm" : [
-                    "device" :[
-                        "manufacturer" : "Atari",
-                        "type" : "mobile"
+                "xdm": [
+                    "device": [
+                        "manufacturer": "Atari",
+                        "type": "mobile"
                     ]
                 ]
             ]]
         let edgeRequest = EdgeRequest(meta: requestMetadata, xdm: requestContext, events: events)
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
-        
+
         let data = try? encoder.encode(edgeRequest)
         let actualResult = asFlattenDictionary(data: data)
-        let expectedResult : [String: Any] =
+        let expectedResult: [String: Any] =
             [ "events[0].data.key": "value",
               "events[0].xdm.device.manufacturer": "Atari",
               "events[0].xdm.device.type": "mobile",
@@ -57,27 +57,27 @@ class EdgeRequestTests: XCTestCase {
               "xdm.identityMap.email[0].id": "example@adobe.com"]
         assertEqual(expectedResult, actualResult)
     }
-    
+
     func testEncode_onlyRequestMetadata() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
         let edgeRequest = EdgeRequest(meta: requestMetadata,
                                       xdm: nil,
                                       events: nil)
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
-        
+
         let data = try? encoder.encode(edgeRequest)
         let actualResult = asFlattenDictionary(data: data)
-        let expectedResult : [String: Any] =
+        let expectedResult: [String: Any] =
             ["meta.konductorConfig.streaming.enabled": true,
              "meta.konductorConfig.streaming.recordSeparator": "A",
              "meta.konductorConfig.streaming.lineFeed": "B"]
         assertEqual(expectedResult, actualResult)
     }
-    
+
     func testEncode_onlyRequestContext() {
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
@@ -85,52 +85,52 @@ class EdgeRequestTests: XCTestCase {
         let edgeRequest = EdgeRequest(meta: nil,
                                       xdm: requestContext,
                                       events: nil)
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
-        
+
         let data = try? encoder.encode(edgeRequest)
-        
+
         let actualResult = asFlattenDictionary(data: data)
-        let expectedResult : [String: Any] = ["xdm.identityMap.email[0].id": "example@adobe.com"]
+        let expectedResult: [String: Any] = ["xdm.identityMap.email[0].id": "example@adobe.com"]
         assertEqual(expectedResult, actualResult)
     }
-    
+
     func testEncode_onlyEvents() {
-        let events: [[String : AnyCodable]] = [
+        let events: [[String: AnyCodable]] = [
             [
-                "data" : [
-                    "key" : "value"
+                "data": [
+                    "key": "value"
                 ],
-                "xdm" : [
-                    "device" :[
-                        "manufacturer" : "Atari",
-                        "type" : "mobile"
+                "xdm": [
+                    "device": [
+                        "manufacturer": "Atari",
+                        "type": "mobile"
                     ]
                 ]
             ],
             [
-                "xdm" : [
-                    "test" : [
-                        "true" : true,
-                        "false" : false,
-                        "one" : 1,
-                        "zero" : 0,
+                "xdm": [
+                    "test": [
+                        "true": true,
+                        "false": false,
+                        "one": 1,
+                        "zero": 0
                     ]
                 ]
             ]]
         let edgeRequest = EdgeRequest(meta: nil,
                                       xdm: nil,
                                       events: events)
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
-        
+
         let data = try? encoder.encode(edgeRequest)
         let actualResult = asFlattenDictionary(data: data)
-        let expectedResult : [String: Any] =
+        let expectedResult: [String: Any] =
             [ "events[0].data.key": "value",
               "events[0].xdm.device.manufacturer": "Atari",
               "events[0].xdm.device.type": "mobile",

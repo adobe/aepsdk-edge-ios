@@ -10,18 +10,17 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 /// A request for pushing events to the Adobe Data Platform.
 /// An `EdgeRequest` is the top-level request object sent to Konductor.
-struct EdgeRequest : Encodable {
+struct EdgeRequest: Encodable {
     /// Metadata passed to solutions and even to Konductor itself with possiblity of overriding at event level
     let meta: RequestMetadata?
-    
+
     /// XDM context data for the entire request
     let xdm: RequestContextData?
-    
+
     /// List of Experience events
-    let events: [[String : AnyCodable]]?
+    let events: [[String: AnyCodable]]?
 }

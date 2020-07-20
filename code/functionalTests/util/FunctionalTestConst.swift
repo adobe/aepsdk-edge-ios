@@ -10,12 +10,11 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 struct FunctionalTestConst {
     private init() {}
-    
+
     struct EventType {
         private init() {}
         static let experiencePlatform = "com.adobe.eventType.experiencePlatform"
@@ -24,7 +23,7 @@ struct FunctionalTestConst {
         static let configuration = "com.adobe.eventType.configuration"
         static let identity = "com.adobe.eventType.identity"
     }
-    
+
     struct EventSource {
         private init() {}
         static let requestContent = "com.adobe.eventSource.requestContent"
@@ -37,17 +36,17 @@ struct FunctionalTestConst {
         static let responseIdentity = "com.adobe.eventSource.responseIdentity"
         static let booted = "com.adobe.eventSource.booted"
     }
-    
+
     struct EventDataKey {
         private init() {}
         static let stateOwner = "stateowner"
         static let state = "state"
     }
-    
+
     struct Defaults {
-        static let waitEventTimeout:TimeInterval = 2
-        static let waitSharedStateTimeout:TimeInterval = 3
-        static let waitNetworkRequestTimeout:TimeInterval = 2
-        static let waitTimeout:UInt32 = 1 // used when no expectation was set
+        static let waitEventTimeout: TimeInterval = 2
+        static let waitSharedStateTimeout: TimeInterval = 3
+        static let waitNetworkRequestTimeout: TimeInterval = 2
+        static let waitTimeout: UInt32 = 1 // used when no expectation was set
     }
 }

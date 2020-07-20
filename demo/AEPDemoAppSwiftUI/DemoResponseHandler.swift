@@ -10,13 +10,12 @@
 // governing permissions and limitations under the License.
 //
 
-
-import Foundation
 import AEPExperiencePlatform
+import Foundation
 
-class DemoResponseHandler : ExperiencePlatformResponseHandler {
-    
-    func onResponse(data: [String : Any]) {
+class DemoResponseHandler: ExperiencePlatformResponseHandler {
+
+    func onResponse(data: [String: Any]) {
         print("Received data from AEPExperiencePlatform \(data)")
     }
 }

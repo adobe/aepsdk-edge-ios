@@ -15,7 +15,7 @@ import UIKit
 var adbMobileShoppingCart = ShoppingCart()
 
 class ProductViewController: UIViewController {
-    
+
     @IBOutlet var productImage: UIImageView!
     @IBOutlet var productSku: UILabel!
     @IBOutlet var productName: UILabel!
@@ -28,23 +28,29 @@ class ProductViewController: UIViewController {
     @IBOutlet var quantityLbl: UILabel!
     @IBOutlet var priceLbl: UILabel!
     @IBOutlet var addToCartBtn: UIButton!
-    
-    var productData:ProductData?
+
+    var productData: ProductData?
     var qtyOrdered: Int = 1
     private var qtySource: [Int] = []
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        appNameLbl.text = AEPDemoConstants.Strings.APP_NAME
-        /// itemListLbl.text = AEPDemoConstants.Strings.TITLE_ITEM_DETAIL
-        quantityLbl.text = AEPDemoConstants.Strings.QUANTITY
-        priceLbl.text = AEPDemoConstants.Strings.PRICE
-        addToCartBtn.setTitle(AEPDemoConstants.Strings.ADD_TO_CART, for: .normal)
+        appNameLbl.text = AEPDemoConstants.Strings.appName
+        quantityLbl.text = AEPDemoConstants.Strings.quantity
+        priceLbl.text = AEPDemoConstants.Strings.price
+        addToCartBtn.setTitle(AEPDemoConstants.Strings.addToCart, for: .normal)
         guard let productData = productData else {
                print("Not a valid product!")
                return
            }
-        let prodData =  ProductData(sku: productData.sku, name: productData.name, details: productData.details, price: productData.price, currency: productData.currency, imageLarge: productData.imageLarge, imageSmall: productData.imageSmall)
+        let prodData = ProductData(sku: productData.sku,
+                                   name: productData.name,
+                                   details: productData.details,
+                                   price: productData.price,
+                                   currency: productData.currency,
+                                   imageLarge: productData.imageLarge,
+                                   imageSmall: productData.imageSmall)
+
         productImage.image = UIImage(named: "\((prodData.imageSmall))")
         productImage.layer.cornerRadius = 30
         productImage.clipsToBounds = true
@@ -61,19 +67,26 @@ class ProductViewController: UIViewController {
         productQty.setValue(UIColor.white, forKey: "textColor")
         CommerceUtil.sendProductViewXdmEvent(productData: prodData)
     }
-    
-    @IBAction func AddToCartBtn(_ sender: UIButton) {
-        
+
+    @IBAction func addToCartBtn(_ sender: UIButton) {
+
         guard let productData = productData else {
             print("Not a valid product!")
             return
         }
-        let prodData:ProductData = ProductData(sku: productData.sku, name: productData.name, details: productData.details, price: productData.price, currency: productData.currency, imageLarge: productData.imageLarge, imageSmall: productData.imageSmall)
+        let prodData: ProductData = ProductData(sku: productData.sku,
+                                                name: productData.name,
+                                                details: productData.details,
+                                                price: productData.price,
+                                                currency: productData.currency,
+                                                imageLarge: productData.imageLarge,
+                                                imageSmall: productData.imageSmall)
+
         let product = Product(productData: prodData, quantity: qtyOrdered)
         adbMobileShoppingCart.add(product: product)
-        
-        let message  = "\(product.quantity) quantities of " + product.productData.name + AEPDemoConstants.Strings.ITEM_ADDED_MSG
-        Snackbar(message : message)
+
+        let message  = "\(product.quantity) quantities of " + product.productData.name + AEPDemoConstants.Strings.itemAddedMsg
+        snackbar(message: message)
         CommerceUtil.sendProductListAddXdmEvent(productData: prodData, quantity: qtyOrdered)
     }
 }
@@ -82,15 +95,15 @@ extension ProductViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return qtySource.count
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         qtyOrdered = qtySource[row]
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return String(qtySource[row])
     }
