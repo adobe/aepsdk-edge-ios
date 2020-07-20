@@ -364,7 +364,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
-    
+
     func testSendEvent_withEmptyXDMSchema_doesNotSendExEdgeNetworkRequest() {
         let responseConnection : HttpConnection = HttpConnection(data: responseBody.data(using: .utf8), response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
