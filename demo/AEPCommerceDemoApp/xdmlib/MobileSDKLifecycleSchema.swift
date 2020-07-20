@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Schema Swift Object Generated 2020-07-10 12:46:29.536537 -0700 PDT m=+2.252375361 by XDMTool
+ XDM Schema Swift Object Generated 2020-07-17 14:52:20.614883 -0700 PDT m=+2.253090988 by XDMTool
 
  Title			:	Mobile SDK Lifecycle Schema
  Version		:	1.1

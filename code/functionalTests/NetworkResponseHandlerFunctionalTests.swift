@@ -22,6 +22,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     override func setUp() {
         super.setUp()
         continueAfterFailure = false
+        FunctionalTestUtils.resetUserDefaults()
     }
 
     // MARK: processResponseOnError

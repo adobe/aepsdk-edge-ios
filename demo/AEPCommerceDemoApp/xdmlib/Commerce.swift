@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:35.396017 -0700 PDT m=+1.997750016 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:38.219084 -0700 PDT m=+2.052522329 by XDMTool
 
  Title			:	Commerce
  Description	:	Commerce specific data related to this event.

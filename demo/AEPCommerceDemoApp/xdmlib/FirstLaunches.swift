@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:29.539313 -0700 PDT m=+2.255150816 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:20.615941 -0700 PDT m=+2.254149934 by XDMTool
 
  Title			:	FirstLaunches
  Description	:	Triggered on first launch after install.
@@ -24,7 +24,7 @@ public struct FirstLaunches {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"
