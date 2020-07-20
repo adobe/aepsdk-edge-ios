@@ -10,102 +10,102 @@
 // governing permissions and limitations under the License.
 //
 
-import XCTest
 @testable import AEPExperiencePlatform
+import XCTest
 
 class KonductorConfigTests: XCTestCase {
-    
+
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false // fail so nil checks stop execution
     }
-    
+
     // MARK: Streaming encoder tests
-    
+
     func testStreamingEncodeFromInitAll() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: "B")
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
-        
+
         let data = try? encoder.encode(streaming)
         let actualResult = asFlattenDictionary(data: data)
-        let expectedResult : [String: Any] =
+        let expectedResult: [String: Any] =
             [ "enabled": true,
               "lineFeed": "B",
               "recordSeparator": "A"]
         assertEqual(expectedResult, actualResult)
     }
-    
+
     func testStreamingEncodeWithNilRecordSeparator() {
         let streaming = Streaming(recordSeparator: nil, lineFeed: "B")
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
-        
+
         let data = try? encoder.encode(streaming)
         let actualResult = asFlattenDictionary(data: data)
-        let expectedResult : [String: Any] =
+        let expectedResult: [String: Any] =
             [ "enabled": false,
               "lineFeed": "B"]
         assertEqual(expectedResult, actualResult)
     }
-    
+
     func testStreamingEncodeWithNilLineFeed() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: nil)
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
-        
+
         let data = try? encoder.encode(streaming)
         let actualResult = asFlattenDictionary(data: data)
-        let expectedResult : [String: Any] =
+        let expectedResult: [String: Any] =
             [ "enabled": false,
               "recordSeparator": "A"]
         assertEqual(expectedResult, actualResult)
     }
-    
+
     func testStreamingEncodeWithNilLineFeedAndRecordSeparator() {
         let streaming = Streaming(recordSeparator: nil, lineFeed: nil)
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
-        
+
         let data = try? encoder.encode(streaming)
         let actualResult = asFlattenDictionary(data: data)
-        let expectedResult : [String: Any] =
+        let expectedResult: [String: Any] =
             [ "enabled": false]
         assertEqual(expectedResult, actualResult)
     }
-    
+
     // MARK: KonductorConfig encoder tests
-    
+
     func testKonductorConfigEncodeFromInitAll() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: "B")
         let config = KonductorConfig(streaming: streaming)
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
-        
+
         let data = try? encoder.encode(config)
         let actualResult = asFlattenDictionary(data: data)
-        let expectedResult : [String: Any] =
+        let expectedResult: [String: Any] =
             [ "streaming.enabled": true,
               "streaming.lineFeed": "B",
               "streaming.recordSeparator": "A"]
         assertEqual(expectedResult, actualResult)
     }
-    
+
     func testKonductorConfigEncodeEmptyParameters() {
         let config = KonductorConfig(streaming: nil)
-        
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
-        
+
         let data = try? encoder.encode(config)
         let actualResult = asFlattenDictionary(data: data)
-        let expectedResult : [String: Any] = [:]
+        let expectedResult: [String: Any] = [:]
         assertEqual(expectedResult, actualResult)
     }
-    
+
 }

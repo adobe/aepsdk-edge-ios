@@ -12,30 +12,30 @@
 
 import UIKit
 
-protocol CartDelegate {
+protocol CartDelegate: AnyObject {
     func remove(cell: ShoppingItemCell)
 }
 
 class ShoppingItemCell: UITableViewCell {
-    
+
     @IBOutlet var productImageView: UIImageView!
     @IBOutlet var productNameLbl: UILabel!
     @IBOutlet var productUnitPriceLbl: UILabel!
     @IBOutlet var productQtyLbl: UILabel!
     @IBOutlet var productPriceLbl: UILabel!
     @IBOutlet var deleteProduct: UIButton!
-    
-    var delegate: CartDelegate?
-    
+
+    weak var delegate: CartDelegate?
+
     func setProduct(product: Product) {
-        
-        productImageView.image = UIImage(named:product.productData.imageLarge)
+
+        productImageView.image = UIImage(named: product.productData.imageLarge)
         productNameLbl.text = product.productData.name
-        productUnitPriceLbl.text  = String(format: "%.2f", product.productData.price)
+        productUnitPriceLbl.text = String(format: "%.2f", product.productData.price)
         productQtyLbl.text = String(Int(product.quantity))
         productPriceLbl.text = String(format: "%.2f", product.subtotal)
     }
-    
+
     @IBAction func deleteAProduct(_ sender: UIButton) {
         self.delegate?.remove(cell: self)
     }

@@ -13,8 +13,8 @@
 import Foundation
 
 struct Product: Equatable {
-    var productData : ProductData
-    var quantity : Int
+    var productData: ProductData
+    var quantity: Int
     var subtotal: Double { return productData.price * Double(quantity) }
 }
 

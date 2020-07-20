@@ -10,15 +10,15 @@
 // governing permissions and limitations under the License.
 //
 
-import Foundation
 import ACPCore
 import AEPExperiencePlatform
+import Foundation
 
-class ResponseHandler : ExperiencePlatformResponseHandler {
+class ResponseHandler: ExperiencePlatformResponseHandler {
     var onResponseCalled: Bool = false
-    
-    func onResponse(data: [String : Any]) {
-    self.onResponseCalled = true
-    ACPCore.log(ACPMobileLogLevel.debug, tag:"ResponseHandler", message:"Platform response has been recieved...")
+
+    func onResponse(data: [String: Any]) {
+        self.onResponseCalled = true
+        ACPCore.log(ACPMobileLogLevel.debug, tag: "ResponseHandler", message: "Platform response has been recieved...")
     }
 }

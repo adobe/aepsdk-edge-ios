@@ -10,12 +10,11 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 struct ExperiencePlatformConstants {
     private init() {}
-    
+
     static let eventTypeExperiencePlatform = "com.adobe.eventType.experiencePlatform"
     static let eventTypeAdobeHub = "com.adobe.eventType.hub"
 
@@ -23,16 +22,16 @@ struct ExperiencePlatformConstants {
     static let eventSourceExtensionRequestContent = "com.adobe.eventSource.requestContent"
     static let eventSourceExtensionResponseContent = "com.adobe.eventSource.responseContent"
     static let eventSourceExtensionErrorResponseContent = "com.adobe.eventSource.errorResponseContent"
-    
+
     static let eventNameRequestContent = "AEP Request Event"
     static let eventNameResponseContent = "AEP Response Event Handle"
     static let eventNameErrorResponseContent = "AEP Error Response"
 
     static let platformDataStorage = "PlatformExtensionDataStorage"
-    
+
     struct Defaults {
         private init() {}
-        
+
         static let networkRequestMaxRetries: UInt = 5
         static let requestConfigRecordSeparator: String = "\u{0000}"
         static let requestConfigLineFeed: String = "\n"
@@ -40,35 +39,35 @@ struct ExperiencePlatformConstants {
 
     struct EventDataKeys {
         private init() {}
-        
+
         static let edgeRequesId = "requestId"
         static let requestEventId = "requestEventId"
         static let datasetId = "datasetId"
     }
-    
+
     struct DataStoreKeys {
         private init() {}
-        
+
         static let storeName = "AEPExperiencePlatform"
         static let storePayloads = "storePayloads"
     }
-    
+
     struct SharedState {
         private init() {}
-        
+
         static let stateowner = "stateowner"
-        
+
         struct Configuration {
             private init() {}
-            
+
             static let stateOwner = "com.adobe.module.configuration"
             static let experiencePlatformConfigId = "experiencePlatform.configId"
             static let experienceCloudOrgId = "experienceCloud.org"
         }
-        
+
         struct Identity {
             private init() {}
-            
+
             static let stateOwner = "com.adobe.module.identity"
             static let ecid = "mid"
         }
@@ -81,24 +80,24 @@ struct ExperiencePlatformConstants {
 
         struct Lifecycle {
             private init() {}
-            
+
             static let stateOwner = "com.adobe.module.lifecycle"
         }
     }
-    
+
     struct JsonKeys {
         private init() {}
-        
+
         static let xdm = "xdm"
         static let data = "data"
         static let ECID = "ECID"
         static let timestamp = "timestamp"
         static let eventId = "_id"
         static let meta = "meta"
-        
+
         struct CollectMetadata {
             private init() {}
-            
+
             static let collect = "collect"
             static let datasetId = "datasetId"
         }

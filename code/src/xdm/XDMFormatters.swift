@@ -12,7 +12,6 @@
 
 import Foundation
 
-
 public class XDMFormatters {
 
     /// Serialize the given Date to a string formatted to an ISO 8601 date-time as defined in
@@ -29,7 +28,7 @@ public class XDMFormatters {
             return nil
         }
     }
-    
+
     /// Serialize the given Date to a string formatted to an ISO 8601 date as defined in
     /// <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>
     /// For example, 2017-09-26
@@ -50,7 +49,7 @@ private extension Date {
     func asISO8601String() -> String {
         return ISO8601DateFormatter().string(from: self)
     }
-    
+
     func asFullDate() -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")

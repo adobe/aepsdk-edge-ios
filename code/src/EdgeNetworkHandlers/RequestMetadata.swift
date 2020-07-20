@@ -10,12 +10,11 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 /// Metadata passed to solutions and even to Konductor itself with possibility of overriding at event level.
 /// Is contained within the `EdgeRequest` request property.
-struct RequestMetadata : Encodable {
+struct RequestMetadata: Encodable {
     let konductorConfig: KonductorConfig?
     let state: StateMetadata?
 }

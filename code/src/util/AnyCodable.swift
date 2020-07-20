@@ -21,31 +21,31 @@ struct AnyCodable: Codable {
     var stringValue: String? {
         return value as? String
     }
-    
+
     var boolValue: Bool? {
         return value as? Bool
     }
-    
+
     var intValue: Int? {
         return value as? Int
     }
-    
+
     var doubleValue: Double? {
         return value as? Double
     }
-    
+
     var arrayValue: [Any]? {
         return value as? [Any]
     }
-    
+
     var dictionaryValue: [AnyHashable: Any]? {
         return value as? [AnyHashable: Any]
     }
-    
+
     public init(_ value: Any?) {
         self.value = value
     }
-    
+
     static func from(dictionary: [AnyHashable: Any]) -> [AnyHashable: AnyCodable] {
         var newDict: [AnyHashable: AnyCodable] = [:]
         for (key, val) in dictionary {
@@ -55,29 +55,29 @@ struct AnyCodable: Codable {
                 newDict[key] = AnyCodable(val)
             }
         }
-        
+
         return newDict
     }
-    
+
     static func from(dictionary: [AnyHashable: Any]) -> [String: AnyCodable] {
-         var newDict: [String: AnyCodable] = [:]
-         for (key, val) in dictionary {
-            if let key:String = key as? String {
-                 if let anyCodableVal = val as? AnyCodable {
-                     newDict[key] = anyCodableVal
-                 } else {
-                     newDict[key] = AnyCodable(val)
-                 }
+        var newDict: [String: AnyCodable] = [:]
+        for (key, val) in dictionary {
+            if let key: String = key as? String {
+                if let anyCodableVal = val as? AnyCodable {
+                    newDict[key] = anyCodableVal
+                } else {
+                    newDict[key] = AnyCodable(val)
+                }
             }
-         }
-         
-         return newDict
-     }
-    
+        }
+
+        return newDict
+    }
+
     // MARK: Decodable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        
+
         if let string = try? container.decode(String.self) {
             self.init(string)
         } else if let bool = try? container.decode(Bool.self) {
@@ -96,16 +96,16 @@ struct AnyCodable: Codable {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Failed to decode AnyCodable")
         }
     }
-    
+
     // MARK: Codable
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        
+
         guard value != nil else {
             try container.encodeNil()
             return
         }
-        
+
         switch value {
         case let num as NSNumber:
             try encode(nsNumber: num, into: &container)
@@ -129,7 +129,7 @@ struct AnyCodable: Codable {
             print("AnyCodable - encode: Failed to encode \(String(describing: value))")
         }
     }
-    
+
     private func encode(nsNumber: NSNumber, into container: inout SingleValueEncodingContainer) throws {
         switch CFNumberGetType(nsNumber) {
         case .charType:
@@ -210,7 +210,7 @@ extension AnyCodable: Equatable {
         if lhs.value == nil && rhs.value == nil {
             return true
         }
-        
+
         switch (lhs.value, rhs.value) {
         case let (lhs as String, rhs as String):
             return lhs == rhs
