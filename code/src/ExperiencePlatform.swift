@@ -38,9 +38,9 @@ public class ExperiencePlatform {
     ///   - responseHandler: Optional callback to be invoked when the response handles are received from
     ///                     Adobe Data Platform. It may be invoked on a different thread and may be invoked multiple times
     public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent, responseHandler: ExperiencePlatformResponseHandler? = nil) {
-        
+
         guard let xdmData = experiencePlatformEvent.xdm, !xdmData.isEmpty, let eventData = experiencePlatformEvent.asDictionary() else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message:"Failed to dispatch the platform event because the XDM data was nil/empty.")
+            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "Failed to dispatch the platform event because the XDM data was nil/empty.")
             return
         }
         do {
