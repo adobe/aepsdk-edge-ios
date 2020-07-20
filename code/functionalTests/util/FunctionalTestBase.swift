@@ -34,7 +34,8 @@ extension EventSpec: Hashable {
 }
 
 class FunctionalTestBase: XCTestCase {
-    private static var firstRun = true
+    /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
+    private(set) static var isFirstRun: Bool = true
     private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService()
     /// Use this setting to enable debug mode logging in the `FunctionalTestBase`
     static var debugEnabled = false
@@ -49,19 +50,19 @@ class FunctionalTestBase: XCTestCase {
 
     public override func setUp() {
         super.setUp()
-        if FunctionalTestBase.firstRun {
+        continueAfterFailure = false
+        if FunctionalTestBase.isFirstRun {
             guard let _ = try? ACPCore.registerExtension(InstrumentedExtension.self) else {
                 log("Unable to register the InstrumentedExtension")
                 return
             }
         }
-        FunctionalTestBase.firstRun = false
-
     }
 
     public override func tearDown() {
         super.tearDown()
         resetTestExpectations()
+        FunctionalTestBase.isFirstRun = false
     }
 
     /// Reset event and network request expectations and drop the items received until this point
@@ -160,6 +161,8 @@ class FunctionalTestBase: XCTestCase {
     }
 
     /// To be revisited once AMSDK-10169 is implemented
+    /// - Parameters:
+    ///   - timeout:how long should this method wait, in seconds; by default it waits up to 1 second
     func wait(_ timeout: UInt32? = FunctionalTestConst.Defaults.waitTimeout) {
         sleep(timeout!)
     }
@@ -278,11 +281,6 @@ class FunctionalTestBase: XCTestCase {
     /// - See also:
     ///     - setExpectationNetworkRequest(url:httpMethod:)
     func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = FunctionalTestConst.Defaults.waitNetworkRequestTimeout, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
-        guard FunctionalTestBase.networkService.expectedNetworkRequests.count > 0 else {
-            assertionFailure("There are no network expectations set, use this API after calling setNetworkRequestExpectation")
-            return []
-        }
-
         guard let requestUrl = URL(string: url) else {
             assertionFailure("Unable to convert the provided string \(url) to URL")
             return []
