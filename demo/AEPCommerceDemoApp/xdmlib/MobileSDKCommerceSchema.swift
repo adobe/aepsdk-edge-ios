@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Schema Swift Object Generated 2020-07-10 12:46:35.393987 -0700 PDT m=+1.995720501 by XDMTool
+ XDM Schema Swift Object Generated 2020-07-17 14:52:38.217262 -0700 PDT m=+2.050700202 by XDMTool
 
  Title			:	Mobile SDK Commerce Schema
  Version		:	1.0

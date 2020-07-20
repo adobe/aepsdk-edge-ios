@@ -10,30 +10,29 @@
 // governing permissions and limitations under the License.
 //
 
-
-import Foundation
 import AEPExperiencePlatform
+import Foundation
 
-struct TestXDMObject : Encodable {
+struct TestXDMObject: Encodable {
     public init() {}
-    
+
     public var innerKey: String?
 }
 
-struct TestXDMSchema : XDMSchema {
+struct TestXDMSchema: XDMSchema {
     public let schemaVersion = "1.5"
     public let schemaIdentifier = "https://schema.example.com"
     public let datasetIdentifier = "abc123def"
-    
+
     public init() {}
-    
+
     public var xdmObject: TestXDMObject?
     public var stringObject: String?
     public var intObject: Int?
     public var boolObject: Bool?
     public var doubleObject: Double?
     public var timestamp: Date?
-    
+
     enum CodingKeys: String, CodingKey {
         case xdmObject = "xdmObject"
         case stringObject = "stringObject"
@@ -44,7 +43,7 @@ struct TestXDMSchema : XDMSchema {
     }
 }
 
-extension TestXDMSchema: Encodable{
+extension TestXDMSchema: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if let unwrapped = xdmObject { try container.encode(unwrapped, forKey: .xdmObject) }

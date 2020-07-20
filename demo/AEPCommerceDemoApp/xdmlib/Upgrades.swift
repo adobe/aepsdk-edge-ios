@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:29.539375 -0700 PDT m=+2.255212668 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:20.617075 -0700 PDT m=+2.255283577 by XDMTool
 
  Title			:	Upgrades
  Description	:	Upgrade of an application that has previously been installed. Triggered on first launch after upgrade.
@@ -24,7 +24,7 @@ public struct Upgrades {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"

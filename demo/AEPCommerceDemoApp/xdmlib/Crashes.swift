@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:29.540079 -0700 PDT m=+2.255917004 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:20.615871 -0700 PDT m=+2.254079241 by XDMTool
 
  Title			:	Crashes
  Description	:	Triggered when the application does not exit gracefully. Event is sent on application launch after a crash.
@@ -24,7 +24,7 @@ public struct Crashes {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"

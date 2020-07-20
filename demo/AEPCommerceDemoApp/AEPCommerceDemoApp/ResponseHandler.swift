@@ -18,7 +18,7 @@ class ResponseHandler: ExperiencePlatformResponseHandler {
     var onResponseCalled: Bool = false
 
     func onResponse(data: [String: Any]) {
-    self.onResponseCalled = true
-    ACPCore.log(ACPMobileLogLevel.debug, tag: "ResponseHandler", message: "Platform response has been recieved...")
+        self.onResponseCalled = true
+        ACPCore.log(ACPMobileLogLevel.debug, tag: "ResponseHandler", message: "Platform response has been recieved...")
     }
 }

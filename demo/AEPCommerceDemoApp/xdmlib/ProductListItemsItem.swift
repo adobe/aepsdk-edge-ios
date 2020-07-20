@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:35.394568 -0700 PDT m=+1.996300670 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:38.218773 -0700 PDT m=+2.052211033 by XDMTool
 
  Title			:	ProductListItemsItem
  Description	:	
@@ -25,7 +25,7 @@ public struct ProductListItemsItem {
 
 	public var currencyCode: String?
 	public var name: String?
-	public var priceTotal: Float?
+	public var priceTotal: Double?
 	public var productAddMethod: String?
 	public var product: String?
 	public var quantity: Int64?

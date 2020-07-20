@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:35.396614 -0700 PDT m=+1.998347401 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:38.218364 -0700 PDT m=+2.051802072 by XDMTool
 
  Title			:	Order
  Description	:	The placed order for one or more products.
@@ -25,7 +25,7 @@ public struct Order {
 
 	public var currencyCode: String?
 	public var payments: Array<PaymentsItem?>?
-	public var priceTotal: Float?
+	public var priceTotal: Double?
 	public var purchaseID: String?
 	public var purchaseOrderNumber: String?
 

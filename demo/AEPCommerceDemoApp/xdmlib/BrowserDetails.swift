@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:29.537571 -0700 PDT m=+2.253409349 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:20.617621 -0700 PDT m=+2.255829148 by XDMTool
 
  Title			:	Browser details
  Description	:	The browser specific details such as browser name, version, javascript version, user agent string, and accept language.

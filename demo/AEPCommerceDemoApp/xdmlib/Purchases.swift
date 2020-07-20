@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-07-10 12:46:35.394481 -0700 PDT m=+1.996213911 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:38.218699 -0700 PDT m=+2.052137391 by XDMTool
 
  Title			:	Purchases
  Description	:	An order has been accepted. Purchase is the only required action in a commerce conversion. Purchase must have a product list referenced.
@@ -24,7 +24,7 @@ public struct Purchases {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"

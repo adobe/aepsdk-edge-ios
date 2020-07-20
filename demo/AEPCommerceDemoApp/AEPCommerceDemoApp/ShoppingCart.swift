@@ -38,15 +38,15 @@ extension ShoppingCart {
         items.remove(at: index)
     }
 
-    var totalQuantity: Float {
+    var totalQuantity: Double {
         return items.reduce(0) { value, item in
-            value + Float(item.product.quantity)
+            value + Double(item.product.quantity)
         }
     }
 
-    var total: Float {
+    var total: Double {
         return items.reduce(0.0) { value, item in
-            value + Float(item.product.quantity) * item.product.productData.price
+            value + Double(item.product.quantity) * item.product.productData.price
         }
     }
 }

@@ -133,7 +133,7 @@ class MockKeyValueStore: KeyValueStore {
 
     private func get(key: String) -> Any? {
         if key.isEmpty {
-           return nil
+            return nil
         }
         return dataStore[key]
     }

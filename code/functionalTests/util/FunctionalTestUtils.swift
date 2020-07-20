@@ -10,8 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import Foundation
 @testable import AEPExperiencePlatform
+import Foundation
 
 public class FunctionalTestUtils {
 
@@ -22,14 +22,14 @@ public class FunctionalTestUtils {
         dictionary.keys.forEach { key in
             defaults.removeObject(forKey: key)
         }
-        
+
         // force reset overridden config
         defaults.set(nil, forKey: "Adobe.AdobeMobile_ConfigState.config.overridden.map")
-        
+
         // remove from suites
         let store = NamedUserDefaultsStore(name: "AEPExperiencePlatform")
         store.removeAll()
-        
+
         print("resetUserDefaults - Removed all user defaults")
     }
 }
