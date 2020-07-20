@@ -144,10 +144,14 @@ class ExperiencePlatformInternal: ACPExtension {
         requestBuilder.enableResponseStreaming(recordSeparator: ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator, lineFeed: ExperiencePlatformConstants.Defaults.requestConfigLineFeed)
 
         // get ECID
-        if let identityState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Identity.stateOwner, event: event) {
-            if let ecid = identityState[ExperiencePlatformConstants.SharedState.Identity.ecid] as? String {
-                requestBuilder.experienceCloudId = ecid
-            }
+        guard let identityState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Identity.stateOwner, event: event) else {
+            return false // keep event in queue to process when Identity state updates
+        }
+
+        if let ecid = identityState[ExperiencePlatformConstants.SharedState.Identity.ecid] as? String {
+            requestBuilder.experienceCloudId = ecid
+        } else {
+            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "handleSendEvent - An unexpected error has occured, ECID is null.")
         }
 
         // get Griffon integration id and include it in to the requestHeaders
