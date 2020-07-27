@@ -54,6 +54,24 @@
 		BF024B6F24B8FE42002131E9 /* FirstLaunches.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B4B24B8FE42002131E9 /* FirstLaunches.swift */; };
 		BF024B7024B8FE42002131E9 /* ProductListReopens.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B4C24B8FE42002131E9 /* ProductListReopens.swift */; };
 		BF024B7124B8FE42002131E9 /* BrowserDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B4D24B8FE42002131E9 /* BrowserDetails.swift */; };
+		BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
+		BF024B7A24C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
+		BF024B7C24C62B3B002131E9 /* FakeIdentityListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7B24C62B3B002131E9 /* FakeIdentityListener.swift */; };
+		BF024B7D24C62B3B002131E9 /* FakeIdentityListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7B24C62B3B002131E9 /* FakeIdentityListener.swift */; };
+		BF024B8524CF93DF002131E9 /* FunctionalTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */; };
+		BF024B8624CF93DF002131E9 /* CountDownLatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BBB74248DC54F00775DAC /* CountDownLatch.swift */; };
+		BF024B8724CF93DF002131E9 /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA1244587520057A6CC /* TestUtils.swift */; };
+		BF024B8824CF93DF002131E9 /* FunctionalTestConst.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A473C52485938D00D31710 /* FunctionalTestConst.swift */; };
+		BF024B8924CF93DF002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
+		BF024B8A24CF93DF002131E9 /* InstrumentedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */; };
+		BF024B8B24CF93DF002131E9 /* InstrumentedWildcardListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A473C0248585BE00D31710 /* InstrumentedWildcardListener.swift */; };
+		BF024B8C24CF93DF002131E9 /* FunctionalTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */; };
+		BF024B8D24CF93DF002131E9 /* FakeIdentityListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7B24C62B3B002131E9 /* FakeIdentityListener.swift */; };
+		BF024B8E24CF93DF002131E9 /* TestableExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */; };
+		BF024B8F24CF93DF002131E9 /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655406246DF6DB00A150E2 /* FunctionalTestUtils.swift */; };
+		BF024B9224CF93DF002131E9 /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libAEPExperiencePlatform.a */; platformFilter = ios; };
+		BF024B9324CF93DF002131E9 /* Pods_functionalTestsConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E9BE4B5F95A128A6EF61695 /* Pods_functionalTestsConfig.framework */; };
+		BF024B9B24CF9420002131E9 /* IdentityStateFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7E24C62BED002131E9 /* IdentityStateFunctionalTests.swift */; };
 		BF0C092A2461209900892B5D /* FunctionalTestsWithNoConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */; };
 		BF0C092D2461209900892B5D /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libAEPExperiencePlatform.a */; platformFilter = ios; };
 		BF0C0935246120B200892B5D /* NetworkResponseHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* NetworkResponseHandlerFunctionalTests.swift */; };
@@ -170,6 +188,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		BF024B8224CF93DF002131E9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4D5B4E6242EBB1600CAB6E4;
+			remoteInfo = ACPExperiencePlatform;
+		};
 		D465540D24730DC500A150E2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
@@ -263,6 +288,11 @@
 		BF024B4B24B8FE42002131E9 /* FirstLaunches.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstLaunches.swift; sourceTree = "<group>"; };
 		BF024B4C24B8FE42002131E9 /* ProductListReopens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductListReopens.swift; sourceTree = "<group>"; };
 		BF024B4D24B8FE42002131E9 /* BrowserDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserDetails.swift; sourceTree = "<group>"; };
+		BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeIdentityExtension.swift; sourceTree = "<group>"; };
+		BF024B7B24C62B3B002131E9 /* FakeIdentityListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeIdentityListener.swift; sourceTree = "<group>"; };
+		BF024B7E24C62BED002131E9 /* IdentityStateFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityStateFunctionalTests.swift; sourceTree = "<group>"; };
+		BF024B9924CF93DF002131E9 /* functionalTestsIdentity.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsIdentity.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF024B9A24CF93E0002131E9 /* functionalTestsConfig copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "functionalTestsConfig copy-Info.plist"; path = "/Users/lind/git/mobile/experience-platform/public/platform-extension-ios/build/xcode/functionalTestsConfig copy-Info.plist"; sourceTree = "<absolute>"; };
 		BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestsWithNoConfiguration.swift; sourceTree = "<group>"; };
 		BF0C09332461209900892B5D /* functionalTestsConfig.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsConfig.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestableExperiencePlatformInternal.swift; sourceTree = "<group>"; };
@@ -377,6 +407,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		BF024B9124CF93DF002131E9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF024B9224CF93DF002131E9 /* libAEPExperiencePlatform.a in Frameworks */,
+				BF024B9324CF93DF002131E9 /* Pods_functionalTestsConfig.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BF0C092C2461209900892B5D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -473,6 +512,8 @@
 				BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */,
 				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
 				D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */,
+				BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */,
+				BF024B7B24C62B3B002131E9 /* FakeIdentityListener.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -481,6 +522,7 @@
 			isa = PBXGroup;
 			children = (
 				BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */,
+				BF024B7E24C62BED002131E9 /* IdentityStateFunctionalTests.swift */,
 			);
 			name = functionalTestsConfig;
 			path = ../../code/functionalTests;
@@ -669,6 +711,7 @@
 				E5239B915F53B993A1976FC4 /* Pods */,
 				1C120237246DA22700EAF9CA /* Recovered References */,
 				706B7527226CD8E54F9D7921 /* Frameworks */,
+				BF024B9A24CF93E0002131E9 /* functionalTestsConfig copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -681,6 +724,7 @@
 				D4D5B57A2432977F00CAB6E4 /* AEPDemoAppSwiftUI.app */,
 				BF0C09332461209900892B5D /* functionalTestsConfig.xctest */,
 				BF5EECE524983AE000C72622 /* AEPCommerceDemoApp.app */,
+				BF024B9924CF93DF002131E9 /* functionalTestsIdentity.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -801,6 +845,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		BF024B8024CF93DF002131E9 /* functionalTestsIdentity */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BF024B9624CF93DF002131E9 /* Build configuration list for PBXNativeTarget "functionalTestsIdentity" */;
+			buildPhases = (
+				BF024B8324CF93DF002131E9 /* [CP] Check Pods Manifest.lock */,
+				BF024B8424CF93DF002131E9 /* Sources */,
+				BF024B9124CF93DF002131E9 /* Frameworks */,
+				BF024B9424CF93DF002131E9 /* Resources */,
+				BF024B9524CF93DF002131E9 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BF024B8124CF93DF002131E9 /* PBXTargetDependency */,
+			);
+			name = functionalTestsIdentity;
+			productName = functionalTests;
+			productReference = BF024B9924CF93DF002131E9 /* functionalTestsIdentity.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		BF0C09252461209900892B5D /* functionalTestsConfig */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF0C09302461209900892B5D /* Build configuration list for PBXNativeTarget "functionalTestsConfig" */;
@@ -958,6 +1022,7 @@
 				D4D5B5202432599B00CAB6E4 /* unitTests */,
 				D4D5B53224325AB700CAB6E4 /* functionalTests */,
 				BF0C09252461209900892B5D /* functionalTestsConfig */,
+				BF024B8024CF93DF002131E9 /* functionalTestsIdentity */,
 				D4D5B5792432977F00CAB6E4 /* AEPDemoAppSwiftUI */,
 				BF5EECD424983AE000C72622 /* AEPCommerceDemoApp */,
 			);
@@ -965,6 +1030,13 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		BF024B9424CF93DF002131E9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BF0C092F2461209900892B5D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1223,6 +1295,45 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config ../../tools/format/.swiftlint.yml --path ../../code/functionalTests --lenient\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
+		BF024B8324CF93DF002131E9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-functionalTestsConfig-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BF024B9524CF93DF002131E9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config ../../tools/format/.swiftlint.yml --path ../../code/functionalTests --lenient\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
 		BF5EECD524983AE000C72622 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1248,6 +1359,25 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		BF024B8424CF93DF002131E9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF024B9B24CF9420002131E9 /* IdentityStateFunctionalTests.swift in Sources */,
+				BF024B8524CF93DF002131E9 /* FunctionalTestNetworkService.swift in Sources */,
+				BF024B8624CF93DF002131E9 /* CountDownLatch.swift in Sources */,
+				BF024B8724CF93DF002131E9 /* TestUtils.swift in Sources */,
+				BF024B8824CF93DF002131E9 /* FunctionalTestConst.swift in Sources */,
+				BF024B8924CF93DF002131E9 /* FakeIdentityExtension.swift in Sources */,
+				BF024B8A24CF93DF002131E9 /* InstrumentedExtension.swift in Sources */,
+				BF024B8B24CF93DF002131E9 /* InstrumentedWildcardListener.swift in Sources */,
+				BF024B8C24CF93DF002131E9 /* FunctionalTestBase.swift in Sources */,
+				BF024B8D24CF93DF002131E9 /* FakeIdentityListener.swift in Sources */,
+				BF024B8E24CF93DF002131E9 /* TestableExperiencePlatformInternal.swift in Sources */,
+				BF024B8F24CF93DF002131E9 /* FunctionalTestUtils.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BF0C09292461209900892B5D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1256,9 +1386,11 @@
 				D44BBB76248DEDB400775DAC /* CountDownLatch.swift in Sources */,
 				D4A473CE2485AA4700D31710 /* TestUtils.swift in Sources */,
 				D4A473C8248596AE00D31710 /* FunctionalTestConst.swift in Sources */,
+				BF024B7A24C6238C002131E9 /* FakeIdentityExtension.swift in Sources */,
 				D4A473C32485929000D31710 /* InstrumentedExtension.swift in Sources */,
 				D4A473C42485929000D31710 /* InstrumentedWildcardListener.swift in Sources */,
 				D4A473C22485928A00D31710 /* FunctionalTestBase.swift in Sources */,
+				BF024B7D24C62B3B002131E9 /* FakeIdentityListener.swift in Sources */,
 				BF0C09492465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */,
 				D4655408246DF6DB00A150E2 /* FunctionalTestUtils.swift in Sources */,
 				BF0C092A2461209900892B5D /* FunctionalTestsWithNoConfiguration.swift in Sources */,
@@ -1412,8 +1544,10 @@
 				BF0C09482465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */,
 				D4A473C1248585BE00D31710 /* InstrumentedWildcardListener.swift in Sources */,
 				D4A473D02485B86D00D31710 /* AEPExperiencePlatformFunctionalTests.swift in Sources */,
+				BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */,
 				D4655402246CD0B000A150E2 /* InstrumentedExtension.swift in Sources */,
 				D48CBD2224A17EEA00A24BD8 /* TestXDMSchema.swift in Sources */,
+				BF024B7C24C62B3B002131E9 /* FakeIdentityListener.swift in Sources */,
 				D4EED36C2489ACE200D4815C /* FunctionalTestNetworkService.swift in Sources */,
 				D4655407246DF6DB00A150E2 /* FunctionalTestUtils.swift in Sources */,
 				BF0C0935246120B200892B5D /* NetworkResponseHandlerFunctionalTests.swift in Sources */,
@@ -1434,6 +1568,12 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		BF024B8124CF93DF002131E9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = D4D5B4E6242EBB1600CAB6E4 /* AEPExperiencePlatform */;
+			targetProxy = BF024B8224CF93DF002131E9 /* PBXContainerItemProxy */;
+		};
 		BF0C09262461209900892B5D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			platformFilter = ios;
@@ -1490,6 +1630,50 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		BF024B9724CF93DF002131E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3B00DD0D8027E516378D8B07 /* Pods-functionalTestsConfig.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FKGEE875K4;
+				INFOPLIST_FILE = ../../code/functionalTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.functionalTestsConfig;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				VALID_ARCHS = "$(inherited)";
+			};
+			name = Debug;
+		};
+		BF024B9824CF93DF002131E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EC5D122CB999378BD811FEAF /* Pods-functionalTestsConfig.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FKGEE875K4;
+				INFOPLIST_FILE = ../../code/functionalTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.functionalTestsConfig;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				VALID_ARCHS = "$(inherited)";
+			};
+			name = Release;
+		};
 		BF0C09312461209900892B5D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3B00DD0D8027E516378D8B07 /* Pods-functionalTestsConfig.debug.xcconfig */;
@@ -1907,6 +2091,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BF024B9624CF93DF002131E9 /* Build configuration list for PBXNativeTarget "functionalTestsIdentity" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BF024B9724CF93DF002131E9 /* Debug */,
+				BF024B9824CF93DF002131E9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BF0C09302461209900892B5D /* Build configuration list for PBXNativeTarget "functionalTestsConfig" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
