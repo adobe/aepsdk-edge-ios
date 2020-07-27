@@ -13,7 +13,7 @@
 import ACPCore
 import XCTest
 
-/// Wildcard listener that monitors all the events dispatched in current test session. Use it along with `FunctionalTestBase`
+/// Listener for request events to `FakeIdentityExtension`.
 class FakeIdentityListener: ACPExtensionListener {
     override func hear(_ event: ACPExtensionEvent) {
         guard let parentExtension = self.extension as? FakeIdentityExtension else { return }

@@ -13,7 +13,8 @@
 import ACPCore
 import XCTest
 
-/// Instrumented extension that registers a wildcard listener for intercepting events in current session. Use it along with `FunctionalTestBase`
+/// Extension used to 'fake' an Identity extension and allows tests to clear and set the Identity shared state. Use it along with `FunctionalTestBase`
+/// Cannot be used along with another Identity Extension which is registered with ACPCore.
 class FakeIdentityExtension: ACPExtension {
     private static let logTag = "FakeIdentityExtension"
 
@@ -25,7 +26,13 @@ class FakeIdentityExtension: ACPExtension {
     override init() {
         super.init()
 
-        try? api.registerWildcardListener(FakeIdentityListener.self)
+        try? api.registerListener(FakeIdentityListener.self,
+                                  eventType: FakeIdentityExtension.eventType,
+                                  eventSource: FakeIdentityExtension.eventSetState)
+
+        try? api.registerListener(FakeIdentityListener.self,
+                                  eventType: FakeIdentityExtension.eventType,
+                                  eventSource: FakeIdentityExtension.eventClearState)
     }
 
     override func name() -> String? {
@@ -43,6 +50,9 @@ class FakeIdentityExtension: ACPExtension {
         try? api.clearSharedEventStates()
     }
 
+    /// Clear the shared state for this `FakeIdentityExtension`.
+    /// Calls `ACPExtensionApi.clearSharedEventState()` to perform the opteration.
+    /// This is a synchronous call, which waits for a response from the extension before returning.
     public static func clearSharedState() {
         guard let event = try? ACPExtensionEvent(name: "Set Fake Identity State",
                                                  type: FakeIdentityExtension.eventType,
@@ -60,6 +70,11 @@ class FakeIdentityExtension: ACPExtension {
         _ = latch.await(timeout: 5)
     }
 
+    /// Set a new shared state for this `FakeIdentityExtension`. Setting a shared state will trigger a Hub Shared State event
+    /// from the EventHub just like any other extension.
+    /// Calls `ACPExtensionApi.setSharedEventState` to perform the operation.
+    /// This is a synchronous call, which waits for a response from the extension before returning.
+    /// - Parameter state: the state to set
     public static func setSharedState(state: [AnyHashable: Any]) {
 
         guard let event = try? ACPExtensionEvent(name: "Set Fake Identity State",
@@ -80,8 +95,9 @@ class FakeIdentityExtension: ACPExtension {
 
     // MARK: Event Processors
 
-    /// Process `getSharedStateFor` requests
-    /// - Parameter event: event sent from `getSharedStateFor` which specifies the shared state `stateowner` to retrieve
+    /// Processes events received from the event listener. If the event is handled, a paired response event is dispatched to notify the caller
+    /// the event was processed.
+    /// - Parameter event: an event to process
     func processRequest(_ event: ACPExtensionEvent) {
         var doDispatch = false
 
@@ -109,10 +125,5 @@ class FakeIdentityExtension: ACPExtension {
                 return
             }
         }
-    }
-
-    func unregisterExtension() {
-        ACPCore.log(ACPMobileLogLevel.debug, tag: FakeIdentityExtension.logTag, message: "Unregistering the Instrumented extension from the Event Hub")
-        self.api.unregisterExtension()
     }
 }
