@@ -31,8 +31,10 @@ class ExperiencePlatformExtensionRequestListener: ACPExtensionListener {
                 return
             }
 
+            // If Configuration or Identity shared state, start processing event queue
             let stateOwner = eventData[ExperiencePlatformConstants.SharedState.stateowner] as? String
-            if stateOwner == ExperiencePlatformConstants.SharedState.Configuration.stateOwner {
+            if stateOwner == ExperiencePlatformConstants.SharedState.Configuration.stateOwner  ||
+                stateOwner == ExperiencePlatformConstants.SharedState.Identity.stateOwner {
                 // kick event queue processing
                 parentExtension.processEventQueue(event)
             }
