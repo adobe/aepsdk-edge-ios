@@ -16,7 +16,7 @@ import XCTest
 
 /// Functional test suite for tests which require no Identity shared state at startup to simulate a missing or pending state.
 /// This test suite cannot be run in same target as other tests which registers the Identity extension
-/// as all the tests in the same target use the same ACPCore instance with that Idenitty extension and not the needed 'fake' Identity extension.
+/// as all the tests in the same target use the same ACPCore instance with that Identity extension and not the needed 'fake' Identity extension.
 class IdentityStateFunctionalTests: FunctionalTestBase {
 
     private let exEdgeInteractUrl = "https://edge.adobedc.net/ee/v1/interact"
@@ -92,7 +92,7 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("1234", flattenRequestBody["xdm.identityMap.ECID[0].id"] as? String)
     }
 
-    func testSendEvent_withNoECIDInIdentityState_noRequestSent() {
+    func testSendEvent_withNoECIDInIdentityState_requestSentWithoutECID() {
         FakeIdentityExtension.setSharedState(state: ["blob": "testing"]) // set state without ECID
 
         let responseBody = "{\"test\": \"json\"}"
