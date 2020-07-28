@@ -130,11 +130,16 @@ class ExperiencePlatformInternal: ACPExtension {
 
         guard let configSharedState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
                                                      event: event) else {
+                                                        ACPCore.log(ACPMobileLogLevel.debug,
+                                                                    tag: TAG,
+                                                                    message: "handleSendEvent - Unable to process queued events at this time, Configuration shared state is pending.")
                                                         return false // keep event in queue to process on next trigger
         }
 
         guard let configId = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String else {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Removed event '\(event.eventUniqueIdentifier)' because of invalid experiencePlatform.configId in configuration.")
+            ACPCore.log(ACPMobileLogLevel.warning,
+                        tag: TAG,
+                        message: "handleSendEvent - Removed event '\(event.eventUniqueIdentifier)' because of invalid experiencePlatform.configId in configuration.")
             return true // drop event from queue
         }
 
@@ -144,8 +149,12 @@ class ExperiencePlatformInternal: ACPExtension {
         requestBuilder.enableResponseStreaming(recordSeparator: ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator, lineFeed: ExperiencePlatformConstants.Defaults.requestConfigLineFeed)
 
         // get ECID
-        guard let identityState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Identity.stateOwner, event: event) else {
-            return false // keep event in queue to process when Identity state updates
+        guard let identityState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Identity.stateOwner,
+                                                 event: event) else {
+                                                    ACPCore.log(ACPMobileLogLevel.debug,
+                                                                tag: TAG,
+                                                                message: "handleSendEvent - Unable to process queued events at this time, Identity shared state is pending.")
+                                                    return false // keep event in queue to process when Identity state updates
         }
 
         if let ecid = identityState[ExperiencePlatformConstants.SharedState.Identity.ecid] as? String {
