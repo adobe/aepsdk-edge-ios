@@ -10,24 +10,23 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 /// Contains a `StorePayload` plus bookeeping expires information.
 /// Use this object when serializing to local storage.
-struct StoreResponsePayload : Codable {
-    
+struct StoreResponsePayload: Codable {
+
     /// The store payload from the server response
     let payload: StorePayload
-    
+
     /// The `Date` at which this payload expires
     let expiryDate: Date
-    
+
     /// Checks if the payload has exceeded its max age
     var isExpired: Bool {
         return Date() >= expiryDate
     }
-    
+
     init(payload: StorePayload) {
         self.payload = payload
         expiryDate = Date(timeIntervalSinceNow: payload.maxAge)
@@ -36,13 +35,13 @@ struct StoreResponsePayload : Codable {
 
 /// Store payload from the server response.
 /// Contains only the parameters sent over the network.
-struct StorePayload : Codable {
+struct StorePayload: Codable {
     /// They payload key identifier
     let key: String
-    
+
     /// The payload value
     let value: String
-    
+
     /// The max age in seconds this payload should be stored
     let maxAge: TimeInterval
 }

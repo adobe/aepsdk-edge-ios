@@ -10,26 +10,26 @@
 // governing permissions and limitations under the License.
 //
 
-import Foundation
 @testable import AEPExperiencePlatform
+import Foundation
 
-class MockResponseCallback : ResponseCallback {
+class MockResponseCallback: ResponseCallback {
     var onResponseCalled: Bool = false
-    var onResponseJsonResponse:[String] = []
+    var onResponseJsonResponse: [String] = []
     var onErrorCalled: Bool = false
-    var onErrorJsonError:[String] = []
+    var onErrorJsonError: [String] = []
     var onCompleteCalled: Bool = false
-    
+
     func onResponse(jsonResponse: String) {
         onResponseCalled = true
         onResponseJsonResponse.append(jsonResponse)
     }
-    
+
     func onError(jsonError: String) {
         onErrorCalled = true
         onErrorJsonError.append(jsonError)
     }
-    
+
     func onComplete() {
         onCompleteCalled = true
     }

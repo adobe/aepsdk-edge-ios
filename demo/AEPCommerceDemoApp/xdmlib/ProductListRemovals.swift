@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.50171 -0700 PDT m=+1.943950109 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:38.217972 -0700 PDT m=+2.051410268 by XDMTool
 
  Title			:	ProductListRemovals
  Description	:	Removal or removals of a product entry from a product list, for example a product is removed from a shopping cart.
@@ -24,7 +24,7 @@ public struct ProductListRemovals {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"

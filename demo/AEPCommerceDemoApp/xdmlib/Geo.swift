@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.497991 -0700 PDT m=+1.940230817 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:20.616748 -0700 PDT m=+2.254956003 by XDMTool
 
  Title			:	Geo
  Description	:	The geographic location where the experience was delivered.
@@ -27,9 +27,9 @@ public struct Geo {
 	public var countryCode: String?
 	public var description_: String?
 	public var dmaID: Int64?
-	public var elevation: Float?
-	public var latitude: Float?
-	public var longitude: Float?
+	public var elevation: Double?
+	public var latitude: Double?
+	public var longitude: Double?
 	public var msaID: Int64?
 	public var postalCode: String?
 	public var stateProvince: String?

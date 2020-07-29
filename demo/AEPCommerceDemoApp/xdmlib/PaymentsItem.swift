@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.502322 -0700 PDT m=+1.944562300 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:38.218545 -0700 PDT m=+2.051983375 by XDMTool
 
  Title			:	PaymentsItem
  Description	:	
@@ -24,7 +24,7 @@ public struct PaymentsItem {
 	public init() {}
 
 	public var currencyCode: String?
-	public var paymentAmount: Float?
+	public var paymentAmount: Double?
 	public var paymentType: String?
 	public var transactionID: String?
 

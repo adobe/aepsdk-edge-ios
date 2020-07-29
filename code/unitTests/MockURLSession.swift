@@ -19,11 +19,11 @@ class MockURLSession: URLSession {
     // we want our mocked URLSession to return for any request.
     var data: Data?
     var error: Error?
-    var dataTaskWithCompletionHandlerCalled:Bool
+    var dataTaskWithCompletionHandlerCalled: Bool
     var calledWithUrlRequest: URLRequest?
-    
+
     private let mockTask: MockTask
-    
+
     init(data: Data? = nil, urlResponse: URLResponse? = nil, error: Error? = nil) {
         mockTask = MockTask(data: data, urlResponse: urlResponse, error:
             error)

@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.500906 -0700 PDT m=+1.943146123 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:38.219617 -0700 PDT m=+2.053054959 by XDMTool
 
  Title			:	ProductListOpens
  Description	:	Initializations of a new product list, for example a shopping cart is created.
@@ -24,7 +24,7 @@ public struct ProductListOpens {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"

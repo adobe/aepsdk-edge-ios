@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.500981 -0700 PDT m=+1.943220477 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:20.616014 -0700 PDT m=+2.254222881 by XDMTool
 
  Title			:	Installs
  Description	:	Install of an application on a device where the specific install event is available.
@@ -24,7 +24,7 @@ public struct Installs {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"

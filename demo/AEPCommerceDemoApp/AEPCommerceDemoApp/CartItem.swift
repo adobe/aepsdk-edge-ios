@@ -13,8 +13,8 @@
 import Foundation
 
 class CartItem: CustomStringConvertible {
-    
-    var product : Product
+
+    var product: Product
     var description: String {
         return "(Product : \(product))"
     }

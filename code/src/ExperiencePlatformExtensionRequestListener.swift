@@ -10,30 +10,31 @@
 // governing permissions and limitations under the License.
 //
 
-
-import Foundation
 import ACPCore
+import Foundation
 
-class ExperiencePlatformExtensionRequestListener : ACPExtensionListener {
+class ExperiencePlatformExtensionRequestListener: ACPExtensionListener {
     private let TAG = "ExperiencePlatformExtensionListener"
-    
+
     override func hear(_ event: ACPExtensionEvent) {
-        
+
         // get parent extension
         guard let parentExtension = self.extension as? ExperiencePlatformInternal else {
             ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Unable to hear event '\(event.eventUniqueIdentifier)' as parent extension is not instance of ExperiencePlatformInternal.")
             return
         }
-        
+
         // Handle SharedState events
         if event.eventType == ExperiencePlatformConstants.eventTypeAdobeHub {
             guard let eventData = event.eventData else {
                 ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Adobe Hub event contains no data. Cannot process event '\(event.eventUniqueIdentifier)'")
                 return
             }
-            
+
+            // If Configuration or Identity shared state, start processing event queue
             let stateOwner = eventData[ExperiencePlatformConstants.SharedState.stateowner] as? String
-            if stateOwner == ExperiencePlatformConstants.SharedState.Configuration.stateOwner {
+            if stateOwner == ExperiencePlatformConstants.SharedState.Configuration.stateOwner  ||
+                stateOwner == ExperiencePlatformConstants.SharedState.Identity.stateOwner {
                 // kick event queue processing
                 parentExtension.processEventQueue(event)
             }

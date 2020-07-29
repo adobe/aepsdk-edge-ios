@@ -10,8 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import Foundation
 import ACPCore
+import Foundation
 
 /// Use this class to register `ExperiencePlatformResponseHandler`(s) for a specific event identifier
 /// and get notified once a response is received from the Experience Edge or when an error occurred. This class uses a `ThreadSafeDictionary` for the internal mapping.
@@ -19,7 +19,7 @@ class ResponseCallbackHandler {
     private let TAG = "ResponseCallbacksHandler"
     private var responseHandlers = ThreadSafeDictionary<String, ExperiencePlatformResponseHandler>(identifier: "com.adobe.experiencePlaftorm.responseHandlers")
     static let shared = ResponseCallbackHandler()
-    
+
     /// Registers a `ExperiencePlatformResponseHandler` for the specified `uniqueEventId`. This handler will
     /// be invoked whenever a response event for the same uniqueEventId was seen.
     ///
@@ -32,11 +32,11 @@ class ResponseCallbackHandler {
             ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to register response handler because of empty unique event id.")
             return
         }
-        
+
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Registering callback for Data platform response with unique id \(uniqueEventId).")
         responseHandlers[uniqueEventId] = unwrappedResponseHandler
     }
-    
+
     /// Unregisters a `ExperiencePlatformResponseHandler` for the specified `uniqueEventId`. After this operation,
     /// the associated response handler will not be invoked anymore for any ExEdge response events.
     /// - Parameter uniqueEventId: unique event identifier for data platform events; should not be empty
@@ -46,7 +46,7 @@ class ResponseCallbackHandler {
             ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Removing callback for Data platform response with unique id \(uniqueEventId).")
         }
     }
-    
+
     /// Invokes the response handler for the unique event identifier (if any callback was previously registered for this id).
     /// - Parameter eventData: data received from an ExEdge response event, containing the event handle payload and the request event identifier
     func invokeResponseHandler(eventData: [String: Any]) {
@@ -55,14 +55,14 @@ class ResponseCallbackHandler {
             ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to invoke the response handler because of unspecified requestEventId, data received \(eventData)")
             return
         }
-        
+
         guard let responseHandler = responseHandlers[unwrappedRequestEventId] else {
             ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Unable to find response handler for requestEventId (\(unwrappedRequestEventId)), not invoked")
             return
         }
-        
+
         ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Invoking registered onResponse handler for requestEventId (\(unwrappedRequestEventId)) with data \(eventData)")
         responseHandler.onResponse(data: eventData)
-        
+
     }
 }

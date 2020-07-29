@@ -13,11 +13,11 @@
 import Foundation
 
 struct ProductData: Codable {
-    
+
     var sku: String
     var name: String
     var details: String
-    var price: Float
+    var price: Double
     var currency: String
     var imageLarge: String
     var imageSmall: String

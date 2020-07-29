@@ -8,6 +8,8 @@ setup:
 	(cd build/xcode && pod install)
 	(cd demo/$(APP_NAME) && pod install)
 
+setup-tools: _install-swiftlint _install-githook
+
 pod-repo-update:
 	(cd build/xcode && pod repo update)
 	(cd demo/$(APP_NAME) && pod repo update)
@@ -29,15 +31,15 @@ open-app:
 
 clean:
 	(rm -rf bin)
-	(rm -rf ${OUT_DIR})
+	(rm -rf $(OUT_DIR))
 	(make -C build/xcode clean)
-	(rm -rf build/xcode/${PROJECT_NAME}/out)
+	(rm -rf build/xcode/$(PROJECT_NAME)/out)
 
 build: clean _create-out
-	(set -o pipefail && make -C build/xcode build-shallow 2>&1 | tee -a ${OUT_DIR}/build.log)
+	(set -o pipefail && make -C build/xcode build-shallow 2>&1 | tee -a $(OUT_DIR)/build.log)
 
 build-all: clean _create-out
-	(set -o pipefail && make -C build/xcode all 2>&1 | tee -a ${OUT_DIR}/build.log)
+	(set -o pipefail && make -C build/xcode all 2>&1 | tee -a $(OUT_DIR)/build.log)
 
 build-app: _create-out
 	(set -o pipefail && make -C demo/$(APP_NAME) build-shallow 2>&1 | tee -a $(OUT_DIR)/appbuild.log)
@@ -48,13 +50,23 @@ archive-app: _create-out
 test: unit-test
 
 unit-test: _create-out
-	(mkdir -p ${OUT_DIR}/unitTest)
+	(mkdir -p $(OUT_DIR)/unitTest)
 	(make -C build/xcode unit-test)
 
 functional-test: _create-out
-	(mkdir -p ${OUT_DIR}/functionalTest)
+	(mkdir -p $(OUT_DIR)/functionalTest)
 	(make -C build/xcode functional-test)
 
 _create-out:
-	(mkdir -p ${OUT_DIR})
+	(mkdir -p $(OUT_DIR))
+
+_install-swiftlint:
+	brew install swiftlint && brew cleanup swiftlint
+
+_install-githook:
+	./tools/git-hooks/setup.sh
+	
+
+
+
 

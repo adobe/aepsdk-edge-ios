@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 import XCTest
 
@@ -19,7 +18,7 @@ class CountDownLatch {
     private let initialCount: Int32
     private var count: Int32
     private let waitSemaphore = DispatchSemaphore(value: 0)
-    
+
     init(_ count: Int32) {
         guard count > 0 else {
             assertionFailure("CountDownLatch requires a count greater than 0")
@@ -27,32 +26,32 @@ class CountDownLatch {
             self.initialCount = 0
             return
         }
-        
+
         self.count = count
         self.initialCount = count
     }
-    
+
     func getCurrentCount() -> Int32 {
         return count
     }
-    
+
     func getInitialCount() -> Int32 {
         return initialCount
     }
-    
+
     func await(timeout: TimeInterval = 1) -> DispatchTimeoutResult {
         return count > 0 ? waitSemaphore.wait(timeout: (DispatchTime.now() + timeout)) : DispatchTimeoutResult.success
     }
-    
+
     func countDown() {
         OSAtomicDecrement32(&count)
         if count == 0 {
             waitSemaphore.signal()
         }
-        
+
         if count < 0 {
             print("Count Down decreased more times than expected.")
         }
-        
+
     }
 }

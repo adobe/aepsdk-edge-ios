@@ -13,18 +13,18 @@
 import Foundation
 
 class ShoppingCart {
-    
-    private(set) var items : [CartItem] = []
+
+    private(set) var items: [CartItem] = []
 }
 
 extension ShoppingCart {
-    
-    func clearCart(){
+
+    func clearCart() {
         items.removeAll()
     }
-    
+
     func add(product: Product) {
-        
+
         let item = items.filter { $0.product == product }
         if let unwrappedItem = item.first {
             unwrappedItem.product.quantity += product.quantity
@@ -32,21 +32,21 @@ extension ShoppingCart {
             items.append(CartItem(product: product))
         }
     }
-    
+
     func remove(product: Product) {
         guard let index = items.firstIndex(where: { $0.product == product }) else { return}
         items.remove(at: index)
     }
-    
-    var totalQuantity : Float {
+
+    var totalQuantity: Double {
         return items.reduce(0) { value, item in
-            value + Float(item.product.quantity)
+            value + Double(item.product.quantity)
         }
     }
-    
-    var total: Float {
+
+    var total: Double {
         return items.reduce(0.0) { value, item in
-            value + Float(item.product.quantity)*item.product.productData.price
+            value + Double(item.product.quantity) * item.product.productData.price
         }
     }
 }

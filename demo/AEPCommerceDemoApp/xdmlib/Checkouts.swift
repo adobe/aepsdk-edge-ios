@@ -10,7 +10,7 @@
  governing permissions and limitations under the License.
 
 ----
- XDM Property Swift Object Generated 2020-06-25 16:18:51.501435 -0700 PDT m=+1.943675169 by XDMTool
+ XDM Property Swift Object Generated 2020-07-17 14:52:38.219533 -0700 PDT m=+2.052971413 by XDMTool
 
  Title			:	Checkouts
  Description	:	An action during a checkout process of a product list, there can be more than one checkout event if there are multiple steps in a checkout process. If there are multiple steps the event time information and referenced page or experience is used to identify the step individual events represent in order.
@@ -24,7 +24,7 @@ public struct Checkouts {
 	public init() {}
 
 	public var id: String?
-	public var value: Float?
+	public var value: Double?
 
 	enum CodingKeys: String, CodingKey {
 		case id = "id"

@@ -14,17 +14,17 @@ import Foundation
 
 /// A response from the Adobe Experience Edge server.
 /// An `EdgeResponse` is the top-level response object received from Konductor.
-struct EdgeResponse : Decodable {
-    
+struct EdgeResponse: Decodable {
+
     /// The request identifier associated with this response
     let requestId: String?
-    
+
     /// List of event handles received from the Adobe solutions
     let handle: [EdgeEventHandle]?
-    
+
     /// List of errors received from Konductor
     let errors: [EdgeEventError]?
-    
+
     /// List of warnings received from Konductor
     let warnings: [EdgeEventError]?
 }
