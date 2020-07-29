@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "AEPExperiencePlatform"
-  s.version          = "1.0.0-alpha"
+  s.version          = "1.0.0-alpha-2"
   s.summary          = "Experience Platform extension for Adobe Experience Platform SDK. Written and maintained by Adobe."
 
   s.description      = <<-DESC
