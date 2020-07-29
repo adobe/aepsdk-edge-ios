@@ -14,7 +14,7 @@ import ACPCore
 import Foundation
 
 class ExperiencePlatformInternal: ACPExtension {
-    private static let version = "1.0.0-alpha"
+    private static let version = "1.0.0-alpha-2"
 
     // Tag for logging
     private let TAG = "ExperiencePlatformInternal"
