@@ -67,7 +67,7 @@ autocorrect-format:
 	(swiftlint autocorrect --config tools/format/.swiftlint.yml --format)
 
 lint-format:
-	(swiftlint lint --config tools/format/.swiftlint-ci.yml)
+	(swiftlint lint --config tools/format/.swiftlint.yml code/src demo/AEPCommerceDemoApp)
 
 _create-out:
 	(mkdir -p $(OUT_DIR))
