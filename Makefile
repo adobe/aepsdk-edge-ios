@@ -64,10 +64,10 @@ install-githook:
 	./tools/git-hooks/setup.sh
 
 autocorrect-format:
-	(swiftlint autocorrect --config tools/format/.swiftlint.yml --format)
+	(swiftlint autocorrect --format)
 
 lint-format:
-	(swiftlint lint --config tools/format/.swiftlint.yml code/src demo/AEPCommerceDemoApp)
+	(swiftlint lint code/src demo/AEPCommerceDemoApp)
 
 _create-out:
 	(mkdir -p $(OUT_DIR))
