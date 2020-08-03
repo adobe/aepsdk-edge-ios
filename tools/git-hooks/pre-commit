@@ -1,6 +1,6 @@
 #!/bin/bash
 SWIFTLINT=swiftlint
-CONFIG=tools/format/.swiftlint.yml
+CONFIG=.swiftlint.yml
 
 if ! command -v "${SWIFTLINT}" &> /dev/null; then
 	echo "${SWIFTLINT} is not installed. Please run 'make install-swiftlint'."

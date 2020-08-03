@@ -39,6 +39,14 @@ jobs:
             - ./build/xcode/Pods
             - ~/.cocoapods
 
+      - run:
+          name: Install SwiftLint
+          command: make install-swiftlint
+
+      - run:
+          name: Lint Source Code
+          command: make lint-format
+
       # pre-start the simulator to prevent timeouts
       - run:
           name: Pre-start Simulator
