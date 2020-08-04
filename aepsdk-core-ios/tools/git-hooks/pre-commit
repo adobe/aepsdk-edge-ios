@@ -1,0 +1,32 @@
+#!/bin/bash
+SWIFTLINT=swiftlint
+CONFIG=.swiftlint.yml
+
+if ! command -v "${SWIFTLINT}" &> /dev/null; then
+	echo "${SWIFTLINT} is not installed. Please run 'make install-swiftlint'."
+	exit 0
+fi
+
+echo "SwiftLint $(${SWIFTLINT} version)"
+
+count=0
+
+# Changed files added to stage
+for file_path in $(git diff --cached --name-only --diff-filter=d | grep ".swift$"); do
+	export SCRIPT_INPUT_FILE_$count=$file_path
+	count=$((count + 1))
+done
+
+if [ "$count" -ne 0 ]; then
+	export SCRIPT_INPUT_FILE_COUNT=$count
+	$SWIFTLINT autocorrect --config $CONFIG --use-script-input-files --force-exclude --format
+else
+	echo "No files to lint!"
+	exit 0
+fi
+
+# Re-add changes to files in stage area
+for file_path in $(git diff --cached --name-only --diff-filter=d | grep ".swift$"); do
+	git add "$file_path"
+done
+
