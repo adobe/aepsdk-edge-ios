@@ -10,25 +10,27 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
 import AEPExperiencePlatform
 import Compression
 import UIKit
+import AEPCore
+import AEPIdentity
+import AEPServices
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        ACPCore.setLogLevel(ACPMobileLogLevel.debug)
-        ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with AEPExperiencePlatform."))
-        ACPIdentity.registerExtension()
+        MobileCore.setLogLevel(level: .debug)
+        Identity.registerExtension()
         ExperiencePlatform.registerExtension()
-        ACPCore.start {
-            ACPCore.updateConfiguration(["global.privacy": "optedin",
-                                         "experienceCloud.org": "FAF554945B90342F0A495E2C@AdobeOrg",
-                                         "experiencePlatform.configId": "d3d079e7-130e-4ec1-88d7-c328eb9815c4"])
+        MobileCore.start {
+            MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
+            "experienceCloud.org": "FAF554945B90342F0A495E2C@AdobeOrg",
+            "experiencePlatform.configId": "d3d079e7-130e-4ec1-88d7-c328eb9815c4"])
         }
+
         return true
     }
 

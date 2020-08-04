@@ -10,16 +10,95 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
+import AEPServices
 import Foundation
 
-class ExperiencePlatformInternal: ACPExtension {
-    private static let version = "1.0.0-alpha-2"
+public enum ExperiencePlatformEventType : EventType {
+    public var description: String {
+        return self.rawValue
+    }
+    
+    public typealias RawValue = String
+    
+    case experiencePlatform
+    
+    public var rawValue: RawValue {
+        switch self {
+        case .experiencePlatform:
+            return Constants.experiencePlatform
+        }
+    }
+    
+    public init?(rawValue: RawValue) {
+        switch rawValue {
+        case Constants.experiencePlatform:
+            self = .experiencePlatform
+        }
+    }
+    
+    private struct Constants {
+        static let experiencePlatform = "com.adobe.eventType.experiencePlatform"
+    }
+}
 
+@objc(AEPExperiencePlatform) public class ExperiencePlatform: NSObject, Extension {
     // Tag for logging
     private let TAG = "ExperiencePlatformInternal"
+    
+    public var name = ExperiencePlatformConstants.extensionName
+    public var friendlyName = ExperiencePlatformConstants.friendlyName
+    public static var extensionVersion = ExperiencePlatformConstants.extensionVersion
+    public var metadata: [String : String]?
+    public var runtime: ExtensionRuntime
+    
+    
 
-    typealias EventHandlerMapping = (event: ACPExtensionEvent, handler: (ACPExtensionEvent) -> (Bool))
+    public required init(runtime: ExtensionRuntime) {
+        self.runtime = runtime
+        super.init()
+        
+        requestEventQueue.setHandler({ return $0.handler($0.event) })
+        responseEventQueue.setHandler({ return $0.handler($0.event) })
+        requestEventQueue.start()
+        responseEventQueue.start()
+    }
+    
+    public func onRegistered() {
+        registerListener(type: <#T##EventType#>, source: <#T##EventSource#>, listener: handleExperienceEventRequest)
+        registerListener(type: <#T##EventType#>, source: <#T##EventSource#>, listener: handleExperienceEventResponse)
+        registerListener(type: EventType.hub, source: EventSource.sharedState, listener: handleSharedStateUpdate)
+    }
+    
+    public func onUnregistered() {
+        print("Extension unregistered from MobileCore: \(ExperiencePlatformConstants.friendlyName)")
+        
+    }
+    
+    private func handleExperienceEventRequest(event: Event) {
+        processAddEvent(event)
+    }
+    
+    private func handleExperienceEventResponse(event: Event) {
+        processPlatformResponseEvent(event)
+    }
+    
+    private func handleSharedStateUpdate(event: Event) {
+        guard let eventData = event.data else {
+            //ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Adobe Hub event contains no data. Cannot process event '\(event.eventUniqueIdentifier)'")
+            return
+        }
+
+        // If Configuration or Identity shared state, start processing event queue
+        let stateOwner = eventData[ExperiencePlatformConstants.SharedState.stateowner] as? String
+        if stateOwner == ExperiencePlatformConstants.SharedState.Configuration.stateOwner  ||
+            stateOwner == ExperiencePlatformConstants.SharedState.Identity.stateOwner {
+            // kick event queue processing
+            processEventQueue(event)
+        }
+    }
+
+    typealias EventHandlerMapping = (event: Event, handler: (Event) -> (Bool))
     private let requestEventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal Requests")
     private let responseEventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal Responses")
     private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
@@ -30,47 +109,32 @@ class ExperiencePlatformInternal: ACPExtension {
         requestEventQueue.setHandler({ return $0.handler($0.event) })
         responseEventQueue.setHandler({ return $0.handler($0.event) })
 
-        do {
-            try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
-                                     eventType: ExperiencePlatformConstants.eventTypeAdobeHub,
-                                     eventSource: ExperiencePlatformConstants.eventSourceAdobeSharedState)
-        } catch {
-            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for shared state events: \(error.localizedDescription)")
-        }
-
-        do {
-            try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
-                                     eventType: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                     eventSource: ExperiencePlatformConstants.eventSourceExtensionRequestContent)
-        } catch {
-            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension request content events: \(error.localizedDescription)")
-        }
-
-        do {
-            try api.registerListener(ExperiencePlatformExtensionResponseListener.self,
-                                     eventType: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                     eventSource: ExperiencePlatformConstants.eventSourceExtensionResponseContent)
-        } catch {
-            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension response content events: \(error.localizedDescription)")
-        }
+//        do {
+//            try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
+//                                     eventType: ExperiencePlatformConstants.eventTypeAdobeHub,
+//                                     eventSource: ExperiencePlatformConstants.eventSourceAdobeSharedState)
+//        } catch {
+//            Log.error(label: TAG, "There was an error registering Extension Listener for shared state events: \(error.localizedDescription)")
+//        }
+//
+//        do {
+//            try api.registerListener(ExperiencePlatformExtensionRequestListener.self,
+//                                     eventType: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+//                                     eventSource: ExperiencePlatformConstants.eventSourceExtensionRequestContent)
+//        } catch {
+//            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension request content events: \(error.localizedDescription)")
+//        }
+//
+//        do {
+//            try api.registerListener(ExperiencePlatformExtensionResponseListener.self,
+//                                     eventType: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+//                                     eventSource: ExperiencePlatformConstants.eventSourceExtensionResponseContent)
+//        } catch {
+//            ACPCore.log(ACPMobileLogLevel.error, tag: TAG, message: "There was an error registering Extension Listener for extension response content events: \(error.localizedDescription)")
+//        }
 
         requestEventQueue.start()
         responseEventQueue.start()
-    }
-
-    override func name() -> String? {
-        "com.adobe.ExperiencePlatform"
-    }
-
-    override func version() -> String? {
-        return ExperiencePlatformInternal.version
-    }
-
-    override func onUnregister() {
-        super.onUnregister()
-
-        // if the shared states are not used in the next registration they can be cleared in this method
-        try? api.clearSharedEventStates()
     }
 
     override func unexpectedError(_ error: Error) {
@@ -81,24 +145,24 @@ class ExperiencePlatformInternal: ACPExtension {
 
     /// Adds an event to the event queue and starts processing the queue.  Events with no event data are ignored.
     /// - Parameter event: the event to add to the event queue for processing
-    func processAddEvent(_ event: ACPExtensionEvent) {
+    func processAddEvent(_ event: Event) {
         requestEventQueue.add((event, handleAddEvent(event:)))
-        ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) added to queue.")
+        Log.trace(label: TAG, "Event with id \(event.id.uuidString) added to queue.")
     }
 
     /// Called by event listeners to kick the processing of the event queue. Event passed to function is not added to queue for processing
     /// - Parameter event: the event which triggered processing of the event queue
-    func processEventQueue(_ event: ACPExtensionEvent) {
+    func processEventQueue(_ event: Event) {
         // Trigger processing of queue
         requestEventQueue.start()
-        ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) requested event queue kick.")
+        Log.trace(label: TAG, "Event with id \(event.id.uuidString) requested event queue kick.")
     }
 
     /// Handler called from `OperationQueue` to add and process an event.
     /// - Parameter event: an event containing ExperiencePlatformEvent data for processing
-    func handleAddEvent(event: ACPExtensionEvent) -> Bool {
-        if event.eventData == nil {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) contained no data, ignoring.")
+    func handleAddEvent(event: Event) -> Bool {
+        if event.data == nil {
+            Log.debug(label: TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
             return true
         }
 
@@ -107,16 +171,16 @@ class ExperiencePlatformInternal: ACPExtension {
 
     /// Handle Konductor response by calling response callback. Called by event listener.
     /// - Parameter event: the response event to add to the queue
-    func processPlatformResponseEvent(_ event: ACPExtensionEvent) {
+    func processPlatformResponseEvent(_ event: Event) {
         responseEventQueue.add((event, handleResponseEvent(event:)))
-        ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Event with id \(event.eventUniqueIdentifier) added to queue.")
+        Log.trace(label: TAG, "Event with id \(event.id.uuidString) added to queue.")
     }
 
     /// Calls `ResponseCallbackHandler` and invokes the response handler associated with this response event, if any
     /// - Parameter event: the `ACPExtensionEvent` to process, event data should not be nil and it should contain a requestEventId
     /// - Returns: `Bool` indicating if the response event was processed or not
-    func handleResponseEvent(event: ACPExtensionEvent) -> Bool {
-        guard let eventData = event.eventData as? [String: Any], let _ = eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] else { return false }
+    func handleResponseEvent(event: Event) -> Bool {
+        guard let eventData = event.data, let _ = eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] else { return false }
         ResponseCallbackHandler.shared.invokeResponseHandler(eventData: eventData)
         return true
     }
@@ -125,7 +189,7 @@ class ExperiencePlatformInternal: ACPExtension {
     ///
     /// A valid Configuration shared state is required for processing events and if one is not available, processing the queue is halted without removing events from
     /// the queue. If a valid Configuration shared state is available but no `experiencePlatform.configId ` is found, the event is dropped.
-    func handleSendEvent(_ event: ACPExtensionEvent) -> Bool {
+    func handleSendEvent(_ event: Event) -> Bool {
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Processing handleSendEvent for event with id \(event.eventUniqueIdentifier).")
 
         guard let configSharedState = getSharedState(owner: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
@@ -172,7 +236,7 @@ class ExperiencePlatformInternal: ACPExtension {
         }
 
         // Build and send the network request to Konductor
-        let listOfEvents: [ACPExtensionEvent] = [event]
+        let listOfEvents: [Event] = [event]
         if let requestPayload = requestBuilder.getRequestPayload(listOfEvents) {
             let requestId: String = UUID.init().uuidString
 
@@ -204,7 +268,7 @@ class ExperiencePlatformInternal: ACPExtension {
     private func getSharedState(owner: String, event: ACPExtensionEvent) -> [AnyHashable: Any]? {
         let state: [AnyHashable: Any]?
         do {
-            state = try api.getSharedEventState(owner, event: event)
+            state = getSharedState(owner, event: event)
         } catch {
             ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to retrieve shared state \(owner): \(error.localizedDescription)")
             return nil // keep event in queue to process on next trigger

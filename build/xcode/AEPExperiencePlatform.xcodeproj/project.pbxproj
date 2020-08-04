@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		10E38A2ED4862738B86863CF /* Pods_functionalTestsConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E9BE4B5F95A128A6EF61695 /* Pods_functionalTestsConfig.framework */; };
 		187CE2BD31AC7B86C42E7288 /* Pods_functionalTestsConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E9BE4B5F95A128A6EF61695 /* Pods_functionalTestsConfig.framework */; };
 		1CB57B262460F2B6000B2DA5 /* ExperiencePlatformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB57B242460EF0C000B2DA5 /* ExperiencePlatformTests.swift */; };
 		1CCD27C62458CB2300E912B2 /* ExperiencePlatformEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C52458CB2300E912B2 /* ExperiencePlatformEvent.swift */; };
@@ -70,7 +71,6 @@
 		BF024B8E24CF93DF002131E9 /* TestableExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */; };
 		BF024B8F24CF93DF002131E9 /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655406246DF6DB00A150E2 /* FunctionalTestUtils.swift */; };
 		BF024B9224CF93DF002131E9 /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libAEPExperiencePlatform.a */; platformFilter = ios; };
-		BF024B9324CF93DF002131E9 /* Pods_functionalTestsConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E9BE4B5F95A128A6EF61695 /* Pods_functionalTestsConfig.framework */; };
 		BF024B9B24CF9420002131E9 /* IdentityStateFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7E24C62BED002131E9 /* IdentityStateFunctionalTests.swift */; };
 		BF0C092A2461209900892B5D /* FunctionalTestsWithNoConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */; };
 		BF0C092D2461209900892B5D /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libAEPExperiencePlatform.a */; platformFilter = ios; };
@@ -131,6 +131,9 @@
 		D4000F332459E2300052C536 /* ExperiencePlatformNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F322459E2300052C536 /* ExperiencePlatformNetworkService.swift */; };
 		D4000F35245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F34245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift */; };
 		D4000F37245B7E200052C536 /* NetworkResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */; };
+		D403381D24DA0DB80026B12D /* AEPCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D403380624DA0D600026B12D /* AEPCore.framework */; };
+		D403381E24DA0EBD0026B12D /* AEPCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D403380624DA0D600026B12D /* AEPCore.framework */; };
+		D403381F24DA0EBD0026B12D /* AEPIdentity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D403380A24DA0D600026B12D /* AEPIdentity.framework */; };
 		D42B86BE2449007500A4E13B /* HttpMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86BD2449007500A4E13B /* HttpMethod.swift */; };
 		D42B86C0244900A100A4E13B /* HttpConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86BF244900A100A4E13B /* HttpConnection.swift */; };
 		D42B86C2244900C700A4E13B /* NetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B86C1244900C700A4E13B /* NetworkRequest.swift */; };
@@ -195,6 +198,90 @@
 			remoteGlobalIDString = D4D5B4E6242EBB1600CAB6E4;
 			remoteInfo = ACPExperiencePlatform;
 		};
+		D403380524DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 21CAC0D62422917600C11388;
+			remoteInfo = AEPCore;
+		};
+		D403380724DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 21CAC0DF2422917600C11388;
+			remoteInfo = AEPCoreTests;
+		};
+		D403380924DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3FE6DE2F24C642330065EA05;
+			remoteInfo = AEPIdentity;
+		};
+		D403380B24DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3FE6DE3724C642330065EA05;
+			remoteInfo = AEPIdentityTests;
+		};
+		D403380D24DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3FE6DDD124C62EE60065EA05;
+			remoteInfo = AEPLifecycle;
+		};
+		D403380F24DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3FE6DDD924C62EE60065EA05;
+			remoteInfo = AEPLifecycleTests;
+		};
+		D403381124DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3F03978724BE5DD30019F095;
+			remoteInfo = AEPServices;
+		};
+		D403381324DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3FE6DDA924C62C090065EA05;
+			remoteInfo = AEPServicesMock;
+		};
+		D403381524DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3F03978F24BE5DD30019F095;
+			remoteInfo = AEPServicesTests;
+		};
+		D403381724DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 24B4934F24D4C31100AA38D9;
+			remoteInfo = AEPSignal;
+		};
+		D403381924DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 24B4935724D4C31100AA38D9;
+			remoteInfo = AEPSignalTests;
+		};
+		D403381B24DA0D600026B12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3FF8170A24D89B160064DFA1;
+			remoteInfo = AEPCoreMocks;
+		};
 		D465540D24730DC500A150E2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
@@ -242,11 +329,11 @@
 		27992B07DDD37DD414AAABBB /* Pods-functionalTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTests.release.xcconfig"; path = "Target Support Files/Pods-functionalTests/Pods-functionalTests.release.xcconfig"; sourceTree = "<group>"; };
 		2FB2E32F03A9005E37BBC05B /* Pods-functionalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTests.debug.xcconfig"; path = "Target Support Files/Pods-functionalTests/Pods-functionalTests.debug.xcconfig"; sourceTree = "<group>"; };
 		38184D7D9D1EA34B4AE03B44 /* Pods_AEPExperiencePlatform.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPExperiencePlatform.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3B00DD0D8027E516378D8B07 /* Pods-functionalTestsConfig.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTestsConfig.debug.xcconfig"; path = "Target Support Files/Pods-functionalTestsConfig/Pods-functionalTestsConfig.debug.xcconfig"; sourceTree = "<group>"; };
 		4C113C147D73E182B69A2AE5 /* Pods_AEPCommerceDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPCommerceDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E9BE4B5F95A128A6EF61695 /* Pods_functionalTestsConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_functionalTestsConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DD0DD41E54942D437A91AF2 /* Pods-unitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-unitTests.debug.xcconfig"; path = "Target Support Files/Pods-unitTests/Pods-unitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		76B9EBA5F3B722092244D92A /* Pods-unitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-unitTests.release.xcconfig"; path = "Target Support Files/Pods-unitTests/Pods-unitTests.release.xcconfig"; sourceTree = "<group>"; };
+		80C8E14FA5A9689CC34C324D /* Pods-functionalTestsConfig.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTestsConfig.release.xcconfig"; path = "Target Support Files/Pods-functionalTestsConfig/Pods-functionalTestsConfig.release.xcconfig"; sourceTree = "<group>"; };
 		A0E2AD8C15652FA8BA7DD0F2 /* Pods_unitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_unitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB9960EC38354330392EE304 /* Pods-AEPDemoAppSwiftUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPDemoAppSwiftUI.release.xcconfig"; path = "Target Support Files/Pods-AEPDemoAppSwiftUI/Pods-AEPDemoAppSwiftUI.release.xcconfig"; sourceTree = "<group>"; };
 		ADE77A33494C29240B6DF02E /* Pods-AEPDemoAppSwiftUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPDemoAppSwiftUI.debug.xcconfig"; path = "Target Support Files/Pods-AEPDemoAppSwiftUI/Pods-AEPDemoAppSwiftUI.debug.xcconfig"; sourceTree = "<group>"; };
@@ -354,6 +441,7 @@
 		D4000F322459E2300052C536 /* ExperiencePlatformNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformNetworkService.swift; sourceTree = "<group>"; };
 		D4000F34245A53FB0052C536 /* ExperiencePlatformNetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformNetworkServiceTests.swift; sourceTree = "<group>"; };
 		D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseCallback.swift; sourceTree = "<group>"; };
+		D40337F524DA0D600026B12D /* AEPCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AEPCore.xcodeproj; path = "../../aepsdk-core-ios/AEPCore.xcodeproj"; sourceTree = "<group>"; };
 		D42B86BD2449007500A4E13B /* HttpMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpMethod.swift; sourceTree = "<group>"; };
 		D42B86BF244900A100A4E13B /* HttpConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpConnection.swift; sourceTree = "<group>"; };
 		D42B86C1244900C700A4E13B /* NetworkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkRequest.swift; sourceTree = "<group>"; };
@@ -402,8 +490,8 @@
 		D4F74FE82447A92800379258 /* MockURLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLSession.swift; sourceTree = "<group>"; };
 		D4F74FEA2447A94900379258 /* MockTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTask.swift; sourceTree = "<group>"; };
 		D915833A6A7611E584F45F65 /* Pods-AEPExperiencePlatform.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPExperiencePlatform.debug.xcconfig"; path = "Target Support Files/Pods-AEPExperiencePlatform/Pods-AEPExperiencePlatform.debug.xcconfig"; sourceTree = "<group>"; };
+		E09E2903215D749311439C25 /* Pods-functionalTestsConfig.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTestsConfig.debug.xcconfig"; path = "Target Support Files/Pods-functionalTestsConfig/Pods-functionalTestsConfig.debug.xcconfig"; sourceTree = "<group>"; };
 		E95B731A2F8135225A08B4AE /* Pods-AEPCommerceDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
-		EC5D122CB999378BD811FEAF /* Pods-functionalTestsConfig.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTestsConfig.release.xcconfig"; path = "Target Support Files/Pods-functionalTestsConfig/Pods-functionalTestsConfig.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -412,7 +500,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF024B9224CF93DF002131E9 /* libAEPExperiencePlatform.a in Frameworks */,
-				BF024B9324CF93DF002131E9 /* Pods_functionalTestsConfig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -422,6 +509,7 @@
 			files = (
 				BF0C092D2461209900892B5D /* libAEPExperiencePlatform.a in Frameworks */,
 				187CE2BD31AC7B86C42E7288 /* Pods_functionalTestsConfig.framework in Frameworks */,
+				10E38A2ED4862738B86863CF /* Pods_functionalTestsConfig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -438,6 +526,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D403381D24DA0DB80026B12D /* AEPCore.framework in Frameworks */,
 				E05007173B3D2FA34141FB57 /* Pods_AEPExperiencePlatform.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -464,6 +553,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D403381E24DA0EBD0026B12D /* AEPCore.framework in Frameworks */,
+				D403381F24DA0EBD0026B12D /* AEPIdentity.framework in Frameworks */,
 				D4D5B58F2432979C00CAB6E4 /* libAEPExperiencePlatform.a in Frameworks */,
 				D7D46DAE400EE6BA0EA021DF /* Pods_AEPDemoAppSwiftUI.framework in Frameworks */,
 			);
@@ -641,6 +732,25 @@
 			path = services;
 			sourceTree = "<group>";
 		};
+		D40337F624DA0D600026B12D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D403380624DA0D600026B12D /* AEPCore.framework */,
+				D403380824DA0D600026B12D /* AEPCoreTests.xctest */,
+				D403380A24DA0D600026B12D /* AEPIdentity.framework */,
+				D403380C24DA0D600026B12D /* AEPIdentityTests.xctest */,
+				D403380E24DA0D600026B12D /* AEPLifecycle.framework */,
+				D403381024DA0D600026B12D /* AEPLifecycleTests.xctest */,
+				D403381224DA0D600026B12D /* AEPServices.framework */,
+				D403381424DA0D600026B12D /* AEPServicesMock.framework */,
+				D403381624DA0D600026B12D /* AEPServicesTests.xctest */,
+				D403381824DA0D600026B12D /* AEPSignal.framework */,
+				D403381A24DA0D600026B12D /* AEPSignalTests.xctest */,
+				D403381C24DA0D600026B12D /* AEPCoreMocks.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		D42B86C9244901D400A4E13B /* NetworkService */ = {
 			isa = PBXGroup;
 			children = (
@@ -700,6 +810,7 @@
 		D4D5B4DE242EBB1600CAB6E4 = {
 			isa = PBXGroup;
 			children = (
+				D40337F524DA0D600026B12D /* AEPCore.xcodeproj */,
 				D4D5B4E9242EBB1600CAB6E4 /* src */,
 				D4D5B4F1242EBD2200CAB6E4 /* unitTests */,
 				D4D5B4F2242EBFAE00CAB6E4 /* functionalTests */,
@@ -832,12 +943,12 @@
 				AB9960EC38354330392EE304 /* Pods-AEPDemoAppSwiftUI.release.xcconfig */,
 				2FB2E32F03A9005E37BBC05B /* Pods-functionalTests.debug.xcconfig */,
 				27992B07DDD37DD414AAABBB /* Pods-functionalTests.release.xcconfig */,
-				3B00DD0D8027E516378D8B07 /* Pods-functionalTestsConfig.debug.xcconfig */,
-				EC5D122CB999378BD811FEAF /* Pods-functionalTestsConfig.release.xcconfig */,
 				5DD0DD41E54942D437A91AF2 /* Pods-unitTests.debug.xcconfig */,
 				76B9EBA5F3B722092244D92A /* Pods-unitTests.release.xcconfig */,
 				D915833A6A7611E584F45F65 /* Pods-AEPExperiencePlatform.debug.xcconfig */,
 				C008F5E1B89ED9C0CF410D33 /* Pods-AEPExperiencePlatform.release.xcconfig */,
+				E09E2903215D749311439C25 /* Pods-functionalTestsConfig.debug.xcconfig */,
+				80C8E14FA5A9689CC34C324D /* Pods-functionalTestsConfig.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -849,7 +960,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF024B9624CF93DF002131E9 /* Build configuration list for PBXNativeTarget "functionalTestsIdentity" */;
 			buildPhases = (
-				BF024B8324CF93DF002131E9 /* [CP] Check Pods Manifest.lock */,
 				BF024B8424CF93DF002131E9 /* Sources */,
 				BF024B9124CF93DF002131E9 /* Frameworks */,
 				BF024B9424CF93DF002131E9 /* Resources */,
@@ -1016,6 +1126,12 @@
 			mainGroup = D4D5B4DE242EBB1600CAB6E4;
 			productRefGroup = D4D5B4E8242EBB1600CAB6E4 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = D40337F624DA0D600026B12D /* Products */;
+					ProjectRef = D40337F524DA0D600026B12D /* AEPCore.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				D4D5B4E6242EBB1600CAB6E4 /* AEPExperiencePlatform */,
@@ -1028,6 +1144,93 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		D403380624DA0D600026B12D /* AEPCore.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AEPCore.framework;
+			remoteRef = D403380524DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403380824DA0D600026B12D /* AEPCoreTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = AEPCoreTests.xctest;
+			remoteRef = D403380724DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403380A24DA0D600026B12D /* AEPIdentity.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AEPIdentity.framework;
+			remoteRef = D403380924DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403380C24DA0D600026B12D /* AEPIdentityTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = AEPIdentityTests.xctest;
+			remoteRef = D403380B24DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403380E24DA0D600026B12D /* AEPLifecycle.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AEPLifecycle.framework;
+			remoteRef = D403380D24DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403381024DA0D600026B12D /* AEPLifecycleTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = AEPLifecycleTests.xctest;
+			remoteRef = D403380F24DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403381224DA0D600026B12D /* AEPServices.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AEPServices.framework;
+			remoteRef = D403381124DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403381424DA0D600026B12D /* AEPServicesMock.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AEPServicesMock.framework;
+			remoteRef = D403381324DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403381624DA0D600026B12D /* AEPServicesTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = AEPServicesTests.xctest;
+			remoteRef = D403381524DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403381824DA0D600026B12D /* AEPSignal.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AEPSignal.framework;
+			remoteRef = D403381724DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403381A24DA0D600026B12D /* AEPSignalTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = AEPSignalTests.xctest;
+			remoteRef = D403381924DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D403381C24DA0D600026B12D /* AEPCoreMocks.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AEPCoreMocks.framework;
+			remoteRef = D403381B24DA0D600026B12D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BF024B9424CF93DF002131E9 /* Resources */ = {
@@ -1294,28 +1497,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config ../../.swiftlint.yml --path ../../code/functionalTests --lenient\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
-		};
-		BF024B8324CF93DF002131E9 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-functionalTestsConfig-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 		BF024B9524CF93DF002131E9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1632,7 +1813,6 @@
 /* Begin XCBuildConfiguration section */
 		BF024B9724CF93DF002131E9 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B00DD0D8027E516378D8B07 /* Pods-functionalTestsConfig.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FKGEE875K4;
@@ -1654,7 +1834,6 @@
 		};
 		BF024B9824CF93DF002131E9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EC5D122CB999378BD811FEAF /* Pods-functionalTestsConfig.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FKGEE875K4;
@@ -1676,7 +1855,7 @@
 		};
 		BF0C09312461209900892B5D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B00DD0D8027E516378D8B07 /* Pods-functionalTestsConfig.debug.xcconfig */;
+			baseConfigurationReference = E09E2903215D749311439C25 /* Pods-functionalTestsConfig.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FKGEE875K4;
@@ -1698,7 +1877,7 @@
 		};
 		BF0C09322461209900892B5D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EC5D122CB999378BD811FEAF /* Pods-functionalTestsConfig.release.xcconfig */;
+			baseConfigurationReference = 80C8E14FA5A9689CC34C324D /* Pods-functionalTestsConfig.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FKGEE875K4;
