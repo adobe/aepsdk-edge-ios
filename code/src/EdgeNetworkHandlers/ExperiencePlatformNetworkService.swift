@@ -10,7 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
+import AEPServices
 import Foundation
 
 /// ExperienceEdge Request Types:
@@ -82,7 +83,7 @@ class ExperiencePlatformNetworkService {
         var shouldRetry = self.doRequest(url: url, requestBody: requestBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
         var retries = 0
         while shouldRetry == RetryNetworkRequest.yes && retries < retryTimes {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "doRequest with retry - Error occurred for network request, retrying...")
+            Log.debug(label: TAG, "doRequest with retry - Error occurred for network request, retrying...")
             shouldRetry = self.doRequest(url: url, requestBody: requestBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
             retries += 1
         }
@@ -106,7 +107,7 @@ class ExperiencePlatformNetworkService {
         encoder.outputFormatting = [.prettyPrinted]
 
         guard let data = try? encoder.encode(requestBody) else {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to encode request to JSON, dropping this request")
+            Log.warning(label: TAG, "Failed to encode request to JSON, dropping this request")
             return shouldRetry
         }
 
@@ -119,7 +120,7 @@ class ExperiencePlatformNetworkService {
                                                             httpHeaders: headers,
                                                             connectTimeout: ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout,
                                                             readTimeout: ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout)
-        ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Sending request to URL \(url.absoluteString) with header: \(headers) and body: \n\(payload)")
+        Log.debug(label: TAG, "Sending request to URL \(url.absoluteString) with header: \(headers) and body: \n\(payload)")
 
         // make sync call to process the response right away and retry if needed
         let semaphore = DispatchSemaphore(value: 0)
@@ -137,22 +138,22 @@ class ExperiencePlatformNetworkService {
             shouldRetry = RetryNetworkRequest.no
             if let responseCode = connection.responseCode {
                 if responseCode == HttpResponseCodes.ok.rawValue {
-                    ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Interact connection to ExEdge was successful.")
+                    Log.debug(label: self.TAG, "doRequest - Interact connection to ExEdge was successful.")
                     self.handleContent(connection: connection, streaming: requestBody.meta?.konductorConfig?.streaming, responseCallback: responseCallback)
 
                 } else if responseCode == HttpResponseCodes.noContent.rawValue {
                     // Successful collect requests do not return content
-                    ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Collect connection to data platform successful.")
+                    Log.debug(label: self.TAG, "doRequest - Collect connection to data platform successful.")
 
                 } else if self.recoverableNetworkErrorCodes.contains(responseCode) {
-                    ACPCore.log(ACPMobileLogLevel.debug, tag: self.TAG, message: "doRequest - Connection to ExEdge returned recoverable error code \(responseCode)")
+                    Log.debug(label: self.TAG, "doRequest - Connection to ExEdge returned recoverable error code \(responseCode)")
                     shouldRetry = RetryNetworkRequest.yes
                 } else {
-                    ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unrecoverable error code \(responseCode)")
+                    Log.warning(label: self.TAG, "doRequest - Connection to ExEdge returned unrecoverable error code \(responseCode)")
                     self.handleError(connection: connection, responseCallback: responseCallback)
                 }
             } else {
-                ACPCore.log(ACPMobileLogLevel.warning, tag: self.TAG, message: "doRequest - Connection to ExEdge returned unknown error")
+                Log.warning(label: self.TAG, "doRequest - Connection to ExEdge returned unknown error")
                 self.handleError(connection: connection, responseCallback: responseCallback)
             }
 
@@ -175,7 +176,7 @@ class ExperiencePlatformNetworkService {
     ///   - responseCallback: `ResponseCallback` that is invoked for each individual stream if streaming is enabled or once with the unrapped response content
     func handleContent(connection: HttpConnection, streaming: Streaming?, responseCallback: ResponseCallback) {
         guard let unwrappedResponseString = connection.responseString else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "handleContent - No data to handle")
+            Log.debug(label: TAG, "handleContent - No data to handle")
             return
         }
         if let unwrappedStreaming = streaming {
@@ -223,7 +224,7 @@ class ExperiencePlatformNetworkService {
         guard let lineFeedDelimiter: String = streaming.lineFeed else { return }
         guard let lineFeedCharacter: Character = lineFeedDelimiter.convertToCharacter() else { return }
 
-        ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "handleStreamingResponse - Handle server response with streaming enabled")
+        Log.trace(label: TAG, "handleStreamingResponse - Handle server response with streaming enabled")
 
         let splitResult = unwrappedResponseString.split(separator: lineFeedCharacter)
 
@@ -253,11 +254,11 @@ class ExperiencePlatformNetworkService {
 
         let errorDictionary = [ExperiencePlatformConstants.JsonKeys.Response.Error.message: unwrappedErrorMessage, ExperiencePlatformConstants.JsonKeys.Response.Error.namespace: defaultNamespace]
         guard let json = try? JSONSerialization.data(withJSONObject: errorDictionary, options: []) else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "composeGenericErrorAsJson - Failed to serialize the error message.")
+            Log.debug(label: TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
             return nil
         }
         guard let jsonString = String(data: json, encoding: .utf8) else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "composeGenericErrorAsJson - Failed to serialize the error message.")
+            Log.debug(label: TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
             return nil
         }
 
@@ -271,11 +272,11 @@ extension String {
     /// - Returns: the result Character or nil if the convertion failed
     func convertToCharacter() -> Character? {
         guard self.count == 1 else {
-            ACPCore.log(ACPMobileLogLevel.verbose, tag: "convertToCharacter", message: "Unable to decode Character with multiple characters (\(self))")
+            Log.trace(label: "convertToCharacter", "Unable to decode Character with multiple characters (\(self))")
             return nil
         }
         guard let character = self.first else {
-            ACPCore.log(ACPMobileLogLevel.verbose, tag: "convertToCharacter", message: "Unable to decode empty Character (\(self)")
+            Log.trace(label: "convertToCharacter", "Unable to decode empty Character (\(self)")
             return nil
         }
         return character

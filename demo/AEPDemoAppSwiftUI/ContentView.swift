@@ -17,8 +17,12 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Button(action: {
-                let networkRequest1: NetworkRequest = NetworkRequest(url: URL(string: "https://www.adobe.com")!, httpMethod: HttpMethod.get, connectPayload: "test", httpHeaders: [:],
-                                                                     connectTimeout: 5, readTimeout: 5)
+                let networkRequest1: NetworkRequest = NetworkRequest(url: URL(string: "https://www.adobe.com")!,
+                                                                     httpMethod: HttpMethod.get,
+                                                                     connectPayload: "test",
+                                                                     httpHeaders: [:],
+                                                                     connectTimeout: 5,
+                                                                     readTimeout: 5)
 
                 AEPServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest1, completionHandler: {connection in
                     // function body goes here
@@ -31,7 +35,8 @@ struct ContentView: View {
             }.padding()
 
             Button(action: {
-                let experienceEvent = ExperiencePlatformEvent(xdm: [:], data: ["data": ["test": "data"]])
+                let experienceEvent = ExperiencePlatformEvent(xdm: ["xdmtest": "data"],
+                                                              data: ["data": ["test": "data"]])
                 ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent, responseHandler: DemoResponseHandler())
             }) {
                 Text("Ping to ExEdge")
