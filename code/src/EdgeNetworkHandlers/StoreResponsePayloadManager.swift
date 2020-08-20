@@ -10,16 +10,17 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
+import AEPServices
 import Foundation
 
 class StoreResponsePayloadManager {
     private let TAG: String = "StoreResponsePayloadManager"
-    private let dataStore: KeyValueStore
+    private let dataStoreName: String
     private let storePayloadKeyName: String = ExperiencePlatformConstants.DataStoreKeys.storePayloads
 
-    init(_ store: KeyValueStore) {
-        dataStore = store
+    init(_ storeName: String) {
+        dataStoreName = storeName
     }
 
     /// Reads all the active saved store payloads from the data store.
@@ -27,8 +28,8 @@ class StoreResponsePayloadManager {
     /// - Returns: a map of `StoreResponsePayload` objects keyed by `StoreResponsePayload.key`
     func getActiveStores() -> [String: StoreResponsePayload] {
 
-        guard let serializedPayloads = dataStore.getDictionary(key: storePayloadKeyName, fallback: nil) else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Unable to retrieve active payloads. No payloads were found in the data store.")
+        guard let serializedPayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: dataStoreName, key: storePayloadKeyName) as? [String : Any] else {
+            Log.debug(label: TAG, "Unable to retrieve active payloads. No payloads were found in the data store.")
             return [:]
         }
 
@@ -42,9 +43,8 @@ class StoreResponsePayloadManager {
         decoder.dateDecodingStrategy = .iso8601
 
         for (_, codedPayload) in serializedPayloads {
-
-            guard let data = codedPayload.data(using: .utf8) else {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to convert store response payload string to data.")
+            guard let codedPayloadString = codedPayload as? String, let data = codedPayloadString.data(using: .utf8) else {
+                Log.debug(label: TAG, "Failed to convert store response payload string to data.")
                 continue
             }
 
@@ -57,7 +57,7 @@ class StoreResponsePayloadManager {
                     payloads[storeResponse.payload.key] = storeResponse
                 }
             } catch {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to decode store response payload with: \(error.localizedDescription)")
+                Log.debug(label: TAG, "Failed to decode store response payload with: \(error.localizedDescription)")
             }
         }
 
@@ -84,7 +84,7 @@ class StoreResponsePayloadManager {
             return
         }
 
-        guard var serializedPayloads = dataStore.getDictionary(key: storePayloadKeyName, fallback: [:]) else {
+        guard var serializedPayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: dataStoreName, key: storePayloadKeyName) as? [String: Any] else {
             return
         }
 
@@ -109,12 +109,12 @@ class StoreResponsePayloadManager {
 
                 serializedPayloads[storeResponse.payload.key] = serializedPayload
             } catch {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Failed to encode store response payload: \(error.localizedDescription)")
+                Log.debug(label: TAG, "Failed to encode store response payload: \(error.localizedDescription)")
                 continue
             }
         }
 
-        dataStore.setDictionary(key: storePayloadKeyName, value: serializedPayloads)
+        ServiceProvider.shared.namedKeyValueService.set(collectionName: dataStoreName, key: storePayloadKeyName, value: serializedPayloads)
         deleteStoredResponses(keys: expiredList)
 
     }
@@ -122,8 +122,8 @@ class StoreResponsePayloadManager {
     /// Deletes a list of stores from the data store
     /// - Parameter keys: a list of `StoreResponsePayload.key`
     private func deleteStoredResponses(keys: [String]) {
-        guard var codedPayloads = dataStore.getDictionary(key: storePayloadKeyName, fallback: nil) else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Unable to delete expired payloads. No payloads were found in the data store.")
+        guard var codedPayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: dataStoreName, key: storePayloadKeyName) as? [String: Any] else {
+            Log.trace(label: TAG, "Unable to delete expired payloads. No payloads were found in the data store.")
             return
         }
 
@@ -131,6 +131,6 @@ class StoreResponsePayloadManager {
             codedPayloads.removeValue(forKey: key)
         }
 
-        dataStore.setDictionary(key: storePayloadKeyName, value: codedPayloads)
+        ServiceProvider.shared.namedKeyValueService.set(collectionName: dataStoreName, key: storePayloadKeyName, value: codedPayloads)
     }
 }

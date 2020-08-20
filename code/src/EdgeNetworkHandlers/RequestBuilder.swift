@@ -11,6 +11,7 @@
 //
 
 import AEPCore
+import AEPServices
 import Foundation
 
 class RequestBuilder {
@@ -29,12 +30,11 @@ class RequestBuilder {
     private let storeResponsePayloadManager: StoreResponsePayloadManager
 
     init() {
-        let dataStore = NamedUserDefaultsStore(name: ExperiencePlatformConstants.DataStoreKeys.storeName)
-        storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
+        storeResponsePayloadManager = StoreResponsePayloadManager(ExperiencePlatformConstants.DataStoreKeys.storeName)
     }
 
-    init(dataStore: KeyValueStore) {
-        storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
+    init(dataStoreName: String) {
+        storeResponsePayloadManager = StoreResponsePayloadManager(dataStoreName)
     }
 
     /// Enables streaming of the Platform Edge Response.
@@ -107,8 +107,12 @@ class RequestBuilder {
                 eventData.removeValue(forKey: ExperiencePlatformConstants.EventDataKeys.datasetId)
             }
 
-            platformEvents.append(AnyCodable.from(dictionary: eventData))
-
+            guard let wrappedEventData = AnyCodable.from(dictionary: eventData) else {
+                Log.warning(label: TAG, "Failed to add EventData to platformEvents - unable to convert to [String : AnyCodable]")
+                continue
+            }
+            
+            platformEvents.append(wrappedEventData)
         }
 
         return platformEvents

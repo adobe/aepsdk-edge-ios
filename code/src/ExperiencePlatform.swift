@@ -14,9 +14,18 @@ import AEPCore
 import AEPServices
 import Foundation
 
-@objc(AEPExperiencePlatform) public class ExperiencePlatform: NSObject, Extension {
+@objc(AEPExperiencePlatform)
+public class ExperiencePlatform: NSObject, Extension {
     // Tag for logging
     private let TAG = "ExperiencePlatformInternal"
+    
+    typealias EventHandlerMapping = (event: Event, handler: (Event) -> (Bool))
+    private let requestEventQueue = OperationOrderer<EventHandlerMapping>("ExperiencePlatformInternal Requests")
+    private let responseEventQueue = OperationOrderer<EventHandlerMapping>("ExperiencePlatformInternal Responses")
+    private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
+    private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
+    
+    // MARK: - Extension
     
     public var name = ExperiencePlatformConstants.extensionName
     public var friendlyName = ExperiencePlatformConstants.friendlyName
@@ -24,8 +33,6 @@ import Foundation
     public var metadata: [String : String]?
     public var runtime: ExtensionRuntime
     
-    
-
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
         super.init()
@@ -44,7 +51,6 @@ import Foundation
     
     public func onUnregistered() {
         print("Extension unregistered from MobileCore: \(ExperiencePlatformConstants.friendlyName)")
-        
     }
     
     public func readyForEvent(_ event: Event) -> Bool {
@@ -73,12 +79,8 @@ import Foundation
             processEventQueue(event)
         }
     }
-
-    typealias EventHandlerMapping = (event: Event, handler: (Event) -> (Bool))
-    private let requestEventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal Requests")
-    private let responseEventQueue = OperationQueue<EventHandlerMapping>("ExperiencePlatformInternal Responses")
-    private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
-    private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
+       
+    
 
     /// Adds an event to the event queue and starts processing the queue.  Events with no event data are ignored.
     /// - Parameter event: the event to add to the event queue for processing

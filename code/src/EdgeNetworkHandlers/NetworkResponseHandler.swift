@@ -48,7 +48,12 @@ class NetworkResponseHandler {
     /// - Returns: the list of unique event ids associated with the requestId that were removed
     func removeWaitingEvents(requestId: String) -> [String]? {
         guard !requestId.isEmpty else { return nil }
-        return sentEventsWaitingResponse.removeValue(forKey: requestId)
+        guard let eventIds = sentEventsWaitingResponse[requestId] else {
+            return nil
+        }
+        
+        sentEventsWaitingResponse[requestId] = nil
+        return eventIds
     }
 
     /// Returns the list of unique event ids associated with the provided requestId or empty if not found.
@@ -219,9 +224,8 @@ class NetworkResponseHandler {
                 storeResponsePayloads.append(StoreResponsePayload(payload: storePayload))
             }
         }
-
-        let dataStore = NamedUserDefaultsStore(name: ExperiencePlatformConstants.DataStoreKeys.storeName)
-        let storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
+        
+        let storeResponsePayloadManager = StoreResponsePayloadManager(ExperiencePlatformConstants.DataStoreKeys.storeName)
         storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
         if !storeResponsePayloads.isEmpty {
             Log.debug(label:logTag, "Processed \(storeResponsePayloads.count) store response payload(s)")

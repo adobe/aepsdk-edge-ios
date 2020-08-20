@@ -10,7 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
+import AEPServices
 import Foundation
 
 /// Use this class to register `ExperiencePlatformResponseHandler`(s) for a specific event identifier
@@ -29,11 +30,11 @@ class ResponseCallbackHandler {
     func registerResponseHandler(uniqueEventId: String, responseHandler: ExperiencePlatformResponseHandler?) {
         guard let unwrappedResponseHandler = responseHandler else { return }
         guard !uniqueEventId.isEmpty else {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to register response handler because of empty unique event id.")
+            Log.warning(label: TAG, "Failed to register response handler because of empty unique event id.")
             return
         }
 
-        ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Registering callback for Data platform response with unique id \(uniqueEventId).")
+        Log.trace(label: TAG, "Registering callback for Data platform response with unique id \(uniqueEventId).")
         responseHandlers[uniqueEventId] = unwrappedResponseHandler
     }
 
@@ -42,8 +43,10 @@ class ResponseCallbackHandler {
     /// - Parameter uniqueEventId: unique event identifier for data platform events; should not be empty
     func unregisterResponseHandler(uniqueEventId: String) {
         guard !uniqueEventId.isEmpty else { return }
-        if responseHandlers.removeValue(forKey: uniqueEventId) != nil {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Removing callback for Data platform response with unique id \(uniqueEventId).")
+        
+        if responseHandlers[uniqueEventId] != nil {
+            responseHandlers[uniqueEventId] = nil
+            Log.trace(label: TAG, "Removing callback for Data platform response with unique id \(uniqueEventId).")
         }
     }
 
@@ -52,17 +55,16 @@ class ResponseCallbackHandler {
     func invokeResponseHandler(eventData: [String: Any]) {
         let requestEventId: String? = eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] as? String
         guard let unwrappedRequestEventId = requestEventId, !unwrappedRequestEventId.isEmpty else {
-            ACPCore.log(ACPMobileLogLevel.warning, tag: TAG, message: "Failed to invoke the response handler because of unspecified requestEventId, data received \(eventData)")
+            Log.warning(label: TAG, "Failed to invoke the response handler because of unspecified requestEventId, data received \(eventData)")
             return
         }
 
         guard let responseHandler = responseHandlers[unwrappedRequestEventId] else {
-            ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Unable to find response handler for requestEventId (\(unwrappedRequestEventId)), not invoked")
+            Log.trace(label: TAG, "Unable to find response handler for requestEventId (\(unwrappedRequestEventId)), not invoked")
             return
         }
 
-        ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Invoking registered onResponse handler for requestEventId (\(unwrappedRequestEventId)) with data \(eventData)")
+        Log.trace(label: TAG, "Invoking registered onResponse handler for requestEventId (\(unwrappedRequestEventId)) with data \(eventData)")
         responseHandler.onResponse(data: eventData)
-
     }
 }

@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import Foundation
 
 /// Details and results for a sent EdgeRequest

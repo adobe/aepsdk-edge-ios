@@ -125,7 +125,7 @@ class ExperiencePlatformNetworkService {
         // make sync call to process the response right away and retry if needed
         let semaphore = DispatchSemaphore(value: 0)
 
-        AEPServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest) { (connection: HttpConnection) in
+        ServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest) { (connection: HttpConnection) in
             if connection.error != nil {
                 // handle generic error
                 self.handleError(connection: connection, responseCallback: responseCallback)
