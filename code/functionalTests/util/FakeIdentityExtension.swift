@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 import XCTest
 
 /// Extension used to 'fake' an Identity extension and allows tests to clear and set the Identity shared state. Use it along with `FunctionalTestBase`

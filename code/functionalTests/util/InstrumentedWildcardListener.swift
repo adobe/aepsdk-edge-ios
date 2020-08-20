@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 import XCTest
 
 /// Wildcard listener that monitors all the events dispatched in current test session. Use it along with `FunctionalTestBase`

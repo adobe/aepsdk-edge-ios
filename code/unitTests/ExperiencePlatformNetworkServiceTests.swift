@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import XCTest
 
 @testable import AEPExperiencePlatform
@@ -25,7 +26,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         continueAfterFailure = false
         self.mockResponseCallback = MockResponseCallback()
         self.mockNetworkService = MockNetworkServiceOverrider()
-        AEPServiceProvider.shared.networkService = mockNetworkService
+        ServiceProvider.shared.networkService = mockNetworkService
         networkService = ExperiencePlatformNetworkService()
     }
 

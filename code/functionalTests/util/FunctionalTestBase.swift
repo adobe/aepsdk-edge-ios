@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 @testable import AEPExperiencePlatform
 import Foundation
 import XCTest

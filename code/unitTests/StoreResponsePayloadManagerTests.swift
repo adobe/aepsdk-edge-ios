@@ -14,6 +14,7 @@
 import XCTest
 
 class StoreResponsePayloadManagerTests: XCTestCase {
+    let testDataStoreName = "StoreResponsePayloadManagerTests"
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -27,13 +28,13 @@ class StoreResponsePayloadManagerTests: XCTestCase {
     // MARK: 
 
     func testGetActiveStores_isCorrect_whenRecordsInDataStore() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
     }
 
     func testGetActiveStores_evictsExpiredKey_whenCurrentDatePassesExpiry() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
         sleep(3)
@@ -41,27 +42,27 @@ class StoreResponsePayloadManagerTests: XCTestCase {
     }
 
     func testGetActivePayloadList_returnsList_whenRecordsInDataStore() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
         let payloads = manager.getActivePayloadList()
         XCTAssertEqual(2, payloads.count)
     }
 
     func testSaveStorePayloads_savesPayloads_whenValid() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
     }
 
     func testSaveStorePayloads_overwritesPayloads_whenDuplicateKeys() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
     }
 
     func testSaveStorePayloads_maxAgeLessThanOne_isRemoved() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))])
         XCTAssertEqual(1, manager.getActiveStores().count)
         manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: -1))])
@@ -69,7 +70,7 @@ class StoreResponsePayloadManagerTests: XCTestCase {
     }
 
     func testSaveStorePayloads_overwritesPayloads_whenDuplicateKeysAndNewValues() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
 
         let originalPayloads = manager.getActiveStores()

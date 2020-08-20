@@ -10,11 +10,12 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 @testable import AEPExperiencePlatform
 import XCTest
 
 class RequestBuilderTests: XCTestCase {
+    let testDataStoreName = "Testing"
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -74,11 +75,10 @@ class RequestBuilderTests: XCTestCase {
     }
 
     func testGetRequestPayload_withStorePayload_responseContainsStateEntries() {
-        let dataStore = MockKeyValueStore()
-        let manager = StoreResponsePayloadManager(dataStore)
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))])
 
-        let request = RequestBuilder(dataStore: dataStore)
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
@@ -95,7 +95,7 @@ class RequestBuilderTests: XCTestCase {
     }
 
     func testGetRequestPayload_withoutStorePayload_responseDoesNotContainsStateEntries() {
-        let request = RequestBuilder(dataStore: MockKeyValueStore())
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
@@ -113,7 +113,7 @@ class RequestBuilderTests: XCTestCase {
     }
 
     func testGetRequestPayload_withDatasetId_responseContainsCollectMeta() {
-        let request = RequestBuilder(dataStore: MockKeyValueStore())
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
 
         guard let event = try? ACPExtensionEvent(name: "Request Test",
                                                  type: "type",
@@ -138,7 +138,7 @@ class RequestBuilderTests: XCTestCase {
     }
 
     func testGetRequestPayload_withoutDatasetId_responseDoesNotContainCollectMeta() {
-        let request = RequestBuilder(dataStore: MockKeyValueStore())
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
 
         guard let event = try? ACPExtensionEvent(name: "Request Test",
                                                  type: "type",
@@ -157,7 +157,7 @@ class RequestBuilderTests: XCTestCase {
     }
 
     func testGetRequestPayload_withNilOrEmptyDatasetId_responseDoesNotContainCollectMeta() {
-        let request = RequestBuilder(dataStore: MockKeyValueStore())
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
 
         guard let event1 = try? ACPExtensionEvent(name: "Request Test1",
                                                   type: "type",

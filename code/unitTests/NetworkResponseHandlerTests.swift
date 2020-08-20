@@ -10,15 +10,15 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 @testable import AEPExperiencePlatform
 import XCTest
 
 class NetworkResponseHandlerTests: XCTestCase {
     private var networkResponseHandler = NetworkResponseHandler()
-    private let e1 = try! ACPExtensionEvent(name: "e1", type: "eventType", source: "eventSource", data: nil)
-    private let e2 = try! ACPExtensionEvent(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private let e3 = try! ACPExtensionEvent(name: "e3", type: "eventType", source: "eventSource", data: nil)
+    private let e1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
+    private let e2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
+    private let e3 = Event(name: "e3", type: "eventType", source: "eventSource", data: nil)
 
     override func setUp() {
         continueAfterFailure = false // fail so nil checks stop execution
@@ -28,7 +28,7 @@ class NetworkResponseHandlerTests: XCTestCase {
     // MARK: addWaitingEvents, getWaitingEvents, removeWaitingEvents
     func testAddWaitingEvents_addsNewList_happy() {
         let requestId = "test"
-        let eventsList: [ACPExtensionEvent] = [e1, e2]
+        let eventsList: [Event] = [e1, e2]
 
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: eventsList)
         guard let result = networkResponseHandler.getWaitingEvents(requestId: requestId), result.count == 2 else {
@@ -36,12 +36,12 @@ class NetworkResponseHandlerTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(e1.eventUniqueIdentifier, result[0])
-        XCTAssertEqual(e2.eventUniqueIdentifier, result[1])
+        XCTAssertEqual(e1.id.uuidString, result[0])
+        XCTAssertEqual(e2.id.uuidString, result[1])
     }
 
     func testAddWaitingEvents_skips_whenEmptyRequestId() {
-        let eventsList: [ACPExtensionEvent] = [e1, e2]
+        let eventsList: [Event] = [e1, e2]
 
         networkResponseHandler.addWaitingEvents(requestId: "", batchedEvents: eventsList)
         let result = networkResponseHandler.getWaitingEvents(requestId: "")
@@ -68,7 +68,7 @@ class NetworkResponseHandlerTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(e3.eventUniqueIdentifier, result[0])
+        XCTAssertEqual(e3.id.uuidString, result[0])
     }
 
     func testRemoveWaitingEvents_removesByRequestId() {
@@ -82,7 +82,7 @@ class NetworkResponseHandlerTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(e3.eventUniqueIdentifier, result[0])
+        XCTAssertEqual(e3.id.uuidString, result[0])
         XCTAssertNil(networkResponseHandler.getWaitingEvents(requestId: requestId2))
         guard let result2 = networkResponseHandler.getWaitingEvents(requestId: requestId1), result2.count == 2 else {
             XCTFail("Waiting events list was empty, should contain two events - e1, e2")

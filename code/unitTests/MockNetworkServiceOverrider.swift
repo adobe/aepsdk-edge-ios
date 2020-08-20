@@ -11,9 +11,10 @@
 //
 
 @testable import AEPExperiencePlatform
+import AEPServices
 import Foundation
 
-class MockNetworkServiceOverrider: NetworkService {
+class MockNetworkServiceOverrider: Networking {
 
     var connectAsyncCalled: Bool = false
     var connectAsyncCalledWithNetworkRequest: NetworkRequest?

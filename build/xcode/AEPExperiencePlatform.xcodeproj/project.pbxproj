@@ -16,6 +16,10 @@
 		1CCD27DE245A254D00E912B2 /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */; };
 		240E3C8224EECC6700D44993 /* AEPCore in Frameworks */ = {isa = PBXBuildFile; productRef = 240E3C8124EECC6700D44993 /* AEPCore */; };
 		240E3C8424EECC6700D44993 /* AEPServices in Frameworks */ = {isa = PBXBuildFile; productRef = 240E3C8324EECC6700D44993 /* AEPServices */; };
+		240E3C9924EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
+		240E3C9A24EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
+		240E3C9B24EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
+		240E3C9C24EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
 		26E77E37655A0C16DFCAACC4 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C113C147D73E182B69A2AE5 /* Pods_AEPCommerceDemoApp.framework */; };
 		2BD93BEECC2AE45715BB1136 /* Pods_functionalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C83DCBEED96347CFDAF1909 /* Pods_functionalTests.framework */; };
 		ADC8A037D336C0B4BA2B37DB /* Pods_unitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E2AD8C15652FA8BA7DD0F2 /* Pods_unitTests.framework */; };
@@ -57,8 +61,6 @@
 		BF024B7124B8FE42002131E9 /* BrowserDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B4D24B8FE42002131E9 /* BrowserDetails.swift */; };
 		BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
 		BF024B7A24C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
-		BF024B7C24C62B3B002131E9 /* FakeIdentityListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7B24C62B3B002131E9 /* FakeIdentityListener.swift */; };
-		BF024B7D24C62B3B002131E9 /* FakeIdentityListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7B24C62B3B002131E9 /* FakeIdentityListener.swift */; };
 		BF024B8524CF93DF002131E9 /* FunctionalTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */; };
 		BF024B8624CF93DF002131E9 /* CountDownLatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BBB74248DC54F00775DAC /* CountDownLatch.swift */; };
 		BF024B8724CF93DF002131E9 /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA1244587520057A6CC /* TestUtils.swift */; };
@@ -67,7 +69,6 @@
 		BF024B8A24CF93DF002131E9 /* InstrumentedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */; };
 		BF024B8B24CF93DF002131E9 /* InstrumentedWildcardListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A473C0248585BE00D31710 /* InstrumentedWildcardListener.swift */; };
 		BF024B8C24CF93DF002131E9 /* FunctionalTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */; };
-		BF024B8D24CF93DF002131E9 /* FakeIdentityListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7B24C62B3B002131E9 /* FakeIdentityListener.swift */; };
 		BF024B8E24CF93DF002131E9 /* TestableExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */; };
 		BF024B8F24CF93DF002131E9 /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655406246DF6DB00A150E2 /* FunctionalTestUtils.swift */; };
 		BF024B9224CF93DF002131E9 /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libAEPExperiencePlatform.a */; platformFilter = ios; };
@@ -116,7 +117,6 @@
 		BF947F8F2440F0940057A6CC /* StateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F8E2440F0940057A6CC /* StateMetadata.swift */; };
 		BF947F912440F6660057A6CC /* StateMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F902440F6660057A6CC /* StateMetadataTests.swift */; };
 		BF947F93244126D70057A6CC /* StoreResponsePayloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */; };
-		BF947F9D244181FF0057A6CC /* MockKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F9C244181FF0057A6CC /* MockKeyValueStore.swift */; };
 		BF947F9E244182B30057A6CC /* StoreResponsePayloadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */; };
 		BF947FA0244569190057A6CC /* EdgeRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F9F244569190057A6CC /* EdgeRequestTests.swift */; };
 		BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */; };
@@ -236,6 +236,7 @@
 		1CCD27C82458CB8000E912B2 /* ExperiencePlatformEventTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformEventTests.swift; sourceTree = "<group>"; };
 		1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMFormatters.swift; sourceTree = "<group>"; };
 		1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMProtocols.swift; sourceTree = "<group>"; };
+		240E3C9824EF357100D44993 /* MockDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDataStore.swift; sourceTree = "<group>"; };
 		27992B07DDD37DD414AAABBB /* Pods-functionalTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTests.release.xcconfig"; path = "Target Support Files/Pods-functionalTests/Pods-functionalTests.release.xcconfig"; sourceTree = "<group>"; };
 		2FB2E32F03A9005E37BBC05B /* Pods-functionalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTests.debug.xcconfig"; path = "Target Support Files/Pods-functionalTests/Pods-functionalTests.debug.xcconfig"; sourceTree = "<group>"; };
 		38184D7D9D1EA34B4AE03B44 /* Pods_AEPExperiencePlatform.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPExperiencePlatform.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -286,10 +287,8 @@
 		BF024B4C24B8FE42002131E9 /* ProductListReopens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductListReopens.swift; sourceTree = "<group>"; };
 		BF024B4D24B8FE42002131E9 /* BrowserDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserDetails.swift; sourceTree = "<group>"; };
 		BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeIdentityExtension.swift; sourceTree = "<group>"; };
-		BF024B7B24C62B3B002131E9 /* FakeIdentityListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeIdentityListener.swift; sourceTree = "<group>"; };
 		BF024B7E24C62BED002131E9 /* IdentityStateFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityStateFunctionalTests.swift; sourceTree = "<group>"; };
 		BF024B9924CF93DF002131E9 /* functionalTestsIdentity.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsIdentity.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		BF024B9A24CF93E0002131E9 /* functionalTestsConfig copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "functionalTestsConfig copy-Info.plist"; path = "/Users/lind/git/mobile/experience-platform/public/platform-extension-ios/build/xcode/functionalTestsConfig copy-Info.plist"; sourceTree = "<absolute>"; };
 		BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestsWithNoConfiguration.swift; sourceTree = "<group>"; };
 		BF0C09332461209900892B5D /* functionalTestsConfig.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsConfig.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestableExperiencePlatformInternal.swift; sourceTree = "<group>"; };
@@ -335,7 +334,6 @@
 		BF947F902440F6660057A6CC /* StateMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMetadataTests.swift; sourceTree = "<group>"; };
 		BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreResponsePayloadManager.swift; sourceTree = "<group>"; };
 		BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreResponsePayloadManagerTests.swift; sourceTree = "<group>"; };
-		BF947F9C244181FF0057A6CC /* MockKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockKeyValueStore.swift; sourceTree = "<group>"; };
 		BF947F9F244569190057A6CC /* EdgeRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeRequestTests.swift; sourceTree = "<group>"; };
 		BF947FA1244587520057A6CC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestMetadataTests.swift; sourceTree = "<group>"; };
@@ -458,13 +456,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1C120237246DA22700EAF9CA /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Recovered References";
-			sourceTree = "<group>";
-		};
 		1CCD27CD24592B2800E912B2 /* xdm */ = {
 			isa = PBXGroup;
 			children = (
@@ -499,7 +490,6 @@
 				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
 				D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */,
 				BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */,
-				BF024B7B24C62B3B002131E9 /* FakeIdentityListener.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -644,6 +634,7 @@
 		D4655403246DF3B000A150E2 /* testUtilsShared */ = {
 			isa = PBXGroup;
 			children = (
+				240E3C9824EF357100D44993 /* MockDataStore.swift */,
 				BF947FA1244587520057A6CC /* TestUtils.swift */,
 			);
 			name = testUtilsShared;
@@ -662,9 +653,7 @@
 				D4D5B57B2432977F00CAB6E4 /* AEPDemoAppSwiftUI */,
 				D4D5B4E8242EBB1600CAB6E4 /* Products */,
 				E5239B915F53B993A1976FC4 /* Pods */,
-				1C120237246DA22700EAF9CA /* Recovered References */,
 				706B7527226CD8E54F9D7921 /* Frameworks */,
-				BF024B9A24CF93E0002131E9 /* functionalTestsConfig copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -764,7 +753,6 @@
 				D4F74FE62447A8B800379258 /* MockNetworkServiceOverrider.swift */,
 				D4F74FE82447A92800379258 /* MockURLSession.swift */,
 				D4F74FEA2447A94900379258 /* MockTask.swift */,
-				BF947F9C244181FF0057A6CC /* MockKeyValueStore.swift */,
 				D42FB8E024635FA200E9321C /* MockResponseCallback.swift */,
 				D46553F2246A138800A150E2 /* MockExperiencePlatformResponseHandler.swift */,
 				D44BBB972492F5C900775DAC /* UnitTestAssertions.swift */,
@@ -829,6 +817,8 @@
 				BF0C09262461209900892B5D /* PBXTargetDependency */,
 			);
 			name = functionalTestsConfig;
+			packageProductDependencies = (
+			);
 			productName = functionalTests;
 			productReference = BF0C09332461209900892B5D /* functionalTestsConfig.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -894,6 +884,8 @@
 				D4D5B5282432599B00CAB6E4 /* PBXTargetDependency */,
 			);
 			name = unitTests;
+			packageProductDependencies = (
+			);
 			productName = UnitTests;
 			productReference = D4D5B5212432599B00CAB6E4 /* unitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -914,6 +906,8 @@
 				D4D5B53A24325AB700CAB6E4 /* PBXTargetDependency */,
 			);
 			name = functionalTests;
+			packageProductDependencies = (
+			);
 			productName = functionalTests;
 			productReference = D4D5B53324325AB700CAB6E4 /* functionalTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -1306,9 +1300,9 @@
 				BF024B8824CF93DF002131E9 /* FunctionalTestConst.swift in Sources */,
 				BF024B8924CF93DF002131E9 /* FakeIdentityExtension.swift in Sources */,
 				BF024B8A24CF93DF002131E9 /* InstrumentedExtension.swift in Sources */,
+				240E3C9C24EF357100D44993 /* MockDataStore.swift in Sources */,
 				BF024B8B24CF93DF002131E9 /* InstrumentedWildcardListener.swift in Sources */,
 				BF024B8C24CF93DF002131E9 /* FunctionalTestBase.swift in Sources */,
-				BF024B8D24CF93DF002131E9 /* FakeIdentityListener.swift in Sources */,
 				BF024B8E24CF93DF002131E9 /* TestableExperiencePlatformInternal.swift in Sources */,
 				BF024B8F24CF93DF002131E9 /* FunctionalTestUtils.swift in Sources */,
 			);
@@ -1325,8 +1319,8 @@
 				BF024B7A24C6238C002131E9 /* FakeIdentityExtension.swift in Sources */,
 				D4A473C32485929000D31710 /* InstrumentedExtension.swift in Sources */,
 				D4A473C42485929000D31710 /* InstrumentedWildcardListener.swift in Sources */,
+				240E3C9B24EF357100D44993 /* MockDataStore.swift in Sources */,
 				D4A473C22485928A00D31710 /* FunctionalTestBase.swift in Sources */,
-				BF024B7D24C62B3B002131E9 /* FakeIdentityListener.swift in Sources */,
 				BF0C09492465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */,
 				D4655408246DF6DB00A150E2 /* FunctionalTestUtils.swift in Sources */,
 				BF0C092A2461209900892B5D /* FunctionalTestsWithNoConfiguration.swift in Sources */,
@@ -1429,11 +1423,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				240E3C9924EF357100D44993 /* MockDataStore.swift in Sources */,
 				D4A473CD2485AA3D00D31710 /* TestUtils.swift in Sources */,
 				D4F06FD52475FDE1003FFEF2 /* NetworkServiceTests.swift in Sources */,
 				BF947F912440F6660057A6CC /* StateMetadataTests.swift in Sources */,
 				D46553F1246A123900A150E2 /* RequestCallbackHandlerTests.swift in Sources */,
-				BF947F9D244181FF0057A6CC /* MockKeyValueStore.swift in Sources */,
 				BF947FA0244569190057A6CC /* EdgeRequestTests.swift in Sources */,
 				1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */,
 				BF947F82243F05BF0057A6CC /* IdentityMapTests.swift in Sources */,
@@ -1470,8 +1464,8 @@
 				BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */,
 				D4655402246CD0B000A150E2 /* InstrumentedExtension.swift in Sources */,
 				D48CBD2224A17EEA00A24BD8 /* TestXDMSchema.swift in Sources */,
-				BF024B7C24C62B3B002131E9 /* FakeIdentityListener.swift in Sources */,
 				D4EED36C2489ACE200D4815C /* FunctionalTestNetworkService.swift in Sources */,
+				240E3C9A24EF357100D44993 /* MockDataStore.swift in Sources */,
 				D4655407246DF6DB00A150E2 /* FunctionalTestUtils.swift in Sources */,
 				BF0C0935246120B200892B5D /* NetworkResponseHandlerFunctionalTests.swift in Sources */,
 			);
