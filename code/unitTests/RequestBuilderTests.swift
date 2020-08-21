@@ -27,12 +27,12 @@ class RequestBuilderTests: XCTestCase {
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
-        let event = try? ACPExtensionEvent(name: "Request Test",
-                                           type: "type",
-                                           source: "source",
-                                           data: ["data": ["key": "value"]])
+        let event = Event(name: "Request Test",
+                          type: "type",
+                          source: "source",
+                          data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getRequestPayload([event!])
+        let requestPayload = request.getRequestPayload([event])
 
         XCTAssertEqual("A", requestPayload?.meta?.konductorConfig?.streaming?.recordSeparator)
         XCTAssertEqual("B", requestPayload?.meta?.konductorConfig?.streaming?.lineFeed)
@@ -49,29 +49,29 @@ class RequestBuilderTests: XCTestCase {
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
-        var events: [ACPExtensionEvent] = []
+        var events: [Event] = []
 
-        events.append(try! ACPExtensionEvent(name: "Request Test 1",
-                                             type: "type",
-                                             source: "source",
-                                             data: ["xdm": ["application": ["name": "myapp"]]]))
+        events.append(Event(name: "Request Test 1",
+                            type: "type",
+                            source: "source",
+                            data: ["xdm": ["application": ["name": "myapp"]]]))
 
-        events.append(try! ACPExtensionEvent(name: "Request Test 2",
-                                             type: "type",
-                                             source: "source",
-                                             data: ["xdm": ["environment": ["type": "widget"]]]))
+        events.append(Event(name: "Request Test 2",
+                            type: "type",
+                            source: "source",
+                            data: ["xdm": ["environment": ["type": "widget"]]]))
 
         let requestPayload = request.getRequestPayload(events)
 
         let flattenEvent0 = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue as! [String: Any])
         let flattenEvent1 = flattenDictionary(dict: requestPayload?.events?[1]["xdm"]?.dictionaryValue as! [String: Any])
         XCTAssertEqual("myapp", flattenEvent0["application.name"] as? String)
-        XCTAssertEqual(events[0].eventUniqueIdentifier, flattenEvent0["_id"] as? String)
-        XCTAssertEqual(timestampToISO8601(events[0].eventTimestamp), flattenEvent0["timestamp"] as? String)
+        XCTAssertEqual(events[0].id.uuidString, flattenEvent0["_id"] as? String)
+        XCTAssertEqual(timestampToISO8601(events[0].timestamp), flattenEvent0["timestamp"] as? String)
 
         XCTAssertEqual("widget", flattenEvent1["environment.type"] as? String)
-        XCTAssertEqual(events[1].eventUniqueIdentifier, flattenEvent1["_id"] as? String)
-        XCTAssertEqual(timestampToISO8601(events[1].eventTimestamp), flattenEvent1["timestamp"] as? String)
+        XCTAssertEqual(events[1].id.uuidString, flattenEvent1["_id"] as? String)
+        XCTAssertEqual(timestampToISO8601(events[1].timestamp), flattenEvent1["timestamp"] as? String)
     }
 
     func testGetRequestPayload_withStorePayload_responseContainsStateEntries() {
@@ -82,12 +82,12 @@ class RequestBuilderTests: XCTestCase {
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
-        let event = try? ACPExtensionEvent(name: "Request Test",
-                                           type: "type",
-                                           source: "source",
-                                           data: ["data": ["key": "value"]])
+        let event = Event(name: "Request Test",
+                          type: "type",
+                          source: "source",
+                          data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getRequestPayload([event!])
+        let requestPayload = request.getRequestPayload([event])
 
         XCTAssertEqual("key", requestPayload?.meta?.state?.entries?[0].key)
         XCTAssertEqual(3600.0, requestPayload?.meta?.state?.entries?[0].maxAge)
@@ -99,13 +99,10 @@ class RequestBuilderTests: XCTestCase {
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.experienceCloudId = "ecid"
 
-        guard let event = try? ACPExtensionEvent(name: "Request Test",
-                                                 type: "type",
-                                                 source: "source",
-                                                 data: ["data": ["key": "value"]]) else {
-                                                    XCTFail("Failed to create event without store payload")
-                                                    return
-        }
+        let event = Event(name: "Request Test",
+                          type: "type",
+                          source: "source",
+                          data: ["data": ["key": "value"]])
 
         let requestPayload = request.getRequestPayload([event])
 
@@ -115,15 +112,12 @@ class RequestBuilderTests: XCTestCase {
     func testGetRequestPayload_withDatasetId_responseContainsCollectMeta() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
 
-        guard let event = try? ACPExtensionEvent(name: "Request Test",
-                                                 type: "type",
-                                                 source: "source",
-                                                 data: ["data": ["key": "value"],
-                                                        "xdm": ["application": ["name": "myapp"]],
-                                                        "datasetId": "customDatasetId"]) else {
-                                                            XCTFail("Failed to create event with dataset id")
-                                                            return
-        }
+        let event = Event(name: "Request Test",
+                          type: "type",
+                          source: "source",
+                          data: ["data": ["key": "value"],
+                                "xdm": ["application": ["name": "myapp"]],
+                                "datasetId": "customDatasetId"])
 
         let requestPayload = request.getRequestPayload([event])
 
@@ -140,14 +134,11 @@ class RequestBuilderTests: XCTestCase {
     func testGetRequestPayload_withoutDatasetId_responseDoesNotContainCollectMeta() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
 
-        guard let event = try? ACPExtensionEvent(name: "Request Test",
-                                                 type: "type",
-                                                 source: "source",
-                                                 data: ["data": ["key": "value"],
-                                                        "xdm": ["application": ["name": "myapp"]]]) else {
-                                                            XCTFail("Failed to create event without dataset id")
-                                                            return
-        }
+        let event = Event(name: "Request Test",
+                          type: "type",
+                          source: "source",
+                          data: ["data": ["key": "value"],
+                                "xdm": ["application": ["name": "myapp"]]])
 
         let requestPayload = request.getRequestPayload([event])
 
@@ -159,35 +150,26 @@ class RequestBuilderTests: XCTestCase {
     func testGetRequestPayload_withNilOrEmptyDatasetId_responseDoesNotContainCollectMeta() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
 
-        guard let event1 = try? ACPExtensionEvent(name: "Request Test1",
-                                                  type: "type",
-                                                  source: "source",
-                                                  data: ["xdm": ["application": ["name": "myapp"]],
-                                                         "datasetId": ""]) else {
-                                                            XCTFail("Failed to create event with empty dataset id")
-                                                            return
-        }
+        let event1 = Event(name: "Request Test1",
+                           type: "type",
+                           source: "source",
+                           data: ["xdm": ["application": ["name": "myapp"]],
+                                 "datasetId": ""])
 
-        guard let event2 = try? ACPExtensionEvent(name: "Request Test2",
-                                                  type: "type",
-                                                  source: "source",
-                                                  data: ["data": ["key": "value"],
-                                                         "datasetId": "        "]) else {
-                                                            XCTFail("Failed to create event with dataset id which whitespaces only")
-                                                            return
-        }
+        let event2 = Event(name: "Request Test2",
+                           type: "type",
+                           source: "source",
+                           data: ["data": ["key": "value"],
+                             "datasetId": "        "])
 
-        var eventData: [AnyHashable: Any] = [:]
+        var eventData: [String: Any] = [:]
         eventData["data"] = ["key": "value"]
         eventData["xdm"] = ["application": ["name": "myapp"]]
         eventData["datasetId"] = nil
-        guard let event3 = try? ACPExtensionEvent(name: "Request Test3",
-                                                  type: "type",
-                                                  source: "source",
-                                                  data: eventData) else {
-                                                    XCTFail("Failed to create event with nil dataset id")
-                                                    return
-        }
+        let event3 = Event(name: "Request Test3",
+                           type: "type",
+                           source: "source",
+                           data: eventData)
 
         let requestPayload = request.getRequestPayload([event1, event2, event3])
 

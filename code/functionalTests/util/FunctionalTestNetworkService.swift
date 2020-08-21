@@ -11,6 +11,7 @@
 //
 
 @testable import AEPExperiencePlatform
+@testable import AEPServices
 import Foundation
 
 // NetworkRequest extension used for compares in Dictionaries where NetworkRequest is the key
@@ -38,7 +39,7 @@ class FunctionalTestNetworkService: NetworkService {
     var responseMatchers: [NetworkRequest: HttpConnection] = [NetworkRequest: HttpConnection]()
     var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [NetworkRequest: CountDownLatch]()
 
-    func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
+    override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         FunctionalTestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
         if var requests = receivedNetworkRequests[networkRequest] {
             requests.append(networkRequest)

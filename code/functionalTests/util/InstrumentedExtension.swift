@@ -11,65 +11,98 @@
 //
 
 import AEPCore
+import AEPServices
 import XCTest
 
 /// Instrumented extension that registers a wildcard listener for intercepting events in current session. Use it along with `FunctionalTestBase`
-class InstrumentedExtension: ACPExtension {
+class InstrumentedExtension: Extension {
     private static let logTag = "InstrumentedExtension"
+    var name = "com.adobe.InstrumentedExtension"
+    var friendlyName = "InstrumentedExtension"
+    static var extensionVersion = "1.0.0"
+    var metadata: [String : String]?
+    var runtime: ExtensionRuntime
+    
+    // Expected events Dictionary - key: EventSpec, value: the expected count
+    static var expectedEvents: [EventSpec: CountDownLatch] = [EventSpec: CountDownLatch]()
 
-    override init() {
-        super.init()
-
-        try? api.registerWildcardListener(InstrumentedWildcardListener.self)
+    // All the events seen by this listener that are not of type instrumentedExtension
+    static var receivedEvents: [EventSpec: [Event]] = [EventSpec: [Event]]()
+    
+    func onRegistered() {
+        runtime.registerListener(type: EventType.wildcard, source: EventSource.wildcard, listener: wildcardListenerProcessor)
     }
-
-    override func name() -> String? {
-        "com.adobe.InstrumentedExtension"
+    
+    func onUnregistered() {}
+    
+    public func readyForEvent(_ event: Event) -> Bool {
+        return true
     }
-
-    override func version() -> String? {
-        "1.0.0"
+    
+    required init?(runtime: ExtensionRuntime) {
+        self.runtime = runtime
     }
-
-    override func onUnregister() {
-        super.onUnregister()
-
-        // if the shared states are not used in the next registration they can be cleared in this method
-        try? api.clearSharedEventStates()
-    }
-
+    
     // MARK: Event Processors
+    func wildcardListenerProcessor(_ event: Event) {
+        if event.type.lowercased() == FunctionalTestConst.EventType.instrumentedExtension.lowercased() {
+            // process the shared state request event
+            if event.source.lowercased() == FunctionalTestConst.EventSource.sharedStateRequest.lowercased() {
+                processSharedStateRequest(event)
+            }
+                // process the unregister extension event
+            else if event.source.lowercased() == FunctionalTestConst.EventSource.unregisterExtension.lowercased() {
+                unregisterExtension()
+            }
+
+            return
+        }
+
+        // save this event in the receivedEvents dictionary
+        if let _ = InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)] {
+            InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)]?.append(event)
+        } else {
+            InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)] = [event]
+        }
+
+        // count down if this is an expected event
+        if let _ = InstrumentedExtension.expectedEvents[EventSpec(type: event.type, source: event.source)] {
+            InstrumentedExtension.expectedEvents[EventSpec(type: event.type, source: event.source)]?.countDown()
+        }
+
+        Log.debug(label: InstrumentedExtension.logTag, "Received event with type \(event.type) and source \(event.source)")
+    }
 
     /// Process `getSharedStateFor` requests
     /// - Parameter event: event sent from `getSharedStateFor` which specifies the shared state `stateowner` to retrieve
-    func processSharedStateRequest(_ event: ACPExtensionEvent) {
-        guard let eventData = event.eventData, !eventData.isEmpty  else { return }
+    func processSharedStateRequest(_ event: Event) {
+        guard let eventData = event.data, !eventData.isEmpty  else { return }
         guard let owner = eventData[FunctionalTestConst.EventDataKey.stateOwner] as? String else { return }
 
-        var responseData: [AnyHashable: Any?] = [FunctionalTestConst.EventDataKey.stateOwner: owner, FunctionalTestConst.EventDataKey.state: nil]
-        if let state = try? api.getSharedEventState(owner, event: event) {
+        var responseData: [String: Any?] = [FunctionalTestConst.EventDataKey.stateOwner: owner, FunctionalTestConst.EventDataKey.state: nil]
+        if let state = runtime.getSharedState(extensionName: owner, event: event) {
             responseData[FunctionalTestConst.EventDataKey.state] = state
         }
 
-        guard let responseEvent = try? ACPExtensionEvent(name: "Get Shared State Response",
-                                                         type: FunctionalTestConst.EventType.instrumentedExtension,
-                                                         source: FunctionalTestConst.EventSource.sharedStateResponse,
-                                                         data: responseData as [AnyHashable: Any]) else {
-                                                            ACPCore.log(ACPMobileLogLevel.debug, tag: InstrumentedExtension.logTag, message: "ProcessSharedStateRequest failed to create response event.")
-                                                            return
-        }
+        let responseEvent = event.createResponseEvent(name: "Get Shared State Response",
+                                                      type: FunctionalTestConst.EventType.instrumentedExtension,
+                                                      source: FunctionalTestConst.EventSource.sharedStateResponse,
+                                                        data: responseData as [String: Any])
 
-        ACPCore.log(ACPMobileLogLevel.debug, tag: InstrumentedExtension.logTag, message: "ProcessSharedStateRequest Responding with shared state \(String(describing: responseData))")
+        Log.debug(label: InstrumentedExtension.logTag, "ProcessSharedStateRequest Responding with shared state \(String(describing: responseData))")
 
         // dispatch paired response event with shared state data
-        guard let _ = try? ACPCore.dispatchResponseEvent(responseEvent, request: event) else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: InstrumentedExtension.logTag, message: "ProcessSharedStateRequest failed to dispatch response event.")
-            return
-        }
+        MobileCore.dispatch(event: responseEvent)
     }
 
     func unregisterExtension() {
-        ACPCore.log(ACPMobileLogLevel.debug, tag: InstrumentedExtension.logTag, message: "Unregistering the Instrumented extension from the Event Hub")
-        self.api.unregisterExtension()
+        Log.debug(label: InstrumentedExtension.logTag, "Unregistering the Instrumented extension from the Event Hub")
+        // TODO: no unregisterExtension API
+        //runtime.unregisterExtension()
+    }
+    
+    static func reset() {
+        receivedEvents.removeAll()
+        expectedEvents.removeAll()
     }
 }

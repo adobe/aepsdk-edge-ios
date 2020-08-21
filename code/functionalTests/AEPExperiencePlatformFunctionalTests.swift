@@ -11,14 +11,16 @@
 //
 
 import AEPCore
+import AEPIdentity
+import AEPServices
 import AEPExperiencePlatform
 import Foundation
 import XCTest
 
 /// This Test class is an example of usages of the FunctionalTestBase APIs
 class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
-    private let event1 = try! ACPExtensionEvent(name: "e1", type: "eventType", source: "eventSource", data: nil)
-    private let event2 = try! ACPExtensionEvent(name: "e2", type: "eventType", source: "eventSource", data: nil)
+    private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
+    private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let exEdgeInteractUrl = "https://edge.adobedc.net/ee/v1/interact"
     private let responseBody = "{\"test\": \"json\"}"
 
@@ -61,11 +63,11 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
             setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
             setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
 
-            ACPIdentity.registerExtension()
+            Identity.registerExtension()
             ExperiencePlatform.registerExtension()
 
-            ACPCore.start {
-                ACPCore.updateConfiguration(["global.privacy": "optedin",
+            MobileCore.start {
+                MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
                                              "experienceCloud.org": "testOrg@AdobeOrg",
                                              "experiencePlatform.configId": "12345-example"])
                 startLatch.countDown()
@@ -90,8 +92,8 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     func testSample_AssertUnexpectedEvents() {
         // set event expectations specifying the event type, source and the count (count should be > 0)
         setExpectationEvent(type: "eventType", source: "eventSource", count: 2)
-        try? ACPCore.dispatchEvent(event1)
-        try? ACPCore.dispatchEvent(event1)
+        MobileCore.dispatch(event: event1)
+        MobileCore.dispatch(event: event1)
 
         // assert that no unexpected event was received
         assertUnexpectedEvents()
@@ -99,9 +101,9 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
     func testSample_AssertExpectedEvents() {
         setExpectationEvent(type: "eventType", source: "eventSource", count: 2)
-        try? ACPCore.dispatchEvent(event1)
-        try? ACPCore.dispatchEvent(try! ACPExtensionEvent(name: "e1", type: "unexpectedType", source: "unexpectedSource", data: ["test": "withdata"]))
-        try? ACPCore.dispatchEvent(event1)
+        MobileCore.dispatch(event: event1)
+        MobileCore.dispatch(event: Event(name: "e1", type: "unexpectedType", source: "unexpectedSource", data: ["test": "withdata"]))
+        MobileCore.dispatch(event: event1)
 
         // assert all expected events were received and ignore any unexpected events
         // when ignoreUnexpectedEvents is set on false, an extra assertUnexpectedEvents step is performed
@@ -109,15 +111,15 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     }
 
     func testSample_DispatchedEvents() {
-        try? ACPCore.dispatchEvent(event1)
-        try? ACPCore.dispatchEvent(try! ACPExtensionEvent(name: "e1", type: "otherEventType", source: "otherEventSource", data: ["test": "withdata"]))
-        try? ACPCore.dispatchEvent(try! ACPExtensionEvent(name: "e1", type: "eventType", source: "eventSource", data: ["test": "withdata"]))
+        MobileCore.dispatch(event: event1)
+        MobileCore.dispatch(event: Event(name: "e1", type: "otherEventType", source: "otherEventSource", data: ["test": "withdata"]))
+        MobileCore.dispatch(event: Event(name: "e1", type: "eventType", source: "eventSource", data: ["test": "withdata"]))
 
         // assert on count and data for events of a certain type, source
         let dispatchedEvents = getDispatchedEventsWith(type: "eventType", source: "eventSource")
 
         XCTAssertEqual(2, dispatchedEvents.count)
-        guard let event2data = dispatchedEvents[1].eventData as? [String: Any] else {
+        guard let event2data = dispatchedEvents[1].data else {
             XCTFail("Invalid event data for event 2")
             return
         }
@@ -183,7 +185,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                    source: FunctionalTestConst.EventSource.requestContent)
-        guard let eventDataDict = resultEvents[0].eventData as? [String: Any] else {
+        guard let eventDataDict = resultEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
         }
@@ -214,7 +216,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                    source: FunctionalTestConst.EventSource.requestContent)
-        guard let eventDataDict = resultEvents[0].eventData as? [String: Any] else {
+        guard let eventDataDict = resultEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
         }
@@ -241,7 +243,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                    source: FunctionalTestConst.EventSource.requestContent)
-        guard let eventDataDict = resultEvents[0].eventData as? [String: Any] else {
+        guard let eventDataDict = resultEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
         }
@@ -532,10 +534,10 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
         let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                     source: FunctionalTestConst.EventSource.requestContent)
-        let requestEventUUID = requestEvents[0].eventUniqueIdentifier
+        let requestEventUUID = requestEvents[0].id.uuidString
         let responseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                      source: FunctionalTestConst.EventSource.responseContent)
-        guard let eventDataDict = responseEvents[0].eventData as? [String: Any] else {
+        guard let eventDataDict = responseEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
         }
@@ -579,10 +581,10 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
         let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                     source: FunctionalTestConst.EventSource.requestContent)
-        let requestEventUUID = requestEvents[0].eventUniqueIdentifier
+        let requestEventUUID = requestEvents[0].id.uuidString
         let errorResponseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                           source: FunctionalTestConst.EventSource.errorResponseContent)
-        guard let eventDataDict = errorResponseEvents[0].eventData as? [String: Any] else {
+        guard let eventDataDict = errorResponseEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
         }
@@ -622,7 +624,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
         let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                     source: FunctionalTestConst.EventSource.requestContent)
-        let requestEventUUID = requestEvents[0].eventUniqueIdentifier
+        let requestEventUUID = requestEvents[0].id.uuidString
         let data = flattenDictionary(dict: responseHandler.onResponseReceivedData)
         XCTAssertEqual(8, data.count)
         XCTAssertEqual("personalization:decisions", data["type"] as? String)

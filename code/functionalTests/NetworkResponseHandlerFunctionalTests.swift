@@ -15,8 +15,8 @@ import AEPCore
 import XCTest
 
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
-    private let e1 = try! ACPExtensionEvent(name: "e1", type: "eventType", source: "eventSource", data: nil)
-    private let e2 = try! ACPExtensionEvent(name: "e2", type: "eventType", source: "eventSource", data: nil)
+    private let e1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
+    private let e2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let networkResponseHandler = NetworkResponseHandler()
 
     override func setUp() {
@@ -51,7 +51,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent, timeout: 5)
         XCTAssertEqual(1, dispatchEvents.count)
 
-        guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData = dispatchEvents[0].data as? [String: Any] else {
             XCTFail("Invalid event data")
             return
         }
@@ -81,7 +81,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
 
-        guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData = dispatchEvents[0].data as? [String: Any] else {
             XCTFail("Invalid event data")
             return
         }
@@ -114,7 +114,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
 
-        guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData = dispatchEvents[0].data as? [String: Any] else {
             XCTFail("Invalid event data")
             return
         }
@@ -126,7 +126,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("Button color not found", flattenReceivedData["message"] as? String)
         XCTAssertEqual(0, flattenReceivedData["eventIndex"] as? Int)
         XCTAssertEqual(requestId, flattenReceivedData["requestId"] as? String)
-        XCTAssertEqual(e1.eventUniqueIdentifier, flattenReceivedData["requestEventId"] as? String)
+        XCTAssertEqual(e1.id.uuidString, flattenReceivedData["requestEventId"] as? String)
     }
 
     func testProcessResponseOnError_WhenUnknownEventIndex_doesNotCrash() {
@@ -149,7 +149,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
 
-        guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData = dispatchEvents[0].data else {
             XCTFail("Invalid event data")
             return
         }
@@ -182,7 +182,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
 
-        guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData = dispatchEvents[0].data else {
             XCTFail("Invalid event data")
             return
         }
@@ -219,7 +219,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(2, dispatchEvents.count)
 
-        guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData1 = dispatchEvents[0].data as? [String: Any] else {
             XCTFail("Invalid event data for event 1")
             return
         }
@@ -230,7 +230,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases", flattenReceivedData1["message"] as? String)
         XCTAssertEqual(requestId, flattenReceivedData1["requestId"] as? String)
 
-        guard let receivedData2 = dispatchEvents[1].eventData as? [String: Any] else {
+        guard let receivedData2 = dispatchEvents[1].data as? [String: Any] else {
             XCTFail("Invalid event data for event 2")
             return
         }
@@ -278,7 +278,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(1, dispatchEvents.count)
-        guard let receivedData = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData = dispatchEvents[0].data else {
             XCTFail("Invalid event data")
             return
         }
@@ -324,7 +324,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(2, dispatchEvents.count)
         // verify event 1
-        guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for event 1")
             return
         }
@@ -337,7 +337,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(15552000, flattenReceivedData1["payload[0].maxAge"] as? Int)
 
         // verify event 2
-        guard let receivedData2 = dispatchEvents[1].eventData as? [String: Any] else {
+        guard let receivedData2 = dispatchEvents[1].data else {
             XCTFail("Invalid event data for event 2")
             return
         }
@@ -381,7 +381,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         // verify event 1
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(2, dispatchEvents.count)
-        guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for event 1")
             return
         }
@@ -394,7 +394,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(15552000, flattenReceivedData1["payload[0].maxAge"] as? Int)
 
         // verify event 2
-        guard let receivedData2 = dispatchEvents[1].eventData as? [String: Any] else {
+        guard let receivedData2 = dispatchEvents[1].data else {
             XCTFail("Invalid event data for event 2")
             return
         }
@@ -403,7 +403,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("pairedeventexample", flattenReceivedData2["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
         XCTAssertEqual(1, flattenReceivedData2["eventIndex"] as? Int)
-        XCTAssertEqual(e2.eventUniqueIdentifier, flattenReceivedData2["requestEventId"] as? String)
+        XCTAssertEqual(e2.id.uuidString, flattenReceivedData2["requestEventId"] as? String)
         XCTAssertEqual("123612123812381", flattenReceivedData2["payload[0].id"] as? String)
     }
 
@@ -430,7 +430,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(1, dispatchEvents.count)
-        guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for event 1")
             return
         }
@@ -465,7 +465,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(1, dispatchEvents.count)
-        guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for event 1")
             return
         }
@@ -508,7 +508,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(1, dispatchEvents.count)
-        guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for event 1")
             return
         }
@@ -522,7 +522,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
         let dispatchErrorEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchErrorEvents.count)
-        guard let receivedData2 = dispatchErrorEvents[0].eventData as? [String: Any] else {
+        guard let receivedData2 = dispatchErrorEvents[0].data else {
             XCTFail("Invalid event data for event 2")
             return
         }
@@ -561,7 +561,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(2, dispatchEvents.count)
-        guard let receivedData1 = dispatchEvents[0].eventData as? [String: Any] else {
+        guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for event 1")
             return
         }
@@ -572,7 +572,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(2, flattenReceivedData1["eventIndex"] as? Int)
         XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
 
-        guard let receivedData2 = dispatchEvents[1].eventData as? [String: Any] else {
+        guard let receivedData2 = dispatchEvents[1].data else {
             XCTFail("Invalid event data for event 2")
             return
         }
