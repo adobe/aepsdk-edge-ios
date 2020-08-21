@@ -28,7 +28,7 @@ class StoreResponsePayloadManager {
     /// - Returns: a map of `StoreResponsePayload` objects keyed by `StoreResponsePayload.key`
     func getActiveStores() -> [String: StoreResponsePayload] {
 
-        guard let serializedPayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: dataStoreName, key: storePayloadKeyName) as? [String : Any] else {
+        guard let serializedPayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: dataStoreName, key: storePayloadKeyName) as? [String: Any] else {
             Log.debug(label: TAG, "Unable to retrieve active payloads. No payloads were found in the data store.")
             return [:]
         }

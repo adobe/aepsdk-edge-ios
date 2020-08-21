@@ -30,7 +30,7 @@ public extension ExperiencePlatform {
             Log.debug(label: logTag, "Failed to dispatch the platform event because the XDM data was nil/empty.")
             return
         }
-        
+
         let event = Event(name: "AEP Request Event",
                           type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
                           source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,

@@ -18,53 +18,56 @@ import Foundation
 public class ExperiencePlatform: NSObject, Extension {
     // Tag for logging
     private let TAG = "ExperiencePlatformInternal"
-    
     typealias EventHandlerMapping = (event: Event, handler: (Event) -> (Bool))
     private let requestEventQueue = OperationOrderer<EventHandlerMapping>("ExperiencePlatformInternal Requests")
     private let responseEventQueue = OperationOrderer<EventHandlerMapping>("ExperiencePlatformInternal Responses")
     private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
-    
+
     // MARK: - Extension
-    
+
     public var name = ExperiencePlatformConstants.extensionName
     public var friendlyName = ExperiencePlatformConstants.friendlyName
     public static var extensionVersion = ExperiencePlatformConstants.extensionVersion
-    public var metadata: [String : String]?
+    public var metadata: [String: String]?
     public var runtime: ExtensionRuntime
-    
+
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
         super.init()
-        
+
         requestEventQueue.setHandler({ return $0.handler($0.event) })
         responseEventQueue.setHandler({ return $0.handler($0.event) })
         requestEventQueue.start()
         responseEventQueue.start()
     }
-    
+
     public func onRegistered() {
-        registerListener(type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: EventSource.requestContent, listener: handleExperienceEventRequest)
-        registerListener(type: ExperiencePlatformConstants.eventTypeExperiencePlatform, source: EventSource.responseContent, listener: handleExperienceEventResponse)
+        registerListener(type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                         source: EventSource.requestContent,
+                         listener: handleExperienceEventRequest)
+        registerListener(type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                         source: EventSource.responseContent,
+                         listener: handleExperienceEventResponse)
         registerListener(type: EventType.hub, source: EventSource.sharedState, listener: handleSharedStateUpdate)
     }
-    
+
     public func onUnregistered() {
         print("Extension unregistered from MobileCore: \(ExperiencePlatformConstants.friendlyName)")
     }
-    
+
     public func readyForEvent(_ event: Event) -> Bool {
         return true
     }
-    
+
     private func handleExperienceEventRequest(event: Event) {
         processAddEvent(event)
     }
-    
+
     private func handleExperienceEventResponse(event: Event) {
         processPlatformResponseEvent(event)
     }
-    
+
     private func handleSharedStateUpdate(event: Event) {
         guard let eventData = event.data else {
             //ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Adobe Hub event contains no data. Cannot process event '\(event.eventUniqueIdentifier)'")
@@ -79,8 +82,6 @@ public class ExperiencePlatform: NSObject, Extension {
             processEventQueue(event)
         }
     }
-       
-    
 
     /// Adds an event to the event queue and starts processing the queue.  Events with no event data are ignored.
     /// - Parameter event: the event to add to the event queue for processing
@@ -119,7 +120,7 @@ public class ExperiencePlatform: NSObject, Extension {
     /// - Parameter event: the `ACPExtensionEvent` to process, event data should not be nil and it should contain a requestEventId
     /// - Returns: `Bool` indicating if the response event was processed or not
     func handleResponseEvent(event: Event) -> Bool {
-        guard let eventData = event.data, let _ = eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] else { return false }
+        guard let eventData = event.data, eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] != nil else { return false }
         ResponseCallbackHandler.shared.invokeResponseHandler(eventData: eventData)
         return true
     }
@@ -133,19 +134,22 @@ public class ExperiencePlatform: NSObject, Extension {
 
         guard let configSharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
                                                      event: event)?.value else {
-                                                        Log.debug(label: TAG, "handleSendEvent - Unable to process queued events at this time, Configuration shared state is pending.")
+                                                        Log.debug(label: TAG,
+                                                                  "handleSendEvent - Unable to process queued events at this time, Configuration shared state is pending.")
                                                         return false // keep event in queue to process on next trigger
         }
 
         guard let configId = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String else {
-            Log.warning(label: TAG, "handleSendEvent - Removed event '\(event.id.uuidString)' because of invalid experiencePlatform.configId in configuration.")
+            Log.warning(label: TAG,
+                        "handleSendEvent - Removed event '\(event.id.uuidString)' because of invalid experiencePlatform.configId in configuration.")
             return true // drop event from queue
         }
 
         // Build Request object
 
         let requestBuilder = RequestBuilder()
-        requestBuilder.enableResponseStreaming(recordSeparator: ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator, lineFeed: ExperiencePlatformConstants.Defaults.requestConfigLineFeed)
+        requestBuilder.enableResponseStreaming(recordSeparator: ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator,
+                                               lineFeed: ExperiencePlatformConstants.Defaults.requestConfigLineFeed)
 
         // get ECID
         guard let identityState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Identity.stateOwner,
@@ -175,10 +179,13 @@ public class ExperiencePlatform: NSObject, Extension {
 
             // NOTE: the order of these events need to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
-            networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: listOfEvents)
-            guard let url: URL = experiencePlatformNetworkService.buildUrl(requestType: ExperienceEdgeRequestType.interact, configId: configId, requestId: requestId) else {
-                Log.debug(label: TAG, "Failed to build the URL, skipping current event with id \(event.id.uuidString).")
-                return true
+            networkResponseHandler.addWaitingEvents(requestId: requestId,
+                                                    batchedEvents: listOfEvents)
+            guard let url: URL = experiencePlatformNetworkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
+                                                                           configId: configId,
+                                                                           requestId: requestId) else {
+                                                                            Log.debug(label: TAG, "Failed to build the URL, skipping current event with id \(event.id.uuidString).")
+                                                                            return true
             }
 
             let callback: ResponseCallback = NetworkResponseCallback(requestId: requestId, responseHandler: networkResponseHandler)

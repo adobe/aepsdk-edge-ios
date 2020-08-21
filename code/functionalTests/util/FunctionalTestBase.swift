@@ -11,8 +11,8 @@
 //
 
 import AEPCore
-import AEPServices
 @testable import AEPExperiencePlatform
+import AEPServices
 import Foundation
 import XCTest
 
@@ -44,7 +44,7 @@ class FunctionalTestBase: XCTestCase {
     public class override func setUp() {
         super.setUp()
         FunctionalTestUtils.resetUserDefaults()
-        
+
         MobileCore.setLogLevel(level: LogLevel.trace)
         networkService = FunctionalTestNetworkService()
         ServiceProvider.shared.networkService = networkService

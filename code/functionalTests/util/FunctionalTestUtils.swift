@@ -11,8 +11,8 @@
 //
 
 @testable import AEPExperiencePlatform
-import Foundation
 import AEPServices
+import Foundation
 
 public class FunctionalTestUtils {
 

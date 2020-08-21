@@ -11,9 +11,9 @@
 //
 
 import AEPCore
+import AEPExperiencePlatform
 import AEPIdentity
 import AEPServices
-import AEPExperiencePlatform
 import Foundation
 import XCTest
 
@@ -68,8 +68,8 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
             MobileCore.start {
                 MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
-                                             "experienceCloud.org": "testOrg@AdobeOrg",
-                                             "experiencePlatform.configId": "12345-example"])
+                                                                "experienceCloud.org": "testOrg@AdobeOrg",
+                                                                "experiencePlatform.configId": "12345-example"])
                 startLatch.countDown()
             }
 

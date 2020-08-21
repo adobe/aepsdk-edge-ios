@@ -51,7 +51,7 @@ class NetworkResponseHandler {
         guard let eventIds = sentEventsWaitingResponse[requestId] else {
             return nil
         }
-        
+
         sentEventsWaitingResponse[requestId] = nil
         return eventIds
     }
@@ -73,7 +73,7 @@ class NetworkResponseHandler {
 
         if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) {
             Log.debug(label: logTag,
-            "processResponseOnSuccess - Received server response:\n \(jsonResponse), request id \(requestId)")
+                      "processResponseOnSuccess - Received server response:\n \(jsonResponse), request id \(requestId)")
 
             // handle the event handles, errors and warnings coming from server
             dispatchEventHandles(handlesArray: edgeResponse.handle, requestId: requestId)
@@ -95,7 +95,7 @@ class NetworkResponseHandler {
 
         guard let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) else {
             Log.warning(label: logTag,
-            "processResponseOnError - The conversion to JSON failed for server error response: \(jsonError), request id \(requestId)")
+                        "processResponseOnError - The conversion to JSON failed for server error response: \(jsonError), request id \(requestId)")
             return
         }
 
@@ -103,7 +103,7 @@ class NetworkResponseHandler {
 
         // Note: if the Konductor error doesn't have an eventIndex it means that this error is a generic request error,
         // otherwise it is an event specific error. There can be multiple errors returned for the same event
-        if let _ = edgeErrorResponse.errors {
+        if edgeErrorResponse.errors != nil {
             // this is an error coming from Konductor, read the error from the errors node
             dispatchEventErrors(errorsArray: edgeErrorResponse.errors, requestId: requestId, isError: true)
         } else {
@@ -163,7 +163,10 @@ class NetworkResponseHandler {
                 logErrorMessage(errorAsDictionary, isError: isError, requestId: requestId)
 
                 // set eventRequestId and edge requestId on the response event and dispatch data
-                let eventData = addEventAndRequestIdToDictionary(errorAsDictionary, requestEventIdsList: requestEventIdsList, index: error.eventIndex, requestId: requestId)
+                let eventData = addEventAndRequestIdToDictionary(errorAsDictionary,
+                                                                 requestEventIdsList: requestEventIdsList,
+                                                                 index: error.eventIndex,
+                                                                 requestId: requestId)
                 guard !eventData.isEmpty else { return }
                 dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true)
             }
@@ -181,12 +184,12 @@ class NetworkResponseHandler {
         if isErrorResponseEvent {
             responseEvent = Event(name: ExperiencePlatformConstants.eventNameErrorResponseContent,
                                   type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                source: ExperiencePlatformConstants.eventSourceExtensionErrorResponseContent,
+                                  source: ExperiencePlatformConstants.eventSourceExtensionErrorResponseContent,
                                   data: eventData)
         } else {
             responseEvent = Event(name: ExperiencePlatformConstants.eventNameResponseContent,
                                   type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                source: ExperiencePlatformConstants.eventSourceExtensionResponseContent,
+                                  source: ExperiencePlatformConstants.eventSourceExtensionResponseContent,
                                   data: eventData)
         }
 
@@ -224,11 +227,11 @@ class NetworkResponseHandler {
                 storeResponsePayloads.append(StoreResponsePayload(payload: storePayload))
             }
         }
-        
+
         let storeResponsePayloadManager = StoreResponsePayloadManager(ExperiencePlatformConstants.DataStoreKeys.storeName)
         storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
         if !storeResponsePayloads.isEmpty {
-            Log.debug(label:logTag, "Processed \(storeResponsePayloads.count) store response payload(s)")
+            Log.debug(label: logTag, "Processed \(storeResponsePayloads.count) store response payload(s)")
         }
     }
 

@@ -20,29 +20,29 @@ class InstrumentedExtension: Extension {
     var name = "com.adobe.InstrumentedExtension"
     var friendlyName = "InstrumentedExtension"
     static var extensionVersion = "1.0.0"
-    var metadata: [String : String]?
+    var metadata: [String: String]?
     var runtime: ExtensionRuntime
-    
+
     // Expected events Dictionary - key: EventSpec, value: the expected count
     static var expectedEvents: [EventSpec: CountDownLatch] = [EventSpec: CountDownLatch]()
 
     // All the events seen by this listener that are not of type instrumentedExtension
     static var receivedEvents: [EventSpec: [Event]] = [EventSpec: [Event]]()
-    
+
     func onRegistered() {
         runtime.registerListener(type: EventType.wildcard, source: EventSource.wildcard, listener: wildcardListenerProcessor)
     }
-    
+
     func onUnregistered() {}
-    
+
     public func readyForEvent(_ event: Event) -> Bool {
         return true
     }
-    
+
     required init?(runtime: ExtensionRuntime) {
         self.runtime = runtime
     }
-    
+
     // MARK: Event Processors
     func wildcardListenerProcessor(_ event: Event) {
         if event.type.lowercased() == FunctionalTestConst.EventType.instrumentedExtension.lowercased() {
@@ -87,7 +87,7 @@ class InstrumentedExtension: Extension {
         let responseEvent = event.createResponseEvent(name: "Get Shared State Response",
                                                       type: FunctionalTestConst.EventType.instrumentedExtension,
                                                       source: FunctionalTestConst.EventSource.sharedStateResponse,
-                                                        data: responseData as [String: Any])
+                                                      data: responseData as [String: Any])
 
         Log.debug(label: InstrumentedExtension.logTag, "ProcessSharedStateRequest Responding with shared state \(String(describing: responseData))")
 
@@ -100,7 +100,7 @@ class InstrumentedExtension: Extension {
         // TODO: no unregisterExtension API
         //runtime.unregisterExtension()
     }
-    
+
     static func reset() {
         receivedEvents.removeAll()
         expectedEvents.removeAll()

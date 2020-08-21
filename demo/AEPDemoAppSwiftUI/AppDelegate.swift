@@ -10,12 +10,12 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPExperiencePlatform
-import Compression
-import UIKit
 import AEPCore
+import AEPExperiencePlatform
 import AEPIdentity
 import AEPServices
+import Compression
+import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -27,8 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ExperiencePlatform.registerExtension()
         MobileCore.start {
             MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
-            "experienceCloud.org": "FAF554945B90342F0A495E2C@AdobeOrg",
-            "experiencePlatform.configId": "d3d079e7-130e-4ec1-88d7-c328eb9815c4"])
+                                                            "experienceCloud.org": "FAF554945B90342F0A495E2C@AdobeOrg",
+                                                            "experiencePlatform.configId": "d3d079e7-130e-4ec1-88d7-c328eb9815c4"])
         }
 
         return true

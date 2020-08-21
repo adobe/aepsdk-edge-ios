@@ -18,8 +18,8 @@ import Foundation
 ///     - interact - makes request and expects a response
 ///     - collect - makes request without expecting a response
 enum ExperienceEdgeRequestType: String {
-    case interact = "interact"
-    case collect = "collect"
+    case interact
+    case collect
 }
 
 /// Used to identify if a `NetworkRequest` should be retried or not

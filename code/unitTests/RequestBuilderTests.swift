@@ -116,8 +116,8 @@ class RequestBuilderTests: XCTestCase {
                           type: "type",
                           source: "source",
                           data: ["data": ["key": "value"],
-                                "xdm": ["application": ["name": "myapp"]],
-                                "datasetId": "customDatasetId"])
+                                 "xdm": ["application": ["name": "myapp"]],
+                                 "datasetId": "customDatasetId"])
 
         let requestPayload = request.getRequestPayload([event])
 
@@ -138,7 +138,7 @@ class RequestBuilderTests: XCTestCase {
                           type: "type",
                           source: "source",
                           data: ["data": ["key": "value"],
-                                "xdm": ["application": ["name": "myapp"]]])
+                                 "xdm": ["application": ["name": "myapp"]]])
 
         let requestPayload = request.getRequestPayload([event])
 
@@ -154,13 +154,13 @@ class RequestBuilderTests: XCTestCase {
                            type: "type",
                            source: "source",
                            data: ["xdm": ["application": ["name": "myapp"]],
-                                 "datasetId": ""])
+                                  "datasetId": ""])
 
         let event2 = Event(name: "Request Test2",
                            type: "type",
                            source: "source",
                            data: ["data": ["key": "value"],
-                             "datasetId": "        "])
+                                  "datasetId": "        "])
 
         var eventData: [String: Any] = [:]
         eventData["data"] = ["key": "value"]

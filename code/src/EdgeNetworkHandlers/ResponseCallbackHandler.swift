@@ -43,7 +43,7 @@ class ResponseCallbackHandler {
     /// - Parameter uniqueEventId: unique event identifier for data platform events; should not be empty
     func unregisterResponseHandler(uniqueEventId: String) {
         guard !uniqueEventId.isEmpty else { return }
-        
+
         if responseHandlers[uniqueEventId] != nil {
             responseHandlers[uniqueEventId] = nil
             Log.trace(label: TAG, "Removing callback for Data platform response with unique id \(uniqueEventId).")

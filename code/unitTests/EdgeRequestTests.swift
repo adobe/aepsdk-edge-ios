@@ -10,8 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPServices
 @testable import AEPExperiencePlatform
+import AEPServices
 import XCTest
 
 class EdgeRequestTests: XCTestCase {
@@ -27,7 +27,7 @@ class EdgeRequestTests: XCTestCase {
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
         let requestContext = RequestContextData(identityMap: identityMap)
-        
+
         let events: [[String: AnyCodable]] = [
             [
                 "data": [

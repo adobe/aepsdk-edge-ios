@@ -28,7 +28,7 @@ struct ExperiencePlatformConstants {
     static let eventNameErrorResponseContent = "AEP Error Response"
 
     static let platformDataStorage = "PlatformExtensionDataStorage"
-    
+
     static let extensionName = "com.adobe.ExperiencePlatform"
     static let friendlyName = "AEPExperiencePlatform"
     static let extensionVersion = "1.0.0-alpha-2"

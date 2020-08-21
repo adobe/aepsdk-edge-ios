@@ -22,28 +22,28 @@ class FakeIdentityExtension: Extension {
     private static let eventSetState = "com.adobe.request.setstate"
     private static let eventClearState = "com.adobe.request.clearstate"
     private static let eventResponse = "com.adobe.response"
-    
+
     var name: String = "com.adobe.module.identity"
-    
+
     var friendlyName: String = "Identity"
-    
+
     static var extensionVersion: String = "1.0.0"
-    
-    var metadata: [String : String]?
-    
+
+    var metadata: [String: String]?
+
     var runtime: ExtensionRuntime
-    
+
     func onRegistered() {
         registerListener(type: FakeIdentityExtension.eventType, source: FakeIdentityExtension.eventSetState, listener: processRequest)
         registerListener(type: FakeIdentityExtension.eventType, source: FakeIdentityExtension.eventClearState, listener: processRequest)
     }
-    
+
     func onUnregistered() {}
-    
+
     required init?(runtime: ExtensionRuntime) {
         self.runtime = runtime
     }
-    
+
     public func readyForEvent(_ event: Event) -> Bool {
         return true
     }
@@ -105,9 +105,9 @@ class FakeIdentityExtension: Extension {
 
         if doDispatch {
             let responseEvent = event.createResponseEvent(name: "FakeIdentity Response",
-                                                        type: FakeIdentityExtension.eventType,
-                                                        source: FakeIdentityExtension.eventResponse,
-                                                        data: nil)
+                                                          type: FakeIdentityExtension.eventType,
+                                                          source: FakeIdentityExtension.eventResponse,
+                                                          data: nil)
 
             // dispatch paired response event with shared state data
             MobileCore.dispatch(event: responseEvent)

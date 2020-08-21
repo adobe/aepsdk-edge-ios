@@ -111,7 +111,7 @@ class RequestBuilder {
                 Log.warning(label: TAG, "Failed to add EventData to platformEvents - unable to convert to [String : AnyCodable]")
                 continue
             }
-            
+
             platformEvents.append(wrappedEventData)
         }
 

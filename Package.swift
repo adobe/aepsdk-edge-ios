@@ -19,23 +19,23 @@ let package = Package(
     name: "AEPExperiencePlatform",
     platforms: [.iOS(.v10)],
     products: [
-        .library(name: "AEPExperiencePlatform", targets: ["AEPExperiencePlatform"]),
+        .library(name: "AEPExperiencePlatform", targets: ["AEPExperiencePlatform"])
     ],
     dependencies: [
-        .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .branch("main")),
+        .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .branch("main"))
     ],
     targets: [
         .target(name: "AEPExperiencePlatform",
                 dependencies: ["AEPCore", "AEPServices"],
                 path: "code/src"),
-	.target(name: "AEPDemoAppSwiftUI",
-		dependencies: ["AEPCore", "AEPServices", "AEPIdentity"],
-		path: "demo/AEPDemoAppSwiftUI"),        
+        .target(name: "AEPDemoAppSwiftUI",
+                dependencies: ["AEPCore", "AEPServices", "AEPIdentity"],
+                path: "demo/AEPDemoAppSwiftUI"),
         .target(name: "functionalTests",
                 dependencies: ["AEPCore", "AEPServices", "AEPIdentity"],
                 path: "code/functionalTests"),
-	.target(name: "AEPCommerceDemoApp",
+        .target(name: "AEPCommerceDemoApp",
                 dependencies: ["AEPCore", "AEPServices", "AEPIdentity", "AEPLifecycle"],
-                path: "demo/AEPCommerceDemoApp"),
+                path: "demo/AEPCommerceDemoApp")
     ]
 )
