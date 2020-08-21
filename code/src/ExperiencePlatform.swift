@@ -14,15 +14,16 @@ import ACPCore
 
 private let logTag = "ExperiencePlatform"
 
-public class ExperiencePlatform {
+@objc(AEPExperiencePlatform)
+public class ExperiencePlatform: NSObject {
 
-    @available(*, unavailable) private init() {}
+    @available(*, unavailable) private override init() {}
     private static var responseCallbacksHandlers: [String: ([String: Any]) -> Void] = [:]
 
     /// Registers the AEPExperiencePlatform extension with the Mobile SDK. This method should be called only once in your application class
     /// from the AppDelegate's application:didFinishLaunchingWithOptions method. This call should be before any calls into ACPCore
     /// interface except setLogLevel.
-    public static func registerExtension() {
+    @objc public static func registerExtension() {
 
         do {
             try ACPCore.registerExtension(ExperiencePlatformInternal.self)
@@ -37,6 +38,7 @@ public class ExperiencePlatform {
     ///   - experiencePlatformEvent: Event to be sent to Adobe Data Platform
     ///   - responseHandler: Optional callback to be invoked when the response handles are received from
     ///                     Adobe Data Platform. It may be invoked on a different thread and may be invoked multiple times
+    @objc(sendEvent:responseHandler:)
     public static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent, responseHandler: ExperiencePlatformResponseHandler? = nil) {
 
         guard let xdmData = experiencePlatformEvent.xdm, !xdmData.isEmpty, let eventData = experiencePlatformEvent.asDictionary() else {

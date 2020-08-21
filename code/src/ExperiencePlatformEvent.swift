@@ -12,7 +12,8 @@
 
 import Foundation
 
-public struct ExperiencePlatformEvent {
+@objc(AEPExperiencePlatformEvent)
+public class ExperiencePlatformEvent: NSObject {
 
     private let logTag = "ExperiencePlatformEvent"
 
