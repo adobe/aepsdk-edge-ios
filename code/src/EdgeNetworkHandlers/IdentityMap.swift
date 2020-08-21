@@ -81,7 +81,7 @@ struct IdentityItem: Codable {
 
 /// Defines two `IdentityItem` objects are equal if they have the same `id`.
 extension IdentityItem: Equatable {
-    static func ==(lhs: IdentityItem, rhs: IdentityItem) -> Bool {
+    static func == (lhs: IdentityItem, rhs: IdentityItem) -> Bool {
         return lhs.id == rhs.id
     }
 }

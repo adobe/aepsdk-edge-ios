@@ -197,7 +197,7 @@ class ExperiencePlatformNetworkService {
     ///   - responseCallback: `ResponseCallback` that is invoked with the error message
     func handleError(connection: HttpConnection, responseCallback: ResponseCallback) {
         var errorJson: String?
-        if let _ = connection.error {
+        if connection.error != nil {
             if let unwrappedResponseMessage = connection.responseMessage {
                 errorJson = composeGenericErrorAsJson(plainTextErrorMessage: unwrappedResponseMessage)
             } else {
