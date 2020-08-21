@@ -11,6 +11,9 @@
 //
 
 import AEPCore
+import AEPIdentity
+import AEPLifecycle
+import AEPServices
 import ACPGriffon
 import AEPExperiencePlatform
 import UIKit
@@ -21,8 +24,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
-        ACPCore.log(ACPMobileLogLevel.debug, tag: "AppDelegate", message: String("Testing with AEPExperiencePlatform."))
+        MobileCore.setLogLevel(level: .trace)
+        Log.debug(label: "AppDelegate", "Testing with AEPExperiencePlatform.")
 
         // Option 1 : Configuration : Inline
         // var config = [String: String]()
@@ -31,33 +34,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // config["experiencePlatform.configId"] = "d3d079e7-130e-4ec1-88d7-c328eb9815c4"
 
         // Option 2 : Configuration : From a Launch property
-        // ACPCore.configure(withAppId: "94f571f308d5/e3fc566f21d5/launch-a7a05abd3c78-development")
+//         MobileCore.configureWith(appId: "94f571f308d5/e3fc566f21d5/launch-a7a05abd3c78-development")
 
         // Option 3 :  Configuration : From ADBMobileConfig.json file
         let filePath = Bundle.main.path(forResource: "ADBMobileConfig", ofType: "json")
-        ACPCore.configureWithFile(inPath: filePath)
+        MobileCore.configureWith(filePath: filePath)
 
-        ACPIdentity.registerExtension()
-        ACPLifecycle.registerExtension()
-        ACPSignal.registerExtension()
+        Identity.registerExtension()
+        Lifecycle.registerExtension()
         ACPGriffon.registerExtension()
         ExperiencePlatform.registerExtension()
-        ACPCore.start({
-            //   ACPCore.updateConfiguration(config)
+        MobileCore.start({
+//            MobileCore.updateConfigurationWith(configDict: config)
         })
 
         // only start lifecycle if the application is not in the background
         if application.applicationState != .background {
-            ACPCore.lifecycleStart(nil)
+            MobileCore.lifecycleStart(nil)
         }
         return true
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        ACPCore.lifecycleStart(nil)
+        MobileCore.lifecycleStart(nil)
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        ACPCore.lifecyclePause()
+        MobileCore.lifecyclePause()
     }
 }
