@@ -63,9 +63,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
             setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
             setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
 
-            Identity.registerExtension()
-            ExperiencePlatform.registerExtension()
-
+            MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
             MobileCore.start {
                 MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
                                                                 "experienceCloud.org": "testOrg@AdobeOrg",

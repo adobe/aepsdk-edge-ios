@@ -11,6 +11,7 @@
 //
 
 import AEPCore
+import AEPServices
 @testable import AEPExperiencePlatform
 import XCTest
 
@@ -36,18 +37,13 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
             setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
 
             let startLatch = CountDownLatch(1)
-            do {
-                try ACPCore.registerExtension(TestableExperiencePlatformInternal.self)
-                try ACPCore.registerExtension(FakeIdentityExtension.self)
-                ACPCore.start {
-                    ACPCore.updateConfiguration(["global.privacy": "optedin",
-                                                 "experienceCloud.org": "testOrg@AdobeOrg",
-                                                 "experiencePlatform.configId": "12345-example"])
 
-                    startLatch.countDown()
-                }
-            } catch {
-                XCTFail("Failed test setUp: \(error.localizedDescription)")
+            MobileCore.registerExtensions([TestableExperiencePlatformInternal.self, FakeIdentityExtension.self])
+            MobileCore.start {
+                MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
+                                                                "experienceCloud.org": "testOrg@AdobeOrg",
+                                                                "experiencePlatform.configId": "12345-example"])
+                startLatch.countDown()
             }
 
             _ = startLatch.await(timeout: 2)
