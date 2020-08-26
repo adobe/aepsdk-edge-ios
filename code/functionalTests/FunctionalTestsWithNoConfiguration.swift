@@ -27,10 +27,10 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
 
         setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 1)
-        
+
         MobileCore.registerExtensions([TestableExperiencePlatformInternal.self])
         MobileCore.start { }
-        
+
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
     }
@@ -66,7 +66,7 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
                                   data: ["key": "value"])
         XCTAssertNotNil(responseEvent)
 
-        XCTAssertNotNil(MobileCore.dispatch(event:responseEvent))
+        XCTAssertNotNil(MobileCore.dispatch(event: responseEvent))
 
         // Expected handleResponseEvent is called
         wait(for: [handleResponseEventExpectation], timeout: 1.0)

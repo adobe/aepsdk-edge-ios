@@ -11,6 +11,7 @@
 //
 
 import AEPExperiencePlatform
+import AEPServices
 import SwiftUI
 
 struct ContentView: View {
@@ -24,7 +25,7 @@ struct ContentView: View {
                                                                      connectTimeout: 5,
                                                                      readTimeout: 5)
 
-                AEPServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest1, completionHandler: {connection in
+                ServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest1, completionHandler: {connection in
                     // function body goes here
                     print(connection.responseHttpHeader(forKey: "Content-Type") ?? "no content-type header")
                     print(connection.responseCode ?? "no response code")

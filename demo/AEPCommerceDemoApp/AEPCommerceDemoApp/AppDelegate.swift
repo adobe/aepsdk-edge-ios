@@ -10,11 +10,11 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPGriffon
+//import ACPGriffon
 import AEPCore
 import AEPExperiencePlatform
 import AEPIdentity
-import AEPLifecycle
+//import AEPLifecycle
 import AEPServices
 import UIKit
 
@@ -37,12 +37,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //         MobileCore.configureWith(appId: "94f571f308d5/e3fc566f21d5/launch-a7a05abd3c78-development")
 
         // Option 3 :  Configuration : From ADBMobileConfig.json file
-        let filePath = Bundle.main.path(forResource: "ADBMobileConfig", ofType: "json")
-        MobileCore.configureWith(filePath: filePath)
+        if let filePath = Bundle.main.path(forResource: "ADBMobileConfig", ofType: "json") {
+            MobileCore.configureWith(filePath: filePath)
+        }
 
         Identity.registerExtension()
-        Lifecycle.registerExtension()
-        ACPGriffon.registerExtension()
+        //Lifecycle.registerExtension()
+
+        // todo: reference the swift griffon extension here
+        //ACPGriffon.registerExtension()
         ExperiencePlatform.registerExtension()
         MobileCore.start({
             //            MobileCore.updateConfigurationWith(configDict: config)
@@ -50,13 +53,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // only start lifecycle if the application is not in the background
         if application.applicationState != .background {
-            MobileCore.lifecycleStart(nil)
+            MobileCore.lifecycleStart(additionalContextData: nil)
         }
         return true
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        MobileCore.lifecycleStart(nil)
+        MobileCore.lifecycleStart(additionalContextData: nil)
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {

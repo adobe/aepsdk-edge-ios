@@ -45,6 +45,7 @@ class ResponseCallbackHandler {
         guard !uniqueEventId.isEmpty else { return }
 
         if responseHandlers[uniqueEventId] != nil {
+            // todo: use removeVlaue API from core instead
             responseHandlers[uniqueEventId] = nil
             Log.trace(label: TAG, "Removing callback for Data platform response with unique id \(uniqueEventId).")
         }

@@ -36,6 +36,7 @@ public class ExperiencePlatform: NSObject, Extension {
         self.runtime = runtime
         super.init()
 
+        // todo: revisit the operationOrderer usage
         requestEventQueue.setHandler({ return $0.handler($0.event) })
         responseEventQueue.setHandler({ return $0.handler($0.event) })
         requestEventQueue.start()
@@ -57,6 +58,7 @@ public class ExperiencePlatform: NSObject, Extension {
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
+        // todo: update this based on config/identity shared states readiness
         return true
     }
 
@@ -70,7 +72,6 @@ public class ExperiencePlatform: NSObject, Extension {
 
     private func handleSharedStateUpdate(event: Event) {
         guard let eventData = event.data else {
-            //ACPCore.log(ACPMobileLogLevel.debug, tag: TAG, message: "Adobe Hub event contains no data. Cannot process event '\(event.eventUniqueIdentifier)'")
             return
         }
 
@@ -102,7 +103,7 @@ public class ExperiencePlatform: NSObject, Extension {
     /// - Parameter event: an event containing ExperiencePlatformEvent data for processing
     func handleAddEvent(event: Event) -> Bool {
         if event.data == nil {
-            Log.debug(label: TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
+            Log.trace(label: TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
             return true
         }
 
@@ -196,7 +197,7 @@ public class ExperiencePlatform: NSObject, Extension {
                                                        retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
         }
 
-        Log.debug(label: TAG, "Finished processing and sending events to Platform.")
+        Log.trace(label: TAG, "Finished processing and sending events to Platform.")
         return true
     }
 }

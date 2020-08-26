@@ -25,12 +25,13 @@ extension NetworkRequest {
             && lhs.httpMethod.rawValue == rhs.httpMethod.rawValue
     }
 
-//    public func hash(into hasher: inout Hasher) {
-//        hasher.combine(url.scheme)
-//        hasher.combine(url.host)
-//        hasher.combine(url.path)
-//        hasher.combine(httpMethod.rawValue)
-//    }
+    // todo revisit
+    //    public func hash(into hasher: inout Hasher) {
+    //        hasher.combine(url.scheme)
+    //        hasher.combine(url.host)
+    //        hasher.combine(url.path)
+    //        hasher.combine(httpMethod.rawValue)
+    //    }
 }
 
 /// Overriding NetworkService used for functional tests when extending the FunctionalTestBase
