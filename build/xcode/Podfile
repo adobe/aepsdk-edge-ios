@@ -4,26 +4,6 @@ platform :ios, '10.0'
 workspace 'AEPExperiencePlatform'
 project 'AEPExperiencePlatform.xcodeproj'
 
-target 'AEPExperiencePlatform' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-end
-
-target 'unitTests' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-end
-
-target 'functionalTests' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-end
-
-target 'functionalTestsConfig' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-end
-
 target 'AEPDemoAppSwiftUI' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
