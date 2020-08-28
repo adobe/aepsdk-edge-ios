@@ -14,7 +14,7 @@ import ACPCore
 
 private let logTag = "ExperiencePlatform"
 
-@objc(AEPExperiencePlatform)
+@objc(AEPMobileExperiencePlatform)
 public class ExperiencePlatform: NSObject {
 
     @available(*, unavailable) private override init() {}
