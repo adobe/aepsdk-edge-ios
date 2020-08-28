@@ -10,12 +10,12 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 @testable import AEPExperiencePlatform
 import XCTest
 
 /// Spy  class used for testing and inspecting `ExperiencePlatformInternal`.
-class TestableExperiencePlatformInternal: ExperiencePlatformInternal {
+class TestableExperiencePlatformInternal: ExperiencePlatform {
 
     static public var processAddEventExpectation: XCTestExpectation?
     static public var processEventQueueExpectation: XCTestExpectation?
@@ -23,35 +23,35 @@ class TestableExperiencePlatformInternal: ExperiencePlatformInternal {
     static public var processPlatformResponseEventExpectation: XCTestExpectation?
     static public var handleResponseEventExpectation: XCTestExpectation?
 
-    override func processAddEvent(_ event: ACPExtensionEvent) {
+    override func processAddEvent(_ event: Event) {
         if let expectation = TestableExperiencePlatformInternal.processAddEventExpectation {
             expectation.fulfill()
         }
         super.processAddEvent(event)
     }
 
-    override func processEventQueue(_ event: ACPExtensionEvent) {
+    override func processEventQueue(_ event: Event) {
         if let expectation = TestableExperiencePlatformInternal.processEventQueueExpectation {
             expectation.fulfill()
         }
         super.processEventQueue(event)
     }
 
-    override func handleAddEvent(event: ACPExtensionEvent) -> Bool {
+    override func handleAddEvent(event: Event) -> Bool {
         if let expectation = TestableExperiencePlatformInternal.handleAddEventExpectation {
             expectation.fulfill()
         }
         return super.handleAddEvent(event: event)
     }
 
-    override func processPlatformResponseEvent(_ event: ACPExtensionEvent) {
+    override func processPlatformResponseEvent(_ event: Event) {
         if let expectation = TestableExperiencePlatformInternal.processPlatformResponseEventExpectation {
             expectation.fulfill()
         }
         super.processPlatformResponseEvent(event)
     }
 
-    override func handleResponseEvent(event: ACPExtensionEvent) -> Bool {
+    override func handleResponseEvent(event: Event) -> Bool {
         if let expectation = TestableExperiencePlatformInternal.handleResponseEventExpectation {
             expectation.fulfill()
         }

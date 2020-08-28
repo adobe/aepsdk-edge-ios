@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 @testable import AEPExperiencePlatform
 import XCTest
 
@@ -27,12 +27,10 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
 
         setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 1)
-        do {
-            try ACPCore.registerExtension(TestableExperiencePlatformInternal.self)
-            ACPCore.start(nil)
-        } catch {
-            XCTFail("Failed test setUp: \(error.localizedDescription)")
-        }
+
+        MobileCore.registerExtensions([TestableExperiencePlatformInternal.self])
+        MobileCore.start { }
+
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
     }
@@ -49,26 +47,26 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
         TestableExperiencePlatformInternal.handleResponseEventExpectation = handleResponseEventExpectation
 
         // Dispatch request event which will block request queue as Configuration state is nil
-        let requestEvent = try? ACPExtensionEvent(name: "Request Test",
-                                                  type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                                  source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,
-                                                  data: ["key": "value"])
+        let requestEvent = Event(name: "Request Test",
+                                 type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                                 source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,
+                                 data: ["key": "value"])
 
         XCTAssertNotNil(requestEvent)
 
-        XCTAssertNotNil(try? ACPCore.dispatchEvent(requestEvent!))
+        XCTAssertNotNil(MobileCore.dispatch(event: requestEvent))
 
         // Expected handleAddEvent is called
         wait(for: [handleAddEventExpectation], timeout: 1.0)
 
         // Dispatch response event which will get processed in separate response queue
-        let responseEvent = try? ACPExtensionEvent(name: "Response Test",
-                                                   type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                                   source: ExperiencePlatformConstants.eventSourceExtensionResponseContent,
-                                                   data: ["key": "value"])
+        let responseEvent = Event(name: "Response Test",
+                                  type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+                                  source: ExperiencePlatformConstants.eventSourceExtensionResponseContent,
+                                  data: ["key": "value"])
         XCTAssertNotNil(responseEvent)
 
-        XCTAssertNotNil(try? ACPCore.dispatchEvent(responseEvent!))
+        XCTAssertNotNil(MobileCore.dispatch(event: responseEvent))
 
         // Expected handleResponseEvent is called
         wait(for: [handleResponseEventExpectation], timeout: 1.0)

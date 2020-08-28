@@ -10,8 +10,9 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 @testable import AEPExperiencePlatform
+import AEPServices
 import Foundation
 import XCTest
 
@@ -43,19 +44,17 @@ class FunctionalTestBase: XCTestCase {
     public class override func setUp() {
         super.setUp()
         FunctionalTestUtils.resetUserDefaults()
-        ACPCore.setLogLevel(ACPMobileLogLevel.verbose)
+
+        MobileCore.setLogLevel(level: LogLevel.trace)
         networkService = FunctionalTestNetworkService()
-        AEPServiceProvider.shared.networkService = networkService
+        ServiceProvider.shared.networkService = networkService
     }
 
     public override func setUp() {
         super.setUp()
         continueAfterFailure = false
         if FunctionalTestBase.isFirstRun {
-            guard let _ = try? ACPCore.registerExtension(InstrumentedExtension.self) else {
-                log("Unable to register the InstrumentedExtension")
-                return
-            }
+            MobileCore.registerExtensions([InstrumentedExtension.self])
         }
     }
 
@@ -68,24 +67,18 @@ class FunctionalTestBase: XCTestCase {
     /// Reset event and network request expectations and drop the items received until this point
     func resetTestExpectations() {
         log("Resetting functional test expectations for events and network requests")
-        InstrumentedWildcardListener.reset()
+        InstrumentedExtension.reset()
         FunctionalTestBase.networkService.reset()
     }
 
     /// Unregisters the `InstrumentedExtension` from the Event Hub. This method executes asynchronous.
     func unregisterInstrumentedExtension() {
-        guard let event = try? ACPExtensionEvent(name: "Unregister Instrumented Extension",
-                                                 type: FunctionalTestConst.EventType.instrumentedExtension,
-                                                 source: FunctionalTestConst.EventSource.unregisterExtension,
-                                                 data: nil) else {
-                                                    log("Failed to create unregisterExtension event")
-                                                    return
-        }
+        let event = Event(name: "Unregister Instrumented Extension",
+                          type: FunctionalTestConst.EventType.instrumentedExtension,
+                          source: FunctionalTestConst.EventSource.unregisterExtension,
+                          data: nil)
 
-        guard let _ = try? ACPCore.dispatchEvent(event) else {
-            log("Unable to unregister the InstrumentedExtension")
-            return
-        }
+        MobileCore.dispatch(event: event)
     }
 
     // MARK: Expected/Unexpected events assertions
@@ -107,7 +100,7 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        InstrumentedWildcardListener.expectedEvents[EventSpec(type: type, source: source)] = CountDownLatch(count)
+        InstrumentedExtension.expectedEvents[EventSpec(type: type, source: source)] = CountDownLatch(count)
     }
 
     /// Asserts if all the expected events were received and fails if an unexpected event was seen
@@ -117,12 +110,12 @@ class FunctionalTestBase: XCTestCase {
     ///   - setExpectationEvent(type: source: count:)
     ///   - assertUnexpectedEvents()
     func assertExpectedEvents(ignoreUnexpectedEvents: Bool = false, file: StaticString = #file, line: UInt = #line) {
-        guard InstrumentedWildcardListener.expectedEvents.count > 0 else {
+        guard InstrumentedExtension.expectedEvents.count > 0 else {
             assertionFailure("There are no event expectations set, use this API after calling setExpectationEvent", file: file, line: line)
             return
         }
 
-        for expectedEvent in InstrumentedWildcardListener.expectedEvents {
+        for expectedEvent in InstrumentedExtension.expectedEvents {
             let waitResult = expectedEvent.value.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
             let expectedCount: Int32 = expectedEvent.value.getInitialCount()
             let receivedCount: Int32 = expectedEvent.value.getInitialCount() - expectedEvent.value.getCurrentCount()
@@ -140,10 +133,10 @@ class FunctionalTestBase: XCTestCase {
         wait()
         var unexpectedEventsReceivedCount = 0
         var unexpectedEventsAsString = ""
-        for receivedEvent in InstrumentedWildcardListener.receivedEvents {
+        for receivedEvent in InstrumentedExtension.receivedEvents {
 
             // check if event is expected and it is over the expected count
-            if let expectedEvent = InstrumentedWildcardListener.expectedEvents[EventSpec(type: receivedEvent.key.type, source: receivedEvent.key.source)] {
+            if let expectedEvent = InstrumentedExtension.expectedEvents[EventSpec(type: receivedEvent.key.type, source: receivedEvent.key.source)] {
                 _ = expectedEvent.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
                 let expectedCount: Int32 = expectedEvent.getInitialCount()
                 let receivedCount: Int32 = expectedEvent.getInitialCount() - expectedEvent.getCurrentCount()
@@ -174,14 +167,14 @@ class FunctionalTestBase: XCTestCase {
     ///   - source: the event source as in the expectation
     ///   - timeout: how long should this method wait for the expected event, in seconds; by default it waits up to 1 second
     /// - Returns: list of events with the provided `type` and `source`, or empty if none was dispatched
-    func getDispatchedEventsWith(type: String, source: String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitEventTimeout, file: StaticString = #file, line: UInt = #line) -> [ACPExtensionEvent] {
-        if let _ = InstrumentedWildcardListener.expectedEvents[EventSpec(type: type, source: source)] {
-            let waitResult = InstrumentedWildcardListener.expectedEvents[EventSpec(type: type, source: source)]?.await(timeout: timeout)
+    func getDispatchedEventsWith(type: String, source: String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitEventTimeout, file: StaticString = #file, line: UInt = #line) -> [Event] {
+        if let _ = InstrumentedExtension.expectedEvents[EventSpec(type: type, source: source)] {
+            let waitResult = InstrumentedExtension.expectedEvents[EventSpec(type: type, source: source)]?.await(timeout: timeout)
             XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(type) and source \(source)", file: file, line: line)
         } else {
             wait(FunctionalTestConst.Defaults.waitTimeout)
         }
-        return InstrumentedWildcardListener.receivedEvents[EventSpec(type: type, source: source)] ?? []
+        return InstrumentedExtension.receivedEvents[EventSpec(type: type, source: source)] ?? []
     }
 
     /// Synchronous call to get the shared state for the specified `stateOwner`. This API throws an assertion failure in case of timeout.
@@ -190,24 +183,21 @@ class FunctionalTestBase: XCTestCase {
     /// - Returns: latest shared state of the given `stateOwner` or nil if no shared state was found
     func getSharedStateFor(_ ownerExtension: String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitSharedStateTimeout) -> [AnyHashable: Any]? {
         log("GetSharedState for \(ownerExtension)")
-        guard let event = try? ACPExtensionEvent(name: "Get Shared State",
-                                                 type: FunctionalTestConst.EventType.instrumentedExtension,
-                                                 source: FunctionalTestConst.EventSource.sharedStateRequest,
-                                                 data: ["stateowner": ownerExtension]) else {
-                                                    log("GetSharedState failed to create request event.")
-                                                    return nil
-        }
+        let event = Event(name: "Get Shared State",
+                          type: FunctionalTestConst.EventType.instrumentedExtension,
+                          source: FunctionalTestConst.EventSource.sharedStateRequest,
+                          data: ["stateowner": ownerExtension])
 
         var returnedState: [AnyHashable: Any]?
 
         let expectation = XCTestExpectation(description: "Shared state data returned")
-        try? ACPCore.dispatchEvent(withResponseCallback: event) { event in
+        MobileCore.dispatch(event: event, responseCallback: { event in
 
-            if let eventData = event.eventData {
+            if let eventData = event?.data {
                 returnedState = eventData["state"] as? [AnyHashable: Any]
             }
             expectation.fulfill()
-        }
+        })
 
         wait(for: [expectation], timeout: timeout)
         return returnedState

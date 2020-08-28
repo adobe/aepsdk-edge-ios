@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import Foundation
 
 /// A request for pushing events to the Adobe Data Platform.

@@ -16,8 +16,8 @@
 import Foundation
 
 public enum AuthenticatedState:String, Encodable {
-	case ambiguous = "ambiguous" // Ambiguous
-	case authenticated = "authenticated" // User identified by a login or similar action that was valid at the time of the event observation.
-	case loggedOut = "loggedOut" // User was identified by a login action at some point of time previously, but is not currently logged in.
+	case ambiguous // Ambiguous
+	case authenticated // User identified by a login or similar action that was valid at the time of the event observation.
+	case loggedOut // User was identified by a login action at some point of time previously, but is not currently logged in.
 	 
 }

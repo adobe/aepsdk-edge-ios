@@ -11,10 +11,11 @@
 //
 
 @testable import AEPExperiencePlatform
+@testable import AEPServices
 import Foundation
 
 // NetworkRequest extension used for compares in Dictionaries where NetworkRequest is the key
-extension NetworkRequest: Hashable {
+extension NetworkRequest {
 
     /// Equals compare based on host, scheme and URL path. Query params are not taken into consideration
     public static func == (lhs: NetworkRequest, rhs: NetworkRequest) -> Bool {
@@ -24,12 +25,13 @@ extension NetworkRequest: Hashable {
             && lhs.httpMethod.rawValue == rhs.httpMethod.rawValue
     }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(url.scheme)
-        hasher.combine(url.host)
-        hasher.combine(url.path)
-        hasher.combine(httpMethod.rawValue)
-    }
+    // todo revisit
+    //    public func hash(into hasher: inout Hasher) {
+    //        hasher.combine(url.scheme)
+    //        hasher.combine(url.host)
+    //        hasher.combine(url.path)
+    //        hasher.combine(httpMethod.rawValue)
+    //    }
 }
 
 /// Overriding NetworkService used for functional tests when extending the FunctionalTestBase
@@ -38,7 +40,7 @@ class FunctionalTestNetworkService: NetworkService {
     var responseMatchers: [NetworkRequest: HttpConnection] = [NetworkRequest: HttpConnection]()
     var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [NetworkRequest: CountDownLatch]()
 
-    func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
+    override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         FunctionalTestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
         if var requests = receivedNetworkRequests[networkRequest] {
             requests.append(networkRequest)

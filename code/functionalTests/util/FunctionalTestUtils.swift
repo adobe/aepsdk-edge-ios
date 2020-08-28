@@ -11,6 +11,7 @@
 //
 
 @testable import AEPExperiencePlatform
+import AEPServices
 import Foundation
 
 public class FunctionalTestUtils {
@@ -27,8 +28,8 @@ public class FunctionalTestUtils {
         defaults.set(nil, forKey: "Adobe.AdobeMobile_ConfigState.config.overridden.map")
 
         // remove from suites
-        let store = NamedUserDefaultsStore(name: "AEPExperiencePlatform")
-        store.removeAll()
+        // TODO: check if this is still required
+        //let store = NamedCollectionDataStore(name: "AEPExperiencePlatform")
 
         print("resetUserDefaults - Removed all user defaults")
     }

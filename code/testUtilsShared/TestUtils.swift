@@ -56,11 +56,10 @@ func flattenDictionary(dict: [String: Any]) -> [String: Any] {
     return result
 }
 
-/// Convert an timestamp in miliseconds since Linux epoch to an iso 8601 formatted date string.
-/// - Parameter timestamp: miliseconds since epoch
-func timestampToISO8601(_ timestamp: Int) -> String {
-    let date = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
-    return ISO8601DateFormatter().string(from: date)
+/// Convert an timestamp as Date to an iso 8601 formatted date string.
+/// - Parameter timestamp
+func timestampToISO8601(_ timestamp: Date) -> String {
+    return ISO8601DateFormatter().string(from: timestamp)
 }
 
 /// Attempts to convert provided data to [String: Any] using JSONSerialization.
