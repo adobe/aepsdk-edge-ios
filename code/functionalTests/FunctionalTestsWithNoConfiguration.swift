@@ -25,51 +25,50 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
         FunctionalTestUtils.resetUserDefaults()
         FunctionalTestBase.debugEnabled = false
 
-        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 1)
+        // 2 event hub shared states for registered extensions (TestableExperiencePlatform and InstrumentedExtension registered in FunctionalTestBase)
+        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 2)
 
-        MobileCore.registerExtensions([TestableExperiencePlatformInternal.self])
-        MobileCore.start { }
+        MobileCore.registerExtensions([TestableExperiencePlatform.self])
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
     }
 
-    // todo: rewrite tests related to handleResponseEvent
-    func testHandleResponseEvent_withPendingConfigurationState_expectResponseEventHandled() {
+    func testHandleExperienceEventRequest_withPendingConfigurationState_expectEventsQueueIsBlocked() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
         let configState = getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
         XCTAssertNil(configState)
 
-        let handleAddEventExpectation = XCTestExpectation(description: "Handle Add Event Called")
-        TestableExperiencePlatformInternal.handleAddEventExpectation = handleAddEventExpectation
+        // set expectations
+        let handleExperienceEventRequestExpectation = XCTestExpectation(description: "handleExperienceEventRequest Called")
+        handleExperienceEventRequestExpectation.isInverted = true
+        TestableExperiencePlatform.handleExperienceEventRequestExpectation = handleExperienceEventRequestExpectation
 
-        let handleResponseEventExpectation = XCTestExpectation(description: "Handle Response Event Called")
-        TestableExperiencePlatformInternal.handleResponseEventExpectation = handleResponseEventExpectation
+        let readyForEventExpectation = XCTestExpectation(description: "readyForEvent Called")
+        TestableExperiencePlatform.readyForEventExpectation = readyForEventExpectation
 
         // Dispatch request event which will block request queue as Configuration state is nil
         let requestEvent = Event(name: "Request Test",
                                  type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
                                  source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,
                                  data: ["key": "value"])
+        MobileCore.dispatch(event: requestEvent)
 
-        XCTAssertNotNil(requestEvent)
+        // Expected readyForEvent is called
+        wait(for: [readyForEventExpectation], timeout: 1.0)
 
-        XCTAssertNotNil(MobileCore.dispatch(event: requestEvent))
-
-        // Expected handleAddEvent is called
-        wait(for: [handleAddEventExpectation], timeout: 1.0)
-
-        // Dispatch response event which will get processed in separate response queue
-        let responseEvent = Event(name: "Response Test",
-                                  type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                  source: ExperiencePlatformConstants.eventSourceExtensionResponseContent,
-                                  data: ["key": "value"])
-        XCTAssertNotNil(responseEvent)
-
-        XCTAssertNotNil(MobileCore.dispatch(event: responseEvent))
-
-        // Expected handleResponseEvent is called
-        wait(for: [handleResponseEventExpectation], timeout: 1.0)
+        // Expected handleExperienceEventRequest not called
+        wait(for: [handleExperienceEventRequestExpectation], timeout: 1.0)
     }
+
+    // todo: rewrite the test related to handling the response event
+    // steps:
+    // - set valid configs
+    // - mock network response - multiple chuncks as a response for event1
+    // - send xdm event1
+    // - set invalid config (pending/nil)
+    // - send xdm event2
+    // - check callback is invoked correcly for event1, check xdm event2 not processed
+    //    func testHandleResponseEvent_withPendingConfigurationState_expectResponseEventHandled() {
+    //    }
 }
