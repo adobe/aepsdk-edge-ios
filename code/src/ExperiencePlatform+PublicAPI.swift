@@ -36,7 +36,7 @@ public extension ExperiencePlatform {
                           source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,
                           data: eventData)
 
-        ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: event.id.uuidString, responseHandler: responseHandler)
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: event.id.uuidString, responseHandler: responseHandler)
         MobileCore.dispatch(event: event)
     }
 }

@@ -20,7 +20,6 @@ public class ExperiencePlatform: NSObject, Extension {
     private let TAG = "ExperiencePlatformInternal"
     typealias EventHandlerMapping = (event: Event, handler: (Event) -> (Bool))
     private let requestEventQueue = OperationOrderer<EventHandlerMapping>("ExperiencePlatformInternal Requests")
-    private let responseEventQueue = OperationOrderer<EventHandlerMapping>("ExperiencePlatformInternal Responses")
     private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
 
@@ -38,18 +37,13 @@ public class ExperiencePlatform: NSObject, Extension {
 
         // todo: revisit the operationOrderer usage
         requestEventQueue.setHandler({ return $0.handler($0.event) })
-        responseEventQueue.setHandler({ return $0.handler($0.event) })
         requestEventQueue.start()
-        responseEventQueue.start()
     }
 
     public func onRegistered() {
         registerListener(type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
-        registerListener(type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                         source: EventSource.responseContent,
-                         listener: handleExperienceEventResponse)
         registerListener(type: EventType.hub, source: EventSource.sharedState, listener: handleSharedStateUpdate)
     }
 
@@ -58,16 +52,19 @@ public class ExperiencePlatform: NSObject, Extension {
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        // todo: update this based on config/identity shared states readiness
+        if event.type == ExperiencePlatformConstants.eventTypeExperiencePlatform, event.source == EventSource.requestContent {
+            let configurationSharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
+                                                          event: event)
+            let identitySharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Identity.stateOwner,
+                                                     event: event)
+            return configurationSharedState?.status == .set && identitySharedState?.status == .set
+        }
+
         return true
     }
 
     private func handleExperienceEventRequest(event: Event) {
         processAddEvent(event)
-    }
-
-    private func handleExperienceEventResponse(event: Event) {
-        processPlatformResponseEvent(event)
     }
 
     private func handleSharedStateUpdate(event: Event) {
@@ -108,22 +105,6 @@ public class ExperiencePlatform: NSObject, Extension {
         }
 
         return handleSendEvent(event)
-    }
-
-    /// Handle Konductor response by calling response callback. Called by event listener.
-    /// - Parameter event: the response event to add to the queue
-    func processPlatformResponseEvent(_ event: Event) {
-        responseEventQueue.add((event, handleResponseEvent(event:)))
-        Log.trace(label: TAG, "Event with id \(event.id.uuidString) added to queue.")
-    }
-
-    /// Calls `ResponseCallbackHandler` and invokes the response handler associated with this response event, if any
-    /// - Parameter event: the `ACPExtensionEvent` to process, event data should not be nil and it should contain a requestEventId
-    /// - Returns: `Bool` indicating if the response event was processed or not
-    func handleResponseEvent(event: Event) -> Bool {
-        guard let eventData = event.data, eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] != nil else { return false }
-        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: eventData)
-        return true
     }
 
     /// Processes the events in the event queue in the order they were received.

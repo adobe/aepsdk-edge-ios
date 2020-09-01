@@ -6,7 +6,7 @@
         "repositoryURL": "https://github.com/adobe/aepsdk-core-ios.git",
         "state": {
           "branch": "main",
-          "revision": "bb786961cb9f4a92c7d0dacf228b38d274ba1ff9",
+          "revision": "b6e740cfb34d5b2183fd0360ebcf5eb3163b0af3",
           "version": null
         }
       },
@@ -15,7 +15,7 @@
         "repositoryURL": "https://github.com/adobe/aepsdk-rulesengine-ios.git",
         "state": {
           "branch": "dev",
-          "revision": "df4dd8d0112eed11972649ff28b8e07f17125507",
+          "revision": "ceeb83f5ef6324d60a2431cb7c6520eeb56cd403",
           "version": null
         }
       }
