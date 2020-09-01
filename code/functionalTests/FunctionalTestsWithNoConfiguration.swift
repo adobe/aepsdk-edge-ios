@@ -35,6 +35,7 @@ class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
         resetTestExpectations()
     }
 
+    // todo: rewrite tests related to handleResponseEvent
     func testHandleResponseEvent_withPendingConfigurationState_expectResponseEventHandled() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
         let configState = getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)

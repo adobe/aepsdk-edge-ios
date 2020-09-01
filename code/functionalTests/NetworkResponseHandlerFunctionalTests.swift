@@ -246,14 +246,16 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     func testProcessResponseOnSuccess_WhenEmptyJsonResponse_doesNotDispatchEvent() {
         let jsonResponse = ""
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
-        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
+                                                     source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(0, dispatchEvents.count)
     }
 
     func testProcessResponseOnSuccess_WhenInvalidJsonResponse_doesNotDispatchEvent() {
         let jsonResponse = "{ ivalid json }"
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
-        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
+                                                     source: FunctionalTestConst.EventSource.responseContent)
         XCTAssertEqual(0, dispatchEvents.count)
     }
 

@@ -53,15 +53,19 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false
         if FunctionalTestBase.isFirstRun {
             let startLatch: CountDownLatch = CountDownLatch(1)
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
+            //setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
 
-            // hub shared state update for 1 extension versions, Identity and Config shared state updates
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 3)
+            // hub shared state update for 3 extension versions (InstrumentedExtension, Identity, ExperiencePlatform), Identity and Config shared state updates
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 5)
             setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count: 2)
 
             // expectations for update config request&response events
             setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
             setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+
+            // expectations for Identity force sync
+            setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: "com.adobe.eventSource.requestIdentity", count: 1)
+            setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: "com.adobe.eventSource.responseIdentity", count: 2)
 
             MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
             MobileCore.start {
@@ -472,6 +476,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         // first network call, no stored data
         setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
         var resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        XCTAssertEqual(1, resultNetworkRequests.count)
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(7, requestBody.count)
         resetTestExpectations()
@@ -482,6 +487,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
 
         resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        XCTAssertEqual(1, resultNetworkRequests.count)
         requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(13, requestBody.count)
 
@@ -595,8 +601,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
     }
 
-    // TODO: Failing due to AMSDK-10295, re-enable after the bug fix is released
-    func disable_testSendEvent_receivesResponseEventHandle_callsResponseHandler() {
+    func testSendEvent_receivesResponseEventHandle_callsResponseHandler() {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
@@ -619,12 +624,13 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         responseHandler.await()
 
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        XCTAssertEqual(1, resultNetworkRequests.count)
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
         let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                     source: FunctionalTestConst.EventSource.requestContent)
         let requestEventUUID = requestEvents[0].id.uuidString
         let data = flattenDictionary(dict: responseHandler.onResponseReceivedData)
-        XCTAssertEqual(8, data.count)
+        XCTAssertEqual(6, data.count)
         XCTAssertEqual("personalization:decisions", data["type"] as? String)
         XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", data["payload[0].id"] as? String)
         XCTAssertEqual("#D41DBA", data["payload[0].items[0].data.content.value"] as? String)
@@ -632,8 +638,6 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
         XCTAssertEqual(0, data["eventIndex"] as? Int)
         XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
-        XCTAssertEqual(requestId, data["requestId"] as? String)
-        XCTAssertEqual(requestEventUUID, data["requestEventId"] as? String)
     }
 }
 

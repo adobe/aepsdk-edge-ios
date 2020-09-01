@@ -20,8 +20,6 @@ class TestableExperiencePlatformInternal: ExperiencePlatform {
     static public var processAddEventExpectation: XCTestExpectation?
     static public var processEventQueueExpectation: XCTestExpectation?
     static public var handleAddEventExpectation: XCTestExpectation?
-    static public var processPlatformResponseEventExpectation: XCTestExpectation?
-    static public var handleResponseEventExpectation: XCTestExpectation?
 
     override func processAddEvent(_ event: Event) {
         if let expectation = TestableExperiencePlatformInternal.processAddEventExpectation {
@@ -42,19 +40,5 @@ class TestableExperiencePlatformInternal: ExperiencePlatform {
             expectation.fulfill()
         }
         return super.handleAddEvent(event: event)
-    }
-
-    override func processPlatformResponseEvent(_ event: Event) {
-        if let expectation = TestableExperiencePlatformInternal.processPlatformResponseEventExpectation {
-            expectation.fulfill()
-        }
-        super.processPlatformResponseEvent(event)
-    }
-
-    override func handleResponseEvent(event: Event) -> Bool {
-        if let expectation = TestableExperiencePlatformInternal.handleResponseEventExpectation {
-            expectation.fulfill()
-        }
-        return super.handleResponseEvent(event: event)
     }
 }
