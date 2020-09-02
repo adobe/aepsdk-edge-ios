@@ -38,7 +38,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         }
 
         func await() {
-            countDownLatch.await()
+            _ = countDownLatch.await()
         }
     }
 
@@ -52,11 +52,10 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         FunctionalTestUtils.resetUserDefaults()
         continueAfterFailure = false
         if FunctionalTestBase.isFirstRun {
-            let startLatch: CountDownLatch = CountDownLatch(1)
             //setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
 
-            // hub shared state update for 3 extension versions (InstrumentedExtension, Identity, ExperiencePlatform), Identity and Config shared state updates
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 5)
+            // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, ExperiencePlatform), Identity and Config shared state updates
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 4)
             setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count: 2)
 
             // expectations for update config request&response events
@@ -68,14 +67,9 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
             setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: "com.adobe.eventSource.responseIdentity", count: 2)
 
             MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
-            MobileCore.start {
-                MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
-                                                                "experienceCloud.org": "testOrg@AdobeOrg",
-                                                                "experiencePlatform.configId": "12345-example"])
-                startLatch.countDown()
-            }
-
-            XCTAssertEqual(DispatchTimeoutResult.success, startLatch.await(timeout: 2))
+            MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
+                                                            "experienceCloud.org": "testOrg@AdobeOrg",
+                                                            "experiencePlatform.configId": "12345-example"])
 
             assertExpectedEvents(ignoreUnexpectedEvents: false)
             resetTestExpectations()
