@@ -52,7 +52,6 @@ class NetworkResponseHandler {
             return nil
         }
 
-        // todo: add removeValue API to core
         sentEventsWaitingResponse[requestId] = nil
         return eventIds
     }

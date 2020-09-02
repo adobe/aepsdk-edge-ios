@@ -45,7 +45,6 @@ class ResponseCallbackHandler {
         guard !requestEventId.isEmpty else { return }
 
         if responseHandlers[requestEventId] != nil {
-            // todo: use removeVlaue API from core instead
             responseHandlers[requestEventId] = nil
             Log.trace(label: TAG, "Removing callback for Edge response with request unique id \(requestEventId).")
         }
