@@ -122,8 +122,8 @@ public class ExperiencePlatform: NSObject, Extension {
             guard let url: URL = experiencePlatformNetworkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
                                                                            configId: configId,
                                                                            requestId: requestId) else {
-                                                                            Log.debug(label: TAG, "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(event.id.uuidString)'.")
-                                                                            return
+                Log.debug(label: TAG, "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(event.id.uuidString)'.")
+                return
             }
 
             let callback: ResponseCallback = NetworkResponseCallback(requestId: requestId, responseHandler: networkResponseHandler)

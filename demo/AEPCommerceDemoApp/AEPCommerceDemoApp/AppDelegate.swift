@@ -46,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // todo: reference the swift griffon extension here
         //ACPGriffon.registerExtension()
         MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
-//        MobileCore.updateConfigurationWith(configDict: config)
+        //        MobileCore.updateConfigurationWith(configDict: config)
 
         // only start lifecycle if the application is not in the background
         if application.applicationState != .background {
