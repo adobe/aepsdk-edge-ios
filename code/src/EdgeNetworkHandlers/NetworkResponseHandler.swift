@@ -232,10 +232,7 @@ class NetworkResponseHandler {
     private func addEventAndRequestIdToDictionary(_ dictionary: [String: Any], requestId: String, requestEventId: String?) -> [String: Any] {
         var eventData: [String: Any] = dictionary
         eventData[ExperiencePlatformConstants.EventDataKeys.edgeRequesId] = requestId
-
-        if requestEventId != nil {
-            eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] = requestEventId
-        }
+        eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] = requestEventId
         return eventData
     }
 
