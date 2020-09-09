@@ -13,13 +13,13 @@
 		1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */; };
 		1CCD27DC245A240F00E912B2 /* ExperiencePlatformEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C82458CB8000E912B2 /* ExperiencePlatformEventTests.swift */; };
 		1CCD27DE245A254D00E912B2 /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */; };
-		240E3C8224EECC6700D44993 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 240E3C8124EECC6700D44993 /* SwiftPackageProductDependency */; };
-		240E3C8424EECC6700D44993 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 240E3C8324EECC6700D44993 /* SwiftPackageProductDependency */; };
+		240E3C8224EECC6700D44993 /* AEPCore in Frameworks */ = {isa = PBXBuildFile; productRef = 240E3C8124EECC6700D44993 /* AEPCore */; };
+		240E3C8424EECC6700D44993 /* AEPServices in Frameworks */ = {isa = PBXBuildFile; productRef = 240E3C8324EECC6700D44993 /* AEPServices */; };
 		240E3C9924EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
 		240E3C9A24EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
 		240E3C9B24EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
 		240E3C9C24EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
-		240E3CAA24F06D0800D44993 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 240E3CA924F06D0800D44993 /* SwiftPackageProductDependency */; };
+		240E3CAA24F06D0800D44993 /* AEPIdentity in Frameworks */ = {isa = PBXBuildFile; productRef = 240E3CA924F06D0800D44993 /* AEPIdentity */; };
 		26E77E37655A0C16DFCAACC4 /* Pods_AEPCommerceDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C113C147D73E182B69A2AE5 /* Pods_AEPCommerceDemoApp.framework */; };
 		BF024B4E24B8FE42002131E9 /* AuthenticatedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B2A24B8FE3F002131E9 /* AuthenticatedState.swift */; };
 		BF024B4F24B8FE42002131E9 /* InStorePurchase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B2B24B8FE3F002131E9 /* InStorePurchase.swift */; };
@@ -66,15 +66,15 @@
 		BF024B8924CF93DF002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
 		BF024B8A24CF93DF002131E9 /* InstrumentedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */; };
 		BF024B8C24CF93DF002131E9 /* FunctionalTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */; };
-		BF024B8E24CF93DF002131E9 /* TestableExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */; };
+		BF024B8E24CF93DF002131E9 /* TestableExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatform.swift */; };
 		BF024B8F24CF93DF002131E9 /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655406246DF6DB00A150E2 /* FunctionalTestUtils.swift */; };
 		BF024B9224CF93DF002131E9 /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libAEPExperiencePlatform.a */; platformFilter = ios; };
 		BF024B9B24CF9420002131E9 /* IdentityStateFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7E24C62BED002131E9 /* IdentityStateFunctionalTests.swift */; };
 		BF0C092A2461209900892B5D /* FunctionalTestsWithNoConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */; };
 		BF0C092D2461209900892B5D /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libAEPExperiencePlatform.a */; platformFilter = ios; };
 		BF0C0935246120B200892B5D /* NetworkResponseHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* NetworkResponseHandlerFunctionalTests.swift */; };
-		BF0C09482465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */; };
-		BF0C09492465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */; };
+		BF0C09482465E42100892B5D /* TestableExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatform.swift */; };
+		BF0C09492465E42100892B5D /* TestableExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableExperiencePlatform.swift */; };
 		BF5EECDC24983AE000C72622 /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4D5B4E7242EBB1600CAB6E4 /* libAEPExperiencePlatform.a */; };
 		BF5EECE724983B7000C72622 /* AEPDemoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA3249839DC00C72622 /* AEPDemoConstants.swift */; };
 		BF5EECE824983B7000C72622 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECAF249839DC00C72622 /* AppDelegate.swift */; };
@@ -275,7 +275,7 @@
 		BF024B9924CF93DF002131E9 /* functionalTestsIdentity.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsIdentity.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF0C092324608EEC00892B5D /* FunctionalTestsWithNoConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestsWithNoConfiguration.swift; sourceTree = "<group>"; };
 		BF0C09332461209900892B5D /* functionalTestsConfig.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = functionalTestsConfig.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestableExperiencePlatformInternal.swift; sourceTree = "<group>"; };
+		BF0C09472465E42100892B5D /* TestableExperiencePlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestableExperiencePlatform.swift; sourceTree = "<group>"; };
 		BF5EEC9A249839DC00C72622 /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
 		BF5EEC9B249839DC00C72622 /* CommerceUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceUtil.swift; sourceTree = "<group>"; };
 		BF5EEC9C249839DC00C72622 /* ResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseHandler.swift; sourceTree = "<group>"; };
@@ -398,9 +398,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				240E3C8424EECC6700D44993 /* BuildFile in Frameworks */,
-				240E3C8224EECC6700D44993 /* BuildFile in Frameworks */,
-				240E3CAA24F06D0800D44993 /* BuildFile in Frameworks */,
+				240E3C8424EECC6700D44993 /* AEPServices in Frameworks */,
+				240E3C8224EECC6700D44993 /* AEPCore in Frameworks */,
+				240E3CAA24F06D0800D44993 /* AEPIdentity in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,7 +457,7 @@
 				D4A473C52485938D00D31710 /* FunctionalTestConst.swift */,
 				D4655406246DF6DB00A150E2 /* FunctionalTestUtils.swift */,
 				D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */,
-				BF0C09472465E42100892B5D /* TestableExperiencePlatformInternal.swift */,
+				BF0C09472465E42100892B5D /* TestableExperiencePlatform.swift */,
 				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
 				D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */,
 				BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */,
@@ -820,9 +820,9 @@
 			);
 			name = AEPExperiencePlatform;
 			packageProductDependencies = (
-				240E3C8124EECC6700D44993 /* SwiftPackageProductDependency */,
-				240E3C8324EECC6700D44993 /* SwiftPackageProductDependency */,
-				240E3CA924F06D0800D44993 /* SwiftPackageProductDependency */,
+				240E3C8124EECC6700D44993 /* AEPCore */,
+				240E3C8324EECC6700D44993 /* AEPServices */,
+				240E3CA924F06D0800D44993 /* AEPIdentity */,
 			);
 			productName = ACPExperiencePlatform;
 			productReference = D4D5B4E7242EBB1600CAB6E4 /* libAEPExperiencePlatform.a */;
@@ -918,7 +918,7 @@
 			);
 			mainGroup = D4D5B4DE242EBB1600CAB6E4;
 			packageReferences = (
-				240E3C8024EECC6700D44993 /* RemoteSwiftPackageReference */,
+				240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */,
 			);
 			productRefGroup = D4D5B4E8242EBB1600CAB6E4 /* Products */;
 			projectDirPath = "";
@@ -1168,7 +1168,7 @@
 				BF024B8A24CF93DF002131E9 /* InstrumentedExtension.swift in Sources */,
 				240E3C9C24EF357100D44993 /* MockDataStore.swift in Sources */,
 				BF024B8C24CF93DF002131E9 /* FunctionalTestBase.swift in Sources */,
-				BF024B8E24CF93DF002131E9 /* TestableExperiencePlatformInternal.swift in Sources */,
+				BF024B8E24CF93DF002131E9 /* TestableExperiencePlatform.swift in Sources */,
 				BF024B8F24CF93DF002131E9 /* FunctionalTestUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1185,7 +1185,7 @@
 				D4A473C32485929000D31710 /* InstrumentedExtension.swift in Sources */,
 				240E3C9B24EF357100D44993 /* MockDataStore.swift in Sources */,
 				D4A473C22485928A00D31710 /* FunctionalTestBase.swift in Sources */,
-				BF0C09492465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */,
+				BF0C09492465E42100892B5D /* TestableExperiencePlatform.swift in Sources */,
 				D4655408246DF6DB00A150E2 /* FunctionalTestUtils.swift in Sources */,
 				BF0C092A2461209900892B5D /* FunctionalTestsWithNoConfiguration.swift in Sources */,
 			);
@@ -1321,7 +1321,7 @@
 				D4A473CB2485A8F300D31710 /* TestUtils.swift in Sources */,
 				D4A473C7248595CA00D31710 /* FunctionalTestConst.swift in Sources */,
 				D4655400246CBF5E00A150E2 /* FunctionalTestBase.swift in Sources */,
-				BF0C09482465E42100892B5D /* TestableExperiencePlatformInternal.swift in Sources */,
+				BF0C09482465E42100892B5D /* TestableExperiencePlatform.swift in Sources */,
 				D4A473D02485B86D00D31710 /* AEPExperiencePlatformFunctionalTests.swift in Sources */,
 				BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */,
 				D4655402246CD0B000A150E2 /* InstrumentedExtension.swift in Sources */,
@@ -1349,15 +1349,12 @@
 /* Begin PBXTargetDependency section */
 		240E3C8624EECDD700D44993 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 240E3C8524EECDD700D44993;
 		};
 		240E3C8824EECDD700D44993 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 240E3C8724EECDD700D44993;
 		};
 		240E3CA624F061E000D44993 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 240E3CA524F061E000D44993;
 		};
 		BF024B8124CF93DF002131E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1919,7 +1916,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		240E3C8024EECC6700D44993 /* RemoteSwiftPackageReference */ = {
+		240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/adobe/aepsdk-core-ios.git";
 			requirement = {
@@ -1930,19 +1927,19 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		240E3C8124EECC6700D44993 /* SwiftPackageProductDependency */ = {
+		240E3C8124EECC6700D44993 /* AEPCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 240E3C8024EECC6700D44993 /* RemoteSwiftPackageReference */;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
 			productName = AEPCore;
 		};
-		240E3C8324EECC6700D44993 /* SwiftPackageProductDependency */ = {
+		240E3C8324EECC6700D44993 /* AEPServices */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 240E3C8024EECC6700D44993 /* RemoteSwiftPackageReference */;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
 			productName = AEPServices;
 		};
-		240E3CA924F06D0800D44993 /* SwiftPackageProductDependency */ = {
+		240E3CA924F06D0800D44993 /* AEPIdentity */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 240E3C8024EECC6700D44993 /* RemoteSwiftPackageReference */;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
 			productName = AEPIdentity;
 		};
 /* End XCSwiftPackageProductDependency section */

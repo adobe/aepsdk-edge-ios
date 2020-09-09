@@ -29,24 +29,16 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         FunctionalTestBase.debugEnabled = false
 
         if FunctionalTestBase.isFirstRun {
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 2)
+            // config state and 2 event hub states (TestableExperiencePlatformInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
+            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 3)
 
             // expectations for update config request&response events
             setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
             setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
-
-            let startLatch = CountDownLatch(1)
-
-            MobileCore.registerExtensions([TestableExperiencePlatformInternal.self, FakeIdentityExtension.self])
-            MobileCore.start {
-                MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
-                                                                "experienceCloud.org": "testOrg@AdobeOrg",
-                                                                "experiencePlatform.configId": "12345-example"])
-                startLatch.countDown()
-            }
-
-            _ = startLatch.await(timeout: 2)
+            MobileCore.registerExtensions([TestableExperiencePlatform.self, FakeIdentityExtension.self])
+            MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
+                                                            "experienceCloud.org": "testOrg@AdobeOrg",
+                                                            "experiencePlatform.configId": "12345-example"])
             assertExpectedEvents(ignoreUnexpectedEvents: false)
             resetTestExpectations()
         }

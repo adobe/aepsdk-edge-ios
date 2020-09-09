@@ -23,14 +23,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         MobileCore.setLogLevel(level: .debug)
-        Identity.registerExtension()
-        ExperiencePlatform.registerExtension()
-        MobileCore.start {
-            MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
-                                                            "experienceCloud.org": "FAF554945B90342F0A495E2C@AdobeOrg",
-                                                            "experiencePlatform.configId": "d3d079e7-130e-4ec1-88d7-c328eb9815c4"])
-        }
-
+        MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
+        MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
+                                                        "experienceCloud.org": "FAF554945B90342F0A495E2C@AdobeOrg",
+                                                        "experiencePlatform.configId": "d3d079e7-130e-4ec1-88d7-c328eb9815c4"])
         return true
     }
 

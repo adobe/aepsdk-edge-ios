@@ -475,13 +475,13 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     }
 
     func testHandleNonStreamingResponse_WhenResponseIsEmptyString_ShouldReturnEmptyString() {
-        let responseStr: String = ""
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let responseStr = "".data(using: .utf8)
+        let connection: HttpConnection = HttpConnection(data: responseStr, response: nil, error: nil)
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
         XCTAssertFalse(mockResponseCallback.onErrorCalled)
         XCTAssertFalse(mockResponseCallback.onCompleteCalled)
-        XCTAssertEqual([responseStr], mockResponseCallback.onResponseJsonResponse)
+        XCTAssertEqual([""], mockResponseCallback.onResponseJsonResponse)
     }
 }

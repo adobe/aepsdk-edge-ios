@@ -70,7 +70,11 @@ class InstrumentedExtension: Extension {
             InstrumentedExtension.expectedEvents[EventSpec(type: event.type, source: event.source)]?.countDown()
         }
 
-        Log.debug(label: InstrumentedExtension.logTag, "Received event with type \(event.type) and source \(event.source)")
+        if event.source == EventSource.sharedState {
+            Log.debug(label: InstrumentedExtension.logTag, "Received event with type \(event.type) and source \(event.source), state owner \(event.data?["stateowner"] ?? "unknown")")
+        } else {
+            Log.debug(label: InstrumentedExtension.logTag, "Received event with type \(event.type) and source \(event.source)")
+        }
     }
 
     /// Process `getSharedStateFor` requests

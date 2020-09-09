@@ -18,9 +18,6 @@ import Foundation
 public class ExperiencePlatform: NSObject, Extension {
     // Tag for logging
     private let TAG = "ExperiencePlatformInternal"
-    typealias EventHandlerMapping = (event: Event, handler: (Event) -> (Bool))
-    private let requestEventQueue = OperationOrderer<EventHandlerMapping>("ExperiencePlatformInternal Requests")
-    private let responseEventQueue = OperationOrderer<EventHandlerMapping>("ExperiencePlatformInternal Responses")
     private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
 
@@ -35,22 +32,12 @@ public class ExperiencePlatform: NSObject, Extension {
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
         super.init()
-
-        // todo: revisit the operationOrderer usage
-        requestEventQueue.setHandler({ return $0.handler($0.event) })
-        responseEventQueue.setHandler({ return $0.handler($0.event) })
-        requestEventQueue.start()
-        responseEventQueue.start()
     }
 
     public func onRegistered() {
         registerListener(type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
-        registerListener(type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                         source: EventSource.responseContent,
-                         listener: handleExperienceEventResponse)
-        registerListener(type: EventType.hub, source: EventSource.sharedState, listener: handleSharedStateUpdate)
     }
 
     public func onUnregistered() {
@@ -58,111 +45,61 @@ public class ExperiencePlatform: NSObject, Extension {
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        // todo: update this based on config/identity shared states readiness
+        if event.type == ExperiencePlatformConstants.eventTypeExperiencePlatform, event.source == EventSource.requestContent {
+            let configurationSharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
+                                                          event: event)
+            let identitySharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Identity.stateOwner,
+                                                     event: event)
+            return configurationSharedState?.status == .set && identitySharedState?.status == .set
+        }
+
         return true
     }
 
-    private func handleExperienceEventRequest(event: Event) {
-        processAddEvent(event)
-    }
-
-    private func handleExperienceEventResponse(event: Event) {
-        processPlatformResponseEvent(event)
-    }
-
-    private func handleSharedStateUpdate(event: Event) {
-        guard let eventData = event.data else {
+    /// Handler for Experience Platform Request Content events.
+    /// Valid Configuration and Identity shared states are required for processing the event (see `readyForEvent`). If a valid Configuration shared state is
+    /// available, but no `experiencePlatform.configId ` is found, the event is dropped.
+    ///
+    /// - Parameter event: an event containing ExperiencePlatformEvent data for processing
+    func handleExperienceEventRequest(_ event: Event) {
+        if event.data == nil {
+            Log.trace(label: TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
             return
         }
 
-        // If Configuration or Identity shared state, start processing event queue
-        let stateOwner = eventData[ExperiencePlatformConstants.SharedState.stateowner] as? String
-        if stateOwner == ExperiencePlatformConstants.SharedState.Configuration.stateOwner  ||
-            stateOwner == ExperiencePlatformConstants.SharedState.Identity.stateOwner {
-            // kick event queue processing
-            processEventQueue(event)
-        }
-    }
+        Log.trace(label: TAG, "handleExperienceEventRequest - Processing event with id \(event.id.uuidString).")
 
-    /// Adds an event to the event queue and starts processing the queue.  Events with no event data are ignored.
-    /// - Parameter event: the event to add to the event queue for processing
-    func processAddEvent(_ event: Event) {
-        requestEventQueue.add((event, handleAddEvent(event:)))
-        Log.trace(label: TAG, "Event with id \(event.id.uuidString) added to queue.")
-    }
-
-    /// Called by event listeners to kick the processing of the event queue. Event passed to function is not added to queue for processing
-    /// - Parameter event: the event which triggered processing of the event queue
-    func processEventQueue(_ event: Event) {
-        // Trigger processing of queue
-        requestEventQueue.start()
-        Log.trace(label: TAG, "Event with id \(event.id.uuidString) requested event queue kick.")
-    }
-
-    /// Handler called from `OperationQueue` to add and process an event.
-    /// - Parameter event: an event containing ExperiencePlatformEvent data for processing
-    func handleAddEvent(event: Event) -> Bool {
-        if event.data == nil {
-            Log.trace(label: TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
-            return true
-        }
-
-        return handleSendEvent(event)
-    }
-
-    /// Handle Konductor response by calling response callback. Called by event listener.
-    /// - Parameter event: the response event to add to the queue
-    func processPlatformResponseEvent(_ event: Event) {
-        responseEventQueue.add((event, handleResponseEvent(event:)))
-        Log.trace(label: TAG, "Event with id \(event.id.uuidString) added to queue.")
-    }
-
-    /// Calls `ResponseCallbackHandler` and invokes the response handler associated with this response event, if any
-    /// - Parameter event: the `ACPExtensionEvent` to process, event data should not be nil and it should contain a requestEventId
-    /// - Returns: `Bool` indicating if the response event was processed or not
-    func handleResponseEvent(event: Event) -> Bool {
-        guard let eventData = event.data, eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] != nil else { return false }
-        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: eventData)
-        return true
-    }
-
-    /// Processes the events in the event queue in the order they were received.
-    ///
-    /// A valid Configuration shared state is required for processing events and if one is not available, processing the queue is halted without removing events from
-    /// the queue. If a valid Configuration shared state is available but no `experiencePlatform.configId ` is found, the event is dropped.
-    func handleSendEvent(_ event: Event) -> Bool {
-        Log.trace(label: TAG, "Processing handleSendEvent for event with id \(event.id.uuidString).")
-
+        // fetch config shared state, this should be resolved based on readyForEvent check
         guard let configSharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
                                                      event: event)?.value else {
-                                                        Log.debug(label: TAG,
-                                                                  "handleSendEvent - Unable to process queued events at this time, Configuration shared state is pending.")
-                                                        return false // keep event in queue to process on next trigger
+                                                        Log.warning(label: TAG,
+                                                                    "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', Configuration shared state was nil.")
+                                                        return // drop current event
         }
 
-        guard let configId = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String else {
+        guard let configId = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String, !configId.isEmpty else {
             Log.warning(label: TAG,
-                        "handleSendEvent - Removed event '\(event.id.uuidString)' because of invalid experiencePlatform.configId in configuration.")
-            return true // drop event from queue
+                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' because of invalid experiencePlatform.configId in configuration.")
+            return // drop current event
         }
 
         // Build Request object
-
         let requestBuilder = RequestBuilder()
         requestBuilder.enableResponseStreaming(recordSeparator: ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator,
                                                lineFeed: ExperiencePlatformConstants.Defaults.requestConfigLineFeed)
 
-        // get ECID
+        // get ECID from Identity shared state, this should be resolved based on readyForEvent check
         guard let identityState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Identity.stateOwner,
                                                  event: event)?.value else {
-                                                    Log.debug(label: TAG, "handleSendEvent - Unable to process queued events at this time, Identity shared state is pending.")
-                                                    return false // keep event in queue to process when Identity state updates
+                                                    Log.warning(label: TAG, "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', Identity shared state was nil.")
+                                                    return // drop current event
         }
 
         if let ecid = identityState[ExperiencePlatformConstants.SharedState.Identity.ecid] as? String {
             requestBuilder.experienceCloudId = ecid
         } else {
-            Log.warning(label: TAG, "handleSendEvent - An unexpected error has occurred, ECID is null.")
+            // This is not expected to happen. Continue without ECID
+            Log.warning(label: TAG, "handleExperienceEventRequest - An unexpected error has occurred, ECID is null.")
         }
 
         // get Griffon integration id and include it in to the requestHeaders
@@ -185,8 +122,8 @@ public class ExperiencePlatform: NSObject, Extension {
             guard let url: URL = experiencePlatformNetworkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
                                                                            configId: configId,
                                                                            requestId: requestId) else {
-                                                                            Log.debug(label: TAG, "Failed to build the URL, skipping current event with id \(event.id.uuidString).")
-                                                                            return true
+                Log.debug(label: TAG, "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(event.id.uuidString)'.")
+                return
             }
 
             let callback: ResponseCallback = NetworkResponseCallback(requestId: requestId, responseHandler: networkResponseHandler)
@@ -197,7 +134,6 @@ public class ExperiencePlatform: NSObject, Extension {
                                                        retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
         }
 
-        Log.trace(label: TAG, "Finished processing and sending events to Platform.")
-        return true
+        Log.trace(label: TAG, "handleExperienceEventRequest - Finished processing and sending events to Edge.")
     }
 }

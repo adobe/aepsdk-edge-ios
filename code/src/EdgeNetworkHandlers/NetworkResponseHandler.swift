@@ -52,7 +52,6 @@ class NetworkResponseHandler {
             return nil
         }
 
-        // todo: add removeValue API to core
         sentEventsWaitingResponse[requestId] = nil
         return eventIds
     }
@@ -77,7 +76,7 @@ class NetworkResponseHandler {
                       "processResponseOnSuccess - Received server response:\n \(jsonResponse), request id \(requestId)")
 
             // handle the event handles, errors and warnings coming from server
-            dispatchEventHandles(handlesArray: edgeResponse.handle, requestId: requestId)
+            processEventHandles(handlesArray: edgeResponse.handle, requestId: requestId)
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId, isError: true)
             dispatchEventErrors(errorsArray: edgeResponse.warnings, requestId: requestId, isError: false)
         } else {
@@ -118,29 +117,56 @@ class NetworkResponseHandler {
         }
     }
 
-    /// Dispatches each event handle in the provided `handlesArray` as a separate event through the Event Hub and processes
-    /// the store event handles (if any).
+    /// Dispatches each event handle in the provided `handlesArray` as a separate event through the Event Hub, processes
+    /// the store event handles (if any) and invokes the response handlers if they were registered before.
     /// - Parameters:
-    ///   - handlesArray: `[EdgeEventHandle]` containing all the event handles to be processed
+    ///   - handlesArray: `[EdgeEventHandle]` containing all the event handles to be processed; this list should not be nil/empty
     ///   - requestId: the request identifier, used for logging and to identify the request events associated with this response
     /// - See also: handleStoreEventHandle(handle: EdgeEventHandle)
-    private func dispatchEventHandles(handlesArray: [EdgeEventHandle]?, requestId: String) {
+    private func processEventHandles(handlesArray: [EdgeEventHandle]?, requestId: String) {
         guard let unwrappedEventHandles = handlesArray, !unwrappedEventHandles.isEmpty else {
-            Log.trace(label: logTag, "dispatchEventHandles - Received nil/empty event handle array, nothing to handle")
+            Log.trace(label: logTag, "processEventHandles - Received nil/empty event handle array, nothing to handle")
             return
         }
 
-        let requestEventIdsList = getWaitingEvents(requestId: requestId)
-        Log.trace(label: logTag, "dispatchEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
+        Log.trace(label: logTag, "processEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
+
         for eventHandle in unwrappedEventHandles {
+            let requestEventId = extractRequestEventId(forEventIndex: eventHandle.eventIndex, requestId: requestId)
             handleStoreEventHandle(handle: eventHandle)
 
             guard let eventHandleAsDictionary = try? eventHandle.asDictionary() else { return }
-            // set eventRequestId and edge requestId on the response event and dispatch data
-            let eventData = addEventAndRequestIdToDictionary(eventHandleAsDictionary, requestEventIdsList: requestEventIdsList, index: eventHandle.eventIndex, requestId: requestId)
-            guard !eventData.isEmpty else { return }
-            dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: false)
+            dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary, requestId: requestId, requestEventId: requestEventId)
+            ResponseCallbackHandler.shared.invokeResponseHandler(eventData: eventHandleAsDictionary, requestEventId: requestEventId)
         }
+    }
+
+    /// Extracts the request event identifiers paired with this event handle/error handle based on the index. If no matches found or the event handle index is missing, this method
+    /// returns nil
+    ///
+    /// - Parameters:
+    ///   - forEventIndex: the `EdgeEventHandle`/ `EdgeEventError` event index
+    ///   - requestId: edge request id used to fetch the waiting events associated with it (if any)
+    /// - Returns: the request event unique identifier for which this event handle was received, nil if not found
+    private func extractRequestEventId(forEventIndex: Int?, requestId: String) -> String? {
+        guard let requestEventIdsList = getWaitingEvents(requestId: requestId), let index = forEventIndex, index >= 0, index < requestEventIdsList.count else {
+            return nil
+        }
+
+        return requestEventIdsList[index]
+    }
+
+    /// Dispatches a response event with the provided event handle as `[String: Any]`, including the request event id and request identifier
+    /// - Parameters:
+    ///   - handleAsDictionary: represents an `EdgeEventHandle` parsed as [String:Any]
+    ///   - requestId: the edge request identifier associated with this response
+    ///   - requestEventId: the request event identifier for which this response event handle was received
+    private func dispatchResponseEvent(handleAsDictionary: [String: Any], requestId: String, requestEventId: String?) {
+        guard !handleAsDictionary.isEmpty else { return }
+
+        // set eventRequestId and edge requestId on the response event and dispatch data
+        let eventData = addEventAndRequestIdToDictionary(handleAsDictionary, requestId: requestId, requestEventId: requestEventId)
+        dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: false)
     }
 
     /// Iterates over the provided `errorsArray` and dispatches a new error event to the Event Hub.
@@ -156,18 +182,17 @@ class NetworkResponseHandler {
             return
         }
 
-        let requestEventIdsList = getWaitingEvents(requestId: requestId)
         Log.trace(label: logTag, "dispatchEventErrors - Processing \(unwrappedErrors.count) errors(s) for request id: \(requestId)")
         for error in unwrappedErrors {
 
             if let errorAsDictionary = try? error.asDictionary() {
                 logErrorMessage(errorAsDictionary, isError: isError, requestId: requestId)
 
+                let requestEventId = extractRequestEventId(forEventIndex: error.eventIndex, requestId: requestId)
                 // set eventRequestId and edge requestId on the response event and dispatch data
                 let eventData = addEventAndRequestIdToDictionary(errorAsDictionary,
-                                                                 requestEventIdsList: requestEventIdsList,
-                                                                 index: error.eventIndex,
-                                                                 requestId: requestId)
+                                                                 requestId: requestId,
+                                                                 requestEventId: requestEventId)
                 guard !eventData.isEmpty else { return }
                 dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true)
             }
@@ -204,12 +229,10 @@ class NetworkResponseHandler {
     ///   - requestEventIdsList: waiting events list for current `requestId`
     ///   - index: the request event index associated with this event handle/error
     ///   - requestId: current request id to be added to data
-    private func addEventAndRequestIdToDictionary(_ dictionary: [String: Any], requestEventIdsList: [String]?, index: Int?, requestId: String) -> [String: Any] {
+    private func addEventAndRequestIdToDictionary(_ dictionary: [String: Any], requestId: String, requestEventId: String?) -> [String: Any] {
         var eventData: [String: Any] = dictionary
         eventData[ExperiencePlatformConstants.EventDataKeys.edgeRequesId] = requestId
-
-        guard let unwrappedEventIds = requestEventIdsList, let unwrappedIndex = index, unwrappedIndex >= 0, unwrappedIndex < unwrappedEventIds.count else { return eventData }
-        eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] = unwrappedEventIds[unwrappedIndex]
+        eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] = requestEventId
         return eventData
     }
 

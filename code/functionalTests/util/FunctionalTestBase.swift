@@ -119,8 +119,8 @@ class FunctionalTestBase: XCTestCase {
             let waitResult = expectedEvent.value.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
             let expectedCount: Int32 = expectedEvent.value.getInitialCount()
             let receivedCount: Int32 = expectedEvent.value.getInitialCount() - expectedEvent.value.getCurrentCount()
-            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(expectedEvent.key.type) and source \(expectedEvent.key.source), expected \(expectedCount), but received \(receivedCount)", file: file, line: line)
-            XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) event(s) of type \(expectedEvent.key.type) and source \(expectedEvent.key.source), but received \(receivedCount)", file: file, line: line)
+            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(expectedEvent.key.type) and source \(expectedEvent.key.source), expected \(expectedCount), but received \(receivedCount)", file: (file), line: line)
+            XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) event(s) of type \(expectedEvent.key.type) and source \(expectedEvent.key.source), but received \(receivedCount)", file: (file), line: line)
         }
 
         guard ignoreUnexpectedEvents == false else { return }
@@ -140,7 +140,7 @@ class FunctionalTestBase: XCTestCase {
                 _ = expectedEvent.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
                 let expectedCount: Int32 = expectedEvent.getInitialCount()
                 let receivedCount: Int32 = expectedEvent.getInitialCount() - expectedEvent.getCurrentCount()
-                XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) events of type \(receivedEvent.key.type) and source \(receivedEvent.key.source), but received \(receivedCount)", file: file, line: line)
+                XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) events of type \(receivedEvent.key.type) and source \(receivedEvent.key.source), but received \(receivedCount)", file: (file), line: line)
             }
                 // check for events that don't have expectations set
             else {
@@ -150,7 +150,7 @@ class FunctionalTestBase: XCTestCase {
             }
         }
 
-        XCTAssertEqual(0, unexpectedEventsReceivedCount, "Received \(unexpectedEventsReceivedCount) unexpected event(s): \(unexpectedEventsAsString)", file: file, line: line)
+        XCTAssertEqual(0, unexpectedEventsReceivedCount, "Received \(unexpectedEventsReceivedCount) unexpected event(s): \(unexpectedEventsAsString)", file: (file), line: line)
     }
 
     /// To be revisited once AMSDK-10169 is implemented
@@ -217,7 +217,7 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        FunctionalTestBase.networkService.responseMatchers[NetworkRequest(url: requestUrl, httpMethod: httpMethod)] = responseHttpConnection
+        FunctionalTestBase.networkService.setResponseConnectionFor(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), responseConnection: responseHttpConnection)
     }
 
     /// Set  a network request expectation.
@@ -247,7 +247,7 @@ class FunctionalTestBase: XCTestCase {
     /// - See also:
     ///     - setExpectationNetworkRequest(url:httpMethod:)
     func assertNetworkRequestsCount(file: StaticString = #file, line: UInt = #line) {
-        guard FunctionalTestBase.networkService.expectedNetworkRequests.count > 0 else {
+        guard !FunctionalTestBase.networkService.expectedNetworkRequests.isEmpty else {
             assertionFailure("There are no network request expectations set, use this API after calling setExpectationNetworkRequest")
             return
         }
@@ -277,14 +277,14 @@ class FunctionalTestBase: XCTestCase {
         }
 
         let networkRequest = NetworkRequest(url: requestUrl, httpMethod: httpMethod)
-        if let expectedRequest = FunctionalTestBase.networkService.expectedNetworkRequests[networkRequest] {
-            let waitResult = expectedRequest.await(timeout: timeout)
+
+        if let waitResult = FunctionalTestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
             XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(url) and HTTPMethod \(httpMethod.toString())", file: file, line: line)
         } else {
             wait(FunctionalTestConst.Defaults.waitTimeout)
         }
 
-        return FunctionalTestBase.networkService.receivedNetworkRequests[networkRequest] ?? []
+        return FunctionalTestBase.networkService.getReceivedNetworkRequestsMatching(networkRequest: networkRequest)
     }
 
     /// Use this API for JSON formatted `NetworkRequest` body in order to retrieve a flattened dictionary containing its data.
