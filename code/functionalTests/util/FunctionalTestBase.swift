@@ -240,19 +240,20 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        FunctionalTestBase.networkService.expectedNetworkRequests[NetworkRequest(url: requestUrl, httpMethod: httpMethod)] = CountDownLatch(count)
+        FunctionalTestBase.networkService.setExpectedNetworkRequest(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), count: count)
     }
 
     /// Asserts that the correct number of network requests were being sent, based on the previously set expectations.
     /// - See also:
     ///     - setExpectationNetworkRequest(url:httpMethod:)
     func assertNetworkRequestsCount(file: StaticString = #file, line: UInt = #line) {
-        guard !FunctionalTestBase.networkService.expectedNetworkRequests.isEmpty else {
+        let expectedNetworkRequests = FunctionalTestBase.networkService.getExpectedNetworkRequests()
+        guard !expectedNetworkRequests.isEmpty else {
             assertionFailure("There are no network request expectations set, use this API after calling setExpectationNetworkRequest")
             return
         }
 
-        for expectedRequest in FunctionalTestBase.networkService.expectedNetworkRequests {
+        for expectedRequest in expectedNetworkRequests {
             let waitResult = expectedRequest.value.await(timeout: 2)
             let expectedCount: Int32 = expectedRequest.value.getInitialCount()
             let receivedCount: Int32 = expectedRequest.value.getInitialCount() - expectedRequest.value.getCurrentCount()
