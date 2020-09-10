@@ -12,6 +12,7 @@
 
 import AEPCore
 @testable import AEPExperiencePlatform
+import AEPServices
 import XCTest
 
 class RequestBuilderTests: XCTestCase {
@@ -20,6 +21,11 @@ class RequestBuilderTests: XCTestCase {
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false // fail so nil checks stop execution
+    }
+    
+    override func tearDown() {
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        ServiceProvider.shared.namedKeyValueService.remove(collectionName: testDataStoreName, key: "storePayloads")
     }
 
     func testGetRequestPayload_allParameters_verifyMetadata() {

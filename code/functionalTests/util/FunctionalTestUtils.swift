@@ -27,9 +27,8 @@ public class FunctionalTestUtils {
         // force reset overridden config
         defaults.set(nil, forKey: "Adobe.AdobeMobile_ConfigState.config.overridden.map")
 
-        // remove from suites
-        // TODO: check if this is still required
-        //let store = NamedCollectionDataStore(name: "AEPExperiencePlatform")
+        // remove stored payloads
+        ServiceProvider.shared.namedKeyValueService.remove(collectionName: "AEPExperiencePlatform", key: "storePayloads")
 
         print("resetUserDefaults - Removed all user defaults")
     }

@@ -84,8 +84,15 @@ class StoreResponsePayloadManager {
             return
         }
 
-        guard var serializedPayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: dataStoreName, key: storePayloadKeyName) as? [String: Any] else {
-            return
+        let previouslyStoredPayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: dataStoreName, key: storePayloadKeyName)
+        var serializedPayloads: [String: Any] = [:]
+        if previouslyStoredPayloads != nil {
+            guard let temp = previouslyStoredPayloads as? [String: Any] else {
+                Log.debug(label: TAG, "Failed to decode previously stored payloads, unable to update the client side store")
+                return
+            }
+            
+            serializedPayloads = temp
         }
 
         // list of expired payloads to be deleted
@@ -116,7 +123,6 @@ class StoreResponsePayloadManager {
 
         ServiceProvider.shared.namedKeyValueService.set(collectionName: dataStoreName, key: storePayloadKeyName, value: serializedPayloads)
         deleteStoredResponses(keys: expiredList)
-
     }
 
     /// Deletes a list of stores from the data store

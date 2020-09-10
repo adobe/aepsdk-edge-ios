@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
+@testable import AEPCore
 @testable import AEPExperiencePlatform
 import AEPServices
 import XCTest
@@ -43,7 +43,7 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
             resetTestExpectations()
         }
 
-        FakeIdentityExtension.clearSharedState() // make sure state is clear
+        FakeIdentityExtension.clearSharedState() // TODO: make sure state is clear, requires EventHub.reset
     }
 
     func testSendEvent_withPendingIdentityState_noRequestSent() {
