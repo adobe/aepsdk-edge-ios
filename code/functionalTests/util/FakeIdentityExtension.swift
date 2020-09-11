@@ -94,7 +94,7 @@ class FakeIdentityExtension: Extension {
         var doDispatch = false
 
         if event.source == FakeIdentityExtension.eventClearState {
-            // TODO: not supported anymore
+            // TODO: not supported anymore https://github.com/adobe/aepsdk-core-ios/issues/289
             // try? api.clearSharedEventStates()
             doDispatch = true
         } else if event.source == FakeIdentityExtension.eventSetState {
