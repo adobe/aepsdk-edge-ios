@@ -91,7 +91,7 @@ class StoreResponsePayloadManager {
                 Log.debug(label: TAG, "Failed to decode previously stored payloads, unable to update the client side store")
                 return
             }
-            
+
             serializedPayloads = temp
         }
 

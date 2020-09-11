@@ -25,25 +25,20 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
     override func setUp() {
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
-        FunctionalTestUtils.resetUserDefaults()
         FunctionalTestBase.debugEnabled = false
 
-        if FunctionalTestBase.isFirstRun {
-            // config state and 2 event hub states (TestableExperiencePlatformInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 3)
+        // config state and 2 event hub states (TestableExperiencePlatformInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
+        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 3)
 
-            // expectations for update config request&response events
-            setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
-            setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
-            MobileCore.registerExtensions([TestableExperiencePlatform.self, FakeIdentityExtension.self])
-            MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
-                                                            "experienceCloud.org": "testOrg@AdobeOrg",
-                                                            "experiencePlatform.configId": "12345-example"])
-            assertExpectedEvents(ignoreUnexpectedEvents: false)
-            resetTestExpectations()
-        }
-
-        FakeIdentityExtension.clearSharedState() // TODO: make sure state is clear, requires EventHub.reset
+        // expectations for update config request&response events
+        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        MobileCore.registerExtensions([TestableExperiencePlatform.self, FakeIdentityExtension.self])
+        MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
+                                                        "experienceCloud.org": "testOrg@AdobeOrg",
+                                                        "experiencePlatform.configId": "12345-example"])
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+        resetTestExpectations()
     }
 
     func testSendEvent_withPendingIdentityState_noRequestSent() {

@@ -49,38 +49,27 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
     override func setUp() {
         super.setUp()
-        FunctionalTestUtils.resetUserDefaults()
         continueAfterFailure = false
-        if FunctionalTestBase.isFirstRun {
-            //setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
 
-            // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, ExperiencePlatform), Identity and Config shared state updates
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 4)
-            setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count: 2)
+        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, ExperiencePlatform), Identity and Config shared state updates
+        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 4)
+        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count: 2)
 
-            // expectations for update config request&response events
-            setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
-            setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        // expectations for update config request&response events
+        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
 
-            // expectations for Identity force sync
-            setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: "com.adobe.eventSource.requestIdentity", count: 1)
-            setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: "com.adobe.eventSource.responseIdentity", count: 2)
+        // expectations for Identity force sync
+        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: "com.adobe.eventSource.requestIdentity", count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: "com.adobe.eventSource.responseIdentity", count: 2)
 
-            MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
-            MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
-                                                            "experienceCloud.org": "testOrg@AdobeOrg",
-                                                            "experiencePlatform.configId": "12345-example"])
+        MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
+        MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
+                                                        "experienceCloud.org": "testOrg@AdobeOrg",
+                                                        "experiencePlatform.configId": "12345-example"])
 
-            assertExpectedEvents(ignoreUnexpectedEvents: false)
-            resetTestExpectations()
-        }
-    }
-
-    override func tearDown() {
-        // to revisit when AMSDK-10169 is available
-        // wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
-        usleep(200000)
-        super.tearDown()
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+        resetTestExpectations()
     }
 
     // MARK: sample tests for the FunctionalTest framework usage

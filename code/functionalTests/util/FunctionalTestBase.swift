@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
+@testable import AEPCore
 @testable import AEPExperiencePlatform
 import AEPServices
 import Foundation
@@ -43,8 +43,6 @@ class FunctionalTestBase: XCTestCase {
 
     public class override func setUp() {
         super.setUp()
-        FunctionalTestUtils.resetUserDefaults()
-
         MobileCore.setLogLevel(level: LogLevel.trace)
         networkService = FunctionalTestNetworkService()
         ServiceProvider.shared.networkService = networkService
@@ -53,15 +51,19 @@ class FunctionalTestBase: XCTestCase {
     public override func setUp() {
         super.setUp()
         continueAfterFailure = false
-        if FunctionalTestBase.isFirstRun {
-            MobileCore.registerExtensions([InstrumentedExtension.self])
-        }
+        MobileCore.registerExtensions([InstrumentedExtension.self])
     }
 
     public override func tearDown() {
         super.tearDown()
+
+        // to revisit when AMSDK-10169 is available
+        // wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
+        usleep(200000)
         resetTestExpectations()
         FunctionalTestBase.isFirstRun = false
+        EventHub.reset()
+        UserDefaults.clearAll()
     }
 
     /// Reset event and network request expectations and drop the items received until this point

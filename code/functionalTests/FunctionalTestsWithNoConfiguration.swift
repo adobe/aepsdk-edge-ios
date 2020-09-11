@@ -15,14 +15,11 @@ import AEPCore
 import XCTest
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
-/// This test suite cannot be run in same target as other tests which provide an SDK configuration to ACPCore
-/// as all the tests in the same target use the same ACPCore instance.
 class FunctionalTestsWithNoConfiguration: FunctionalTestBase {
 
     override func setUp() {
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
-        FunctionalTestUtils.resetUserDefaults()
         FunctionalTestBase.debugEnabled = false
 
         // 2 event hub shared states for registered extensions (TestableExperiencePlatform and InstrumentedExtension registered in FunctionalTestBase)
