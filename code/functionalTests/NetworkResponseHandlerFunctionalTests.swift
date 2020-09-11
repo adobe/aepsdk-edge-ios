@@ -15,8 +15,8 @@ import AEPCore
 import XCTest
 
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
-    private let e1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
-    private let e2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
+    private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
+    private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let networkResponseHandler = NetworkResponseHandler()
 
     override func setUp() {
@@ -108,7 +108,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "        }\n" +
             "      ]\n" +
         "    }"
-        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
@@ -125,7 +125,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("Button color not found", flattenReceivedData["message"] as? String)
         XCTAssertEqual(0, flattenReceivedData["eventIndex"] as? Int)
         XCTAssertEqual(requestId, flattenReceivedData["requestId"] as? String)
-        XCTAssertEqual(e1.id.uuidString, flattenReceivedData["requestEventId"] as? String)
+        XCTAssertEqual(event1.id.uuidString, flattenReceivedData["requestEventId"] as? String)
     }
 
     func testProcessResponseOnError_WhenUnknownEventIndex_doesNotCrash() {
@@ -143,7 +143,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "        }\n" +
             "      ]\n" +
         "    }"
-        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
@@ -176,7 +176,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "        }\n" +
             "      ]\n" +
         "    }"
-        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "567")
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.errorResponseContent)
         XCTAssertEqual(1, dispatchEvents.count)
@@ -376,7 +376,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "        }],\n" +
             "      \"errors\": []\n" +
         "    }"
-        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
         // verify event 1
@@ -404,7 +404,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("pairedeventexample", flattenReceivedData2["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
         XCTAssertEqual(1, flattenReceivedData2["eventIndex"] as? Int)
-        XCTAssertEqual(e2.id.uuidString, flattenReceivedData2["requestEventId"] as? String)
+        XCTAssertEqual(event2.id.uuidString, flattenReceivedData2["requestEventId"] as? String)
         XCTAssertEqual("123612123812381", flattenReceivedData2["payload[0].id"] as? String)
     }
 
@@ -426,7 +426,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "      \"errors\": []\n" +
         "    }"
 
-        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e1, e2])
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
@@ -461,7 +461,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "      \"errors\": []\n" +
         "    }"
 
-        networkResponseHandler.addWaitingEvents(requestId: "567", batchedEvents: [e1, e2])
+        networkResponseHandler.addWaitingEvents(requestId: "567", batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent)
