@@ -43,6 +43,7 @@ class FunctionalTestBase: XCTestCase {
 
     public class override func setUp() {
         super.setUp()
+        UserDefaults.clearAll()
         MobileCore.setLogLevel(level: LogLevel.trace)
         networkService = FunctionalTestNetworkService()
         ServiceProvider.shared.networkService = networkService
@@ -170,7 +171,7 @@ class FunctionalTestBase: XCTestCase {
     ///   - timeout: how long should this method wait for the expected event, in seconds; by default it waits up to 1 second
     /// - Returns: list of events with the provided `type` and `source`, or empty if none was dispatched
     func getDispatchedEventsWith(type: String, source: String, timeout: TimeInterval = FunctionalTestConst.Defaults.waitEventTimeout, file: StaticString = #file, line: UInt = #line) -> [Event] {
-        if let _ = InstrumentedExtension.expectedEvents[EventSpec(type: type, source: source)] {
+        if InstrumentedExtension.expectedEvents[EventSpec(type: type, source: source)] != nil {
             let waitResult = InstrumentedExtension.expectedEvents[EventSpec(type: type, source: source)]?.await(timeout: timeout)
             XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(type) and source \(source)", file: file, line: line)
         } else {

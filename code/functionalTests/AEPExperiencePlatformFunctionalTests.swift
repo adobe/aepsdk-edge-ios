@@ -21,7 +21,8 @@ import XCTest
 class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private let exEdgeInteractUrl = "https://edge.adobedc.net/ee/v1/interact"
+    private let exEdgeInteractUrlString = "https://edge.adobedc.net/ee/v1/interact"
+    private let exEdgeInteractUrl = URL(string: "https://edge.adobedc.net/ee/v1/interact")! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
 
     class TestResponseHandler: ExperiencePlatformResponseHandler {
@@ -53,15 +54,14 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
         // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, ExperiencePlatform), Identity and Config shared state updates
         setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 4)
-        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count: 2)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
 
         // expectations for Identity force sync
-        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: "com.adobe.eventSource.requestIdentity", count: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: "com.adobe.eventSource.responseIdentity", count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.requestIdentity, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count: 2)
 
         MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
         MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
@@ -114,13 +114,13 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     func testSample_AssertNetworkRequestsCount() {
         let responseBody = "{\"test\": \"json\"}"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                            response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 2)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 2)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test2": "xdm"], data: nil))
@@ -131,19 +131,20 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     func testSample_AssertNetworkRequestAndResponseEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}}]}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                            response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
 
-        let requests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
 
         XCTAssertEqual(1, requests.count)
         let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])
@@ -257,13 +258,13 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                                response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                           statusCode: 200,
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 1)
 
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString": "xdm",
                                                             "testInt": 10,
@@ -275,7 +276,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
         // verify
         assertNetworkRequestsCount()
-        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(14, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
@@ -294,20 +295,20 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("val", requestBody["events[0].xdm.testDictionary.key"] as? String)
 
         let requestUrl = resultNetworkRequests[0].url
-        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrl))
+        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrlString))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
 
     func testSendEvent_withXDMDataAndCustomData_sendsExEdgeNetworkRequest() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                                response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                           statusCode: 200,
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 1)
 
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString": "xdm"], data: ["testDataString": "stringValue",
                                                                                          "testDataInt": 101,
@@ -319,7 +320,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
         // verify
         assertNetworkRequestsCount()
-        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(15, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
@@ -339,20 +340,20 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("val", requestBody["events[0].data.testDataDictionary.key"] as? String)
 
         let requestUrl = resultNetworkRequests[0].url
-        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrl))
+        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrlString))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
 
     func testSendEvent_withXDMSchema_sendsExEdgeNetworkRequest() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                                response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                           statusCode: 200,
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 1)
 
         var xdmObject = TestXDMObject()
         xdmObject.innerKey = "testInnerObject"
@@ -368,7 +369,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
         // verify
         assertNetworkRequestsCount()
-        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(12, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
@@ -385,91 +386,92 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("abc123def", requestBody["events[0].meta.collect.datasetId"] as? String)
 
         let requestUrl = resultNetworkRequests[0].url
-        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrl))
+        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrlString))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
 
     func testSendEvent_withEmptyXDMSchema_doesNotSendExEdgeNetworkRequest() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                                response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                           statusCode: 200,
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
 
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema())
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
 
         // verify
-        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         XCTAssertEqual(0, resultNetworkRequests.count)
     }
 
     func testSendEvent_withEmptyXDMSchemaAndEmptyData_doesNotSendExEdgeNetworkRequest() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                                response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                           statusCode: 200,
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
 
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema(), data: [:])
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
 
         // verify
-        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         XCTAssertEqual(0, resultNetworkRequests.count)
     }
 
     func testSendEvent_withEmptyXDMSchemaAndNilData_doesNotSendExEdgeNetworkRequest() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                                response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                           statusCode: 200,
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
 
         let experienceEvent = ExperiencePlatformEvent(xdm: TestXDMSchema(), data: nil)
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
 
         // verify
-        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         XCTAssertEqual(0, resultNetworkRequests.count)
     }
 
     // MARK: Client-side store
     func testSendEvent_twoConsecutiveCalls_appendsReceivedClientSideStore() {
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 1)
+        // swiftlint:disable:next line_length
         let storeResponseBody = "\u{0000}{\"requestId\": \"0000-4a4e-1111-bf5c-abcd\",\"handle\": [{\"payload\": [{\"key\": \"kndctr_testOrg_AdobeOrg_identity\",\"value\": \"CiY4OTgzOTEzMzE0NDAwMjUyOTA2NzcwMTY0NDE3Nzc4MzUwMTUzMFINCJHdjrCzLhAAGAEgB6ABnd2OsLMuqAGV8N6h277mkagB8AGR3Y6wsy4=\",\"maxAge\": 34128000},{\"key\": \"kndctr_testOrg_AdobeOrg_consent_check\",\"value\": \"1\",\"maxAge\": 7200},{\"key\": \"expired_key\",\"value\": \"1\",\"maxAge\": 0}],\"type\": \"state:store\"}]}\n"
         let responseConnection: HttpConnection = HttpConnection(data: storeResponseBody.data(using: .utf8),
-                                                                response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                           statusCode: 200,
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
 
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString": "xdm"], data: nil)
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
 
         // first network call, no stored data
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        var resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 1)
+        var resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(7, requestBody.count)
         resetTestExpectations()
 
         // send a new event, should contain previously stored store data
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
 
-        resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(13, requestBody.count)
@@ -488,7 +490,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(7200, requestBody["meta.state.entries[\(Int(!index))].maxAge"] as? Int)
 
         let requestUrl = resultNetworkRequests[0].url
-        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrl))
+        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(exEdgeInteractUrlString))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
@@ -501,15 +503,16 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform,
                             source: FunctionalTestConst.EventSource.responseContent,
                             count: 1)
+        // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                            response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
                                                                                       data: nil))
@@ -517,7 +520,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         assertExpectedEvents(ignoreUnexpectedEvents: true)
 
-        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
         let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                     source: FunctionalTestConst.EventSource.requestContent)
@@ -550,13 +553,13 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
                             count: 1)
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [],\"warnings\": [{\"eventIndex\": 0,\"code\": \"personalization:0\",\"message\": \"Failed due to unrecoverable system error\"}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                            response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
                                                                                       data: nil))
@@ -564,7 +567,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         assertExpectedEvents(ignoreUnexpectedEvents: true)
 
-        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
         let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
                                                     source: FunctionalTestConst.EventSource.requestContent)
@@ -587,15 +590,16 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     func testSendEvent_receivesResponseEventHandle_callsResponseHandler() {
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                            response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, count: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         let responseHandler = TestResponseHandler(expectedCount: 1)
 
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
@@ -606,12 +610,8 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         assertExpectedEvents(ignoreUnexpectedEvents: true)
         responseHandler.await()
 
-        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        let requestId = resultNetworkRequests[0].url.queryParam("requestId")
-        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
-                                                    source: FunctionalTestConst.EventSource.requestContent)
-        let requestEventUUID = requestEvents[0].id.uuidString
         let data = flattenDictionary(dict: responseHandler.onResponseReceivedData)
         XCTAssertEqual(6, data.count)
         XCTAssertEqual("personalization:decisions", data["type"] as? String)

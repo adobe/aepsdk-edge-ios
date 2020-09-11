@@ -59,14 +59,14 @@ class InstrumentedExtension: Extension {
         }
 
         // save this event in the receivedEvents dictionary
-        if let _ = InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)] {
+        if InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)] != nil {
             InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)]?.append(event)
         } else {
             InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)] = [event]
         }
 
         // count down if this is an expected event
-        if let _ = InstrumentedExtension.expectedEvents[EventSpec(type: event.type, source: event.source)] {
+        if InstrumentedExtension.expectedEvents[EventSpec(type: event.type, source: event.source)] != nil {
             InstrumentedExtension.expectedEvents[EventSpec(type: event.type, source: event.source)]?.countDown()
         }
 
