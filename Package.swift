@@ -28,14 +28,17 @@ let package = Package(
         .target(name: "AEPExperiencePlatform",
                 dependencies: ["AEPCore", "AEPServices"],
                 path: "code/src"),
-        .target(name: "AEPDemoAppSwiftUI",
-                dependencies: ["AEPCore", "AEPServices", "AEPIdentity"],
-                path: "demo/AEPDemoAppSwiftUI"),
-        .target(name: "functionalTests",
-                dependencies: ["AEPCore", "AEPServices", "AEPIdentity"],
-                path: "code/functionalTests"),
-        .target(name: "AEPCommerceDemoApp",
-                dependencies: ["AEPCore", "AEPServices", "AEPIdentity", "AEPLifecycle"],
-                path: "demo/AEPCommerceDemoApp")
+        .testTarget(name: "AEPDemoAppSwiftUI",
+                    dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
+                    path: "demo/AEPDemoAppSwiftUI"),
+        .testTarget(name: "functionalTests",
+                    dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
+                    path: "code/functionalTests"),
+        .testTarget(name: "unitTests",
+                    dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
+                    path: "code/unitTests"),
+        .testTarget(name: "AEPCommerceDemoApp",
+                    dependencies: ["AEPExperiencePlatform", "AEPIdentity", "AEPLifecycle"],
+                    path: "demo/AEPCommerceDemoApp")
     ]
 )
