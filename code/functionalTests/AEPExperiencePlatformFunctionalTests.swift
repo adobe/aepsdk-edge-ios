@@ -63,7 +63,13 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.requestIdentity, count: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count: 2)
 
-        MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
+        // wait for async registration because the EventHub is already started in FunctionalTestBase
+        let waitForRegistration = CountDownLatch(1)
+        MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self], {
+            print("Extensions registration is complete")
+            waitForRegistration.countDown()
+        })
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
         MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
                                                         "experienceCloud.org": "testOrg@AdobeOrg",
                                                         "experiencePlatform.configId": "12345-example"])
