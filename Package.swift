@@ -36,9 +36,11 @@ let package = Package(
                     path: "code/functionalTests"),
         .testTarget(name: "unitTests",
                     dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
-                    path: "code/unitTests"),
-        .testTarget(name: "AEPCommerceDemoApp",
-                    dependencies: ["AEPExperiencePlatform", "AEPIdentity", "AEPLifecycle"],
-                    path: "demo/AEPCommerceDemoApp")
+                    path: "code/unitTests")
+        /*
+         .testTarget(name: "AEPCommerceDemoApp",
+         dependencies: ["AEPExperiencePlatform", "AEPIdentity", "AEPLifecycle"],
+         path: "demo/AEPCommerceDemoApp")
+         */
     ]
 )

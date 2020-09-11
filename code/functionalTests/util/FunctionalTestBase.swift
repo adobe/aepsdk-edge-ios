@@ -220,7 +220,7 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        FunctionalTestBase.networkService.setResponseConnectionFor(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), responseConnection: responseHttpConnection)
+        _ = FunctionalTestBase.networkService.setResponseConnectionFor(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), responseConnection: responseHttpConnection)
     }
 
     /// Set  a network request expectation.
