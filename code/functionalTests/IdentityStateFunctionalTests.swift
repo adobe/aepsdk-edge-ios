@@ -10,8 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-@testable import AEPCore
-@testable import AEPExperiencePlatform
+import AEPCore
+import AEPExperiencePlatform
 import AEPServices
 import XCTest
 

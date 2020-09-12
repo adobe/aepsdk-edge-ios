@@ -118,7 +118,6 @@
 		D46553FB246B6FBC00A150E2 /* EdgeEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */; };
 		D4655400246CBF5E00A150E2 /* FunctionalTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */; };
 		D4655402246CD0B000A150E2 /* InstrumentedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */; };
-		D4655407246DF6DB00A150E2 /* FunctionalTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655406246DF6DB00A150E2 /* FunctionalTestUtils.swift */; };
 		D48CBD2224A17EEA00A24BD8 /* TestXDMSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48CBD2124A17EEA00A24BD8 /* TestXDMSchema.swift */; };
 		D49A628F250AE4F500B7C4A3 /* EventHub+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49A628E250AE4F500B7C4A3 /* EventHub+Test.swift */; };
 		D49A6290250AE4F500B7C4A3 /* EventHub+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49A628E250AE4F500B7C4A3 /* EventHub+Test.swift */; };
@@ -323,7 +322,6 @@
 		D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventError.swift; sourceTree = "<group>"; };
 		D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestBase.swift; sourceTree = "<group>"; };
 		D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentedExtension.swift; sourceTree = "<group>"; };
-		D4655406246DF6DB00A150E2 /* FunctionalTestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestUtils.swift; sourceTree = "<group>"; };
 		D48CBD2124A17EEA00A24BD8 /* TestXDMSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestXDMSchema.swift; sourceTree = "<group>"; };
 		D49A628E250AE4F500B7C4A3 /* EventHub+Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventHub+Test.swift"; sourceTree = "<group>"; };
 		D49A6293250AEEF000B7C4A3 /* UserDefaults+Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Test.swift"; sourceTree = "<group>"; };
@@ -425,7 +423,6 @@
 			children = (
 				D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */,
 				D4A473C52485938D00D31710 /* FunctionalTestConst.swift */,
-				D4655406246DF6DB00A150E2 /* FunctionalTestUtils.swift */,
 				D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */,
 				BF0C09472465E42100892B5D /* TestableExperiencePlatform.swift */,
 				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
@@ -1182,7 +1179,6 @@
 				D4EED36C2489ACE200D4815C /* FunctionalTestNetworkService.swift in Sources */,
 				D49A6298250AF39C00B7C4A3 /* NoConfigFunctionalTests.swift in Sources */,
 				240E3C9A24EF357100D44993 /* MockDataStore.swift in Sources */,
-				D4655407246DF6DB00A150E2 /* FunctionalTestUtils.swift in Sources */,
 				D49A6295250AEEF000B7C4A3 /* UserDefaults+Test.swift in Sources */,
 				D49A6290250AE4F500B7C4A3 /* EventHub+Test.swift in Sources */,
 				D49A6299250AF42000B7C4A3 /* IdentityStateFunctionalTests.swift in Sources */,

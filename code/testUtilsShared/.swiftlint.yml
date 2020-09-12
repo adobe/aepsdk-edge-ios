@@ -1,6 +1,3 @@
-disabled_rules:
-- force_unwrapping
-
 line_length:
     warning: 250
     error: 300
