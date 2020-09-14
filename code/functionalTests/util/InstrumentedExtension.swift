@@ -24,10 +24,10 @@ class InstrumentedExtension: Extension {
     var runtime: ExtensionRuntime
 
     // Expected events Dictionary - key: EventSpec, value: the expected count
-    static var expectedEvents: [EventSpec: CountDownLatch] = [EventSpec: CountDownLatch]()
+    static var expectedEvents = ThreadSafeDictionary<EventSpec, CountDownLatch>()
 
-    // All the events seen by this listener that are not of type instrumentedExtension
-    static var receivedEvents: [EventSpec: [Event]] = [EventSpec: [Event]]()
+    // All the events seen by this listener that are not of type instrumentedExtension - key: EventSpec, value: received events with EventSpec type and source
+    static var receivedEvents = ThreadSafeDictionary<EventSpec, [Event]>()
 
     func onRegistered() {
         runtime.registerListener(type: EventType.wildcard, source: EventSource.wildcard, listener: wildcardListenerProcessor)
@@ -106,7 +106,7 @@ class InstrumentedExtension: Extension {
     }
 
     static func reset() {
-        receivedEvents.removeAll()
-        expectedEvents.removeAll()
+        receivedEvents = ThreadSafeDictionary<EventSpec, [Event]>()
+        expectedEvents = ThreadSafeDictionary<EventSpec, CountDownLatch>()
     }
 }

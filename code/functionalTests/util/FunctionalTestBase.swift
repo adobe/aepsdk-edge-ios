@@ -23,7 +23,8 @@ struct EventSpec {
 }
 
 /// Hashable `EventSpec`, to be used as key in Dictionaries
-extension EventSpec: Hashable {
+extension EventSpec: Hashable & Equatable {
+
     static func == (lhs: EventSpec, rhs: EventSpec) -> Bool {
         return lhs.source.lowercased() == rhs.source.lowercased() && lhs.type.lowercased() == rhs.type.lowercased()
     }
@@ -118,7 +119,8 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        for expectedEvent in InstrumentedExtension.expectedEvents {
+        let currentExpectedEvents = InstrumentedExtension.expectedEvents.shallowCopy
+        for expectedEvent in currentExpectedEvents {
             let waitResult = expectedEvent.value.await(timeout: FunctionalTestConst.Defaults.waitEventTimeout)
             let expectedCount: Int32 = expectedEvent.value.getInitialCount()
             let receivedCount: Int32 = expectedEvent.value.getInitialCount() - expectedEvent.value.getCurrentCount()
@@ -136,7 +138,9 @@ class FunctionalTestBase: XCTestCase {
         wait()
         var unexpectedEventsReceivedCount = 0
         var unexpectedEventsAsString = ""
-        for receivedEvent in InstrumentedExtension.receivedEvents {
+
+        let currentReceivedEvents = InstrumentedExtension.receivedEvents.shallowCopy
+        for receivedEvent in currentReceivedEvents {
 
             // check if event is expected and it is over the expected count
             if let expectedEvent = InstrumentedExtension.expectedEvents[EventSpec(type: receivedEvent.key.type, source: receivedEvent.key.source)] {
