@@ -14,7 +14,7 @@
 import AEPCore
 import AEPExperiencePlatform
 import AEPIdentity
-//import AEPLifecycle
+import AEPLifecycle
 import AEPServices
 import UIKit
 
@@ -41,11 +41,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             MobileCore.configureWith(filePath: filePath)
         }
 
-        //Lifecycle.registerExtension()
-
         // todo: reference the swift griffon extension here
         //ACPGriffon.registerExtension()
-        MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
+        MobileCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
         //        MobileCore.updateConfigurationWith(configDict: config)
 
         // only start lifecycle if the application is not in the background

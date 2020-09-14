@@ -11,6 +11,7 @@
 //
 
 @testable import AEPExperiencePlatform
+import AEPServices
 import XCTest
 
 class StoreResponsePayloadManagerTests: XCTestCase {
@@ -23,9 +24,8 @@ class StoreResponsePayloadManagerTests: XCTestCase {
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        ServiceProvider.shared.namedKeyValueService.remove(collectionName: testDataStoreName, key: "storePayloads")
     }
-
-    // MARK: 
 
     func testGetActiveStores_isCorrect_whenRecordsInDataStore() {
         let manager = StoreResponsePayloadManager(testDataStoreName)
@@ -90,20 +90,20 @@ class StoreResponsePayloadManagerTests: XCTestCase {
         let activePayloads = manager.getActiveStores()
         XCTAssertEqual(2, activePayloads.count)
 
-        if let p1 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout"] {
-            XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout", p1.payload.key)
-            XCTAssertEqual("general=false", p1.payload.value)
-            XCTAssertEqual(8000, p1.payload.maxAge)
-            XCTAssertTrue(p1.expiryDate > originalPayloads[p1.payload.key]?.expiryDate ?? Date())
+        if let payload1 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout"] {
+            XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout", payload1.payload.key)
+            XCTAssertEqual("general=false", payload1.payload.value)
+            XCTAssertEqual(8000, payload1.payload.maxAge)
+            XCTAssertTrue(payload1.expiryDate > originalPayloads[payload1.payload.key]?.expiryDate ?? Date())
         } else {
             XCTFail("Failed to get payload with key kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout from active stores.")
         }
 
-        if let p2 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin"] {
-            XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin", p2.payload.key)
-            XCTAssertEqual("newValue", p2.payload.value)
-            XCTAssertEqual(10, p2.payload.maxAge)
-            XCTAssertTrue(p2.expiryDate > originalPayloads[p2.payload.key]?.expiryDate ?? Date())
+        if let payload2 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin"] {
+            XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin", payload2.payload.key)
+            XCTAssertEqual("newValue", payload2.payload.value)
+            XCTAssertEqual(10, payload2.payload.maxAge)
+            XCTAssertTrue(payload2.expiryDate > originalPayloads[payload2.payload.key]?.expiryDate ?? Date())
         } else {
             XCTFail("Failed to get payload with key kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin from active stores.")
         }

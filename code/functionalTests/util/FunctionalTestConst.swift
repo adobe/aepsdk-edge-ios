@@ -34,6 +34,7 @@ struct FunctionalTestConst {
         static let unregisterExtension = "com.adobe.eventSource.unregisterExtension"
         static let sharedState = "com.adobe.eventSource.sharedState"
         static let responseIdentity = "com.adobe.eventSource.responseIdentity"
+        static let requestIdentity = "com.adobe.eventSource.requestIdentity"
         static let booted = "com.adobe.eventSource.booted"
     }
 

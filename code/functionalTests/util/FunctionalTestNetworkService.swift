@@ -18,9 +18,7 @@ import Foundation
 class FunctionalTestNetworkService: NetworkService {
     private var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [NetworkRequest: [NetworkRequest]]()
     private var responseMatchers: [NetworkRequest: HttpConnection] = [NetworkRequest: HttpConnection]()
-
-    // TODO: make this private and use areNetworkRequestsEqual for comparisons
-    var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [NetworkRequest: CountDownLatch]()
+    private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [NetworkRequest: CountDownLatch]()
 
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         FunctionalTestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
@@ -46,6 +44,7 @@ class FunctionalTestNetworkService: NetworkService {
     }
 
     func reset() {
+        expectedNetworkRequests.removeAll()
         receivedNetworkRequests.removeAll()
         responseMatchers.removeAll()
     }
@@ -68,6 +67,14 @@ class FunctionalTestNetworkService: NetworkService {
         }
 
         return []
+    }
+
+    func setExpectedNetworkRequest(networkRequest: NetworkRequest, count: Int32) {
+        expectedNetworkRequests[networkRequest] = CountDownLatch(count)
+    }
+
+    func getExpectedNetworkRequests() -> [NetworkRequest: CountDownLatch] {
+        return expectedNetworkRequests
     }
 
     func setResponseConnectionFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) -> Bool {

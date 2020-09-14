@@ -24,10 +24,10 @@ class InstrumentedExtension: Extension {
     var runtime: ExtensionRuntime
 
     // Expected events Dictionary - key: EventSpec, value: the expected count
-    static var expectedEvents: [EventSpec: CountDownLatch] = [EventSpec: CountDownLatch]()
+    static var expectedEvents = ThreadSafeDictionary<EventSpec, CountDownLatch>()
 
-    // All the events seen by this listener that are not of type instrumentedExtension
-    static var receivedEvents: [EventSpec: [Event]] = [EventSpec: [Event]]()
+    // All the events seen by this listener that are not of type instrumentedExtension - key: EventSpec, value: received events with EventSpec type and source
+    static var receivedEvents = ThreadSafeDictionary<EventSpec, [Event]>()
 
     func onRegistered() {
         runtime.registerListener(type: EventType.wildcard, source: EventSource.wildcard, listener: wildcardListenerProcessor)
@@ -59,14 +59,14 @@ class InstrumentedExtension: Extension {
         }
 
         // save this event in the receivedEvents dictionary
-        if let _ = InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)] {
+        if InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)] != nil {
             InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)]?.append(event)
         } else {
             InstrumentedExtension.receivedEvents[EventSpec(type: event.type, source: event.source)] = [event]
         }
 
         // count down if this is an expected event
-        if let _ = InstrumentedExtension.expectedEvents[EventSpec(type: event.type, source: event.source)] {
+        if InstrumentedExtension.expectedEvents[EventSpec(type: event.type, source: event.source)] != nil {
             InstrumentedExtension.expectedEvents[EventSpec(type: event.type, source: event.source)]?.countDown()
         }
 
@@ -101,12 +101,12 @@ class InstrumentedExtension: Extension {
 
     func unregisterExtension() {
         Log.debug(label: InstrumentedExtension.logTag, "Unregistering the Instrumented extension from the Event Hub")
-        // TODO: no unregisterExtension API
+        // TODO: no unregisterExtension API https://github.com/adobe/aepsdk-core-ios/issues/289
         //runtime.unregisterExtension()
     }
 
     static func reset() {
-        receivedEvents.removeAll()
-        expectedEvents.removeAll()
+        receivedEvents = ThreadSafeDictionary<EventSpec, [Event]>()
+        expectedEvents = ThreadSafeDictionary<EventSpec, CountDownLatch>()
     }
 }
