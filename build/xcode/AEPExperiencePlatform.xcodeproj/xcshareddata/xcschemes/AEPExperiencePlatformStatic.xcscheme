@@ -5,13 +5,28 @@
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D4D5B4E6242EBB1600CAB6E4"
+               BuildableName = "libAEPExperiencePlatformStatic.a"
+               BlueprintName = "AEPExperiencePlatformStatic"
+               ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
    </BuildAction>
    <TestAction
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES"
       onlyGenerateCoverageForSpecifiedTargets = "YES">
       <CodeCoverageTargets>
          <BuildableReference
@@ -53,16 +68,6 @@
                ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BF024B8024CF93DF002131E9"
-               BuildableName = "functionalTestsIdentity.xctest"
-               BlueprintName = "functionalTestsIdentity"
-               ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -82,6 +87,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D4D5B4E6242EBB1600CAB6E4"
+            BuildableName = "libAEPExperiencePlatformStatic.a"
+            BlueprintName = "AEPExperiencePlatformStatic"
+            ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

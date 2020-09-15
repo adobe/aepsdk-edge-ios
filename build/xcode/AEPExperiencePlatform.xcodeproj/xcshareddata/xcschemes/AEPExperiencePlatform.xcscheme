@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1160"
+   LastUpgradeVersion = "1170"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,8 +14,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B4E6242EBB1600CAB6E4"
-               BuildableName = "libAEPExperiencePlatform.a"
+               BlueprintIdentifier = "D49674FF25104C2E001F5F95"
+               BuildableName = "AEPExperiencePlatform.framework"
                BlueprintName = "AEPExperiencePlatform"
                ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
             </BuildableReference>
@@ -26,48 +26,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      onlyGenerateCoverageForSpecifiedTargets = "YES">
-      <CodeCoverageTargets>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D4D5B4E6242EBB1600CAB6E4"
-            BuildableName = "libAEPExperiencePlatform.a"
-            BlueprintName = "AEPExperiencePlatform"
-            ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
-         </BuildableReference>
-      </CodeCoverageTargets>
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B5202432599B00CAB6E4"
-               BuildableName = "unitTests.xctest"
-               BlueprintName = "unitTests"
-               ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B53224325AB700CAB6E4"
-               BuildableName = "functionalTests.xctest"
-               BlueprintName = "functionalTests"
-               ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BF0C09252461209900892B5D"
-               BuildableName = "functionalTestsConfig.xctest"
-               BlueprintName = "functionalTestsConfig"
-               ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -90,8 +50,8 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D4D5B4E6242EBB1600CAB6E4"
-            BuildableName = "libAEPExperiencePlatform.a"
+            BlueprintIdentifier = "D49674FF25104C2E001F5F95"
+            BuildableName = "AEPExperiencePlatform.framework"
             BlueprintName = "AEPExperiencePlatform"
             ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
          </BuildableReference>

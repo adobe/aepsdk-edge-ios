@@ -17,8 +17,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D4D5B4E6242EBB1600CAB6E4"
-            BuildableName = "libAEPExperiencePlatform.a"
-            BlueprintName = "AEPExperiencePlatform"
+            BuildableName = "libAEPExperiencePlatformStatic.a"
+            BlueprintName = "AEPExperiencePlatformStatic"
             ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
