@@ -11,17 +11,12 @@ Pod::Spec.new do |s|
   s.license          = { :type => "Apache License, Version 2.0", :file => "LICENSE" }
   s.author           = "Adobe Experience Platform SDK Team"
   s.source           = { :git => "https://github.com/adobe/aepsdk-platform-ios.git", :tag => "v#{s.version}-#{s.name}" }
-  s.platform = :ios, "10.0"
+  s.ios.deployment_target = '10.0'
   s.swift_version = '5.0'
-  s.requires_arc = true
-  s.static_framework = true
-  
-  s.dependency "ACPCore", ">=2.6.1"
 
-  s.default_subspec = "iOS"
+  s.pod_target_xcconfig = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES' }
+  s.dependency 'AEPCore'
+  s.dependency 'AEPServices'
   
-  s.subspec "iOS" do |ios|
-      ios.source_files = "code/src/**/*.swift"
-  end
-  
+  s.source_files = 'code/src/**/*.swift'
 end

@@ -12,6 +12,27 @@ The Experience Platform Mobile extension for iOS is currently in Alpha developme
 
 ## Installation
 
+### Binaries
+
+To generate an `AEPExperiencePlatform.xcframework`, run the following command:
+
+```
+make archive
+```
+
+This will generate the xcframework under the `build` folder. Drag and drop all the .xcframeworks to your app target.
+
+### [CocoaPods](https://guides.cocoapods.org/using/using-cocoapods.html)
+
+```
+# Podfile
+use_frameworks!
+
+target 'YOUR_TARGET_NAME' do
+    pod 'AEPExperiencePlatform', :git => 'git@github.com:adobe/aepsdk-platform-ios.git', :branch => 'main'
+end
+```
+
 ### [Swift Package Manager](https://github.com/apple/swift-package-manager)
 
 To add the AEPExperiencePlatform Package to your application, from the Xcode menu select:
@@ -26,9 +47,12 @@ Alternatively, if your project has a `Package.swift` file, you can add AEPExperi
 
 ```
 dependencies: [
-    .package(name: "AEPExperiencePlatform",
-              url: "https://github.com/adobe/aepsdk-platform-ios.git",
-           branch: "main")
+    .package(url: "https://github.com/adobe/aepsdk-platform-ios.git", .branch: "main"),
+targets: [
+   	.target(name: "YourTarget",
+    				dependencies: ["AEPExperiencePlatform"],
+          	path: "your/path"),
+    ]
 ]
 ```
 
