@@ -14,7 +14,7 @@ import AEPCore
 import AEPServices
 import Foundation
 
-@objc(AEPExperiencePlatform)
+@objc(AEPMobileExperiencePlatform)
 public class ExperiencePlatform: NSObject, Extension {
     // Tag for logging
     private let TAG = "ExperiencePlatformInternal"
