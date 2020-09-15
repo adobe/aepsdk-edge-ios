@@ -6,6 +6,20 @@
 	objectVersion = 52;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		D496756B25117262001F5F95 /* AEPExperiencePlatformXCF */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D496756C25117263001F5F95 /* Build configuration list for PBXAggregateTarget "AEPExperiencePlatformXCF" */;
+			buildPhases = (
+			);
+			dependencies = (
+				D49675702511726B001F5F95 /* PBXTargetDependency */,
+			);
+			name = AEPExperiencePlatformXCF;
+			productName = AEPExperiencePlatformXCF;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		1CB57B262460F2B6000B2DA5 /* ExperiencePlatformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB57B242460EF0C000B2DA5 /* ExperiencePlatformTests.swift */; };
 		1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */; };
@@ -176,6 +190,13 @@
 			remoteInfo = AEPExperiencePlatform;
 		};
 		D49675622511549A001F5F95 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D49674FF25104C2E001F5F95;
+			remoteInfo = AEPExperiencePlatform;
+		};
+		D496756F2511726B001F5F95 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
 			proxyType = 1;
@@ -852,6 +873,9 @@
 					D49674FF25104C2E001F5F95 = {
 						CreatedOnToolsVersion = 11.7;
 					};
+					D496756B25117262001F5F95 = {
+						CreatedOnToolsVersion = 11.7;
+					};
 					D4D5B5202432599B00CAB6E4 = {
 						CreatedOnToolsVersion = 11.3.1;
 					};
@@ -884,6 +908,7 @@
 				D4D5B53224325AB700CAB6E4 /* functionalTests */,
 				D4D5B5792432977F00CAB6E4 /* AEPDemoAppSwiftUI */,
 				BF5EECD424983AE000C72622 /* AEPCommerceDemoApp */,
+				D496756B25117262001F5F95 /* AEPExperiencePlatformXCF */,
 			);
 		};
 /* End PBXProject section */
@@ -1265,6 +1290,11 @@
 			target = D49674FF25104C2E001F5F95 /* AEPExperiencePlatform */;
 			targetProxy = D49675622511549A001F5F95 /* PBXContainerItemProxy */;
 		};
+		D49675702511726B001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D49674FF25104C2E001F5F95 /* AEPExperiencePlatform */;
+			targetProxy = D496756F2511726B001F5F95 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -1411,6 +1441,30 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		D496756D25117263001F5F95 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FKGEE875K4;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		D496756E25117263001F5F95 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FKGEE875K4;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};
@@ -1686,6 +1740,15 @@
 			buildConfigurations = (
 				D496750A25104C2E001F5F95 /* Debug */,
 				D496750B25104C2E001F5F95 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D496756C25117263001F5F95 /* Build configuration list for PBXAggregateTarget "AEPExperiencePlatformXCF" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D496756D25117263001F5F95 /* Debug */,
+				D496756E25117263001F5F95 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

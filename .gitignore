@@ -13,6 +13,8 @@ xcuserdata/
 ## Build generated
 DerivedData/
 bin/*
+build/*.xcarchive
+build/*.xcframework
 build/xcode/*/out
 build/xcode/genhtml
 demo/AEPDemoAppSwiftUI/build
