@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -44,7 +44,6 @@
 		BF024B2724B8FD83002131E9 /* ProductListOpens.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B0324B8FD83002131E9 /* ProductListOpens.swift */; };
 		BF024B2824B8FD83002131E9 /* ProductViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B0424B8FD83002131E9 /* ProductViews.swift */; };
 		BF024B2924B8FD83002131E9 /* InStorePurchase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B0524B8FD83002131E9 /* InStorePurchase.swift */; };
-		BF2916B624A2A437009038A8 /* libAEPExperiencePlatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2916B524A2A437009038A8 /* libAEPExperiencePlatform.a */; };
 		BF5EEAB124904A3800C72622 /* CartItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA8E24904A3600C72622 /* CartItem.swift */; };
 		BF5EEAB224904A3800C72622 /* AEPDemoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */; };
 		BF5EEAB324904A3800C72622 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA9024904A3600C72622 /* ProductViewController.swift */; };
@@ -142,7 +141,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A63D7A4F24DC50C9842A182 /* Pods_AEPCommerceDemoApp.framework in Frameworks */,
-				BF2916B624A2A437009038A8 /* libAEPExperiencePlatform.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,6 +285,7 @@
 				BF5EE93B249039FE00C72622 /* Sources */,
 				BF5EE93C249039FE00C72622 /* Frameworks */,
 				BF5EE93D249039FE00C72622 /* Resources */,
+				FC1BED85B6BE8F56A5C4087D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -367,6 +366,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FC1BED85B6BE8F56A5C4087D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
