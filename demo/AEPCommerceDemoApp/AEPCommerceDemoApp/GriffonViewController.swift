@@ -46,14 +46,4 @@ class GriffonViewController: UIViewController {
             snackbar(message: AEPDemoConstants.Strings.griffonSessonActive)
         }
     }
-
-    @IBAction func griffonDisconnectBtn(_ sender: UIButton) {
-        if isConnected {
-            ACPGriffon.endSession()
-            snackbar(message: AEPDemoConstants.Strings.griffonSessionDisconnected)
-            isConnected = false
-        } else {
-            snackbar(message: AEPDemoConstants.Strings.griffonSessionNotActive)
-        }
-    }
 }
