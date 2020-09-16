@@ -136,13 +136,37 @@
 		D496752425104C7B001F5F95 /* ExperiencePlatformConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */; };
 		D496752525104C7B001F5F95 /* ExperiencePlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F62243565CC0057A6CC /* ExperiencePlatform.swift */; };
 		D49675332511304A001F5F95 /* AEPExperiencePlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = D496752A25104CD4001F5F95 /* AEPExperiencePlatform.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D496753B251136A0001F5F95 /* AEPCore in Frameworks */ = {isa = PBXBuildFile; productRef = D496753A251136A0001F5F95 /* AEPCore */; };
-		D496753D251136A0001F5F95 /* AEPServices in Frameworks */ = {isa = PBXBuildFile; productRef = D496753C251136A0001F5F95 /* AEPServices */; };
 		D496753E25113A43001F5F95 /* AEPExperiencePlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D496750025104C2E001F5F95 /* AEPExperiencePlatform.framework */; };
-		D496755A251153D9001F5F95 /* AEPIdentity in Frameworks */ = {isa = PBXBuildFile; productRef = D4967559251153D9001F5F95 /* AEPIdentity */; };
-		D496755C251153D9001F5F95 /* AEPLifecycle in Frameworks */ = {isa = PBXBuildFile; productRef = D496755B251153D9001F5F95 /* AEPLifecycle */; };
 		D496756125115494001F5F95 /* AEPExperiencePlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D496750025104C2E001F5F95 /* AEPExperiencePlatform.framework */; };
 		D49675642511549D001F5F95 /* AEPExperiencePlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D496750025104C2E001F5F95 /* AEPExperiencePlatform.framework */; };
+		D496757D2511D532001F5F95 /* AEPCoreDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D496757C2511D532001F5F95 /* AEPCoreDynamic */; };
+		D496757F2511D532001F5F95 /* AEPCoreDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D496757C2511D532001F5F95 /* AEPCoreDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675812511D53A001F5F95 /* AEPServicesDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675802511D53A001F5F95 /* AEPServicesDynamic */; };
+		D49675822511D53A001F5F95 /* AEPServicesDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675802511D53A001F5F95 /* AEPServicesDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675942511D692001F5F95 /* AEPCoreDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675932511D692001F5F95 /* AEPCoreDynamic */; };
+		D49675952511D692001F5F95 /* AEPCoreDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675932511D692001F5F95 /* AEPCoreDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675972511D698001F5F95 /* AEPServicesDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675962511D698001F5F95 /* AEPServicesDynamic */; };
+		D49675982511D698001F5F95 /* AEPServicesDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675962511D698001F5F95 /* AEPServicesDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675A02511D710001F5F95 /* AEPCoreDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D496759F2511D710001F5F95 /* AEPCoreDynamic */; };
+		D49675A22511D710001F5F95 /* AEPCoreDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D496759F2511D710001F5F95 /* AEPCoreDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675A42511D715001F5F95 /* AEPServicesDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675A32511D715001F5F95 /* AEPServicesDynamic */; };
+		D49675A52511D715001F5F95 /* AEPServicesDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675A32511D715001F5F95 /* AEPServicesDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675A72511D747001F5F95 /* AEPCoreDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675A62511D747001F5F95 /* AEPCoreDynamic */; };
+		D49675A92511D747001F5F95 /* AEPCoreDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675A62511D747001F5F95 /* AEPCoreDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675AB2511D74D001F5F95 /* AEPServicesDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675AA2511D74D001F5F95 /* AEPServicesDynamic */; };
+		D49675AC2511D74D001F5F95 /* AEPServicesDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675AA2511D74D001F5F95 /* AEPServicesDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675B62511D771001F5F95 /* AEPIdentityDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675B52511D771001F5F95 /* AEPIdentityDynamic */; };
+		D49675B72511D771001F5F95 /* AEPIdentityDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675B52511D771001F5F95 /* AEPIdentityDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675B92511D779001F5F95 /* AEPLifecycleDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675B82511D779001F5F95 /* AEPLifecycleDynamic */; };
+		D49675BA2511D779001F5F95 /* AEPLifecycleDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675B82511D779001F5F95 /* AEPLifecycleDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675C32511D8DB001F5F95 /* AEPIdentityDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675C22511D8DB001F5F95 /* AEPIdentityDynamic */; };
+		D49675C42511D8DB001F5F95 /* AEPIdentityDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675C22511D8DB001F5F95 /* AEPIdentityDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675CC2511D932001F5F95 /* AEPIdentityDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675CB2511D932001F5F95 /* AEPIdentityDynamic */; };
+		D49675CD2511D932001F5F95 /* AEPIdentityDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675CB2511D932001F5F95 /* AEPIdentityDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675CF2511D938001F5F95 /* AEPCoreDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675CE2511D938001F5F95 /* AEPCoreDynamic */; };
+		D49675D02511D938001F5F95 /* AEPCoreDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675CE2511D938001F5F95 /* AEPCoreDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D49675D22511D949001F5F95 /* AEPServicesDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = D49675D12511D949001F5F95 /* AEPServicesDynamic */; };
+		D49675D32511D949001F5F95 /* AEPServicesDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D49675D12511D949001F5F95 /* AEPServicesDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D49A628F250AE4F500B7C4A3 /* EventHub+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49A628E250AE4F500B7C4A3 /* EventHub+Test.swift */; };
 		D49A6290250AE4F500B7C4A3 /* EventHub+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49A628E250AE4F500B7C4A3 /* EventHub+Test.swift */; };
 		D49A6294250AEEF000B7C4A3 /* UserDefaults+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49A6293250AEEF000B7C4A3 /* UserDefaults+Test.swift */; };
@@ -213,6 +237,60 @@
 			dstSubfolderSpec = 10;
 			files = (
 				D496750825104C2E001F5F95 /* AEPExperiencePlatform.framework in Embed Frameworks */,
+				D49675D32511D949001F5F95 /* AEPServicesDynamic in Embed Frameworks */,
+				D49675CD2511D932001F5F95 /* AEPIdentityDynamic in Embed Frameworks */,
+				D49675D02511D938001F5F95 /* AEPCoreDynamic in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D496757E2511D532001F5F95 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D496757F2511D532001F5F95 /* AEPCoreDynamic in Embed Frameworks */,
+				D49675822511D53A001F5F95 /* AEPServicesDynamic in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D49675852511D55B001F5F95 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D49675952511D692001F5F95 /* AEPCoreDynamic in Embed Frameworks */,
+				D49675982511D698001F5F95 /* AEPServicesDynamic in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D49675A12511D710001F5F95 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D49675A22511D710001F5F95 /* AEPCoreDynamic in Embed Frameworks */,
+				D49675C42511D8DB001F5F95 /* AEPIdentityDynamic in Embed Frameworks */,
+				D49675A52511D715001F5F95 /* AEPServicesDynamic in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D49675A82511D747001F5F95 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D49675A92511D747001F5F95 /* AEPCoreDynamic in Embed Frameworks */,
+				D49675B72511D771001F5F95 /* AEPIdentityDynamic in Embed Frameworks */,
+				D49675BA2511D779001F5F95 /* AEPLifecycleDynamic in Embed Frameworks */,
+				D49675AC2511D74D001F5F95 /* AEPServicesDynamic in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -376,7 +454,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				D496753E25113A43001F5F95 /* AEPExperiencePlatform.framework in Frameworks */,
+				D49675B62511D771001F5F95 /* AEPIdentityDynamic in Frameworks */,
+				D49675AB2511D74D001F5F95 /* AEPServicesDynamic in Frameworks */,
 				26E77E37655A0C16DFCAACC4 /* Pods_AEPCommerceDemoApp.framework in Frameworks */,
+				D49675B92511D779001F5F95 /* AEPLifecycleDynamic in Frameworks */,
+				D49675A72511D747001F5F95 /* AEPCoreDynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,10 +466,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D496753B251136A0001F5F95 /* AEPCore in Frameworks */,
-				D496753D251136A0001F5F95 /* AEPServices in Frameworks */,
-				D496755C251153D9001F5F95 /* AEPLifecycle in Frameworks */,
-				D496755A251153D9001F5F95 /* AEPIdentity in Frameworks */,
+				D496757D2511D532001F5F95 /* AEPCoreDynamic in Frameworks */,
+				D49675812511D53A001F5F95 /* AEPServicesDynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,6 +476,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D496756125115494001F5F95 /* AEPExperiencePlatform.framework in Frameworks */,
+				D49675972511D698001F5F95 /* AEPServicesDynamic in Frameworks */,
+				D49675942511D692001F5F95 /* AEPCoreDynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,6 +486,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D49675642511549D001F5F95 /* AEPExperiencePlatform.framework in Frameworks */,
+				D49675A02511D710001F5F95 /* AEPCoreDynamic in Frameworks */,
+				D49675A42511D715001F5F95 /* AEPServicesDynamic in Frameworks */,
+				D49675C32511D8DB001F5F95 /* AEPIdentityDynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,6 +497,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D496750725104C2E001F5F95 /* AEPExperiencePlatform.framework in Frameworks */,
+				D49675D22511D949001F5F95 /* AEPServicesDynamic in Frameworks */,
+				D49675CC2511D932001F5F95 /* AEPIdentityDynamic in Frameworks */,
+				D49675CF2511D938001F5F95 /* AEPCoreDynamic in Frameworks */,
 				D7D46DAE400EE6BA0EA021DF /* Pods_AEPDemoAppSwiftUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -754,14 +842,23 @@
 				BF5EECDB24983AE000C72622 /* Frameworks */,
 				BF5EECDE24983AE000C72622 /* Resources */,
 				BF024B7324BFD9BF002131E9 /* ShellScript */,
+				D49675A82511D747001F5F95 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D49675B42511D76B001F5F95 /* PBXTargetDependency */,
+				D49675B22511D765001F5F95 /* PBXTargetDependency */,
+				D49675B02511D757001F5F95 /* PBXTargetDependency */,
+				D49675AE2511D752001F5F95 /* PBXTargetDependency */,
 				D496755E25115464001F5F95 /* PBXTargetDependency */,
 			);
 			name = AEPCommerceDemoApp;
 			packageProductDependencies = (
+				D49675A62511D747001F5F95 /* AEPCoreDynamic */,
+				D49675AA2511D74D001F5F95 /* AEPServicesDynamic */,
+				D49675B52511D771001F5F95 /* AEPIdentityDynamic */,
+				D49675B82511D779001F5F95 /* AEPLifecycleDynamic */,
 			);
 			productName = AEPCommerceDemoApp;
 			productReference = BF5EECE524983AE000C72622 /* AEPCommerceDemoApp.app */;
@@ -776,21 +873,18 @@
 				D49674FD25104C2E001F5F95 /* Frameworks */,
 				D49674FE25104C2E001F5F95 /* Resources */,
 				D496752C251050B9001F5F95 /* ShellScript */,
+				D496757E2511D532001F5F95 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D4967556251153D4001F5F95 /* PBXTargetDependency */,
-				D4967558251153D4001F5F95 /* PBXTargetDependency */,
-				D496753725113678001F5F95 /* PBXTargetDependency */,
-				D496753925113678001F5F95 /* PBXTargetDependency */,
+				D49675792511D522001F5F95 /* PBXTargetDependency */,
+				D496757B2511D522001F5F95 /* PBXTargetDependency */,
 			);
 			name = AEPExperiencePlatform;
 			packageProductDependencies = (
-				D496753A251136A0001F5F95 /* AEPCore */,
-				D496753C251136A0001F5F95 /* AEPServices */,
-				D4967559251153D9001F5F95 /* AEPIdentity */,
-				D496755B251153D9001F5F95 /* AEPLifecycle */,
+				D496757C2511D532001F5F95 /* AEPCoreDynamic */,
+				D49675802511D53A001F5F95 /* AEPServicesDynamic */,
 			);
 			productName = AEPExperiencePlatform;
 			productReference = D496750025104C2E001F5F95 /* AEPExperiencePlatform.framework */;
@@ -804,14 +898,19 @@
 				D4D5B51E2432599B00CAB6E4 /* Frameworks */,
 				D4D5B51F2432599B00CAB6E4 /* Resources */,
 				BF024B7524C01AB2002131E9 /* ShellScript */,
+				D49675852511D55B001F5F95 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D49675902511D677001F5F95 /* PBXTargetDependency */,
+				D49675922511D677001F5F95 /* PBXTargetDependency */,
 				D49675602511548A001F5F95 /* PBXTargetDependency */,
 			);
 			name = unitTests;
 			packageProductDependencies = (
+				D49675932511D692001F5F95 /* AEPCoreDynamic */,
+				D49675962511D698001F5F95 /* AEPServicesDynamic */,
 			);
 			productName = UnitTests;
 			productReference = D4D5B5212432599B00CAB6E4 /* unitTests.xctest */;
@@ -825,14 +924,21 @@
 				D4D5B53024325AB700CAB6E4 /* Frameworks */,
 				D4D5B53124325AB700CAB6E4 /* Resources */,
 				BF024B7624C01D02002131E9 /* ShellScript */,
+				D49675A12511D710001F5F95 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D496759E2511D70A001F5F95 /* PBXTargetDependency */,
+				D496759C2511D704001F5F95 /* PBXTargetDependency */,
+				D49675C12511D8CA001F5F95 /* PBXTargetDependency */,
 				D49675632511549A001F5F95 /* PBXTargetDependency */,
 			);
 			name = functionalTests;
 			packageProductDependencies = (
+				D496759F2511D710001F5F95 /* AEPCoreDynamic */,
+				D49675A32511D715001F5F95 /* AEPServicesDynamic */,
+				D49675C22511D8DB001F5F95 /* AEPIdentityDynamic */,
 			);
 			productName = functionalTests;
 			productReference = D4D5B53324325AB700CAB6E4 /* functionalTests.xctest */;
@@ -853,9 +959,15 @@
 			);
 			dependencies = (
 				D496750625104C2E001F5F95 /* PBXTargetDependency */,
+				D49675C82511D917001F5F95 /* PBXTargetDependency */,
+				D49675C62511D90E001F5F95 /* PBXTargetDependency */,
+				D49675CA2511D922001F5F95 /* PBXTargetDependency */,
 			);
 			name = AEPDemoAppSwiftUI;
 			packageProductDependencies = (
+				D49675CB2511D932001F5F95 /* AEPIdentityDynamic */,
+				D49675CE2511D938001F5F95 /* AEPCoreDynamic */,
+				D49675D12511D949001F5F95 /* AEPServicesDynamic */,
 			);
 			productName = AEPCommerceDemoApp;
 			productReference = D4D5B57A2432977F00CAB6E4 /* AEPDemoAppSwiftUI.app */;
@@ -898,6 +1010,7 @@
 			mainGroup = D4D5B4DE242EBB1600CAB6E4;
 			packageReferences = (
 				240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */,
+				D49675BB2511D827001F5F95 /* XCRemoteSwiftPackageReference "aepsdk-rulesengine-ios" */,
 			);
 			productRefGroup = D4D5B4E8242EBB1600CAB6E4 /* Products */;
 			projectDirPath = "";
@@ -1259,22 +1372,6 @@
 			target = D49674FF25104C2E001F5F95 /* AEPExperiencePlatform */;
 			targetProxy = D496750525104C2E001F5F95 /* PBXContainerItemProxy */;
 		};
-		D496753725113678001F5F95 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = D496753625113678001F5F95 /* AEPCore */;
-		};
-		D496753925113678001F5F95 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = D496753825113678001F5F95 /* AEPServices */;
-		};
-		D4967556251153D4001F5F95 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = D4967555251153D4001F5F95 /* AEPIdentity */;
-		};
-		D4967558251153D4001F5F95 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = D4967557251153D4001F5F95 /* AEPLifecycle */;
-		};
 		D496755E25115464001F5F95 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D49674FF25104C2E001F5F95 /* AEPExperiencePlatform */;
@@ -1294,6 +1391,62 @@
 			isa = PBXTargetDependency;
 			target = D49674FF25104C2E001F5F95 /* AEPExperiencePlatform */;
 			targetProxy = D496756F2511726B001F5F95 /* PBXContainerItemProxy */;
+		};
+		D49675792511D522001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D49675782511D522001F5F95 /* AEPCoreDynamic */;
+		};
+		D496757B2511D522001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D496757A2511D522001F5F95 /* AEPServicesDynamic */;
+		};
+		D49675902511D677001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D496758F2511D677001F5F95 /* AEPCoreDynamic */;
+		};
+		D49675922511D677001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D49675912511D677001F5F95 /* AEPServicesDynamic */;
+		};
+		D496759C2511D704001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D496759B2511D704001F5F95 /* AEPCoreDynamic */;
+		};
+		D496759E2511D70A001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D496759D2511D70A001F5F95 /* AEPServicesDynamic */;
+		};
+		D49675AE2511D752001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D49675AD2511D752001F5F95 /* AEPCoreDynamic */;
+		};
+		D49675B02511D757001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D49675AF2511D757001F5F95 /* AEPServicesDynamic */;
+		};
+		D49675B22511D765001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D49675B12511D765001F5F95 /* AEPIdentityDynamic */;
+		};
+		D49675B42511D76B001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D49675B32511D76B001F5F95 /* AEPLifecycleDynamic */;
+		};
+		D49675C12511D8CA001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D49675C02511D8CA001F5F95 /* AEPIdentityDynamic */;
+		};
+		D49675C62511D90E001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D49675C52511D90E001F5F95 /* AEPCoreDynamic */;
+		};
+		D49675C82511D917001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D49675C72511D917001F5F95 /* AEPServicesDynamic */;
+		};
+		D49675CA2511D922001F5F95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = D49675C92511D922001F5F95 /* AEPIdentityDynamic */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1800,48 +1953,156 @@
 				kind = branch;
 			};
 		};
+		D49675BB2511D827001F5F95 /* XCRemoteSwiftPackageReference "aepsdk-rulesengine-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adobe/aepsdk-rulesengine-ios.git";
+			requirement = {
+				branch = dev;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		D496753625113678001F5F95 /* AEPCore */ = {
+		D49675782511D522001F5F95 /* AEPCoreDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
-			productName = AEPCore;
+			productName = AEPCoreDynamic;
 		};
-		D496753825113678001F5F95 /* AEPServices */ = {
+		D496757A2511D522001F5F95 /* AEPServicesDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
-			productName = AEPServices;
+			productName = AEPServicesDynamic;
 		};
-		D496753A251136A0001F5F95 /* AEPCore */ = {
+		D496757C2511D532001F5F95 /* AEPCoreDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
-			productName = AEPCore;
+			productName = AEPCoreDynamic;
 		};
-		D496753C251136A0001F5F95 /* AEPServices */ = {
+		D49675802511D53A001F5F95 /* AEPServicesDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
-			productName = AEPServices;
+			productName = AEPServicesDynamic;
 		};
-		D4967555251153D4001F5F95 /* AEPIdentity */ = {
+		D496758F2511D677001F5F95 /* AEPCoreDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
-			productName = AEPIdentity;
+			productName = AEPCoreDynamic;
 		};
-		D4967557251153D4001F5F95 /* AEPLifecycle */ = {
+		D49675912511D677001F5F95 /* AEPServicesDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
-			productName = AEPLifecycle;
+			productName = AEPServicesDynamic;
 		};
-		D4967559251153D9001F5F95 /* AEPIdentity */ = {
+		D49675932511D692001F5F95 /* AEPCoreDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
-			productName = AEPIdentity;
+			productName = AEPCoreDynamic;
 		};
-		D496755B251153D9001F5F95 /* AEPLifecycle */ = {
+		D49675962511D698001F5F95 /* AEPServicesDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
-			productName = AEPLifecycle;
+			productName = AEPServicesDynamic;
+		};
+		D496759B2511D704001F5F95 /* AEPCoreDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPCoreDynamic;
+		};
+		D496759D2511D70A001F5F95 /* AEPServicesDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPServicesDynamic;
+		};
+		D496759F2511D710001F5F95 /* AEPCoreDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPCoreDynamic;
+		};
+		D49675A32511D715001F5F95 /* AEPServicesDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPServicesDynamic;
+		};
+		D49675A62511D747001F5F95 /* AEPCoreDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPCoreDynamic;
+		};
+		D49675AA2511D74D001F5F95 /* AEPServicesDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPServicesDynamic;
+		};
+		D49675AD2511D752001F5F95 /* AEPCoreDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPCoreDynamic;
+		};
+		D49675AF2511D757001F5F95 /* AEPServicesDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPServicesDynamic;
+		};
+		D49675B12511D765001F5F95 /* AEPIdentityDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPIdentityDynamic;
+		};
+		D49675B32511D76B001F5F95 /* AEPLifecycleDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPLifecycleDynamic;
+		};
+		D49675B52511D771001F5F95 /* AEPIdentityDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPIdentityDynamic;
+		};
+		D49675B82511D779001F5F95 /* AEPLifecycleDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPLifecycleDynamic;
+		};
+		D49675C02511D8CA001F5F95 /* AEPIdentityDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPIdentityDynamic;
+		};
+		D49675C22511D8DB001F5F95 /* AEPIdentityDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPIdentityDynamic;
+		};
+		D49675C52511D90E001F5F95 /* AEPCoreDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPCoreDynamic;
+		};
+		D49675C72511D917001F5F95 /* AEPServicesDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPServicesDynamic;
+		};
+		D49675C92511D922001F5F95 /* AEPIdentityDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPIdentityDynamic;
+		};
+		D49675CB2511D932001F5F95 /* AEPIdentityDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPIdentityDynamic;
+		};
+		D49675CE2511D938001F5F95 /* AEPCoreDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPCoreDynamic;
+		};
+		D49675D12511D949001F5F95 /* AEPServicesDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPServicesDynamic;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
