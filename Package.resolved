@@ -6,16 +6,16 @@
         "repositoryURL": "https://github.com/adobe/aepsdk-core-ios.git",
         "state": {
           "branch": "main",
-          "revision": "5ef0686f18c4b50f75bdef1296bf1886d1bc2128",
+          "revision": "041228244c4f97e501a85cf027ac09a0e01a24f4",
           "version": null
         }
       },
       {
-        "package": "SwiftRulesEngine",
+        "package": "AEPRulesEngine",
         "repositoryURL": "https://github.com/adobe/aepsdk-rulesengine-ios.git",
         "state": {
           "branch": "dev",
-          "revision": "df4dd8d0112eed11972649ff28b8e07f17125507",
+          "revision": "23bb1679b1d7f02b5a09103578c4402afe8242c3",
           "version": null
         }
       }
