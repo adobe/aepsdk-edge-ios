@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPGriffon
+//import ACPGriffon
 import AEPCore
 import Foundation
 import UIKit
@@ -35,7 +35,7 @@ class GriffonViewController: UIViewController {
             if  griffonURLText.contains(AEPDemoConstants.Strings.griffonUrlValidationString) {
                 if let url = URL(string: griffonURLText) {
                     isConnected = true
-                    ACPGriffon.startSession(url)
+                    //ACPGriffon.startSession(url)
                 } else {
                     snackbar(message: AEPDemoConstants.Strings.griffonUrlInvalid)
                 }

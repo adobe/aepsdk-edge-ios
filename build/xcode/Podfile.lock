@@ -1,12 +1,4 @@
 PODS:
-  - ACPCore (2.7.4):
-    - ACPCore/main (= 2.7.4)
-  - ACPCore/main (2.7.4)
-  - ACPGriffon (1.2.0):
-    - ACPCore
-    - ACPGriffon/iOS (= 1.2.0)
-  - ACPGriffon/iOS (1.2.0):
-    - ACPCore
   - AEPCore (0.0.1):
     - AEPRulesEngine
     - AEPServices
@@ -18,17 +10,11 @@ PODS:
   - AEPServices (0.0.1)
 
 DEPENDENCIES:
-  - ACPGriffon (~> 1.0)
   - "AEPCore (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
   - "AEPIdentity (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
   - "AEPLifecycle (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
   - "AEPRulesEngine (from `git@github.com:adobe/aepsdk-rulesengine-ios.git`, branch `dev`)"
   - "AEPServices (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
-
-SPEC REPOS:
-  trunk:
-    - ACPCore
-    - ACPGriffon
 
 EXTERNAL SOURCES:
   AEPCore:
@@ -49,30 +35,28 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AEPCore:
-    :commit: 4d939d366227ae33b474e9c5993f8992325b7074
+    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPIdentity:
-    :commit: 4d939d366227ae33b474e9c5993f8992325b7074
+    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPLifecycle:
-    :commit: 4d939d366227ae33b474e9c5993f8992325b7074
+    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPRulesEngine:
     :commit: 23bb1679b1d7f02b5a09103578c4402afe8242c3
     :git: "git@github.com:adobe/aepsdk-rulesengine-ios.git"
   AEPServices:
-    :commit: 4d939d366227ae33b474e9c5993f8992325b7074
+    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
 
 SPEC CHECKSUMS:
-  ACPCore: 8b9c4f63344c368567c215656d8a89bbd72292ec
-  ACPGriffon: 53b524a9366c34968cce9b4eba50cbf72d0221d8
   AEPCore: e8ddaae01a787926fde35cfcc24770b26a765e58
   AEPIdentity: f46a1b34363243f8d417a8143bfb876a36809104
   AEPLifecycle: 9e63cf6a8085161f95706ddbffef20dd1d748c3e
   AEPRulesEngine: 5742652bd7ab65aa7325f731725d995947e41db8
   AEPServices: ad642c76cede1c7babb61e6804198ded4317d74f
 
-PODFILE CHECKSUM: 19b75f5e811a6f762a99ee8391f9d3bae7b9793e
+PODFILE CHECKSUM: 2f9f80770662f0a719e3c74647f8657d43186f7f
 
 COCOAPODS: 1.9.1

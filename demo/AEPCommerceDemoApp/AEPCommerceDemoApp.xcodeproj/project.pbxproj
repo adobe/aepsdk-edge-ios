@@ -611,30 +611,7 @@
 					"$(PROJECT_DIR)/libs/**",
 					"$(PROJECT_DIR)/libs",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"ACPCore_iOS\"",
-					"-l\"ACPGriffon_iOS\"",
-					"-l\"ACPIdentity_iOS\"",
-					"-l\"ACPLifecycle_iOS\"",
-					"-l\"ACPSignal_iOS\"",
-					"-l\"c++\"",
-					"-l\"sqlite3.0\"",
-					"-l\"z\"",
-					"-framework",
-					"\"ACPCore\"",
-					"-framework",
-					"\"ACPGriffon\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-					"-framework",
-					"\"UIKit\"",
-					"-framework",
-					"\"UserNotifications\"",
-					"-framework",
-					"\"WebKit\"",
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.mobile.AEPCommerceDemoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(inherited) $(PROJECT_DIR)/libs/**";
@@ -663,30 +640,7 @@
 					"$(PROJECT_DIR)/libs/**",
 					"$(PROJECT_DIR)/libs",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"ACPCore_iOS\"",
-					"-l\"ACPGriffon_iOS\"",
-					"-l\"ACPIdentity_iOS\"",
-					"-l\"ACPLifecycle_iOS\"",
-					"-l\"ACPSignal_iOS\"",
-					"-l\"c++\"",
-					"-l\"sqlite3.0\"",
-					"-l\"z\"",
-					"-framework",
-					"\"ACPCore\"",
-					"-framework",
-					"\"ACPGriffon\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-					"-framework",
-					"\"UIKit\"",
-					"-framework",
-					"\"UserNotifications\"",
-					"-framework",
-					"\"WebKit\"",
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.mobile.AEPCommerceDemoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(inherited) $(PROJECT_DIR)/libs/**";
