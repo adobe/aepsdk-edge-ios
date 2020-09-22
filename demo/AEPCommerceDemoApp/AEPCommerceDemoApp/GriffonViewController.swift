@@ -10,8 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
 import ACPGriffon
+import AEPCore
 import Foundation
 import UIKit
 

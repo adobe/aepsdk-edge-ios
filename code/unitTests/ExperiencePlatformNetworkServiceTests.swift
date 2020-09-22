@@ -10,58 +10,79 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import XCTest
 
 @testable import AEPExperiencePlatform
 
 class ExperiencePlatformNetworkServiceTests: XCTestCase {
 
-    private var mockNetworkService = MockNetworkServiceOverrider()
+    private var mockNetworking = MockNetworking()
     private var mockResponseCallback = MockResponseCallback()
     private var networkService = ExperiencePlatformNetworkService()
     private let edgeRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
+    private let url = URL(string: "https://test.com")! // swiftlint:disable:this force_unwrapping
+    private let defaultNetworkingHeaders: [String] = ["User-Agent", "Accept-Language"]
 
     public override func setUp() {
         continueAfterFailure = false
         self.mockResponseCallback = MockResponseCallback()
-        self.mockNetworkService = MockNetworkServiceOverrider()
-        AEPServiceProvider.shared.networkService = mockNetworkService
+        self.mockNetworking = MockNetworking()
+        ServiceProvider.shared.networkService = mockNetworking
         networkService = ExperiencePlatformNetworkService()
     }
 
     func testDoRequest_whenRequestHeadersAreEmpty_setsDefaultHeaders() {
-        // setup
-        let url: URL = URL(string: "https://test.com")!
+        let defaultServiceHeaders: [String: String] = ["accept": "application/json", "Content-Type": "application/json"]
 
         // test
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
 
         // verify
-        XCTAssertTrue(mockNetworkService.connectAsyncCalled)
-        XCTAssertEqual(["accept": "application/json", "Content-Type": "application/json"], mockNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders)
+        XCTAssertTrue(mockNetworking.connectAsyncCalled)
+        XCTAssertEqual(defaultServiceHeaders.count + defaultNetworkingHeaders.count,
+                       mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
+        for header in defaultServiceHeaders {
+            XCTAssertNotNil(mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header.key])
+        }
+
+        for header in defaultNetworkingHeaders {
+            XCTAssertNotNil(mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header])
+        }
     }
 
     func testDoRequest_whenRequestHeadersExist_RequestHeadersAppendedOnNetworkCall() {
         // setup
-        let url: URL = URL(string: "https://test.com")!
-        let headers: [String: String] = ["test": "header", "accept": "application/json", "Content-Type": "application/json", "key": "value"]
+        let testHeaders: [String: String] = ["test": "header", "accept": "application/json", "Content-Type": "application/json", "key": "value"]
 
         // test
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: headers, responseCallback: mockResponseCallback, retryTimes: 0)
+        networkService.doRequest(url: url,
+                                 requestBody: edgeRequest,
+                                 requestHeaders: testHeaders,
+                                 responseCallback: mockResponseCallback,
+                                 retryTimes: 0)
 
         // verify
-        XCTAssertTrue(mockNetworkService.connectAsyncCalled)
-        XCTAssertEqual(headers, mockNetworkService.connectAsyncCalledWithNetworkRequest?.httpHeaders)
+        XCTAssertTrue(mockNetworking.connectAsyncCalled)
+        XCTAssertEqual(testHeaders.count + defaultNetworkingHeaders.count, mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
+        for header in testHeaders {
+            XCTAssertNotNil(mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header.key])
+        }
+
+        for header in defaultNetworkingHeaders {
+            XCTAssertNotNil(mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header])
+        }
     }
 
     func testDoRequest_whenConnection_ResponseCode200_ReturnsRetryNo_AndCallsResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "{\"key\":\"value\"}"
-        let url: URL = URL(string: "https://test.com")!
 
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
 
         // verify
@@ -74,11 +95,12 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testDoRequest_whenConnection_ResponseCode204_ReturnsRetryNo_AndNoResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "OK"
-        let url: URL = URL(string: "https://test.com")!
 
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 204, httpVersion: nil, headerFields: nil), error: nil)
-        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 204, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
 
         // verify
@@ -91,11 +113,12 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testDoRequest_whenConnection_RecoverableResponseCode_ReturnsRetryYes_AndNoResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "Service Unavailable"
-        let url: URL = URL(string: "https://test.com")!
 
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: nil)
-        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         let retryResult = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
 
         // verify
@@ -108,12 +131,11 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
 
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithError_ReturnFormattedError() {
         // setup
-        let url: URL = URL(string: "https://test.com")!
         let error: NSError = NSError(domain: NSURLErrorDomain, code: NSURLErrorAppTransportSecurityRequiresSecureConnection, userInfo: nil)
 
         // test
         let mockHttpConnection = HttpConnection(data: nil, response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: error)
-        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         let retryResult = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
 
         // verify
@@ -127,12 +149,11 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     }
 
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithNilError_ShouldReturnGenericError() {
-        // setup
-        let url: URL = URL(string: "https://test.com")!
-
         // test
-        let mockHttpConnection = HttpConnection(data: nil, response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil), error: nil)
-        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let mockHttpConnection = HttpConnection(data: nil,
+                                                response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         let retryResult = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
 
         // verify
@@ -148,11 +169,12 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithInvalidJsonContent() {
         // setup
         let stringResponseBody = "Internal Server Error"
-        let url: URL = URL(string: "https://test.com")!
 
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil), error: nil)
-        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         let retryResult = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
 
         // verify
@@ -180,11 +202,12 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
             "        }\n" +
             "      ]\n" +
         "    }"
-        let url: URL = URL(string: "https://test.com")!
 
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil), error: nil)
-        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         let retryResult = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
 
         // verify
@@ -199,11 +222,12 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testDoRequest_whenRequestProcessed_CallsOnComplete() {
         // setup
         let stringResponseBody = "{\"key\":\"value\"}"
-        let url: URL = URL(string: "https://test.com")!
 
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
 
         // verify
@@ -215,10 +239,11 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testDoRequest_whenRequestNotProcessed_NoCallOnComplete() {
         // setup
         let stringResponseBody = "Service Unavailable"
-        let url: URL = URL(string: "https://test.com")!
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: nil)
-        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         _ = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
 
         // verify
@@ -230,10 +255,11 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testDoRequest_whenRequestNotProcessed_noRetry_CallsOnComplete() {
         // setup
         let stringResponseBody = "Service Unavailable"
-        let url: URL = URL(string: "https://test.com")!
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: nil)
-        mockNetworkService.connectAsyncCompletionHandlerReturnConnection = mockHttpConnection
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
 
         // verify
@@ -246,7 +272,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         let responseStr: String = ""
 
         let streamingSettings = Streaming(recordSeparator: nil, lineFeed: nil)
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: streamingSettings, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -259,7 +285,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         let responseStr: String = "{}"
 
         let streamingSettings = Streaming(recordSeparator: "", lineFeed: "\n")
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: streamingSettings, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -282,7 +308,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         "}<LF>"
 
         let streamingSettings = Streaming(recordSeparator: "<RS>", lineFeed: "<LF>")
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: streamingSettings, responseCallback: mockResponseCallback)
 
         XCTAssertFalse(mockResponseCallback.onResponseCalled)
@@ -315,7 +341,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
             "  }\n" +
             "}")
         let streamingSettings = Streaming(recordSeparator: "\u{00A9}", lineFeed: "\u{00F8}")
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: streamingSettings, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -348,7 +374,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
             "  }\n" +
             "}")
         let streamingSettings = Streaming(recordSeparator: "\u{00A9}", lineFeed: "\u{00FF}")
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: streamingSettings, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -358,11 +384,13 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     }
 
     func testHandleStreamingResponse_SingleStreamingResponse() {
+        // swiftlint:disable line_length
         let responseStr: String = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}\n"
         let expectedResponse: String =
         "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
+        // swiftlint:enable line_length
         let streamingSettings = Streaming(recordSeparator: "\u{0000}", lineFeed: "\n")
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: streamingSettings, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -372,12 +400,14 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     }
 
     func testHandleStreamingResponse_TwoStreamingResponses() {
+        // swiftlint:disable line_length
         var responseStr: String = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}\n"
         responseStr += responseStr
         let expectedResponse: String =
         "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
+        // swiftlint:enable line_length
         let streamingSettings = Streaming(recordSeparator: "\u{0000}", lineFeed: "\n")
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: streamingSettings, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -387,11 +417,13 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     }
 
     func testHandleStreamingResponse_ManyStreamingResponses() {
+        // swiftlint:disable line_length
         let responseStr: String = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}\n"
         let expectedResponse: String =
         "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
+        // swiftlint:enable line_length
         let streamingSettings = Streaming(recordSeparator: "\u{0000}", lineFeed: "\n")
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: streamingSettings, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -411,7 +443,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
             "    ]" +
             "  }" +
         "}"
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -431,7 +463,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
             "    ]" +
             "  }" +
         "}\n"
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -442,6 +474,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
 
     func testHandleNonStreamingResponse_WhenOneJsonObject_ShouldReturnEntireResponse() {
         let responseStr: String = "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
+        // swiftlint:disable:previous line_length
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 
@@ -453,7 +486,8 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
 
     func testHandleNonStreamingResponse_WhenTwoJsonObjects_ShouldReturnEntireResponse() {
         let responseStr: String = "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        // swiftlint:disable:previous line_length
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -464,7 +498,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
 
     func testHandleNonStreamingResponse_WhenResponseIsEmptyObject_ShouldReturnEmptyObject() {
         let responseStr: String = "{}"
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
@@ -474,13 +508,13 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     }
 
     func testHandleNonStreamingResponse_WhenResponseIsEmptyString_ShouldReturnEmptyString() {
-        let responseStr: String = ""
-        let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil)
+        let responseStr = "".data(using: .utf8)
+        let connection: HttpConnection = HttpConnection(data: responseStr, response: nil, error: nil)
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 
         XCTAssertTrue(mockResponseCallback.onResponseCalled)
         XCTAssertFalse(mockResponseCallback.onErrorCalled)
         XCTAssertFalse(mockResponseCallback.onCompleteCalled)
-        XCTAssertEqual([responseStr], mockResponseCallback.onResponseJsonResponse)
+        XCTAssertEqual([""], mockResponseCallback.onResponseJsonResponse)
     }
 }

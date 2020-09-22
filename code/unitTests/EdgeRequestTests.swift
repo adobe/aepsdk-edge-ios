@@ -11,6 +11,7 @@
 //
 
 @testable import AEPExperiencePlatform
+import AEPServices
 import XCTest
 
 class EdgeRequestTests: XCTestCase {

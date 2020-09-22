@@ -12,17 +12,12 @@
 
 import Foundation
 
-/// This enum is used for building `NetworkRequest` objects.
-@objc public enum HttpMethod: Int {
-    case get
-    case post
-
-    func toString() -> String {
-        switch self {
-        case .get:
-            return "GET"
-        case .post:
-            return "POST"
+extension UserDefaults {
+    public static func clearAll() {
+        for _ in 0 ... 5 {
+            for key in UserDefaults.standard.dictionaryRepresentation().keys {
+                UserDefaults.standard.removeObject(forKey: key)
+            }
         }
     }
 }

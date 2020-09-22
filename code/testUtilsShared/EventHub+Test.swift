@@ -10,13 +10,11 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
-import XCTest
+@testable import AEPCore
+import Foundation
 
-/// Listener for request events to `FakeIdentityExtension`.
-class FakeIdentityListener: ACPExtensionListener {
-    override func hear(_ event: ACPExtensionEvent) {
-        guard let parentExtension = self.extension as? FakeIdentityExtension else { return }
-        parentExtension.processRequest(event)
+extension EventHub {
+    static func reset() {
+        shared = EventHub()
     }
 }

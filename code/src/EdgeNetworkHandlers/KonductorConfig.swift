@@ -32,9 +32,9 @@ struct Streaming {
     }
 
     enum CodingKeys: String, CodingKey {
-        case recordSeparator = "recordSeparator"
-        case lineFeed = "lineFeed"
-        case enabled = "enabled"
+        case recordSeparator
+        case lineFeed
+        case enabled
     }
 }
 

@@ -15,8 +15,8 @@ import XCTest
 
 func assertEqual(_ expected: [String: Any], _ actual: [String: Any], _ message: String? = nil, file: StaticString = #file, line: UInt = #line) {
     if let unwrappedMessage = message {
-        XCTAssertEqual(expected as NSObject, actual as NSObject, unwrappedMessage, file: file, line: line)
+        XCTAssertEqual(expected as NSObject, actual as NSObject, unwrappedMessage, file: (file), line: line)
     } else {
-        XCTAssertEqual(expected as NSObject, actual as NSObject, file: file, line: line)
+        XCTAssertEqual(expected as NSObject, actual as NSObject, file: (file), line: line)
     }
 }

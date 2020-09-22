@@ -10,12 +10,12 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 import XCTest
 
 /// Extension used to 'fake' an Identity extension and allows tests to clear and set the Identity shared state. Use it along with `FunctionalTestBase`
 /// Cannot be used along with another Identity Extension which is registered with ACPCore.
-class FakeIdentityExtension: ACPExtension {
+class FakeIdentityExtension: Extension {
     private static let logTag = "FakeIdentityExtension"
 
     private static let eventType = "com.adobe.fakeidentity"
@@ -23,49 +23,44 @@ class FakeIdentityExtension: ACPExtension {
     private static let eventClearState = "com.adobe.request.clearstate"
     private static let eventResponse = "com.adobe.response"
 
-    override init() {
-        super.init()
+    var name: String = "com.adobe.module.identity"
 
-        try? api.registerListener(FakeIdentityListener.self,
-                                  eventType: FakeIdentityExtension.eventType,
-                                  eventSource: FakeIdentityExtension.eventSetState)
+    var friendlyName: String = "Identity"
 
-        try? api.registerListener(FakeIdentityListener.self,
-                                  eventType: FakeIdentityExtension.eventType,
-                                  eventSource: FakeIdentityExtension.eventClearState)
+    static var extensionVersion: String = "1.0.0"
+
+    var metadata: [String: String]?
+
+    var runtime: ExtensionRuntime
+
+    func onRegistered() {
+        registerListener(type: FakeIdentityExtension.eventType, source: FakeIdentityExtension.eventSetState, listener: processRequest)
+        registerListener(type: FakeIdentityExtension.eventType, source: FakeIdentityExtension.eventClearState, listener: processRequest)
     }
 
-    override func name() -> String? {
-        "com.adobe.module.identity"
+    func onUnregistered() {}
+
+    required init?(runtime: ExtensionRuntime) {
+        self.runtime = runtime
     }
 
-    override func version() -> String? {
-        "1.0.0"
-    }
-
-    override func onUnregister() {
-        super.onUnregister()
-
-        // if the shared states are not used in the next registration they can be cleared in this method
-        try? api.clearSharedEventStates()
+    public func readyForEvent(_ event: Event) -> Bool {
+        return true
     }
 
     /// Clear the shared state for this `FakeIdentityExtension`.
     /// Calls `ACPExtensionApi.clearSharedEventState()` to perform the opteration.
     /// This is a synchronous call, which waits for a response from the extension before returning.
     public static func clearSharedState() {
-        guard let event = try? ACPExtensionEvent(name: "Set Fake Identity State",
-                                                 type: FakeIdentityExtension.eventType,
-                                                 source: FakeIdentityExtension.eventClearState,
-                                                 data: nil) else {
-                                                    ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "setSharedState failed to create request event.")
-                                                    return
-        }
+        let event = Event(name: "Set Fake Identity State",
+                          type: FakeIdentityExtension.eventType,
+                          source: FakeIdentityExtension.eventClearState,
+                          data: nil)
 
         let latch = CountDownLatch(1)
-        try? ACPCore.dispatchEvent(withResponseCallback: event) { _ in
+        MobileCore.dispatch(event: event, responseCallback: { _ in
             latch.countDown()
-        }
+        })
 
         _ = latch.await(timeout: 5)
     }
@@ -75,20 +70,17 @@ class FakeIdentityExtension: ACPExtension {
     /// Calls `ACPExtensionApi.setSharedEventState` to perform the operation.
     /// This is a synchronous call, which waits for a response from the extension before returning.
     /// - Parameter state: the state to set
-    public static func setSharedState(state: [AnyHashable: Any]) {
+    public static func setSharedState(state: [String: Any]) {
 
-        guard let event = try? ACPExtensionEvent(name: "Set Fake Identity State",
-                                                 type: FakeIdentityExtension.eventType,
-                                                 source: FakeIdentityExtension.eventSetState,
-                                                 data: state) else {
-                                                    ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "setSharedState failed to create request event.")
-                                                    return
-        }
+        let event = Event(name: "Set Fake Identity State",
+                          type: FakeIdentityExtension.eventType,
+                          source: FakeIdentityExtension.eventSetState,
+                          data: state)
 
         let latch = CountDownLatch(1)
-        try? ACPCore.dispatchEvent(withResponseCallback: event) { _ in
+        MobileCore.dispatch(event: event, responseCallback: { _ in
             latch.countDown()
-        }
+        })
 
         _ = latch.await(timeout: 5)
     }
@@ -98,32 +90,27 @@ class FakeIdentityExtension: ACPExtension {
     /// Processes events received from the event listener. If the event is handled, a paired response event is dispatched to notify the caller
     /// the event was processed.
     /// - Parameter event: an event to process
-    func processRequest(_ event: ACPExtensionEvent) {
+    func processRequest(_ event: Event) {
         var doDispatch = false
 
-        if event.eventSource == FakeIdentityExtension.eventClearState {
-            try? api.clearSharedEventStates()
+        if event.source == FakeIdentityExtension.eventClearState {
+            // TODO: not supported anymore https://github.com/adobe/aepsdk-core-ios/issues/289
+            // try? api.clearSharedEventStates()
             doDispatch = true
-        } else if event.eventSource == FakeIdentityExtension.eventSetState {
-            guard let eventData = event.eventData, !eventData.isEmpty  else { return }
-            try? api.setSharedEventState(eventData, event: event)
+        } else if event.source == FakeIdentityExtension.eventSetState {
+            guard let eventData = event.data, !eventData.isEmpty  else { return }
+            runtime.createSharedState(data: eventData, event: event)
             doDispatch = true
         }
 
         if doDispatch {
-            guard let responseEvent = try? ACPExtensionEvent(name: "FakeIdentity Response",
-                                                             type: FakeIdentityExtension.eventType,
-                                                             source: FakeIdentityExtension.eventResponse,
-                                                             data: nil) else {
-                                                                ACPCore.log(ACPMobileLogLevel.debug, tag: FakeIdentityExtension.logTag, message: "ProcessSharedStateRequest failed to create response event.")
-                                                                return
-            }
+            let responseEvent = event.createResponseEvent(name: "FakeIdentity Response",
+                                                          type: FakeIdentityExtension.eventType,
+                                                          source: FakeIdentityExtension.eventResponse,
+                                                          data: nil)
 
             // dispatch paired response event with shared state data
-            guard let _ = try? ACPCore.dispatchResponseEvent(responseEvent, request: event) else {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: FakeIdentityExtension.logTag, message: "ProcessSharedStateRequest failed to dispatch response event.")
-                return
-            }
+            MobileCore.dispatch(event: responseEvent)
         }
     }
 }

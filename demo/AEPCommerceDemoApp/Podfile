@@ -8,7 +8,6 @@ target 'AEPCommerceDemoApp' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
-  pod 'ACPCore', '~> 2.0'
   pod 'ACPGriffon', '~> 1.0'
 
 end

@@ -13,9 +13,9 @@
 import Foundation
 
 enum AuthenticationState: String, Codable {
-    case ambiguous = "ambiguous"
-    case authenticated = "authenticated"
-    case loggedOut = "loggedOut"
+    case ambiguous
+    case authenticated
+    case loggedOut
 }
 
 /// Defines a map containing a set of end user identities, keyed on either namespace integration code or the namespace ID of the identity.
@@ -81,7 +81,7 @@ struct IdentityItem: Codable {
 
 /// Defines two `IdentityItem` objects are equal if they have the same `id`.
 extension IdentityItem: Equatable {
-    static func ==(lhs: IdentityItem, rhs: IdentityItem) -> Bool {
+    static func == (lhs: IdentityItem, rhs: IdentityItem) -> Bool {
         return lhs.id == rhs.id
     }
 }

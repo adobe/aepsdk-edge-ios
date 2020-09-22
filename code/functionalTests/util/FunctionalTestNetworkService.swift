@@ -11,34 +11,16 @@
 //
 
 @testable import AEPExperiencePlatform
+@testable import AEPServices
 import Foundation
-
-// NetworkRequest extension used for compares in Dictionaries where NetworkRequest is the key
-extension NetworkRequest: Hashable {
-
-    /// Equals compare based on host, scheme and URL path. Query params are not taken into consideration
-    public static func == (lhs: NetworkRequest, rhs: NetworkRequest) -> Bool {
-        return lhs.url.host?.lowercased() == rhs.url.host?.lowercased()
-            && lhs.url.scheme?.lowercased() == rhs.url.scheme?.lowercased()
-            && lhs.url.path.lowercased() == rhs.url.path.lowercased()
-            && lhs.httpMethod.rawValue == rhs.httpMethod.rawValue
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(url.scheme)
-        hasher.combine(url.host)
-        hasher.combine(url.path)
-        hasher.combine(httpMethod.rawValue)
-    }
-}
 
 /// Overriding NetworkService used for functional tests when extending the FunctionalTestBase
 class FunctionalTestNetworkService: NetworkService {
-    var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [NetworkRequest: [NetworkRequest]]()
-    var responseMatchers: [NetworkRequest: HttpConnection] = [NetworkRequest: HttpConnection]()
-    var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [NetworkRequest: CountDownLatch]()
+    private var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [NetworkRequest: [NetworkRequest]]()
+    private var responseMatchers: [NetworkRequest: HttpConnection] = [NetworkRequest: HttpConnection]()
+    private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [NetworkRequest: CountDownLatch]()
 
-    func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
+    override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         FunctionalTestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
         if var requests = receivedNetworkRequests[networkRequest] {
             requests.append(networkRequest)
@@ -46,22 +28,92 @@ class FunctionalTestNetworkService: NetworkService {
             receivedNetworkRequests[networkRequest] = [networkRequest]
         }
 
-        if let _ = expectedNetworkRequests[networkRequest] {
-            expectedNetworkRequests[networkRequest]?.countDown()
-        }
-
+        countDownExpected(networkRequest: networkRequest)
         guard let unwrappedCompletionHandler = completionHandler else { return }
-        if let response = responseMatchers[networkRequest] {
+        if let response = getMarchedResponseForUrlAndHttpMethod(networkRequest: networkRequest) {
             unwrappedCompletionHandler(response)
         } else {
             // default response
-            unwrappedCompletionHandler(HttpConnection(data: "".data(using: .utf8), response: HTTPURLResponse(url: networkRequest.url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil))
+            unwrappedCompletionHandler(HttpConnection(data: "".data(using: .utf8),
+                                                      response: HTTPURLResponse(url: networkRequest.url,
+                                                                                statusCode: 200,
+                                                                                httpVersion: nil,
+                                                                                headerFields: nil),
+                                                      error: nil))
         }
     }
 
     func reset() {
+        expectedNetworkRequests.removeAll()
         receivedNetworkRequests.removeAll()
         responseMatchers.removeAll()
+    }
+
+    func awaitFor(networkRequest: NetworkRequest, timeout: TimeInterval) -> DispatchTimeoutResult? {
+        for expectedNetworkRequest in expectedNetworkRequests {
+            if areNetworkRequestsEqual(lhs: expectedNetworkRequest.key, rhs: networkRequest) {
+                return expectedNetworkRequest.value.await(timeout: timeout)
+            }
+        }
+
+        return nil
+    }
+
+    func getReceivedNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
+        for receivedRequest in receivedNetworkRequests {
+            if areNetworkRequestsEqual(lhs: receivedRequest.key, rhs: networkRequest) {
+                return receivedRequest.value
+            }
+        }
+
+        return []
+    }
+
+    func setExpectedNetworkRequest(networkRequest: NetworkRequest, count: Int32) {
+        expectedNetworkRequests[networkRequest] = CountDownLatch(count)
+    }
+
+    func getExpectedNetworkRequests() -> [NetworkRequest: CountDownLatch] {
+        return expectedNetworkRequests
+    }
+
+    func setResponseConnectionFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) -> Bool {
+        for responseMatcher in responseMatchers {
+            if areNetworkRequestsEqual(lhs: responseMatcher.key, rhs: networkRequest) {
+                // unable to override response matcher
+                return false
+            }
+        }
+
+        // add new entry if not present already
+        responseMatchers[networkRequest] = responseConnection
+        return true
+    }
+
+    private func countDownExpected(networkRequest: NetworkRequest) {
+        for expectedNetworkRequest in expectedNetworkRequests {
+            if areNetworkRequestsEqual(lhs: expectedNetworkRequest.key, rhs: networkRequest) {
+                expectedNetworkRequest.value.countDown()
+            }
+        }
+    }
+
+    private func getMarchedResponseForUrlAndHttpMethod(networkRequest: NetworkRequest) -> HttpConnection? {
+        for responseMatcher in responseMatchers {
+            if areNetworkRequestsEqual(lhs: responseMatcher.key, rhs: networkRequest) {
+                return responseMatcher.value
+            }
+        }
+
+        return nil
+    }
+
+    /// Equals compare based on host, scheme and URL path. Query params are not taken into consideration
+    private func areNetworkRequestsEqual(lhs: NetworkRequest, rhs: NetworkRequest) -> Bool {
+        return lhs.url.host?.lowercased() == rhs.url.host?.lowercased()
+            && lhs.url.scheme?.lowercased() == rhs.url.scheme?.lowercased()
+            && lhs.url.path.lowercased() == rhs.url.path.lowercased()
+            && lhs.httpMethod.rawValue == rhs.httpMethod.rawValue
     }
 }
 

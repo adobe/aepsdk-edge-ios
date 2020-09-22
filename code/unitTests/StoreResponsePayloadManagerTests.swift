@@ -11,9 +11,11 @@
 //
 
 @testable import AEPExperiencePlatform
+import AEPServices
 import XCTest
 
 class StoreResponsePayloadManagerTests: XCTestCase {
+    let testDataStoreName = "StoreResponsePayloadManagerTests"
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -22,18 +24,17 @@ class StoreResponsePayloadManagerTests: XCTestCase {
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        ServiceProvider.shared.namedKeyValueService.remove(collectionName: testDataStoreName, key: "storePayloads")
     }
 
-    // MARK: 
-
     func testGetActiveStores_isCorrect_whenRecordsInDataStore() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
     }
 
     func testGetActiveStores_evictsExpiredKey_whenCurrentDatePassesExpiry() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
         sleep(3)
@@ -41,27 +42,27 @@ class StoreResponsePayloadManagerTests: XCTestCase {
     }
 
     func testGetActivePayloadList_returnsList_whenRecordsInDataStore() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
         let payloads = manager.getActivePayloadList()
         XCTAssertEqual(2, payloads.count)
     }
 
     func testSaveStorePayloads_savesPayloads_whenValid() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
     }
 
     func testSaveStorePayloads_overwritesPayloads_whenDuplicateKeys() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
         manager.saveStorePayloads(buildStorePayloads())
         XCTAssertEqual(2, manager.getActiveStores().count)
     }
 
     func testSaveStorePayloads_maxAgeLessThanOne_isRemoved() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))])
         XCTAssertEqual(1, manager.getActiveStores().count)
         manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: -1))])
@@ -69,7 +70,7 @@ class StoreResponsePayloadManagerTests: XCTestCase {
     }
 
     func testSaveStorePayloads_overwritesPayloads_whenDuplicateKeysAndNewValues() {
-        let manager = StoreResponsePayloadManager(MockKeyValueStore())
+        let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads(buildStorePayloads())
 
         let originalPayloads = manager.getActiveStores()
@@ -89,20 +90,20 @@ class StoreResponsePayloadManagerTests: XCTestCase {
         let activePayloads = manager.getActiveStores()
         XCTAssertEqual(2, activePayloads.count)
 
-        if let p1 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout"] {
-            XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout", p1.payload.key)
-            XCTAssertEqual("general=false", p1.payload.value)
-            XCTAssertEqual(8000, p1.payload.maxAge)
-            XCTAssertTrue(p1.expiryDate > originalPayloads[p1.payload.key]?.expiryDate ?? Date())
+        if let payload1 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout"] {
+            XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout", payload1.payload.key)
+            XCTAssertEqual("general=false", payload1.payload.value)
+            XCTAssertEqual(8000, payload1.payload.maxAge)
+            XCTAssertTrue(payload1.expiryDate > originalPayloads[payload1.payload.key]?.expiryDate ?? Date())
         } else {
             XCTFail("Failed to get payload with key kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout from active stores.")
         }
 
-        if let p2 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin"] {
-            XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin", p2.payload.key)
-            XCTAssertEqual("newValue", p2.payload.value)
-            XCTAssertEqual(10, p2.payload.maxAge)
-            XCTAssertTrue(p2.expiryDate > originalPayloads[p2.payload.key]?.expiryDate ?? Date())
+        if let payload2 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin"] {
+            XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin", payload2.payload.key)
+            XCTAssertEqual("newValue", payload2.payload.value)
+            XCTAssertEqual(10, payload2.payload.maxAge)
+            XCTAssertTrue(payload2.expiryDate > originalPayloads[payload2.payload.key]?.expiryDate ?? Date())
         } else {
             XCTFail("Failed to get payload with key kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin from active stores.")
         }

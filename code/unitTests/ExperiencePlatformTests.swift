@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 import XCTest
 
 @testable import AEPExperiencePlatform
@@ -45,23 +45,23 @@ class ExperiencePlatformTests: XCTestCase {
     let generateXdmSchema = MobileSDKSchema(schemaVersion: "1.4", schemaIdentifier: "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", datasetIdentifier: "5dd603781b95cc18a83d42ce")
 
     func testregisterExtension_registersWithoutAnyErrorOrCrash() {
-        XCTAssertTrue(ExperiencePlatform.registerExtension() == ())
+        XCTAssertNoThrow(MobileCore.registerExtensions([ExperiencePlatform.self]))
     }
 
     func testSendEvent_withNonNullXdmAndNonNullData_ExperiencePlatformEventData() {
-        ExperiencePlatform.registerExtension()
+        MobileCore.registerExtensions([ExperiencePlatform.self])
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm: generateXdm(), data: generateData())
         XCTAssertTrue(ExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
     }
 
     func testSendEvent_withNonNullXdmAndNullData_ExperiencePlatformEventData() {
-        ExperiencePlatform.registerExtension()
+        MobileCore.registerExtensions([ExperiencePlatform.self])
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm: generateXdm(), data: nil)
         XCTAssertTrue(ExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
     }
 
     func testSendEvent_withNonNullXdmSchemaAndNonNullData_ExperiencePlatformEventData() {
-        ExperiencePlatform.registerExtension()
+        MobileCore.registerExtensions([ExperiencePlatform.self])
         let experiencePlatformEvent = ExperiencePlatformEvent(xdm: generateXdmSchema, data: generateData())
         XCTAssertTrue(ExperiencePlatform.sendEvent(experiencePlatformEvent: experiencePlatformEvent, responseHandler: mockResponseHandler) == ())
     }

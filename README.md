@@ -10,7 +10,29 @@ The Adobe Experience Platform Mobile Extension is an extension for the [Adobe Ex
 ## Current version
 The Experience Platform Mobile extension for iOS is currently in Alpha development.
 
-### Installation
+## Installation
+
+### [Swift Package Manager](https://github.com/apple/swift-package-manager)
+
+To add the AEPExperiencePlatform Package to your application, from the Xcode menu select:
+
+`File > Swift Packages > Add Package Dependency...`
+
+Enter the URL for the AEPExperiencePlatform package repository: `https://github.com/adobe/aepsdk-platform-ios.git`.
+
+When prompted, make sure you change the branch to `main`. (Once the repo is public, we will reference specific tags/versions instead of a branch)
+
+Alternatively, if your project has a `Package.swift` file, you can add AEPExperiencePlatform directly to your dependencies:
+
+```
+dependencies: [
+    .package(name: "AEPExperiencePlatform",
+              url: "https://github.com/adobe/aepsdk-platform-ios.git",
+           branch: "main")
+]
+```
+
+## Development
 
 The first time you clone or download the project, you should run the following from the root directory to setup the environment:
 
@@ -56,7 +78,7 @@ You can also run the unit test suite from command line:
 make test
 ~~~
 
-### Setup Demo Application
+## Setup Demo Application
 The AEP Commerce Demo application is a sample app which demonstrates how to send commerce data to Adobe Experience Platform by using the Adobe Experience Platform Mobile Extension.
 
 Follow the command line instructions above to build the project and bundle the demo application. With both `AEPCommerceDemoApp-<version>.zip` and `AEPExperiencePlatform-<version>.zip` in the same folder, run the following commands in a terminal:
@@ -69,10 +91,10 @@ pod install
 open AEPCommerceDemoApp.xcworkspace
 ~~~
 
-### Contributing
+## Contributing
 
 Contributions are welcomed! Read the [Contributing Guide](./.github/CONTRIBUTING.md) for more information.
 
-### Licensing
+## Licensing
 
 This project is licensed under the Apache V2 License. See [LICENSE](LICENSE) for more information.

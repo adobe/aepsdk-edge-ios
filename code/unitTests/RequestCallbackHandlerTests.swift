@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 @testable import AEPExperiencePlatform
 import XCTest
 
@@ -29,9 +29,9 @@ class ResponseCallbackHandlerTests: XCTestCase {
         data[requestEventId] = uniqueEventId
 
         let mockResponseHandler = MockExperiencePlatformResponseHandler()
-        ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: uniqueEventId, responseHandler: mockResponseHandler)
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
 
-        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data)
+        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data, requestEventId: uniqueEventId)
 
         XCTAssertEqual(1, mockResponseHandler.onResponseCalledTimes)
         XCTAssertEqual(3, mockResponseHandler.onResponseReceivedData.count)
@@ -48,11 +48,11 @@ class ResponseCallbackHandlerTests: XCTestCase {
         data[requestEventId] = uniqueEventId
 
         let mockResponseHandler1 = MockExperiencePlatformResponseHandler()
-        ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: "567", responseHandler: mockResponseHandler1)
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: "567", responseHandler: mockResponseHandler1)
         let mockResponseHandler2 = MockExperiencePlatformResponseHandler()
-        ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: uniqueEventId, responseHandler: mockResponseHandler2)
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler2)
 
-        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data)
+        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data, requestEventId: uniqueEventId)
 
         XCTAssertEqual(0, mockResponseHandler1.onResponseCalledTimes)
         XCTAssertEqual(1, mockResponseHandler2.onResponseCalledTimes)
@@ -69,12 +69,12 @@ class ResponseCallbackHandlerTests: XCTestCase {
         data["key2"] = 2
         data[requestEventId] = uniqueEventId
 
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data), "invokeResponseHandler should skip if no registered handler")
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data, requestEventId: uniqueEventId), "invokeResponseHandler should skip if no registered handler")
     }
 
     func testNoRegisterResponseHandler_thenUnregisterResponseHandler_doesNotCrash() {
         let uniqueEventId = "123"
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterResponseHandler(uniqueEventId: uniqueEventId), "unregisterResponseHandler should skip if no registered handler")
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterResponseHandler(requestEventId: uniqueEventId), "unregisterResponseHandler should skip if no registered handler")
     }
 
     func testRegisterResponseHandler_thenUnregisterResponseHandler() {
@@ -85,31 +85,31 @@ class ResponseCallbackHandlerTests: XCTestCase {
         data[requestEventId] = uniqueEventId
 
         let mockResponseHandler = MockExperiencePlatformResponseHandler()
-        ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: uniqueEventId, responseHandler: mockResponseHandler)
-        ResponseCallbackHandler.shared.unregisterResponseHandler(uniqueEventId: uniqueEventId)
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
+        ResponseCallbackHandler.shared.unregisterResponseHandler(requestEventId: uniqueEventId)
 
-        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data) // should not call the callback
+        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data, requestEventId: uniqueEventId) // should not call the callback
 
         XCTAssertEqual(0, mockResponseHandler.onResponseCalledTimes)
     }
 
     func testRegisterResponseHandler_withEmptyUniqueEvent_doesNotCrash() {
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: "", responseHandler: MockExperiencePlatformResponseHandler()))
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: "", responseHandler: MockExperiencePlatformResponseHandler()))
     }
 
     func testRegisterResponseHandlers_withNilResponseHandler_thenInvokeResponseHandler_doesNotCrash() {
         let uniqueEventId = "123"
-        ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: uniqueEventId, responseHandler: nil)
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.invokeResponseHandler(eventData: ["key": "value"]), "invokeResponseHandler should skip when nil responseHandler")
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: nil)
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.invokeResponseHandler(eventData: ["key": "value"], requestEventId: uniqueEventId), "invokeResponseHandler should skip when nil responseHandler")
     }
 
     func testRegisterResponseHandlers_withNilResponseHandler_thenUnregisterResponseHandler_doesNotCrash() {
         let uniqueEventId = "123"
-        ResponseCallbackHandler.shared.registerResponseHandler(uniqueEventId: uniqueEventId, responseHandler: nil)
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterResponseHandler(uniqueEventId: uniqueEventId), "unregisterResponseHandler should skip when nil responseHandler")
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: nil)
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterResponseHandler(requestEventId: uniqueEventId), "unregisterResponseHandler should skip when nil responseHandler")
     }
 
     func testUnregisterResponseHandler_withEmptyUniqueEvent_doesNotCrash() {
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterResponseHandler(uniqueEventId: ""), "unregisterResponseHandler should skip when empty unique event id")
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterResponseHandler(requestEventId: ""), "unregisterResponseHandler should skip when empty unique event id")
     }
 }

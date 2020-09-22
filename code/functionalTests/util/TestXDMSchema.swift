@@ -34,12 +34,12 @@ struct TestXDMSchema: XDMSchema {
     public var timestamp: Date?
 
     enum CodingKeys: String, CodingKey {
-        case xdmObject = "xdmObject"
-        case stringObject = "stringObject"
-        case intObject = "intObject"
-        case boolObject = "boolObject"
-        case doubleObject = "doubleObject"
-        case timestamp = "timestamp"
+        case xdmObject
+        case stringObject
+        case intObject
+        case boolObject
+        case doubleObject
+        case timestamp
     }
 }
 

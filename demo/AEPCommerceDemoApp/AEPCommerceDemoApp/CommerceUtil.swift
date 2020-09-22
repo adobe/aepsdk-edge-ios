@@ -10,8 +10,9 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
 import AEPExperiencePlatform
+import AEPServices
 import Foundation
 
 /// This CommerceUtil Class encapsulates logic for creating Commerce objects and sending as
@@ -85,7 +86,7 @@ class CommerceUtil {
             if let unwrappedProductItem = productItem {
                 itemsList.append(unwrappedProductItem)
             } else {
-                ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendPurchaseXdmEvent - Cannot create '" + eventTypeCommercePurchases + "' event as given product item is null.")
+                Log.debug(label: logTag, "sendPurchaseXdmEvent - Cannot create '" + eventTypeCommercePurchases + "' event as given product item is null.")
             }
         }
         return itemsList
@@ -97,13 +98,13 @@ class CommerceUtil {
     ///    - productData : The product details of the com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem} item which was viewed
     static func sendProductViewXdmEvent(productData: ProductData) {
 
-        ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendProductViewXdmEvent with item '" + productData.name + "'")
+        Log.debug(label: logTag, "sendProductViewXdmEvent with item '" + productData.name + "'")
         let productItem = createProductListItemsItem(productData: productData, quantity: 0)
 
         if let unwrappedProductItem = productItem {
             createAndSendEvent(itemsList: [unwrappedProductItem], eventType: eventTypeCommerceProductViews)
         } else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendProductViewXdmEvent - Cannot create '" + eventTypeCommerceProductViews + "' event as given product item is null.")
+            Log.debug(label: logTag, "sendProductViewXdmEvent - Cannot create '" + eventTypeCommerceProductViews + "' event as given product item is null.")
         }
     }
 
@@ -114,15 +115,13 @@ class CommerceUtil {
     ///    - quantity       : The number of product items added.
     static func sendProductListAddXdmEvent(productData: ProductData, quantity: Int) {
 
-        ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendProductListAddXdmEvent with item '" + productData.name + "'")
+        Log.debug(label: logTag, "sendProductListAddXdmEvent with item '" + productData.name + "'")
         let productItem = createProductListItemsItem(productData: productData, quantity: quantity)
 
         if let unwrappedProductItem = productItem {
             createAndSendEvent(itemsList: [unwrappedProductItem], eventType: eventTypeCommerceProductListAdds)
         } else {
-            ACPCore.log(ACPMobileLogLevel.debug,
-                        tag: logTag,
-                        message: "sendProductListAddXdmEvent - Cannot create '" + eventTypeCommerceProductListAdds + "' event as given product item is null.")
+            Log.debug(label: logTag, "sendProductListAddXdmEvent - Cannot create '" + eventTypeCommerceProductListAdds + "' event as given product item is null.")
         }
     }
 
@@ -133,15 +132,13 @@ class CommerceUtil {
     ///    - quantity       : The number of product items that was added.
     static func sendProductListRemoveXdmEvent(productData: ProductData, quantity: Int) {
 
-        ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendProductListRemoveXdmEvent with item '" + productData.name + "'")
+        Log.debug(label: logTag, "sendProductListRemoveXdmEvent with item '" + productData.name + "'")
         let productItem = createProductListItemsItem(productData: productData, quantity: quantity)
 
         if let unwrappedProductItem = productItem {
             createAndSendEvent(itemsList: [unwrappedProductItem], eventType: eventTypeCommerceProductListRemovals)
         } else {
-            ACPCore.log(ACPMobileLogLevel.debug,
-                        tag: logTag,
-                        message: "sendProductListRemoveXdmEvent - Cannot create '" + eventTypeCommerceProductListRemovals + "' event as given product item is null.")
+            Log.debug(label: logTag, "sendProductListRemoveXdmEvent - Cannot create '" + eventTypeCommerceProductListRemovals + "' event as given product item is null.")
         }
     }
 
@@ -150,11 +147,11 @@ class CommerceUtil {
     /// There may be more than one checkout events if there are multiple steps in the checkout process.
     static func sendCheckoutXdmEvent() {
 
-        ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendCheckoutXdmEvent")
+        Log.debug(label: logTag, "sendCheckoutXdmEvent")
         if let itemsList = prepareProductList() {
             createAndSendEvent(itemsList: itemsList, eventType: eventTypeCommerceCheckouts)
         } else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendCheckoutXdmEvent - Cannot create '" + eventTypeCommerceCheckouts + "' event as given product item is null.")
+            Log.debug(label: logTag, "sendCheckoutXdmEvent - Cannot create '" + eventTypeCommerceCheckouts + "' event as given product item is null.")
         }
     }
 
@@ -162,11 +159,11 @@ class CommerceUtil {
     /// This method should be called when an action during the shopping cart is being cleared.
     static func sendCartClearXdmEvent() {
 
-        ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendCartClearXdmEvent")
+        Log.debug(label: logTag, "sendCartClearXdmEvent")
         if let itemsList = prepareProductList() {
             createAndSendEvent(itemsList: itemsList, eventType: eventTypeCommerceProductListRemovals)
         } else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendCartClearXdmEvent - Cannot create '" + eventTypeCommerceProductListRemovals + "' event as given product item is null.")
+            Log.debug(label: logTag, "sendCartClearXdmEvent - Cannot create '" + eventTypeCommerceProductListRemovals + "' event as given product item is null.")
         }
     }
 
@@ -174,7 +171,7 @@ class CommerceUtil {
     /// This method should be called when a final purchase is made of a shopping cart.
     static func sendPurchaseXdmEvent() {
 
-        ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendPurchaseXdmEvent")
+        Log.debug(label: logTag, "sendPurchaseXdmEvent")
         if let itemsList = prepareProductList() {
 
             /// Create PaymentItem which details the method of payment
@@ -207,7 +204,7 @@ class CommerceUtil {
             let responseHandler = ResponseHandler()
             ExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
         } else {
-            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "sendPurchaseXdmEvent - Cannot create '" + eventTypeCommercePurchases + "' as no items were found in cart.")
+            Log.debug(label: logTag, "sendPurchaseXdmEvent - Cannot create '" + eventTypeCommercePurchases + "' as no items were found in cart.")
         }
     }
 
@@ -245,7 +242,7 @@ class CommerceUtil {
             commerce.purchases = purchases
 
         default:
-            ACPCore.log(ACPMobileLogLevel.debug, tag: logTag, message: "Unknown event type when sending Commerce event. Ignoring event.")
+            Log.debug(label: logTag, "Unknown event type when sending Commerce event. Ignoring event.")
             return
         }
 

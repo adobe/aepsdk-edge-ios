@@ -10,7 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
+import AEPCore
+import AEPServices
 import Foundation
 
 class RequestBuilder {
@@ -29,12 +30,11 @@ class RequestBuilder {
     private let storeResponsePayloadManager: StoreResponsePayloadManager
 
     init() {
-        let dataStore = NamedUserDefaultsStore(name: ExperiencePlatformConstants.DataStoreKeys.storeName)
-        storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
+        storeResponsePayloadManager = StoreResponsePayloadManager(ExperiencePlatformConstants.DataStoreKeys.storeName)
     }
 
-    init(dataStore: KeyValueStore) {
-        storeResponsePayloadManager = StoreResponsePayloadManager(dataStore)
+    init(dataStoreName: String) {
+        storeResponsePayloadManager = StoreResponsePayloadManager(dataStoreName)
     }
 
     /// Enables streaming of the Platform Edge Response.
@@ -50,7 +50,7 @@ class RequestBuilder {
     /// - Parameter events: List of `ACPExtensionEvent` objects. Each event is expected to contain a serialized Experience Platform Event
     /// encoded in the `ACPExtensionEvent.eventData` property.
     /// - Returns: A `EdgeRequest` object or nil if the events list is empty
-    func getRequestPayload(_ events: [ACPExtensionEvent]) -> EdgeRequest? {
+    func getRequestPayload(_ events: [Event]) -> EdgeRequest? {
         guard !events.isEmpty else { return nil }
 
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
@@ -79,11 +79,11 @@ class RequestBuilder {
     ///
     /// - Parameter events: A list of `ACPExtensionEvent` which contain an Experience Platform Event as event data.
     /// - Returns: A list of Experience Platform Events as maps
-    private func extractPlatformEvents(_ events: [ACPExtensionEvent]) -> [ [String: AnyCodable] ] {
+    private func extractPlatformEvents(_ events: [Event]) -> [ [String: AnyCodable] ] {
         var platformEvents: [[String: AnyCodable]] = []
 
         for event in events {
-            guard var eventData = event.eventData else {
+            guard var eventData = event.data else {
                 continue
             }
 
@@ -92,9 +92,8 @@ class RequestBuilder {
             }
 
             if var xdm = eventData[ExperiencePlatformConstants.JsonKeys.xdm] as? [String: Any] {
-                let date = Date(timeIntervalSince1970: TimeInterval(event.eventTimestamp / 1000))
-                xdm[ExperiencePlatformConstants.JsonKeys.timestamp] = ISO8601DateFormatter().string(from: date)
-                xdm[ExperiencePlatformConstants.JsonKeys.eventId] = event.eventUniqueIdentifier
+                xdm[ExperiencePlatformConstants.JsonKeys.timestamp] = ISO8601DateFormatter().string(from: event.timestamp)
+                xdm[ExperiencePlatformConstants.JsonKeys.eventId] = event.id.uuidString
                 eventData[ExperiencePlatformConstants.JsonKeys.xdm] = xdm
             }
 
@@ -103,13 +102,18 @@ class RequestBuilder {
                 let trimmedDatasetId = datasetId.trimmingCharacters(in: CharacterSet.whitespaces)
                 if !trimmedDatasetId.isEmpty {
                     eventData[ExperiencePlatformConstants.JsonKeys.meta] =
-                        [ExperiencePlatformConstants.JsonKeys.CollectMetadata.collect: [ExperiencePlatformConstants.JsonKeys.CollectMetadata.datasetId: trimmedDatasetId]]
+                        [ExperiencePlatformConstants.JsonKeys.CollectMetadata.collect:
+                            [ExperiencePlatformConstants.JsonKeys.CollectMetadata.datasetId: trimmedDatasetId]]
                 }
                 eventData.removeValue(forKey: ExperiencePlatformConstants.EventDataKeys.datasetId)
             }
 
-            platformEvents.append(AnyCodable.from(dictionary: eventData))
+            guard let wrappedEventData = AnyCodable.from(dictionary: eventData) else {
+                Log.warning(label: TAG, "Failed to add EventData to platformEvents - unable to convert to [String : AnyCodable]")
+                continue
+            }
 
+            platformEvents.append(wrappedEventData)
         }
 
         return platformEvents

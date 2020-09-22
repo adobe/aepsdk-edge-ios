@@ -10,13 +10,12 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
-@testable import AEPExperiencePlatform
+import AEPCore
+import AEPExperiencePlatform
+import AEPServices
 import XCTest
 
 /// Functional test suite for tests which require no Identity shared state at startup to simulate a missing or pending state.
-/// This test suite cannot be run in same target as other tests which registers the Identity extension
-/// as all the tests in the same target use the same ACPCore instance with that Identity extension and not the needed 'fake' Identity extension.
 class IdentityStateFunctionalTests: FunctionalTestBase {
 
     private let exEdgeInteractUrl = "https://edge.adobedc.net/ee/v1/interact"
@@ -24,38 +23,20 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
     override func setUp() {
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
-        FunctionalTestUtils.resetUserDefaults()
         FunctionalTestBase.debugEnabled = false
 
-        if FunctionalTestBase.isFirstRun {
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.booted, count: 1)
-            setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 2)
+        // config state and 2 event hub states (TestableExperiencePlatformInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
+        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 3)
 
-            // expectations for update config request&response events
-            setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
-            setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
-
-            let startLatch = CountDownLatch(1)
-            do {
-                try ACPCore.registerExtension(TestableExperiencePlatformInternal.self)
-                try ACPCore.registerExtension(FakeIdentityExtension.self)
-                ACPCore.start {
-                    ACPCore.updateConfiguration(["global.privacy": "optedin",
-                                                 "experienceCloud.org": "testOrg@AdobeOrg",
-                                                 "experiencePlatform.configId": "12345-example"])
-
-                    startLatch.countDown()
-                }
-            } catch {
-                XCTFail("Failed test setUp: \(error.localizedDescription)")
-            }
-
-            _ = startLatch.await(timeout: 2)
-            assertExpectedEvents(ignoreUnexpectedEvents: false)
-            resetTestExpectations()
-        }
-
-        FakeIdentityExtension.clearSharedState() // make sure state is clear
+        // expectations for update config request&response events
+        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        MobileCore.registerExtensions([TestableExperiencePlatform.self, FakeIdentityExtension.self])
+        MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
+                                                        "experienceCloud.org": "testOrg@AdobeOrg",
+                                                        "experiencePlatform.configId": "12345-example"])
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+        resetTestExpectations()
     }
 
     func testSendEvent_withPendingIdentityState_noRequestSent() {
