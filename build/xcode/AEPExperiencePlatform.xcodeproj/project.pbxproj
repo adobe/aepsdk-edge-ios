@@ -336,7 +336,6 @@
 		D444995F2519506B0093B364 /* AEPExperiencePlatform.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AEPExperiencePlatform.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D44499612519506B0093B364 /* AEPExperiencePlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEPExperiencePlatform.h; sourceTree = "<group>"; };
 		D44499622519506B0093B364 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D4449ADC2519938D0093B364 /* AEPExperiencePlatformStatic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEPExperiencePlatformStatic.swift; sourceTree = "<group>"; };
 		D4449B262519964E0093B364 /* libAEPCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAEPCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4449B282519964E0093B364 /* libAEPServices.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAEPServices.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D44BBB74248DC54F00775DAC /* CountDownLatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountDownLatch.swift; sourceTree = "<group>"; };
@@ -353,7 +352,7 @@
 		D48CBD2124A17EEA00A24BD8 /* TestXDMSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestXDMSchema.swift; sourceTree = "<group>"; };
 		D496750225104C2E001F5F95 /* AEPExperiencePlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEPExperiencePlatform.h; sourceTree = "<group>"; };
 		D496750325104C2E001F5F95 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D4967534251130D3001F5F95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D4967534251130D3001F5F95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../build/xcode/AEPExperiencePlatform/Info.plist; sourceTree = "<group>"; };
 		D49A628E250AE4F500B7C4A3 /* EventHub+Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventHub+Test.swift"; sourceTree = "<group>"; };
 		D49A6293250AEEF000B7C4A3 /* UserDefaults+Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Test.swift"; sourceTree = "<group>"; };
 		D49A62DB250C311100B7C4A3 /* SampleFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleFunctionalTests.swift; sourceTree = "<group>"; };
@@ -378,16 +377,12 @@
 		D4D669112514278200B4866D /* AEPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D669132514278200B4866D /* AEPRulesEngine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPRulesEngine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D669152514278200B4866D /* AEPServices.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPServices.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D4D6693925142B1200B4866D /* AEPCoreAll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEPCoreAll.h; sourceTree = "<group>"; };
-		D4D6693A25142B1200B4866D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D4D6695F25142B9C00B4866D /* AEPCoreExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEPCoreExtensions.h; sourceTree = "<group>"; };
-		D4D6696025142B9C00B4866D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D4D669B3251434CC00B4866D /* AEPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D669B5251434CC00B4866D /* AEPRulesEngine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPRulesEngine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D669B7251434CC00B4866D /* AEPServices.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPServices.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D66A5A25190B9800B4866D /* AEPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D66A7425190C8400B4866D /* AEPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D4D66AA2251910FB00B4866D /* AEPExperiencePlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEPExperiencePlatform.h; sourceTree = "<group>"; };
+		D4D66AA2251910FB00B4866D /* AEPExperiencePlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AEPExperiencePlatform.h; path = ../../build/xcode/AEPExperiencePlatform/AEPExperiencePlatform.h; sourceTree = "<group>"; };
 		D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestNetworkService.swift; sourceTree = "<group>"; };
 		D4F74FE62447A8B800379258 /* MockNetworking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworking.swift; sourceTree = "<group>"; };
 		D4F74FE82447A92800379258 /* MockURLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLSession.swift; sourceTree = "<group>"; };
@@ -629,14 +624,6 @@
 			path = AEPExperiencePlatform;
 			sourceTree = "<group>";
 		};
-		D4449ADB2519938D0093B364 /* AEPExperiencePlatformStatic */ = {
-			isa = PBXGroup;
-			children = (
-				D4449ADC2519938D0093B364 /* AEPExperiencePlatformStatic.swift */,
-			);
-			path = AEPExperiencePlatformStatic;
-			sourceTree = "<group>";
-		};
 		D4655403246DF3B000A150E2 /* testUtilsShared */ = {
 			isa = PBXGroup;
 			children = (
@@ -668,10 +655,7 @@
 				BF5EEC2D249839DC00C72622 /* AEPCommerceDemoApp */,
 				D4D5B57B2432977F00CAB6E4 /* AEPDemoAppSwiftUI */,
 				D496750125104C2E001F5F95 /* AEPExperiencePlatform */,
-				D4D6693825142B1200B4866D /* AEPCoreAll */,
-				D4D6695E25142B9C00B4866D /* AEPCoreExtensions */,
 				D44499602519506B0093B364 /* AEPExperiencePlatform */,
-				D4449ADB2519938D0093B364 /* AEPExperiencePlatformStatic */,
 				D4D5B4E8242EBB1600CAB6E4 /* Products */,
 				E5239B915F53B993A1976FC4 /* Pods */,
 				3BB2159D8E84140309C411FF /* Frameworks */,
@@ -767,24 +751,6 @@
 				D4D5B5852432977F00CAB6E4 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		D4D6693825142B1200B4866D /* AEPCoreAll */ = {
-			isa = PBXGroup;
-			children = (
-				D4D6693925142B1200B4866D /* AEPCoreAll.h */,
-				D4D6693A25142B1200B4866D /* Info.plist */,
-			);
-			path = AEPCoreAll;
-			sourceTree = "<group>";
-		};
-		D4D6695E25142B9C00B4866D /* AEPCoreExtensions */ = {
-			isa = PBXGroup;
-			children = (
-				D4D6695F25142B9C00B4866D /* AEPCoreExtensions.h */,
-				D4D6696025142B9C00B4866D /* Info.plist */,
-			);
-			path = AEPCoreExtensions;
 			sourceTree = "<group>";
 		};
 		D4F74FEC2447A95400379258 /* utils */ = {
