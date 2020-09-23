@@ -7,7 +7,7 @@ project 'AEPCommerceDemoApp.xcodeproj'
 target 'AEPCommerceDemoApp' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
-  pod 'AEPExperiencePlatform', :git => 'git@github.com:emdobrin/aepsdk-platform-ios.git', :branch => 'AMSDK-10474-dynamic-only'
+  pod 'AEPExperiencePlatform', :git => 'git@github.com:adobe/aepsdk-platform-ios.git', :branch => 'dev'
   pod 'AEPCore', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
   pod 'AEPServices', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
   pod 'SwiftRulesEngine', :git => 'git@github.com:adobe/aepsdk-rulesengine-ios.git', :branch => 'dev'
