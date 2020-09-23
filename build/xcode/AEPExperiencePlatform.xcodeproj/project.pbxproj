@@ -167,6 +167,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		D42F36A5251BEA7E00490C0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D444995E2519506B0093B364;
+			remoteInfo = AEPExperiencePlatform;
+		};
+		D42F36A7251BEA8300490C0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D444995E2519506B0093B364;
+			remoteInfo = AEPExperiencePlatform;
+		};
 		D4ABABEB251A889C008076BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
@@ -852,6 +866,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D42F36A6251BEA7E00490C0D /* PBXTargetDependency */,
 			);
 			name = unitTests;
 			productName = UnitTests;
@@ -873,6 +888,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D42F36A8251BEA8300490C0D /* PBXTargetDependency */,
 			);
 			name = functionalTests;
 			productName = functionalTests;
@@ -1411,6 +1427,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		D42F36A6251BEA7E00490C0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D444995E2519506B0093B364 /* AEPExperiencePlatform */;
+			targetProxy = D42F36A5251BEA7E00490C0D /* PBXContainerItemProxy */;
+		};
+		D42F36A8251BEA8300490C0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D444995E2519506B0093B364 /* AEPExperiencePlatform */;
+			targetProxy = D42F36A7251BEA8300490C0D /* PBXContainerItemProxy */;
+		};
 		D4ABABEC251A889C008076BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D444995E2519506B0093B364 /* AEPExperiencePlatform */;
