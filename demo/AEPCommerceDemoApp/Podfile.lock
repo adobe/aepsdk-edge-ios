@@ -14,7 +14,7 @@ PODS:
 
 DEPENDENCIES:
   - "AEPCore (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
-  - "AEPExperiencePlatform (from `git@github.com:emdobrin/aepsdk-platform-ios.git`, branch `AMSDK-10474-dynamic-only`)"
+  - "AEPExperiencePlatform (from `git@github.com:adobe/aepsdk-platform-ios.git`, branch `dev`)"
   - "AEPIdentity (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
   - "AEPLifecycle (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
   - "AEPServices (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
@@ -25,8 +25,8 @@ EXTERNAL SOURCES:
     :branch: main
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPExperiencePlatform:
-    :branch: AMSDK-10474-dynamic-only
-    :git: "git@github.com:emdobrin/aepsdk-platform-ios.git"
+    :branch: dev
+    :git: "git@github.com:adobe/aepsdk-platform-ios.git"
   AEPIdentity:
     :branch: main
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
@@ -45,8 +45,8 @@ CHECKOUT OPTIONS:
     :commit: 18c9758864582a1416b407e6356e28fa69111f96
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPExperiencePlatform:
-    :commit: 7bb2c4942f68ad01ca132f896d3fcc6d5cdbc743
-    :git: "git@github.com:emdobrin/aepsdk-platform-ios.git"
+    :commit: 69bdde90d4589507fbbcb76dd55ac4f1453fc833
+    :git: "git@github.com:adobe/aepsdk-platform-ios.git"
   AEPIdentity:
     :commit: 18c9758864582a1416b407e6356e28fa69111f96
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
@@ -68,6 +68,6 @@ SPEC CHECKSUMS:
   AEPServices: ad642c76cede1c7babb61e6804198ded4317d74f
   SwiftRulesEngine: 5b6727f221618ef9a2c84705d563d321451da0cc
 
-PODFILE CHECKSUM: b43a0ff1f6659ccb330d02deb2aa043cf2abf997
+PODFILE CHECKSUM: a9b15fa00a025b6bbd958ee62fdad36604ba53b0
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3
