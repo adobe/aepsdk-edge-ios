@@ -1,5 +1,8 @@
 # Adobe Experience Platform Mobile Extension
 
+## BETA
+
+AEPExperiencePlatform is currently in beta. Use of this code is by invitation only and not otherwise supported by Adobe. Please contact your Adobe Customer Success Manager to learn more.
 
 ## About this project
 
