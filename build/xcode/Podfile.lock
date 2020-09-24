@@ -1,25 +1,62 @@
 PODS:
-  - ACPCore (2.7.3):
-    - ACPCore/main (= 2.7.3)
-  - ACPCore/main (2.7.3)
-  - ACPGriffon (1.1.3):
-    - ACPCore
-    - ACPGriffon/iOS (= 1.1.3)
-  - ACPGriffon/iOS (1.1.3):
-    - ACPCore
+  - AEPCore (0.0.1):
+    - AEPRulesEngine
+    - AEPServices
+  - AEPIdentity (0.0.1):
+    - AEPCore
+  - AEPLifecycle (0.0.1):
+    - AEPCore
+  - AEPRulesEngine (0.0.1)
+  - AEPServices (0.0.1)
 
 DEPENDENCIES:
-  - ACPGriffon (~> 1.0)
+  - "AEPCore (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
+  - "AEPIdentity (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
+  - "AEPLifecycle (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
+  - "AEPRulesEngine (from `git@github.com:adobe/aepsdk-rulesengine-ios.git`, branch `dev`)"
+  - "AEPServices (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
 
-SPEC REPOS:
-  trunk:
-    - ACPCore
-    - ACPGriffon
+EXTERNAL SOURCES:
+  AEPCore:
+    :branch: main
+    :git: "git@github.com:adobe/aepsdk-core-ios.git"
+  AEPIdentity:
+    :branch: main
+    :git: "git@github.com:adobe/aepsdk-core-ios.git"
+  AEPLifecycle:
+    :branch: main
+    :git: "git@github.com:adobe/aepsdk-core-ios.git"
+  AEPRulesEngine:
+    :branch: dev
+    :git: "git@github.com:adobe/aepsdk-rulesengine-ios.git"
+  AEPServices:
+    :branch: main
+    :git: "git@github.com:adobe/aepsdk-core-ios.git"
+
+CHECKOUT OPTIONS:
+  AEPCore:
+    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
+    :git: "git@github.com:adobe/aepsdk-core-ios.git"
+  AEPIdentity:
+    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
+    :git: "git@github.com:adobe/aepsdk-core-ios.git"
+  AEPLifecycle:
+    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
+    :git: "git@github.com:adobe/aepsdk-core-ios.git"
+  AEPRulesEngine:
+    :commit: 23bb1679b1d7f02b5a09103578c4402afe8242c3
+    :git: "git@github.com:adobe/aepsdk-rulesengine-ios.git"
+  AEPServices:
+    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
+    :git: "git@github.com:adobe/aepsdk-core-ios.git"
 
 SPEC CHECKSUMS:
-  ACPCore: 775f513687127325d980dba5721b08ea3d5ea79a
-  ACPGriffon: f34c6e6fa4887a7de339f4fb9cf5fd9fbb82fe6e
+  AEPCore: e8ddaae01a787926fde35cfcc24770b26a765e58
+  AEPIdentity: f46a1b34363243f8d417a8143bfb876a36809104
+  AEPLifecycle: 9e63cf6a8085161f95706ddbffef20dd1d748c3e
+  AEPRulesEngine: 5742652bd7ab65aa7325f731725d995947e41db8
+  AEPServices: ad642c76cede1c7babb61e6804198ded4317d74f
 
-PODFILE CHECKSUM: 257d0c0a0c92cc8bf06a425d44beb6459ac92589
+PODFILE CHECKSUM: 7496862d1bd83c68766c79dfe7caef46144ac47d
 
 COCOAPODS: 1.9.1

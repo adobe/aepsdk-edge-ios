@@ -19,7 +19,9 @@ let package = Package(
     name: "AEPExperiencePlatform",
     platforms: [.iOS(.v10)],
     products: [
-        .library(name: "AEPExperiencePlatform", targets: ["AEPExperiencePlatform"])
+        .library(name: "AEPExperiencePlatform", targets: ["AEPExperiencePlatform"]),
+        .library(name: "AEPExperiencePlatformStatic", type: .static, targets: ["AEPExperiencePlatform"]),
+        .library(name: "AEPExperiencePlatformDynamic", type: .dynamic, targets: ["AEPExperiencePlatform"]),
     ],
     dependencies: [
         .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .branch("main"))
@@ -29,18 +31,16 @@ let package = Package(
                 dependencies: ["AEPCore"],
                 path: "code/src"),
         .testTarget(name: "AEPDemoAppSwiftUI",
-                    dependencies: ["AEPExperiencePlatform"],
+                    dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
                     path: "demo/AEPDemoAppSwiftUI"),
         .testTarget(name: "functionalTests",
-                    dependencies: ["AEPExperiencePlatform"],
+                    dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
                     path: "code/functionalTests"),
         .testTarget(name: "unitTests",
-                    dependencies: ["AEPExperiencePlatform"],
-                    path: "code/unitTests")
-        /*
-         .testTarget(name: "AEPCommerceDemoApp",
-         dependencies: ["AEPExperiencePlatform", "AEPIdentity", "AEPLifecycle"],
-         path: "demo/AEPCommerceDemoApp")
-         */
+                    dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
+                    path: "code/unitTests"),
+	.testTarget(name: "AEPCommerceDemoApp",
+                    dependencies: ["AEPExperiencePlatform", "AEPIdentity", "AEPLifecycle"],
+		    path: "demo/AEPCommerceDemoApp"),
     ]
 )

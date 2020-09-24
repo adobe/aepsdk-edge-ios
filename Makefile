@@ -3,6 +3,11 @@ export EXTENSION_NAME = AEPExperiencePlatform
 export APP_NAME = AEPCommerceDemoApp
 export OUT_DIR = out
 PROJECT_NAME = $(EXTENSION_NAME)
+export TARGET_NAME_XCFRAMEWORK = $(EXTENSION_NAME).xcframework 
+export SCHEME_NAME_XCFRAMEWORK = AEPExperiencePlatformXCF
+
+SIMULATOR_ARCHIVE_PATH = ./build/ios_simulator.xcarchive/Products/Library/Frameworks/
+IOS_ARCHIVE_PATH = ./build/ios.xcarchive/Products/Library/Frameworks/
 
 setup: 
 	(cd build/xcode && pod install)
@@ -34,6 +39,8 @@ clean:
 	(rm -rf $(OUT_DIR))
 	(make -C build/xcode clean)
 	(rm -rf build/xcode/$(PROJECT_NAME)/out)
+	(rm -rf build/*.xcarchive)
+	(rm -rf build/*.xcframework)
 
 build: clean _create-out
 	(set -o pipefail && make -C build/xcode build-shallow 2>&1 | tee -a $(OUT_DIR)/build.log)
@@ -43,6 +50,11 @@ build-all: clean _create-out
 
 build-app: _create-out
 	(set -o pipefail && make -C demo/$(APP_NAME) build-shallow 2>&1 | tee -a $(OUT_DIR)/appbuild.log)
+
+archive:
+	xcodebuild archive -workspace ./build/xcode/$(PROJECT_NAME).xcworkspace -scheme $(SCHEME_NAME_XCFRAMEWORK) -archivePath "./build/ios.xcarchive" -sdk iphoneos -destination="iOS" SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES
+	xcodebuild archive -workspace ./build/xcode/$(PROJECT_NAME).xcworkspace -scheme $(SCHEME_NAME_XCFRAMEWORK) -archivePath "./build/ios_simulator.xcarchive" -sdk iphonesimulator -destination="iOS Simulator" SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES
+	xcodebuild -create-xcframework -framework $(SIMULATOR_ARCHIVE_PATH)$(EXTENSION_NAME).framework -framework $(IOS_ARCHIVE_PATH)$(EXTENSION_NAME).framework -output ./build/$(TARGET_NAME_XCFRAMEWORK)
 
 archive-app: _create-out
 	(make -C demo/$(APP_NAME) archive-app)
