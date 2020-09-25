@@ -66,22 +66,18 @@ jobs:
       - run:
           name: Build XCFramework
           command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
               make archive
               mkdir -p circle-artifacts
               cp -R ./build/*.xcframework ./circle-artifacts
-            fi
 
       # verify demo app builds
       - run:
           name: Build Demo App
           command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
               make build-app
               make archive-app
               mkdir -p circle-artifacts
               cp ./build/*.zip ./circle-artifacts
-            fi
 
       - store_artifacts:
           path: circle-artifacts
