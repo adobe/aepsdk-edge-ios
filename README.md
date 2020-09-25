@@ -32,10 +32,10 @@ This will generate the xcframework under the `build` folder. Drag and drop all t
 use_frameworks!
 
 target 'YOUR_TARGET_NAME' do
-	pod 'AEPExperiencePlatform', :git => 'git@github.com:adobe/aepsdk-platform-ios.git', :branch => 'dev'
+	pod 'AEPExperiencePlatform', :git => 'git@github.com:adobe/aepsdk-platform-ios.git', :branch => 'main'
   	pod 'AEPCore', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
   	pod 'AEPServices', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
-  	pod 'SwiftRulesEngine', :git => 'git@github.com:adobe/aepsdk-rulesengine-ios.git', :branch => 'dev'
+  	pod 'AEPRulesEngine', :git => 'git@github.com:adobe/aepsdk-rulesengine-ios.git', :branch => 'main'
 end
 ```
 
@@ -84,38 +84,27 @@ make open
 ~~~
 
 #### Command line integration
-From command line you can build the project for a simulator by running the following command:
 
-~~~
-make build
-~~~
-
-To build the project for release, run the following command and find the lib and .swiftmodule files under `out/AEPExperiencePlatform-<version>.zip`:
-
-~~~
-make build-all
-~~~
-
-To bundle the Commerce Demo application, run the following command and find the archive under `out/AEPCommerceDemoApp-<version>.zip`:
-
-~~~
-make archive-app
-~~~
-
-You can also run the unit test suite from command line:
+You can run the unit test suite from command line:
 
 ~~~
 make test
 ~~~
 
+To bundle the Commerce Demo application, run the following command and find the archive under `build/AEPCommerceDemoApp-<version>.zip`:
+
+~~~
+make archive-app
+~~~
+
+
 ## Setup Demo Application
 The AEP Commerce Demo application is a sample app which demonstrates how to send commerce data to Adobe Experience Platform by using the Adobe Experience Platform Mobile Extension.
 
-Follow the command line instructions above to build the project and bundle the demo application. With both `AEPCommerceDemoApp-<version>.zip` and `AEPExperiencePlatform-<version>.zip` in the same folder, run the following commands in a terminal:
+Follow the command line instructions above to bundle the demo application. Run the following commands in a terminal:
 
 ~~~
 unzip AEPCommerceDemoApp-<version>.zip
-unzip AEPExperiencePlatform-<version>.zip -d AEPCommerceDemoApp/libs
 cd AEPCommerceDemoApp
 pod install
 open AEPCommerceDemoApp.xcworkspace
