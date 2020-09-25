@@ -13,7 +13,7 @@ DEPENDENCIES:
   - "AEPCore (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
   - "AEPIdentity (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
   - "AEPLifecycle (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
-  - "AEPRulesEngine (from `git@github.com:adobe/aepsdk-rulesengine-ios.git`, branch `dev`)"
+  - "AEPRulesEngine (from `git@github.com:adobe/aepsdk-rulesengine-ios.git`, branch `main`)"
   - "AEPServices (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
 
 EXTERNAL SOURCES:
@@ -27,7 +27,7 @@ EXTERNAL SOURCES:
     :branch: main
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPRulesEngine:
-    :branch: dev
+    :branch: main
     :git: "git@github.com:adobe/aepsdk-rulesengine-ios.git"
   AEPServices:
     :branch: main
@@ -35,19 +35,19 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AEPCore:
-    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
+    :commit: fe6ea7b92d2affa6d8b84d1981a6a6c37f191e47
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPIdentity:
-    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
+    :commit: fe6ea7b92d2affa6d8b84d1981a6a6c37f191e47
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPLifecycle:
-    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
+    :commit: fe6ea7b92d2affa6d8b84d1981a6a6c37f191e47
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPRulesEngine:
-    :commit: 23bb1679b1d7f02b5a09103578c4402afe8242c3
+    :commit: b7e2b7d778b07be8fccd6641e8119767bfc26b1f
     :git: "git@github.com:adobe/aepsdk-rulesengine-ios.git"
   AEPServices:
-    :commit: 01e07861d4f166b3790b09aae1be38801a507b5d
+    :commit: fe6ea7b92d2affa6d8b84d1981a6a6c37f191e47
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
 
 SPEC CHECKSUMS:
@@ -57,6 +57,6 @@ SPEC CHECKSUMS:
   AEPRulesEngine: 5742652bd7ab65aa7325f731725d995947e41db8
   AEPServices: ad642c76cede1c7babb61e6804198ded4317d74f
 
-PODFILE CHECKSUM: 7496862d1bd83c68766c79dfe7caef46144ac47d
+PODFILE CHECKSUM: 2ee705699d231f728de5c7ad13d117d81f623791
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3

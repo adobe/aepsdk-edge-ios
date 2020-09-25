@@ -4,6 +4,8 @@
 
 AEPExperiencePlatform is currently in beta. Use of this code is by invitation only and not otherwise supported by Adobe. Please contact your Adobe Customer Success Manager to learn more.
 
+By using the Beta, you hereby acknowledge that the Beta is provided "as is" without warranty of any kind. Adobe shall have no obligation to maintain, correct, update, change, modify or otherwise support the Beta. You are advised to use caution and not to rely in any way on the correct functioning or performance of such Beta and/or accompanying materials.
+
 ## About this project
 
 The Experience Platform Mobile extension allows you to send data to the Adobe Experience Platform from a mobile application. This extension allows you to implement Adobe Experience Cloud capabilities in a more robust way, serve multiple Adobe solutions though one network call, and simultaneously forward this information to the Adobe Experience Platform.
@@ -11,7 +13,7 @@ The Experience Platform Mobile extension allows you to send data to the Adobe Ex
 The Adobe Experience Platform Mobile Extension is an extension for the [Adobe Experience Platform SDK](https://github.com/Adobe-Marketing-Cloud/acp-sdks).
 
 ## Current version
-The Experience Platform Mobile extension for iOS is currently in Alpha development.
+The Experience Platform Mobile extension for iOS is currently in Beta development.
 
 ## Installation
 
@@ -32,10 +34,10 @@ This will generate the xcframework under the `build` folder. Drag and drop all t
 use_frameworks!
 
 target 'YOUR_TARGET_NAME' do
-	pod 'AEPExperiencePlatform', :git => 'git@github.com:adobe/aepsdk-platform-ios.git', :branch => 'dev'
+	pod 'AEPExperiencePlatform', :git => 'git@github.com:adobe/aepsdk-platform-ios.git', :branch => 'main'
   	pod 'AEPCore', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
   	pod 'AEPServices', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
-  	pod 'SwiftRulesEngine', :git => 'git@github.com:adobe/aepsdk-rulesengine-ios.git', :branch => 'dev'
+  	pod 'AEPRulesEngine', :git => 'git@github.com:adobe/aepsdk-rulesengine-ios.git', :branch => 'main'
 end
 ```
 
@@ -84,25 +86,8 @@ make open
 ~~~
 
 #### Command line integration
-From command line you can build the project for a simulator by running the following command:
 
-~~~
-make build
-~~~
-
-To build the project for release, run the following command and find the lib and .swiftmodule files under `out/AEPExperiencePlatform-<version>.zip`:
-
-~~~
-make build-all
-~~~
-
-To bundle the Commerce Demo application, run the following command and find the archive under `out/AEPCommerceDemoApp-<version>.zip`:
-
-~~~
-make archive-app
-~~~
-
-You can also run the unit test suite from command line:
+You can run all the test suites from command line:
 
 ~~~
 make test
@@ -111,14 +96,22 @@ make test
 ## Setup Demo Application
 The AEP Commerce Demo application is a sample app which demonstrates how to send commerce data to Adobe Experience Platform by using the Adobe Experience Platform Mobile Extension.
 
-Follow the command line instructions above to build the project and bundle the demo application. With both `AEPCommerceDemoApp-<version>.zip` and `AEPExperiencePlatform-<version>.zip` in the same folder, run the following commands in a terminal:
+Setup the environment by running the following from the root directory of the repository:
 
 ~~~
-unzip AEPCommerceDemoApp-<version>.zip
-unzip AEPExperiencePlatform-<version>.zip -d AEPCommerceDemoApp/libs
-cd AEPCommerceDemoApp
-pod install
-open AEPCommerceDemoApp.xcworkspace
+make pod-install
+~~~
+
+Subsequently, you can make sure your environment is updated by running the following:
+
+~~~
+make pod-update
+~~~
+
+Open the AEPCommerceDemoApp workspace in Xcode by running the following command from the root directory of the repository:
+
+~~~
+make open-app
 ~~~
 
 ## Contributing

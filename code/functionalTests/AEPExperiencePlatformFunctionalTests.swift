@@ -60,7 +60,6 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
 
         // expectations for Identity force sync
-        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.requestIdentity, count: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count: 2)
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
@@ -401,9 +400,9 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(13, requestBody.count)
 
         guard let firstStore = requestBody["meta.state.entries[0].key"] as? String,
-            let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
-                XCTFail("Client-side store not found")
-                return
+              let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
+            XCTFail("Client-side store not found")
+            return
         }
         XCTAssertEqual("kndctr_testOrg_AdobeOrg_identity", requestBody["meta.state.entries[\(Int(index))].key"] as? String)
         XCTAssertEqual("CiY4OTgzOTEzMzE0NDAwMjUyOTA2NzcwMTY0NDE3Nzc4MzUwMTUzMFINCJHdjrCzLhAAGAEgB6ABnd2OsLMuqAGV8N6h277mkagB8AGR3Y6wsy4=",

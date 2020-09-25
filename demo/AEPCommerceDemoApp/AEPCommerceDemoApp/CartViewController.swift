@@ -67,7 +67,9 @@ extension CartViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let product = adbMobileShoppingCart.items[indexPath.row].product
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ProductCell") as! ShoppingItemCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ProductCell", for: indexPath) as? ShoppingItemCell
+            ?? ShoppingItemCell(style: .default, reuseIdentifier: "ProductCell")
+
         cell.setProduct(product: product)
         cell.delegate = self
         return cell
