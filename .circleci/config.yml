@@ -62,16 +62,29 @@ jobs:
           name: Upload Code Coverage Report
           command: bash <(curl -s https://codecov.io/bash) -v -X s3 -c -D "./build/out" -J "AEPExperiencePlatform" -t ${CODECOV_TOKEN}
 
+      # build XCFramework archive
+      - run:
+          name: Build XCFramework
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              make archive
+              mkdir -p circle-artifacts
+              cp -R ./build/*.xcframework ./circle-artifacts
+            fi
 
-      # verify demo app builds, must build lib before this step
+      # verify demo app builds
       - run:
           name: Build Demo App
           command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
               make build-app
               make archive-app
+              mkdir -p circle-artifacts
+              cp ./build/*.zip ./circle-artifacts
+            fi
 
       - store_artifacts:
-          path: out
+          path: circle-artifacts
 
 
 
