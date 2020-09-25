@@ -50,7 +50,7 @@ class InstrumentedExtension: Extension {
             if event.source.lowercased() == FunctionalTestConst.EventSource.sharedStateRequest.lowercased() {
                 processSharedStateRequest(event)
             }
-                // process the unregister extension event
+            // process the unregister extension event
             else if event.source.lowercased() == FunctionalTestConst.EventSource.unregisterExtension.lowercased() {
                 unregisterExtension()
             }

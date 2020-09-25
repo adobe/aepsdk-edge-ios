@@ -163,7 +163,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         XCTAssertEqual(1, mockResponseCallback.onErrorJsonError.capacity)
         let errorJson = mockResponseCallback.onErrorJsonError[0]
         XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
-        XCTAssertTrue(errorJson.contains("\"message\":\"Request to ExEdge failed with an unknown exception\""))
+        XCTAssertTrue(errorJson.contains("\"message\":\"Request to Experience Edge failed with an unknown exception\""))
     }
 
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithInvalidJsonContent() {
@@ -201,7 +201,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
             +
             "        }\n" +
             "      ]\n" +
-        "    }"
+            "    }"
 
         // test
         let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
@@ -297,15 +297,15 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testHandleStreamingResponse_nonCharacterSeparators_doesNotHandleContent() {
         let responseStr: String =
             "<RS>{\"some\":\"thing\\n\"}<LF>" +
-                "<RS>{\n" +
-                "  \"may\": {\n" +
-                "    \"include\": \"nested\",\n" +
-                "    \"objects\": [\n" +
-                "      \"and\",\n" +
-                "      \"arrays\"\n" +
-                "    ]\n" +
-                "  }\n" +
-        "}<LF>"
+            "<RS>{\n" +
+            "  \"may\": {\n" +
+            "    \"include\": \"nested\",\n" +
+            "    \"objects\": [\n" +
+            "      \"and\",\n" +
+            "      \"arrays\"\n" +
+            "    ]\n" +
+            "  }\n" +
+            "}<LF>"
 
         let streamingSettings = Streaming(recordSeparator: "<RS>", lineFeed: "<LF>")
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
@@ -320,18 +320,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testHandleStreamingResponse_SimpleStreamingResponse2() {
         let responseStr: String =
             "\u{00A9}{\"some\":\"thing\\n\"}\u{00F8}" +
-                "\u{00A9}{\n" +
-                "  \"may\": {\n" +
-                "    \"include\": \"nested\",\n" +
-                "    \"objects\": [\n" +
-                "      \"and\",\n" +
-                "      \"arrays\"\n" +
-                "    ]\n" +
-                "  }\n" +
-        "}\u{00F8}"
-        var expectedResponse: [String] = []
-        expectedResponse.append("{\"some\":\"thing\\n\"}")
-        expectedResponse.append("{\n" +
+            "\u{00A9}{\n" +
             "  \"may\": {\n" +
             "    \"include\": \"nested\",\n" +
             "    \"objects\": [\n" +
@@ -339,7 +328,18 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
             "      \"arrays\"\n" +
             "    ]\n" +
             "  }\n" +
-            "}")
+            "}\u{00F8}"
+        var expectedResponse: [String] = []
+        expectedResponse.append("{\"some\":\"thing\\n\"}")
+        expectedResponse.append("{\n" +
+                                    "  \"may\": {\n" +
+                                    "    \"include\": \"nested\",\n" +
+                                    "    \"objects\": [\n" +
+                                    "      \"and\",\n" +
+                                    "      \"arrays\"\n" +
+                                    "    ]\n" +
+                                    "  }\n" +
+                                    "}")
         let streamingSettings = Streaming(recordSeparator: "\u{00A9}", lineFeed: "\u{00F8}")
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: streamingSettings, responseCallback: mockResponseCallback)
@@ -353,18 +353,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
     func testHandleStreamingResponse_SimpleStreamingResponse3() {
         let responseStr: String =
             "\u{00A9}{\"some\":\"thing\\n\"}\u{00FF}" +
-                "\u{00A9}{\n" +
-                "  \"may\": {\n" +
-                "    \"include\": \"nested\",\n" +
-                "    \"objects\": [\n" +
-                "      \"and\",\n" +
-                "      \"arrays\"\n" +
-                "    ]\n" +
-                "  }\n" +
-        "}\u{00FF}"
-        var expectedResponse: [String] = []
-        expectedResponse.append("{\"some\":\"thing\\n\"}")
-        expectedResponse.append("{\n" +
+            "\u{00A9}{\n" +
             "  \"may\": {\n" +
             "    \"include\": \"nested\",\n" +
             "    \"objects\": [\n" +
@@ -372,7 +361,18 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
             "      \"arrays\"\n" +
             "    ]\n" +
             "  }\n" +
-            "}")
+            "}\u{00FF}"
+        var expectedResponse: [String] = []
+        expectedResponse.append("{\"some\":\"thing\\n\"}")
+        expectedResponse.append("{\n" +
+                                    "  \"may\": {\n" +
+                                    "    \"include\": \"nested\",\n" +
+                                    "    \"objects\": [\n" +
+                                    "      \"and\",\n" +
+                                    "      \"arrays\"\n" +
+                                    "    ]\n" +
+                                    "  }\n" +
+                                    "}")
         let streamingSettings = Streaming(recordSeparator: "\u{00A9}", lineFeed: "\u{00FF}")
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: streamingSettings, responseCallback: mockResponseCallback)
@@ -387,7 +387,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         // swiftlint:disable line_length
         let responseStr: String = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}\n"
         let expectedResponse: String =
-        "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
+            "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
         // swiftlint:enable line_length
         let streamingSettings = Streaming(recordSeparator: "\u{0000}", lineFeed: "\n")
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
@@ -404,7 +404,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         var responseStr: String = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}\n"
         responseStr += responseStr
         let expectedResponse: String =
-        "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
+            "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
         // swiftlint:enable line_length
         let streamingSettings = Streaming(recordSeparator: "\u{0000}", lineFeed: "\n")
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
@@ -420,7 +420,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         // swiftlint:disable line_length
         let responseStr: String = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}\n"
         let expectedResponse: String =
-        "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
+            "{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":358,\"spec\":{\"url\":\"//ib.adnxs.com/getuid?https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D358%26dpuuid%3D%24UID\",\"hideReferrer\":true,\"ttlMinutes\":10080}},{\"type\":\"url\",\"id\":477,\"spec\":{\"url\":\"//idsync.rlcdn.com/365868.gif?partner_uid=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":14400}},{\"type\":\"url\",\"id\":540,\"spec\":{\"url\":\"//pixel.tapad.com/idsync/ex/receive?partner_id=ADB&partner_url=https%3A%2F%2Fdpm.demdex.net%2Fibs%3Adpid%3D540%26dpuuid%3D%24%7BTA_DEVICE_ID%7D&partner_device_id=42985602780892980519057012517360930936\",\"hideReferrer\":true,\"ttlMinutes\":1440}},{\"type\":\"url\",\"id\":771,\"spec\":{\"url\":\"https://cm.g.doubleclick.net/pixel?google_nid=adobe_dmp&google_cm&gdpr=0&gdpr_consent=\",\"hideReferrer\":true,\"ttlMinutes\":20160}},{\"type\":\"url\",\"id\":1123,\"spec\":{\"url\":\"//analytics.twitter.com/i/adsct?p_user_id=42985602780892980519057012517360930936&p_id=38594\",\"hideReferrer\":true,\"ttlMinutes\":10080}}]}]}"
         // swiftlint:enable line_length
         let streamingSettings = Streaming(recordSeparator: "\u{0000}", lineFeed: "\n")
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
@@ -442,7 +442,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
             "      \"arrays\"" +
             "    ]" +
             "  }" +
-        "}"
+            "}"
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 
@@ -462,7 +462,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
             "      \"arrays\"" +
             "    ]" +
             "  }" +
-        "}\n"
+            "}\n"
         let connection: HttpConnection = HttpConnection(data: responseStr.data(using: .utf8)!, response: nil, error: nil) // swiftlint:disable:this force_unwrapping
         networkService.handleContent(connection: connection, streaming: nil, responseCallback: mockResponseCallback)
 

@@ -33,9 +33,9 @@ class StoreResponsePayloadTests: XCTestCase {
         let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             [ "expiryDate": "\(ISO8601DateFormatter().string(from: payload.expiryDate))",
-                "payload.key": "key",
-                "payload.maxAge": 3600,
-                "payload.value": "value"]
+              "payload.key": "key",
+              "payload.maxAge": 3600,
+              "payload.value": "value"]
         assertEqual(expectedResult, actualResult)
     }
 
