@@ -20,7 +20,7 @@ struct KonductorConfig: Encodable {
 
 /// Konductor configuration metadata to provide response fragments in a streaming fashion (HTTP 1.1/chunked, IETF RFC 7464).
 struct Streaming {
-    /// Control charactor used before each response fragment.
+    /// Control character used before each response fragment.
     let recordSeparator: String?
 
     /// Control character used at the end of each response fragment.

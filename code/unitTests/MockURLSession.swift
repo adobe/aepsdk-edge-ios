@@ -25,8 +25,9 @@ class MockURLSession: URLSession {
     private let mockTask: MockTask
 
     init(data: Data? = nil, urlResponse: URLResponse? = nil, error: Error? = nil) {
-        mockTask = MockTask(data: data, urlResponse: urlResponse, error:
-            error)
+        mockTask = MockTask(data: data,
+                            urlResponse: urlResponse,
+                            error: error)
         dataTaskWithCompletionHandlerCalled = false
     }
 

@@ -12,7 +12,7 @@
 
 import Foundation
 
-/// Response callback used for handlng the responses from the Adobe Experience Edge network connections
+/// Response callback used for handling the responses from the Adobe Experience Edge network connections
 class NetworkResponseCallback: ResponseCallback {
     private let requestId: String
     private let networkResponseHandler: NetworkResponseHandler

@@ -40,9 +40,9 @@ enum HttpResponseCodes: Int {
 
 /// Network service for requests to the Adobe Experience Edge
 class ExperiencePlatformNetworkService {
-    private let TAG: String = "ExperiencePlatformNetworkService"
-    private let defaultGenericErrorMessage = "Request to ExEdge failed with an unknown exception"
-    private let defaultNamespace = "global"
+    private let LOG_TAG: String = "ExperiencePlatformNetworkService"
+    private let DEFAULT_GENERIC_ERROR_MESSAGE = "Request to Experience Edge failed with an unknown exception"
+    private let DEFAULT_NAMESPACE = "global"
     private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.clientTimeout.rawValue,
                                                        HttpResponseCodes.tooManyRequests.rawValue,
                                                        HttpResponseCodes.serviceUnavailable.rawValue,
@@ -51,10 +51,10 @@ class ExperiencePlatformNetworkService {
     private var defaultHeaders = [ExperiencePlatformConstants.NetworkKeys.headerKeyAccept: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson,
                                   ExperiencePlatformConstants.NetworkKeys.headerKeyContentType: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson]
 
-    /// Builds the URL required for connections to ExEdge with the provided `ExperienceEdgeRequestType`
+    /// Builds the URL required for connections to Experience Edge with the provided `ExperienceEdgeRequestType`
     /// - Parameters:
     ///   - requestType: see `ExperienceEdgeRequestType`
-    ///   - configId: blackbird configuration id
+    ///   - configId: Edge configuration identifier
     ///   - requestId: batch request identifier
     /// - Returns: built URL or nil on error
     func buildUrl(requestType: ExperienceEdgeRequestType, configId: String, requestId: String) -> URL? {
@@ -76,14 +76,13 @@ class ExperiencePlatformNetworkService {
     ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
     ///   - retryTimes: number of retries required for this request in case the connection failed or a `recoverableNetworkErrorCodes` was encountered
     func doRequest(url: URL, requestBody: EdgeRequest, requestHeaders: [String: String]? = [:], responseCallback: ResponseCallback, retryTimes: UInt = 0) {
-        // AMSDK-8909 check if this network request fails and needs a retry. The retry will happen right away, repeatedly (if needed) for
-        // maximum NETWORK_REQUEST_MAX_RETRIES times or until the request is accepted by the server.
-        // To be reconsidered when implementing AMSDK-8822 when we may not need the max retries limit anymore.
+        // AMSDK-8909 check if this network request fails and needs a retry. The retry will happen right away, repeatedly (if needed) for maximim retryTimes or until the request is accepted by the server.
+        // To be reconsidered when implementing AMSDK-9829 when we may not need the max retries limit anymore.
 
         var shouldRetry = self.doRequest(url: url, requestBody: requestBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
         var retries = 0
         while shouldRetry == RetryNetworkRequest.yes && retries < retryTimes {
-            Log.debug(label: TAG, "doRequest with retry - Error occurred for network request, retrying...")
+            Log.debug(label: LOG_TAG, "doRequest with retry - Error occurred for network request, retrying...")
             shouldRetry = self.doRequest(url: url, requestBody: requestBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
             retries += 1
         }
@@ -107,7 +106,7 @@ class ExperiencePlatformNetworkService {
         encoder.outputFormatting = [.prettyPrinted]
 
         guard let data = try? encoder.encode(requestBody) else {
-            Log.warning(label: TAG, "Failed to encode request to JSON, dropping this request")
+            Log.warning(label: LOG_TAG, "doRequest - Failed to encode request to JSON, dropping this request")
             return shouldRetry
         }
 
@@ -120,7 +119,7 @@ class ExperiencePlatformNetworkService {
                                                             httpHeaders: headers,
                                                             connectTimeout: ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout,
                                                             readTimeout: ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout)
-        Log.debug(label: TAG, "Sending request to URL \(url.absoluteString) with header: \(headers) and body: \n\(payload)")
+        Log.debug(label: LOG_TAG, "doRequest - Sending request to URL \(url.absoluteString) with headers: \(headers) and body: \n\(payload)")
 
         // make sync call to process the response right away and retry if needed
         let semaphore = DispatchSemaphore(value: 0)
@@ -138,22 +137,22 @@ class ExperiencePlatformNetworkService {
             shouldRetry = RetryNetworkRequest.no
             if let responseCode = connection.responseCode {
                 if responseCode == HttpResponseCodes.ok.rawValue {
-                    Log.debug(label: self.TAG, "doRequest - Interact connection to ExEdge was successful.")
+                    Log.debug(label: self.LOG_TAG, "doRequest - Interact connection to Experience Edge was successful.")
                     self.handleContent(connection: connection, streaming: requestBody.meta?.konductorConfig?.streaming, responseCallback: responseCallback)
 
                 } else if responseCode == HttpResponseCodes.noContent.rawValue {
                     // Successful collect requests do not return content
-                    Log.debug(label: self.TAG, "doRequest - Collect connection to data platform successful.")
+                    Log.debug(label: self.LOG_TAG, "doRequest - Collect connection to Experience Edge was successful.")
 
                 } else if self.recoverableNetworkErrorCodes.contains(responseCode) {
-                    Log.debug(label: self.TAG, "doRequest - Connection to ExEdge returned recoverable error code \(responseCode)")
+                    Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned recoverable error code \(responseCode)")
                     shouldRetry = RetryNetworkRequest.yes
                 } else {
-                    Log.warning(label: self.TAG, "doRequest - Connection to ExEdge returned unrecoverable error code \(responseCode)")
+                    Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unrecoverable error code \(responseCode)")
                     self.handleError(connection: connection, responseCallback: responseCallback)
                 }
             } else {
-                Log.warning(label: self.TAG, "doRequest - Connection to ExEdge returned unknown error")
+                Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unknown error")
                 self.handleError(connection: connection, responseCallback: responseCallback)
             }
 
@@ -168,15 +167,15 @@ class ExperiencePlatformNetworkService {
         return shouldRetry
     }
 
-    /// Attempts the read the response from the c`connection`and return the content via the `responseCallback`. This method should be used for handling 2xx server response.
-    /// In the eventuality of an error, this method returns false and an error message will be logged.
+    /// Attempts the read the response from the `connection`and return the content via the `responseCallback`. This method should be used for handling 2xx server responses.
+    /// In the eventuality of an error, this method returns false and an error message is logged.
     /// - Parameters:
     ///   - connection: `HttpConnection` containing the response from the server
     ///   - streaming: `Streaming` settings to be used to determine if streaming is enabled or not
-    ///   - responseCallback: `ResponseCallback` that is invoked for each individual stream if streaming is enabled or once with the unrapped response content
+    ///   - responseCallback: `ResponseCallback` that is invoked for each individual stream if streaming is enabled or once with the unwrapped response content
     func handleContent(connection: HttpConnection, streaming: Streaming?, responseCallback: ResponseCallback) {
         guard let unwrappedResponseString = connection.responseString else {
-            Log.debug(label: TAG, "handleContent - No data to handle")
+            Log.trace(label: LOG_TAG, "handleContent - No data to handle")
             return
         }
         if let unwrappedStreaming = streaming {
@@ -224,7 +223,7 @@ class ExperiencePlatformNetworkService {
         guard let lineFeedDelimiter: String = streaming.lineFeed else { return }
         guard let lineFeedCharacter: Character = lineFeedDelimiter.convertToCharacter() else { return }
 
-        Log.trace(label: TAG, "handleStreamingResponse - Handle server response with streaming enabled")
+        Log.trace(label: LOG_TAG, "handleStreamingResponse - Handle server response with streaming enabled")
 
         let splitResult = unwrappedResponseString.split(separator: lineFeedCharacter)
 
@@ -236,12 +235,12 @@ class ExperiencePlatformNetworkService {
         }
     }
 
-    /// Composes a generic error (string with JSON format), containing generic namespace and the provided error message, after removing the leading and trailing spaces.
+    /// Composes a generic error (String with JSON format), containing a generic namespace and the provided error message, after removing the leading and trailing spaces.
     /// - Parameter plainTextErrorMessage: error message to be formatted; if nil/empty is provided, a default error message is returned.
-    /// - Returns: the JSON formatted error as a String or nil if there was an error while serlizinging the error message
+    /// - Returns: the JSON formatted error as a String or nil if there was an error while serializing the error message
     private func composeGenericErrorAsJson(plainTextErrorMessage: String?) -> String? {
         if let unwrappedMessage = plainTextErrorMessage {
-            // check if this is a json error response from ExEdge, and if so passed unchanged
+            // check if this is a JSON error response from Experience Edge, and if so pass it unchanged
             let data = Data(unwrappedMessage.utf8)
 
             if let _ = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
@@ -249,16 +248,16 @@ class ExperiencePlatformNetworkService {
             }
         }
 
-        var unwrappedErrorMessage = plainTextErrorMessage ?? defaultGenericErrorMessage
+        var unwrappedErrorMessage = plainTextErrorMessage ?? DEFAULT_GENERIC_ERROR_MESSAGE
         unwrappedErrorMessage = unwrappedErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let errorDictionary = [ExperiencePlatformConstants.JsonKeys.Response.Error.message: unwrappedErrorMessage, ExperiencePlatformConstants.JsonKeys.Response.Error.namespace: defaultNamespace]
+        let errorDictionary = [ExperiencePlatformConstants.JsonKeys.Response.Error.message: unwrappedErrorMessage, ExperiencePlatformConstants.JsonKeys.Response.Error.namespace: DEFAULT_NAMESPACE]
         guard let json = try? JSONSerialization.data(withJSONObject: errorDictionary, options: []) else {
-            Log.debug(label: TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
+            Log.debug(label: LOG_TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
             return nil
         }
         guard let jsonString = String(data: json, encoding: .utf8) else {
-            Log.debug(label: TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
+            Log.debug(label: LOG_TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
             return nil
         }
 

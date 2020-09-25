@@ -15,12 +15,12 @@ import AEPServices
 import Foundation
 
 class RequestBuilder {
-    private let TAG = "RequestBuilder"
+    private let LOG_TAG = "RequestBuilder"
 
-    /// Control charactor used before each response fragment. Response streaming is enabled when both `recoredSeparator` and `lineFeed` are non nil.
+    /// Control character used before each response fragment. Response streaming is enabled when both `recordSeparator` and `lineFeed` are non nil.
     private var recordSeparator: String?
 
-    /// Control character used at the end of each response fragment. Response streaming is enabled when both `recoredSeparator` and `lineFeed` are non nil.
+    /// Control character used at the end of each response fragment. Response streaming is enabled when both `recordSeparator` and `lineFeed` are non nil.
     private var lineFeed: String?
 
     /// The Experiece Cloud ID to be sent with this request
@@ -37,7 +37,7 @@ class RequestBuilder {
         storeResponsePayloadManager = StoreResponsePayloadManager(dataStoreName)
     }
 
-    /// Enables streaming of the Platform Edge Response.
+    /// Enables streaming of the Experience Edge Response.
     /// - Parameters:
     ///   - recordSeparator: the record separator used to delimit the start of a response chunk
     ///   - lineFeed: the line feed used to delimit the end of a response chunk
@@ -47,8 +47,8 @@ class RequestBuilder {
     }
 
     /// Builds the request payload with all the provided parameters and events.
-    /// - Parameter events: List of `ACPExtensionEvent` objects. Each event is expected to contain a serialized Experience Platform Event
-    /// encoded in the `ACPExtensionEvent.eventData` property.
+    /// - Parameter events: List of `Event` objects. Each event is expected to contain a serialized `ExperiencePlatformEvent`
+    /// encoded in the `Event.data` property.
     /// - Returns: A `EdgeRequest` object or nil if the events list is empty
     func getRequestPayload(_ events: [Event]) -> EdgeRequest? {
         guard !events.isEmpty else { return nil }
@@ -73,12 +73,12 @@ class RequestBuilder {
         return EdgeRequest(meta: requestMetadata, xdm: contextData, events: platformEvents)
     }
 
-    /// Extract the Experience Platform Event from each `ACPExtensionEvent` and return as a list of maps. The timestamp for each
-    /// `ACPExtensionEvent` is set as the timestamp for its contained Experience Platform Event. The unique identifier for each
-    /// `ACPExtensionEvent` is set as the event ID for its contained Experience Platform Event.
+    /// Extract the `ExperiencePlatformEvent` from each `Event` and return as a list of maps.
+    /// The timestamp for each `Event` is set as the timestamp for its contained `ExperiencePlatformEvent`.
+    /// The unique identifier for each `Event` is set as the event ID for its contained `ExperiencePlatformEvent`.
     ///
-    /// - Parameter events: A list of `ACPExtensionEvent` which contain an Experience Platform Event as event data.
-    /// - Returns: A list of Experience Platform Events as maps
+    /// - Parameter events: A list of `Event`s which contain an `ExperiencePlatformEvent` as event data.
+    /// - Returns: A list of `ExperiencePlatformEvent`s as maps
     private func extractPlatformEvents(_ events: [Event]) -> [ [String: AnyCodable] ] {
         var platformEvents: [[String: AnyCodable]] = []
 
@@ -109,7 +109,7 @@ class RequestBuilder {
             }
 
             guard let wrappedEventData = AnyCodable.from(dictionary: eventData) else {
-                Log.warning(label: TAG, "Failed to add EventData to platformEvents - unable to convert to [String : AnyCodable]")
+                Log.debug(label: LOG_TAG, "Failed to add event data to ExperiencePlatformEvent - unable to convert to [String : AnyCodable]")
                 continue
             }
 
