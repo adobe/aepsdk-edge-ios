@@ -15,13 +15,12 @@ DerivedData/
 bin/*
 build/*.xcarchive
 build/*.xcframework
-build/xcode/*/out
-build/xcode/genhtml
+build/*
 demo/AEPDemoAppSwiftUI/build
 demo/AEPCommerceDemoApp/build
 ci/*
 out/*
-build/xcode/*/out
+
 DerivedData/
 *.moved-aside
 *.pbxuser
@@ -95,4 +94,4 @@ fastlane/test_output
 
 ## Cocoapods
 Pods/
-build/xcode/Pods
+
