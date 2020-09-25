@@ -67,10 +67,8 @@ jobs:
       - run:
           name: Build Demo App
           command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
               make build-app
               make archive-app
-            fi
 
       - store_artifacts:
           path: out
