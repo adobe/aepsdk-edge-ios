@@ -36,15 +36,15 @@ open-app:
 clean:
 	(rm -rf build)
 
-build-app: _create-out
-	(set -o pipefail && make -C demo/$(APP_NAME) build-shallow 2>&1 | tee -a $(OUT_DIR)/appbuild.log)
+build-app:
+	make -C demo/$(APP_NAME) build-shallow
 
 archive:
 	xcodebuild archive -workspace $(PROJECT_NAME).xcworkspace -scheme $(SCHEME_NAME_XCFRAMEWORK) -archivePath "./build/ios.xcarchive" -sdk iphoneos -destination="iOS" SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES
 	xcodebuild archive -workspace $(PROJECT_NAME).xcworkspace -scheme $(SCHEME_NAME_XCFRAMEWORK) -archivePath "./build/ios_simulator.xcarchive" -sdk iphonesimulator -destination="iOS Simulator" SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES
 	xcodebuild -create-xcframework -framework $(SIMULATOR_ARCHIVE_PATH)$(EXTENSION_NAME).framework -framework $(IOS_ARCHIVE_PATH)$(EXTENSION_NAME).framework -output ./build/$(TARGET_NAME_XCFRAMEWORK)
 
-archive-app: _create-out
+archive-app:
 	(make -C demo/$(APP_NAME) archive-app)
 
 test:
