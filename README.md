@@ -97,17 +97,25 @@ To bundle the Commerce Demo application, run the following command and find the 
 make archive-app
 ~~~
 
-
 ## Setup Demo Application
 The AEP Commerce Demo application is a sample app which demonstrates how to send commerce data to Adobe Experience Platform by using the Adobe Experience Platform Mobile Extension.
 
-Follow the command line instructions above to bundle the demo application. Run the following commands in a terminal:
+Setup the environment by running the following from the root directory of the repository:
 
 ~~~
-unzip AEPCommerceDemoApp-<version>.zip
-cd AEPCommerceDemoApp
-pod install
-open AEPCommerceDemoApp.xcworkspace
+make pod-install
+~~~
+
+Subsequently, you can make sure your environment is updated by running the following:
+
+~~~
+make pod-update
+~~~
+
+Open the AEPCommerceDemoApp workspace in Xcode by running the following command from the root directory of the repository:
+
+~~~
+make open-app
 ~~~
 
 ## Contributing
