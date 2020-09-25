@@ -48,9 +48,8 @@ archive-app:
 	(make -C demo/$(APP_NAME) archive-app)
 
 test:
-	#(mkdir -p build/out/test)
 	@echo "######################################################################"
-	@echo "### Unit Testing iOS"
+	@echo "### Testing iOS"
 	@echo "######################################################################"
 	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'platform=iOS Simulator,name=iPhone 8' -derivedDataPath build/out -enableCodeCoverage YES
 
