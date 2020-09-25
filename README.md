@@ -87,16 +87,10 @@ make open
 
 #### Command line integration
 
-You can run the unit test suite from command line:
+You can run all the test suites from command line:
 
 ~~~
 make test
-~~~
-
-To bundle the Commerce Demo application, run the following command and find the archive under `build/AEPCommerceDemoApp-<version>.zip`:
-
-~~~
-make archive-app
 ~~~
 
 ## Setup Demo Application
