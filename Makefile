@@ -61,7 +61,7 @@ lint-autocorrect:
 	(swiftlint autocorrect --format)
 
 lint:
-	(swiftlint lint code/src SampleApps/AEPCommerceDemoApp)
+	(swiftlint lint Sources SampleApps/AEPCommerceDemoApp)
 
 
 

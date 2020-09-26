@@ -29,7 +29,7 @@ let package = Package(
     targets: [
         .target(name: "AEPExperiencePlatform",
                 dependencies: ["AEPCore"],
-                path: "code/src"),
+                path: "Sources"),
         .testTarget(name: "AEPDemoAppSwiftUI",
                     dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
                     path: "SampleApps/AEPDemoAppSwiftUI"),
