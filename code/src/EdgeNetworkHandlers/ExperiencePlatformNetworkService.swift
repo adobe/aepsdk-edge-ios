@@ -83,7 +83,7 @@ class ExperiencePlatformNetworkService {
         var shouldRetry = self.doRequest(url: url, requestBody: requestBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
         var retries = 0
         while shouldRetry == RetryNetworkRequest.yes && retries < retryTimes {
-            Log.debug(label: LOG_TAG, "doRequest with retry - Error occurred for network request, retrying...")
+            Log.debug(label: LOG_TAG, "doRequest - Error occurred for network request, retrying...")
             shouldRetry = self.doRequest(url: url, requestBody: requestBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
             retries += 1
         }
