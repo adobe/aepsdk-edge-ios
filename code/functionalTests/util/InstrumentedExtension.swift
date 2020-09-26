@@ -84,7 +84,7 @@ class InstrumentedExtension: Extension {
         guard let owner = eventData[FunctionalTestConst.EventDataKey.stateOwner] as? String else { return }
 
         var responseData: [String: Any?] = [FunctionalTestConst.EventDataKey.stateOwner: owner, FunctionalTestConst.EventDataKey.state: nil]
-        if let state = runtime.getSharedState(extensionName: owner, event: event) {
+        if let state = runtime.getSharedState(extensionName: owner, event: event, barrier: false) {
             responseData[FunctionalTestConst.EventDataKey.state] = state
         }
 
