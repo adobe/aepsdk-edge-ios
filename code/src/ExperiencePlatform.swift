@@ -23,9 +23,9 @@ public class ExperiencePlatform: NSObject, Extension {
 
     // MARK: - Extension
 
-    public var name = ExperiencePlatformConstants.extensionName
-    public var friendlyName = ExperiencePlatformConstants.friendlyName
-    public static var extensionVersion = ExperiencePlatformConstants.extensionVersion
+    public var name = Constants.EXTENSION_NAME
+    public var friendlyName = Constants.FRIENDLY_NAME
+    public static var extensionVersion = Constants.EXTENSION_VERSION
     public var metadata: [String: String]?
     public var runtime: ExtensionRuntime
 
@@ -35,20 +35,20 @@ public class ExperiencePlatform: NSObject, Extension {
     }
 
     public func onRegistered() {
-        registerListener(type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
+        registerListener(type: Constants.EventType.EXPERIENCE_PLATFORM,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
     }
 
     public func onUnregistered() {
-        print("Extension unregistered from MobileCore: \(ExperiencePlatformConstants.friendlyName)")
+        print("Extension unregistered from MobileCore: \(Constants.FRIENDLY_NAME)")
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        if event.type == ExperiencePlatformConstants.eventTypeExperiencePlatform, event.source == EventSource.requestContent {
-            let configurationSharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
+        if event.type == Constants.EventType.EXPERIENCE_PLATFORM, event.source == EventSource.requestContent {
+            let configurationSharedState = getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
-            let identitySharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Identity.stateOwner,
+            let identitySharedState = getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,
                                                      event: event)
             return configurationSharedState?.status == .set && identitySharedState?.status == .set
         }
@@ -71,7 +71,7 @@ public class ExperiencePlatform: NSObject, Extension {
 
         // fetch config shared state, this should be resolved based on readyForEvent check
         guard let configSharedState =
-                getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
+                getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
                                event: event)?.value else {
             Log.warning(label: LOG_TAG,
                         "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', Configuration shared state is nil.")
@@ -79,7 +79,7 @@ public class ExperiencePlatform: NSObject, Extension {
         }
 
         guard let configId =
-                configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String,
+                configSharedState[Constants.SharedState.Configuration.CONFIG_ID] as? String,
               !configId.isEmpty else {
             Log.warning(label: LOG_TAG,
                         "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' " +
@@ -89,12 +89,12 @@ public class ExperiencePlatform: NSObject, Extension {
 
         // Build Request object
         let requestBuilder = RequestBuilder()
-        requestBuilder.enableResponseStreaming(recordSeparator: ExperiencePlatformConstants.Defaults.requestConfigRecordSeparator,
-                                               lineFeed: ExperiencePlatformConstants.Defaults.requestConfigLineFeed)
+        requestBuilder.enableResponseStreaming(recordSeparator: Constants.Defaults.RECORD_SEPARATOR,
+                                               lineFeed: Constants.Defaults.LINE_FEED)
 
         // get ECID from Identity shared state, this should be resolved based on readyForEvent check
         guard let identityState =
-                getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Identity.stateOwner,
+                getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,
                                event: event)?.value else {
             Log.warning(label: LOG_TAG,
                         "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', " +
@@ -102,7 +102,7 @@ public class ExperiencePlatform: NSObject, Extension {
             return // drop current event
         }
 
-        if let ecid = identityState[ExperiencePlatformConstants.SharedState.Identity.ecid] as? String {
+        if let ecid = identityState[Constants.SharedState.Identity.ECID] as? String {
             requestBuilder.experienceCloudId = ecid
         } else {
             // This is not expected to happen. Continue without ECID
@@ -111,9 +111,9 @@ public class ExperiencePlatform: NSObject, Extension {
 
         // get Griffon integration id and include it in to the requestHeaders
         var requestHeaders: [String: String] = [:]
-        if let griffonSharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Griffon.stateOwner, event: event)?.value {
-            if let griffonIntegrationId = griffonSharedState[ExperiencePlatformConstants.SharedState.Griffon.integrationId] as? String {
-                requestHeaders[ExperiencePlatformConstants.NetworkKeys.headerKeyAEPValidationToken] = griffonIntegrationId
+        if let griffonSharedState = getSharedState(extensionName: Constants.SharedState.Griffon.STATE_OWNER_NAME, event: event)?.value {
+            if let griffonIntegrationId = griffonSharedState[Constants.SharedState.Griffon.INTEGRATION_ID] as? String {
+                requestHeaders[Constants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = griffonIntegrationId
             }
         }
 
@@ -138,7 +138,7 @@ public class ExperiencePlatform: NSObject, Extension {
                                                        requestBody: requestPayload,
                                                        requestHeaders: requestHeaders,
                                                        responseCallback: callback,
-                                                       retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
+                                                       retryTimes: Constants.Defaults.NETWORK_REQUEST_MAX_RETRIES)
         }
 
         Log.trace(label: LOG_TAG, "handleExperienceEventRequest - Finished processing and sending events to Edge.")

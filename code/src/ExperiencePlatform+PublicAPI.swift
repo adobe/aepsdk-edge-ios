@@ -32,8 +32,8 @@ public extension ExperiencePlatform {
         }
 
         let event = Event(name: "AEP Request Event",
-                          type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                          source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,
+                          type: Constants.EventType.EXPERIENCE_PLATFORM,
+                          source: Constants.EventSource.REQUEST_CONTENT,
                           data: eventData)
 
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: event.id.uuidString, responseHandler: responseHandler)

@@ -44,6 +44,9 @@ struct FunctionalTestConst {
         static let state = "state"
     }
 
+    struct SharedState {
+        static let CONFIGURATION = "com.adobe.module.configuration"
+    }
     struct Defaults {
         static let waitEventTimeout: TimeInterval = 2
         static let waitSharedStateTimeout: TimeInterval = 3

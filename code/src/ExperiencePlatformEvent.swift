@@ -52,14 +52,14 @@ public class ExperiencePlatformEvent: NSObject {
     internal func asDictionary() -> [String: Any]? {
         var dataDict: [String: Any] = [:]
         if let unwrappedXdm = xdm {
-            dataDict = [ExperiencePlatformConstants.JsonKeys.xdm: unwrappedXdm as Any]
+            dataDict = [Constants.JsonKeys.XDM: unwrappedXdm as Any]
         }
         if let unwrappedData = data {
-            dataDict[ExperiencePlatformConstants.JsonKeys.data] = unwrappedData
+            dataDict[Constants.JsonKeys.DATA] = unwrappedData
         }
 
         if let unwrappedDatasetId = datasetIdentifier {
-            dataDict[ExperiencePlatformConstants.EventDataKeys.datasetId] = unwrappedDatasetId
+            dataDict[Constants.EventDataKeys.DATASET_ID] = unwrappedDatasetId
         }
         return dataDict.isEmpty ? nil : dataDict
     }

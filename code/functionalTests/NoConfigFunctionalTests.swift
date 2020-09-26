@@ -33,7 +33,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
 
     func testHandleExperienceEventRequest_withPendingConfigurationState_expectEventsQueueIsBlocked() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
-        let configState = getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
+        let configState = getSharedStateFor(FunctionalTestConst.SharedState.CONFIGURATION)
         XCTAssertNil(configState)
 
         // set expectations
@@ -46,8 +46,8 @@ class NoConfigFunctionalTests: FunctionalTestBase {
 
         // Dispatch request event which will block request queue as Configuration state is nil
         let requestEvent = Event(name: "Request Test",
-                                 type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                 source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,
+                                 type: FunctionalTestConst.EventType.experiencePlatform,
+                                 source: FunctionalTestConst.EventSource.requestContent,
                                  data: ["key": "value"])
         MobileCore.dispatch(event: requestEvent)
 

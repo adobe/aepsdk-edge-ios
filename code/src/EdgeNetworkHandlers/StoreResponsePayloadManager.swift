@@ -17,7 +17,7 @@ import Foundation
 class StoreResponsePayloadManager {
     private let LOG_TAG: String = "StoreResponsePayloadManager"
     private let dataStoreName: String
-    private let storePayloadKeyName: String = ExperiencePlatformConstants.DataStoreKeys.storePayloads
+    private let storePayloadKeyName: String = Constants.DataStoreKeys.STORE_PAYLOADS
 
     init(_ storeName: String) {
         dataStoreName = storeName
