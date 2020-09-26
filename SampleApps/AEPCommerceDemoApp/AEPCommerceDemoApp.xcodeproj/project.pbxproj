@@ -258,17 +258,9 @@
 		BF5EEB4824904C7300C72622 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BF5EEB792494482A00C72622 /* libs */,
 				972E2FD5F80E4197A9839191 /* Pods_AEPCommerceDemoApp.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		BF5EEB792494482A00C72622 /* libs */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = libs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

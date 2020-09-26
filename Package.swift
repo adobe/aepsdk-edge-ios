@@ -32,7 +32,7 @@ let package = Package(
                 path: "code/src"),
         .testTarget(name: "AEPDemoAppSwiftUI",
                     dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
-                    path: "demo/AEPDemoAppSwiftUI"),
+                    path: "SampleApps/AEPDemoAppSwiftUI"),
         .testTarget(name: "functionalTests",
                     dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
                     path: "code/functionalTests"),
@@ -41,6 +41,6 @@ let package = Package(
                     path: "code/unitTests"),
         .testTarget(name: "AEPCommerceDemoApp",
                     dependencies: ["AEPExperiencePlatform", "AEPIdentity", "AEPLifecycle"],
-                    path: "demo/AEPCommerceDemoApp")
+                    path: "SampleApps/AEPCommerceDemoApp")
     ]
 )

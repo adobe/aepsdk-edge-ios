@@ -37,7 +37,7 @@ jobs:
           key: cocoapods-cache-v3-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
           paths:
             - ./Pods
-            - ./demo/AEPCommerceDemoApp/Pods
+            - ./SampleApps/AEPCommerceDemoApp/Pods
             - ~/.cocoapods
 
       - run:

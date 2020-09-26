@@ -505,7 +505,7 @@
 				BF5EEC2F249839DC00C72622 /* xdmlib */,
 			);
 			name = AEPCommerceDemoApp;
-			path = demo/AEPCommerceDemoApp;
+			path = SampleApps/AEPCommerceDemoApp;
 			sourceTree = "<group>";
 		};
 		BF5EEC2F249839DC00C72622 /* xdmlib */ = {
@@ -732,7 +732,7 @@
 				D4D5B5842432977F00CAB6E4 /* Preview Content */,
 			);
 			name = AEPDemoAppSwiftUI;
-			path = demo/AEPDemoAppSwiftUI;
+			path = SampleApps/AEPDemoAppSwiftUI;
 			sourceTree = "<group>";
 		};
 		D4D5B5842432977F00CAB6E4 /* Preview Content */ = {
@@ -1147,7 +1147,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint demo/AEPCommerceDemoApp/AEPCommerceDemoApp\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		BF024B7424BFDC8B002131E9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1164,7 +1164,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint demo/AEPDemoAppSwiftUI\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint SampleApps/AEPDemoAppSwiftUI\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		BF024B7524C01AB2002131E9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1480,10 +1480,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/ADBMobileConfig.json demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/product_list_colors.json demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets.xcassets";
+				DEVELOPMENT_ASSET_PATHS = "SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/ADBMobileConfig.json SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/product_list_colors.json SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets.xcassets";
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Info.plist;
+				INFOPLIST_FILE = SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1510,10 +1510,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/ADBMobileConfig.json demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/product_list_colors.json demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets.xcassets";
+				DEVELOPMENT_ASSET_PATHS = "SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/ADBMobileConfig.json SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/product_list_colors.json SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets.xcassets";
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Info.plist;
+				INFOPLIST_FILE = SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1832,7 +1832,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_LOADER = "";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"demo/AEPDemoAppSwiftUI/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SampleApps/AEPDemoAppSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1841,7 +1841,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/ACPGriffon\"",
 				);
 				GCC_NO_COMMON_BLOCKS = NO;
-				INFOPLIST_FILE = demo/AEPDemoAppSwiftUI/Info.plist;
+				INFOPLIST_FILE = SampleApps/AEPDemoAppSwiftUI/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1871,7 +1871,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_LOADER = "";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"demo/AEPDemoAppSwiftUI/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SampleApps/AEPDemoAppSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1880,7 +1880,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/ACPGriffon\"",
 				);
 				GCC_NO_COMMON_BLOCKS = NO;
-				INFOPLIST_FILE = demo/AEPDemoAppSwiftUI/Info.plist;
+				INFOPLIST_FILE = SampleApps/AEPDemoAppSwiftUI/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
