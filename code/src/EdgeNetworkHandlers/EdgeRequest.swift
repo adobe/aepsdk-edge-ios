@@ -13,13 +13,13 @@
 import AEPServices
 import Foundation
 
-/// A request for pushing events to the Adobe Data Platform.
-/// An `EdgeRequest` is the top-level request object sent to Konductor.
+/// A request for pushing events to the Adobe Experience Edge.
+/// An `EdgeRequest` is the top-level request object sent to Experience Edge.
 struct EdgeRequest: Encodable {
-    /// Metadata passed to solutions and even to Konductor itself with possiblity of overriding at event level
+    /// Metadata passed to the Experience Cloud Solutions and even to the Edge itself with possiblity of overriding at event level
     let meta: RequestMetadata?
 
-    /// XDM context data for the entire request
+    /// XDM data applied for the entire request
     let xdm: RequestContextData?
 
     /// List of Experience events

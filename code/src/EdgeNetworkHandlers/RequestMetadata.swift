@@ -12,7 +12,7 @@
 
 import Foundation
 
-/// Metadata passed to solutions and even to Konductor itself with possibility of overriding at event level.
+/// Metadata passed to Solutions and even to Experience Edge itself with possibility of overriding at event level.
 /// Is contained within the `EdgeRequest` request property.
 struct RequestMetadata: Encodable {
     let konductorConfig: KonductorConfig?

@@ -14,11 +14,11 @@ import AEPCore
 import AEPServices
 import Foundation
 
-/// This class is used to process the ExEdge network responses when the ResponseCallback is invoked with a response or error message. The response processing consists in parsing
-/// the server response message and dispatching response content and/or error response content events and storing the response payload (if needed).
+/// This class is used to process the Experience Edge network responses when the ResponseCallback is invoked with a response or error message. The response processing
+/// consists in parsing the server response message and dispatching response content and/or error response content events and storing the response payload (if needed).
 /// - See also: `EdgeResponse` and  `NetworkResponseCallback`
 class NetworkResponseHandler {
-    private let logTag = "NetworkResponseHandler"
+    private let LOG_TAG = "NetworkResponseHandler"
     private let serialQueue = DispatchQueue(label: "com.adobe.experiencePlatform.eventsDictionary") // serial queue for atomic operations
 
     // the order of the request events matter for matching them with the response events
@@ -36,7 +36,7 @@ class NetworkResponseHandler {
         let eventIds = batchedEvents.map { $0.id.uuidString }
         serialQueue.sync {
             if self.sentEventsWaitingResponse[requestId] != nil {
-                Log.warning(label: self.logTag, "Name collision for requestId \(requestId), events list is overwritten.")
+                Log.warning(label: self.LOG_TAG, "Name collision for requestId \(requestId), events list is overwritten.")
             }
 
             self.sentEventsWaitingResponse[requestId] = eventIds
@@ -72,7 +72,7 @@ class NetworkResponseHandler {
         guard let data = jsonResponse.data(using: .utf8) else { return }
 
         if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) {
-            Log.debug(label: logTag,
+            Log.debug(label: LOG_TAG,
                       "processResponseOnSuccess - Received server response:\n \(jsonResponse), request id \(requestId)")
 
             // handle the event handles, errors and warnings coming from server
@@ -80,7 +80,7 @@ class NetworkResponseHandler {
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId, isError: true)
             dispatchEventErrors(errorsArray: edgeResponse.warnings, requestId: requestId, isError: false)
         } else {
-            Log.warning(label: logTag,
+            Log.warning(label: LOG_TAG,
                         "processResponseOnSuccess - The conversion to JSON failed for server response: \(jsonResponse), request id \(requestId)")
         }
     }
@@ -94,14 +94,14 @@ class NetworkResponseHandler {
         guard let data = jsonError.data(using: .utf8) else { return }
 
         guard let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) else {
-            Log.warning(label: logTag,
+            Log.warning(label: LOG_TAG,
                         "processResponseOnError - The conversion to JSON failed for server error response: \(jsonError), request id \(requestId)")
             return
         }
 
-        Log.debug(label: logTag, "processResponseOnError - Processing server error response:\n \(jsonError), request id \(requestId)")
+        Log.debug(label: LOG_TAG, "processResponseOnError - Processing server error response:\n \(jsonError), request id \(requestId)")
 
-        // Note: if the Konductor error doesn't have an eventIndex it means that this error is a generic request error,
+        // Note: if the Edge error doesn't have an eventIndex it means that this error is a generic request error,
         // otherwise it is an event specific error. There can be multiple errors returned for the same event
         if edgeErrorResponse.errors != nil {
             // this is an error coming from Konductor, read the error from the errors node
@@ -109,7 +109,7 @@ class NetworkResponseHandler {
         } else {
             // generic server error, return the error as is
             guard let genericErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) else {
-                Log.warning(label: logTag, "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), request id \(requestId)")
+                Log.warning(label: LOG_TAG, "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), request id \(requestId)")
                 return
             }
 
@@ -125,11 +125,11 @@ class NetworkResponseHandler {
     /// - See also: handleStoreEventHandle(handle: EdgeEventHandle)
     private func processEventHandles(handlesArray: [EdgeEventHandle]?, requestId: String) {
         guard let unwrappedEventHandles = handlesArray, !unwrappedEventHandles.isEmpty else {
-            Log.trace(label: logTag, "processEventHandles - Received nil/empty event handle array, nothing to handle")
+            Log.trace(label: LOG_TAG, "processEventHandles - Received nil/empty event handle array, nothing to handle")
             return
         }
 
-        Log.trace(label: logTag, "processEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
+        Log.trace(label: LOG_TAG, "processEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
 
         for eventHandle in unwrappedEventHandles {
             let requestEventId = extractRequestEventId(forEventIndex: eventHandle.eventIndex, requestId: requestId)
@@ -141,8 +141,8 @@ class NetworkResponseHandler {
         }
     }
 
-    /// Extracts the request event identifiers paired with this event handle/error handle based on the index. If no matches found or the event handle index is missing, this method
-    /// returns nil
+    /// Extracts the request event identifiers paired with this event handle/error handle based on the index. If no matches are found or the event handle index is missing,
+    /// this method returns nil
     ///
     /// - Parameters:
     ///   - forEventIndex: the `EdgeEventHandle`/ `EdgeEventError` event index
@@ -178,18 +178,18 @@ class NetworkResponseHandler {
     /// - See Also: `logErrorMessage(_ error: [String: Any], isError: Bool, requestId: String)`
     private func dispatchEventErrors(errorsArray: [EdgeEventError]?, requestId: String, isError: Bool) {
         guard let unwrappedErrors = errorsArray, !unwrappedErrors.isEmpty else {
-            Log.trace(label: logTag, "dispatchEventErrors - Received nil/empty errors array, nothing to handle")
+            Log.trace(label: LOG_TAG, "dispatchEventErrors - Received nil/empty errors array, nothing to handle")
             return
         }
 
-        Log.trace(label: logTag, "dispatchEventErrors - Processing \(unwrappedErrors.count) errors(s) for request id: \(requestId)")
+        Log.trace(label: LOG_TAG, "dispatchEventErrors - Processing \(unwrappedErrors.count) errors(s) for request id: \(requestId)")
         for error in unwrappedErrors {
 
             if let errorAsDictionary = try? error.asDictionary() {
                 logErrorMessage(errorAsDictionary, isError: isError, requestId: requestId)
 
                 let requestEventId = extractRequestEventId(forEventIndex: error.eventIndex, requestId: requestId)
-                // set eventRequestId and edge requestId on the response event and dispatch data
+                // set eventRequestId and Edge requestId on the response event and dispatch data
                 let eventData = addEventAndRequestIdToDictionary(errorAsDictionary,
                                                                  requestId: requestId,
                                                                  requestEventId: requestEventId)
@@ -223,12 +223,11 @@ class NetworkResponseHandler {
         MobileCore.dispatch(event: unwrappedResponseEvent)
     }
 
-    /// Extracts the event unique id corresponding to the eventIndex from `EventHandle` and returns the corresponding event data
+    /// Attaches the provided `requestId` and `requestEventId` (if provided) to the `dictionary` and returns the result
     /// - Parameters:
-    ///   - dictionary: data coming from server (an event handle or error or warning), which will be enhanced with eventUniqueId
-    ///   - requestEventIdsList: waiting events list for current `requestId`
-    ///   - index: the request event index associated with this event handle/error
+    ///   - dictionary: data coming from server (an event handle or error or warning)
     ///   - requestId: current request id to be added to data
+    ///   - requestEventId: the request event id associated with this data
     private func addEventAndRequestIdToDictionary(_ dictionary: [String: Any], requestId: String, requestEventId: String?) -> [String: Any] {
         var eventData: [String: Any] = dictionary
         eventData[ExperiencePlatformConstants.EventDataKeys.edgeRequesId] = requestId
@@ -255,7 +254,7 @@ class NetworkResponseHandler {
         let storeResponsePayloadManager = StoreResponsePayloadManager(ExperiencePlatformConstants.DataStoreKeys.storeName)
         storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
         if !storeResponsePayloads.isEmpty {
-            Log.debug(label: logTag, "Processed \(storeResponsePayloads.count) store response payload(s)")
+            Log.debug(label: LOG_TAG, "Processed \(storeResponsePayloads.count) store response payload(s)")
         }
     }
 
@@ -268,9 +267,9 @@ class NetworkResponseHandler {
     ///   - requestId: the event request identifier, used for logging
     private func logErrorMessage(_ error: [String: Any], isError: Bool, requestId: String) {
         if isError {
-            Log.error(label: logTag, "Received event error for request id (\(requestId)), error details:\n\(error as AnyObject)")
+            Log.error(label: LOG_TAG, "Received event error for request id (\(requestId)), error details:\n\(error as AnyObject)")
         } else {
-            Log.warning(label: logTag, "Received event error for request id (\(requestId)), error details:\n\(error as AnyObject)")
+            Log.warning(label: LOG_TAG, "Received event error for request id (\(requestId)), error details:\n\(error as AnyObject)")
         }
     }
 }

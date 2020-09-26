@@ -28,6 +28,7 @@ empty_count:
 force_cast: warning
 force_try: warning
 identifier_name:
+    allowed_symbols: "_"
     excluded:
         - id
         - no

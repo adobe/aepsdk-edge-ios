@@ -21,8 +21,8 @@ class ResponseCallbackHandler {
     private var responseHandlers = ThreadSafeDictionary<String, ExperiencePlatformResponseHandler>(identifier: "com.adobe.experiencePlaftorm.responseHandlers")
     static let shared = ResponseCallbackHandler()
 
-    /// Registers a `ExperiencePlatformResponseHandler` for the specified `requestEventId`. This handler will
-    /// be invoked whenever a response event for the same requestEventId was seen.
+    /// Registers a `ExperiencePlatformResponseHandler` for the specified `requestEventId`. This handler is
+    /// invoked whenever a response event for the same `requestEventId` is returned by the server.
     ///
     /// - Parameters:
     ///   - requestEventId: unique event identifier for which the response callback is registered; should not be empty
@@ -39,7 +39,7 @@ class ResponseCallbackHandler {
     }
 
     /// Unregisters a `ExperiencePlatformResponseHandler` for the specified `requestEventId`. After this operation,
-    /// the associated response handler will not be invoked anymore for any Edge response events.
+    /// the associated response handler is not invoked anymore.
     /// - Parameter requestEventId: unique event identifier for experience platform events; should not be empty
     func unregisterResponseHandler(requestEventId: String) {
         guard !requestEventId.isEmpty else { return }
@@ -51,7 +51,7 @@ class ResponseCallbackHandler {
     }
 
     /// Invokes the response handler for the unique event identifier (if any callback was previously registered for this id).
-    /// - Parameter eventData: data received from an ExEdge response event, containing the event handle payload and the request event identifier
+    /// - Parameter eventData: data received from the Edge response event, containing the event handle payload and the request event identifier
     /// - Parameter requestEventId: the request event identifier to be called with the provided `eventData`
     func invokeResponseHandler(eventData: [String: Any], requestEventId: String?) {
         guard let unwrappedRequestEventId = requestEventId, !unwrappedRequestEventId.isEmpty else {

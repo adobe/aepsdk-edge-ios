@@ -17,7 +17,7 @@ import Foundation
 @objc(AEPMobileExperiencePlatform)
 public class ExperiencePlatform: NSObject, Extension {
     // Tag for logging
-    private let TAG = "ExperiencePlatformInternal"
+    private let LOG_TAG = "ExperiencePlatformInternal"
     private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
 
@@ -63,23 +63,27 @@ public class ExperiencePlatform: NSObject, Extension {
     /// - Parameter event: an event containing ExperiencePlatformEvent data for processing
     func handleExperienceEventRequest(_ event: Event) {
         if event.data == nil {
-            Log.trace(label: TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
+            Log.trace(label: LOG_TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
             return
         }
 
-        Log.trace(label: TAG, "handleExperienceEventRequest - Processing event with id \(event.id.uuidString).")
+        Log.trace(label: LOG_TAG, "handleExperienceEventRequest - Processing event with id \(event.id.uuidString).")
 
         // fetch config shared state, this should be resolved based on readyForEvent check
-        guard let configSharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
-                                                     event: event)?.value else {
-                                                        Log.warning(label: TAG,
-                                                                    "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', Configuration shared state was nil.")
-                                                        return // drop current event
+        guard let configSharedState =
+                getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Configuration.stateOwner,
+                               event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', Configuration shared state is nil.")
+            return // drop current event
         }
 
-        guard let configId = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String, !configId.isEmpty else {
-            Log.warning(label: TAG,
-                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' because of invalid experiencePlatform.configId in configuration.")
+        guard let configId =
+                configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String,
+              !configId.isEmpty else {
+            Log.warning(label: LOG_TAG,
+                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' " +
+                            "because of invalid experiencePlatform.configId in configuration.")
             return // drop current event
         }
 
@@ -89,17 +93,20 @@ public class ExperiencePlatform: NSObject, Extension {
                                                lineFeed: ExperiencePlatformConstants.Defaults.requestConfigLineFeed)
 
         // get ECID from Identity shared state, this should be resolved based on readyForEvent check
-        guard let identityState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Identity.stateOwner,
-                                                 event: event)?.value else {
-                                                    Log.warning(label: TAG, "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', Identity shared state was nil.")
-                                                    return // drop current event
+        guard let identityState =
+                getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Identity.stateOwner,
+                               event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            return // drop current event
         }
 
         if let ecid = identityState[ExperiencePlatformConstants.SharedState.Identity.ecid] as? String {
             requestBuilder.experienceCloudId = ecid
         } else {
             // This is not expected to happen. Continue without ECID
-            Log.warning(label: TAG, "handleExperienceEventRequest - An unexpected error has occurred, ECID is null.")
+            Log.warning(label: LOG_TAG, "handleExperienceEventRequest - An unexpected error has occurred, ECID is null.")
         }
 
         // get Griffon integration id and include it in to the requestHeaders
@@ -122,7 +129,7 @@ public class ExperiencePlatform: NSObject, Extension {
             guard let url: URL = experiencePlatformNetworkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
                                                                            configId: configId,
                                                                            requestId: requestId) else {
-                Log.debug(label: TAG, "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(event.id.uuidString)'.")
+                Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(event.id.uuidString)'.")
                 return
             }
 
@@ -134,6 +141,6 @@ public class ExperiencePlatform: NSObject, Extension {
                                                        retryTimes: ExperiencePlatformConstants.Defaults.networkRequestMaxRetries)
         }
 
-        Log.trace(label: TAG, "handleExperienceEventRequest - Finished processing and sending events to Edge.")
+        Log.trace(label: LOG_TAG, "handleExperienceEventRequest - Finished processing and sending events to Edge.")
     }
 }

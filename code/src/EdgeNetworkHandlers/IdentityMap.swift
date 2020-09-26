@@ -26,10 +26,10 @@ struct IdentityMap {
     /// Adds an `IdentityItem` to this map. If an item is added which shares the same `namespace` and `id` as an item
     /// already in the map, then the new item replaces the existing item.
     /// - Parameters:
-    ///   - namespace: the namespace for this identity
+    ///   - namespace: The namespace for this identity
     ///   - id: Identity of the consumer in the related namespace.
     ///   - authenticationState: The state this identity is authenticated as for this observed ExperienceEvent.
-    ///   - primary: Indicates this identity is the preferred identity. Is used as a hint to help systems better organize how identities are queried.
+    ///   - primary: Indicates if this identity is the preferred identity. It is used as a hint to help systems better organize how identities are queried.
     mutating func addItem(namespace: String,
                           id: String,
                           authenticationState: AuthenticationState? = nil,
@@ -48,7 +48,7 @@ struct IdentityMap {
         }
     }
 
-    /// Get the array of `IdentityItem` for the given namespace.
+    /// Get the array of `IdentityItem`(s) for the given namespace.
     /// - Parameter namespace: the namespace of items to retrieve
     /// - Returns: An array of `IdentityItem` for the given `namespace` or nil if this `IdentityMap` does not contain the `namespace`.
     func getItemsFor(namespace: String) -> [IdentityItem]? {

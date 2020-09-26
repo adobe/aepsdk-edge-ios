@@ -12,7 +12,7 @@
 
 import Foundation
 
-/// Contains a `StorePayload` plus bookeeping expires information.
+/// Contains a `StorePayload` with its expiring information.
 /// Use this object when serializing to local storage.
 struct StoreResponsePayload: Codable {
 

@@ -15,7 +15,7 @@ import AEPServices
 import Foundation
 
 class StoreResponsePayloadManager {
-    private let TAG: String = "StoreResponsePayloadManager"
+    private let LOG_TAG: String = "StoreResponsePayloadManager"
     private let dataStoreName: String
     private let storePayloadKeyName: String = ExperiencePlatformConstants.DataStoreKeys.storePayloads
 
@@ -23,13 +23,13 @@ class StoreResponsePayloadManager {
         dataStoreName = storeName
     }
 
-    /// Reads all the active saved store payloads from the data store.
-    /// Any store payload that has expired is not included and is evicted from the data store.
+    /// Reads all the active saved store payloads from the Data Store.
+    /// Any store payload that has expired is not included and is evicted from the Data Store.
     /// - Returns: a map of `StoreResponsePayload` objects keyed by `StoreResponsePayload.key`
     func getActiveStores() -> [String: StoreResponsePayload] {
-
-        guard let serializedPayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: dataStoreName, key: storePayloadKeyName) as? [String: Any] else {
-            Log.debug(label: TAG, "Unable to retrieve active payloads. No payloads were found in the data store.")
+        let dataStore = NamedCollectionDataStore(name: dataStoreName)
+        guard let serializedPayloads = dataStore.getDictionary(key: storePayloadKeyName) as? [String: Any] else {
+            Log.trace(label: LOG_TAG, "No active store payloads were found in the Data Store.")
             return [:]
         }
 
@@ -44,7 +44,7 @@ class StoreResponsePayloadManager {
 
         for (_, codedPayload) in serializedPayloads {
             guard let codedPayloadString = codedPayload as? String, let data = codedPayloadString.data(using: .utf8) else {
-                Log.debug(label: TAG, "Failed to convert store response payload string to data.")
+                Log.debug(label: LOG_TAG, "Failed to convert store response payload string to data.")
                 continue
             }
 
@@ -57,7 +57,7 @@ class StoreResponsePayloadManager {
                     payloads[storeResponse.payload.key] = storeResponse
                 }
             } catch {
-                Log.debug(label: TAG, "Failed to decode store response payload with: \(error.localizedDescription)")
+                Log.debug(label: LOG_TAG, "Failed to decode store response payload, error: \(error.localizedDescription)")
             }
         }
 
@@ -65,8 +65,8 @@ class StoreResponsePayloadManager {
         return payloads
     }
 
-    /// Reads all the active saved store payloads from the data store and returns them as a list.
-    /// Any store payload that has expired is not included and is evicted from the data store
+    /// Reads all the active saved store payloads from the Data Store and returns them as a list.
+    /// Any store payload that has expired is not included and is evicted from the Data Store
     /// - Returns: a list of `StorePayload` objects
     func getActivePayloadList() -> [StorePayload] {
         let storeResponses = getActiveStores()
@@ -77,8 +77,8 @@ class StoreResponsePayloadManager {
         return payloads
     }
 
-    /// Saves a list of `StoreResponsePayload` objects to the data store. Payloads with `maxAge <= 0` are deleted.
-    /// - Parameter payloads: a list of `StoreResponsePayload` to be saved to the data store
+    /// Saves a list of `StoreResponsePayload` objects to the Data Store. Payloads with `maxAge <= 0` are deleted.
+    /// - Parameter payloads: a list of `StoreResponsePayload` to be saved to the Data Store
     func saveStorePayloads(_ payloads: [StoreResponsePayload]) {
         if payloads.isEmpty {
             return
@@ -88,7 +88,7 @@ class StoreResponsePayloadManager {
         var serializedPayloads: [String: Any] = [:]
         if previouslyStoredPayloads != nil {
             guard let temp = previouslyStoredPayloads as? [String: Any] else {
-                Log.debug(label: TAG, "Failed to decode previously stored payloads, unable to update the client side store")
+                Log.debug(label: LOG_TAG, "Failed to decode previously stored payloads, unable to update the client side store")
                 return
             }
 
@@ -116,7 +116,7 @@ class StoreResponsePayloadManager {
 
                 serializedPayloads[storeResponse.payload.key] = serializedPayload
             } catch {
-                Log.debug(label: TAG, "Failed to encode store response payload: \(error.localizedDescription)")
+                Log.debug(label: LOG_TAG, "Failed to encode store response payload: \(error.localizedDescription)")
                 continue
             }
         }
@@ -128,8 +128,9 @@ class StoreResponsePayloadManager {
     /// Deletes a list of stores from the data store
     /// - Parameter keys: a list of `StoreResponsePayload.key`
     private func deleteStoredResponses(keys: [String]) {
-        guard var codedPayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: dataStoreName, key: storePayloadKeyName) as? [String: Any] else {
-            Log.trace(label: TAG, "Unable to delete expired payloads. No payloads were found in the data store.")
+        let dataStore = NamedCollectionDataStore(name: dataStoreName)
+        guard var codedPayloads = dataStore.getDictionary(key: storePayloadKeyName) as? [String: Any] else {
+            Log.trace(label: LOG_TAG, "Unable to delete expired payloads. No payloads were found in the data store.")
             return
         }
 

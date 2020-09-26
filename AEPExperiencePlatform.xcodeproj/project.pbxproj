@@ -593,8 +593,8 @@
 		D42FB8D02461086200E9321C /* EdgeNetworkHandlers */ = {
 			isa = PBXGroup;
 			children = (
-				D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */,
 				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
+				D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */,
 				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
 				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
 				D42FB8DA246261E600E9321C /* EdgeResponse.swift */,
@@ -1215,7 +1215,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint code/src\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config ../../.swiftlint.yml code/src\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n\n";
 		};
 		D4B4B819ABBB963CEED15F22 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
