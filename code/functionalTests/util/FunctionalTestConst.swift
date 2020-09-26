@@ -12,45 +12,41 @@
 
 import Foundation
 
-struct FunctionalTestConst {
-    private init() {}
+enum FunctionalTestConst {
 
-    struct EventType {
-        private init() {}
-        static let experiencePlatform = "com.adobe.eventType.experiencePlatform"
-        static let instrumentedExtension = "com.adobe.eventType.instrumentedExtension"
-        static let eventHub = "com.adobe.eventType.hub"
-        static let configuration = "com.adobe.eventType.configuration"
-        static let identity = "com.adobe.eventType.identity"
+    enum EventType {
+        static let EXPERIENCE_PLATFORM = "com.adobe.eventType.experiencePlatform"
+        static let INSTRUMENTED_EXTENSION = "com.adobe.eventType.instrumentedExtension"
+        static let HUB = "com.adobe.eventType.hub"
+        static let CONFIGURATION = "com.adobe.eventType.configuration"
+        static let IDENTITY = "com.adobe.eventType.identity"
     }
 
-    struct EventSource {
-        private init() {}
-        static let requestContent = "com.adobe.eventSource.requestContent"
-        static let responseContent = "com.adobe.eventSource.responseContent"
-        static let errorResponseContent = "com.adobe.eventSource.errorResponseContent"
-        static let sharedStateRequest = "com.adobe.eventSource.requestState"
-        static let sharedStateResponse = "com.adobe.eventSource.responseState"
-        static let unregisterExtension = "com.adobe.eventSource.unregisterExtension"
-        static let sharedState = "com.adobe.eventSource.sharedState"
-        static let responseIdentity = "com.adobe.eventSource.responseIdentity"
-        static let requestIdentity = "com.adobe.eventSource.requestIdentity"
-        static let booted = "com.adobe.eventSource.booted"
+    enum EventSource {
+        static let REQUEST_CONTENT = "com.adobe.eventSource.requestContent"
+        static let RESPONSE_CONTENT = "com.adobe.eventSource.responseContent"
+        static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
+        static let SHARED_STATE_REQUEST = "com.adobe.eventSource.requestState"
+        static let SHARED_STATE_RESPONSE = "com.adobe.eventSource.responseState"
+        static let UNREGISTER_EXTENSION = "com.adobe.eventSource.unregisterExtension"
+        static let SHARED_STATE = "com.adobe.eventSource.sharedState"
+        static let RESPONSE_IDENTITY = "com.adobe.eventSource.responseIdentity"
+        static let REQUEST_IDENTITY = "com.adobe.eventSource.requestIdentity"
+        static let BOOTED = "com.adobe.eventSource.booted"
     }
 
-    struct EventDataKey {
-        private init() {}
-        static let stateOwner = "stateowner"
-        static let state = "state"
+    enum EventDataKey {
+        static let STATE_OWNER = "stateowner"
+        static let STATE = "state"
     }
 
-    struct SharedState {
+    enum SharedState {
         static let CONFIGURATION = "com.adobe.module.configuration"
     }
-    struct Defaults {
-        static let waitEventTimeout: TimeInterval = 2
-        static let waitSharedStateTimeout: TimeInterval = 3
-        static let waitNetworkRequestTimeout: TimeInterval = 2
-        static let waitTimeout: UInt32 = 1 // used when no expectation was set
+    enum Defaults {
+        static let WAIT_EVENT_TIMEOUT: TimeInterval = 2
+        static let WAIT_SHARED_STATE_TIMEOUT: TimeInterval = 3
+        static let WAIT_NETWORK_REQUEST_TIMEOUT: TimeInterval = 2
+        static let WAIT_TIMEOUT: UInt32 = 1 // used when no expectation is set
     }
 }

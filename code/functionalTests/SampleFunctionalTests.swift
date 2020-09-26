@@ -35,14 +35,14 @@ class SampleFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false
 
         // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, ExperiencePlatform), Identity and Config shared state updates
-        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 4)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, count: 4)
 
         // expectations for update config request&response events
-        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, count: 1)
 
         // expectations for Identity force sync
-        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.IDENTITY, source: FunctionalTestConst.EventSource.RESPONSE_IDENTITY, count: 2)
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
@@ -116,8 +116,8 @@ class SampleFunctionalTests: FunctionalTestBase {
     }
 
     func testSample_AssertNetworkRequestAndResponseEvent() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, count: 1)
         // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}}]}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),

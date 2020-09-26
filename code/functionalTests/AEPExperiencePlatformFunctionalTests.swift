@@ -53,14 +53,14 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false
 
         // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, ExperiencePlatform), Identity and Config shared state updates
-        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 4)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, count: 4)
 
         // expectations for update config request&response events
-        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, count: 1)
 
         // expectations for Identity force sync
-        setExpectationEvent(type: FunctionalTestConst.EventType.identity, source: FunctionalTestConst.EventSource.responseIdentity, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.IDENTITY, source: FunctionalTestConst.EventSource.RESPONSE_IDENTITY, count: 2)
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
@@ -80,7 +80,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     // MARK: test request event format
 
     func testSendEvent_withXDMData_sendsCorrectRequestEvent() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
 
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString": "xdm",
                                                             "testInt": 10,
@@ -92,8 +92,8 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
-        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
-                                                   source: FunctionalTestConst.EventSource.requestContent)
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                                                   source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         guard let eventDataDict = resultEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
@@ -111,7 +111,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_withXDMDataAndCustomData_sendsCorrectRequestEvent() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
 
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString": "xdm"], data: ["testDataString": "stringValue",
                                                                                          "testDataInt": 101,
@@ -123,8 +123,8 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
-        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
-                                                   source: FunctionalTestConst.EventSource.requestContent)
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                                                   source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         guard let eventDataDict = resultEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
@@ -143,15 +143,15 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_withXDMDataAndNilData_sendsCorrectRequestEvent() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
 
         let experienceEvent = ExperiencePlatformEvent(xdm: ["testString": "xdm"], data: nil)
         ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent)
 
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
-        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
-                                                   source: FunctionalTestConst.EventSource.requestContent)
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                                                   source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         guard let eventDataDict = resultEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
@@ -420,11 +420,11 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
     // MARK: Paired request-response events
     func testSendEvent_receivesResponseEventHandle_sendsResponseEvent_pairedWithTheRequestEventId() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform,
-                            source: FunctionalTestConst.EventSource.requestContent,
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                            source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             count: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform,
-                            source: FunctionalTestConst.EventSource.responseContent,
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                            source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
                             count: 1)
         // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
@@ -445,11 +445,11 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
-        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
-                                                    source: FunctionalTestConst.EventSource.requestContent)
+        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                                                    source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         let requestEventUUID = requestEvents[0].id.uuidString
-        let responseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
-                                                     source: FunctionalTestConst.EventSource.responseContent)
+        let responseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                                                     source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
         guard let eventDataDict = responseEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
@@ -468,11 +468,11 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_receivesResponseEventWarning_sendsErrorResponseEvent_pairedWithTheRequestEventId() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform,
-                            source: FunctionalTestConst.EventSource.requestContent,
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                            source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             count: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform,
-                            source: FunctionalTestConst.EventSource.errorResponseContent,
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                            source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT,
                             count: 1)
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [],\"warnings\": [{\"eventIndex\": 0,\"code\": \"personalization:0\",\"message\": \"Failed due to unrecoverable system error\"}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
@@ -492,11 +492,11 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
 
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
-        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
-                                                    source: FunctionalTestConst.EventSource.requestContent)
+        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                                                    source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         let requestEventUUID = requestEvents[0].id.uuidString
-        let errorResponseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.experiencePlatform,
-                                                          source: FunctionalTestConst.EventSource.errorResponseContent)
+        let errorResponseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                                                          source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
         guard let eventDataDict = errorResponseEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
@@ -511,8 +511,8 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_receivesResponseEventHandle_callsResponseHandler() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.requestContent, count: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.experiencePlatform, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, count: 1)
         // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),

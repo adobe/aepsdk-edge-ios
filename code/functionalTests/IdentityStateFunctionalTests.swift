@@ -26,11 +26,11 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         FunctionalTestBase.debugEnabled = false
 
         // config state and 2 event hub states (TestableExperiencePlatformInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
-        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 3)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, count: 3)
 
         // expectations for update config request&response events
-        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.requestContent, count: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.configuration, source: FunctionalTestConst.EventSource.responseContent, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, count: 1)
         MobileCore.registerExtensions([TestableExperiencePlatform.self, FakeIdentityExtension.self])
         MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
                                                         "experienceCloud.org": "testOrg@AdobeOrg",
