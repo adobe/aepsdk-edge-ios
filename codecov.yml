@@ -13,10 +13,8 @@ coverage:
     changes: no
 
   ignore:
-    - "./code/unitTests/**/*"
-    - "./code/unitTests/.*"
-    - "./code/functionalTests/**/*"
-    - "./code/functionalTests/.*"
+    - "./Tests/**/*"
+    - "./Tests/.*"
     - "./SampleApps"
 
 parsers:
