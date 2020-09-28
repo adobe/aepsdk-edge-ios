@@ -22,9 +22,9 @@ jobs:
       # restore pods related caches
       - restore_cache:
           keys:
-            - cocoapods-cache-v3-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
-            - cocoapods-cache-v3-{{ arch }}-{{ .Branch }}
-            - cocoapods-cache-v3
+            - cocoapods-cache-v4-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
+            - cocoapods-cache-v4-{{ arch }}-{{ .Branch }}
+            - cocoapods-cache-v4
 
       # install CocoaPods - using default CocoaPods version, not the bundle
       - run: 
@@ -34,10 +34,10 @@ jobs:
       # save pods related files
       - save_cache:
           name: Saving CocoaPods Cache
-          key: cocoapods-cache-v3-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
+          key: cocoapods-cache-v4-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
           paths:
             - ./Pods
-            - ./demo/AEPCommerceDemoApp/Pods
+            - ./SampleApps/AEPCommerceDemoApp/Pods
             - ~/.cocoapods
 
       - run:
