@@ -127,7 +127,7 @@ class RequestBuilderTests: XCTestCase {
 
         let requestPayload = request.getRequestPayload([event])
 
-        let flattenEventMeta = flattenDictionary(dict: requestPayload?.events?[0]["meta"]?.dictionaryValue as! [String: Any])
+        let flattenEventMeta: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["meta"]?.dictionaryValue ?? [:])
         XCTAssertEqual(1, flattenEventMeta.count)
         XCTAssertEqual("customDatasetId", flattenEventMeta["collect.datasetId"] as? String)
         XCTAssertNil(requestPayload?.events?[0]["datasetId"])

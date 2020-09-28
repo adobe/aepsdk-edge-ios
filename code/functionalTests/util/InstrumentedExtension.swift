@@ -101,8 +101,7 @@ class InstrumentedExtension: Extension {
 
     func unregisterExtension() {
         Log.debug(label: InstrumentedExtension.logTag, "Unregistering the Instrumented extension from the Event Hub")
-        // TODO: no unregisterExtension API https://github.com/adobe/aepsdk-core-ios/issues/289
-        //runtime.unregisterExtension()
+        runtime.unregisterExtension()
     }
 
     static func reset() {
