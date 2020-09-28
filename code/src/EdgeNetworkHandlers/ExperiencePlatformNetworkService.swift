@@ -139,7 +139,9 @@ class ExperiencePlatformNetworkService {
             if let responseCode = connection.responseCode {
                 if responseCode == HttpResponseCodes.ok.rawValue {
                     Log.debug(label: self.LOG_TAG, "doRequest - Interact connection to Experience Edge was successful.")
-                    self.handleContent(connection: connection, streaming: requestBody.meta?.konductorConfig?.streaming, responseCallback: responseCallback)
+                    self.handleContent(connection: connection,
+                                       streaming: requestBody.meta?.konductorConfig?.streaming,
+                                       responseCallback: responseCallback)
 
                 } else if responseCode == HttpResponseCodes.noContent.rawValue {
                     // Successful collect requests do not return content
@@ -244,7 +246,7 @@ class ExperiencePlatformNetworkService {
             // check if this is a JSON error response from Experience Edge, and if so pass it unchanged
             let data = Data(unwrappedMessage.utf8)
 
-            if let _ = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+            if (try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]) != nil {
                 return plainTextErrorMessage
             }
         }
@@ -252,7 +254,8 @@ class ExperiencePlatformNetworkService {
         var unwrappedErrorMessage = plainTextErrorMessage ?? DEFAULT_GENERIC_ERROR_MESSAGE
         unwrappedErrorMessage = unwrappedErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let errorDictionary = [Constants.JsonKeys.Response.Error.MESSAGE: unwrappedErrorMessage, Constants.JsonKeys.Response.Error.NAMESPACE: DEFAULT_NAMESPACE]
+        let errorDictionary = [Constants.JsonKeys.Response.Error.MESSAGE: unwrappedErrorMessage,
+                               Constants.JsonKeys.Response.Error.NAMESPACE: DEFAULT_NAMESPACE]
         guard let json = try? JSONSerialization.data(withJSONObject: errorDictionary, options: []) else {
             Log.debug(label: LOG_TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
             return nil

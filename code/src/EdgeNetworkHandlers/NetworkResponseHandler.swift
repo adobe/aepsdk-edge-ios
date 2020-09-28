@@ -109,7 +109,9 @@ class NetworkResponseHandler {
         } else {
             // generic server error, return the error as is
             guard let genericErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) else {
-                Log.warning(label: LOG_TAG, "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), request id \(requestId)")
+                Log.warning(label: LOG_TAG,
+                            "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), " +
+                                "request id \(requestId)")
                 return
             }
 
@@ -149,7 +151,8 @@ class NetworkResponseHandler {
     ///   - requestId: edge request id used to fetch the waiting events associated with it (if any)
     /// - Returns: the request event unique identifier for which this event handle was received, nil if not found
     private func extractRequestEventId(forEventIndex: Int?, requestId: String) -> String? {
-        guard let requestEventIdsList = getWaitingEvents(requestId: requestId), let index = forEventIndex, index >= 0, index < requestEventIdsList.count else {
+        guard let requestEventIdsList = getWaitingEvents(requestId: requestId),
+              let index = forEventIndex, index >= 0, index < requestEventIdsList.count else {
             return nil
         }
 

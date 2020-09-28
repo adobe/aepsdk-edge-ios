@@ -16,13 +16,11 @@ import Foundation
 
 @objc(AEPMobileExperiencePlatform)
 public class ExperiencePlatform: NSObject, Extension {
-    // Tag for logging
-    private let LOG_TAG = "ExperiencePlatformInternal"
-    private var experiencePlatformNetworkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
+    private let LOG_TAG = "ExperiencePlatform" // Tag for logging
+    private var networkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
 
     // MARK: - Extension
-
     public var name = Constants.EXTENSION_NAME
     public var friendlyName = Constants.FRIENDLY_NAME
     public static var extensionVersion = Constants.EXTENSION_VERSION
@@ -70,20 +68,7 @@ public class ExperiencePlatform: NSObject, Extension {
         Log.trace(label: LOG_TAG, "handleExperienceEventRequest - Processing event with id \(event.id.uuidString).")
 
         // fetch config shared state, this should be resolved based on readyForEvent check
-        guard let configSharedState =
-                getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
-                               event: event)?.value else {
-            Log.warning(label: LOG_TAG,
-                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', Configuration shared state is nil.")
-            return // drop current event
-        }
-
-        guard let configId =
-                configSharedState[Constants.SharedState.Configuration.CONFIG_ID] as? String,
-              !configId.isEmpty else {
-            Log.warning(label: LOG_TAG,
-                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' " +
-                            "because of invalid experiencePlatform.configId in configuration.")
+        guard let configId = getEdgeConfigId(event: event) else {
             return // drop current event
         }
 
@@ -106,7 +91,7 @@ public class ExperiencePlatform: NSObject, Extension {
             requestBuilder.experienceCloudId = ecid
         } else {
             // This is not expected to happen. Continue without ECID
-            Log.warning(label: LOG_TAG, "handleExperienceEventRequest - An unexpected error has occurred, ECID is null.")
+            Log.warning(label: LOG_TAG, "handleExperienceEventRequest - An unexpected error has occurred, ECID is nil.")
         }
 
         // get Griffon integration id and include it in to the requestHeaders
@@ -117,30 +102,52 @@ public class ExperiencePlatform: NSObject, Extension {
             }
         }
 
-        // Build and send the network request to Konductor
+        // Build and send the network request to Experience Edge
         let listOfEvents: [Event] = [event]
         if let requestPayload = requestBuilder.getRequestPayload(listOfEvents) {
             let requestId: String = UUID.init().uuidString
 
-            // NOTE: the order of these events need to be maintained as they were sent in the network request
+            // NOTE: the order of these events needs to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
             networkResponseHandler.addWaitingEvents(requestId: requestId,
                                                     batchedEvents: listOfEvents)
-            guard let url: URL = experiencePlatformNetworkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
-                                                                           configId: configId,
-                                                                           requestId: requestId) else {
+            guard let url: URL = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
+                                                         configId: configId,
+                                                         requestId: requestId) else {
                 Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(event.id.uuidString)'.")
                 return
             }
 
             let callback: ResponseCallback = NetworkResponseCallback(requestId: requestId, responseHandler: networkResponseHandler)
-            experiencePlatformNetworkService.doRequest(url: url,
-                                                       requestBody: requestPayload,
-                                                       requestHeaders: requestHeaders,
-                                                       responseCallback: callback,
-                                                       retryTimes: Constants.Defaults.NETWORK_REQUEST_MAX_RETRIES)
+            networkService.doRequest(url: url,
+                                     requestBody: requestPayload,
+                                     requestHeaders: requestHeaders,
+                                     responseCallback: callback,
+                                     retryTimes: Constants.Defaults.NETWORK_REQUEST_MAX_RETRIES)
+        }
+    }
+
+    /// Extracts the Edge Configuration identifier from the Configuration Shared State
+    /// - Parameter event: current event for which the configuration is required
+    /// - Returns: the Edge Configuration Id if found, nil otherwise
+    private func getEdgeConfigId(event: Event) -> String? {
+        guard let configSharedState =
+                getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
+                               event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', Configuration shared state is nil.")
+            return nil
         }
 
-        Log.trace(label: LOG_TAG, "handleExperienceEventRequest - Finished processing and sending events to Edge.")
+        guard let configId =
+                configSharedState[Constants.SharedState.Configuration.CONFIG_ID] as? String,
+              !configId.isEmpty else {
+            Log.warning(label: LOG_TAG,
+                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' " +
+                            "because of invalid experiencePlatform.configId in configuration.")
+            return nil
+        }
+
+        return configId
     }
 }
