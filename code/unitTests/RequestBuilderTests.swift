@@ -69,8 +69,8 @@ class RequestBuilderTests: XCTestCase {
 
         let requestPayload = request.getRequestPayload(events)
 
-        let flattenEvent0 = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue as! [String: Any])
-        let flattenEvent1 = flattenDictionary(dict: requestPayload?.events?[1]["xdm"]?.dictionaryValue as! [String: Any])
+        let flattenEvent0: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
+        let flattenEvent1: [String: Any] = flattenDictionary(dict: requestPayload?.events?[1]["xdm"]?.dictionaryValue ?? [:])
         XCTAssertEqual("myapp", flattenEvent0["application.name"] as? String)
         XCTAssertEqual(events[0].id.uuidString, flattenEvent0["_id"] as? String)
         XCTAssertEqual(timestampToISO8601(events[0].timestamp), flattenEvent0["timestamp"] as? String)

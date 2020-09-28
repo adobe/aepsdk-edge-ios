@@ -18,7 +18,8 @@ import XCTest
 /// Functional test suite for tests which require no Identity shared state at startup to simulate a missing or pending state.
 class IdentityStateFunctionalTests: FunctionalTestBase {
 
-    private let exEdgeInteractUrl = "https://edge.adobedc.net/ee/v1/interact"
+    private let exEdgeInteractUrlString = "https://edge.adobedc.net/ee/v1/interact"
+    private let exEdgeInteractUrl = URL(string: "https://edge.adobedc.net/ee/v1/interact")! // swiftlint:disable:this force_unwrapping
 
     override func setUp() {
         super.setUp()
@@ -26,11 +27,11 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         FunctionalTestBase.debugEnabled = false
 
         // config state and 2 event hub states (TestableExperiencePlatformInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, count: 3)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 3)
 
         // expectations for update config request&response events
-        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, count: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, count: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         MobileCore.registerExtensions([TestableExperiencePlatform.self, FakeIdentityExtension.self])
         MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
                                                         "experienceCloud.org": "testOrg@AdobeOrg",
@@ -42,32 +43,35 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
     func testSendEvent_withPendingIdentityState_noRequestSent() {
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
 
-        let requests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, timeout: 2)
+        let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertTrue(requests.isEmpty)
     }
 
     func testSendEvent_withPendingIdentityState_thenValidIdentityState_requestSentAfterChange() {
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
 
-        var requests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, timeout: 2)
+        var requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertTrue(requests.isEmpty) // no network request sent yet
 
-        let responseBody = "{\"test\": \"json\"}"
-        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                            response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+        guard let responseBody = "{\"test\": \"json\"}".data(using: .utf8) else {
+            XCTFail("Failed to convert json to data")
+            return
+        }
+        let httpConnection: HttpConnection = HttpConnection(data: responseBody,
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         // Once the shared state is set, the Platform Extension is expected to reprocess the original
         // Send Event request once the Hub Shared State event is received.
         FakeIdentityExtension.setSharedState(state: ["mid": "1234"])
         assertNetworkRequestsCount()
 
-        requests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, requests.count)
         let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])
         XCTAssertEqual("1234", flattenRequestBody["xdm.identityMap.ECID[0].id"] as? String)
@@ -76,22 +80,25 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
     func testSendEvent_withNoECIDInIdentityState_requestSentWithoutECID() {
         FakeIdentityExtension.setSharedState(state: ["blob": "testing"]) // set state without ECID
 
-        let responseBody = "{\"test\": \"json\"}"
-        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                            response: HTTPURLResponse(url: URL(string: exEdgeInteractUrl)!,
+        guard let responseBody = "{\"test\": \"json\"}".data(using: .utf8) else {
+            XCTFail("Failed to convert json to data")
+            return
+        }
+        let httpConnection: HttpConnection = HttpConnection(data: responseBody,
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, count: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrl, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
 
         assertNetworkRequestsCount()
 
         // Assert network request does not contain an ECID
-        let requests = getNetworkRequestsWith(url: exEdgeInteractUrl, httpMethod: HttpMethod.post)
+        let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, requests.count)
         let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])
         XCTAssertNil(flattenRequestBody["xdm.identityMap.ECID[0].id"])

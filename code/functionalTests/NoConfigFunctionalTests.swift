@@ -23,7 +23,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         FunctionalTestBase.debugEnabled = false
 
         // 2 event hub shared states for registered extensions (TestableExperiencePlatform and InstrumentedExtension registered in FunctionalTestBase)
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 2)
 
         MobileCore.registerExtensions([TestableExperiencePlatform.self])
 

@@ -94,8 +94,8 @@ class FunctionalTestBase: XCTestCase {
     ///   - count: the number of times this event should be dispatched, but default it is set to 1
     /// - See also:
     ///   - assertExpectedEvents(ignoreUnexpectedEvents:)
-    func setExpectationEvent(type: String, source: String, count: Int32 = 1) {
-        guard count > 0 else {
+    func setExpectationEvent(type: String, source: String, expectedCount: Int32 = 1) {
+        guard expectedCount > 0 else {
             assertionFailure("Expected event count should be greater than 0")
             return
         }
@@ -104,7 +104,7 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        InstrumentedExtension.expectedEvents[EventSpec(type: type, source: source)] = CountDownLatch(count)
+        InstrumentedExtension.expectedEvents[EventSpec(type: type, source: source)] = CountDownLatch(expectedCount)
     }
 
     /// Asserts if all the expected events were received and fails if an unexpected event was seen
@@ -114,7 +114,7 @@ class FunctionalTestBase: XCTestCase {
     ///   - setExpectationEvent(type: source: count:)
     ///   - assertUnexpectedEvents()
     func assertExpectedEvents(ignoreUnexpectedEvents: Bool = false, file: StaticString = #file, line: UInt = #line) {
-        guard InstrumentedExtension.expectedEvents.count > 0 else {
+        guard InstrumentedExtension.expectedEvents.count > 0 else { // swiftlint:disable:this empty_count
             assertionFailure("There are no event expectations set, use this API after calling setExpectationEvent", file: file, line: line)
             return
         }
@@ -164,7 +164,9 @@ class FunctionalTestBase: XCTestCase {
     /// - Parameters:
     ///   - timeout:how long should this method wait, in seconds; by default it waits up to 1 second
     func wait(_ timeout: UInt32? = FunctionalTestConst.Defaults.WAIT_TIMEOUT) {
-        sleep(timeout!)
+        if let timeout = timeout {
+            sleep(timeout)
+        }
     }
 
     /// Returns the `ACPExtensionEvent`(s) dispatched through the Event Hub, or empty if none was found.
@@ -236,8 +238,8 @@ class FunctionalTestBase: XCTestCase {
     /// - See also:
     ///     - assertNetworkRequestsCount()
     ///     - getNetworkRequestsWith(url:httpMethod:)
-    func setExpectationNetworkRequest(url: String, httpMethod: HttpMethod, count: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
-        guard count > 0 else {
+    func setExpectationNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
+        guard expectedCount > 0 else {
             assertionFailure("Expected event count should be greater than 0")
             return
         }
@@ -247,7 +249,7 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        FunctionalTestBase.networkService.setExpectedNetworkRequest(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), count: count)
+        FunctionalTestBase.networkService.setExpectedNetworkRequest(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), count: expectedCount)
     }
 
     /// Asserts that the correct number of network requests were being sent, based on the previously set expectations.

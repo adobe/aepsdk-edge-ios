@@ -22,6 +22,7 @@ excluded: # paths to ignore during linting
 - demo/*/Pods
 - demo/*/xdmlib
 - demo/*/libs
+- Pods
 
 empty_count: 
     severity: warning
