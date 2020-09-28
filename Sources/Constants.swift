@@ -14,6 +14,10 @@ import Foundation
 
 enum Constants {
 
+    static let EXTENSION_NAME = "com.adobe.ExperiencePlatform"
+    static let EXTENSION_VERSION = "1.0.0-alpha-2"
+    static let FRIENDLY_NAME = "AEPExperiencePlatform"
+
     enum EventType {
         static let EXPERIENCE_PLATFORM = "com.adobe.eventType.experiencePlatform"
         static let HUB = "com.adobe.eventType.hub"
@@ -31,10 +35,6 @@ enum Constants {
         static let RESPONSE_CONTENT = "AEP Response Event Handle"
         static let ERROR_RESPONSE_CONTENT = "AEP Error Response"
     }
-
-    static let EXTENSION_NAME = "com.adobe.ExperiencePlatform"
-    static let EXTENSION_VERSION = "1.0.0-alpha-2"
-    static let FRIENDLY_NAME = "AEPExperiencePlatform"
 
     enum Defaults {
         static let NETWORK_REQUEST_MAX_RETRIES: UInt = 5
