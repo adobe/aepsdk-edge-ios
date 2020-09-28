@@ -75,10 +75,10 @@ struct ExperiencePlatformConstants {
             static let stateOwner = "com.adobe.module.identity"
             static let ecid = "mid"
         }
-        struct Griffon {
+        struct Assurance {
             private init() {}
 
-            static let stateOwner = "com.adobe.ACPGriffon"
+            static let stateOwner = "com.adobe.assurance"
             static let integrationId = "integrationid"
         }
 

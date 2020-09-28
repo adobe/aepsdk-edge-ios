@@ -76,7 +76,7 @@
 		BF5EECEA24983B7000C72622 /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEC9A249839DC00C72622 /* CartViewController.swift */; };
 		BF5EECEB24983B7000C72622 /* CheckOutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEC9F249839DC00C72622 /* CheckOutViewController.swift */; };
 		BF5EECEC24983B7000C72622 /* CommerceUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEC9B249839DC00C72622 /* CommerceUtil.swift */; };
-		BF5EECED24983B7000C72622 /* GriffonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECC2249839DC00C72622 /* GriffonViewController.swift */; };
+		BF5EECED24983B7000C72622 /* AssuranceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECC2249839DC00C72622 /* AssuranceViewController.swift */; };
 		BF5EECEE24983B7000C72622 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA7249839DC00C72622 /* HomeViewController.swift */; };
 		BF5EECF324983B7000C72622 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECAD249839DC00C72622 /* Product.swift */; };
 		BF5EECF424983B7000C72622 /* ProductData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA5249839DC00C72622 /* ProductData.swift */; };
@@ -243,6 +243,7 @@
 		1CCD27C82458CB8000E912B2 /* ExperiencePlatformEventTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformEventTests.swift; sourceTree = "<group>"; };
 		1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMFormatters.swift; sourceTree = "<group>"; };
 		1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMProtocols.swift; sourceTree = "<group>"; };
+		21BB037A25224C2500F8242E /* AEPCommerceDemoApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AEPCommerceDemoApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		240E3C9824EF357100D44993 /* MockDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDataStore.swift; sourceTree = "<group>"; };
 		3B5409C9E5CCA44825C53E04 /* Pods-functionalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-functionalTests.debug.xcconfig"; path = "Target Support Files/Pods-functionalTests/Pods-functionalTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3FB819783BD7803120C42171 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -315,7 +316,7 @@
 		BF5EECB6249839DC00C72622 /* ADBMobileConfig.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ADBMobileConfig.json; sourceTree = "<group>"; };
 		BF5EECC0249839DC00C72622 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BF5EECC1249839DC00C72622 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		BF5EECC2249839DC00C72622 /* GriffonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GriffonViewController.swift; sourceTree = "<group>"; };
+		BF5EECC2249839DC00C72622 /* AssuranceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssuranceViewController.swift; sourceTree = "<group>"; };
 		BF5EECE524983AE000C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF947F62243565CC0057A6CC /* ExperiencePlatform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatform.swift; sourceTree = "<group>"; };
 		BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformConstants.swift; sourceTree = "<group>"; };
@@ -562,7 +563,7 @@
 				BF5EEC9A249839DC00C72622 /* CartViewController.swift */,
 				BF5EEC9F249839DC00C72622 /* CheckOutViewController.swift */,
 				BF5EEC9B249839DC00C72622 /* CommerceUtil.swift */,
-				BF5EECC2249839DC00C72622 /* GriffonViewController.swift */,
+				BF5EECC2249839DC00C72622 /* AssuranceViewController.swift */,
 				BF5EECA7249839DC00C72622 /* HomeViewController.swift */,
 				BF5EECC0249839DC00C72622 /* Info.plist */,
 				BF5EECA8249839DC00C72622 /* LaunchScreen.storyboard */,
@@ -577,6 +578,7 @@
 				BF5EECAE249839DC00C72622 /* ShoppingCart.swift */,
 				BF5EECA4249839DC00C72622 /* ShoppingItemCell.swift */,
 				BF5EECA6249839DC00C72622 /* UIViewControllerSnackBar.swift */,
+				21BB037A25224C2500F8242E /* AEPCommerceDemoApp-Bridging-Header.h */,
 			);
 			path = AEPCommerceDemoApp;
 			sourceTree = "<group>";
@@ -902,6 +904,9 @@
 				LastSwiftUpdateCheck = 1200;
 				LastUpgradeCheck = 1160;
 				TargetAttributes = {
+					BF5EECD424983AE000C72622 = {
+						LastSwiftMigration = 1200;
+					};
 					D444995E2519506B0093B364 = {
 						CreatedOnToolsVersion = 12.0;
 					};
@@ -1292,7 +1297,7 @@
 				BF024B5624B8FE42002131E9 /* Order.swift in Sources */,
 				BF024B6924B8FE42002131E9 /* ProductListOpens.swift in Sources */,
 				BF5EECEC24983B7000C72622 /* CommerceUtil.swift in Sources */,
-				BF5EECED24983B7000C72622 /* GriffonViewController.swift in Sources */,
+				BF5EECED24983B7000C72622 /* AssuranceViewController.swift in Sources */,
 				BF024B5D24B8FE42002131E9 /* SaveForLaters.swift in Sources */,
 				BF024B6324B8FE42002131E9 /* Commerce.swift in Sources */,
 				BF024B5E24B8FE42002131E9 /* PlaceContext.swift in Sources */,
@@ -1479,6 +1484,7 @@
 			baseConfigurationReference = 044278249A4BD2A56E962B92 /* Pods-AEPCommerceDemoApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/ADBMobileConfig.json demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/product_list_colors.json demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets.xcassets";
 				DEVELOPMENT_TEAM = FKGEE875K4;
@@ -1498,6 +1504,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.mobile.AEPCommerceDemoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "demo/AEPCommerceDemoApp/AEPCommerceDemoApp/AEPCommerceDemoApp-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 13.0;
@@ -1509,6 +1517,7 @@
 			baseConfigurationReference = 3FB819783BD7803120C42171 /* Pods-AEPCommerceDemoApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/ADBMobileConfig.json demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets/product_list_colors.json demo/AEPCommerceDemoApp/AEPCommerceDemoApp/Assets.xcassets";
 				DEVELOPMENT_TEAM = FKGEE875K4;
@@ -1521,6 +1530,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.mobile.AEPCommerceDemoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "demo/AEPCommerceDemoApp/AEPCommerceDemoApp/AEPCommerceDemoApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 13.0;

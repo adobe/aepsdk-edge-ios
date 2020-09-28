@@ -9,13 +9,12 @@
 // OF ANY KIND, either express or implied. See the License for the specific language
 // governing permissions and limitations under the License.
 //
-
-//import ACPGriffon
 import AEPCore
 import AEPExperiencePlatform
 import AEPIdentity
 import AEPLifecycle
 import AEPServices
+import ACPCore
 import UIKit
 
 @UIApplicationMain
@@ -41,15 +40,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             MobileCore.configureWith(filePath: filePath)
         }
 
-        // todo: reference the swift griffon extension here
-        //ACPGriffon.registerExtension()
-        MobileCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
-        //        MobileCore.updateConfigurationWith(configDict: config)
-
-        // only start lifecycle if the application is not in the background
-        if application.applicationState != .background {
-            MobileCore.lifecycleStart(additionalContextData: nil)
+        var extensions = [Identity.self, Lifecycle.self, ExperiencePlatform.self]
+        extensions += [AEPAssurance.self] // todo: reference the swift assurance extension here
+        ACPCore.registerExtensions(extensions) {
+            // only start lifecycle if the application is not in the background
+            if application.applicationState != .background {
+                MobileCore.lifecycleStart(additionalContextData: nil)
+            }
         }
+        // MobileCore.updateConfigurationWith(configDict: config)
         return true
     }
 

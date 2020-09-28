@@ -1,3 +1,4 @@
+source 'git@git.corp.adobe.com:dms-mobile/v5-podspecs.git'
 # Uncomment the next line to define a global platform for your project
 platform :ios, '10.0'
 
@@ -32,7 +33,9 @@ target 'AEPDemoAppSwiftUI' do
   pod 'AEPRulesEngine', :git => 'git@github.com:adobe/aepsdk-rulesengine-ios.git', :branch => 'main'
   pod 'AEPLifecycle', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
   pod 'AEPIdentity', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
-#  pod 'ACPGriffon', '~> 1.0'
+  pod 'AEPSignal', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
+  pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
+  pod 'AEPAssurance_Staging'
 end
 
 target 'AEPCommerceDemoApp' do
@@ -41,5 +44,7 @@ target 'AEPCommerceDemoApp' do
   pod 'AEPRulesEngine', :git => 'git@github.com:adobe/aepsdk-rulesengine-ios.git', :branch => 'main'
   pod 'AEPLifecycle', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
   pod 'AEPIdentity', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
-#  pod 'ACPGriffon', '~> 1.0'
+  pod 'AEPSignal', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
+  pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
+  pod 'AEPAssurance_Staging'
 end

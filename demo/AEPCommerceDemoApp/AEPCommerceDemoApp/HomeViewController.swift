@@ -23,7 +23,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     @IBOutlet var appTitle: UILabel!
     @IBOutlet var productList: UITableView!
     @IBOutlet var cartBtn: UIButton!
-    @IBOutlet var griffonBtn: UIButton!
+    @IBOutlet var assuranceBtn: UIButton!
     @IBOutlet var appTitleLbl: UILabel!
 
     let productData = ProductDataLoader().productData
@@ -76,7 +76,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.performSegue(withIdentifier: "showShoppingCartPage", sender: self)
     }
 
-    @IBAction func gotoGriffonConnectPage(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "showGriffonPage", sender: self)
+    @IBAction func presentAssuranceConnect(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "showAssurancePage", sender: self)
     }
 }
