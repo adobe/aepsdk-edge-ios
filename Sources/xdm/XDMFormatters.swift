@@ -13,7 +13,7 @@
 import Foundation
 
 /// Helper functions for XDM formatting
-public class XDMFormatters {
+public enum XDMFormatters {
 
     /// Serialize the given Date to a string formatted to an ISO 8601 date-time as defined in
     /// <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>
