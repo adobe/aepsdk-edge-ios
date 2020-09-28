@@ -12,6 +12,8 @@ The Experience Platform Mobile extension allows you to send data to the Adobe Ex
 
 The Adobe Experience Platform Mobile Extension is an extension for the [Adobe Experience Platform SDK](https://github.com/Adobe-Marketing-Cloud/acp-sdks).
 
+To learn more about this extension, read [Adobe Experience Platform -Experience Edge](https://aep-sdks.gitbook.io/docs/beta/experience-platform-extension).
+
 ## Current version
 The Experience Platform Mobile extension for iOS is currently in Beta development.
 
