@@ -58,7 +58,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         wait(for: [handleExperienceEventRequestExpectation], timeout: 1.0)
     }
 
-    // todo: rewrite the test related to handling the response event
+    // TODO: AMSDK-10665 rewrite the test related to handling the response event
     // steps:
     // - set valid configs
     // - mock network response - multiple chuncks as a response for event1
