@@ -76,7 +76,7 @@
 		BF5EECEA24983B7000C72622 /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEC9A249839DC00C72622 /* CartViewController.swift */; };
 		BF5EECEB24983B7000C72622 /* CheckOutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEC9F249839DC00C72622 /* CheckOutViewController.swift */; };
 		BF5EECEC24983B7000C72622 /* CommerceUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEC9B249839DC00C72622 /* CommerceUtil.swift */; };
-		BF5EECED24983B7000C72622 /* GriffonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECC2249839DC00C72622 /* GriffonViewController.swift */; };
+		BF5EECED24983B7000C72622 /* AsssuranceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECC2249839DC00C72622 /* AsssuranceViewController.swift */; };
 		BF5EECEE24983B7000C72622 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA7249839DC00C72622 /* HomeViewController.swift */; };
 		BF5EECF324983B7000C72622 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECAD249839DC00C72622 /* Product.swift */; };
 		BF5EECF424983B7000C72622 /* ProductData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA5249839DC00C72622 /* ProductData.swift */; };
@@ -317,7 +317,7 @@
 		BF5EECB6249839DC00C72622 /* ADBMobileConfig.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ADBMobileConfig.json; sourceTree = "<group>"; };
 		BF5EECC0249839DC00C72622 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BF5EECC1249839DC00C72622 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		BF5EECC2249839DC00C72622 /* GriffonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GriffonViewController.swift; sourceTree = "<group>"; };
+		BF5EECC2249839DC00C72622 /* AsssuranceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsssuranceViewController.swift; sourceTree = "<group>"; };
 		BF5EECE524983AE000C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF947F62243565CC0057A6CC /* ExperiencePlatform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatform.swift; sourceTree = "<group>"; };
 		BF947F63243565CC0057A6CC /* ExperiencePlatformConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperiencePlatformConstants.swift; sourceTree = "<group>"; };
@@ -566,7 +566,7 @@
 				BF5EEC9A249839DC00C72622 /* CartViewController.swift */,
 				BF5EEC9F249839DC00C72622 /* CheckOutViewController.swift */,
 				BF5EEC9B249839DC00C72622 /* CommerceUtil.swift */,
-				BF5EECC2249839DC00C72622 /* GriffonViewController.swift */,
+				BF5EECC2249839DC00C72622 /* AsssuranceViewController.swift */,
 				BF5EECA7249839DC00C72622 /* HomeViewController.swift */,
 				BF5EECC0249839DC00C72622 /* Info.plist */,
 				BF5EECA8249839DC00C72622 /* LaunchScreen.storyboard */,
@@ -936,8 +936,8 @@
 			);
 			mainGroup = D4D5B4DE242EBB1600CAB6E4;
 			packageReferences = (
-				240E3C8024EECC6700D44993 /* RemoteSwiftPackageReference */,
-				D49675BB2511D827001F5F95 /* RemoteSwiftPackageReference */,
+				240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */,
+				D49675BB2511D827001F5F95 /* XCRemoteSwiftPackageReference "aepsdk-rulesengine-ios" */,
 			);
 			productRefGroup = D4D5B4E8242EBB1600CAB6E4 /* Products */;
 			projectDirPath = "";
@@ -1299,7 +1299,7 @@
 				BF024B5624B8FE42002131E9 /* Order.swift in Sources */,
 				BF024B6924B8FE42002131E9 /* ProductListOpens.swift in Sources */,
 				BF5EECEC24983B7000C72622 /* CommerceUtil.swift in Sources */,
-				BF5EECED24983B7000C72622 /* GriffonViewController.swift in Sources */,
+				BF5EECED24983B7000C72622 /* AsssuranceViewController.swift in Sources */,
 				BF024B5D24B8FE42002131E9 /* SaveForLaters.swift in Sources */,
 				BF024B6324B8FE42002131E9 /* Commerce.swift in Sources */,
 				BF024B5E24B8FE42002131E9 /* PlaceContext.swift in Sources */,
@@ -1971,7 +1971,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		240E3C8024EECC6700D44993 /* RemoteSwiftPackageReference */ = {
+		240E3C8024EECC6700D44993 /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/adobe/aepsdk-core-ios.git";
 			requirement = {
@@ -1979,7 +1979,7 @@
 				kind = branch;
 			};
 		};
-		D49675BB2511D827001F5F95 /* RemoteSwiftPackageReference */ = {
+		D49675BB2511D827001F5F95 /* XCRemoteSwiftPackageReference "aepsdk-rulesengine-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/adobe/aepsdk-rulesengine-ios.git";
 			requirement = {

@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-//import ACPGriffon
+//import AEPAssurance
 import AEPCore
 import AEPExperiencePlatform
 import AEPIdentity
@@ -41,8 +41,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             MobileCore.configureWith(filePath: filePath)
         }
 
-        // todo: reference the swift griffon extension here
-        //ACPGriffon.registerExtension()
+        // todo: reference the swift assurance extension here
+        //AEPAssurance.registerExtension()
         MobileCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
         //        MobileCore.updateConfigurationWith(configDict: config)
 

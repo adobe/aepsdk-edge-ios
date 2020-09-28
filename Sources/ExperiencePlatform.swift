@@ -109,11 +109,11 @@ public class ExperiencePlatform: NSObject, Extension {
             Log.warning(label: LOG_TAG, "handleExperienceEventRequest - An unexpected error has occurred, ECID is null.")
         }
 
-        // get Griffon integration id and include it in to the requestHeaders
+        // get Assurance integration id and include it in to the requestHeaders
         var requestHeaders: [String: String] = [:]
-        if let griffonSharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Griffon.stateOwner, event: event)?.value {
-            if let griffonIntegrationId = griffonSharedState[ExperiencePlatformConstants.SharedState.Griffon.integrationId] as? String {
-                requestHeaders[ExperiencePlatformConstants.NetworkKeys.headerKeyAEPValidationToken] = griffonIntegrationId
+        if let assuranceSharedState = getSharedState(extensionName: ExperiencePlatformConstants.SharedState.Assurance.stateOwner, event: event)?.value {
+            if let assuranceIntegrationId = assuranceSharedState[ExperiencePlatformConstants.SharedState.Assurance.integrationId] as? String {
+                requestHeaders[ExperiencePlatformConstants.NetworkKeys.headerKeyAEPValidationToken] = assuranceIntegrationId
             }
         }
 
