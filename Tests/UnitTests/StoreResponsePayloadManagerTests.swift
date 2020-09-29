@@ -77,10 +77,10 @@ class StoreResponsePayloadManagerTests: XCTestCase {
 
         // new payloads use same keys as original payloads
         var newPayloads: [StoreResponsePayload] = []
-        newPayloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout",
+        newPayloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_testOrg_AdobeOrg_optout",
                                                                       value: "general=false",
                                                                       maxAge: 8000)))
-        newPayloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin",
+        newPayloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_testOrg_AdobeOrg_optin",
                                                                       value: "newValue",
                                                                       maxAge: 10)))
 
@@ -90,32 +90,32 @@ class StoreResponsePayloadManagerTests: XCTestCase {
         let activePayloads = manager.getActiveStores()
         XCTAssertEqual(2, activePayloads.count)
 
-        if let payload1 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout"] {
-            XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout", payload1.payload.key)
+        if let payload1 = activePayloads["kndctr_testOrg_AdobeOrg_optout"] {
+            XCTAssertEqual("kndctr_testOrg_AdobeOrg_optout", payload1.payload.key)
             XCTAssertEqual("general=false", payload1.payload.value)
             XCTAssertEqual(8000, payload1.payload.maxAge)
             XCTAssertTrue(payload1.expiryDate > originalPayloads[payload1.payload.key]?.expiryDate ?? Date())
         } else {
-            XCTFail("Failed to get payload with key kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout from active stores.")
+            XCTFail("Failed to get payload with key kndctr_testOrg_AdobeOrg_optout from active stores.")
         }
 
-        if let payload2 = activePayloads["kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin"] {
-            XCTAssertEqual("kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin", payload2.payload.key)
+        if let payload2 = activePayloads["kndctr_testOrg_AdobeOrg_optin"] {
+            XCTAssertEqual("kndctr_testOrg_AdobeOrg_optin", payload2.payload.key)
             XCTAssertEqual("newValue", payload2.payload.value)
             XCTAssertEqual(10, payload2.payload.maxAge)
             XCTAssertTrue(payload2.expiryDate > originalPayloads[payload2.payload.key]?.expiryDate ?? Date())
         } else {
-            XCTFail("Failed to get payload with key kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin from active stores.")
+            XCTFail("Failed to get payload with key kndctr_testOrg_AdobeOrg_optin from active stores.")
         }
     }
 
     func buildStorePayloads() -> [StoreResponsePayload] {
         var payloads: [StoreResponsePayload] = []
 
-        payloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optout",
+        payloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_testOrg_AdobeOrg_optout",
                                                                    value: "general=true",
                                                                    maxAge: 7200)))
-        payloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_optin",
+        payloads.append(StoreResponsePayload(payload: StorePayload(key: "kndctr_testOrg_AdobeOrg_optin",
                                                                    value: "",
                                                                    maxAge: 2)))
         return payloads
