@@ -47,9 +47,9 @@ class ExperiencePlatformNetworkService {
                                                        HttpResponseCodes.tooManyRequests.rawValue,
                                                        HttpResponseCodes.serviceUnavailable.rawValue,
                                                        HttpResponseCodes.gatewayTimeout.rawValue]
-    private let waitTimeout: TimeInterval = max(ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout, ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout) + 1
-    private var defaultHeaders = [ExperiencePlatformConstants.NetworkKeys.headerKeyAccept: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson,
-                                  ExperiencePlatformConstants.NetworkKeys.headerKeyContentType: ExperiencePlatformConstants.NetworkKeys.headerValueApplicationJson]
+    private let waitTimeout: TimeInterval = max(Constants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT, Constants.NetworkKeys.DEFAULT_READ_TIMEOUT) + 1
+    private var defaultHeaders = [Constants.NetworkKeys.HEADER_KEY_ACCEPT: Constants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON,
+                                  Constants.NetworkKeys.HEADER_KEY_CONTENT_TYPE: Constants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON]
 
     /// Builds the URL required for connections to Experience Edge with the provided `ExperienceEdgeRequestType`
     /// - Parameters:
@@ -58,12 +58,12 @@ class ExperiencePlatformNetworkService {
     ///   - requestId: batch request identifier
     /// - Returns: built URL or nil on error
     func buildUrl(requestType: ExperienceEdgeRequestType, configId: String, requestId: String) -> URL? {
-        guard var url = URL(string: ExperiencePlatformConstants.NetworkKeys.edgeEndpoint) else { return nil }
+        guard var url = URL(string: Constants.NetworkKeys.EDGE_ENDPOINT) else { return nil }
         url.appendPathComponent(requestType.rawValue)
 
         guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
-        urlComponents.queryItems = [URLQueryItem(name: ExperiencePlatformConstants.NetworkKeys.requestParamConfigId, value: configId),
-                                    URLQueryItem(name: ExperiencePlatformConstants.NetworkKeys.requestParamRequestId, value: requestId)]
+        urlComponents.queryItems = [URLQueryItem(name: Constants.NetworkKeys.REQUEST_PARAM_CONFIG_ID, value: configId),
+                                    URLQueryItem(name: Constants.NetworkKeys.REQUEST_PARAM_REQUEST_ID, value: requestId)]
 
         return urlComponents.url
     }
@@ -118,8 +118,8 @@ class ExperiencePlatformNetworkService {
                                                             httpMethod: HttpMethod.post,
                                                             connectPayload: payload,
                                                             httpHeaders: headers,
-                                                            connectTimeout: ExperiencePlatformConstants.NetworkKeys.defaultConnectTimeout,
-                                                            readTimeout: ExperiencePlatformConstants.NetworkKeys.defaultReadTimeout)
+                                                            connectTimeout: Constants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT,
+                                                            readTimeout: Constants.NetworkKeys.DEFAULT_READ_TIMEOUT)
         Log.debug(label: LOG_TAG, "doRequest - Sending request to URL \(url.absoluteString) with headers: \(headers) and body: \n\(payload)")
 
         // make sync call to process the response right away and retry if needed
@@ -139,7 +139,9 @@ class ExperiencePlatformNetworkService {
             if let responseCode = connection.responseCode {
                 if responseCode == HttpResponseCodes.ok.rawValue {
                     Log.debug(label: self.LOG_TAG, "doRequest - Interact connection to Experience Edge was successful.")
-                    self.handleContent(connection: connection, streaming: requestBody.meta?.konductorConfig?.streaming, responseCallback: responseCallback)
+                    self.handleContent(connection: connection,
+                                       streaming: requestBody.meta?.konductorConfig?.streaming,
+                                       responseCallback: responseCallback)
 
                 } else if responseCode == HttpResponseCodes.noContent.rawValue {
                     // Successful collect requests do not return content
@@ -244,7 +246,7 @@ class ExperiencePlatformNetworkService {
             // check if this is a JSON error response from Experience Edge, and if so pass it unchanged
             let data = Data(unwrappedMessage.utf8)
 
-            if let _ = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+            if (try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]) != nil {
                 return plainTextErrorMessage
             }
         }
@@ -252,7 +254,8 @@ class ExperiencePlatformNetworkService {
         var unwrappedErrorMessage = plainTextErrorMessage ?? DEFAULT_GENERIC_ERROR_MESSAGE
         unwrappedErrorMessage = unwrappedErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let errorDictionary = [ExperiencePlatformConstants.JsonKeys.Response.Error.message: unwrappedErrorMessage, ExperiencePlatformConstants.JsonKeys.Response.Error.namespace: DEFAULT_NAMESPACE]
+        let errorDictionary = [Constants.JsonKeys.Response.Error.MESSAGE: unwrappedErrorMessage,
+                               Constants.JsonKeys.Response.Error.NAMESPACE: DEFAULT_NAMESPACE]
         guard let json = try? JSONSerialization.data(withJSONObject: errorDictionary, options: []) else {
             Log.debug(label: LOG_TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
             return nil

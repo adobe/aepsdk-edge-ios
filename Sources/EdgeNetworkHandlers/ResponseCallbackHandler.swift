@@ -18,7 +18,8 @@ import Foundation
 /// and get notified once a response is received from the Experience Edge or when an error occurred. This class uses a `ThreadSafeDictionary` for the internal mapping.
 class ResponseCallbackHandler {
     private let TAG = "ResponseCallbacksHandler"
-    private var responseHandlers = ThreadSafeDictionary<String, ExperiencePlatformResponseHandler>(identifier: "com.adobe.experiencePlaftorm.responseHandlers")
+    private var responseHandlers =
+        ThreadSafeDictionary<String, ExperiencePlatformResponseHandler>(identifier: "com.adobe.experiencePlaftorm.responseHandlers")
     static let shared = ResponseCallbackHandler()
 
     /// Registers a `ExperiencePlatformResponseHandler` for the specified `requestEventId`. This handler is

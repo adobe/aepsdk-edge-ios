@@ -33,7 +33,10 @@ class RequestContextDataTests: XCTestCase {
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
 
-        let data = try? encoder.encode(context)
+        guard let data = try? encoder.encode(context) else {
+            XCTFail("Failed to convert request context data to data")
+            return
+        }
 
         XCTAssertNotNil(data)
         let expected = """
@@ -41,7 +44,7 @@ class RequestContextDataTests: XCTestCase {
 
             }
             """
-        let jsonString = String(data: data!, encoding: .utf8)
+        let jsonString = String(data: data, encoding: .utf8)
 
         XCTAssertEqual(expected, jsonString)
     }
@@ -53,7 +56,10 @@ class RequestContextDataTests: XCTestCase {
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
 
-        let data = try? encoder.encode(context)
+        guard let data = try? encoder.encode(context)  else {
+            XCTFail("Failed to convert RequestContentData to data")
+            return
+        }
 
         XCTAssertNotNil(data)
         let expected = """
@@ -63,8 +69,7 @@ class RequestContextDataTests: XCTestCase {
               }
             }
             """
-        let jsonString = String(data: data!, encoding: .utf8)
-
+        let jsonString = String(data: data, encoding: .utf8)
         XCTAssertEqual(expected, jsonString)
     }
 

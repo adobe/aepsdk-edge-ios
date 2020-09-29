@@ -42,7 +42,10 @@ class XDMFormattersTests: XCTestCase {
         dateComponents.second = 45
         let userCalendar = Calendar.current
         let cal = userCalendar.date(from: dateComponents)
-        let serializedDate: String = XDMFormatters.dateToISO8601String(from: cal)!
+        guard let serializedDate: String = XDMFormatters.dateToISO8601String(from: cal) else {
+            XCTFail("Failed to serialize date to ISO8601 string")
+            return
+        }
         var pattern: String
         if serializedDate.contains("Z") {
             pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T([0-9]{2}:){2}[0-9]{2}Z"
@@ -71,7 +74,10 @@ class XDMFormattersTests: XCTestCase {
         let userCalendar = Calendar.current
         let cal = userCalendar.date(from: dateComponents)
 
-        let serializedDate: String = XDMFormatters.dateToFullDateString(from: cal)!
+        guard let serializedDate: String = XDMFormatters.dateToFullDateString(from: cal) else {
+            XCTFail("Failed to convert date to full date string")
+            return
+        }
         var pattern: String
         pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}"
 

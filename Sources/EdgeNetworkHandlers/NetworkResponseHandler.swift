@@ -109,7 +109,9 @@ class NetworkResponseHandler {
         } else {
             // generic server error, return the error as is
             guard let genericErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) else {
-                Log.warning(label: LOG_TAG, "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), request id \(requestId)")
+                Log.warning(label: LOG_TAG,
+                            "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), " +
+                                "request id \(requestId)")
                 return
             }
 
@@ -149,7 +151,8 @@ class NetworkResponseHandler {
     ///   - requestId: edge request id used to fetch the waiting events associated with it (if any)
     /// - Returns: the request event unique identifier for which this event handle was received, nil if not found
     private func extractRequestEventId(forEventIndex: Int?, requestId: String) -> String? {
-        guard let requestEventIdsList = getWaitingEvents(requestId: requestId), let index = forEventIndex, index >= 0, index < requestEventIdsList.count else {
+        guard let requestEventIdsList = getWaitingEvents(requestId: requestId),
+              let index = forEventIndex, index >= 0, index < requestEventIdsList.count else {
             return nil
         }
 
@@ -208,14 +211,14 @@ class NetworkResponseHandler {
         guard !eventData.isEmpty else { return }
         var responseEvent: Event?
         if isErrorResponseEvent {
-            responseEvent = Event(name: ExperiencePlatformConstants.eventNameErrorResponseContent,
-                                  type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                  source: ExperiencePlatformConstants.eventSourceExtensionErrorResponseContent,
+            responseEvent = Event(name: Constants.EventName.ERROR_RESPONSE_CONTENT,
+                                  type: Constants.EventType.EXPERIENCE_PLATFORM,
+                                  source: Constants.EventSource.ERROR_RESPONSE_CONTENT,
                                   data: eventData)
         } else {
-            responseEvent = Event(name: ExperiencePlatformConstants.eventNameResponseContent,
-                                  type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                  source: ExperiencePlatformConstants.eventSourceExtensionResponseContent,
+            responseEvent = Event(name: Constants.EventName.RESPONSE_CONTENT,
+                                  type: Constants.EventType.EXPERIENCE_PLATFORM,
+                                  source: Constants.EventSource.RESPONSE_CONTENT,
                                   data: eventData)
         }
 
@@ -230,15 +233,15 @@ class NetworkResponseHandler {
     ///   - requestEventId: the request event id associated with this data
     private func addEventAndRequestIdToDictionary(_ dictionary: [String: Any], requestId: String, requestEventId: String?) -> [String: Any] {
         var eventData: [String: Any] = dictionary
-        eventData[ExperiencePlatformConstants.EventDataKeys.edgeRequesId] = requestId
-        eventData[ExperiencePlatformConstants.EventDataKeys.requestEventId] = requestEventId
+        eventData[Constants.EventDataKeys.EDGE_REQUEST_ID] = requestId
+        eventData[Constants.EventDataKeys.REQUEST_EVENT_ID] = requestEventId
         return eventData
     }
 
     /// If handle is of type "state:store" persist it to Data Store
     /// - Parameter handle: current `EventHandle` to store
     private func handleStoreEventHandle(handle: EdgeEventHandle) {
-        guard let type = handle.type, ExperiencePlatformConstants.JsonKeys.Response.eventHandleStoreType == type.lowercased() else { return }
+        guard let type = handle.type, Constants.JsonKeys.Response.EVENT_HANDLE_TYPE_STORE == type.lowercased() else { return }
         guard let payload: [[String: AnyCodable]] = handle.payload else { return }
 
         var storeResponsePayloads: [StoreResponsePayload] = []
@@ -251,7 +254,7 @@ class NetworkResponseHandler {
             }
         }
 
-        let storeResponsePayloadManager = StoreResponsePayloadManager(ExperiencePlatformConstants.DataStoreKeys.storeName)
+        let storeResponsePayloadManager = StoreResponsePayloadManager(Constants.DataStoreKeys.STORE_NAME)
         storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
         if !storeResponsePayloads.isEmpty {
             Log.debug(label: LOG_TAG, "Processed \(storeResponsePayloads.count) store response payload(s)")

@@ -15,3 +15,9 @@ file_length:
     warning: 1200
     error: 1500
     ignore_comment_only_lines: true
+identifier_name:
+    allowed_symbols: "_"
+    excluded:
+        - id
+        - no
+        - ok

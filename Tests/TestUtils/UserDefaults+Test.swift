@@ -13,6 +13,8 @@
 import Foundation
 
 extension UserDefaults {
+
+    /// Util function to clean up all the keys from UserDefaults between tests
     public static func clearAll() {
         for _ in 0 ... 5 {
             for key in UserDefaults.standard.dictionaryRepresentation().keys {
