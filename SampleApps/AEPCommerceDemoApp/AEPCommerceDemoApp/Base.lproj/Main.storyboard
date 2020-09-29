@@ -47,9 +47,9 @@
                                 <size key="shadowOffset" width="0.0" height="20"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="86d-ar-rIv" userLabel="assuranceButton">
-                                <rect key="frame" x="270.66666666666669" y="11" width="43" height="38"/>
+                                <rect key="frame" x="254" y="11" width="73" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="11"/>
                                 <state key="normal" title="Assurance">
                                     <color key="titleColor" systemColor="systemYellowColor"/>
                                 </state>
@@ -83,7 +83,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-613.04347826086962" y="-82.33695652173914"/>
+            <point key="canvasLocation" x="-613.04347826086962" y="-82.366071428571431"/>
         </scene>
         <!--Product View Controller-->
         <scene sceneID="F7j-33-Oho">

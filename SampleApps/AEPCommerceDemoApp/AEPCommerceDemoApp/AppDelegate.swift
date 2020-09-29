@@ -15,6 +15,7 @@ import AEPCore
 import AEPExperiencePlatform
 import AEPIdentity
 import AEPLifecycle
+import ACPCore
 import AEPServices
 import UIKit
 
@@ -41,9 +42,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             MobileCore.configureWith(filePath: filePath)
         }
 
-        // todo: reference the swift assurance extension here
-        //AEPAssurance.registerExtension()
-        MobileCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
+        AEPAssurance.registerExtension()
+        ACPCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
         //        MobileCore.updateConfigurationWith(configDict: config)
 
         // only start lifecycle if the application is not in the background
