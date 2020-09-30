@@ -60,4 +60,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         MobileCore.lifecyclePause()
     }
+    
+    // To handle deeplink on iOS versions 12 and below
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        AEPAssurance.startSession(url)
+        return true
+    }
 }
