@@ -50,6 +50,7 @@ ROOT_DIR = $(shell git rev-parse --show-toplevel)
 LIB_VERSION = $(shell grep 'private static let version' $(ROOT_DIR)/code/src/ExperiencePlatformInternal.swift | sed 's/.*private static let version.*=.*\"\(.*\)\".*/\1/')
 
 # environments
+EXTENSION_NAME = AEPExperiencePlatform
 WORKSPACE_NAME = $(EXTENSION_NAME).xcworkspace
 PROJECT_FILE = $(EXTENSION_NAME).xcodeproj
 BUILD_SCHEME = $(EXTENSION_NAME)
@@ -244,4 +245,3 @@ clean:
 	-rm -rf $(BIN_DIR)$(LIBRARY_NAME)
 	-rm -rf $(BIN_DIR)$(LIBRARY_NAME_SIM)
 	-rm -rf $(BIN_DIR)$(LIBRARY_NAME_DEVICE)
-
