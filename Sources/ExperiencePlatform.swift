@@ -96,7 +96,7 @@ public class ExperiencePlatform: NSObject, Extension {
 
         // get Assurance integration id and include it in to the requestHeaders
         var requestHeaders: [String: String] = [:]
-        if let assuranceSharedState = getSharedState(extensionName: Constants.SharedState.STATE_OWNER, event: event)?.value {
+        if let assuranceSharedState = getSharedState(extensionName: Constants.SharedState.Assurance.STATE_OWNER_NAME, event: event)?.value {
             if let assuranceIntegrationId = assuranceSharedState[Constants.SharedState.Assurance.INTEGRATION_ID] as? String {
                 requestHeaders[Constants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
             }

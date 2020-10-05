@@ -43,7 +43,7 @@ class AssuranceViewController: UIViewController {
                 snackbar(message: AEPDemoConstants.Strings.assuranceUrlInvalid)
             }
         } else {
-            snackbar(message: AEPDemoConstants.Strings.assuranceSessonActive)
+            snackbar(message: AEPDemoConstants.Strings.assuranceSessionActive)
         }
     }
 }

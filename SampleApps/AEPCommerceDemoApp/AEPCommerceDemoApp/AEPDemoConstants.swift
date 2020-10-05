@@ -52,8 +52,7 @@ struct AEPDemoConstants {
 
         // MARK: Assurance : Snackbar messages
         static let assuranceUrlInvalid = "Enter a valid URL of the Assurance Session"
-        static let assuranceSessonActive = "Connection to a Assurance Session is already active or in progress. Disconnect before trying to connect..."
-        static let assuranceSessionDisconnected = "Assurance Session has been disconnected"
+        static let assuranceSessionActive = "A connection to an Assurance Session is already or in progress. Disconnect before trying to connect..."
         static let assuranceSessionNotActive = "Assurance Session is not active..."
         static let assuranceUrlValidationString = "adb_validation_sessionid"
     }

@@ -32,7 +32,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         AEPAssurance.registerExtension()
         ACPCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
-        // MobileCore.updateConfigurationWith(configDict: config)
 
         // only start lifecycle if the application is not in the background
         if application.applicationState != .background {
