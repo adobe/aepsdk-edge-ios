@@ -23,7 +23,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         FunctionalTestBase.debugEnabled = false
 
         // 2 event hub shared states for registered extensions (TestableExperiencePlatform and InstrumentedExtension registered in FunctionalTestBase)
-        setExpectationEvent(type: FunctionalTestConst.EventType.eventHub, source: FunctionalTestConst.EventSource.sharedState, count: 2)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 2)
 
         MobileCore.registerExtensions([TestableExperiencePlatform.self])
 
@@ -33,7 +33,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
 
     func testHandleExperienceEventRequest_withPendingConfigurationState_expectEventsQueueIsBlocked() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
-        let configState = getSharedStateFor(ExperiencePlatformConstants.SharedState.Configuration.stateOwner)
+        let configState = getSharedStateFor(FunctionalTestConst.SharedState.CONFIGURATION)
         XCTAssertNil(configState)
 
         // set expectations
@@ -46,8 +46,8 @@ class NoConfigFunctionalTests: FunctionalTestBase {
 
         // Dispatch request event which will block request queue as Configuration state is nil
         let requestEvent = Event(name: "Request Test",
-                                 type: ExperiencePlatformConstants.eventTypeExperiencePlatform,
-                                 source: ExperiencePlatformConstants.eventSourceExtensionRequestContent,
+                                 type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                                 source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                                  data: ["key": "value"])
         MobileCore.dispatch(event: requestEvent)
 
@@ -58,7 +58,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         wait(for: [handleExperienceEventRequestExpectation], timeout: 1.0)
     }
 
-    // todo: rewrite the test related to handling the response event
+    // TODO: AMSDK-10665 rewrite the test related to handling the response event
     // steps:
     // - set valid configs
     // - mock network response - multiple chuncks as a response for event1

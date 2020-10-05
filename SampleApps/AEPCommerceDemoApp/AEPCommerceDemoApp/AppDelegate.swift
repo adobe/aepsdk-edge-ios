@@ -21,30 +21,18 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    // TODO: Set up the Environment File ID from your Launch property for the preferred environment
+    private let LAUNCH_ENVIRONMENT_FILE_ID = ""
 
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         MobileCore.setLogLevel(level: .trace)
-        Log.debug(label: "AppDelegate", "Testing with AEPExperiencePlatform.")
-
-        // Option 1 : Configuration : Inline
-        // var config = [String: String]()
-        // config["global.privacy"] = "optedin"
-        // config["experienceCloud.org"] = "FAF554945B90342F0A495E2C@AdobeOrg"
-        // config["experiencePlatform.configId"] = "d3d079e7-130e-4ec1-88d7-c328eb9815c4"
-
-        // Option 2 : Configuration : From a Launch property
-        //         MobileCore.configureWith(appId: "94f571f308d5/e3fc566f21d5/launch-a7a05abd3c78-development")
-
-        // Option 3 :  Configuration : From ADBMobileConfig.json file
-        if let filePath = Bundle.main.path(forResource: "ADBMobileConfig", ofType: "json") {
-            MobileCore.configureWith(filePath: filePath)
-        }
+        MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
 
         AEPAssurance.registerExtension()
         ACPCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
-        //        MobileCore.updateConfigurationWith(configDict: config)
+        // MobileCore.updateConfigurationWith(configDict: config)
 
         // only start lifecycle if the application is not in the background
         if application.applicationState != .background {
@@ -60,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         MobileCore.lifecyclePause()
     }
-    
+
     // To handle deeplink on iOS versions 12 and below
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         AEPAssurance.startSession(url)

@@ -15,10 +15,7 @@
  Title			:	Mobile SDK Lifecycle Schema
  Version		:	1.1
  Description	:	
- ID				:	https://ns.adobe.com/acopprod3/schemas/711b0b9afc7162017bfe022cda7af34a15232797b4a69107
- Alt ID			:	_acopprod3.schemas.711b0b9afc7162017bfe022cda7af34a15232797b4a69107
  Type			:	schemas
- IMS Org		:	FAF554945B90342F0A495E2C@AdobeOrg
 ----
 */
 
@@ -27,8 +24,8 @@ import AEPExperiencePlatform
 
 public struct MobileSDKLifecycleSchema : XDMSchema {
 	public let schemaVersion = "1.1"
-	public let schemaIdentifier = "https://ns.adobe.com/acopprod3/schemas/711b0b9afc7162017bfe022cda7af34a15232797b4a69107"
-	public let datasetIdentifier = "5f05094a112ea71914bd169c"
+	public let schemaIdentifier = ""
+	public let datasetIdentifier = ""
 	
 	public init() {}
 

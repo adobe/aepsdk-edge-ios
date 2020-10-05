@@ -19,14 +19,14 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    // TODO: Set up the Environment File ID from your Launch property for the preferred environment
+    private let LAUNCH_ENVIRONMENT_FILE_ID = ""
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        MobileCore.setLogLevel(level: .debug)
+        MobileCore.setLogLevel(level: .trace)
+        MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
         MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self])
-        MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
-                                                        "experienceCloud.org": "FAF554945B90342F0A495E2C@AdobeOrg",
-                                                        "experiencePlatform.configId": "d3d079e7-130e-4ec1-88d7-c328eb9815c4"])
         return true
     }
 

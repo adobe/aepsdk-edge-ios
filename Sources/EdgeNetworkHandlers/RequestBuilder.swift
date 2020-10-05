@@ -30,7 +30,7 @@ class RequestBuilder {
     private let storeResponsePayloadManager: StoreResponsePayloadManager
 
     init() {
-        storeResponsePayloadManager = StoreResponsePayloadManager(ExperiencePlatformConstants.DataStoreKeys.storeName)
+        storeResponsePayloadManager = StoreResponsePayloadManager(Constants.DataStoreKeys.STORE_NAME)
     }
 
     init(dataStoreName: String) {
@@ -66,7 +66,7 @@ class RequestBuilder {
         // set ECID if available
         if let ecid = experienceCloudId {
             var identityMap = IdentityMap()
-            identityMap.addItem(namespace: ExperiencePlatformConstants.JsonKeys.ECID, id: ecid)
+            identityMap.addItem(namespace: Constants.JsonKeys.ECID, id: ecid)
             contextData = RequestContextData(identityMap: identityMap)
         }
 
@@ -87,25 +87,25 @@ class RequestBuilder {
                 continue
             }
 
-            if eventData[ExperiencePlatformConstants.JsonKeys.xdm] == nil {
-                eventData[ExperiencePlatformConstants.JsonKeys.xdm] = [:]
+            if eventData[Constants.JsonKeys.XDM] == nil {
+                eventData[Constants.JsonKeys.XDM] = [:]
             }
 
-            if var xdm = eventData[ExperiencePlatformConstants.JsonKeys.xdm] as? [String: Any] {
-                xdm[ExperiencePlatformConstants.JsonKeys.timestamp] = ISO8601DateFormatter().string(from: event.timestamp)
-                xdm[ExperiencePlatformConstants.JsonKeys.eventId] = event.id.uuidString
-                eventData[ExperiencePlatformConstants.JsonKeys.xdm] = xdm
+            if var xdm = eventData[Constants.JsonKeys.XDM] as? [String: Any] {
+                xdm[Constants.JsonKeys.TIMESTAMP] = ISO8601DateFormatter().string(from: event.timestamp)
+                xdm[Constants.JsonKeys.EVENT_ID] = event.id.uuidString
+                eventData[Constants.JsonKeys.XDM] = xdm
             }
 
             // enable collect override if a valid dataset is provided
-            if let datasetId = eventData[ExperiencePlatformConstants.EventDataKeys.datasetId] as? String {
+            if let datasetId = eventData[Constants.EventDataKeys.DATASET_ID] as? String {
                 let trimmedDatasetId = datasetId.trimmingCharacters(in: CharacterSet.whitespaces)
                 if !trimmedDatasetId.isEmpty {
-                    eventData[ExperiencePlatformConstants.JsonKeys.meta] =
-                        [ExperiencePlatformConstants.JsonKeys.CollectMetadata.collect:
-                            [ExperiencePlatformConstants.JsonKeys.CollectMetadata.datasetId: trimmedDatasetId]]
+                    eventData[Constants.JsonKeys.META] =
+                        [Constants.JsonKeys.CollectMetadata.COLLECT:
+                            [Constants.JsonKeys.CollectMetadata.DATASET_ID: trimmedDatasetId]]
                 }
-                eventData.removeValue(forKey: ExperiencePlatformConstants.EventDataKeys.datasetId)
+                eventData.removeValue(forKey: Constants.EventDataKeys.DATASET_ID)
             }
 
             guard let wrappedEventData = AnyCodable.from(dictionary: eventData) else {

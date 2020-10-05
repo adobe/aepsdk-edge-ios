@@ -12,6 +12,8 @@ The Experience Platform Mobile extension allows you to send data to the Adobe Ex
 
 The Adobe Experience Platform Mobile Extension is an extension for the [Adobe Experience Platform SDK](https://github.com/Adobe-Marketing-Cloud/acp-sdks).
 
+To learn more about this extension, read [Adobe Experience Platform -Experience Edge](https://aep-sdks.gitbook.io/docs/beta/experience-platform-extension).
+
 ## Current version
 The Experience Platform Mobile extension for iOS is currently in Beta development.
 
@@ -96,6 +98,8 @@ make test
 ## Setup Demo Application
 The AEP Commerce Demo application is a sample app which demonstrates how to send commerce data to Adobe Experience Platform by using the Adobe Experience Platform Mobile Extension.
 
+If this is the first time you use this application, start by creating the XDM Schema and Dataset required for it, as well as creating your Edge Configuration identifier. Here are the steps to [Generate Environment Identifier](https://aep-sdks.gitbook.io/docs/beta/experience-platform-extension/experience-platform-setup).
+
 Setup the environment by running the following from the root directory of the repository:
 
 ~~~
@@ -113,6 +117,10 @@ Open the AEPCommerceDemoApp workspace in Xcode by running the following command 
 ~~~
 make open-app
 ~~~
+
+Configure the Launch Mobile Property and set up the Environment File ID in the app. Follow these steps to [Configure the demo app](https://aep-sdks.gitbook.io/docs/beta/experience-platform-extension/commerce-demo-app-setup#configure-the-demo-app).
+
+You are now all set to start testing with this app.
 
 ## Contributing
 

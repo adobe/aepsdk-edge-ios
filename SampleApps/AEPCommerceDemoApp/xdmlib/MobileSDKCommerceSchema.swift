@@ -15,10 +15,7 @@
  Title			:	Mobile SDK Commerce Schema
  Version		:	1.0
  Description	:	
- ID				:	https://ns.adobe.com/acopprod3/schemas/95f430276fa51f45c81234aadc64f4e00dad6753d659345a
- Alt ID			:	_acopprod3.schemas.95f430276fa51f45c81234aadc64f4e00dad6753d659345a
  Type			:	schemas
- IMS Org		:	FAF554945B90342F0A495E2C@AdobeOrg
 ----
 */
 
@@ -27,8 +24,8 @@ import AEPExperiencePlatform
 
 public struct MobileSDKCommerceSchema : XDMSchema {
 	public let schemaVersion = "1.0"
-	public let schemaIdentifier = "https://ns.adobe.com/acopprod3/schemas/95f430276fa51f45c81234aadc64f4e00dad6753d659345a"
-	public let datasetIdentifier = "5f05095dba13bf191536d178"
+	public let schemaIdentifier = ""
+	public let datasetIdentifier = ""
 	
 	public init() {}
 
