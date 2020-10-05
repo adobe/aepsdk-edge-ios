@@ -34,7 +34,7 @@ DEPENDENCIES:
   - "AEPSignal (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
 
 SPEC REPOS:
-  "git@git.corp.adobe.com:dms-mobile/v5-podspecs.git":
+  trunk:
     - AEPAssurance
 
 EXTERNAL SOURCES:
@@ -85,7 +85,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   ACPCore: 54bea9e0ab404307eb1e11806049a5a748156bbc
-  AEPAssurance: 52e1dc4a05b2bfaaeac06f022623316fc2551386
+  AEPAssurance: 79480081626b89fc37af26bbbf4522af9718e75f
   AEPCore: e8ddaae01a787926fde35cfcc24770b26a765e58
   AEPIdentity: f46a1b34363243f8d417a8143bfb876a36809104
   AEPLifecycle: 9e63cf6a8085161f95706ddbffef20dd1d748c3e

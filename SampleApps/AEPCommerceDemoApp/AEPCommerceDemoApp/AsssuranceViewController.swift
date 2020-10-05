@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-//import AEPAssurance
+import AEPAssurance
 import AEPCore
 import Foundation
 import UIKit

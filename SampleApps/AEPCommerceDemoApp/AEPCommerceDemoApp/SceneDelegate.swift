@@ -15,6 +15,7 @@
 //
 
 import UIKit
+import AEPAssurance
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
