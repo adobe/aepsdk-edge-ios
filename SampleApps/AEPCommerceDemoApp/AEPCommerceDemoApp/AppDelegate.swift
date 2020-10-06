@@ -10,11 +10,12 @@
 // governing permissions and limitations under the License.
 //
 
-//import ACPGriffon
+import AEPAssurance
 import AEPCore
 import AEPExperiencePlatform
 import AEPIdentity
 import AEPLifecycle
+import ACPCore
 import AEPServices
 import UIKit
 
@@ -29,9 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MobileCore.setLogLevel(level: .trace)
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
 
-        // todo: reference the swift griffon extension here
-        //ACPGriffon.registerExtension()
-        MobileCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
+        AEPAssurance.registerExtension()
+        ACPCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
 
         // only start lifecycle if the application is not in the background
         if application.applicationState != .background {
@@ -46,5 +46,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidEnterBackground(_ application: UIApplication) {
         MobileCore.lifecyclePause()
+    }
+
+    // To handle deeplink on iOS versions 12 and below
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        AEPAssurance.startSession(url)
+        return true
     }
 }

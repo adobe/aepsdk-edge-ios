@@ -10,14 +10,14 @@
 // governing permissions and limitations under the License.
 //
 
-//import ACPGriffon
+import AEPAssurance
 import AEPCore
 import Foundation
 import UIKit
 
-class GriffonViewController: UIViewController {
+class AssuranceViewController: UIViewController {
 
-    @IBOutlet var griffonSessionURL: UITextField!
+    @IBOutlet var assuranceSessionURL: UITextField!
     @IBOutlet var appNameLbl: UILabel!
 
     var isConnected: Bool = false
@@ -27,23 +27,23 @@ class GriffonViewController: UIViewController {
         appNameLbl.text = AEPDemoConstants.Strings.appName
     }
 
-    @IBAction func griffonConnectBtn(_ sender: UIButton) {
+    @IBAction func assuranceConnectBtn(_ sender: UIButton) {
         if !isConnected {
-            guard let griffonURLText = griffonSessionURL.text else {
+            guard let assuranceURLText = assuranceSessionURL.text else {
                 return
             }
-            if  griffonURLText.contains(AEPDemoConstants.Strings.griffonUrlValidationString) {
-                if let url = URL(string: griffonURLText) {
+            if assuranceURLText.contains(AEPDemoConstants.Strings.assuranceUrlValidationString) {
+                if let url = URL(string: assuranceURLText) {
                     isConnected = true
-                    //ACPGriffon.startSession(url)
+                    AEPAssurance.startSession(url)
                 } else {
-                    snackbar(message: AEPDemoConstants.Strings.griffonUrlInvalid)
+                    snackbar(message: AEPDemoConstants.Strings.assuranceUrlInvalid)
                 }
             } else {
-                snackbar(message: AEPDemoConstants.Strings.griffonUrlInvalid)
+                snackbar(message: AEPDemoConstants.Strings.assuranceUrlInvalid)
             }
         } else {
-            snackbar(message: AEPDemoConstants.Strings.griffonSessonActive)
+            snackbar(message: AEPDemoConstants.Strings.assuranceSessionActive)
         }
     }
 }

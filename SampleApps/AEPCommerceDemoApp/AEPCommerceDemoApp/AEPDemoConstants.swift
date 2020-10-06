@@ -46,15 +46,14 @@ struct AEPDemoConstants {
         static let cartEmptyMsg = "There are no item in the shopping cart to clear."
         static let cartClearMsg = "Sure!, all the selected items are removed from the Shopping Cart."
 
-        // MARK: Griffon : Labels of UI Components
-        static let griffonConnect = "Connect"
-        static let griffonDisconnect = "Disconnect"
+        // MARK: Assurance : Labels of UI Components
+        static let assuranceConnect = "Connect"
+        static let assuranceDisconnect = "Disconnect"
 
-        // MARK: Griffon : Snackbar messages
-        static let griffonUrlInvalid = "Enter a valid URL of the Griffon Session"
-        static let griffonSessonActive = "Connection to a Griffon Session is already active or in progress. Disconnect before trying to connect..."
-        static let griffonSessionDisconnected = "Griffon Session has been disconnected"
-        static let griffonSessionNotActive = "Griffon Session is not active..."
-        static let griffonUrlValidationString = "adb_validation_sessionid"
+        // MARK: Assurance : Snackbar messages
+        static let assuranceUrlInvalid = "Enter a valid URL of the Assurance Session"
+        static let assuranceSessionActive = "A connection to an Assurance Session is already or in progress. Disconnect before trying to connect..."
+        static let assuranceSessionNotActive = "Assurance Session is not active..."
+        static let assuranceUrlValidationString = "adb_validation_sessionid"
     }
 }

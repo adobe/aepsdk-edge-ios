@@ -66,8 +66,8 @@ enum Constants {
             static let STATE_OWNER_NAME = "com.adobe.module.identity"
             static let ECID = "mid"
         }
-        enum Griffon {
-            static let STATE_OWNER_NAME = "com.adobe.ACPGriffon"
+        enum Assurance {
+            static let STATE_OWNER_NAME = "com.adobe.assurance"
             static let INTEGRATION_ID = "integrationid"
         }
 
