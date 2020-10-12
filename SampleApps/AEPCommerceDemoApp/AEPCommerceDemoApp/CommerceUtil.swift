@@ -16,7 +16,7 @@ import AEPServices
 import Foundation
 
 /// This CommerceUtil Class encapsulates logic for creating Commerce objects and sending as
-/// ExperienceEvents to the Experience Platform Extension.
+/// ExperienceEvents to the Experience Edge Extension.
 ///
 /// The methods in this class are called throughout the commerce workflow to send information
 /// to the Adobe Data Platform for user actions such as viewing product items, adding items to
@@ -202,7 +202,7 @@ class CommerceUtil {
 
             let event = ExperienceEvent(xdm: xdmData)
             let responseHandler = ResponseHandler()
-            Edge.sendEvent(ExperienceEvent: event, responseHandler: responseHandler)
+            Edge.sendEvent(experienceEvent: event, responseHandler: responseHandler)
         } else {
             Log.debug(label: logTag, "sendPurchaseXdmEvent - Cannot create '" + eventTypeCommercePurchases + "' as no items were found in cart.")
         }
@@ -252,7 +252,7 @@ class CommerceUtil {
         xdmData.productListItems = itemsList
         let event = ExperienceEvent(xdm: xdmData)
         let responseHandler = ResponseHandler()
-        Edge.sendEvent(ExperienceEvent: event, responseHandler: responseHandler)
+        Edge.sendEvent(experienceEvent: event, responseHandler: responseHandler)
     }
 
     /// Helper method to convert an com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem  to an

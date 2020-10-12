@@ -88,7 +88,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                             "testDouble": 12.89,
                                                             "testArray": ["arrayElem1", 2, true],
                                                             "testDictionary": ["key": "val"]])
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
@@ -119,7 +119,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                                                          "testDataDouble": 13.66,
                                                                                          "testDataArray": ["arrayElem1", 2, true],
                                                                                          "testDataDictionary": ["key": "val"]])
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
@@ -146,7 +146,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
 
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
@@ -163,7 +163,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
     func testSendEvent_withEmptyXDMDataAndNilData_DoesNotSendRequestEvent() {
         let experienceEvent = ExperienceEvent(xdm: [:], data: nil)
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         assertUnexpectedEvents()
@@ -171,7 +171,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
     func testSendEvent_withEmptyXDMSchema_DoesNotSendRequestEvent() {
         let experienceEvent = ExperienceEvent(xdm: TestXDMSchema())
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         assertUnexpectedEvents()
@@ -195,7 +195,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                             "testDouble": 12.89,
                                                             "testArray": ["arrayElem1", 2, true],
                                                             "testDictionary": ["key": "val"]])
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         assertNetworkRequestsCount()
@@ -239,7 +239,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                                                          "testDataDouble": 13.66,
                                                                                          "testDataArray": ["arrayElem1", 2, true],
                                                                                          "testDataDictionary": ["key": "val"]])
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         assertNetworkRequestsCount()
@@ -288,7 +288,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         xdmSchema.xdmObject = xdmObject
 
         let experienceEvent = ExperienceEvent(xdm: xdmSchema)
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         assertNetworkRequestsCount()
@@ -324,7 +324,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
 
         let experienceEvent = ExperienceEvent(xdm: TestXDMSchema())
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
@@ -341,7 +341,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
 
         let experienceEvent = ExperienceEvent(xdm: TestXDMSchema(), data: [:])
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
@@ -358,7 +358,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
 
         let experienceEvent = ExperienceEvent(xdm: TestXDMSchema(), data: nil)
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
@@ -379,7 +379,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
 
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // first network call, no stored data
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
@@ -392,7 +392,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         // send a new event, should contain previously stored store data
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        Edge.sendEvent(ExperienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
 
         resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
@@ -437,7 +437,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
                                                                                       data: nil))
 
         assertNetworkRequestsCount()
@@ -484,7 +484,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
                                                                                       data: nil))
 
         assertNetworkRequestsCount()
@@ -529,7 +529,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         let responseHandler = TestResponseHandler(expectedCount: 1)
 
-        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
                                                                                       data: nil),
                                      responseHandler: responseHandler)
 

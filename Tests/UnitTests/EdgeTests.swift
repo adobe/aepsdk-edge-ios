@@ -50,19 +50,19 @@ class EdgeTests: XCTestCase {
 
     func testSendEvent_withNonNullXdmAndNonNullData_ExperienceEventData() {
         MobileCore.registerExtensions([Edge.self])
-        let ExperienceEvent = ExperienceEvent(xdm: generateXdm(), data: generateData())
-        XCTAssertTrue(Edge.sendEvent(ExperienceEvent: ExperienceEvent, responseHandler: mockResponseHandler) == ())
+        let experienceEvent = ExperienceEvent(xdm: generateXdm(), data: generateData())
+        XCTAssertTrue(Edge.sendEvent(experienceEvent: experienceEvent, responseHandler: mockResponseHandler) == ())
     }
 
     func testSendEvent_withNonNullXdmAndNullData_ExperienceEventData() {
         MobileCore.registerExtensions([Edge.self])
-        let ExperienceEvent = ExperienceEvent(xdm: generateXdm(), data: nil)
-        XCTAssertTrue(Edge.sendEvent(ExperienceEvent: ExperienceEvent, responseHandler: mockResponseHandler) == ())
+        let experienceEvent = ExperienceEvent(xdm: generateXdm(), data: nil)
+        XCTAssertTrue(Edge.sendEvent(experienceEvent: experienceEvent, responseHandler: mockResponseHandler) == ())
     }
 
     func testSendEvent_withNonNullXdmSchemaAndNonNullData_ExperienceEventData() {
         MobileCore.registerExtensions([Edge.self])
-        let ExperienceEvent = ExperienceEvent(xdm: generateXdmSchema, data: generateData())
-        XCTAssertTrue(Edge.sendEvent(ExperienceEvent: ExperienceEvent, responseHandler: mockResponseHandler) == ())
+        let experienceEvent = ExperienceEvent(xdm: generateXdmSchema, data: generateData())
+        XCTAssertTrue(Edge.sendEvent(experienceEvent: experienceEvent, responseHandler: mockResponseHandler) == ())
     }
 }

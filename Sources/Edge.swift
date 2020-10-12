@@ -54,7 +54,7 @@ public class Edge: NSObject, Extension {
         return true
     }
 
-    /// Handler for Experience Platform Request Content events.
+    /// Handler for Experience Edge Request Content events.
     /// Valid Configuration and Identity shared states are required for processing the event (see `readyForEvent`). If a valid Configuration shared state is
     /// available, but no `experiencePlatform.configId ` is found, the event is dropped.
     ///

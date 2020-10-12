@@ -41,14 +41,14 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_withPendingIdentityState_noRequestSent() {
-        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
         let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertTrue(requests.isEmpty)
     }
 
     func testSendEvent_withPendingIdentityState_thenValidIdentityState_requestSentAfterChange() {
-        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
         var requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertTrue(requests.isEmpty) // no network request sent yet
@@ -66,7 +66,7 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        // Once the shared state is set, the Platform Extension is expected to reprocess the original
+        // Once the shared state is set, the Edge Extension is expected to reprocess the original
         // Send Event request once the Hub Shared State event is received.
         FakeIdentityExtension.setSharedState(state: ["mid": "1234"])
         assertNetworkRequestsCount()
@@ -94,7 +94,7 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
         assertNetworkRequestsCount()
 

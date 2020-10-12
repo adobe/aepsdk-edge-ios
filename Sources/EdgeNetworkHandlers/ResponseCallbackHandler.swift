@@ -41,7 +41,7 @@ class ResponseCallbackHandler {
 
     /// Unregisters a `EdgeResponseHandler` for the specified `requestEventId`. After this operation,
     /// the associated response handler is not invoked anymore.
-    /// - Parameter requestEventId: unique event identifier for experience platform events; should not be empty
+    /// - Parameter requestEventId: unique event identifier for experience events; should not be empty
     func unregisterResponseHandler(requestEventId: String) {
         guard !requestEventId.isEmpty else { return }
 

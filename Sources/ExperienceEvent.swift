@@ -24,7 +24,7 @@ public class ExperienceEvent: NSObject {
     /// Adobe Experience Platform dataset identifier, if not set the default dataset identifier set in the Edge Configuration is used
     public let datasetIdentifier: String?
 
-    /// Initialize an Experience Platform Event with the provided event data
+    /// Initialize an Experience Event with the provided event data
     /// - Parameters:
     ///   - xdm:  XDM formatted data for this event, passed as a raw XDM Schema data dictionary.
     ///   - data: Any free form data in a [String : Any] dictionary structure.
@@ -35,7 +35,7 @@ public class ExperienceEvent: NSObject {
         self.datasetIdentifier = datasetIdentifier
     }
 
-    /// Initialize an Experience Platform Event with the provided event data
+    /// Initialize an Experience Event with the provided event data
     /// - Parameters:
     ///   - xdm: XDM formatted event data passed as an XDMSchema
     ///   - data: Any free form data in a [String : Any] dictionary structure.

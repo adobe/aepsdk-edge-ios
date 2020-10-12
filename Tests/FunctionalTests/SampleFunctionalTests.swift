@@ -109,8 +109,8 @@ class SampleFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
-        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["test2": "xdm"], data: nil))
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test2": "xdm"], data: nil))
 
         assertNetworkRequestsCount()
     }
@@ -129,7 +129,7 @@ class SampleFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
 
         let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
 
