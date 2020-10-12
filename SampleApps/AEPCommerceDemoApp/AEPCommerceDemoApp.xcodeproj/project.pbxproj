@@ -47,10 +47,8 @@
 		BF5EEAB124904A3800C72622 /* CartItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA8E24904A3600C72622 /* CartItem.swift */; };
 		BF5EEAB224904A3800C72622 /* AEPDemoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */; };
 		BF5EEAB324904A3800C72622 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA9024904A3600C72622 /* ProductViewController.swift */; };
-		BF5EEAB424904A3800C72622 /* GriffonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEA9124904A3600C72622 /* GriffonViewController.swift */; };
 		BF5EEAB524904A3800C72622 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9224904A3600C72622 /* Assets.xcassets */; };
 		BF5EEABA24904A3800C72622 /* product_list_colors.json in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9824904A3700C72622 /* product_list_colors.json */; };
-		BF5EEABB24904A3800C72622 /* ADBMobileConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEA9924904A3700C72622 /* ADBMobileConfig.json */; };
 		BF5EEAC624904A3800C72622 /* ShoppingItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAA424904A3700C72622 /* ShoppingItemCell.swift */; };
 		BF5EEAC724904A3800C72622 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAA524904A3700C72622 /* Product.swift */; };
 		BF5EEAC824904A3800C72622 /* UIViewControllerSnackBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAA624904A3700C72622 /* UIViewControllerSnackBar.swift */; };
@@ -111,7 +109,6 @@
 		BF5EEA8E24904A3600C72622 /* CartItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartItem.swift; sourceTree = "<group>"; };
 		BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEPDemoConstants.swift; sourceTree = "<group>"; };
 		BF5EEA9024904A3600C72622 /* ProductViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
-		BF5EEA9124904A3600C72622 /* GriffonViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GriffonViewController.swift; sourceTree = "<group>"; };
 		BF5EEA9224904A3600C72622 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BF5EEA9824904A3700C72622 /* product_list_colors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = product_list_colors.json; sourceTree = "<group>"; };
 		BF5EEA9924904A3700C72622 /* ADBMobileConfig.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ADBMobileConfig.json; sourceTree = "<group>"; };
@@ -185,7 +182,6 @@
 				BF5EEAAA24904A3800C72622 /* CartViewController.swift */,
 				BF5EEAB024904A3800C72622 /* CheckOutViewController.swift */,
 				BF5EEAAB24904A3800C72622 /* CommerceUtil.swift */,
-				BF5EEA9124904A3600C72622 /* GriffonViewController.swift */,
 				BF5EEAAF24904A3800C72622 /* HomeViewController.swift */,
 				BF5EEAA324904A3700C72622 /* Info.plist */,
 				BF5EEB582490703A00C72622 /* LaunchScreen.storyboard */,
@@ -328,7 +324,6 @@
 				BF5EEB5D2490703A00C72622 /* Main.storyboard in Resources */,
 				BF5EEB5C2490703A00C72622 /* LaunchScreen.storyboard in Resources */,
 				BF5EEAB524904A3800C72622 /* Assets.xcassets in Resources */,
-				BF5EEABB24904A3800C72622 /* ADBMobileConfig.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -392,7 +387,6 @@
 				BF024B1B24B8FD83002131E9 /* Upgrades.swift in Sources */,
 				BF024B2424B8FD83002131E9 /* BrowserDetails.swift in Sources */,
 				BF024B1624B8FD83002131E9 /* Crashes.swift in Sources */,
-				BF5EEAB424904A3800C72622 /* GriffonViewController.swift in Sources */,
 				BF024B2624B8FD83002131E9 /* Order.swift in Sources */,
 				BF024B2024B8FD83002131E9 /* Device.swift in Sources */,
 				BF024B1824B8FD83002131E9 /* FeatureUsages.swift in Sources */,
