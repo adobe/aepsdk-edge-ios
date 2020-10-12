@@ -10,12 +10,12 @@
 // governing permissions and limitations under the License.
 //
 
+import ACPCore
 import AEPAssurance
 import AEPCore
 import AEPEdge
 import AEPIdentity
 import AEPLifecycle
-import ACPCore
 import AEPServices
 import UIKit
 
@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     // To handle deeplink on iOS versions 12 and below
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         AEPAssurance.startSession(url)
         return true
     }

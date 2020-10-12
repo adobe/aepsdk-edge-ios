@@ -37,7 +37,7 @@ struct ContentView: View {
 
             Button(action: {
                 let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                                              data: ["data": ["test": "data"]])
+                                                      data: ["data": ["test": "data"]])
                 Edge.sendEvent(experienceEvent: experienceEvent, responseHandler: DemoResponseHandler())
             }) {
                 Text("Ping to ExEdge")
