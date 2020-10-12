@@ -10,15 +10,15 @@
 // governing permissions and limitations under the License.
 //
 
-@testable import AEPExperiencePlatform
 import Foundation
 
-class MockExperiencePlatformResponseHandler: ExperiencePlatformResponseHandler {
-    var onResponseReceivedData: [String: Any] = [:] // latest data received in the onResponse callback
-    var onResponseCalledTimes = 0 // the number of times onResponse was called
+/// Protocol that can be implemented in order to receive response(s) from the Adobe Experience Edge in the mobile application when
+/// `ExperienceEvent`s are sent through the `AEPEdge`.
+@objc(AEPEdgeResponseHandler)
+public protocol EdgeResponseHandler {
 
-    func onResponse(data: [String: Any]) {
-        onResponseCalledTimes += 1
-        onResponseReceivedData = data
-    }
+    /// This method is called when the response was successfully fetched from the Adobe Experience Edge for an associated event;
+    /// this method may be call multiple times for the same event, based on the data coming from the server.
+    /// - Parameter data: response from the server
+    func onResponse(data: [String: Any])
 }

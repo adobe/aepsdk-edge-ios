@@ -1,14 +1,14 @@
 
-export EXTENSION_NAME = AEPExperiencePlatform
+export EXTENSION_NAME = AEPEdge
 export APP_NAME = AEPCommerceDemoApp
 PROJECT_NAME = $(EXTENSION_NAME)
-TARGET_NAME_XCFRAMEWORK = $(EXTENSION_NAME).xcframework 
-SCHEME_NAME_XCFRAMEWORK = AEPExperiencePlatformXCF
+TARGET_NAME_XCFRAMEWORK = $(EXTENSION_NAME).xcframework
+SCHEME_NAME_XCFRAMEWORK = AEPEdgeXCF
 
 SIMULATOR_ARCHIVE_PATH = ./build/ios_simulator.xcarchive/Products/Library/Frameworks/
 IOS_ARCHIVE_PATH = ./build/ios.xcarchive/Products/Library/Frameworks/
 
-setup: 
+setup:
 	(pod install)
 	(cd SampleApps/$(APP_NAME) && pod install)
 
@@ -62,8 +62,3 @@ lint-autocorrect:
 
 lint:
 	(swiftlint lint Sources SampleApps/AEPCommerceDemoApp)
-
-
-
-
-

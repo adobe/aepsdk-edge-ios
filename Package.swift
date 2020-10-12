@@ -16,31 +16,31 @@
 import PackageDescription
 
 let package = Package(
-    name: "AEPExperiencePlatform",
+    name: "AEPEdge",
     platforms: [.iOS(.v10)],
     products: [
-        .library(name: "AEPExperiencePlatform", targets: ["AEPExperiencePlatform"]),
-        .library(name: "AEPExperiencePlatformStatic", type: .static, targets: ["AEPExperiencePlatform"]),
-        .library(name: "AEPExperiencePlatformDynamic", type: .dynamic, targets: ["AEPExperiencePlatform"])
+        .library(name: "AEPEdge", targets: ["AEPEdge"]),
+        .library(name: "AEPEdgeStatic", type: .static, targets: ["AEPEdge"]),
+        .library(name: "AEPEdgeDynamic", type: .dynamic, targets: ["AEPEdge"])
     ],
     dependencies: [
         .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .branch("main"))
     ],
     targets: [
-        .target(name: "AEPExperiencePlatform",
+        .target(name: "AEPEdge",
                 dependencies: ["AEPCore"],
                 path: "Sources"),
         .testTarget(name: "AEPDemoAppSwiftUI",
-                    dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
+                    dependencies: ["AEPEdge", "AEPIdentity"],
                     path: "SampleApps/AEPDemoAppSwiftUI"),
         .testTarget(name: "FunctionalTests",
-                    dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
+                    dependencies: ["AEPEdge", "AEPIdentity"],
                     path: "Tests/FunctionalTests"),
         .testTarget(name: "UnitTests",
-                    dependencies: ["AEPExperiencePlatform", "AEPIdentity"],
+                    dependencies: ["AEPEdge", "AEPIdentity"],
                     path: "Tests/UnitTests"),
         .testTarget(name: "AEPCommerceDemoApp",
-                    dependencies: ["AEPExperiencePlatform", "AEPIdentity", "AEPLifecycle"],
+                    dependencies: ["AEPEdge", "AEPIdentity", "AEPLifecycle"],
                     path: "SampleApps/AEPCommerceDemoApp")
     ]
 )

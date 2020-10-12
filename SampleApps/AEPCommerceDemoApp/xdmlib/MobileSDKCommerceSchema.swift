@@ -20,7 +20,7 @@
 */
 
 import Foundation
-import AEPExperiencePlatform
+import AEPEdge
 
 public struct MobileSDKCommerceSchema : XDMSchema {
 	public let schemaVersion = "1.0"

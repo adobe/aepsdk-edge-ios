@@ -13,12 +13,12 @@
 
 #import <Foundation/Foundation.h>
 
-//! Project version number for AEPExperiencePlatform.
-FOUNDATION_EXPORT double AEPExperiencePlatformVersionNumber;
+//! Project version number for AEPEdge.
+FOUNDATION_EXPORT double AEPEdgeVersionNumber;
 
-//! Project version string for AEPExperiencePlatform.
-FOUNDATION_EXPORT const unsigned char AEPExperiencePlatformVersionString[];
+//! Project version string for AEPEdge.
+FOUNDATION_EXPORT const unsigned char AEPEdgeVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <AEPExperiencePlatform/PublicHeader.h>
+// In this header, you should import all the public headers of your framework using statements like #import <AEPEdge/PublicHeader.h>
 
 

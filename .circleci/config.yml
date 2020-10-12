@@ -27,10 +27,10 @@ jobs:
             - cocoapods-cache-v4
 
       # install CocoaPods - using default CocoaPods version, not the bundle
-      - run: 
+      - run:
           name: Repo Update & Install CocoaPods
           command: make pod-install
-      
+
       # save pods related files
       - save_cache:
           name: Saving CocoaPods Cache
@@ -53,14 +53,14 @@ jobs:
           name: Pre-start Simulator
           command: xcrun instruments -w "iPhone 8 (13.1) [" || true
 
-      - run: 
+      - run:
           name: Run Tests
           command: make test
 
       # code coverage
       - run:
           name: Upload Code Coverage Report
-          command: bash <(curl -s https://codecov.io/bash) -v -X s3 -c -D "./build/out" -J "AEPExperiencePlatform" -t ${CODECOV_TOKEN}
+          command: bash <(curl -s https://codecov.io/bash) -v -X s3 -c -D "./build/out" -J "AEPEdge" -t ${CODECOV_TOKEN}
 
       # verify XCFramework archive builds
       - run:
@@ -77,6 +77,3 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "main" ]; then
               make build-app
             fi
-
-
-

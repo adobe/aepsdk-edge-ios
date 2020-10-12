@@ -13,13 +13,13 @@
 import AEPServices
 import XCTest
 
-@testable import AEPExperiencePlatform
+@testable import AEPEdge
 
-class ExperiencePlatformNetworkServiceTests: XCTestCase {
+class EdgeNetworkServiceTests: XCTestCase {
 
     private var mockNetworking = MockNetworking()
     private var mockResponseCallback = MockResponseCallback()
-    private var networkService = ExperiencePlatformNetworkService()
+    private var networkService = EdgeNetworkService()
     private let edgeRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
     private let url = URL(string: "https://test.com")! // swiftlint:disable:this force_unwrapping
     private let defaultNetworkingHeaders: [String] = ["User-Agent", "Accept-Language"]
@@ -29,7 +29,7 @@ class ExperiencePlatformNetworkServiceTests: XCTestCase {
         self.mockResponseCallback = MockResponseCallback()
         self.mockNetworking = MockNetworking()
         ServiceProvider.shared.networkService = mockNetworking
-        networkService = ExperiencePlatformNetworkService()
+        networkService = EdgeNetworkService()
     }
 
     func testDoRequest_whenRequestHeadersAreEmpty_setsDefaultHeaders() {

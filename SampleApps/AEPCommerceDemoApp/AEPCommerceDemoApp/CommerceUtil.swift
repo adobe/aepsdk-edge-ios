@@ -11,12 +11,12 @@
 //
 
 import AEPCore
-import AEPExperiencePlatform
+import AEPEdge
 import AEPServices
 import Foundation
 
 /// This CommerceUtil Class encapsulates logic for creating Commerce objects and sending as
-/// ExperiencePlatformEvents to the Experience Platform Extension.
+/// ExperienceEvents to the Experience Platform Extension.
 ///
 /// The methods in this class are called throughout the commerce workflow to send information
 /// to the Adobe Data Platform for user actions such as viewing product items, adding items to
@@ -200,15 +200,15 @@ class CommerceUtil {
             xdmData.commerce = commerce
             xdmData.productListItems = itemsList
 
-            let event = ExperiencePlatformEvent(xdm: xdmData)
+            let event = ExperienceEvent(xdm: xdmData)
             let responseHandler = ResponseHandler()
-            ExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
+            Edge.sendEvent(ExperienceEvent: event, responseHandler: responseHandler)
         } else {
             Log.debug(label: logTag, "sendPurchaseXdmEvent - Cannot create '" + eventTypeCommercePurchases + "' as no items were found in cart.")
         }
     }
 
-    /// Helper method to construct and send the ExperiencePlatformEvent} to the Experience Platform Extension.
+    /// Helper method to construct and send the ExperienceEvent} to the Experience Platform Extension.
     /// - Parameters:
     ///    - itemsList   : The  list of ProductListItemsItem}s associated with this commerce event.
     ///    - eventType   : event type for the given commerce event.
@@ -250,9 +250,9 @@ class CommerceUtil {
         xdmData.eventType = eventType
         xdmData.commerce = commerce
         xdmData.productListItems = itemsList
-        let event = ExperiencePlatformEvent(xdm: xdmData)
+        let event = ExperienceEvent(xdm: xdmData)
         let responseHandler = ResponseHandler()
-        ExperiencePlatform.sendEvent(experiencePlatformEvent: event, responseHandler: responseHandler)
+        Edge.sendEvent(ExperienceEvent: event, responseHandler: responseHandler)
     }
 
     /// Helper method to convert an com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem  to an

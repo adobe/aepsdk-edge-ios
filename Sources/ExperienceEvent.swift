@@ -37,7 +37,7 @@ public class ExperienceEvent: NSObject {
 
     /// Initialize an Experience Platform Event with the provided event data
     /// - Parameters:
-    ///   - xdm: XDM formatted event data pased as an XDMSchema
+    ///   - xdm: XDM formatted event data passed as an XDMSchema
     ///   - data: Any free form data in a [String : Any] dictionary structure.
     public init(xdm: XDMSchema, data: [String: Any]? = nil) {
         if let jsonXdm = xdm.toJSONData() {

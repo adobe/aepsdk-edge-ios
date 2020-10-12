@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPExperiencePlatform
+import AEPEdge
 import Foundation
 import UIKit
 

@@ -17,9 +17,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D444995E2519506B0093B364"
-            BuildableName = "AEPExperiencePlatform.framework"
-            BlueprintName = "AEPExperiencePlatform"
-            ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
+            BuildableName = "AEPEdge.framework"
+            BlueprintName = "AEPEdge"
+            ReferencedContainer = "container:AEPEdge.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
@@ -27,10 +27,10 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D4D5B53224325AB700CAB6E4"
-               BuildableName = "FunctionalTests.xctest"
-               BlueprintName = "FunctionalTests"
-               ReferencedContainer = "container:AEPExperiencePlatform.xcodeproj">
+               BlueprintIdentifier = "D4D5B5202432599B00CAB6E4"
+               BuildableName = "UnitTests.xctest"
+               BlueprintName = "UnitTests"
+               ReferencedContainer = "container:AEPEdge.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

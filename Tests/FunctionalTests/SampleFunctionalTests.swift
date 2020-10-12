@@ -11,7 +11,7 @@
 //
 
 import AEPCore
-import AEPExperiencePlatform
+import AEPEdge
 import AEPIdentity
 import AEPServices
 import Foundation
@@ -34,7 +34,7 @@ class SampleFunctionalTests: FunctionalTestBase {
         super.setUp()
         continueAfterFailure = false
 
-        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, ExperiencePlatform), Identity and Config shared state updates
+        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, Edge), Identity and Config shared state updates
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
 
         // expectations for update config request&response events
@@ -46,7 +46,7 @@ class SampleFunctionalTests: FunctionalTestBase {
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
-        MobileCore.registerExtensions([Identity.self, ExperiencePlatform.self], {
+        MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
@@ -109,15 +109,15 @@ class SampleFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
-        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test2": "xdm"], data: nil))
+        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
+        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["test2": "xdm"], data: nil))
 
         assertNetworkRequestsCount()
     }
 
     func testSample_AssertNetworkRequestAndResponseEvent() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}}]}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
@@ -129,7 +129,7 @@ class SampleFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
+        Edge.sendEvent(ExperienceEvent: ExperienceEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
 
         let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
 

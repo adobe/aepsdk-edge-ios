@@ -10,15 +10,15 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPEdge
-import AEPServices
+@testable import AEPEdge
 import Foundation
 
-class ResponseHandler: EdgePlatformResponseHandler {
-    var onResponseCalled: Bool = false
+class MockEdgeResponseHandler: EdgeResponseHandler {
+    var onResponseReceivedData: [String: Any] = [:] // latest data received in the onResponse callback
+    var onResponseCalledTimes = 0 // the number of times onResponse was called
 
     func onResponse(data: [String: Any]) {
-        self.onResponseCalled = true
-        Log.debug(label: "ResponseHandler", "Platform response has been received...")
+        onResponseCalledTimes += 1
+        onResponseReceivedData = data
     }
 }

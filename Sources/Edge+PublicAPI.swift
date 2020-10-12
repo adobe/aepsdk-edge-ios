@@ -13,26 +13,26 @@
 import AEPCore
 import AEPServices
 
-private let LOG_TAG = "ExperiencePlatform"
+private let LOG_TAG = "Edge"
 
-public extension ExperiencePlatform {
+public extension Edge {
 
     private static var responseCallbacksHandlers: [String: ([String: Any]) -> Void] = [:]
 
     /// Sends an event to Adobe Experience Edge and registers a handler for responses coming from the Edge Network
     /// - Parameters:
-    ///   - experiencePlatformEvent: Event to be sent to Adobe Experience Edge
+    ///   - experienceEvent: Event to be sent to Adobe Experience Edge
     ///   - responseHandler: Optional callback to be invoked when the response handles are received from
     ///                     Adobe Experience Edge. It may be invoked on a different thread and may be invoked multiple times
-    static func sendEvent(experiencePlatformEvent: ExperiencePlatformEvent, responseHandler: ExperiencePlatformResponseHandler? = nil) {
+    static func sendEvent(experienceEvent: ExperienceEvent, responseHandler: EdgeResponseHandler? = nil) {
 
-        guard let xdmData = experiencePlatformEvent.xdm, !xdmData.isEmpty, let eventData = experiencePlatformEvent.asDictionary() else {
+        guard let xdmData = experienceEvent.xdm, !xdmData.isEmpty, let eventData = experienceEvent.asDictionary() else {
             Log.debug(label: LOG_TAG, "Failed to dispatch the platform event because the XDM data was nil/empty.")
             return
         }
 
         let event = Event(name: "AEP Request Event",
-                          type: Constants.EventType.EXPERIENCE_PLATFORM,
+                          type: Constants.EventType.EXPERIENCE,
                           source: Constants.EventSource.REQUEST_CONTENT,
                           data: eventData)
 

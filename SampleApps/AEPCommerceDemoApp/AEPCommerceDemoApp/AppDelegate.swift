@@ -12,7 +12,7 @@
 
 import AEPAssurance
 import AEPCore
-import AEPExperiencePlatform
+import AEPEdge
 import AEPIdentity
 import AEPLifecycle
 import ACPCore
@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
 
         AEPAssurance.registerExtension()
-        ACPCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
+        ACPCore.registerExtensions([Identity.self, Lifecycle.self, Edge.self])
 
         // only start lifecycle if the application is not in the background
         if application.applicationState != .background {

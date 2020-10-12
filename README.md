@@ -1,8 +1,8 @@
-# Adobe Experience Platform Mobile Extension
+# Adobe Experience Edge Mobile Extension
 
 ## BETA
 
-AEPExperiencePlatform is currently in beta. Use of this code is by invitation only and not otherwise supported by Adobe. Please contact your Adobe Customer Success Manager to learn more.
+AEPEdge is currently in beta. Use of this code is by invitation only and not otherwise supported by Adobe. Please contact your Adobe Customer Success Manager to learn more.
 
 By using the Beta, you hereby acknowledge that the Beta is provided "as is" without warranty of any kind. Adobe shall have no obligation to maintain, correct, update, change, modify or otherwise support the Beta. You are advised to use caution and not to rely in any way on the correct functioning or performance of such Beta and/or accompanying materials.
 
@@ -21,7 +21,7 @@ The Experience Platform Mobile extension for iOS is currently in Beta developmen
 
 ### Binaries
 
-To generate an `AEPExperiencePlatform.xcframework`, run the following command:
+To generate an `AEPEdge.xcframework`, run the following command:
 
 ```
 make archive
@@ -31,12 +31,12 @@ This will generate the xcframework under the `build` folder. Drag and drop all t
 
 ### [CocoaPods](https://guides.cocoapods.org/using/using-cocoapods.html)
 
-```
+```ruby
 # Podfile
 use_frameworks!
 
 target 'YOUR_TARGET_NAME' do
-	pod 'AEPExperiencePlatform', :git => 'git@github.com:adobe/aepsdk-platform-ios.git', :branch => 'main'
+	pod 'AEPEdge', :git => 'git@github.com:adobe/aepsdk-platform-ios.git', :branch => 'main'
   	pod 'AEPCore', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
   	pod 'AEPServices', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
   	pod 'AEPRulesEngine', :git => 'git@github.com:adobe/aepsdk-rulesengine-ios.git', :branch => 'main'
@@ -45,22 +45,22 @@ end
 
 ### [Swift Package Manager](https://github.com/apple/swift-package-manager)
 
-To add the AEPExperiencePlatform Package to your application, from the Xcode menu select:
+To add the AEPEdge Package to your application, from the Xcode menu select:
 
 `File > Swift Packages > Add Package Dependency...`
 
-Enter the URL for the AEPExperiencePlatform package repository: `https://github.com/adobe/aepsdk-platform-ios.git`.
+Enter the URL for the AEPEdge package repository: `https://github.com/adobe/aepsdk-platform-ios.git`.
 
 When prompted, make sure you change the branch to `main`. (Once the repo is public, we will reference specific tags/versions instead of a branch)
 
-Alternatively, if your project has a `Package.swift` file, you can add AEPExperiencePlatform directly to your dependencies:
+Alternatively, if your project has a `Package.swift` file, you can add AEPEdge directly to your dependencies:
 
 ```
 dependencies: [
 	.package(url: "https://github.com/adobe/aepsdk-platform-ios.git", .branch: "dev"),
 targets: [
    	.target(name: "YourTarget",
-    				dependencies: ["AEPExperiencePlatform"],
+    				dependencies: ["AEPEdge"],
           	path: "your/path"),
     ]
 ]

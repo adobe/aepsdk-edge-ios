@@ -10,10 +10,10 @@
 // governing permissions and limitations under the License.
 //
 
-@testable import AEPExperiencePlatform
+@testable import AEPEdge
 import XCTest
 
-class ExperiencePlatformEventTests: XCTestCase {
+class ExperienceEventTests: XCTestCase {
     private let datasetId = "datasetId"
     private let xdm = "xdm"
     private let data = "data"
@@ -49,8 +49,8 @@ class ExperiencePlatformEventTests: XCTestCase {
         expectedEventData[xdm] = expectedXdm
         expectedEventData[data] = expectedData
 
-        let experiencePlatformEvent = ExperiencePlatformEvent(xdm: expectedXdm, data: expectedData)
-        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+        let ExperienceEvent = ExperienceEvent(xdm: expectedXdm, data: expectedData)
+        guard let actualEventData = ExperienceEvent.asDictionary() else {
             XCTFail("Failed to retrieve platform event asDictionary")
             return
         }
@@ -65,8 +65,8 @@ class ExperiencePlatformEventTests: XCTestCase {
         expectedEventData[xdm] = expectedXdm
         expectedEventData[data] = nil
 
-        let experiencePlatformEvent = ExperiencePlatformEvent(xdm: expectedXdm, data: nil)
-        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+        let ExperienceEvent = ExperienceEvent(xdm: expectedXdm, data: nil)
+        guard let actualEventData = ExperienceEvent.asDictionary() else {
             XCTFail("Failed to retrieve platform event asDictionary")
             return
         }
@@ -82,8 +82,8 @@ class ExperiencePlatformEventTests: XCTestCase {
         expectedEventData[data] = nil
         expectedEventData[datasetId] = "testDatasetId"
 
-        let experiencePlatformEvent = ExperiencePlatformEvent(xdm: expectedXdm, data: nil, datasetIdentifier: "testDatasetId")
-        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+        let ExperienceEvent = ExperienceEvent(xdm: expectedXdm, data: nil, datasetIdentifier: "testDatasetId")
+        guard let actualEventData = ExperienceEvent.asDictionary() else {
             XCTFail("Failed to retrieve platform event asDictionary")
             return
         }
@@ -99,8 +99,8 @@ class ExperiencePlatformEventTests: XCTestCase {
         expectedEventData[data] = nil
         expectedEventData[datasetId] = ""
 
-        let experiencePlatformEvent = ExperiencePlatformEvent(xdm: expectedXdm, data: nil, datasetIdentifier: "")
-        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+        let ExperienceEvent = ExperienceEvent(xdm: expectedXdm, data: nil, datasetIdentifier: "")
+        guard let actualEventData = ExperienceEvent.asDictionary() else {
             XCTFail("Failed to retrieve platform event asDictionary")
             return
         }
@@ -115,8 +115,8 @@ class ExperiencePlatformEventTests: XCTestCase {
         expectedEventData[data] = expectedData
         expectedEventData[datasetId] = "5dd603781b95cc18a83d42ce"
 
-        let experiencePlatformEvent = ExperiencePlatformEvent(xdm: generatedXdmSchema, data: expectedData)
-        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+        let ExperienceEvent = ExperienceEvent(xdm: generatedXdmSchema, data: expectedData)
+        guard let actualEventData = ExperienceEvent.asDictionary() else {
             XCTFail("Failed to retrieve platform event asDictionary")
             return
         }
@@ -130,8 +130,8 @@ class ExperiencePlatformEventTests: XCTestCase {
         expectedEventData[data] = nil
         expectedEventData[datasetId] = "5dd603781b95cc18a83d42ce"
 
-        let experiencePlatformEvent = ExperiencePlatformEvent(xdm: generatedXdmSchema, data: nil)
-        guard let actualEventData = experiencePlatformEvent.asDictionary() else {
+        let ExperienceEvent = ExperienceEvent(xdm: generatedXdmSchema, data: nil)
+        guard let actualEventData = ExperienceEvent.asDictionary() else {
             XCTFail("Failed to retrieve platform event asDictionary")
             return
         }

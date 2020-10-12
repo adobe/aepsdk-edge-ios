@@ -18,7 +18,7 @@
 */
 
 import Foundation
-import AEPExperiencePlatform
+import AEPEdge
 
 public struct PlaceContext {
 	public init() {}
