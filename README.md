@@ -1,4 +1,4 @@
-# Adobe Experience Edge Mobile Extension
+# Adobe Experience Platform Edge Mobile Extension
 
 ## BETA
 

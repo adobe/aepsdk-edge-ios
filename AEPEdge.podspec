@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
   s.name             = "AEPEdge"
   s.version          = "1.0.0-alpha-2"
-  s.summary          = "Experience Edge extension for Adobe Experience Edge SDK. Written and maintained by Adobe."
+  s.summary          = "Experience Platform Edge extension for Adobe Experience Platform Mobile SDK. Written and maintained by Adobe."
 
   s.description      = <<-DESC
-                       The Experience Edge extension enables sending data to the Adobe Experience Edge from a mobile device using the v5 Adobe Experience Edge SDK.
+                       The Experience Platform Edge extension enables sending data to the Adobe Experience Edge from a mobile device using the v5 Adobe Experience Platform SDK.
                        DESC
 
   s.homepage         = "https://github.com/adobe/aepsdk-platform-ios.git"

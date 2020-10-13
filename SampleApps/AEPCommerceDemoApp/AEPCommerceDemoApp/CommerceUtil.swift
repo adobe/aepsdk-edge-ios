@@ -16,7 +16,7 @@ import AEPServices
 import Foundation
 
 /// This CommerceUtil Class encapsulates logic for creating Commerce objects and sending as
-/// ExperienceEvents to the Experience Edge Extension.
+/// ExperienceEvents to the Adobe Edge Network.
 ///
 /// The methods in this class are called throughout the commerce workflow to send information
 /// to the Adobe Data Platform for user actions such as viewing product items, adding items to
