@@ -16,7 +16,7 @@
 				D4ABABEC251A889C008076BF /* PBXTargetDependency */,
 			);
 			name = AEPEdgeXCF;
-			productName = AEPExperiencePlatformXCF;
+			productName = AEPEdgeXCF;
 		};
 /* End PBXAggregateTarget section */
 
@@ -171,21 +171,21 @@
 			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D444995E2519506B0093B364;
-			remoteInfo = AEPExperiencePlatform;
+			remoteInfo = AEPEdge;
 		};
 		D42F36A7251BEA8300490C0D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D444995E2519506B0093B364;
-			remoteInfo = AEPExperiencePlatform;
+			remoteInfo = AEPEdge;
 		};
 		D4ABABEB251A889C008076BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D4D5B4DF242EBB1600CAB6E4 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D444995E2519506B0093B364;
-			remoteInfo = AEPExperiencePlatform;
+			remoteInfo = AEPEdge;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -820,7 +820,7 @@
 			dependencies = (
 			);
 			name = AEPEdge;
-			productName = AEPExperiencePlatform;
+			productName = AEPEdge;
 			productReference = D444995F2519506B0093B364 /* AEPEdge.framework */;
 			productType = "com.apple.product-type.framework";
 		};
