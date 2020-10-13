@@ -71,7 +71,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
         MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
                                                         "experienceCloud.org": "testOrg@AdobeOrg",
-                                                        "experiencePlatform.configId": "12345-example"])
+                                                        "edge.configId": "12345-example"])
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()

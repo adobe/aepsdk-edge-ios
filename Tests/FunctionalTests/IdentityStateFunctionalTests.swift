@@ -35,7 +35,7 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         MobileCore.registerExtensions([TestableEdge.self, FakeIdentityExtension.self])
         MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
                                                         "experienceCloud.org": "testOrg@AdobeOrg",
-                                                        "experiencePlatform.configId": "12345-example"])
+                                                        "edge.configId": "12345-example"])
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
     }

@@ -58,7 +58,7 @@ enum Constants {
 
         enum Configuration {
             static let STATE_OWNER_NAME = "com.adobe.module.configuration"
-            static let CONFIG_ID = "experiencePlatform.configId"
+            static let CONFIG_ID = "edge.configId"
             static let ORG_ID = "experienceCloud.org"
         }
 

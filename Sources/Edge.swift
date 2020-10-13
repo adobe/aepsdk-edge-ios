@@ -56,7 +56,7 @@ public class Edge: NSObject, Extension {
 
     /// Handler for Experience Edge Request Content events.
     /// Valid Configuration and Identity shared states are required for processing the event (see `readyForEvent`). If a valid Configuration shared state is
-    /// available, but no `experiencePlatform.configId ` is found, the event is dropped.
+    /// available, but no `edge.configId ` is found, the event is dropped.
     ///
     /// - Parameter event: an event containing ExperienceEvent data for processing
     func handleExperienceEventRequest(_ event: Event) {
@@ -144,7 +144,7 @@ public class Edge: NSObject, Extension {
               !configId.isEmpty else {
             Log.warning(label: LOG_TAG,
                         "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' " +
-                            "because of invalid experiencePlatform.configId in configuration.")
+                            "because of invalid edge.configId in configuration.")
             return nil
         }
 
