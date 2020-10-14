@@ -46,7 +46,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
 
         // Dispatch request event which will block request queue as Configuration state is nil
         let requestEvent = Event(name: "Request Test",
-                                 type: FunctionalTestConst.EventType.EXPERIENCE,
+                                 type: FunctionalTestConst.EventType.EDGE,
                                  source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                                  data: ["key": "value"])
         MobileCore.dispatch(event: requestEvent)

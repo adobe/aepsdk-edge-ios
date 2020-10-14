@@ -80,7 +80,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     // MARK: test request event format
 
     func testSendEvent_withXDMData_sendsCorrectRequestEvent() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
 
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm",
                                                     "testInt": 10,
@@ -92,7 +92,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
-        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE,
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
                                                    source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         guard let eventDataDict = resultEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
@@ -111,7 +111,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_withXDMDataAndCustomData_sendsCorrectRequestEvent() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
 
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: ["testDataString": "stringValue",
                                                                                  "testDataInt": 101,
@@ -123,7 +123,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
-        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE,
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
                                                    source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         guard let eventDataDict = resultEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
@@ -143,14 +143,14 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_withXDMDataAndNilData_sendsCorrectRequestEvent() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
 
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
         assertExpectedEvents(ignoreUnexpectedEvents: false)
-        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE,
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
                                                    source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         guard let eventDataDict = resultEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
@@ -420,10 +420,10 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
     // MARK: Paired request-response events
     func testSendEvent_receivesResponseEventHandle_sendsResponseEvent_pairedWithTheRequestEventId() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE,
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE,
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
                             expectedCount: 1)
         // swiftlint:disable:next line_length
@@ -445,10 +445,10 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
-        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE,
+        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
                                                     source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         let requestEventUUID = requestEvents[0].id.uuidString
-        let responseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE,
+        let responseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
                                                      source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
         guard let eventDataDict = responseEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
@@ -468,10 +468,10 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_receivesResponseEventWarning_sendsErrorResponseEvent_pairedWithTheRequestEventId() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE,
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE,
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT,
                             expectedCount: 1)
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [],\"warnings\": [{\"eventIndex\": 0,\"code\": \"personalization:0\",\"message\": \"Failed due to unrecoverable system error\"}]}\n"
@@ -492,10 +492,10 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestId = resultNetworkRequests[0].url.queryParam("requestId")
-        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE,
+        let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
                                                     source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         let requestEventUUID = requestEvents[0].id.uuidString
-        let errorResponseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EXPERIENCE,
+        let errorResponseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
                                                           source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
         guard let eventDataDict = errorResponseEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
@@ -511,10 +511,10 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_receivesResponseEventHandle_callsResponseHandler() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE,
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.EXPERIENCE,
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
                             expectedCount: 1)
         // swiftlint:disable:next line_length
