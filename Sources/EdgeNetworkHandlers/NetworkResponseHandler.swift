@@ -212,12 +212,12 @@ class NetworkResponseHandler {
         var responseEvent: Event?
         if isErrorResponseEvent {
             responseEvent = Event(name: Constants.EventName.ERROR_RESPONSE_CONTENT,
-                                  type: Constants.EventType.EXPERIENCE,
+                                  type: Constants.EventType.EDGE,
                                   source: Constants.EventSource.ERROR_RESPONSE_CONTENT,
                                   data: eventData)
         } else {
             responseEvent = Event(name: Constants.EventName.RESPONSE_CONTENT,
-                                  type: Constants.EventType.EXPERIENCE,
+                                  type: Constants.EventType.EDGE,
                                   source: Constants.EventSource.RESPONSE_CONTENT,
                                   data: eventData)
         }

@@ -19,7 +19,7 @@ enum Constants {
     static let FRIENDLY_NAME = "AEPEdge"
 
     enum EventType {
-        static let EXPERIENCE = "com.adobe.eventType.experience"
+        static let EDGE = "com.adobe.eventType.edge"
         static let HUB = "com.adobe.eventType.hub"
     }
 

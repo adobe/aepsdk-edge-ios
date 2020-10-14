@@ -33,7 +33,7 @@ public class Edge: NSObject, Extension {
     }
 
     public func onRegistered() {
-        registerListener(type: Constants.EventType.EXPERIENCE,
+        registerListener(type: Constants.EventType.EDGE,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
     }
@@ -43,7 +43,7 @@ public class Edge: NSObject, Extension {
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        if event.type == Constants.EventType.EXPERIENCE, event.source == EventSource.requestContent {
+        if event.type == Constants.EventType.EDGE, event.source == EventSource.requestContent {
             let configurationSharedState = getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
             let identitySharedState = getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,

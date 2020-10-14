@@ -32,7 +32,7 @@ public extension Edge {
         }
 
         let event = Event(name: "AEP Request Event",
-                          type: Constants.EventType.EXPERIENCE,
+                          type: Constants.EventType.EDGE,
                           source: Constants.EventSource.REQUEST_CONTENT,
                           data: eventData)
 
