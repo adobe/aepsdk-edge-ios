@@ -23,6 +23,11 @@ enum AuthenticationState: String, Codable {
 struct IdentityMap {
     private var items: [String: [IdentityItem]] = [:]
 
+    static func fromDict(dict: [String: Any]) -> IdentityMap? {
+        guard let data = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return nil }
+        return try? JSONDecoder().decode(IdentityMap.self, from: data)
+    }
+    
     /// Adds an `IdentityItem` to this map. If an item is added which shares the same `namespace` and `id` as an item
     /// already in the map, then the new item replaces the existing item.
     /// - Parameters:

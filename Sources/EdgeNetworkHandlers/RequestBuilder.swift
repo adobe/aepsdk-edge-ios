@@ -25,7 +25,10 @@ class RequestBuilder {
 
     /// The Experience Cloud ID to be sent with this request
     var experienceCloudId: String?
-
+    
+    /// The XDM shared state
+    var xdmSharedState: [String: Any]?
+    
     /// Data store manager for retrieving store response payloads for `StateMetadata`
     private let storeResponsePayloadManager: StoreResponsePayloadManager
 
@@ -50,7 +53,7 @@ class RequestBuilder {
     /// - Parameter events: List of `Event` objects. Each event is expected to contain a serialized `ExperienceEvent`
     /// encoded in the `Event.data` property.
     /// - Returns: A `EdgeRequest` object or nil if the events list is empty
-    func getRequestPayload(_ events: [Event]) -> EdgeRequest? {
+    func getRequestPayload(_ events: [Event], xdmSharedState: [String: Any]?) -> EdgeRequest? {
         guard !events.isEmpty else { return nil }
 
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
@@ -62,12 +65,17 @@ class RequestBuilder {
 
         let experienceEvents = extractExperienceEvents(events)
         var contextData: RequestContextData?
-
-        // set ECID if available
-        if let ecid = experienceCloudId {
+        
+        // attempt to read identity from XDM shared state
+        if let identityMap = xdmSharedState?["identityMap"] as? [String: Any] {
+            var additionalData = xdmSharedState
+            additionalData?.removeValue(forKey: "identityMap") // remove identity map as its serialized on its own
+            contextData = RequestContextData(identityMap: IdentityMap.fromDict(dict: identityMap), additionalData: AnyCodable.from(dictionary: additionalData))
+        } else if let ecid = experienceCloudId {
+            // fallback on ecid from Identity shared state if not available
             var identityMap = IdentityMap()
             identityMap.addItem(namespace: Constants.JsonKeys.ECID, id: ecid)
-            contextData = RequestContextData(identityMap: identityMap)
+            contextData = RequestContextData(identityMap: identityMap, additionalData: nil)
         }
 
         return EdgeRequest(meta: requestMetadata, xdm: contextData, events: experienceEvents)

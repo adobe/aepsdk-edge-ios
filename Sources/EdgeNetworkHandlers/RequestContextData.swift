@@ -11,9 +11,11 @@
 //
 
 import Foundation
+import AEPServices
 
 /// Property that holds the global XDM context data within an `EdgeRequest` object.
 /// It is contained within the `EdgeRequest` request property.
 struct RequestContextData: Encodable {
     let identityMap: IdentityMap?
+    let additionalData: [String: AnyCodable]?
 }

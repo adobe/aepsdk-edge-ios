@@ -104,7 +104,7 @@ public class Edge: NSObject, Extension {
 
         // Build and send the network request to Experience Edge
         let listOfEvents: [Event] = [event]
-        if let requestPayload = requestBuilder.getRequestPayload(listOfEvents) {
+        if let requestPayload = requestBuilder.getRequestPayload(listOfEvents, xdmSharedState: getXDMSharedState()?.value) {
             let requestId: String = UUID.init().uuidString
 
             // NOTE: the order of these events needs to be maintained as they were sent in the network request
