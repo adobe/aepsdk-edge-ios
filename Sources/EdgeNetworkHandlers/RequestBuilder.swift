@@ -67,9 +67,9 @@ class RequestBuilder {
         var contextData: RequestContextData?
         
         // attempt to read identity from XDM shared state
-        if let identityMap = xdmSharedState?["identityMap"] as? [String: Any] {
+        if let identityMap = xdmSharedState?[Constants.SharedState.Identity.IDENTITY_MAP] as? [String: Any] {
             var additionalData = xdmSharedState
-            additionalData?.removeValue(forKey: "identityMap") // remove identity map as its serialized on its own
+            additionalData?.removeValue(forKey: Constants.SharedState.Identity.IDENTITY_MAP) // remove identity map as its serialized on its own
             contextData = RequestContextData(identityMap: IdentityMap.fromDict(dict: identityMap), additionalData: AnyCodable.from(dictionary: additionalData))
         } else if let ecid = experienceCloudId {
             // fallback on ecid from Identity shared state if not available
