@@ -13,9 +13,9 @@
 import Foundation
 
 /// Protocol that can be implemented in order to receive response(s) from the Adobe Experience Edge in the mobile application when
-/// `ExperiencePlatformEvent`s are sent through the `AEPExperiencePlatform`.
-@objc(AEPExperiencePlatformResponseHandler)
-public protocol ExperiencePlatformResponseHandler {
+/// `ExperienceEvent`s are sent through the `AEPEdge`.
+@objc(AEPEdgeResponseHandler)
+public protocol EdgeResponseHandler {
 
     /// This method is called when the response was successfully fetched from the Adobe Experience Edge for an associated event;
     /// this method may be call multiple times for the same event, based on the data coming from the server.

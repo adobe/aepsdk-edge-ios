@@ -11,7 +11,7 @@
 //
 
 import AEPCore
-@testable import AEPExperiencePlatform
+@testable import AEPEdge
 import XCTest
 
 class NetworkResponseHandlerTests: XCTestCase {

@@ -14,10 +14,10 @@ import AEPCore
 import AEPServices
 import Foundation
 
-@objc(AEPMobileExperiencePlatform)
-public class ExperiencePlatform: NSObject, Extension {
-    private let LOG_TAG = "ExperiencePlatform" // Tag for logging
-    private var networkService: ExperiencePlatformNetworkService = ExperiencePlatformNetworkService()
+@objc(AEPMobileEdge)
+public class Edge: NSObject, Extension {
+    private let LOG_TAG = "Edge" // Tag for logging
+    private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
 
     // MARK: - Extension
@@ -33,7 +33,7 @@ public class ExperiencePlatform: NSObject, Extension {
     }
 
     public func onRegistered() {
-        registerListener(type: Constants.EventType.EXPERIENCE_PLATFORM,
+        registerListener(type: Constants.EventType.EDGE,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
     }
@@ -43,7 +43,7 @@ public class ExperiencePlatform: NSObject, Extension {
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        if event.type == Constants.EventType.EXPERIENCE_PLATFORM, event.source == EventSource.requestContent {
+        if event.type == Constants.EventType.EDGE, event.source == EventSource.requestContent {
             let configurationSharedState = getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
             let identitySharedState = getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,
@@ -54,11 +54,11 @@ public class ExperiencePlatform: NSObject, Extension {
         return true
     }
 
-    /// Handler for Experience Platform Request Content events.
+    /// Handler for Experience Edge Request Content events.
     /// Valid Configuration and Identity shared states are required for processing the event (see `readyForEvent`). If a valid Configuration shared state is
-    /// available, but no `experiencePlatform.configId ` is found, the event is dropped.
+    /// available, but no `edge.configId ` is found, the event is dropped.
     ///
-    /// - Parameter event: an event containing ExperiencePlatformEvent data for processing
+    /// - Parameter event: an event containing ExperienceEvent data for processing
     func handleExperienceEventRequest(_ event: Event) {
         if event.data == nil {
             Log.trace(label: LOG_TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
@@ -144,7 +144,7 @@ public class ExperiencePlatform: NSObject, Extension {
               !configId.isEmpty else {
             Log.warning(label: LOG_TAG,
                         "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' " +
-                            "because of invalid experiencePlatform.configId in configuration.")
+                            "because of invalid edge.configId in configuration.")
             return nil
         }
 

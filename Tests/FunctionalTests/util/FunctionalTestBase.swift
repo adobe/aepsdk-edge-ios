@@ -11,7 +11,7 @@
 //
 
 @testable import AEPCore
-@testable import AEPExperiencePlatform
+@testable import AEPEdge
 import AEPServices
 import Foundation
 import XCTest

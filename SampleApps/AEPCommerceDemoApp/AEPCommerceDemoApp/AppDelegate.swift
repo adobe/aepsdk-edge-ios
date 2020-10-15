@@ -10,12 +10,12 @@
 // governing permissions and limitations under the License.
 //
 
+import ACPCore
 import AEPAssurance
 import AEPCore
-import AEPExperiencePlatform
+import AEPEdge
 import AEPIdentity
 import AEPLifecycle
-import ACPCore
 import AEPServices
 import UIKit
 
@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
 
         AEPAssurance.registerExtension()
-        ACPCore.registerExtensions([Identity.self, Lifecycle.self, ExperiencePlatform.self])
+        ACPCore.registerExtensions([Identity.self, Lifecycle.self, Edge.self])
 
         // only start lifecycle if the application is not in the background
         if application.applicationState != .background {
@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     // To handle deeplink on iOS versions 12 and below
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         AEPAssurance.startSession(url)
         return true
     }

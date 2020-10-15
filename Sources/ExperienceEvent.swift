@@ -12,8 +12,8 @@
 
 import Foundation
 
-@objc(AEPExperiencePlatformEvent)
-public class ExperiencePlatformEvent: NSObject {
+@objc(AEPExperienceEvent)
+public class ExperienceEvent: NSObject {
 
     /// XDM formatted data, use an `XDMSchema` implementation for a better XDM data injestion and format control
     public let xdm: [String: Any]?
@@ -24,7 +24,7 @@ public class ExperiencePlatformEvent: NSObject {
     /// Adobe Experience Platform dataset identifier, if not set the default dataset identifier set in the Edge Configuration is used
     public let datasetIdentifier: String?
 
-    /// Initialize an Experience Platform Event with the provided event data
+    /// Initialize an Experience Event with the provided event data
     /// - Parameters:
     ///   - xdm:  XDM formatted data for this event, passed as a raw XDM Schema data dictionary.
     ///   - data: Any free form data in a [String : Any] dictionary structure.
@@ -35,9 +35,9 @@ public class ExperiencePlatformEvent: NSObject {
         self.datasetIdentifier = datasetIdentifier
     }
 
-    /// Initialize an Experience Platform Event with the provided event data
+    /// Initialize an Experience Event with the provided event data
     /// - Parameters:
-    ///   - xdm: XDM formatted event data pased as an XDMSchema
+    ///   - xdm: XDM formatted event data passed as an XDMSchema
     ///   - data: Any free form data in a [String : Any] dictionary structure.
     public init(xdm: XDMSchema, data: [String: Any]? = nil) {
         if let jsonXdm = xdm.toJSONData() {

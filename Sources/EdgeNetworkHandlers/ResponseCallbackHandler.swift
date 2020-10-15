@@ -14,21 +14,21 @@ import AEPCore
 import AEPServices
 import Foundation
 
-/// Use this class to register `ExperiencePlatformResponseHandler`(s) for a specific event identifier
+/// Use this class to register `EdgeResponseHandler`(s) for a specific event identifier
 /// and get notified once a response is received from the Experience Edge or when an error occurred. This class uses a `ThreadSafeDictionary` for the internal mapping.
 class ResponseCallbackHandler {
     private let TAG = "ResponseCallbacksHandler"
     private var responseHandlers =
-        ThreadSafeDictionary<String, ExperiencePlatformResponseHandler>(identifier: "com.adobe.experiencePlaftorm.responseHandlers")
+        ThreadSafeDictionary<String, EdgeResponseHandler>(identifier: "com.adobe.edge.responseHandlers")
     static let shared = ResponseCallbackHandler()
 
-    /// Registers a `ExperiencePlatformResponseHandler` for the specified `requestEventId`. This handler is
+    /// Registers a `EdgeResponseHandler` for the specified `requestEventId`. This handler is
     /// invoked whenever a response event for the same `requestEventId` is returned by the server.
     ///
     /// - Parameters:
     ///   - requestEventId: unique event identifier for which the response callback is registered; should not be empty
-    ///   - responseHandler: the `ExperiencePlatformResponseHandler` that needs to be registered, should not be nil
-    func registerResponseHandler(requestEventId: String, responseHandler: ExperiencePlatformResponseHandler?) {
+    ///   - responseHandler: the `EdgeResponseHandler` that needs to be registered, should not be nil
+    func registerResponseHandler(requestEventId: String, responseHandler: EdgeResponseHandler?) {
         guard let unwrappedResponseHandler = responseHandler else { return }
         guard !requestEventId.isEmpty else {
             Log.warning(label: TAG, "Failed to register response handler because of empty request event id.")
@@ -39,9 +39,9 @@ class ResponseCallbackHandler {
         responseHandlers[requestEventId] = unwrappedResponseHandler
     }
 
-    /// Unregisters a `ExperiencePlatformResponseHandler` for the specified `requestEventId`. After this operation,
+    /// Unregisters a `EdgeResponseHandler` for the specified `requestEventId`. After this operation,
     /// the associated response handler is not invoked anymore.
-    /// - Parameter requestEventId: unique event identifier for experience platform events; should not be empty
+    /// - Parameter requestEventId: unique event identifier for experience events; should not be empty
     func unregisterResponseHandler(requestEventId: String) {
         guard !requestEventId.isEmpty else { return }
 

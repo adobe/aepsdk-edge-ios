@@ -10,15 +10,15 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPExperiencePlatform
+import AEPEdge
 import AEPServices
 import Foundation
 
-class ResponseHandler: ExperiencePlatformResponseHandler {
+class ResponseHandler: EdgeResponseHandler {
     var onResponseCalled: Bool = false
 
     func onResponse(data: [String: Any]) {
         self.onResponseCalled = true
-        Log.debug(label: "ResponseHandler", "Platform response has been received...")
+        Log.debug(label: "ResponseHandler", "Edge response has been received...")
     }
 }

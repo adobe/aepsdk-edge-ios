@@ -11,7 +11,7 @@
 //
 
 import AEPCore
-import AEPExperiencePlatform
+import AEPEdge
 import AEPServices
 import XCTest
 
@@ -26,29 +26,29 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false // fail so nil checks stop execution
         FunctionalTestBase.debugEnabled = false
 
-        // config state and 2 event hub states (TestableExperiencePlatformInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
+        // config state and 2 event hub states (TestableEdgeInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 3)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
-        MobileCore.registerExtensions([TestableExperiencePlatform.self, FakeIdentityExtension.self])
+        MobileCore.registerExtensions([TestableEdge.self, FakeIdentityExtension.self])
         MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
                                                         "experienceCloud.org": "testOrg@AdobeOrg",
-                                                        "experiencePlatform.configId": "12345-example"])
+                                                        "edge.configId": "12345-example"])
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
     }
 
     func testSendEvent_withPendingIdentityState_noRequestSent() {
-        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
         let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertTrue(requests.isEmpty)
     }
 
     func testSendEvent_withPendingIdentityState_thenValidIdentityState_requestSentAfterChange() {
-        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
         var requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertTrue(requests.isEmpty) // no network request sent yet
@@ -66,7 +66,7 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        // Once the shared state is set, the Platform Extension is expected to reprocess the original
+        // Once the shared state is set, the Edge Extension is expected to reprocess the original
         // Send Event request once the Hub Shared State event is received.
         FakeIdentityExtension.setSharedState(state: ["mid": "1234"])
         assertNetworkRequestsCount()
@@ -94,7 +94,7 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        ExperiencePlatform.sendEvent(experiencePlatformEvent: ExperiencePlatformEvent(xdm: ["test1": "xdm"], data: nil))
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
         assertNetworkRequestsCount()
 

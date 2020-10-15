@@ -14,12 +14,12 @@ import Foundation
 
 enum Constants {
 
-    static let EXTENSION_NAME = "com.adobe.ExperiencePlatform"
+    static let EXTENSION_NAME = "com.adobe.edge"
     static let EXTENSION_VERSION = "1.0.0-alpha-2"
-    static let FRIENDLY_NAME = "AEPExperiencePlatform"
+    static let FRIENDLY_NAME = "AEPEdge"
 
     enum EventType {
-        static let EXPERIENCE_PLATFORM = "com.adobe.eventType.experiencePlatform"
+        static let EDGE = "com.adobe.eventType.edge"
         static let HUB = "com.adobe.eventType.hub"
     }
 
@@ -49,7 +49,7 @@ enum Constants {
     }
 
     enum DataStoreKeys {
-        static let STORE_NAME = "AEPExperiencePlatform"
+        static let STORE_NAME = "AEPEdge"
         static let STORE_PAYLOADS = "storePayloads"
     }
 
@@ -58,7 +58,7 @@ enum Constants {
 
         enum Configuration {
             static let STATE_OWNER_NAME = "com.adobe.module.configuration"
-            static let CONFIG_ID = "experiencePlatform.configId"
+            static let CONFIG_ID = "edge.configId"
             static let ORG_ID = "experienceCloud.org"
         }
 

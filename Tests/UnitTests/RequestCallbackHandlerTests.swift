@@ -11,7 +11,7 @@
 //
 
 import AEPCore
-@testable import AEPExperiencePlatform
+@testable import AEPEdge
 import XCTest
 
 class ResponseCallbackHandlerTests: XCTestCase {
@@ -28,7 +28,7 @@ class ResponseCallbackHandlerTests: XCTestCase {
         data["key2"] = 2
         data[requestEventId] = uniqueEventId
 
-        let mockResponseHandler = MockExperiencePlatformResponseHandler()
+        let mockResponseHandler = MockEdgeResponseHandler()
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
 
         ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data, requestEventId: uniqueEventId)
@@ -47,9 +47,9 @@ class ResponseCallbackHandlerTests: XCTestCase {
         data["key2"] = 2
         data[requestEventId] = uniqueEventId
 
-        let mockResponseHandler1 = MockExperiencePlatformResponseHandler()
+        let mockResponseHandler1 = MockEdgeResponseHandler()
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: "567", responseHandler: mockResponseHandler1)
-        let mockResponseHandler2 = MockExperiencePlatformResponseHandler()
+        let mockResponseHandler2 = MockEdgeResponseHandler()
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler2)
 
         ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data, requestEventId: uniqueEventId)
@@ -84,7 +84,7 @@ class ResponseCallbackHandlerTests: XCTestCase {
         data["key2"] = 2
         data[requestEventId] = uniqueEventId
 
-        let mockResponseHandler = MockExperiencePlatformResponseHandler()
+        let mockResponseHandler = MockEdgeResponseHandler()
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
         ResponseCallbackHandler.shared.unregisterResponseHandler(requestEventId: uniqueEventId)
 
@@ -94,7 +94,7 @@ class ResponseCallbackHandlerTests: XCTestCase {
     }
 
     func testRegisterResponseHandler_withEmptyUniqueEvent_doesNotCrash() {
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: "", responseHandler: MockExperiencePlatformResponseHandler()))
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: "", responseHandler: MockEdgeResponseHandler()))
     }
 
     func testRegisterResponseHandlers_withNilResponseHandler_thenInvokeResponseHandler_doesNotCrash() {

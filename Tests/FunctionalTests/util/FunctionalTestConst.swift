@@ -15,7 +15,7 @@ import Foundation
 enum FunctionalTestConst {
 
     enum EventType {
-        static let EXPERIENCE_PLATFORM = "com.adobe.eventType.experiencePlatform"
+        static let EDGE = "com.adobe.eventType.edge"
         static let INSTRUMENTED_EXTENSION = "com.adobe.eventType.instrumentedExtension"
         static let HUB = "com.adobe.eventType.hub"
         static let CONFIGURATION = "com.adobe.eventType.configuration"

@@ -10,12 +10,12 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPExperiencePlatform
+import AEPEdge
 import Foundation
 
-class DemoResponseHandler: ExperiencePlatformResponseHandler {
+class DemoResponseHandler: EdgeResponseHandler {
 
     func onResponse(data: [String: Any]) {
-        print("Received data from AEPExperiencePlatform \(data)")
+        print("Received data from AEPEdge \(data)")
     }
 }

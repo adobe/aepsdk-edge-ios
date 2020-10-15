@@ -11,7 +11,7 @@
 //
 
 import AEPCore
-@testable import AEPExperiencePlatform
+@testable import AEPEdge
 import XCTest
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
@@ -22,10 +22,10 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false // fail so nil checks stop execution
         FunctionalTestBase.debugEnabled = false
 
-        // 2 event hub shared states for registered extensions (TestableExperiencePlatform and InstrumentedExtension registered in FunctionalTestBase)
+        // 2 event hub shared states for registered extensions (TestableEdge and InstrumentedExtension registered in FunctionalTestBase)
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 2)
 
-        MobileCore.registerExtensions([TestableExperiencePlatform.self])
+        MobileCore.registerExtensions([TestableEdge.self])
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
@@ -39,14 +39,14 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         // set expectations
         let handleExperienceEventRequestExpectation = XCTestExpectation(description: "handleExperienceEventRequest Called")
         handleExperienceEventRequestExpectation.isInverted = true
-        TestableExperiencePlatform.handleExperienceEventRequestExpectation = handleExperienceEventRequestExpectation
+        TestableEdge.handleExperienceEventRequestExpectation = handleExperienceEventRequestExpectation
 
         let readyForEventExpectation = XCTestExpectation(description: "readyForEvent Called")
-        TestableExperiencePlatform.readyForEventExpectation = readyForEventExpectation
+        TestableEdge.readyForEventExpectation = readyForEventExpectation
 
         // Dispatch request event which will block request queue as Configuration state is nil
         let requestEvent = Event(name: "Request Test",
-                                 type: FunctionalTestConst.EventType.EXPERIENCE_PLATFORM,
+                                 type: FunctionalTestConst.EventType.EDGE,
                                  source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                                  data: ["key": "value"])
         MobileCore.dispatch(event: requestEvent)

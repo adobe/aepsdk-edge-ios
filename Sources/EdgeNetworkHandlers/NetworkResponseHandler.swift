@@ -19,7 +19,7 @@ import Foundation
 /// - See also: `EdgeResponse` and  `NetworkResponseCallback`
 class NetworkResponseHandler {
     private let LOG_TAG = "NetworkResponseHandler"
-    private let serialQueue = DispatchQueue(label: "com.adobe.experiencePlatform.eventsDictionary") // serial queue for atomic operations
+    private let serialQueue = DispatchQueue(label: "com.adobe.edge.eventsDictionary") // serial queue for atomic operations
 
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [String]>()
@@ -212,12 +212,12 @@ class NetworkResponseHandler {
         var responseEvent: Event?
         if isErrorResponseEvent {
             responseEvent = Event(name: Constants.EventName.ERROR_RESPONSE_CONTENT,
-                                  type: Constants.EventType.EXPERIENCE_PLATFORM,
+                                  type: Constants.EventType.EDGE,
                                   source: Constants.EventSource.ERROR_RESPONSE_CONTENT,
                                   data: eventData)
         } else {
             responseEvent = Event(name: Constants.EventName.RESPONSE_CONTENT,
-                                  type: Constants.EventType.EXPERIENCE_PLATFORM,
+                                  type: Constants.EventType.EDGE,
                                   source: Constants.EventSource.RESPONSE_CONTENT,
                                   data: eventData)
         }

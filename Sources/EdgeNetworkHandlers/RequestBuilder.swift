@@ -23,7 +23,7 @@ class RequestBuilder {
     /// Control character used at the end of each response fragment. Response streaming is enabled when both `recordSeparator` and `lineFeed` are non nil.
     private var lineFeed: String?
 
-    /// The Experiece Cloud ID to be sent with this request
+    /// The Experience Cloud ID to be sent with this request
     var experienceCloudId: String?
 
     /// Data store manager for retrieving store response payloads for `StateMetadata`
@@ -47,7 +47,7 @@ class RequestBuilder {
     }
 
     /// Builds the request payload with all the provided parameters and events.
-    /// - Parameter events: List of `Event` objects. Each event is expected to contain a serialized `ExperiencePlatformEvent`
+    /// - Parameter events: List of `Event` objects. Each event is expected to contain a serialized `ExperienceEvent`
     /// encoded in the `Event.data` property.
     /// - Returns: A `EdgeRequest` object or nil if the events list is empty
     func getRequestPayload(_ events: [Event]) -> EdgeRequest? {
@@ -60,7 +60,7 @@ class RequestBuilder {
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig,
                                               state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads))
 
-        let platformEvents = extractPlatformEvents(events)
+        let experienceEvents = extractExperienceEvents(events)
         var contextData: RequestContextData?
 
         // set ECID if available
@@ -70,17 +70,17 @@ class RequestBuilder {
             contextData = RequestContextData(identityMap: identityMap)
         }
 
-        return EdgeRequest(meta: requestMetadata, xdm: contextData, events: platformEvents)
+        return EdgeRequest(meta: requestMetadata, xdm: contextData, events: experienceEvents)
     }
 
-    /// Extract the `ExperiencePlatformEvent` from each `Event` and return as a list of maps.
-    /// The timestamp for each `Event` is set as the timestamp for its contained `ExperiencePlatformEvent`.
-    /// The unique identifier for each `Event` is set as the event ID for its contained `ExperiencePlatformEvent`.
+    /// Extract the `ExperienceEvent` from each `Event` and return as a list of maps.
+    /// The timestamp for each `Event` is set as the timestamp for its contained `ExperienceEvent`.
+    /// The unique identifier for each `Event` is set as the event ID for its contained `ExperienceEvent`.
     ///
-    /// - Parameter events: A list of `Event`s which contain an `ExperiencePlatformEvent` as event data.
-    /// - Returns: A list of `ExperiencePlatformEvent`s as maps
-    private func extractPlatformEvents(_ events: [Event]) -> [ [String: AnyCodable] ] {
-        var platformEvents: [[String: AnyCodable]] = []
+    /// - Parameter events: A list of `Event`s which contain an `ExperienceEvent` as event data.
+    /// - Returns: A list of `ExperienceEvent`s as maps
+    private func extractExperienceEvents(_ events: [Event]) -> [ [String: AnyCodable] ] {
+        var experienceEvents: [[String: AnyCodable]] = []
 
         for event in events {
             guard var eventData = event.data else {
@@ -109,13 +109,13 @@ class RequestBuilder {
             }
 
             guard let wrappedEventData = AnyCodable.from(dictionary: eventData) else {
-                Log.debug(label: LOG_TAG, "Failed to add event data to ExperiencePlatformEvent - unable to convert to [String : AnyCodable]")
+                Log.debug(label: LOG_TAG, "Failed to add event data to ExperienceEvent - unable to convert to [String : AnyCodable]")
                 continue
             }
 
-            platformEvents.append(wrappedEventData)
+            experienceEvents.append(wrappedEventData)
         }
 
-        return platformEvents
+        return experienceEvents
     }
 }

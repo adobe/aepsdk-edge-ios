@@ -12,7 +12,7 @@
 
 import Foundation
 
-/// Internal response callback protocol, used by the `ExperiencePlatformNetworkService` to capture the response from the Adobe Experience Edge server.
+/// Internal response callback protocol, used by the `EdgeNetworkService` to capture the response from the Adobe Experience Edge server.
 protocol ResponseCallback {
 
     /// This method is called when the response was successfully fetched from the Experience Edge server

@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPExperiencePlatform
+import AEPEdge
 import AEPServices
 import SwiftUI
 
@@ -36,9 +36,9 @@ struct ContentView: View {
             }.padding()
 
             Button(action: {
-                let experienceEvent = ExperiencePlatformEvent(xdm: ["xdmtest": "data"],
-                                                              data: ["data": ["test": "data"]])
-                ExperiencePlatform.sendEvent(experiencePlatformEvent: experienceEvent, responseHandler: DemoResponseHandler())
+                let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                                      data: ["data": ["test": "data"]])
+                Edge.sendEvent(experienceEvent: experienceEvent, responseHandler: DemoResponseHandler())
             }) {
                 Text("Ping to ExEdge")
             }

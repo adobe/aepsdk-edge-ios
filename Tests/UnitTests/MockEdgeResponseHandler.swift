@@ -10,10 +10,10 @@
 // governing permissions and limitations under the License.
 //
 
-@testable import AEPExperiencePlatform
+@testable import AEPEdge
 import Foundation
 
-class MockExperiencePlatformResponseHandler: ExperiencePlatformResponseHandler {
+class MockEdgeResponseHandler: EdgeResponseHandler {
     var onResponseReceivedData: [String: Any] = [:] // latest data received in the onResponse callback
     var onResponseCalledTimes = 0 // the number of times onResponse was called
 

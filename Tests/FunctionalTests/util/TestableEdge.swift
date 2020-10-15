@@ -11,23 +11,23 @@
 //
 
 import AEPCore
-@testable import AEPExperiencePlatform
+@testable import AEPEdge
 import XCTest
 
-/// Spy  class used for testing and inspecting `ExperiencePlatform`.
-class TestableExperiencePlatform: ExperiencePlatform {
+/// Spy  class used for testing and inspecting `Edge`.
+class TestableEdge: Edge {
     static public var readyForEventExpectation: XCTestExpectation?
     static public var handleExperienceEventRequestExpectation: XCTestExpectation?
 
     override func handleExperienceEventRequest(_ event: Event) {
-        if let expectation = TestableExperiencePlatform.handleExperienceEventRequestExpectation {
+        if let expectation = TestableEdge.handleExperienceEventRequestExpectation {
             expectation.fulfill()
         }
         super.handleExperienceEventRequest(event)
     }
 
     override public func readyForEvent(_ event: Event) -> Bool {
-        if let expectation = TestableExperiencePlatform.readyForEventExpectation {
+        if let expectation = TestableEdge.readyForEventExpectation {
             expectation.fulfill()
         }
         return super.readyForEvent(event)

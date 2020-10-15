@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
-  s.name             = "AEPExperiencePlatform"
+  s.name             = "AEPEdge"
   s.version          = "1.0.0-alpha-2"
-  s.summary          = "Experience Platform extension for Adobe Experience Platform SDK. Written and maintained by Adobe."
+  s.summary          = "Experience Platform Edge extension for Adobe Experience Platform Mobile SDK. Written and maintained by Adobe."
 
   s.description      = <<-DESC
-                       The Experience Platform extension enables sending data to the Adobe Experience Platform from a mobile device using the v5 Adobe Experience Platform SDK.
+                       The Experience Platform Edge extension enables sending data to the Adobe Experience Edge from a mobile device using the v5 Adobe Experience Platform SDK.
                        DESC
 
   s.homepage         = "https://github.com/adobe/aepsdk-platform-ios.git"
@@ -17,6 +17,6 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES' }
   s.dependency 'AEPCore'
   s.dependency 'AEPServices'
-  
+
   s.source_files = 'Sources/**/*.swift'
 end

@@ -39,8 +39,8 @@ enum HttpResponseCodes: Int {
 }
 
 /// Network service for requests to the Adobe Experience Edge
-class ExperiencePlatformNetworkService {
-    private let LOG_TAG: String = "ExperiencePlatformNetworkService"
+class EdgeNetworkService {
+    private let LOG_TAG: String = "EdgeNetworkService"
     private let DEFAULT_GENERIC_ERROR_MESSAGE = "Request to Experience Edge failed with an unknown exception"
     private let DEFAULT_NAMESPACE = "global"
     private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.clientTimeout.rawValue,
