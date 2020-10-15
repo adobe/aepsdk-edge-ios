@@ -36,7 +36,7 @@ This will generate the xcframework under the `build` folder. Drag and drop all t
 use_frameworks!
 
 target 'YOUR_TARGET_NAME' do
-	pod 'AEPEdge', :git => 'git@github.com:adobe/aepsdk-platform-ios.git', :branch => 'main'
+	pod 'AEPEdge', :git => 'git@github.com:adobe/aepsdk-edge-ios.git', :branch => 'main'
   	pod 'AEPCore', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
   	pod 'AEPServices', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
   	pod 'AEPRulesEngine', :git => 'git@github.com:adobe/aepsdk-rulesengine-ios.git', :branch => 'main'
@@ -49,7 +49,7 @@ To add the AEPEdge Package to your application, from the Xcode menu select:
 
 `File > Swift Packages > Add Package Dependency...`
 
-Enter the URL for the AEPEdge package repository: `https://github.com/adobe/aepsdk-platform-ios.git`.
+Enter the URL for the AEPEdge package repository: `https://github.com/adobe/aepsdk-edge-ios.git`.
 
 When prompted, make sure you change the branch to `main`. (Once the repo is public, we will reference specific tags/versions instead of a branch)
 
@@ -57,7 +57,7 @@ Alternatively, if your project has a `Package.swift` file, you can add AEPEdge d
 
 ```
 dependencies: [
-	.package(url: "https://github.com/adobe/aepsdk-platform-ios.git", .branch: "dev"),
+	.package(url: "https://github.com/adobe/aepsdk-edge-ios.git", .branch: "dev"),
 targets: [
    	.target(name: "YourTarget",
     				dependencies: ["AEPEdge"],
