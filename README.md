@@ -8,14 +8,14 @@ By using the Beta, you hereby acknowledge that the Beta is provided "as is" with
 
 ## About this project
 
-The Experience Platform Mobile extension allows you to send data to the Adobe Experience Platform from a mobile application. This extension allows you to implement Adobe Experience Cloud capabilities in a more robust way, serve multiple Adobe solutions though one network call, and simultaneously forward this information to the Adobe Experience Platform.
+The AEP Edge Mobile extension allows you to send data to the Adobe Experience Platform (AEP) from a mobile application. This extension allows you to implement Adobe Experience Cloud capabilities in a more robust way, serve multiple Adobe solutions though one network call, and simultaneously forward this information to the Adobe Experience Platform.
 
-The Adobe Experience Platform Mobile Extension is an extension for the [Adobe Experience Platform SDK](https://github.com/Adobe-Marketing-Cloud/acp-sdks).
+The Adobe Experience Platform Edge Mobile Extension is an extension for the [Adobe Experience Platform SDK](https://github.com/Adobe-Marketing-Cloud/acp-sdks).
 
-To learn more about this extension, read [Adobe Experience Platform -Experience Edge](https://aep-sdks.gitbook.io/docs/beta/experience-platform-extension).
+To learn more about this extension, read [Adobe Experience Platform Edge Mobile Extension](https://aep-sdks.gitbook.io/docs/beta/experience-platform-extension).
 
 ## Current version
-The Experience Platform Mobile extension for iOS is currently in Beta development.
+The Adobe Experience Platform Edge Mobile extension for iOS is currently in Beta development.
 
 ## Installation
 

@@ -208,7 +208,7 @@ class CommerceUtil {
         }
     }
 
-    /// Helper method to construct and send the ExperienceEvent} to the Experience Platform Extension.
+    /// Helper method to construct and send the ExperienceEvent to the Edge Extension.
     /// - Parameters:
     ///    - itemsList   : The  list of ProductListItemsItem}s associated with this commerce event.
     ///    - eventType   : event type for the given commerce event.
