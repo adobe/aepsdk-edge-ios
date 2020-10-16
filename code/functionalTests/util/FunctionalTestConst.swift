@@ -17,7 +17,7 @@ struct FunctionalTestConst {
 
     struct EventType {
         private init() {}
-        static let experiencePlatform = "com.adobe.eventType.experiencePlatform"
+        static let experiencePlatform = "com.adobe.eventType.edge"
         static let instrumentedExtension = "com.adobe.eventType.instrumentedExtension"
         static let eventHub = "com.adobe.eventType.hub"
         static let configuration = "com.adobe.eventType.configuration"
