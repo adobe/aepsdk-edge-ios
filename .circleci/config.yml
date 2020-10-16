@@ -22,55 +22,58 @@ jobs:
       # restore pods related caches
       - restore_cache:
           keys:
-            - cocoapods-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "build/xcode/Podfile.lock" }}
-            - cocoapods-cache-v2-{{ arch }}-{{ .Branch }}
-            - cocoapods-cache-v2
+            - cocoapods-cache-v4-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
+            - cocoapods-cache-v4-{{ arch }}-{{ .Branch }}
+            - cocoapods-cache-v4
 
       # install CocoaPods - using default CocoaPods version, not the bundle
-      - run: 
+      - run:
           name: Repo Update & Install CocoaPods
           command: make pod-install
-      
+
       # save pods related files
       - save_cache:
           name: Saving CocoaPods Cache
-          key: cocoapods-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "build/xcode/Podfile.lock" }}
+          key: cocoapods-cache-v4-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
           paths:
-            - ./build/xcode/Pods
+            - ./Pods
+            - ./SampleApps/AEPCommerceDemoApp/Pods
             - ~/.cocoapods
+
+      - run:
+          name: Install SwiftLint
+          command: make install-swiftlint
+
+      - run:
+          name: Lint Source Code
+          command: make lint
 
       # pre-start the simulator to prevent timeouts
       - run:
           name: Pre-start Simulator
           command: xcrun instruments -w "iPhone 8 (13.1) [" || true
 
-      - run: 
+      - run:
           name: Run Tests
           command: make test
 
       # code coverage
       - run:
           name: Upload Code Coverage Report
-          command: bash <(curl -s https://codecov.io/bash) -v -X s3 -c -D "./build/xcode/AEPExperiencePlatform/out" -J "unitTests" -J "functionalTests" -J "functionalTestsConfig" -t ${CODECOV_TOKEN}
+          command: bash <(curl -s https://codecov.io/bash) -v -X s3 -c -D "./build/out" -J "AEPEdge" -t ${CODECOV_TOKEN}
 
+      # verify XCFramework archive builds
       - run:
-          name: Build Universal Library
+          name: Build XCFramework
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              make build-all
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              make archive
             fi
 
-      # verify demo app builds, must build lib before this step
+      # verify demo app builds
       - run:
           name: Build Demo App
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
               make build-app
-              make archive-app
             fi
-
-      - store_artifacts:
-          path: out
-
-
-

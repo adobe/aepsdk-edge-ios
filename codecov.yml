@@ -13,11 +13,9 @@ coverage:
     changes: no
 
   ignore:
-    - "./code/unitTests/**/*"
-    - "./code/unitTests/.*"
-    - "./code/functionalTests/**/*"
-    - "./code/functionalTests/.*"
-    - "./demo"
+    - "./Tests/**/*"
+    - "./Tests/.*"
+    - "./SampleApps"
 
 parsers:
   gcov:
