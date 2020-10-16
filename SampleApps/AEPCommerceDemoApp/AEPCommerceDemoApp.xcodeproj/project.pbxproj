@@ -64,6 +64,7 @@
 		BF5EEAD224904A3800C72622 /* CheckOutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEAB024904A3800C72622 /* CheckOutViewController.swift */; };
 		BF5EEB5C2490703A00C72622 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEB582490703A00C72622 /* LaunchScreen.storyboard */; };
 		BF5EEB5D2490703A00C72622 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF5EEB5A2490703A00C72622 /* Main.storyboard */; };
+		D4BDA62225391F4700D7AAD4 /* AsssuranceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BDA62125391F4700D7AAD4 /* AsssuranceViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -129,6 +130,7 @@
 		BF5EEB592490703A00C72622 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BF5EEB5B2490703A00C72622 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C341D5F1BD42B23B1A5248BA /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		D4BDA62125391F4700D7AAD4 /* AsssuranceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsssuranceViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +180,7 @@
 				BF5EEA9224904A3600C72622 /* Assets.xcassets */,
 				BF5EEA8F24904A3600C72622 /* AEPDemoConstants.swift */,
 				BF5EEAAC24904A3800C72622 /* AppDelegate.swift */,
+				D4BDA62125391F4700D7AAD4 /* AsssuranceViewController.swift */,
 				BF5EEA8E24904A3600C72622 /* CartItem.swift */,
 				BF5EEAAA24904A3800C72622 /* CartViewController.swift */,
 				BF5EEAB024904A3800C72622 /* CheckOutViewController.swift */,
@@ -420,6 +423,7 @@
 				BF024B2224B8FD83002131E9 /* PaymentsItem.swift in Sources */,
 				BF024B2124B8FD83002131E9 /* Type.swift in Sources */,
 				BF024B0924B8FD83002131E9 /* MobileSDKCommerceSchema.swift in Sources */,
+				D4BDA62225391F4700D7AAD4 /* AsssuranceViewController.swift in Sources */,
 				BF024B1424B8FD83002131E9 /* Purchases.swift in Sources */,
 				BF5EEACC24904A3800C72622 /* CartViewController.swift in Sources */,
 				BF5EEAC724904A3800C72622 /* Product.swift in Sources */,
@@ -591,8 +595,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/libs/**",
-					"$(PROJECT_DIR)/libs",
+					"$(PROJECT_DIR)/xdmlib/**",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.mobile.AEPCommerceDemoApp;
@@ -620,8 +623,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/libs/**",
-					"$(PROJECT_DIR)/libs",
+					"$(PROJECT_DIR)/xdmlib/**",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.mobile.AEPCommerceDemoApp;

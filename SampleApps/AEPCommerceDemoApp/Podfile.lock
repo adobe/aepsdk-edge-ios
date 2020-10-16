@@ -30,7 +30,7 @@ DEPENDENCIES:
   - ACPCore (from `https://github.com/adobe/aep-sdk-compatibility-ios.git`, branch `main`)
   - AEPAssurance
   - "AEPCore (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
-  - AEPEdge (from `../..`)
+  - AEPEdge (from `https://github.com/adobe/aepsdk-edge-ios.git`, branch `dev`)
   - "AEPIdentity (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
   - "AEPLifecycle (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `main`)"
   - "AEPRulesEngine (from `git@github.com:adobe/aepsdk-rulesengine-ios.git`, branch `main`)"
@@ -49,7 +49,8 @@ EXTERNAL SOURCES:
     :branch: main
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPEdge:
-    :path: "../.."
+    :branch: dev
+    :git: https://github.com/adobe/aepsdk-edge-ios.git
   AEPIdentity:
     :branch: main
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
@@ -73,6 +74,9 @@ CHECKOUT OPTIONS:
   AEPCore:
     :commit: bdb4f912704b60191e91d2e571cca27e7b1a310f
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
+  AEPEdge:
+    :commit: 73489cbef9e520b3d6021fff5bd2c4e7237d7562
+    :git: https://github.com/adobe/aepsdk-edge-ios.git
   AEPIdentity:
     :commit: bdb4f912704b60191e91d2e571cca27e7b1a310f
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
@@ -93,13 +97,13 @@ SPEC CHECKSUMS:
   ACPCore: 54bea9e0ab404307eb1e11806049a5a748156bbc
   AEPAssurance: 79480081626b89fc37af26bbbf4522af9718e75f
   AEPCore: e8ddaae01a787926fde35cfcc24770b26a765e58
-  AEPEdge: 1a344873b237efee32332cc4c85e3c86506a6ca6
+  AEPEdge: b8d30c0e799d25839f40a9968c9523d0ca4be28f
   AEPIdentity: f46a1b34363243f8d417a8143bfb876a36809104
   AEPLifecycle: 9e63cf6a8085161f95706ddbffef20dd1d748c3e
   AEPRulesEngine: 5742652bd7ab65aa7325f731725d995947e41db8
   AEPServices: ad642c76cede1c7babb61e6804198ded4317d74f
   AEPSignal: b6473f4543d2b876c124d162228b49d53a31a552
 
-PODFILE CHECKSUM: 5e65ac74b1bfbb23cd26129d84fb7eaee7e757b8
+PODFILE CHECKSUM: c1aa158495bca577a2080a1ead73ad4dfbff4c21
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.9.1
