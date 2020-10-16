@@ -67,7 +67,7 @@ class AEPExperiencePlatformFunctionalTests: FunctionalTestBase {
             ACPCore.start {
                 ACPCore.updateConfiguration(["global.privacy": "optedin",
                                              "experienceCloud.org": "testOrg@AdobeOrg",
-                                             "experiencePlatform.configId": "12345-example"])
+                                             "edge.configId": "12345-example"])
                 startLatch.countDown()
             }
 

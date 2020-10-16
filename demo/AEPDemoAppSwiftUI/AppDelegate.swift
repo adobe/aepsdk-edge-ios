@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ACPCore.start {
             ACPCore.updateConfiguration(["global.privacy": "optedin",
                                          "experienceCloud.org": "FAF554945B90342F0A495E2C@AdobeOrg",
-                                         "experiencePlatform.configId": "d3d079e7-130e-4ec1-88d7-c328eb9815c4"])
+                                         "edge.configId": "d3d079e7-130e-4ec1-88d7-c328eb9815c4"])
         }
         return true
     }

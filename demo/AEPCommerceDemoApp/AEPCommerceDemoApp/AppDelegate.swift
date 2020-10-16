@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // var config = [String: String]()
         // config["global.privacy"] = "optedin"
         // config["experienceCloud.org"] = "FAF554945B90342F0A495E2C@AdobeOrg"
-        // config["experiencePlatform.configId"] = "d3d079e7-130e-4ec1-88d7-c328eb9815c4"
+        // config["edge.configId"] = "d3d079e7-130e-4ec1-88d7-c328eb9815c4"
 
         // Option 2 : Configuration : From a Launch property
         // ACPCore.configure(withAppId: "94f571f308d5/e3fc566f21d5/launch-a7a05abd3c78-development")

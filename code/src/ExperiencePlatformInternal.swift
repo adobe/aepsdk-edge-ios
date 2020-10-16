@@ -124,7 +124,7 @@ class ExperiencePlatformInternal: ACPExtension {
     /// Processes the events in the event queue in the order they were received.
     ///
     /// A valid Configuration shared state is required for processing events and if one is not available, processing the queue is halted without removing events from
-    /// the queue. If a valid Configuration shared state is available but no `experiencePlatform.configId ` is found, the event is dropped.
+    /// the queue. If a valid Configuration shared state is available but no `edge.configId ` is found, the event is dropped.
     func handleSendEvent(_ event: ACPExtensionEvent) -> Bool {
         ACPCore.log(ACPMobileLogLevel.verbose, tag: TAG, message: "Processing handleSendEvent for event with id \(event.eventUniqueIdentifier).")
 
@@ -139,7 +139,7 @@ class ExperiencePlatformInternal: ACPExtension {
         guard let configId = configSharedState[ExperiencePlatformConstants.SharedState.Configuration.experiencePlatformConfigId] as? String else {
             ACPCore.log(ACPMobileLogLevel.warning,
                         tag: TAG,
-                        message: "handleSendEvent - Removed event '\(event.eventUniqueIdentifier)' because of invalid experiencePlatform.configId in configuration.")
+                        message: "handleSendEvent - Removed event '\(event.eventUniqueIdentifier)' because of invalid edge.configId in configuration.")
             return true // drop event from queue
         }
 

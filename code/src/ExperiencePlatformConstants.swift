@@ -61,7 +61,7 @@ struct ExperiencePlatformConstants {
             private init() {}
 
             static let stateOwner = "com.adobe.module.configuration"
-            static let experiencePlatformConfigId = "experiencePlatform.configId"
+            static let experiencePlatformConfigId = "edge.configId"
             static let experienceCloudOrgId = "experienceCloud.org"
         }
 
