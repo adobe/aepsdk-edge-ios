@@ -50,6 +50,7 @@ public class Edge: NSObject, Extension {
     }
 
     public func onUnregistered() {
+        hitQueue?.close()
         print("Extension unregistered from MobileCore: \(Constants.FRIENDLY_NAME)")
     }
 
