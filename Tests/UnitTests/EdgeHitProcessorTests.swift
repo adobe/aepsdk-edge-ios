@@ -51,7 +51,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHitHappy() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        let expectedUrl = URL(string: "adobe.com")!
+        guard let expectedUrl = URL(string: "adobe.com") else { XCTFail("Could not create URL"); return }
         let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
         let expectedHeaders = ["testHeaderKey": "testHeaderVal"]
         let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
@@ -77,7 +77,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHitRecoverableNetworkError() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should be retried")
-        let expectedUrl = URL(string: "adobe.com")!
+        guard let expectedUrl = URL(string: "adobe.com") else { XCTFail("Could not create URL"); return }
         let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
         let expectedHeaders = ["testHeaderKey": "testHeaderVal"]
         let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
@@ -106,7 +106,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHitUnrecoverableNetworkError() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        let expectedUrl = URL(string: "adobe.com")!
+        guard let expectedUrl = URL(string: "adobe.com") else { XCTFail("Could not create URL"); return }
         let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
         let expectedHeaders = ["testHeaderKey": "testHeaderVal"]
         let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)

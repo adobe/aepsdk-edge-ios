@@ -13,7 +13,9 @@
 import AEPServices
 import Foundation
 
+/// A `HitProcessing` which handles the processing of `EdgeHit`s
 class EdgeHitProcessor: HitProcessing {
+    private let LOG_TAG = "EdgeHitProcessor"
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
     var retryInterval = TimeInterval(5)
@@ -26,6 +28,7 @@ class EdgeHitProcessor: HitProcessing {
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
         guard let data = entity.data, let edgeHit = try? JSONDecoder().decode(EdgeHit.self, from: data) else {
             // can't convert data to hit, unrecoverable error, move to next hit
+            Log.debug(label: LOG_TAG, "processHit - Failed to decode edge hit '\(entity.uniqueIdentifier)'.")
             completion(true)
             return
         }
@@ -54,10 +57,8 @@ private struct EdgeHitResponseCallback: ResponseCallback {
 
     func onError(jsonError: String) {
         guard let data = jsonError.data(using: .utf8) else { return }
-
         guard let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) else {
-            Log.warning(label: LOG_TAG,
-                        "onError - The conversion to JSON failed for server error response: \(jsonError)")
+            Log.warning(label: LOG_TAG, "onError - The conversion to JSON failed for server error response: \(jsonError).")
             return
         }
 
