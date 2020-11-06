@@ -21,7 +21,7 @@ extension FileManager {
             do {
                 try self.removeItem(at: URL(fileURLWithPath: "\(url.relativePath)/com.adobe.edge"))
                 if let dqService = ServiceProvider.shared.dataQueueService as? DataQueueService {
-                    let _ = dqService.threadSafeDictionary.removeValue(forKey: "com.adobe.edge")
+                    _ = dqService.threadSafeDictionary.removeValue(forKey: "com.adobe.edge")
                 }
             } catch {
                 print("ERROR DESCRIPTION: \(error)")

@@ -389,7 +389,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(7, requestBody.count)
         resetTestExpectations()
-        
+
         sleep(2)
 
         // send a new event, should contain previously stored store data

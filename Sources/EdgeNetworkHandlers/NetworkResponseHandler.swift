@@ -137,7 +137,7 @@ class NetworkResponseHandler {
             let requestEventId = extractRequestEventId(forEventIndex: eventHandle.eventIndex, requestId: requestId)
             handleStoreEventHandle(handle: eventHandle)
 
-            guard let eventHandleAsDictionary = try? eventHandle.asDictionary() else { return }
+            guard let eventHandleAsDictionary = eventHandle.asDictionary() else { return }
             dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary, requestId: requestId, requestEventId: requestEventId)
             ResponseCallbackHandler.shared.invokeResponseHandler(eventData: eventHandleAsDictionary, requestEventId: requestEventId)
         }
@@ -188,7 +188,7 @@ class NetworkResponseHandler {
         Log.trace(label: LOG_TAG, "dispatchEventErrors - Processing \(unwrappedErrors.count) errors(s) for request id: \(requestId)")
         for error in unwrappedErrors {
 
-            if let errorAsDictionary = try? error.asDictionary() {
+            if let errorAsDictionary = error.asDictionary() {
                 logErrorMessage(errorAsDictionary, isError: isError, requestId: requestId)
 
                 let requestEventId = extractRequestEventId(forEventIndex: error.eventIndex, requestId: requestId)

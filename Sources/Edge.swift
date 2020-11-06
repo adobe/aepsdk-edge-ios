@@ -19,7 +19,7 @@ public class Edge: NSObject, Extension {
     private let LOG_TAG = "Edge" // Tag for logging
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
-    private var hitQueue: HitQueuing? = nil
+    private var hitQueue: HitQueuing?
 
     // MARK: - Extension
     public var name = Constants.EXTENSION_NAME
@@ -158,14 +158,14 @@ public class Edge: NSObject, Extension {
 
         return configId
     }
-    
+
     /// Sets up the `PersistentHitQueue` to handle `EdgeHit`s
     private func setupHitQueue() {
         guard let dataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: name) else {
             Log.error(label: "\(name):\(#function)", "Failed to create Data Queue, Identity could not be initialized")
             return
         }
-        
+
         let hitProcessor = EdgeHitProcessor(networkService: networkService, networkResponseHandler: networkResponseHandler)
         hitQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
         hitQueue?.beginProcessing()
