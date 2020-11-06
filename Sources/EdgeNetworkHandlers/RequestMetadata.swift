@@ -14,7 +14,7 @@ import Foundation
 
 /// Metadata passed to Solutions and even to Experience Edge itself with possibility of overriding at event level.
 /// Is contained within the `EdgeRequest` request property.
-struct RequestMetadata: Encodable {
+struct RequestMetadata: Codable {
     let konductorConfig: KonductorConfig?
     let state: StateMetadata?
 }

@@ -24,6 +24,9 @@
 		1CB57B262460F2B6000B2DA5 /* EdgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB57B242460EF0C000B2DA5 /* EdgeTests.swift */; };
 		1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */; };
 		1CCD27DC245A240F00E912B2 /* ExperienceEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */; };
+		216989652554B39900B2752C /* EdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989642554B39900B2752C /* EdgeHit.swift */; };
+		216989782554B61500B2752C /* EdgeHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989772554B61500B2752C /* EdgeHitProcessor.swift */; };
+		2169897C2554D38D00B2752C /* EdgeHitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2169897B2554D38D00B2752C /* EdgeHitTests.swift */; };
 		240E3C9924EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
 		240E3C9A24EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
 		5804F75855E57988DC5C245B /* Pods_UnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38ACBDAC9AE339F84DF409D1 /* Pods_UnitTests.framework */; };
@@ -241,6 +244,9 @@
 		1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMFormatters.swift; sourceTree = "<group>"; };
 		1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMProtocols.swift; sourceTree = "<group>"; };
 		1ED3CB89A749953625CC5616 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		216989642554B39900B2752C /* EdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHit.swift; sourceTree = "<group>"; };
+		216989772554B61500B2752C /* EdgeHitProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessor.swift; sourceTree = "<group>"; };
+		2169897B2554D38D00B2752C /* EdgeHitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitTests.swift; sourceTree = "<group>"; };
 		240E3C9824EF357100D44993 /* MockDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDataStore.swift; sourceTree = "<group>"; };
 		38ACBDAC9AE339F84DF409D1 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		48A9314EEF94AB3655402E38 /* Pods_AEPDemoAppSwiftUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPDemoAppSwiftUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -591,6 +597,8 @@
 			isa = PBXGroup;
 			children = (
 				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
+				216989642554B39900B2752C /* EdgeHit.swift */,
+				216989772554B61500B2752C /* EdgeHitProcessor.swift */,
 				D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */,
 				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
 				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
@@ -683,6 +691,7 @@
 				BF947F9F244569190057A6CC /* EdgeRequestTests.swift */,
 				D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */,
 				1CB57B242460EF0C000B2DA5 /* EdgeTests.swift */,
+				2169897B2554D38D00B2752C /* EdgeHitTests.swift */,
 				BF947F81243F05BF0057A6CC /* IdentityMapTests.swift */,
 				BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */,
 				D46553F6246A384900A150E2 /* NetworkResponseHandlerTests.swift */,
@@ -1338,9 +1347,11 @@
 				D4C6B444251A76CB0038F4F9 /* NetworkResponseHandler.swift in Sources */,
 				D4C6B445251A76CB0038F4F9 /* RequestBuilder.swift in Sources */,
 				D4C6B446251A76CB0038F4F9 /* RequestContextData.swift in Sources */,
+				216989782554B61500B2752C /* EdgeHitProcessor.swift in Sources */,
 				D4C6B447251A76CB0038F4F9 /* RequestMetadata.swift in Sources */,
 				D4C6B448251A76CB0038F4F9 /* ResponseCallback.swift in Sources */,
 				D4C6B449251A76CB0038F4F9 /* ResponseCallbackHandler.swift in Sources */,
+				216989652554B39900B2752C /* EdgeHit.swift in Sources */,
 				D4C6B44A251A76CB0038F4F9 /* StateMetadata.swift in Sources */,
 				D4C6B44B251A76CB0038F4F9 /* StoreResponsePayload.swift in Sources */,
 				D4C6B44C251A76CB0038F4F9 /* StoreResponsePayloadManager.swift in Sources */,
@@ -1357,6 +1368,7 @@
 				D4A473CD2485AA3D00D31710 /* TestUtils.swift in Sources */,
 				BF947F912440F6660057A6CC /* StateMetadataTests.swift in Sources */,
 				D46553F1246A123900A150E2 /* RequestCallbackHandlerTests.swift in Sources */,
+				2169897C2554D38D00B2752C /* EdgeHitTests.swift in Sources */,
 				BF947FA0244569190057A6CC /* EdgeRequestTests.swift in Sources */,
 				1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */,
 				BF947F82243F05BF0057A6CC /* IdentityMapTests.swift in Sources */,

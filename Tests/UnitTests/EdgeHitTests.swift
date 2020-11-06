@@ -11,16 +11,18 @@
 //
 
 @testable import AEPEdge
+import Foundation
 import AEPServices
+import AEPCore
 import XCTest
 
-class EdgeRequestTests: XCTestCase {
+class EdgeHitTests: XCTestCase {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false // fail so nil checks stop execution
     }
-
+    
     func testEncodeAndDecode_allProperties() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
@@ -40,16 +42,23 @@ class EdgeRequestTests: XCTestCase {
                     ]
                 ]
             ]]
-        let edgeRequest = EdgeRequest(meta: requestMetadata, xdm: requestContext, events: events)
+        let edgeRequest = EdgeRequest(meta: requestMetadata,
+                                      xdm: nil,
+                                      events: events)
+        
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+        let url = URL(string: "adobe.com")!
+        let headers = ["headerKey": "headerVal"]
+        let edgeHit = EdgeHit(url: url, request: edgeRequest, headers: headers, event: event)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
 
-        let data = try? encoder.encode(edgeRequest)
-        let decodedRequest = try? JSONDecoder().decode(EdgeRequest.self, from: data ?? Data())
+        let data = try? encoder.encode(edgeHit)
+        let decodedHit = try? JSONDecoder().decode(EdgeHit.self, from: data ?? Data())
 
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedRequest))
+        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedHit))
         let expectedResult: [String: Any] =
             [ "events[0].data.key": "value",
               "events[0].xdm.device.manufacturer": "Atari",

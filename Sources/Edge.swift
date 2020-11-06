@@ -19,7 +19,8 @@ public class Edge: NSObject, Extension {
     private let LOG_TAG = "Edge" // Tag for logging
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
-
+    private var hitQueue: HitQueuing?
+    
     // MARK: - Extension
     public var name = Constants.EXTENSION_NAME
     public var friendlyName = Constants.FRIENDLY_NAME
@@ -29,6 +30,16 @@ public class Edge: NSObject, Extension {
 
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
+        guard let dataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: name) else {
+            Log.error(label: "\(name):\(#function)", "Failed to create Data Queue, Identity could not be initialized")
+            hitQueue = nil
+            super.init()
+            return
+        }
+        let hitProcessor = EdgeHitProcessor(networkService: networkService, networkResponseHandler: networkResponseHandler)
+        hitQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
+        hitQueue?.beginProcessing()
+        
         super.init()
     }
 
@@ -104,27 +115,27 @@ public class Edge: NSObject, Extension {
 
         // Build and send the network request to Experience Edge
         let listOfEvents: [Event] = [event]
-        if let requestPayload = requestBuilder.getRequestPayload(listOfEvents) {
-            let requestId: String = UUID.init().uuidString
-
-            // NOTE: the order of these events needs to be maintained as they were sent in the network request
-            // otherwise the response callback cannot be matched
-            networkResponseHandler.addWaitingEvents(requestId: requestId,
-                                                    batchedEvents: listOfEvents)
-            guard let url: URL = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
-                                                         configId: configId,
-                                                         requestId: requestId) else {
-                Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(event.id.uuidString)'.")
-                return
-            }
-
-            let callback: ResponseCallback = NetworkResponseCallback(requestId: requestId, responseHandler: networkResponseHandler)
-            networkService.doRequest(url: url,
-                                     requestBody: requestPayload,
-                                     requestHeaders: requestHeaders,
-                                     responseCallback: callback,
-                                     retryTimes: Constants.Defaults.NETWORK_REQUEST_MAX_RETRIES)
+        guard let requestPayload = requestBuilder.getRequestPayload(listOfEvents) else {
+            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
+            return
         }
+        
+        let requestId: String = UUID.init().uuidString
+        // NOTE: the order of these events needs to be maintained as they were sent in the network request
+        // otherwise the response callback cannot be matched
+        networkResponseHandler.addWaitingEvents(requestId: requestId,
+                                                batchedEvents: listOfEvents)
+        guard let url: URL = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
+                                                     configId: configId,
+                                                     requestId: requestId) else {
+            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(event.id.uuidString)'.")
+            return
+        }
+
+        let edgeHit = EdgeHit(url: url, request: requestPayload, headers: requestHeaders, event: event)
+        let edgeHitData = try! JSONEncoder().encode(edgeHit)
+        let entity = DataEntity(uniqueIdentifier: requestId, timestamp: event.timestamp, data: edgeHitData)
+        hitQueue?.queue(entity: entity)
     }
 
     /// Extracts the Edge Configuration identifier from the Configuration Shared State

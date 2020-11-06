@@ -10,18 +10,20 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPServices
+import AEPCore
 import Foundation
 
-/// A request for pushing events to the Adobe Experience Edge.
-/// An `EdgeRequest` is the top-level request object sent to Experience Edge.
-struct EdgeRequest: Codable {
-    /// Metadata passed to the Experience Cloud Solutions and even to the Edge itself with possibility of overriding at event level
-    let meta: RequestMetadata?
+/// Struct which represents an Identity hit
+struct EdgeHit: Codable {
+    /// URL to be requested for this Edge hit
+    let url: URL
 
-    /// XDM data applied for the entire request
-    let xdm: RequestContextData?
-
-    /// List of Experience events
-    let events: [[String: AnyCodable]]?
+    /// The `EdgeRequest` for the corresponding hit
+    let request: EdgeRequest
+    
+    /// Request headers for this `EdgeHit`
+    let headers: [String: String]
+    
+    /// The `Event` associated with the `EdgeHit`
+    let event: Event
 }

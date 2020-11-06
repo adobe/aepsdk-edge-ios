@@ -20,9 +20,9 @@ class RequestMetadataTests: XCTestCase {
         continueAfterFailure = false // fail so nil checks stop execution
     }
 
-    // MARK: encoder tests
+    // MARK: Codable tests
 
-    func testEncode_noParameters() {
+    func testEncodeAndDecode_noParameters() {
         let metadata = RequestMetadata(konductorConfig: nil, state: nil)
 
         let encoder = JSONEncoder()
@@ -30,12 +30,14 @@ class RequestMetadataTests: XCTestCase {
         encoder.dateEncodingStrategy = .iso8601
 
         let data = try? encoder.encode(metadata)
-        let actualResult = asFlattenDictionary(data: data)
+        let decodedMetadata = try? JSONDecoder().decode(RequestMetadata.self, from: data ?? Data())
+
+        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedMetadata))
         let expectedResult: [String: Any] = [:]
         assertEqual(expectedResult, actualResult)
     }
 
-    func testEncode_paramKonductorConfig() {
+    func testEncodeAndDecode_paramKonductorConfig() {
         let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil),
                                        state: nil)
 
@@ -44,12 +46,14 @@ class RequestMetadataTests: XCTestCase {
         encoder.dateEncodingStrategy = .iso8601
 
         let data = try? encoder.encode(metadata)
-        let actualResult = asFlattenDictionary(data: data)
+        let decodedMetadata = try? JSONDecoder().decode(RequestMetadata.self, from: data ?? Data())
+
+        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedMetadata))
         let expectedResult: [String: Any] = ["konductorConfig": "isEmpty"]
         assertEqual(expectedResult, actualResult)
     }
 
-    func testEncode_paramStateMetadata() {
+    func testEncodeAndDecode_paramStateMetadata() {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
         let metadata = RequestMetadata(konductorConfig: nil, state: StateMetadata(payload: [payload]))
 
@@ -58,7 +62,9 @@ class RequestMetadataTests: XCTestCase {
         encoder.dateEncodingStrategy = .iso8601
 
         let data = try? encoder.encode(metadata)
-        let actualResult = asFlattenDictionary(data: data)
+        let decodedMetadata = try? JSONDecoder().decode(RequestMetadata.self, from: data ?? Data())
+
+        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedMetadata))
         let expectedResult: [String: Any] =
             ["state.entries[0].key": "key",
              "state.entries[0].maxAge": 3600,
@@ -66,7 +72,7 @@ class RequestMetadataTests: XCTestCase {
         assertEqual(expectedResult, actualResult)
     }
 
-    func testEncode_paramKonductorConfig_paramStateMetadata() {
+    func testEncodeAndDecode_paramKonductorConfig_paramStateMetadata() {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
         let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil),
                                        state: StateMetadata(payload: [payload]))
@@ -76,7 +82,9 @@ class RequestMetadataTests: XCTestCase {
         encoder.dateEncodingStrategy = .iso8601
 
         let data = try? encoder.encode(metadata)
-        let actualResult = asFlattenDictionary(data: data)
+        let decodedMetadata = try? JSONDecoder().decode(RequestMetadata.self, from: data ?? Data())
+
+        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedMetadata))
         let expectedResult: [String: Any] =
             ["state.entries[0].key": "key",
              "state.entries[0].maxAge": 3600,

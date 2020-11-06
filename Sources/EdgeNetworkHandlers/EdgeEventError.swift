@@ -26,4 +26,10 @@ struct EdgeEventError: Codable {
 
     /// Error namespace info
     let namespace: String?
+    
+    /// A flag indicating whether or not this `EdgeEventError` is recoverable
+    var isRecoverable: Bool {
+        let recoverableCodes = ["502", "503", "504", "429"]
+        return recoverableCodes.contains(code ?? "")
+    }
 }
