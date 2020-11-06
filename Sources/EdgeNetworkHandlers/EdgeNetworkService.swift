@@ -77,7 +77,7 @@ class EdgeNetworkService {
     ///   - retryTimes: number of retries required for this request in case the connection failed or a `recoverableNetworkErrorCodes` was encountered
     func doRequest(url: URL, requestBody: EdgeRequest, requestHeaders: [String: String]? = [:], responseCallback: ResponseCallback, retryTimes: UInt = 0) {
         // AMSDK-8909 check if this network request fails and needs a retry. The retry will happen right away, repeatedly (if needed)
-        // for maximim retryTimes or until the request is accepted by the server.
+        // for maximum retryTimes or until the request is accepted by the server.
         // To be reconsidered when implementing AMSDK-9829 when we may not need the max retries limit anymore.
 
         var shouldRetry = self.doRequest(url: url, requestBody: requestBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
@@ -272,7 +272,7 @@ class EdgeNetworkService {
 extension String {
     /// Converts a String to Character. The `string` needs to have only one Character and it should not be empty.
     /// - Parameter string: String to be convert to Character
-    /// - Returns: the result Character or nil if the convertion failed
+    /// - Returns: the result Character or nil if the conversion failed
     func convertToCharacter() -> Character? {
         guard self.count == 1 else {
             Log.trace(label: "convertToCharacter", "Unable to decode Character with multiple characters (\(self))")
