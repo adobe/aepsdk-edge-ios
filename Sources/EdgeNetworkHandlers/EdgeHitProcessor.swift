@@ -16,8 +16,8 @@ import Foundation
 class EdgeHitProcessor: HitProcessing {
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
-    var retryInterval = TimeInterval(30)
-    
+    var retryInterval = TimeInterval(5)
+
     init(networkService: EdgeNetworkService, networkResponseHandler: NetworkResponseHandler) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
@@ -38,7 +38,7 @@ class EdgeHitProcessor: HitProcessing {
                                  responseCallback: hitCallback,
                                  retryTimes: Constants.Defaults.NETWORK_REQUEST_MAX_RETRIES)
     }
-    
+
 }
 
 /// A wrapper struct to handle the network service callback and pass it to the customer facing callback
@@ -60,7 +60,7 @@ private struct EdgeHitResponseCallback: ResponseCallback {
                         "onError - The conversion to JSON failed for server error response: \(jsonError)")
             return
         }
-        
+
         callback.onError(jsonError: jsonError)
         let isRecoverable = edgeErrorResponse.errors?.contains(where: {$0.isRecoverable}) ?? false
         completion(!isRecoverable) // error, retry this hit if it is recoverable

@@ -14,7 +14,7 @@ import Foundation
 
 /// A response from the Adobe Experience Edge server.
 /// An `EdgeResponse` is the top-level response object received from the server.
-struct EdgeResponse: Decodable {
+struct EdgeResponse: Codable {
 
     /// The request identifier associated with this response
     let requestId: String?
