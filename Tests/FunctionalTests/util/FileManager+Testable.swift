@@ -10,20 +10,24 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
+@testable import AEPServices
 import Foundation
 
-/// Struct which represents an Identity hit
-struct EdgeHit: Codable {
-    /// URL to be requested for this Edge hit
-    let url: URL
+extension FileManager {
 
-    /// The `EdgeRequest` for the corresponding hit
-    let request: EdgeRequest
+    func clearCache() {
+        if let url = self.urls(for: .cachesDirectory, in: .userDomainMask).first {
 
-    /// Request headers for this `EdgeHit`
-    let headers: [String: String]
+            do {
+                try self.removeItem(at: URL(fileURLWithPath: "\(url.relativePath)/com.adobe.edge"))
+                if let dqService = ServiceProvider.shared.dataQueueService as? DataQueueService {
+                    let _ = dqService.threadSafeDictionary.removeValue(forKey: "com.adobe.edge")
+                }
+            } catch {
+                print("ERROR DESCRIPTION: \(error)")
+            }
+        }
 
-    /// The `Event` associated with the `EdgeHit`
-    let event: Event
+    }
+
 }

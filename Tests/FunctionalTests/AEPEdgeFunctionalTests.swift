@@ -51,6 +51,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     override func setUp() {
         super.setUp()
         continueAfterFailure = false
+        FileManager.default.clearCache()
 
         // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, Edge), Identity and Config shared state updates
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)

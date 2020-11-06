@@ -20,7 +20,7 @@ public class Edge: NSObject, Extension {
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
     private var hitQueue: HitQueuing?
-    
+
     // MARK: - Extension
     public var name = Constants.EXTENSION_NAME
     public var friendlyName = Constants.FRIENDLY_NAME
@@ -39,7 +39,7 @@ public class Edge: NSObject, Extension {
         let hitProcessor = EdgeHitProcessor(networkService: networkService, networkResponseHandler: networkResponseHandler)
         hitQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
         hitQueue?.beginProcessing()
-        
+
         super.init()
     }
 
@@ -117,10 +117,11 @@ public class Edge: NSObject, Extension {
         // Build and send the network request to Experience Edge
         let listOfEvents: [Event] = [event]
         guard let requestPayload = requestBuilder.getRequestPayload(listOfEvents) else {
-            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
+            Log.debug(label: LOG_TAG,
+                      "handleExperienceEventRequest - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
             return
         }
-        
+
         let requestId: String = UUID.init().uuidString
         // NOTE: the order of these events needs to be maintained as they were sent in the network request
         // otherwise the response callback cannot be matched
@@ -134,7 +135,11 @@ public class Edge: NSObject, Extension {
         }
 
         let edgeHit = EdgeHit(url: url, request: requestPayload, headers: requestHeaders, event: event)
-        let edgeHitData = try! JSONEncoder().encode(edgeHit)
+        guard let edgeHitData = try? JSONEncoder().encode(edgeHit) else {
+            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode edge hit: '\(event.id.uuidString)'.")
+            return
+        }
+
         let entity = DataEntity(uniqueIdentifier: requestId, timestamp: event.timestamp, data: edgeHitData)
         hitQueue?.queue(entity: entity)
     }
