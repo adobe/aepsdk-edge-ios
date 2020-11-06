@@ -79,6 +79,7 @@ enum Constants {
     enum JsonKeys {
         static let XDM = "xdm"
         static let DATA = "data"
+        static let QUERY = "query"
         static let ECID = "ECID"
         static let TIMESTAMP = "timestamp"
         static let EVENT_ID = "_id"

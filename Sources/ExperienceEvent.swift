@@ -20,6 +20,9 @@ public class ExperienceEvent: NSObject {
 
     /// Optional free-form data associated with this event
     public let data: [String: Any]?
+    
+    /// Optional free-form query data associated with this event
+    public var query: [String: Any]?
 
     /// Adobe Experience Platform dataset identifier, if not set the default dataset identifier set in the Edge Configuration is used
     public let datasetIdentifier: String?
@@ -56,6 +59,10 @@ public class ExperienceEvent: NSObject {
         }
         if let unwrappedData = data {
             dataDict[Constants.JsonKeys.DATA] = unwrappedData
+        }
+        
+        if let query = query {
+            dataDict[Constants.JsonKeys.QUERY] = query
         }
 
         if let unwrappedDatasetId = datasetIdentifier {

@@ -26,8 +26,8 @@ public extension Edge {
     ///                     Adobe Experience Edge. It may be invoked on a different thread and may be invoked multiple times
     static func sendEvent(experienceEvent: ExperienceEvent, responseHandler: EdgeResponseHandler? = nil) {
 
-        guard let xdmData = experienceEvent.xdm, !xdmData.isEmpty, let eventData = experienceEvent.asDictionary() else {
-            Log.debug(label: LOG_TAG, "Failed to dispatch the experience event because the XDM data was nil/empty.")
+        guard let _ = experienceEvent.xdm, let eventData = experienceEvent.asDictionary() else {
+            Log.debug(label: LOG_TAG, "Failed to dispatch the experience event because the XDM data was nil.")
             return
         }
 

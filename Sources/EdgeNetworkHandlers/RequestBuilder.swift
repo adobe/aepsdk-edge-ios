@@ -97,6 +97,10 @@ class RequestBuilder {
                 eventData[Constants.JsonKeys.XDM] = xdm
             }
 
+            if let query = eventData[Constants.JsonKeys.QUERY] as? [String: Any] {
+                eventData[Constants.JsonKeys.QUERY] = query
+            }
+
             // enable collect override if a valid dataset is provided
             if let datasetId = eventData[Constants.EventDataKeys.DATASET_ID] as? String {
                 let trimmedDatasetId = datasetId.trimmingCharacters(in: CharacterSet.whitespaces)

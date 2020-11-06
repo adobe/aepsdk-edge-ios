@@ -48,6 +48,8 @@ public class Edge: NSObject, Extension {
                                                           event: event)
             let identitySharedState = getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,
                                                      event: event)
+            
+            let result = configurationSharedState?.status == .set && identitySharedState?.status == .set
             return configurationSharedState?.status == .set && identitySharedState?.status == .set
         }
 
