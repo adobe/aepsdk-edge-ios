@@ -60,8 +60,8 @@ public class ExperienceEvent: NSObject {
         if let unwrappedData = data {
             dataDict[Constants.JsonKeys.DATA] = unwrappedData
         }
-        
-        if let query = query {
+
+        if let query = query, query.count > 0 {
             dataDict[Constants.JsonKeys.QUERY] = query
         }
 
