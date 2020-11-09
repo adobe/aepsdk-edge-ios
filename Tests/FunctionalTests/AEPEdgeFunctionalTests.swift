@@ -10,8 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
-import AEPEdge
+@testable import AEPCore
+@testable import AEPEdge
 import AEPIdentity
 import AEPServices
 import Foundation
@@ -551,6 +551,98 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
         XCTAssertEqual(0, data["eventIndex"] as? Int)
         XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
+    }
+
+    // MARK: test persisted hits
+
+    func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersisting() {
+        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
+        let responseData = try? JSONEncoder().encode(edgeResponse)
+
+        let responseConnection: HttpConnection = HttpConnection(data: responseData,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 502,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm",
+                                                    "testInt": 10,
+                                                    "testBool": false,
+                                                    "testDouble": 12.89,
+                                                    "testArray": ["arrayElem1", 2, true],
+                                                    "testDictionary": ["key": "val"]])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // reset event hub to mimic a shutdown
+        EventHub.reset()
+        resetTestExpectations()
+
+        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                      statusCode: 200,
+                                                                                      httpVersion: nil,
+                                                                                      headerFields: nil),
+                                                            error: nil)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+
+        let expectation = XCTestExpectation(description: "Did assert network count")
+
+        // after starting the SDK again, the previously queued hit should be sent out
+        MobileCore.registerExtensions([Identity.self, Edge.self], {
+            self.assertNetworkRequestsCount()
+            expectation.fulfill()
+        })
+
+        wait(for: [expectation], timeout: 0.5)
+    }
+
+    func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
+        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
+        let responseData = try? JSONEncoder().encode(edgeResponse)
+
+        let responseConnection: HttpConnection = HttpConnection(data: responseData,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 502,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm",
+                                                    "testInt": 10,
+                                                    "testBool": false,
+                                                    "testDouble": 12.89,
+                                                    "testArray": ["arrayElem1", 2, true],
+                                                    "testDictionary": ["key": "val"]])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // reset event hub to mimic a shutdown
+        EventHub.reset()
+        resetTestExpectations()
+
+        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                      statusCode: 200,
+                                                                                      httpVersion: nil,
+                                                                                      headerFields: nil),
+                                                            error: nil)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 3)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+
+        let expectation = XCTestExpectation(description: "Did assert network count")
+
+        // after starting the SDK again, the previously queued hit should be sent out
+        MobileCore.registerExtensions([Identity.self, Edge.self], {
+            self.assertNetworkRequestsCount()
+            expectation.fulfill()
+        })
+
+        wait(for: [expectation], timeout: 0.5)
     }
 }
 
