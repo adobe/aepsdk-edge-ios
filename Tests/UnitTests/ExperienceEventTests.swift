@@ -17,6 +17,7 @@ class ExperienceEventTests: XCTestCase {
     private let datasetId = "datasetId"
     private let xdm = "xdm"
     private let data = "data"
+    private let query = "query"
 
     func generateXdm() -> [String: Any] {
         var xdm = [String: Any]()
@@ -131,6 +132,40 @@ class ExperienceEventTests: XCTestCase {
         expectedEventData[datasetId] = "5dd603781b95cc18a83d42ce"
 
         let experienceEvent = ExperienceEvent(xdm: generatedXdmSchema, data: nil)
+        guard let actualEventData = experienceEvent.asDictionary() else {
+            XCTFail("Failed to retrieve experience event asDictionary")
+            return
+        }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+    }
+
+    func testAsDictionary_withQuery() {
+
+        let expectedQuery = generateData()
+        var expectedEventData: [String: Any] = [:]
+        expectedEventData[xdm] = expectedXdmSchema
+        expectedEventData[data] = nil
+        expectedEventData[datasetId] = "5dd603781b95cc18a83d42ce"
+        expectedEventData[query] = expectedQuery
+
+        let experienceEvent = ExperienceEvent(xdm: generatedXdmSchema, data: nil)
+        experienceEvent.query = expectedQuery
+        guard let actualEventData = experienceEvent.asDictionary() else {
+            XCTFail("Failed to retrieve experience event asDictionary")
+            return
+        }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+    }
+
+    func testAsDictionary_withNilQuery() {
+
+        var expectedEventData: [String: Any] = [:]
+        expectedEventData[xdm] = expectedXdmSchema
+        expectedEventData[data] = nil
+        expectedEventData[datasetId] = "5dd603781b95cc18a83d42ce"
+
+        let experienceEvent = ExperienceEvent(xdm: generatedXdmSchema, data: nil)
+        experienceEvent.query = nil
         guard let actualEventData = experienceEvent.asDictionary() else {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
