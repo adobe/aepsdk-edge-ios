@@ -592,6 +592,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         // after starting the SDK again, the previously queued hit should be sent out
         MobileCore.registerExtensions([Identity.self, Edge.self], {
+            sleep(2)
             self.assertNetworkRequestsCount()
             expectation.fulfill()
         })
@@ -638,6 +639,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         // after starting the SDK again, the previously queued hit should be sent out
         MobileCore.registerExtensions([Identity.self, Edge.self], {
+            sleep(2)
             self.assertNetworkRequestsCount()
             expectation.fulfill()
         })
