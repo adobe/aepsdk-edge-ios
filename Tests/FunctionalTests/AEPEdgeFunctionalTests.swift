@@ -588,16 +588,14 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        let expectation = XCTestExpectation(description: "Did assert network count")
-
         // after starting the SDK again, the previously queued hit should be sent out
+        let waitForRegistration = CountDownLatch(1)
         MobileCore.registerExtensions([Identity.self, Edge.self], {
-            sleep(2)
-            self.assertNetworkRequestsCount()
-            expectation.fulfill()
+            waitForRegistration.countDown()
         })
 
-        wait(for: [expectation], timeout: 5.0)
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
+        self.assertNetworkRequestsCount()
     }
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
@@ -635,16 +633,15 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 3)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        let expectation = XCTestExpectation(description: "Did assert network count")
-
         // after starting the SDK again, the previously queued hit should be sent out
+        let waitForRegistration = CountDownLatch(1)
         MobileCore.registerExtensions([Identity.self, Edge.self], {
-            sleep(2)
-            self.assertNetworkRequestsCount()
-            expectation.fulfill()
+            waitForRegistration.countDown()
         })
 
-        wait(for: [expectation], timeout: 5.0)
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
+        sleep(1)
+        self.assertNetworkRequestsCount()
     }
 }
 
