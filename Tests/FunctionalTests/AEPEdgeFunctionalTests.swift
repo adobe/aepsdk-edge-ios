@@ -566,6 +566,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                                                           headerFields: nil),
                                                                 error: nil)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm",
                                                     "testInt": 10,
@@ -574,6 +575,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                     "testArray": ["arrayElem1", 2, true],
                                                     "testDictionary": ["key": "val"]])
         Edge.sendEvent(experienceEvent: experienceEvent)
+        self.assertNetworkRequestsCount()
 
         // reset event hub to mimic a shutdown
         EventHub.reset()
@@ -609,7 +611,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                                                           headerFields: nil),
                                                                 error: nil)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm",
                                                     "testInt": 10,
                                                     "testBool": false,
@@ -618,6 +620,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                     "testDictionary": ["key": "val"]])
         Edge.sendEvent(experienceEvent: experienceEvent)
         Edge.sendEvent(experienceEvent: experienceEvent)
+
+        self.assertNetworkRequestsCount()
 
         // reset event hub to mimic a shutdown
         EventHub.reset()
