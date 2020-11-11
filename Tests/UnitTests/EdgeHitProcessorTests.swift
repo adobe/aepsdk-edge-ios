@@ -31,7 +31,7 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     /// Tests that when a `DataEntity` with bad data is passed, that it is not retried and is removed from the queue
-    func testProcessHitBadHit() {
+    func testProcessHit_badHit_decodeFails() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: nil) // entity data does not contain an `EdgeHit`
@@ -48,7 +48,7 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     /// Tests that when a good hit is processed that a network request is made and the request returns 200
-    func testProcessHitHappy() {
+    func testProcessHit_happy_sendsNetworkRequest_returnsTrue() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
         guard let expectedUrl = URL(string: "adobe.com") else { XCTFail("Could not create URL"); return }
@@ -74,9 +74,9 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     /// Tests that when the network request fails but has a recoverable error that we will retry the hit and do not invoke the response handler for that hit
-    func testProcessHitRecoverableNetworkError() {
+    func testProcessHit_whenRecoverableNetworkError_sendsNetworkRequest_returnsFalse() {
         // setup
-        let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should be retried")
+        let expectation = XCTestExpectation(description: "Callback should be invoked with false signaling this hit should be retried")
         guard let expectedUrl = URL(string: "adobe.com") else { XCTFail("Could not create URL"); return }
         let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
         let expectedHeaders = ["testHeaderKey": "testHeaderVal"]
@@ -103,7 +103,7 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     /// Tests that when the network request fails and does not have a recoverable response code that we invoke the response handler and do not retry the hit
-    func testProcessHitUnrecoverableNetworkError() {
+    func testProcessHit_whenUnrecoverableNetworkError_sendsNetworkRequest_returnsTrue() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
         guard let expectedUrl = URL(string: "adobe.com") else { XCTFail("Could not create URL"); return }

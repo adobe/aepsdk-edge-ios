@@ -13,7 +13,7 @@
 import AEPCore
 import Foundation
 
-/// Struct which represents an Identity hit
+/// Struct which represents an Edge hit
 struct EdgeHit: Codable {
     /// URL to be requested for this Edge hit
     let url: URL
