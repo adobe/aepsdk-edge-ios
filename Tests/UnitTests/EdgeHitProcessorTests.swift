@@ -51,13 +51,13 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_happy_sendsNetworkRequest_returnsTrue() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        guard let expectedUrl = URL(string: "adobe.com") else { XCTFail("Could not create URL"); return }
+        let expectedConfigId = "test-config-id"
+        let expectedReqId = "test-req-id"
         let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
         let expectedHeaders = ["testHeaderKey": "testHeaderVal"]
         let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
-        let hit = EdgeHit(url: expectedUrl, request: expectedRequest, headers: expectedHeaders, event: expectedEvent)
-
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: expectedUrl, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, headers: expectedHeaders, event: expectedEvent)
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(hit))
 
@@ -70,23 +70,22 @@ class EdgeHitProcessorTests: XCTestCase {
         // verify
         wait(for: [expectation], timeout: 1)
         XCTAssertTrue(mockNetworkService?.connectAsyncCalled ?? false) // network request should have been made
-        XCTAssertEqual(mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url, expectedUrl) // network request should be made with the url in the hit
     }
 
     /// Tests that when the network request fails but has a recoverable error that we will retry the hit and do not invoke the response handler for that hit
     func testProcessHit_whenRecoverableNetworkError_sendsNetworkRequest_returnsFalse() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with false signaling this hit should be retried")
-        guard let expectedUrl = URL(string: "adobe.com") else { XCTFail("Could not create URL"); return }
+        let expectedConfigId = "test-config-id"
+        let expectedReqId = "test-req-id"
         let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
         let expectedHeaders = ["testHeaderKey": "testHeaderVal"]
         let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
-        let hit = EdgeHit(url: expectedUrl, request: expectedRequest, headers: expectedHeaders, event: expectedEvent)
-
+        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, headers: expectedHeaders, event: expectedEvent)
         let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [EdgeEventError(eventIndex: 0, message: "test-err", code: "502", namespace: nil)], warnings: nil)
         let responseData = try? JSONEncoder().encode(edgeResponse)
 
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData, response: HTTPURLResponse(url: expectedUrl, statusCode: 502, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData, response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 502, httpVersion: nil, headerFields: nil), error: nil)
 
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(hit))
 
@@ -99,19 +98,19 @@ class EdgeHitProcessorTests: XCTestCase {
         // verify
         wait(for: [expectation], timeout: 1)
         XCTAssertTrue(mockNetworkService?.connectAsyncCalled ?? false) // network request should have been made
-        XCTAssertEqual(mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url, expectedUrl) // network request should be made with the url in the hit
     }
 
     /// Tests that when the network request fails and does not have a recoverable response code that we invoke the response handler and do not retry the hit
     func testProcessHit_whenUnrecoverableNetworkError_sendsNetworkRequest_returnsTrue() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        guard let expectedUrl = URL(string: "adobe.com") else { XCTFail("Could not create URL"); return }
+        let expectedConfigId = "test-config-id"
+        let expectedReqId = "test-req-id"
         let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
         let expectedHeaders = ["testHeaderKey": "testHeaderVal"]
         let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
-        let hit = EdgeHit(url: expectedUrl, request: expectedRequest, headers: expectedHeaders, event: expectedEvent)
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: expectedUrl, statusCode: -1, httpVersion: nil, headerFields: nil), error: nil)
+        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, headers: expectedHeaders, event: expectedEvent)
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: -1, httpVersion: nil, headerFields: nil), error: nil)
 
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(hit))
 
@@ -124,6 +123,5 @@ class EdgeHitProcessorTests: XCTestCase {
         // verify
         wait(for: [expectation], timeout: 1)
         XCTAssertTrue(mockNetworkService?.connectAsyncCalled ?? false) // network request should have been made
-        XCTAssertEqual(mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url, expectedUrl) // network request should be made with the url in the hit
     }
 }

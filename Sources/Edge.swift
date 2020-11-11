@@ -113,25 +113,18 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        let requestId: String = UUID.init().uuidString
-        // NOTE: the order of these events needs to be maintained as they were sent in the network request
-        // otherwise the response callback cannot be matched
-        networkResponseHandler.addWaitingEvents(requestId: requestId,
-                                                batchedEvents: listOfEvents)
-        guard let url: URL = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
-                                                     configId: configId,
-                                                     requestId: requestId) else {
-            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(event.id.uuidString)'.")
-            return
-        }
-
-        let edgeHit = EdgeHit(url: url, request: requestPayload, headers: requestHeaders, event: event)
+        let edgeHit = EdgeHit(configId: configId, requestId: UUID().uuidString, request: requestPayload, headers: requestHeaders, event: event)
         guard let edgeHitData = try? JSONEncoder().encode(edgeHit) else {
             Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode edge hit: '\(event.id.uuidString)'.")
             return
         }
 
-        let entity = DataEntity(uniqueIdentifier: requestId, timestamp: event.timestamp, data: edgeHitData)
+        // NOTE: the order of these events needs to be maintained as they were sent in the network request
+        // otherwise the response callback cannot be matched
+        networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
+                                                batchedEvents: listOfEvents)
+
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: edgeHitData)
         hitQueue?.queue(entity: entity)
     }
 

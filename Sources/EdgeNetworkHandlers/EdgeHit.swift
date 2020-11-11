@@ -15,8 +15,11 @@ import Foundation
 
 /// Struct which represents an Edge hit
 struct EdgeHit: Codable {
-    /// URL to be requested for this Edge hit
-    let url: URL
+    /// The Edge configuration identifier
+    let configId: String
+
+    /// Unique identifier for this hit
+    let requestId: String
 
     /// The `EdgeRequest` for the corresponding hit
     let request: EdgeRequest

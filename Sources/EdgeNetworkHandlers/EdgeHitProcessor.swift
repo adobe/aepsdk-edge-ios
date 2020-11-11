@@ -33,9 +33,18 @@ class EdgeHitProcessor: HitProcessing {
             return
         }
 
-        let callback: ResponseCallback = NetworkResponseCallback(requestId: entity.uniqueIdentifier, responseHandler: networkResponseHandler)
+        guard let url: URL = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
+                                                     configId: edgeHit.configId,
+                                                     requestId: edgeHit.requestId) else {
+                                                        Log.debug(label: LOG_TAG,
+                                                                  "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(edgeHit.event.id.uuidString)'.")
+                                                        completion(true)
+                                                        return
+        }
+
+        let callback = NetworkResponseCallback(requestId: edgeHit.requestId, responseHandler: networkResponseHandler)
         let hitCallback = EdgeHitResponseCallback(completion: completion, callback: callback)
-        networkService.doRequest(url: edgeHit.url,
+        networkService.doRequest(url: url,
                                  requestBody: edgeHit.request,
                                  requestHeaders: edgeHit.headers,
                                  responseCallback: hitCallback,
