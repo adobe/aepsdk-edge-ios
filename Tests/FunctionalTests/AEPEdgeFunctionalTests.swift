@@ -618,7 +618,6 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                     "testDictionary": ["key": "val"]])
         Edge.sendEvent(experienceEvent: experienceEvent)
         Edge.sendEvent(experienceEvent: experienceEvent)
-        Edge.sendEvent(experienceEvent: experienceEvent)
 
         // reset event hub to mimic a shutdown
         EventHub.reset()
@@ -630,7 +629,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 3)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         // after starting the SDK again, the previously queued hit should be sent out
