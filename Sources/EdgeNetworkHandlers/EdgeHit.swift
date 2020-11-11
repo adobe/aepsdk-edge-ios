@@ -24,9 +24,6 @@ struct EdgeHit: Codable {
     /// The `EdgeRequest` for the corresponding hit
     let request: EdgeRequest
 
-    /// Request headers for this `EdgeHit`
-    let headers: [String: String]
-
     /// The `Event` associated with the `EdgeHit`
     let event: Event
 }

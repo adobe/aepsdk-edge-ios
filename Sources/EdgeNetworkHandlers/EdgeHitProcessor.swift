@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPCore
 import AEPServices
 import Foundation
 
@@ -18,11 +19,13 @@ class EdgeHitProcessor: HitProcessing {
     private let LOG_TAG = "EdgeHitProcessor"
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
+    private var getSharedState: (String, Event?) -> SharedStateResult?
     var retryInterval = TimeInterval(5)
 
-    init(networkService: EdgeNetworkService, networkResponseHandler: NetworkResponseHandler) {
+    init(networkService: EdgeNetworkService, networkResponseHandler: NetworkResponseHandler, getSharedState: @escaping (String, Event?) -> SharedStateResult?) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
+        self.getSharedState = getSharedState
     }
 
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
@@ -33,7 +36,15 @@ class EdgeHitProcessor: HitProcessing {
             return
         }
 
-        guard let url: URL = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
+        // get Assurance integration id and include it in to the requestHeaders
+        var requestHeaders: [String: String] = [:]
+        if let assuranceSharedState = getSharedState(Constants.SharedState.Assurance.STATE_OWNER_NAME, edgeHit.event)?.value {
+            if let assuranceIntegrationId = assuranceSharedState[Constants.SharedState.Assurance.INTEGRATION_ID] as? String {
+                requestHeaders[Constants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
+            }
+        }
+
+        guard let url = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
                                                      configId: edgeHit.configId,
                                                      requestId: edgeHit.requestId) else {
                                                         Log.debug(label: LOG_TAG,
@@ -43,41 +54,11 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         let callback = NetworkResponseCallback(requestId: edgeHit.requestId, responseHandler: networkResponseHandler)
-        let hitCallback = EdgeHitResponseCallback(completion: completion, callback: callback)
         networkService.doRequest(url: url,
                                  requestBody: edgeHit.request,
-                                 requestHeaders: edgeHit.headers,
-                                 responseCallback: hitCallback,
-                                 retryTimes: Constants.Defaults.NETWORK_REQUEST_MAX_RETRIES)
-    }
-
-}
-
-/// A wrapper struct to handle the network service callback and pass it to the customer facing callback
-private struct EdgeHitResponseCallback: ResponseCallback {
-    private let LOG_TAG = "EdgeHitResponseCallback"
-    let completion: (Bool) -> Void
-    let callback: ResponseCallback
-
-    func onResponse(jsonResponse: String) {
-        callback.onResponse(jsonResponse: jsonResponse)
-        completion(true)
-    }
-
-    func onError(jsonError: String) {
-        guard let data = jsonError.data(using: .utf8) else { return }
-        guard let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) else {
-            Log.warning(label: LOG_TAG, "onError - The conversion to JSON failed for server error response: \(jsonError).")
-            return
-        }
-
-        callback.onError(jsonError: jsonError)
-        let isRecoverable = edgeErrorResponse.errors?.contains(where: {$0.isRecoverable}) ?? false
-        completion(!isRecoverable) // error, retry this hit if it is recoverable
-    }
-
-    func onComplete() {
-        callback.onComplete()
+                                 requestHeaders: requestHeaders,
+                                 responseCallback: callback,
+                                 completion: completion)
     }
 
 }

@@ -97,14 +97,6 @@ public class Edge: NSObject, Extension {
             Log.warning(label: LOG_TAG, "handleExperienceEventRequest - An unexpected error has occurred, ECID is nil.")
         }
 
-        // get Assurance integration id and include it in to the requestHeaders
-        var requestHeaders: [String: String] = [:]
-        if let assuranceSharedState = getSharedState(extensionName: Constants.SharedState.Assurance.STATE_OWNER_NAME, event: event)?.value {
-            if let assuranceIntegrationId = assuranceSharedState[Constants.SharedState.Assurance.INTEGRATION_ID] as? String {
-                requestHeaders[Constants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
-            }
-        }
-
         // Build and send the network request to Experience Edge
         let listOfEvents: [Event] = [event]
         guard let requestPayload = requestBuilder.getRequestPayload(listOfEvents) else {
@@ -113,7 +105,7 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        let edgeHit = EdgeHit(configId: configId, requestId: UUID().uuidString, request: requestPayload, headers: requestHeaders, event: event)
+        let edgeHit = EdgeHit(configId: configId, requestId: UUID().uuidString, request: requestPayload, event: event)
         guard let edgeHitData = try? JSONEncoder().encode(edgeHit) else {
             Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode edge hit: '\(event.id.uuidString)'.")
             return
@@ -159,7 +151,9 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        let hitProcessor = EdgeHitProcessor(networkService: networkService, networkResponseHandler: networkResponseHandler)
+        let hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                            networkResponseHandler: networkResponseHandler,
+                                            getSharedState: getSharedState(extensionName:event:))
         hitQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
         hitQueue?.beginProcessing()
     }

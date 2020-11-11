@@ -22,12 +22,6 @@ enum ExperienceEdgeRequestType: String {
     case collect
 }
 
-/// Used to identify if a `NetworkRequest` should be retried or not
-enum RetryNetworkRequest: Int {
-    case yes
-    case no
-}
-
 /// Convenience enum for the known error codes
 enum HttpResponseCodes: Int {
     case ok = 200
@@ -74,41 +68,16 @@ class EdgeNetworkService {
     ///   - requestBody: `EdgeRequest` containing the encoded events
     ///   - requestHeaders: request HTTP headers
     ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
-    ///   - retryTimes: number of retries required for this request in case the connection failed or a `recoverableNetworkErrorCodes` was encountered
-    func doRequest(url: URL, requestBody: EdgeRequest, requestHeaders: [String: String]? = [:], responseCallback: ResponseCallback, retryTimes: UInt = 0) {
-        // AMSDK-8909 check if this network request fails and needs a retry. The retry will happen right away, repeatedly (if needed)
-        // for maximum retryTimes or until the request is accepted by the server.
-        // To be reconsidered when implementing AMSDK-9829 when we may not need the max retries limit anymore.
-
-        var shouldRetry = self.doRequest(url: url, requestBody: requestBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
-        var retries = 0
-        while shouldRetry == RetryNetworkRequest.yes && retries < retryTimes {
-            Log.debug(label: LOG_TAG, "doRequest - Error occurred for network request, retrying...")
-            shouldRetry = self.doRequest(url: url, requestBody: requestBody, requestHeaders: requestHeaders, responseCallback: responseCallback)
-            retries += 1
-        }
-
-        // force cleanup if the network request did not succeed
-        if shouldRetry == RetryNetworkRequest.yes {
-            responseCallback.onComplete()
-        }
-    }
-
-    /// Make a network request to the Experience Edge and handle the connection.
-    /// - Parameters:
-    ///   - url: request URL
-    ///   - requestBody: `EdgeRequest` containing the encoded events
-    ///   - requestHeaders: request HTTP headers
-    ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
-    /// - Returns: `RetryNetworkRequest` status, returns yes if the connection was not successful or a `recoverableNetworkErrorCodes` was encountered; the caller should retry this request if needed
-    func doRequest(url: URL, requestBody: EdgeRequest, requestHeaders: [String: String]? = [:], responseCallback: ResponseCallback) -> RetryNetworkRequest {
-        var shouldRetry: RetryNetworkRequest = RetryNetworkRequest.no
+    ///   - completion: a closure that is invoked with true if the hit should not be retried, false if the hit should be retried
+    func doRequest(url: URL, requestBody: EdgeRequest, requestHeaders: [String: String]? = [:], responseCallback: ResponseCallback, completion: @escaping (Bool) -> Void) {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
 
         guard let data = try? encoder.encode(requestBody) else {
             Log.warning(label: LOG_TAG, "doRequest - Failed to encode request to JSON, dropping this request")
-            return shouldRetry
+            responseCallback.onComplete()
+            completion(true)
+            return
         }
 
         let headers = defaultHeaders.merging(requestHeaders ?? [:]) { _, new in new}
@@ -122,52 +91,44 @@ class EdgeNetworkService {
                                                             readTimeout: Constants.NetworkKeys.DEFAULT_READ_TIMEOUT)
         Log.debug(label: LOG_TAG, "doRequest - Sending request to URL \(url.absoluteString) with headers: \(headers) and body: \n\(payload)")
 
-        // make sync call to process the response right away and retry if needed
-        let semaphore = DispatchSemaphore(value: 0)
-
         ServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest) { (connection: HttpConnection) in
             if connection.error != nil {
                 // handle generic error
                 self.handleError(connection: connection, responseCallback: responseCallback)
-
-                shouldRetry = RetryNetworkRequest.no
-                semaphore.signal()
+                responseCallback.onComplete()
+                completion(true) // don't retry
                 return
             }
 
-            shouldRetry = RetryNetworkRequest.no
             if let responseCode = connection.responseCode {
                 if responseCode == HttpResponseCodes.ok.rawValue {
                     Log.debug(label: self.LOG_TAG, "doRequest - Interact connection to Experience Edge was successful.")
                     self.handleContent(connection: connection,
                                        streaming: requestBody.meta?.konductorConfig?.streaming,
                                        responseCallback: responseCallback)
-
+                    responseCallback.onComplete()
+                    completion(true) // successful request, return true
                 } else if responseCode == HttpResponseCodes.noContent.rawValue {
                     // Successful collect requests do not return content
                     Log.debug(label: self.LOG_TAG, "doRequest - Collect connection to Experience Edge was successful.")
-
+                    responseCallback.onComplete()
+                    completion(true) // successful request, return true
                 } else if self.recoverableNetworkErrorCodes.contains(responseCode) {
                     Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned recoverable error code \(responseCode)")
-                    shouldRetry = RetryNetworkRequest.yes
+                    completion(false) // failed, but recoverable so retry
                 } else {
                     Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unrecoverable error code \(responseCode)")
                     self.handleError(connection: connection, responseCallback: responseCallback)
+                    responseCallback.onComplete()
+                    completion(true) // failed, but unrecoverable, don't retry
                 }
             } else {
                 Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unknown error")
                 self.handleError(connection: connection, responseCallback: responseCallback)
+                responseCallback.onComplete()
+                completion(true) // failed, but unrecoverable, don't retry
             }
-
-            semaphore.signal()
         }
-
-        _ = semaphore.wait(timeout: .now() + waitTimeout)
-        if shouldRetry == RetryNetworkRequest.no {
-            responseCallback.onComplete()
-        }
-
-        return shouldRetry
     }
 
     /// Attempts the read the response from the `connection`and return the content via the `responseCallback`. This method should be used for handling 2xx server responses.

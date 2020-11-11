@@ -29,7 +29,10 @@ struct EdgeEventError: Codable {
 
     /// A flag indicating whether or not this `EdgeEventError` is recoverable
     var isRecoverable: Bool {
-        let recoverableCodes = ["502", "503", "504", "429"]
-        return recoverableCodes.contains(code ?? "")
+        let recoverableNetworkErrorCodes = [HttpResponseCodes.clientTimeout.rawValue,
+                                                           HttpResponseCodes.tooManyRequests.rawValue,
+                                                           HttpResponseCodes.serviceUnavailable.rawValue,
+                                                           HttpResponseCodes.gatewayTimeout.rawValue]
+        return recoverableNetworkErrorCodes.contains(Int(code ?? "-1") ?? -1)
     }
 }

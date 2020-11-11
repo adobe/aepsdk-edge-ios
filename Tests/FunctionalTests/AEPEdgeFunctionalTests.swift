@@ -390,7 +390,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(7, requestBody.count)
         resetTestExpectations()
 
-        sleep(2)
+        sleep(1)
 
         // send a new event, should contain previously stored store data
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
@@ -596,7 +596,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             expectation.fulfill()
         })
 
-        wait(for: [expectation], timeout: 0.5)
+        wait(for: [expectation], timeout: 5.0)
     }
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
@@ -642,7 +642,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             expectation.fulfill()
         })
 
-        wait(for: [expectation], timeout: 0.5)
+        wait(for: [expectation], timeout: 5.0)
     }
 }
 

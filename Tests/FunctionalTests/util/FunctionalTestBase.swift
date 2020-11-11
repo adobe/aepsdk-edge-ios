@@ -263,7 +263,7 @@ class FunctionalTestBase: XCTestCase {
         }
 
         for expectedRequest in expectedNetworkRequests {
-            let waitResult = expectedRequest.value.await(timeout: 2)
+            let waitResult = expectedRequest.value.await(timeout: 5)
             let expectedCount: Int32 = expectedRequest.value.getInitialCount()
             let receivedCount: Int32 = expectedRequest.value.getInitialCount() - expectedRequest.value.getCurrentCount()
             XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(expectedRequest.key.url.absoluteString) and HTTPMethod \(expectedRequest.key.httpMethod.toString()), expected \(expectedCount) but received \(receivedCount)", file: file, line: line)

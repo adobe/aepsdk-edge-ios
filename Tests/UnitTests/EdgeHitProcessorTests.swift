@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
+@testable import AEPCore
 @testable import AEPEdge
 import AEPServices
 import XCTest
@@ -23,11 +23,15 @@ class EdgeHitProcessorTests: XCTestCase {
         return ServiceProvider.shared.networkService as? MockNetworking
     }
 
+    let expectedHeaders = [Constants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN: "test-int-id"]
+
     override func setUp() {
         ServiceProvider.shared.networkService = MockNetworking()
         networkService = EdgeNetworkService()
         networkResponseHandler = NetworkResponseHandler()
-        hitProcessor = EdgeHitProcessor(networkService: networkService, networkResponseHandler: networkResponseHandler)
+        hitProcessor = EdgeHitProcessor(networkService: networkService, networkResponseHandler: networkResponseHandler, getSharedState: { _, _ -> SharedStateResult? in
+            return SharedStateResult(status: .set, value: [Constants.SharedState.Assurance.INTEGRATION_ID: "test-int-id"])
+        })
     }
 
     /// Tests that when a `DataEntity` with bad data is passed, that it is not retried and is removed from the queue
@@ -54,9 +58,8 @@ class EdgeHitProcessorTests: XCTestCase {
         let expectedConfigId = "test-config-id"
         let expectedReqId = "test-req-id"
         let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
-        let expectedHeaders = ["testHeaderKey": "testHeaderVal"]
         let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
-        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, headers: expectedHeaders, event: expectedEvent)
+        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, event: expectedEvent)
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(hit))
@@ -75,24 +78,32 @@ class EdgeHitProcessorTests: XCTestCase {
     /// Tests that when the network request fails but has a recoverable error that we will retry the hit and do not invoke the response handler for that hit
     func testProcessHit_whenRecoverableNetworkError_sendsNetworkRequest_returnsFalse() {
         // setup
+        let recoverableNetworkErrorCodes = [HttpResponseCodes.clientTimeout.rawValue,
+                                                           HttpResponseCodes.tooManyRequests.rawValue,
+                                                           HttpResponseCodes.serviceUnavailable.rawValue,
+                                                           HttpResponseCodes.gatewayTimeout.rawValue]
+
         let expectation = XCTestExpectation(description: "Callback should be invoked with false signaling this hit should be retried")
+        expectation.expectedFulfillmentCount = recoverableNetworkErrorCodes.count
         let expectedConfigId = "test-config-id"
         let expectedReqId = "test-req-id"
         let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
-        let expectedHeaders = ["testHeaderKey": "testHeaderVal"]
         let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
-        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, headers: expectedHeaders, event: expectedEvent)
-        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [EdgeEventError(eventIndex: 0, message: "test-err", code: "502", namespace: nil)], warnings: nil)
-        let responseData = try? JSONEncoder().encode(edgeResponse)
+        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, event: expectedEvent)
 
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData, response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 502, httpVersion: nil, headerFields: nil), error: nil)
+        for code in recoverableNetworkErrorCodes {
+            let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [EdgeEventError(eventIndex: 0, message: "test-err", code: "\(code)", namespace: nil)], warnings: nil)
+            let responseData = try? JSONEncoder().encode(edgeResponse)
 
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(hit))
+            mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData, response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: code, httpVersion: nil, headerFields: nil), error: nil)
 
-        // test
-        hitProcessor.processHit(entity: entity) { success in
-            XCTAssertFalse(success)
-            expectation.fulfill()
+            let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(hit))
+
+            // test
+            hitProcessor.processHit(entity: entity) { success in
+                XCTAssertFalse(success)
+                expectation.fulfill()
+            }
         }
 
         // verify
@@ -107,9 +118,8 @@ class EdgeHitProcessorTests: XCTestCase {
         let expectedConfigId = "test-config-id"
         let expectedReqId = "test-req-id"
         let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
-        let expectedHeaders = ["testHeaderKey": "testHeaderVal"]
         let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
-        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, headers: expectedHeaders, event: expectedEvent)
+        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, event: expectedEvent)
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: -1, httpVersion: nil, headerFields: nil), error: nil)
 
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(hit))

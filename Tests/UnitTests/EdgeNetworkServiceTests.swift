@@ -34,118 +34,150 @@ class EdgeNetworkServiceTests: XCTestCase {
 
     func testDoRequest_whenRequestHeadersAreEmpty_setsDefaultHeaders() {
         let defaultServiceHeaders: [String: String] = ["accept": "application/json", "Content-Type": "application/json"]
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // test
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertTrue(success)
+            XCTAssertTrue(self.mockNetworking.connectAsyncCalled)
+            XCTAssertEqual(defaultServiceHeaders.count + self.defaultNetworkingHeaders.count,
+                           self.mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
+            for header in defaultServiceHeaders {
+                XCTAssertNotNil(self.mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header.key])
+            }
 
-        // verify
-        XCTAssertTrue(mockNetworking.connectAsyncCalled)
-        XCTAssertEqual(defaultServiceHeaders.count + defaultNetworkingHeaders.count,
-                       mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
-        for header in defaultServiceHeaders {
-            XCTAssertNotNil(mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header.key])
-        }
+            for header in self.defaultNetworkingHeaders {
+                XCTAssertNotNil(self.mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header])
+            }
+            expectation.fulfill()
+        })
 
-        for header in defaultNetworkingHeaders {
-            XCTAssertNotNil(mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header])
-        }
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenRequestHeadersExist_RequestHeadersAppendedOnNetworkCall() {
         // setup
         let testHeaders: [String: String] = ["test": "header", "accept": "application/json", "Content-Type": "application/json", "key": "value"]
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // test
         networkService.doRequest(url: url,
                                  requestBody: edgeRequest,
                                  requestHeaders: testHeaders,
                                  responseCallback: mockResponseCallback,
-                                 retryTimes: 0)
+                                 completion: { success in
+                                    // verify
+                                    XCTAssertTrue(success)
+                                    XCTAssertTrue(self.mockNetworking.connectAsyncCalled)
+                                    XCTAssertEqual(testHeaders.count + self.defaultNetworkingHeaders.count, self.mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
+                                    for header in testHeaders {
+                                        XCTAssertNotNil(self.mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header.key])
+                                    }
 
-        // verify
-        XCTAssertTrue(mockNetworking.connectAsyncCalled)
-        XCTAssertEqual(testHeaders.count + defaultNetworkingHeaders.count, mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
-        for header in testHeaders {
-            XCTAssertNotNil(mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header.key])
-        }
+                                    for header in self.defaultNetworkingHeaders {
+                                        XCTAssertNotNil(self.mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header])
+                                    }
+                                    expectation.fulfill()
+                                 })
 
-        for header in defaultNetworkingHeaders {
-            XCTAssertNotNil(mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders[header])
-        }
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenConnection_ResponseCode200_ReturnsRetryNo_AndCallsResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "{\"key\":\"value\"}"
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // test
         let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
                                                 response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
+        networkService.doRequest(url: url,
+                                 requestBody: edgeRequest,
+                                 requestHeaders: [:],
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success in
+                                    // verify
+                                    XCTAssertTrue(success)
+                                    XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
+                                    XCTAssertEqual([stringResponseBody], self.mockResponseCallback.onResponseJsonResponse)
+                                    expectation.fulfill()
+                                 })
 
-        // verify
-        XCTAssertTrue(mockResponseCallback.onResponseCalled)
-        XCTAssertFalse(mockResponseCallback.onErrorCalled)
-        XCTAssertTrue(mockResponseCallback.onCompleteCalled)
-        XCTAssertEqual([stringResponseBody], mockResponseCallback.onResponseJsonResponse)
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenConnection_ResponseCode204_ReturnsRetryNo_AndNoResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "OK"
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // test
         let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
                                                 response: HTTPURLResponse(url: url, statusCode: 204, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertTrue(success)
+            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+            XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
+            XCTAssertEqual([], self.mockResponseCallback.onResponseJsonResponse)
+            expectation.fulfill()
+        })
 
-        // verify
-        XCTAssertFalse(mockResponseCallback.onResponseCalled)
-        XCTAssertFalse(mockResponseCallback.onErrorCalled)
-        XCTAssertTrue(mockResponseCallback.onCompleteCalled)
-        XCTAssertEqual([], mockResponseCallback.onResponseJsonResponse)
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenConnection_RecoverableResponseCode_ReturnsRetryYes_AndNoResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "Service Unavailable"
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // test
         let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
                                                 response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        let retryResult = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertFalse(success)
+            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+            XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
+            XCTAssertEqual([], self.mockResponseCallback.onResponseJsonResponse)
+            expectation.fulfill()
+        })
 
-        // verify
-        XCTAssertEqual(RetryNetworkRequest.yes, retryResult)
-        XCTAssertFalse(mockResponseCallback.onResponseCalled)
-        XCTAssertFalse(mockResponseCallback.onErrorCalled)
-        XCTAssertFalse(mockResponseCallback.onCompleteCalled)
-        XCTAssertEqual([], mockResponseCallback.onResponseJsonResponse)
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithError_ReturnFormattedError() {
         // setup
         let error: NSError = NSError(domain: NSURLErrorDomain, code: NSURLErrorAppTransportSecurityRequiresSecureConnection, userInfo: nil)
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // test
         let mockHttpConnection = HttpConnection(data: nil, response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: error)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        let retryResult = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertTrue(success)
+            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+            XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+            XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
+            let errorJson = self.mockResponseCallback.onErrorJsonError[0]
+            XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
+            XCTAssertTrue(errorJson.contains("\"message\":\"service unavailable\""))
+            expectation.fulfill()
+        })
 
-        // verify
-        XCTAssertEqual(RetryNetworkRequest.no, retryResult)
-        XCTAssertFalse(mockResponseCallback.onResponseCalled)
-        XCTAssertTrue(mockResponseCallback.onErrorCalled)
-        XCTAssertEqual(1, mockResponseCallback.onErrorJsonError.capacity)
-        let errorJson = mockResponseCallback.onErrorJsonError[0]
-        XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
-        XCTAssertTrue(errorJson.contains("\"message\":\"service unavailable\""))
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithNilError_ShouldReturnGenericError() {
@@ -153,38 +185,47 @@ class EdgeNetworkServiceTests: XCTestCase {
         let mockHttpConnection = HttpConnection(data: nil,
                                                 response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil),
                                                 error: nil)
-        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        let retryResult = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
 
-        // verify
-        XCTAssertEqual(RetryNetworkRequest.no, retryResult)
-        XCTAssertFalse(mockResponseCallback.onResponseCalled)
-        XCTAssertTrue(mockResponseCallback.onErrorCalled)
-        XCTAssertEqual(1, mockResponseCallback.onErrorJsonError.capacity)
-        let errorJson = mockResponseCallback.onErrorJsonError[0]
-        XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
-        XCTAssertTrue(errorJson.contains("\"message\":\"Request to Experience Edge failed with an unknown exception\""))
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertTrue(success)
+            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+            XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+            XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
+            let errorJson = self.mockResponseCallback.onErrorJsonError[0]
+            XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
+            XCTAssertTrue(errorJson.contains("\"message\":\"Request to Experience Edge failed with an unknown exception\""))
+            expectation.fulfill()
+        })
+
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithInvalidJsonContent() {
         // setup
         let stringResponseBody = "Internal Server Error"
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // test
         let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
                                                 response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        let retryResult = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertTrue(success)
+            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+            XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+            XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
+            let errorJson = self.mockResponseCallback.onErrorJsonError[0]
+            XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
+            XCTAssertTrue(errorJson.contains("\"message\":\"Internal Server Error\""))
+            expectation.fulfill()
+        })
 
-        // verify
-        XCTAssertEqual(RetryNetworkRequest.no, retryResult)
-        XCTAssertFalse(mockResponseCallback.onResponseCalled)
-        XCTAssertTrue(mockResponseCallback.onErrorCalled)
-        XCTAssertEqual(1, mockResponseCallback.onErrorJsonError.capacity)
-        let errorJson = mockResponseCallback.onErrorJsonError[0]
-        XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
-        XCTAssertTrue(errorJson.contains("\"message\":\"Internal Server Error\""))
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithValidJsonContent() {
@@ -202,70 +243,91 @@ class EdgeNetworkServiceTests: XCTestCase {
             "        }\n" +
             "      ]\n" +
             "    }"
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // test
         let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
                                                 response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        let retryResult = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertTrue(success)
+            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+            XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+            XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
+            let errorJson = self.mockResponseCallback.onErrorJsonError[0]
+            XCTAssertTrue(errorJson.contains(stringResponseBody))
+            expectation.fulfill()
+        })
 
-        // verify
-        XCTAssertEqual(RetryNetworkRequest.no, retryResult)
-        XCTAssertFalse(mockResponseCallback.onResponseCalled)
-        XCTAssertTrue(mockResponseCallback.onErrorCalled)
-        XCTAssertEqual(1, mockResponseCallback.onErrorJsonError.capacity)
-        let errorJson = mockResponseCallback.onErrorJsonError[0]
-        XCTAssertTrue(errorJson.contains(stringResponseBody))
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenRequestProcessed_CallsOnComplete() {
         // setup
         let stringResponseBody = "{\"key\":\"value\"}"
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // test
         let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
                                                 response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertTrue(success)
+            XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
+            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+            XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
+            expectation.fulfill()
+        })
 
-        // verify
-        XCTAssertTrue(mockResponseCallback.onResponseCalled)
-        XCTAssertFalse(mockResponseCallback.onErrorCalled)
-        XCTAssertTrue(mockResponseCallback.onCompleteCalled)
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenRequestNotProcessed_NoCallOnComplete() {
         // setup
         let stringResponseBody = "Service Unavailable"
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
+
         // test
         let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
                                                 response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        _ = networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback)
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertFalse(success)
+            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+            XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
+            expectation.fulfill()
+        })
 
-        // verify
-        XCTAssertFalse(mockResponseCallback.onResponseCalled)
-        XCTAssertFalse(mockResponseCallback.onErrorCalled)
-        XCTAssertFalse(mockResponseCallback.onCompleteCalled)
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testDoRequest_whenRequestNotProcessed_noRetry_CallsOnComplete() {
         // setup
         let stringResponseBody = "Service Unavailable"
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
+
         // test
         let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
                                                 response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, retryTimes: 0)
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertFalse(success)
+            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+            XCTAssertFalse(self.mockResponseCallback.onCompleteCalled) // hit can be retried don't invoke onComplete
+            expectation.fulfill()
+        })
 
-        // verify
-        XCTAssertFalse(mockResponseCallback.onResponseCalled)
-        XCTAssertFalse(mockResponseCallback.onErrorCalled)
-        XCTAssertTrue(mockResponseCallback.onCompleteCalled)
+        wait(for: [expectation], timeout: 0.5)
     }
 
     func testHandleStreamingResponse_nilSeparators_doesNotCrash() {
