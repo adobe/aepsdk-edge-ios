@@ -26,13 +26,4 @@ struct EdgeEventError: Codable {
 
     /// Error namespace info
     let namespace: String?
-
-    /// A flag indicating whether or not this `EdgeEventError` is recoverable
-    var isRecoverable: Bool {
-        let recoverableNetworkErrorCodes = [HttpResponseCodes.clientTimeout.rawValue,
-                                                           HttpResponseCodes.tooManyRequests.rawValue,
-                                                           HttpResponseCodes.serviceUnavailable.rawValue,
-                                                           HttpResponseCodes.gatewayTimeout.rawValue]
-        return recoverableNetworkErrorCodes.contains(Int(code ?? "-1") ?? -1)
-    }
 }
