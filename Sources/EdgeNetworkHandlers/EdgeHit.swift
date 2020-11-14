@@ -14,7 +14,7 @@ import AEPCore
 import Foundation
 
 /// Struct which represents an Edge hit
-struct EdgeHit: Codable {
+struct EdgeHit {
     /// The Edge configuration identifier
     let configId: String
 

@@ -558,7 +558,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersisting() {
         let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
         let responseData = try? JSONEncoder().encode(edgeResponse)
-        
+
         // bad connection, hits will be retried
         let responseConnection: HttpConnection = HttpConnection(data: responseData,
                                                                 response: HTTPURLResponse(url: exEdgeInteractUrl,
@@ -595,7 +595,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
         let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
         let responseData = try? JSONEncoder().encode(edgeResponse)
-        
+
         // bad connection, hits will be retried
         let responseConnection: HttpConnection = HttpConnection(data: responseData,
                                                                 response: HTTPURLResponse(url: exEdgeInteractUrl,

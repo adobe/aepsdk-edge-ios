@@ -21,7 +21,7 @@ class EdgeRequestTests: XCTestCase {
         continueAfterFailure = false // fail so nil checks stop execution
     }
 
-    func testEncodeAndDecode_allProperties() {
+    func testEncode_allProperties() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
         var identityMap = IdentityMap()
@@ -47,9 +47,7 @@ class EdgeRequestTests: XCTestCase {
         encoder.dateEncodingStrategy = .iso8601
 
         let data = try? encoder.encode(edgeRequest)
-        let decodedRequest = try? JSONDecoder().decode(EdgeRequest.self, from: data ?? Data())
-
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedRequest))
+        let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             [ "events[0].data.key": "value",
               "events[0].xdm.device.manufacturer": "Atari",
@@ -61,7 +59,7 @@ class EdgeRequestTests: XCTestCase {
         assertEqual(expectedResult, actualResult)
     }
 
-    func testEncodeAndDecode_onlyRequestMetadata() {
+    func testEncode_onlyRequestMetadata() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
         let edgeRequest = EdgeRequest(meta: requestMetadata,
@@ -73,9 +71,7 @@ class EdgeRequestTests: XCTestCase {
         encoder.dateEncodingStrategy = .iso8601
 
         let data = try? encoder.encode(edgeRequest)
-        let decodedRequest = try? JSONDecoder().decode(EdgeRequest.self, from: data ?? Data())
-
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedRequest))
+        let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             ["meta.konductorConfig.streaming.enabled": true,
              "meta.konductorConfig.streaming.recordSeparator": "A",
@@ -83,7 +79,7 @@ class EdgeRequestTests: XCTestCase {
         assertEqual(expectedResult, actualResult)
     }
 
-    func testEncodeAndDecode_onlyRequestContext() {
+    func testEncode_onlyRequestContext() {
         var identityMap = IdentityMap()
         identityMap.addItem(namespace: "email", id: "example@adobe.com")
         let requestContext = RequestContextData(identityMap: identityMap)
@@ -97,14 +93,12 @@ class EdgeRequestTests: XCTestCase {
 
         let data = try? encoder.encode(edgeRequest)
 
-        let decodedRequest = try? JSONDecoder().decode(EdgeRequest.self, from: data ?? Data())
-
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedRequest))
+        let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] = ["xdm.identityMap.email[0].id": "example@adobe.com"]
         assertEqual(expectedResult, actualResult)
     }
 
-    func testEncodeAndDecode_onlyEvents() {
+    func testEncode_onlyEvents() {
         let events: [[String: AnyCodable]] = [
             [
                 "data": [
@@ -136,9 +130,7 @@ class EdgeRequestTests: XCTestCase {
         encoder.dateEncodingStrategy = .iso8601
 
         let data = try? encoder.encode(edgeRequest)
-        let decodedRequest = try? JSONDecoder().decode(EdgeRequest.self, from: data ?? Data())
-
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedRequest))
+        let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             [ "events[0].data.key": "value",
               "events[0].xdm.device.manufacturer": "Atari",

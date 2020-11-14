@@ -14,6 +14,6 @@ import Foundation
 
 /// Property that holds the global XDM context data within an `EdgeRequest` object.
 /// It is contained within the `EdgeRequest` request property.
-struct RequestContextData: Codable {
+struct RequestContextData: Encodable {
     let identityMap: IdentityMap?
 }

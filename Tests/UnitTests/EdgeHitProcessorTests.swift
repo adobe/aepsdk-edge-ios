@@ -29,9 +29,23 @@ class EdgeHitProcessorTests: XCTestCase {
         ServiceProvider.shared.networkService = MockNetworking()
         networkService = EdgeNetworkService()
         networkResponseHandler = NetworkResponseHandler()
-        hitProcessor = EdgeHitProcessor(networkService: networkService, networkResponseHandler: networkResponseHandler, getSharedState: { _, _ -> SharedStateResult? in
+        hitProcessor = EdgeHitProcessor(networkService: networkService, networkResponseHandler: networkResponseHandler, getSharedState: resolveSharedState(extensionName:event:))
+    }
+
+    private func resolveSharedState(extensionName: String, event: Event?) -> SharedStateResult? {
+        if extensionName == Constants.SharedState.Assurance.STATE_OWNER_NAME {
             return SharedStateResult(status: .set, value: [Constants.SharedState.Assurance.INTEGRATION_ID: "test-int-id"])
-        })
+        }
+
+        if extensionName == Constants.SharedState.Identity.STATE_OWNER_NAME {
+            return SharedStateResult(status: .set, value: [Constants.SharedState.Identity.STATE_OWNER_NAME: "test-mcid"])
+        }
+
+        if extensionName == Constants.SharedState.Configuration.STATE_OWNER_NAME {
+            return SharedStateResult(status: .set, value: [Constants.SharedState.Configuration.CONFIG_ID: "test-config-id"])
+        }
+
+        return nil
     }
 
     /// Tests that when a `DataEntity` with bad data is passed, that it is not retried and is removed from the queue
@@ -55,14 +69,11 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_happy_sendsNetworkRequest_returnsTrue() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        let expectedConfigId = "test-config-id"
-        let expectedReqId = "test-req-id"
-        let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
-        let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
-        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, event: expectedEvent)
+        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
+       
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(hit))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
 
         // test
         hitProcessor.processHit(entity: entity) { success in
@@ -85,11 +96,7 @@ class EdgeHitProcessorTests: XCTestCase {
 
         let expectation = XCTestExpectation(description: "Callback should be invoked with false signaling this hit should be retried")
         expectation.expectedFulfillmentCount = recoverableNetworkErrorCodes.count
-        let expectedConfigId = "test-config-id"
-        let expectedReqId = "test-req-id"
-        let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
-        let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
-        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, event: expectedEvent)
+        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
 
         for code in recoverableNetworkErrorCodes {
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [EdgeEventError(eventIndex: 0, message: "test-err", code: "\(code)", namespace: nil)], warnings: nil)
@@ -97,7 +104,7 @@ class EdgeHitProcessorTests: XCTestCase {
 
             mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData, response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: code, httpVersion: nil, headerFields: nil), error: nil)
 
-            let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(hit))
+            let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
 
             // test
             hitProcessor.processHit(entity: entity) { success in
@@ -115,14 +122,10 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_whenUnrecoverableNetworkError_sendsNetworkRequest_returnsTrue() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        let expectedConfigId = "test-config-id"
-        let expectedReqId = "test-req-id"
-        let expectedEvent = Event(name: "Hit Event", type: EventType.identity, source: EventSource.requestIdentity, data: nil)
-        let expectedRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
-        let hit = EdgeHit(configId: expectedConfigId, requestId: expectedReqId, request: expectedRequest, event: expectedEvent)
+        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: -1, httpVersion: nil, headerFields: nil), error: nil)
 
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(hit))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
 
         // test
         hitProcessor.processHit(entity: entity) { success in

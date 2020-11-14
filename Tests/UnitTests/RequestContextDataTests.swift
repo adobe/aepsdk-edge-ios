@@ -20,9 +20,13 @@ class RequestContextDataTests: XCTestCase {
         continueAfterFailure = false // fail so nil checks stop execution
     }
 
-    // MARK: Codable tests
+    override func tearDown() {
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    }
 
-    func testEncodeAndDecode_noParameters() {
+    // MARK: encoder tests
+
+    func testEncode_noParameters() {
         let context = RequestContextData(identityMap: nil)
 
         let encoder = JSONEncoder()
@@ -33,19 +37,19 @@ class RequestContextDataTests: XCTestCase {
             XCTFail("Failed to convert request context data to data")
             return
         }
-        XCTAssertNotNil(data)
-        let decodedContext = try? JSONDecoder().decode(RequestContextData.self, from: data)
 
+        XCTAssertNotNil(data)
         let expected = """
-            {}
+            {
+
+            }
             """
-        let jsonData = (try? JSONEncoder().encode(decodedContext)) ?? Data()
-        let jsonString = String(data: jsonData, encoding: .utf8)
+        let jsonString = String(data: data, encoding: .utf8)
 
         XCTAssertEqual(expected, jsonString)
     }
 
-    func testEncodeAndDecode_paramIdentityMap() {
+    func testEncode_paramIdentityMap() {
         let context = RequestContextData(identityMap: IdentityMap())
 
         let encoder = JSONEncoder()
@@ -58,12 +62,14 @@ class RequestContextDataTests: XCTestCase {
         }
 
         XCTAssertNotNil(data)
-        let decodedContext = try? JSONDecoder().decode(RequestContextData.self, from: data)
         let expected = """
-            {"identityMap":{}}
+            {
+              "identityMap" : {
+
+              }
+            }
             """
-        let jsonData = (try? JSONEncoder().encode(decodedContext)) ?? Data()
-        let jsonString = String(data: jsonData, encoding: .utf8)
+        let jsonString = String(data: data, encoding: .utf8)
         XCTAssertEqual(expected, jsonString)
     }
 

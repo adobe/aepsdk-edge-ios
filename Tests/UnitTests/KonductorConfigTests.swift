@@ -20,17 +20,16 @@ class KonductorConfigTests: XCTestCase {
         continueAfterFailure = false // fail so nil checks stop execution
     }
 
-    // MARK: Streaming Codable tests
+    // MARK: Streaming encoder tests
 
-    func testStreamingEncodeAndDecodeFromInitAll() {
+    func testStreamingEncodeFromInitAll() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: "B")
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
 
         let data = try? encoder.encode(streaming)
-        let decodedConfig = try? JSONDecoder().decode(Streaming.self, from: data ?? Data())
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedConfig))
+        let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             [ "enabled": true,
               "lineFeed": "B",
@@ -38,53 +37,50 @@ class KonductorConfigTests: XCTestCase {
         assertEqual(expectedResult, actualResult)
     }
 
-    func testStreamingEncodeAndDecodeWithNilRecordSeparator() {
+    func testStreamingEncodeWithNilRecordSeparator() {
         let streaming = Streaming(recordSeparator: nil, lineFeed: "B")
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
 
         let data = try? encoder.encode(streaming)
-        let decodedConfig = try? JSONDecoder().decode(Streaming.self, from: data ?? Data())
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedConfig))
+        let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             [ "enabled": false,
               "lineFeed": "B"]
         assertEqual(expectedResult, actualResult)
     }
 
-    func testStreamingEncodeAndDecodeWithNilLineFeed() {
+    func testStreamingEncodeWithNilLineFeed() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: nil)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
 
         let data = try? encoder.encode(streaming)
-        let decodedConfig = try? JSONDecoder().decode(Streaming.self, from: data ?? Data())
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedConfig))
+        let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             [ "enabled": false,
               "recordSeparator": "A"]
         assertEqual(expectedResult, actualResult)
     }
 
-    func testStreamingEncodeAndDecodeWithNilLineFeedAndRecordSeparator() {
+    func testStreamingEncodeWithNilLineFeedAndRecordSeparator() {
         let streaming = Streaming(recordSeparator: nil, lineFeed: nil)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
 
         let data = try? encoder.encode(streaming)
-        let decodedConfig = try? JSONDecoder().decode(Streaming.self, from: data ?? Data())
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedConfig))
+        let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             [ "enabled": false]
         assertEqual(expectedResult, actualResult)
     }
 
-    // MARK: KonductorConfig Codable tests
+    // MARK: KonductorConfig encoder tests
 
-    func testKonductorConfigEncodeAndDecodeFromInitAll() {
+    func testKonductorConfigEncodeFromInitAll() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: "B")
         let config = KonductorConfig(streaming: streaming)
 
@@ -92,8 +88,7 @@ class KonductorConfigTests: XCTestCase {
         encoder.outputFormatting = [.prettyPrinted]
 
         let data = try? encoder.encode(config)
-        let decodedConfig = try? JSONDecoder().decode(KonductorConfig.self, from: data ?? Data())
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedConfig))
+        let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             [ "streaming.enabled": true,
               "streaming.lineFeed": "B",
@@ -101,15 +96,14 @@ class KonductorConfigTests: XCTestCase {
         assertEqual(expectedResult, actualResult)
     }
 
-    func testKonductorConfigEncodeAndDecodeEmptyParameters() {
+    func testKonductorConfigEncodeEmptyParameters() {
         let config = KonductorConfig(streaming: nil)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
 
         let data = try? encoder.encode(config)
-        let decodedConfig = try? JSONDecoder().decode(KonductorConfig.self, from: data ?? Data())
-        let actualResult = asFlattenDictionary(data: try? JSONEncoder().encode(decodedConfig))
+        let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] = [:]
         assertEqual(expectedResult, actualResult)
     }
