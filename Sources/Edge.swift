@@ -68,80 +68,15 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        Log.trace(label: LOG_TAG, "handleExperienceEventRequest - Processing event with id \(event.id.uuidString).")
+        Log.trace(label: LOG_TAG, "handleExperienceEventRequest - Queuing event with id \(event.id.uuidString).")
 
-        // fetch config shared state, this should be resolved based on readyForEvent check
-        guard let configId = getEdgeConfigId(event: event) else {
-            return // drop current event
-        }
-
-        // Build Request object
-        let requestBuilder = RequestBuilder()
-        requestBuilder.enableResponseStreaming(recordSeparator: Constants.Defaults.RECORD_SEPARATOR,
-                                               lineFeed: Constants.Defaults.LINE_FEED)
-
-        // get ECID from Identity shared state, this should be resolved based on readyForEvent check
-        guard let identityState =
-                getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,
-                               event: event)?.value else {
-            Log.warning(label: LOG_TAG,
-                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', " +
-                            "Identity shared state is nil.")
-            return // drop current event
-        }
-
-        if let ecid = identityState[Constants.SharedState.Identity.ECID] as? String {
-            requestBuilder.experienceCloudId = ecid
-        } else {
-            // This is not expected to happen. Continue without ECID
-            Log.warning(label: LOG_TAG, "handleExperienceEventRequest - An unexpected error has occurred, ECID is nil.")
-        }
-
-        // Build and send the network request to Experience Edge
-        let listOfEvents: [Event] = [event]
-        guard let requestPayload = requestBuilder.getRequestPayload(listOfEvents) else {
-            Log.debug(label: LOG_TAG,
-                      "handleExperienceEventRequest - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
+        guard let eventData = try? JSONEncoder().encode(event) else {
+            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode event with id: '\(event.id.uuidString)'.")
             return
         }
 
-        let edgeHit = EdgeHit(configId: configId, requestId: UUID().uuidString, request: requestPayload, event: event)
-        guard let edgeHitData = try? JSONEncoder().encode(edgeHit) else {
-            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode edge hit: '\(event.id.uuidString)'.")
-            return
-        }
-
-        // NOTE: the order of these events needs to be maintained as they were sent in the network request
-        // otherwise the response callback cannot be matched
-        networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
-                                                batchedEvents: listOfEvents)
-
-        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: edgeHitData)
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: eventData)
         hitQueue?.queue(entity: entity)
-    }
-
-    /// Extracts the Edge Configuration identifier from the Configuration Shared State
-    /// - Parameter event: current event for which the configuration is required
-    /// - Returns: the Edge Configuration Id if found, nil otherwise
-    private func getEdgeConfigId(event: Event) -> String? {
-        guard let configSharedState =
-                getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
-                               event: event)?.value else {
-            Log.warning(label: LOG_TAG,
-                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', Configuration shared state is nil.")
-            return nil
-        }
-
-        guard let configId =
-                configSharedState[Constants.SharedState.Configuration.CONFIG_ID] as? String,
-              !configId.isEmpty else {
-            Log.warning(label: LOG_TAG,
-                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' " +
-                            "because of invalid edge.configId in configuration.")
-            return nil
-        }
-
-        return configId
     }
 
     /// Sets up the `PersistentHitQueue` to handle `EdgeHit`s

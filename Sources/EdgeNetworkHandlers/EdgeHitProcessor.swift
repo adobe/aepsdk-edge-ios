@@ -29,24 +29,70 @@ class EdgeHitProcessor: HitProcessing {
     }
 
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
-        guard let data = entity.data, let edgeHit = try? JSONDecoder().decode(EdgeHit.self, from: data) else {
+        guard let data = entity.data, let event = try? JSONDecoder().decode(Event.self, from: data) else {
             // can't convert data to hit, unrecoverable error, move to next hit
             Log.debug(label: LOG_TAG, "processHit - Failed to decode edge hit with id '\(entity.uniqueIdentifier)'.")
             completion(true)
             return
         }
 
+        // fetch config shared state, this should be resolved based on readyForEvent check
+        guard let configId = getEdgeConfigId(event: event) else {
+            Log.debug(label: LOG_TAG, "processHit - Failed get edge config id '\(entity.uniqueIdentifier)'.")
+            completion(true)
+            return // drop current event
+        }
+
+        // Build Request object
+        let requestBuilder = RequestBuilder()
+        requestBuilder.enableResponseStreaming(recordSeparator: Constants.Defaults.RECORD_SEPARATOR,
+                                               lineFeed: Constants.Defaults.LINE_FEED)
+
+        // get ECID from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState =
+                getSharedState(Constants.SharedState.Identity.STATE_OWNER_NAME,
+                               event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "processHit - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            completion(true)
+            return // drop current event
+        }
+
+        if let ecid = identityState[Constants.SharedState.Identity.ECID] as? String {
+            requestBuilder.experienceCloudId = ecid
+        } else {
+            // This is not expected to happen. Continue without ECID
+            Log.warning(label: LOG_TAG, "processHit - An unexpected error has occurred, ECID is nil.")
+        }
+
+        // Build and send the network request to Experience Edge
+        let listOfEvents: [Event] = [event]
+        guard let requestPayload = requestBuilder.getRequestPayload(listOfEvents) else {
+            Log.debug(label: LOG_TAG,
+                      "processHit - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
+            completion(true)
+            return
+        }
+
         // get Assurance integration id and include it in to the requestHeaders
         var requestHeaders: [String: String] = [:]
-        if let assuranceSharedState = getSharedState(Constants.SharedState.Assurance.STATE_OWNER_NAME, edgeHit.event)?.value {
+        if let assuranceSharedState = getSharedState(Constants.SharedState.Assurance.STATE_OWNER_NAME, event)?.value {
             if let assuranceIntegrationId = assuranceSharedState[Constants.SharedState.Assurance.INTEGRATION_ID] as? String {
                 requestHeaders[Constants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
             }
         }
 
+        let edgeHit = EdgeHit(configId: configId, requestId: UUID().uuidString, request: requestPayload, event: event)
+
+        // NOTE: the order of these events needs to be maintained as they were sent in the network request
+        // otherwise the response callback cannot be matched
+        networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
+                                                batchedEvents: listOfEvents)
+
         guard let url = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
-                                                     configId: edgeHit.configId,
-                                                     requestId: edgeHit.requestId) else {
+                                                configId: edgeHit.configId,
+                                                requestId: edgeHit.requestId) else {
                                                         Log.debug(label: LOG_TAG,
                                                                   "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(edgeHit.event.id.uuidString)'.")
                                                         completion(true)
@@ -59,6 +105,30 @@ class EdgeHitProcessor: HitProcessing {
                                  requestHeaders: requestHeaders,
                                  responseCallback: callback,
                                  completion: completion)
+    }
+
+    /// Extracts the Edge Configuration identifier from the Configuration Shared State
+    /// - Parameter event: current event for which the configuration is required
+    /// - Returns: the Edge Configuration Id if found, nil otherwise
+    private func getEdgeConfigId(event: Event) -> String? {
+        guard let configSharedState =
+                getSharedState(Constants.SharedState.Configuration.STATE_OWNER_NAME,
+                               event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "getEdgeConfigId - Unable to process the event '\(event.id.uuidString)', Configuration shared state is nil.")
+            return nil
+        }
+
+        guard let configId =
+                configSharedState[Constants.SharedState.Configuration.CONFIG_ID] as? String,
+              !configId.isEmpty else {
+            Log.warning(label: LOG_TAG,
+                        "getEdgeConfigId - Unable to process the event '\(event.id.uuidString)' " +
+                            "because of invalid edge.configId in configuration.")
+            return nil
+        }
+
+        return configId
     }
 
 }

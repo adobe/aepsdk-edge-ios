@@ -558,7 +558,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersisting() {
         let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
         let responseData = try? JSONEncoder().encode(edgeResponse)
-
+        
+        // bad connection, hits will be retried
         let responseConnection: HttpConnection = HttpConnection(data: responseData,
                                                                 response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                           statusCode: 502,
@@ -575,12 +576,10 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                     "testArray": ["arrayElem1", 2, true],
                                                     "testDictionary": ["key": "val"]])
         Edge.sendEvent(experienceEvent: experienceEvent)
-        self.assertNetworkRequestsCount()
-
-        // reset event hub to mimic a shutdown
-        EventHub.reset()
+        assertNetworkRequestsCount()
         resetTestExpectations()
 
+        // good connection, hits sent
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                             response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
@@ -590,20 +589,14 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        // after starting the SDK again, the previously queued hit should be sent out
-        let waitForRegistration = CountDownLatch(1)
-        MobileCore.registerExtensions([Identity.self, Edge.self], {
-            waitForRegistration.countDown()
-        })
-
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
-        self.assertNetworkRequestsCount()
+        assertNetworkRequestsCount()
     }
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
         let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
         let responseData = try? JSONEncoder().encode(edgeResponse)
-
+        
+        // bad connection, hits will be retried
         let responseConnection: HttpConnection = HttpConnection(data: responseData,
                                                                 response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                           statusCode: 502,
@@ -621,12 +614,10 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         Edge.sendEvent(experienceEvent: experienceEvent)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
-        self.assertNetworkRequestsCount()
-
-        // reset event hub to mimic a shutdown
-        EventHub.reset()
+        assertNetworkRequestsCount()
         resetTestExpectations()
 
+        // good connection, hits sent
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                             response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
@@ -636,14 +627,6 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
-        // after starting the SDK again, the previously queued hit should be sent out
-        let waitForRegistration = CountDownLatch(1)
-        MobileCore.registerExtensions([Identity.self, Edge.self], {
-            waitForRegistration.countDown()
-        })
-
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
-        sleep(1)
         self.assertNetworkRequestsCount()
     }
 }

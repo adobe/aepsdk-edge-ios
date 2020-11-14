@@ -26,11 +26,12 @@ enum ExperienceEdgeRequestType: String {
 enum HttpResponseCodes: Int {
     case ok = 200
     case noContent = 204
+    case multiStatus = 207
     case clientTimeout = 408
     case tooManyRequests = 429
+    case badGateway = 502
     case serviceUnavailable = 503
     case gatewayTimeout = 504
-    case multiStatus = 207
 }
 
 /// Network service for requests to the Adobe Experience Edge
@@ -38,11 +39,12 @@ class EdgeNetworkService {
     private let LOG_TAG: String = "EdgeNetworkService"
     private let DEFAULT_GENERIC_ERROR_MESSAGE = "Request to Experience Edge failed with an unknown exception"
     private let DEFAULT_NAMESPACE = "global"
-    private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.clientTimeout.rawValue,
+    private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.multiStatus.rawValue,
+                                                       HttpResponseCodes.clientTimeout.rawValue,
                                                        HttpResponseCodes.tooManyRequests.rawValue,
+                                                       HttpResponseCodes.badGateway.rawValue,
                                                        HttpResponseCodes.serviceUnavailable.rawValue,
-                                                       HttpResponseCodes.gatewayTimeout.rawValue,
-                                                       HttpResponseCodes.multiStatus.rawValue]
+                                                       HttpResponseCodes.gatewayTimeout.rawValue]
     private let waitTimeout: TimeInterval = max(Constants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT, Constants.NetworkKeys.DEFAULT_READ_TIMEOUT) + 1
     private var defaultHeaders = [Constants.NetworkKeys.HEADER_KEY_ACCEPT: Constants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON,
                                   Constants.NetworkKeys.HEADER_KEY_CONTENT_TYPE: Constants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON]
