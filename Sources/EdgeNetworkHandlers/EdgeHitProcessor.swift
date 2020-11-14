@@ -20,7 +20,7 @@ class EdgeHitProcessor: HitProcessing {
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
     private var getSharedState: (String, Event?) -> SharedStateResult?
-    var retryInterval = TimeInterval(5)
+    let retryInterval = Constants.NetworkKeys.RETRY_INTERVAL
 
     init(networkService: EdgeNetworkService, networkResponseHandler: NetworkResponseHandler, getSharedState: @escaping (String, Event?) -> SharedStateResult?) {
         self.networkService = networkService

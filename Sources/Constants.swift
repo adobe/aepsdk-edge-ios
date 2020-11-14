@@ -109,6 +109,7 @@ enum Constants {
         static let HEADER_KEY_CONTENT_TYPE = "Content-Type"
         static let HEADER_KEY_AEP_VALIDATION_TOKEN = "X-Adobe-AEP-Validation-Token"
         static let HEADER_VALUE_APPLICATION_JSON = "application/json"
+        static let RETRY_INTERVAL: TimeInterval = 5
     }
 
     enum Error {
