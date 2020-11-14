@@ -84,7 +84,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
 
-    func testDoRequest_whenConnection_ResponseCode200_ReturnsRetryNo_AndCallsResponseCallback_AndNoErrorCallback() {
+    func testDoRequest_whenConnection_ResponseCode200_CallsCompletionFalse_AndCallsResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "{\"key\":\"value\"}"
         let expectation = XCTestExpectation(description: "Network callback is invoked")
@@ -111,7 +111,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
 
-    func testDoRequest_whenConnection_ResponseCode204_ReturnsRetryNo_AndNoResponseCallback_AndNoErrorCallback() {
+    func testDoRequest_whenConnection_ResponseCode204_CallsCompletionFalse_AndNoResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "OK"
         let expectation = XCTestExpectation(description: "Network callback is invoked")
@@ -134,7 +134,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
 
-    func testDoRequest_whenConnection_RecoverableResponseCode_ReturnsRetryYes_AndNoResponseCallback_AndNoErrorCallback() {
+    func testDoRequest_whenConnection_RecoverableResponseCode_CallsCompletionTrue_AndNoResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "Service Unavailable"
         let expectation = XCTestExpectation(description: "Network callback is invoked")

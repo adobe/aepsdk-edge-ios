@@ -30,6 +30,7 @@ enum HttpResponseCodes: Int {
     case tooManyRequests = 429
     case serviceUnavailable = 503
     case gatewayTimeout = 504
+    case multiStatus = 207
 }
 
 /// Network service for requests to the Adobe Experience Edge
@@ -40,7 +41,8 @@ class EdgeNetworkService {
     private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.clientTimeout.rawValue,
                                                        HttpResponseCodes.tooManyRequests.rawValue,
                                                        HttpResponseCodes.serviceUnavailable.rawValue,
-                                                       HttpResponseCodes.gatewayTimeout.rawValue]
+                                                       HttpResponseCodes.gatewayTimeout.rawValue,
+                                                       HttpResponseCodes.multiStatus.rawValue]
     private let waitTimeout: TimeInterval = max(Constants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT, Constants.NetworkKeys.DEFAULT_READ_TIMEOUT) + 1
     private var defaultHeaders = [Constants.NetworkKeys.HEADER_KEY_ACCEPT: Constants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON,
                                   Constants.NetworkKeys.HEADER_KEY_CONTENT_TYPE: Constants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON]
