@@ -39,8 +39,7 @@ class EdgeNetworkService {
     private let LOG_TAG: String = "EdgeNetworkService"
     private let DEFAULT_GENERIC_ERROR_MESSAGE = "Request to Experience Edge failed with an unknown exception"
     private let DEFAULT_NAMESPACE = "global"
-    private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.multiStatus.rawValue,
-                                                       HttpResponseCodes.clientTimeout.rawValue,
+    private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.clientTimeout.rawValue,
                                                        HttpResponseCodes.tooManyRequests.rawValue,
                                                        HttpResponseCodes.badGateway.rawValue,
                                                        HttpResponseCodes.serviceUnavailable.rawValue,
@@ -120,6 +119,14 @@ class EdgeNetworkService {
                 } else if self.recoverableNetworkErrorCodes.contains(responseCode) {
                     Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned recoverable error code \(responseCode)")
                     completion(false) // failed, but recoverable so retry
+                } else if responseCode == HttpResponseCodes.multiStatus.rawValue {
+                    Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge was successful but encountered non-fatal errors. \(responseCode)")
+                    self.handleContent(connection: connection,
+                                       streaming: requestBody.meta?.konductorConfig?.streaming,
+                                       responseCallback: responseCallback)
+                    self.handleError(connection: connection, responseCallback: responseCallback)
+                    responseCallback.onComplete()
+                    completion(true) // non-fatal error, don't retry
                 } else {
                     Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unrecoverable error code \(responseCode)")
                     self.handleError(connection: connection, responseCallback: responseCallback)

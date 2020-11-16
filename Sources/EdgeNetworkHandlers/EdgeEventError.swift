@@ -18,11 +18,11 @@ struct EdgeEventError: Codable {
     let title: String?
 
     /// Error code info
-    let status: String?
+    let status: Int?
 
     /// Error namespaced error code
     let type: String?
-    
+
     /// Encodes the event to which this error is attached as the index in the events array in EdgeRequest
     let eventIndex: Int?
 }

@@ -664,7 +664,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     // MARK: test persisted hits
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersisting() {
-        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
+        let error = EdgeEventError(title: nil, status: 502, type: "test-type", eventIndex: 1)
+        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
         let responseData = try? JSONEncoder().encode(edgeResponse)
 
         // bad connection, hits will be retried
@@ -701,7 +702,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
-        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
+        let error = EdgeEventError(title: nil, status: 502, type: "test-type", eventIndex: 0)
+        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
         let responseData = try? JSONEncoder().encode(edgeResponse)
 
         // bad connection, hits will be retried
