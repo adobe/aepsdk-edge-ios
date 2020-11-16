@@ -26,5 +26,5 @@ struct EdgeResponse: Codable {
     let errors: [EdgeEventError]?
 
     /// List of warnings received from Experience Edge Network
-    let warnings: [EdgeEventError]?
+    let warnings: [EdgeEventWarning]?
 }

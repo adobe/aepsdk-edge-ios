@@ -12,18 +12,17 @@
 
 import Foundation
 
-/// Error or warning information for a sent EdgeRequest
+/// Error information for a sent EdgeRequest
 struct EdgeEventError: Codable {
-
-    /// Encodes the event to which this error/warning is attached as the index in the events array in EdgeRequest
-    let eventIndex: Int?
-
     /// Error message
-    let message: String?
+    let title: String?
 
     /// Error code info
-    let code: String?
+    let status: String?
 
-    /// Error namespace info
-    let namespace: String?
+    /// Error namespaced error code
+    let type: String?
+    
+    /// Encodes the event to which this error is attached as the index in the events array in EdgeRequest
+    let eventIndex: Int?
 }
