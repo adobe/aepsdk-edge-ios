@@ -592,9 +592,7 @@
 		D42FB8D02461086200E9321C /* EdgeNetworkHandlers */ = {
 			isa = PBXGroup;
 			children = (
-				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
 				D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */,
-				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
 				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
 				D42FB8DA246261E600E9321C /* EdgeResponse.swift */,
 				D4000F322459E2300052C536 /* EdgeNetworkService.swift */,
@@ -620,6 +618,8 @@
 				D4D5B4EA242EBB1600CAB6E4 /* Edge+PublicAPI.swift */,
 				D46553EC2469FBE100A150E2 /* EdgeResponseHandler.swift */,
 				1CCD27C52458CB2300E912B2 /* ExperienceEvent.swift */,
+				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
+				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
 			);
 			name = public;
 			sourceTree = "<group>";

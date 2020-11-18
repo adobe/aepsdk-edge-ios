@@ -15,7 +15,9 @@ import AEPServices
 import Foundation
 
 /// Use this class to register `EdgeResponseHandler`(s) for a specific event identifier
-/// and get notified once a response is received from the Experience Edge or when an error occurred. This class uses a `ThreadSafeDictionary` for the internal mapping.
+/// and get notified for each response handle/error received from the Experience Edge; there can be none, one or multiple such calls.
+/// When using a completion handler, all the event handles and errors will be returned at once.
+/// This class uses a `ThreadSafeDictionary` for the internal mapping.
 class ResponseCallbackHandler {
     private let TAG = "ResponseCallbacksHandler"
     private var responseHandlers =
@@ -49,6 +51,13 @@ class ResponseCallbackHandler {
         responseHandlers[requestEventId] = unwrappedResponseHandler
     }
 
+    /// Registers a completion handler for the specified `requestEventId`. This handler is invoked when the entire Edge response content has been
+    /// handled entirely by the Edge extension, containing a list of `EdgeEventHandle` and a list of `EdgeEventError`. These lists can be empty or
+    /// can contain one or multiple items based on the request and the server side response.
+    ///
+    /// - Parameters:
+    ///   - requestEventId: unique event identifier for which the response callback is registered; should not be empty
+    ///   - completionHandler: the completion handler that needs to be registered, should not be nil
     func registerCompletionHandler(requestEventId: String, completionHandler: (([EdgeEventHandle], [EdgeEventError]) -> Void)?) {
         guard let unwrappedCompletion = completionHandler else { return }
         guard !requestEventId.isEmpty else {
