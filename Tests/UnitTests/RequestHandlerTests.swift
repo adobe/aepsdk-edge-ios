@@ -147,18 +147,51 @@ class ResponseHandlerTests: XCTestCase {
     }
 
     func testRegisterResponseHandler_thenUnregisterCallbacks_thenEventErrorReceived() {
-        let uniqueEventId = "123"
-        var data: [String: Any] = [:]
-        data["key1"] = "value1"
-        data["key2"] = 2
-        data[requestEventId] = uniqueEventId
-
         let mockResponseHandler = MockEdgeResponseHandler()
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
         ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: uniqueEventId)
 
         ResponseCallbackHandler.shared.eventErrorReceived(eventError, requestEventId: uniqueEventId) // should not call the callback
 
+        XCTAssertEqual(0, mockResponseHandler.onErrorUpdateCalledTimes)
+    }
+
+    func testRegisterResponseHandler_thenUnregisterCallbacks_callsOnComplete() {
+        let mockResponseHandler = MockEdgeResponseHandler()
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
+        ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: uniqueEventId)
+
+        XCTAssertEqual(1, mockResponseHandler.onCompleteCalledTimes)
+    }
+
+    func testRegisterResponseHandler_thenUnregisterCallbacksMultipleTimes_callsOnCompleteOnce() {
+        let mockResponseHandler = MockEdgeResponseHandler()
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
+        ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: uniqueEventId)
+        ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: uniqueEventId)
+        ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: uniqueEventId)
+
+        XCTAssertEqual(1, mockResponseHandler.onCompleteCalledTimes)
+    }
+
+    func testRegisterResponseHandler_thenUnregisterCallbacksForOtherEventIds_doesNotCallOnComplete() {
+        let mockResponseHandler = MockEdgeResponseHandler()
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
+        ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: "888")
+        ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: "999")
+
+        XCTAssertEqual(0, mockResponseHandler.onCompleteCalledTimes)
+    }
+
+    func testRegisterResponseHandler_thenUnregisterCallbacks_thenEventErrorReceived_doesNotUpdate() {
+        let mockResponseHandler = MockEdgeResponseHandler()
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
+        ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: uniqueEventId)
+        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId) // should not call the callback
+        ResponseCallbackHandler.shared.eventErrorReceived(eventError, requestEventId: uniqueEventId) // should not call the callback
+
+        XCTAssertEqual(1, mockResponseHandler.onCompleteCalledTimes)
+        XCTAssertEqual(0, mockResponseHandler.onResponseCalledTimes)
         XCTAssertEqual(0, mockResponseHandler.onErrorUpdateCalledTimes)
     }
 }
