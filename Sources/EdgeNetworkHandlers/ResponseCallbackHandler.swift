@@ -70,6 +70,9 @@ class ResponseCallbackHandler {
             completionHandlers[requestEventId] = nil
         }
 
+        edgeEventHandles[requestEventId] = nil
+        edgeEventErrors[requestEventId] = nil
+
         Log.trace(label: TAG, "Removing completion handlers for Edge response with request unique id \(requestEventId).")
     }
 
