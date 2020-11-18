@@ -20,5 +20,14 @@ public protocol EdgeResponseHandler {
     /// This method is called when the response was successfully fetched from the Adobe Experience Edge for an associated event;
     /// this method may be call multiple times for the same event, based on the data coming from the server.
     /// - Parameter data: response from the server
-    func onResponse(data: [String: Any])
+    func onResponseUpdate(eventHandle: EdgeEventHandle)
+
+    /// This method is called when an error/warning response was fetched from the Adobe Experience Edge for an associated event;
+    /// this method may be call multiple times for the same event, based on the data coming from the server.
+    /// - Parameter error: error/warning information from the server
+    func onErrorUpdate(error: EdgeEventError)
+
+    /// This method is called when the response from the Adobe Experience Edge was fully processed and there are no more
+    /// response or error updates expected to be received fot the associated event.
+    func onComplete()
 }

@@ -20,7 +20,7 @@ public class ExperienceEvent: NSObject {
 
     /// Optional free-form data associated with this event
     public let data: [String: Any]?
-    
+
     /// Optional free-form query data associated with this event
     public var query: [String: Any]?
 
@@ -61,7 +61,7 @@ public class ExperienceEvent: NSObject {
             dataDict[Constants.JsonKeys.DATA] = unwrappedData
         }
 
-        if let query = query, query.count > 0 {
+        if let query = query, !query.isEmpty {
             dataDict[Constants.JsonKeys.QUERY] = query
         }
 

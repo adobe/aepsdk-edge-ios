@@ -139,7 +139,7 @@ class NetworkResponseHandler {
 
             guard let eventHandleAsDictionary = try? eventHandle.asDictionary() else { return }
             dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary, requestId: requestId, requestEventId: requestEventId)
-            ResponseCallbackHandler.shared.invokeResponseHandler(eventData: eventHandleAsDictionary, requestEventId: requestEventId)
+            ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: requestEventId)
         }
     }
 
@@ -198,6 +198,7 @@ class NetworkResponseHandler {
                                                                  requestEventId: requestEventId)
                 guard !eventData.isEmpty else { return }
                 dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true)
+                ResponseCallbackHandler.shared.eventErrorReceived(error, requestEventId: requestEventId)
             }
         }
     }

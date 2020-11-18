@@ -14,8 +14,15 @@ import AEPEdge
 import Foundation
 
 class DemoResponseHandler: EdgeResponseHandler {
+    func onResponseUpdate(eventHandle: EdgeEventHandle) {
+        print("Received data from AEPEdge \(eventHandle)")
+    }
 
-    func onResponse(data: [String: Any]) {
-        print("Received data from AEPEdge \(data)")
+    func onErrorUpdate(error: EdgeEventError) {
+        print("Received error/warning from AEPEdge \(error)")
+    }
+
+    func onComplete() {
+        print("Completed")
     }
 }

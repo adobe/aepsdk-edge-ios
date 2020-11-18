@@ -26,16 +26,24 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     private let responseBody = "{\"test\": \"json\"}"
 
     class TestResponseHandler: EdgeResponseHandler {
-        var onResponseReceivedData: [String: Any] = [:] // latest data received in the onResponse callback
+        var onResponseEdgeHandle: EdgeEventHandle? // latest data received in the onResponse callback
         var countDownLatch: CountDownLatch
 
         init(expectedCount: Int32) {
             countDownLatch = CountDownLatch(expectedCount)
         }
 
-        func onResponse(data: [String: Any]) {
-            onResponseReceivedData = data
+        func onResponseUpdate(eventHandle: EdgeEventHandle) {
+            onResponseEdgeHandle = eventHandle
             countDownLatch.countDown()
+        }
+
+        func onErrorUpdate(error: EdgeEventError) {
+            // todo
+        }
+
+        func onComplete() {
+            // todo
         }
 
         func await() {
@@ -339,7 +347,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
-    
+
     func testSendEvent_withXDMSchema_sendsExEdgeNetworkRequest() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                                 response: HTTPURLResponse(url: exEdgeInteractUrl,
@@ -461,7 +469,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        
+
         XCTAssertEqual("query", requestBody["events[0].query.testString"] as? String)
         XCTAssertEqual(10, requestBody["events[0].query.testInt"] as? Int)
         XCTAssertEqual(false, requestBody["events[0].query.testBool"] as? Bool)
@@ -472,7 +480,6 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("val", requestBody["events[0].query.testDictionary.key"] as? String)
     }
 
-    
     // MARK: Client-side store
     func testSendEvent_twoConsecutiveCalls_appendsReceivedClientSideStore() {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
@@ -508,9 +515,9 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(13, requestBody.count)
 
         guard let firstStore = requestBody["meta.state.entries[0].key"] as? String,
-              let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
-            XCTFail("Client-side store not found")
-            return
+            let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
+                XCTFail("Client-side store not found")
+                return
         }
         XCTAssertEqual("kndctr_testOrg_AdobeOrg_identity", requestBody["meta.state.entries[\(Int(index))].key"] as? String)
         XCTAssertEqual("hashed_value",
@@ -647,7 +654,12 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        let data = flattenDictionary(dict: responseHandler.onResponseReceivedData)
+        guard let handle: EdgeEventHandle = responseHandler.onResponseEdgeHandle else {
+            XCTFail("Response handler expected, but not received")
+            return
+        }
+
+        let data = flattenDictionary(dict: handle.toDictionary() ?? [:])
         XCTAssertEqual(6, data.count)
         XCTAssertEqual("personalization:decisions", data["type"] as? String)
         XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", data["payload[0].id"] as? String)
@@ -662,5 +674,12 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 extension Int {
     init(_ val: Bool) {
         self = val ? 1 : 0
+    }
+}
+
+extension EdgeEventHandle {
+    func toDictionary() -> [String: Any]? {
+        guard let data = try? JSONEncoder().encode(self) else { return nil }
+        return try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
     }
 }

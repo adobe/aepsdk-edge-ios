@@ -17,8 +17,23 @@ class MockEdgeResponseHandler: EdgeResponseHandler {
     var onResponseReceivedData: [String: Any] = [:] // latest data received in the onResponse callback
     var onResponseCalledTimes = 0 // the number of times onResponse was called
 
-    func onResponse(data: [String: Any]) {
+    func onResponseUpdate(eventHandle: EdgeEventHandle) {
         onResponseCalledTimes += 1
-        onResponseReceivedData = data
+        onResponseReceivedData = eventHandle.asDictionary() ?? [:]
+    }
+
+    func onErrorUpdate(error: EdgeEventError) {
+        // todo
+    }
+
+    func onComplete() {
+        // todo
+    }
+}
+
+extension EdgeEventHandle {
+    func toDictionary() -> [String: Any]? {
+        guard let data = try? JSONEncoder().encode(self) else { return nil }
+        return try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
     }
 }

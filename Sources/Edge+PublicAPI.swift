@@ -39,4 +39,24 @@ public extension Edge {
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: event.id.uuidString, responseHandler: responseHandler)
         MobileCore.dispatch(event: event)
     }
+
+    /// Sends an event to Adobe Experience Edge and registers a completion handler for responses coming from the Edge Network
+    /// - Parameters:
+    ///   - experienceEvent: Event to be sent to Adobe Experience Edge
+    ///   - completion: Completion callback to be invoked when the request is complete, returning the associated response handles
+    ///                 and error/warning messages received from the Adobe Experience Edge. It may be invoked on a different thread
+    static func sendEvent(experienceEvent: ExperienceEvent, completion: @escaping (([EdgeEventHandle], [EdgeEventError]) -> Void)) {
+        guard let xdmData = experienceEvent.xdm, !xdmData.isEmpty, let eventData = experienceEvent.asDictionary() else {
+            Log.debug(label: LOG_TAG, "Failed to dispatch the experience event because the XDM data was nil/empty.")
+            return
+        }
+
+        let event = Event(name: "AEP Request Event",
+                          type: Constants.EventType.EDGE,
+                          source: Constants.EventSource.REQUEST_CONTENT,
+                          data: eventData)
+
+        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: event.id.uuidString, completionHandler: completion)
+        MobileCore.dispatch(event: event)
+    }
 }

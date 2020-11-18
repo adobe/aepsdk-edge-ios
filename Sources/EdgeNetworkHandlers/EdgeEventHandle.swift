@@ -14,14 +14,15 @@ import AEPServices
 import Foundation
 
 /// Details and results for a sent EdgeRequest
-struct EdgeEventHandle: Codable {
+@objc(AEPEdgeEventHandle)
+public class EdgeEventHandle: NSObject, Codable {
 
     /// Encodes the event to which this handle is attached as the index in the events array in EdgeRequest
     let eventIndex: Int?
 
     /// Payload type
-    let type: String?
+    public let type: String?
 
     /// Event payload
-    let payload: [[String: AnyCodable]]?
+    public let payload: [[String: AnyCodable]]?
 }

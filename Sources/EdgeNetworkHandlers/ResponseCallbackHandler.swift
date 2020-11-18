@@ -20,6 +20,12 @@ class ResponseCallbackHandler {
     private let TAG = "ResponseCallbacksHandler"
     private var responseHandlers =
         ThreadSafeDictionary<String, EdgeResponseHandler>(identifier: "com.adobe.edge.responseHandlers")
+    private var completionHandlers =
+        ThreadSafeDictionary<String, (([EdgeEventHandle], [EdgeEventError]) -> Void)>(identifier: "com.adobe.edge.completionHandlers")
+    private var edgeEventHandles =
+        ThreadSafeDictionary<String, [EdgeEventHandle]>(identifier: "com.adobe.edge.edgeHandlesList") // edge response handles for a event request id (key)
+    private var edgeEventErrors =
+        ThreadSafeDictionary<String, [EdgeEventError]>(identifier: "com.adobe.edge.edgeErrorsList") // edge errors for a event request id (key)
     static let shared = ResponseCallbackHandler()
 
     /// Registers a `EdgeResponseHandler` for the specified `requestEventId`. This handler is
@@ -39,32 +45,75 @@ class ResponseCallbackHandler {
         responseHandlers[requestEventId] = unwrappedResponseHandler
     }
 
-    /// Unregisters a `EdgeResponseHandler` for the specified `requestEventId`. After this operation,
-    /// the associated response handler is not invoked anymore.
-    /// - Parameter requestEventId: unique event identifier for experience events; should not be empty
-    func unregisterResponseHandler(requestEventId: String) {
-        guard !requestEventId.isEmpty else { return }
-
-        if responseHandlers[requestEventId] != nil {
-            responseHandlers[requestEventId] = nil
-            Log.trace(label: TAG, "Removing callback for Edge response with request unique id \(requestEventId).")
+    func registerCompletionHandler(requestEventId: String, completionHandler: (([EdgeEventHandle], [EdgeEventError]) -> Void)?) {
+        guard let unwrappedCompletion = completionHandler else { return }
+        guard !requestEventId.isEmpty else {
+            Log.warning(label: TAG, "Failed to register completion handler because of empty request event id.")
+            return
         }
+
+        completionHandlers[requestEventId] = unwrappedCompletion
+    }
+
+    /// Calls onComplete and unregisters a `EdgeResponseHandler` for the specified `requestEventId`. After this operation,
+    /// the associated response handler or completion handler is removed and no longer called.
+    /// - Parameter requestEventId: unique event identifier for experience events; should not be empty
+    func unregisterCallbacks(requestEventId: String) {
+        guard !requestEventId.isEmpty else { return }
+        if let responseHandler = responseHandlers[requestEventId] {
+            responseHandler.onComplete()
+            responseHandlers[requestEventId] = nil
+        }
+
+        if let completionHandler = completionHandlers[requestEventId] {
+            completionHandler(edgeEventHandles[requestEventId] ?? [], edgeEventErrors[requestEventId] ?? [])
+            completionHandlers[requestEventId] = nil
+        }
+
+        Log.trace(label: TAG, "Removing completion handlers for Edge response with request unique id \(requestEventId).")
+    }
+
+    func eventHandleReceived(_ eventHandle: EdgeEventHandle, requestEventId: String?) {
+        guard let unwrappedRequestEventId = requestEventId, !unwrappedRequestEventId.isEmpty else { return }
+        if edgeEventHandles[unwrappedRequestEventId] != nil {
+            edgeEventHandles[unwrappedRequestEventId]?.append(eventHandle)
+        } else {
+            edgeEventHandles[unwrappedRequestEventId] = [eventHandle]
+        }
+        invokeResponseHandler(eventHandle: eventHandle, eventError: nil, requestEventId: unwrappedRequestEventId)
+    }
+
+    func eventErrorReceived(_ eventError: EdgeEventError, requestEventId: String?) {
+        guard let unwrappedRequestEventId = requestEventId, !unwrappedRequestEventId.isEmpty else {
+            return
+        }
+        if edgeEventErrors[unwrappedRequestEventId] != nil {
+            edgeEventErrors[unwrappedRequestEventId]?.append(eventError)
+        } else {
+            edgeEventErrors[unwrappedRequestEventId] = [eventError]
+        }
+        invokeResponseHandler(eventHandle: nil, eventError: eventError, requestEventId: unwrappedRequestEventId)
     }
 
     /// Invokes the response handler for the unique event identifier (if any callback was previously registered for this id).
     /// - Parameter eventData: data received from the Edge response event, containing the event handle payload and the request event identifier
-    /// - Parameter requestEventId: the request event identifier to be called with the provided `eventData`
-    func invokeResponseHandler(eventData: [String: Any], requestEventId: String?) {
-        guard let unwrappedRequestEventId = requestEventId, !unwrappedRequestEventId.isEmpty else {
+    /// - Parameter requestEventId: the request event identifier to be called with the provided `eventData`, should not be empty
+    private func invokeResponseHandler(eventHandle: EdgeEventHandle?,
+                                       eventError: EdgeEventError?,
+                                       requestEventId: String) {
+        guard let responseHandler = responseHandlers[requestEventId] else {
+            Log.trace(label: TAG, "Unable to find response handler for requestEventId (\(requestEventId)), not invoked")
             return
         }
 
-        guard let responseHandler = responseHandlers[unwrappedRequestEventId] else {
-            Log.trace(label: TAG, "Unable to find response handler for requestEventId (\(unwrappedRequestEventId)), not invoked")
-            return
+        if let handle = eventHandle {
+            Log.trace(label: TAG, "Invoking onResponseUpdate handler for requestEventId (\(requestEventId))")
+            responseHandler.onResponseUpdate(eventHandle: handle)
         }
 
-        Log.trace(label: TAG, "Invoking registered onResponse handler for requestEventId (\(unwrappedRequestEventId)) with data \(eventData)")
-        responseHandler.onResponse(data: eventData)
+        if let error = eventError {
+            Log.trace(label: TAG, "Invoking onErrorUpdate handler for requestEventId (\(requestEventId))")
+            responseHandler.onErrorUpdate(error: error)
+        }
     }
 }

@@ -15,10 +15,22 @@ import AEPServices
 import Foundation
 
 class ResponseHandler: EdgeResponseHandler {
-    var onResponseCalled: Bool = false
+    var onResponseUpdateCalled: Bool = false
+    var onErrorUpdateCalled: Bool = false
+    var onCompleteCalled: Bool = false
 
-    func onResponse(data: [String: Any]) {
-        self.onResponseCalled = true
+    func onResponseUpdate(eventHandle: EdgeEventHandle) {
+        self.onResponseUpdateCalled = true
         Log.debug(label: "ResponseHandler", "Edge response has been received...")
+    }
+
+    func onErrorUpdate(error: EdgeEventError) {
+        self.onErrorUpdateCalled = true
+        Log.debug(label: "ResponseHandler", "Edge error message has been received...")
+    }
+
+    func onComplete() {
+        self.onCompleteCalled = true
+        Log.debug(label: "ResponseHandler", "Edge request completed...")
     }
 }
