@@ -531,7 +531,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
+        setExpectationEvent(type: "personalization:decisions",
                             source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
                             expectedCount: 1)
         // swiftlint:disable:next line_length
@@ -556,7 +556,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         let requestEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
                                                     source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         let requestEventUUID = requestEvents[0].id.uuidString
-        let responseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+        let responseEvents = getDispatchedEventsWith(type: "personalization:decisions",
                                                      source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
         guard let eventDataDict = responseEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
@@ -622,7 +622,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
+        setExpectationEvent(type: "personalization:decisions",
                             source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
                             expectedCount: 1)
         // swiftlint:disable:next line_length

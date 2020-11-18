@@ -117,7 +117,7 @@ class SampleFunctionalTests: FunctionalTestBase {
 
     func testSample_AssertNetworkRequestAndResponseEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        setExpectationEvent(type: "identity:exchange", source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}}]}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
