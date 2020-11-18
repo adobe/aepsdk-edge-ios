@@ -212,7 +212,10 @@ class NetworkResponseHandler {
     private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool, eventSource: String?) {
         guard !eventData.isEmpty else { return }
         var source = isErrorResponseEvent ? Constants.EventSource.ERROR_RESPONSE_CONTENT : Constants.EventSource.RESPONSE_CONTENT
-        source = eventSource ?? source
+        if let eventSource = eventSource, !eventSource.isEmpty {
+            source = eventSource
+        }
+
         let responseEvent = Event(name: isErrorResponseEvent ? Constants.EventName.ERROR_RESPONSE_CONTENT : Constants.EventName.RESPONSE_CONTENT,
                                   type: Constants.EventType.EDGE,
                                   source: source,
