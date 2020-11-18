@@ -88,7 +88,8 @@ public class Edge: NSObject, Extension {
 
         let hitProcessor = EdgeHitProcessor(networkService: networkService,
                                             networkResponseHandler: networkResponseHandler,
-                                            getSharedState: getSharedState(extensionName:event:))
+                                            getSharedState: getSharedState(extensionName:event:),
+                                            readyForEvent: readyForEvent(_:))
         hitQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
         hitQueue?.beginProcessing()
     }

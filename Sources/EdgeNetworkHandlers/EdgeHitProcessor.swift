@@ -20,12 +20,17 @@ class EdgeHitProcessor: HitProcessing {
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
     private var getSharedState: (String, Event?) -> SharedStateResult?
+    private var readyForEvent: (Event) -> Bool
     let retryInterval = Constants.NetworkKeys.RETRY_INTERVAL
 
-    init(networkService: EdgeNetworkService, networkResponseHandler: NetworkResponseHandler, getSharedState: @escaping (String, Event?) -> SharedStateResult?) {
+    init(networkService: EdgeNetworkService,
+         networkResponseHandler: NetworkResponseHandler,
+         getSharedState: @escaping (String, Event?) -> SharedStateResult?,
+         readyForEvent: @escaping (Event) -> Bool) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
         self.getSharedState = getSharedState
+        self.readyForEvent = readyForEvent
     }
 
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
@@ -36,17 +41,18 @@ class EdgeHitProcessor: HitProcessing {
             return
         }
 
+        guard readyForEvent(event) else {
+            Log.debug(label: LOG_TAG, "processHit - readyForEvent returned false, will retry hit with id '\(entity.uniqueIdentifier)'.")
+            completion(false)
+            return
+        }
+
         // fetch config shared state, this should be resolved based on readyForEvent check
         guard let configId = getEdgeConfigId(event: event) else {
             Log.debug(label: LOG_TAG, "processHit - Failed get edge config id '\(entity.uniqueIdentifier)'.")
             completion(true)
             return // drop current event
         }
-
-        // Build Request object
-        let requestBuilder = RequestBuilder()
-        requestBuilder.enableResponseStreaming(recordSeparator: Constants.Defaults.RECORD_SEPARATOR,
-                                               lineFeed: Constants.Defaults.LINE_FEED)
 
         // get ECID from Identity shared state, this should be resolved based on readyForEvent check
         guard let identityState =
@@ -58,6 +64,11 @@ class EdgeHitProcessor: HitProcessing {
             completion(true)
             return // drop current event
         }
+
+        // Build Request object
+        let requestBuilder = RequestBuilder()
+        requestBuilder.enableResponseStreaming(recordSeparator: Constants.Defaults.RECORD_SEPARATOR,
+                                               lineFeed: Constants.Defaults.LINE_FEED)
 
         if let ecid = identityState[Constants.SharedState.Identity.ECID] as? String {
             requestBuilder.experienceCloudId = ecid
@@ -84,12 +95,19 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         let edgeHit = EdgeHit(configId: configId, requestId: UUID().uuidString, request: requestPayload, event: event)
-
         // NOTE: the order of these events needs to be maintained as they were sent in the network request
         // otherwise the response callback cannot be matched
         networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
                                                 batchedEvents: listOfEvents)
+        sendHit(edgeHit: edgeHit, headers: requestHeaders, completion: completion)
+    }
 
+    /// Sends the `edgeHit` to the network service
+    /// - Parameters:
+    ///   - edgeHit: the hit to be sent
+    ///   - headers: headers for the request
+    ///   - completion: completion handler for the hit processor
+    private func sendHit(edgeHit: EdgeHit, headers: [String: String], completion: @escaping (Bool) -> Void) {
         guard let url = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
                                                 configId: edgeHit.configId,
                                                 requestId: edgeHit.requestId) else {
@@ -102,7 +120,7 @@ class EdgeHitProcessor: HitProcessing {
         let callback = NetworkResponseCallback(requestId: edgeHit.requestId, responseHandler: networkResponseHandler)
         networkService.doRequest(url: url,
                                  requestBody: edgeHit.request,
-                                 requestHeaders: requestHeaders,
+                                 requestHeaders: headers,
                                  responseCallback: callback,
                                  completion: completion)
     }

@@ -22,14 +22,16 @@ class EdgeHitProcessorTests: XCTestCase {
     var mockNetworkService: MockNetworking? {
         return ServiceProvider.shared.networkService as? MockNetworking
     }
-
     let expectedHeaders = [Constants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN: "test-int-id"]
 
     override func setUp() {
         ServiceProvider.shared.networkService = MockNetworking()
         networkService = EdgeNetworkService()
         networkResponseHandler = NetworkResponseHandler()
-        hitProcessor = EdgeHitProcessor(networkService: networkService, networkResponseHandler: networkResponseHandler, getSharedState: resolveSharedState(extensionName:event:))
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        getSharedState: resolveSharedState(extensionName:event:),
+                                        readyForEvent: readyForEvent(_:))
     }
 
     private func resolveSharedState(extensionName: String, event: Event?) -> SharedStateResult? {
@@ -46,6 +48,10 @@ class EdgeHitProcessorTests: XCTestCase {
         }
 
         return nil
+    }
+
+    private func readyForEvent(_ event: Event) -> Bool {
+        return true
     }
 
     /// Tests that when a `DataEntity` with bad data is passed, that it is not retried and is removed from the queue
@@ -65,12 +71,117 @@ class EdgeHitProcessorTests: XCTestCase {
         XCTAssertFalse(mockNetworkService?.connectAsyncCalled ?? true) // no network request should have been made
     }
 
+    /// Tests that when `readyForEvent` returns false that we retry the hit
+    func testProcessHit_readyForEventReturnsFalse() {
+        // setup
+        let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should be retried")
+        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        getSharedState: resolveSharedState(extensionName:event:),
+                                        readyForEvent: { _ -> Bool in
+                                            return false
+                                        })
+
+        // test
+        hitProcessor.processHit(entity: entity) { success in
+            XCTAssertFalse(success) // hit should be retried
+            expectation.fulfill()
+        }
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+        XCTAssertFalse(mockNetworkService?.connectAsyncCalled ?? true) // no network request should have been made
+    }
+
+    /// Tests that when no edge config id is in configuration shared state that we drop the hit
+    func testProcessHit_noEdgeConfigId() {
+        // setup
+        let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
+        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        getSharedState: { extensionName, event -> SharedStateResult? in
+                                            if extensionName == Constants.SharedState.Configuration.STATE_OWNER_NAME {
+                                                // simulate shared state with no edge config
+                                                return SharedStateResult(status: .set, value: [:])
+                                            }
+                                            return self.resolveSharedState(extensionName: extensionName, event: event)
+                                        }, readyForEvent: readyForEvent(_:))
+
+        // test
+        hitProcessor.processHit(entity: entity) { success in
+            XCTAssertTrue(success)
+            expectation.fulfill()
+        }
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+        XCTAssertFalse(mockNetworkService?.connectAsyncCalled ?? true) // no network request should have been made
+    }
+
+    /// Tests that when Identity shared state is not set that we drop the hit
+    func testProcessHit_noIdentitySharedState() {
+        // setup
+        let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
+        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        getSharedState: { extensionName, event -> SharedStateResult? in
+                                            if extensionName == Constants.SharedState.Identity.STATE_OWNER_NAME {
+                                                // simulate pending Identity shared state
+                                                return SharedStateResult(status: .pending, value: nil)
+                                            }
+                                            return self.resolveSharedState(extensionName: extensionName, event: event)
+                                        }, readyForEvent: readyForEvent(_:))
+
+        // test
+        hitProcessor.processHit(entity: entity) { success in
+            XCTAssertTrue(success)
+            expectation.fulfill()
+        }
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+        XCTAssertFalse(mockNetworkService?.connectAsyncCalled ?? true) // no network request should have been made
+    }
+
+    /// Tests that when Identity shared state does not contain ECID that we still process the hit
+    func testProcessHit_noECID() {
+        // setup
+        let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
+        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        getSharedState: { extensionName, event -> SharedStateResult? in
+                                            if extensionName == Constants.SharedState.Identity.STATE_OWNER_NAME {
+                                                // simulate pending Identity shared state
+                                                return SharedStateResult(status: .set, value: [:])
+                                            }
+                                            return self.resolveSharedState(extensionName: extensionName, event: event)
+                                        }, readyForEvent: readyForEvent(_:))
+
+        // test
+        hitProcessor.processHit(entity: entity) { success in
+            XCTAssertTrue(success)
+            expectation.fulfill()
+        }
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+        XCTAssertTrue(mockNetworkService?.connectAsyncCalled ?? false) // network request should have been made
+    }
+
     /// Tests that when a good hit is processed that a network request is made and the request returns 200
     func testProcessHit_happy_sendsNetworkRequest_returnsTrue() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
         let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
-       
+
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
