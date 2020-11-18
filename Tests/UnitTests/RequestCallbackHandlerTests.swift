@@ -14,70 +14,64 @@ import AEPCore
 @testable import AEPEdge
 import XCTest
 
-class ResponseCallbackHandlerTests: XCTestCase {
+class ResponseHandlerTests: XCTestCase {
     private let requestEventId = "requestEventId"
+    private var eventHandle: EdgeEventHandle = {
+        let json: [String: Any] = ["payload": [["key1": "value1", "key2": 2]], "type": "testType"]
+        let jsonData = try! JSONSerialization.data(withJSONObject: json, options: [])
+        return try! JSONDecoder().decode(EdgeEventHandle.self, from: jsonData)
+    }()
+    private var eventError: EdgeEventError = {
+        let json: [String: Any] = ["message": "Error message", "code": "789", "namespace": "test.namespace"]
+        let jsonData = try! JSONSerialization.data(withJSONObject: json, options: [])
+        return try! JSONDecoder().decode(EdgeEventError.self, from: jsonData)
+    }()
+    private let uniqueEventId = "123"
 
     override func setUp() {
         continueAfterFailure = false // fail so nil checks stop execution
     }
 
-    func testRegisterResponseHandler_thenInvokeResponseHandler() {
-        let uniqueEventId = "123"
-        var data: [String: Any] = [:]
-        data["key1"] = "value1"
-        data["key2"] = 2
-        data[requestEventId] = uniqueEventId
-
+    func testRegisterResponseHandler_thenEventHandlerReceived_onResponseUpdateCalled() {
         let mockResponseHandler = MockEdgeResponseHandler()
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
-
-        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data, requestEventId: uniqueEventId)
+        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId)
 
         XCTAssertEqual(1, mockResponseHandler.onResponseCalledTimes)
-        XCTAssertEqual(3, mockResponseHandler.onResponseReceivedData.count)
-        XCTAssertEqual("value1", mockResponseHandler.onResponseReceivedData["key1"] as? String)
-        XCTAssertEqual(2, mockResponseHandler.onResponseReceivedData["key2"] as? Int)
-        XCTAssertEqual(uniqueEventId, mockResponseHandler.onResponseReceivedData[requestEventId] as? String)
+        let data = flattenDictionary(dict: mockResponseHandler.onResponseReceivedData)
+        XCTAssertEqual(3, data.count)
+        XCTAssertEqual("value1", data["payload[0].key1"] as? String)
+        XCTAssertEqual(2, data["payload[0].key2"] as? Int)
+        XCTAssertEqual("testType", data["type"] as? String)
     }
 
-    func testRegisterTwoResponseHandlers_thenInvokeResponseHandler() {
-        let uniqueEventId = "123"
-        var data: [String: Any] = [:]
-        data["key1"] = "value1"
-        data["key2"] = 2
-        data[requestEventId] = uniqueEventId
-
+    func testRegisterTwoResponseHandlers_thenEventHandlerReceived_onResponseUpdateCalled() {
         let mockResponseHandler1 = MockEdgeResponseHandler()
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: "567", responseHandler: mockResponseHandler1)
         let mockResponseHandler2 = MockEdgeResponseHandler()
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler2)
 
-        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data, requestEventId: uniqueEventId)
+        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId)
 
         XCTAssertEqual(0, mockResponseHandler1.onResponseCalledTimes)
         XCTAssertEqual(1, mockResponseHandler2.onResponseCalledTimes)
-        XCTAssertEqual(3, mockResponseHandler2.onResponseReceivedData.count)
-        XCTAssertEqual("value1", mockResponseHandler2.onResponseReceivedData["key1"] as? String)
-        XCTAssertEqual(2, mockResponseHandler2.onResponseReceivedData["key2"] as? Int)
-        XCTAssertEqual(uniqueEventId, mockResponseHandler2.onResponseReceivedData[requestEventId] as? String)
+        let data = flattenDictionary(dict: mockResponseHandler2.onResponseReceivedData)
+        XCTAssertEqual(3, data.count)
+        XCTAssertEqual("value1", data["payload[0].key1"] as? String)
+        XCTAssertEqual(2, data["payload[0].key2"] as? Int)
+        XCTAssertEqual("testType", data["type"] as? String)
     }
 
-    func testNoRegisterResponseHandler_thenInvokeResponseHandler_doesNotCrash() {
+    func testNoRegisterResponseHandler_thenEventHandleReceived_doesNotCrash() {
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId), "eventHandleReceived should skip if no registered handler")
+    }
+
+    func testNoRegisterResponseHandler_thenUnregisterCallbacks_doesNotCrash() {
         let uniqueEventId = "123"
-        var data: [String: Any] = [:]
-        data["key1"] = "value1"
-        data["key2"] = 2
-        data[requestEventId] = uniqueEventId
-
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data, requestEventId: uniqueEventId), "invokeResponseHandler should skip if no registered handler")
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: uniqueEventId), "unregisterCallbacks should skip if no registered handler")
     }
 
-    func testNoRegisterResponseHandler_thenUnregisterResponseHandler_doesNotCrash() {
-        let uniqueEventId = "123"
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterResponseHandler(requestEventId: uniqueEventId), "unregisterResponseHandler should skip if no registered handler")
-    }
-
-    func testRegisterResponseHandler_thenUnregisterResponseHandler() {
+    func testRegisterResponseHandler_thenUnregisterCallbacks_thenEventHandleReceived() {
         let uniqueEventId = "123"
         var data: [String: Any] = [:]
         data["key1"] = "value1"
@@ -86,9 +80,9 @@ class ResponseCallbackHandlerTests: XCTestCase {
 
         let mockResponseHandler = MockEdgeResponseHandler()
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
-        ResponseCallbackHandler.shared.unregisterResponseHandler(requestEventId: uniqueEventId)
+        ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: uniqueEventId)
 
-        ResponseCallbackHandler.shared.invokeResponseHandler(eventData: data, requestEventId: uniqueEventId) // should not call the callback
+        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId) // should not call the callback
 
         XCTAssertEqual(0, mockResponseHandler.onResponseCalledTimes)
     }
@@ -97,19 +91,74 @@ class ResponseCallbackHandlerTests: XCTestCase {
         XCTAssertNoThrow(ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: "", responseHandler: MockEdgeResponseHandler()))
     }
 
-    func testRegisterResponseHandlers_withNilResponseHandler_thenInvokeResponseHandler_doesNotCrash() {
+    func testRegisterResponseHandler_withNilResponseHandler_thenEventHandleReceived_doesNotCrash() {
         let uniqueEventId = "123"
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: nil)
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.invokeResponseHandler(eventData: ["key": "value"], requestEventId: uniqueEventId), "invokeResponseHandler should skip when nil responseHandler")
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId), "eventHandleReceived should skip when nil responseHandler")
     }
 
-    func testRegisterResponseHandlers_withNilResponseHandler_thenUnregisterResponseHandler_doesNotCrash() {
+    func testRegisterResponseHandler_withNilResponseHandler_thenUnregisterCallbacks_doesNotCrash() {
         let uniqueEventId = "123"
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: nil)
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterResponseHandler(requestEventId: uniqueEventId), "unregisterResponseHandler should skip when nil responseHandler")
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: uniqueEventId), "unregisterCallbacks should skip when nil responseHandler")
     }
 
-    func testUnregisterResponseHandler_withEmptyUniqueEvent_doesNotCrash() {
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterResponseHandler(requestEventId: ""), "unregisterResponseHandler should skip when empty unique event id")
+    func testUnregisterCallbacks_withEmptyUniqueEvent_doesNotCrash() {
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: ""), "unregisterCallbacks should skip when empty unique event id")
+    }
+    
+    // error handling
+    func testRegisterResponseHandler_thenEventErrorReceived_onErrorUpdateCalled() {
+        let mockResponseHandler = MockEdgeResponseHandler()
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
+        ResponseCallbackHandler.shared.eventErrorReceived(eventError, requestEventId: uniqueEventId)
+
+        XCTAssertEqual(1, mockResponseHandler.onErrorUpdateCalledTimes)
+        guard let error = mockResponseHandler.onErrorUpdateData else {
+            XCTFail("No error received")
+            return
+        }
+        XCTAssertEqual("789", error.code)
+        XCTAssertEqual("test.namespace", error.namespace)
+        XCTAssertEqual("Error message", error.message)
+    }
+
+    func testRegisterTwoResponseHandlers_thenEventErrorReceived_onResponseUpdateCalled() {
+        let mockResponseHandler1 = MockEdgeResponseHandler()
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: "567", responseHandler: mockResponseHandler1)
+        let mockResponseHandler2 = MockEdgeResponseHandler()
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler2)
+
+        ResponseCallbackHandler.shared.eventErrorReceived(eventError, requestEventId: uniqueEventId)
+
+        XCTAssertEqual(0, mockResponseHandler1.onErrorUpdateCalledTimes)
+        XCTAssertEqual(1, mockResponseHandler2.onErrorUpdateCalledTimes)
+        guard let error = mockResponseHandler2.onErrorUpdateData else {
+            XCTFail("No error received")
+            return
+        }
+        XCTAssertEqual("789", error.code)
+        XCTAssertEqual("test.namespace", error.namespace)
+        XCTAssertEqual("Error message", error.message)
+    }
+
+    func testNoRegisterResponseHandler_thenEventErrorReceived_doesNotCrash() {
+        XCTAssertNoThrow(ResponseCallbackHandler.shared.eventErrorReceived(eventError, requestEventId: uniqueEventId), "eventErrorReceived should skip if no registered handler")
+    }
+
+    func testRegisterResponseHandler_thenUnregisterCallbacks_thenEventErrorReceived() {
+        let uniqueEventId = "123"
+        var data: [String: Any] = [:]
+        data["key1"] = "value1"
+        data["key2"] = 2
+        data[requestEventId] = uniqueEventId
+
+        let mockResponseHandler = MockEdgeResponseHandler()
+        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: uniqueEventId, responseHandler: mockResponseHandler)
+        ResponseCallbackHandler.shared.unregisterCallbacks(requestEventId: uniqueEventId)
+
+        ResponseCallbackHandler.shared.eventErrorReceived(eventError, requestEventId: uniqueEventId) // should not call the callback
+
+        XCTAssertEqual(0, mockResponseHandler.onErrorUpdateCalledTimes)
     }
 }

@@ -16,6 +16,9 @@ import Foundation
 class MockEdgeResponseHandler: EdgeResponseHandler {
     var onResponseReceivedData: [String: Any] = [:] // latest data received in the onResponse callback
     var onResponseCalledTimes = 0 // the number of times onResponse was called
+    var onErrorUpdateData: EdgeEventError? = nil// latest error received in the onErrorUpdate callback
+    var onErrorUpdateCalledTimes = 0 // the number of times onResponse was called
+    var onCompleteCalledTimes = 0 // the number of times onComplete was called
 
     func onResponseUpdate(eventHandle: EdgeEventHandle) {
         onResponseCalledTimes += 1
@@ -23,11 +26,12 @@ class MockEdgeResponseHandler: EdgeResponseHandler {
     }
 
     func onErrorUpdate(error: EdgeEventError) {
-        // todo
+        onErrorUpdateCalledTimes += 1
+        onErrorUpdateData = error
     }
 
     func onComplete() {
-        // todo
+        onCompleteCalledTimes += 1
     }
 }
 
