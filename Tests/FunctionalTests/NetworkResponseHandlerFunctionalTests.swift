@@ -277,7 +277,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "    }"
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
 
-        let dispatchEvents = getDispatchedEventsWith(type: "state:store", source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "state:store")
         XCTAssertEqual(1, dispatchEvents.count)
         guard let receivedData = dispatchEvents[0].data else {
             XCTFail("Invalid event data")
@@ -322,8 +322,8 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "    }"
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
 
-        var dispatchEvents = getDispatchedEventsWith(type: "state:store", source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
-        dispatchEvents += getDispatchedEventsWith(type: "identity:persist", source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
+        var dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "state:store")
+        dispatchEvents += getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "identity:persist")
         XCTAssertEqual(2, dispatchEvents.count)
         // verify event 1
         guard let receivedData1 = dispatchEvents[0].data else {
@@ -381,10 +381,10 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
         // verify event 1
-        var dispatchEvents = getDispatchedEventsWith(type: "state:store",
-                                                     source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
-        dispatchEvents += getDispatchedEventsWith(type: "pairedeventexample",
-                                                  source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
+        var dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                     source: "state:store")
+        dispatchEvents += getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                  source: "pairedeventexample")
         XCTAssertEqual(2, dispatchEvents.count)
         guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for event 1")
@@ -433,7 +433,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
-        let dispatchEvents = getDispatchedEventsWith(type: "pairedeventexample", source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "pairedeventexample")
         XCTAssertEqual(1, dispatchEvents.count)
         guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for event 1")
@@ -470,8 +470,8 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         networkResponseHandler.addWaitingEvents(requestId: "567", batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
-        let dispatchEvents = getDispatchedEventsWith(type: "pairedeventexample",
-                                                     source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                     source: "pairedeventexample")
         XCTAssertEqual(1, dispatchEvents.count)
         guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for event 1")
@@ -518,7 +518,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
-        let dispatchEvents = getDispatchedEventsWith(type: "state:store", source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "state:store")
         XCTAssertEqual(1, dispatchEvents.count)
         guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for event 1")

@@ -138,7 +138,7 @@ class NetworkResponseHandler {
             handleStoreEventHandle(handle: eventHandle)
 
             guard let eventHandleAsDictionary = try? eventHandle.asDictionary() else { continue }
-            dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary, requestId: requestId, requestEventId: requestEventId, eventType: eventHandle.type)
+            dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary, requestId: requestId, requestEventId: requestEventId, eventSource: eventHandle.type)
             ResponseCallbackHandler.shared.invokeResponseHandler(eventData: eventHandleAsDictionary, requestEventId: requestEventId)
         }
     }
@@ -164,13 +164,13 @@ class NetworkResponseHandler {
     ///   - handleAsDictionary: represents an `EdgeEventHandle` parsed as [String:Any]
     ///   - requestId: the edge request identifier associated with this response
     ///   - requestEventId: the request event identifier for which this response event handle was received
-    ///   - eventType type of the `EdgeEventHandle`
-    private func dispatchResponseEvent(handleAsDictionary: [String: Any], requestId: String, requestEventId: String?, eventType: String?) {
+    ///   - eventSource type of the `EdgeEventHandle`
+    private func dispatchResponseEvent(handleAsDictionary: [String: Any], requestId: String, requestEventId: String?, eventSource: String?) {
         guard !handleAsDictionary.isEmpty else { return }
 
         // set eventRequestId and edge requestId on the response event and dispatch data
         let eventData = addEventAndRequestIdToDictionary(handleAsDictionary, requestId: requestId, requestEventId: requestEventId)
-        dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: false, eventType: eventType)
+        dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: false, eventSource: eventSource)
     }
 
     /// Iterates over the provided `errorsArray` and dispatches a new error event to the Event Hub.
@@ -198,7 +198,7 @@ class NetworkResponseHandler {
                                                                  requestId: requestId,
                                                                  requestEventId: requestEventId)
                 guard !eventData.isEmpty else { continue }
-                dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true, eventType: nil)
+                dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true, eventSource: nil)
             }
         }
     }
@@ -208,13 +208,15 @@ class NetworkResponseHandler {
     ///   - eventData: Event data to be dispatched, should not be empty
     ///   - requestId: The request identifier associated with this response event, used for logging
     ///   - isErrorResponseEvent: indicates if this should be dispatched as an error or regular response content event
-    ///   - eventType: an optional `String` to be used as the `EventType`, if none is provided it will default to Constants.EventType.EDGE
-    private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool, eventType: String?) {
+    ///   - eventSource: an optional `String` to be used as the event source
+    private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool, eventSource: String?) {
         guard !eventData.isEmpty else { return }
+        var source = isErrorResponseEvent ? Constants.EventSource.ERROR_RESPONSE_CONTENT : Constants.EventSource.RESPONSE_CONTENT
+        source = eventSource ?? source
         let responseEvent = Event(name: isErrorResponseEvent ? Constants.EventName.ERROR_RESPONSE_CONTENT : Constants.EventName.RESPONSE_CONTENT,
-                              type: eventType ?? Constants.EventType.EDGE,
-                              source: isErrorResponseEvent ? Constants.EventSource.ERROR_RESPONSE_CONTENT : Constants.EventSource.RESPONSE_CONTENT,
-                              data: eventData)
+                                  type: Constants.EventType.EDGE,
+                                  source: source,
+                                  data: eventData)
 
         MobileCore.dispatch(event: responseEvent)
     }
