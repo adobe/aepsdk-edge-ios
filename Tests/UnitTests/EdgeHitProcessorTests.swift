@@ -95,6 +95,33 @@ class EdgeHitProcessorTests: XCTestCase {
         XCTAssertFalse(mockNetworkService?.connectAsyncCalled ?? true) // no network request should have been made
     }
 
+    /// Tests that when an nil configuration is provided that the hit is dropped
+    func testProcessHit_nilConfiguration() {
+        // setup
+        let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
+        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        getSharedState: { extensionName, event -> SharedStateResult? in
+                                            if extensionName == Constants.SharedState.Configuration.STATE_OWNER_NAME {
+                                                // simulate shared state with no edge config
+                                                return SharedStateResult(status: .pending, value: nil)
+                                            }
+                                            return self.resolveSharedState(extensionName: extensionName, event: event)
+                                        }, readyForEvent: readyForEvent(_:))
+
+        // test
+        hitProcessor.processHit(entity: entity) { success in
+            XCTAssertTrue(success)
+            expectation.fulfill()
+        }
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+        XCTAssertFalse(mockNetworkService?.connectAsyncCalled ?? true) // no network request should have been made
+    }
+
     /// Tests that when no edge config id is in configuration shared state that we drop the hit
     func testProcessHit_noEdgeConfigId() {
         // setup
