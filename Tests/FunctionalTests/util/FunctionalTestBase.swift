@@ -149,7 +149,7 @@ class FunctionalTestBase: XCTestCase {
                 let receivedCount: Int32 = expectedEvent.getInitialCount() - expectedEvent.getCurrentCount()
                 XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) events of type \(receivedEvent.key.type) and source \(receivedEvent.key.source), but received \(receivedCount)", file: (file), line: line)
             }
-            // check for events that don't have expectations set
+                // check for events that don't have expectations set
             else {
                 unexpectedEventsReceivedCount += receivedEvent.value.count
                 unexpectedEventsAsString.append("(\(receivedEvent.key.type), \(receivedEvent.key.source), \(receivedEvent.value.count)),")

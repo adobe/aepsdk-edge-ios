@@ -111,7 +111,7 @@ class NetworkResponseHandler {
             guard let genericErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) else {
                 Log.warning(label: LOG_TAG,
                             "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), " +
-                                "request id \(requestId)")
+                    "request id \(requestId)")
                 return
             }
 
@@ -137,7 +137,7 @@ class NetworkResponseHandler {
             let requestEventId = extractRequestEventId(forEventIndex: eventHandle.eventIndex, requestId: requestId)
             handleStoreEventHandle(handle: eventHandle)
 
-            guard let eventHandleAsDictionary = try? eventHandle.asDictionary() else { return }
+            guard let eventHandleAsDictionary = eventHandle.asDictionary() else { return }
             dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary, requestId: requestId, requestEventId: requestEventId)
             ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: requestEventId)
         }
@@ -152,8 +152,8 @@ class NetworkResponseHandler {
     /// - Returns: the request event unique identifier for which this event handle was received, nil if not found
     private func extractRequestEventId(forEventIndex: Int?, requestId: String) -> String? {
         guard let requestEventIdsList = getWaitingEvents(requestId: requestId),
-              let index = forEventIndex, index >= 0, index < requestEventIdsList.count else {
-            return nil
+            let index = forEventIndex, index >= 0, index < requestEventIdsList.count else {
+                return nil
         }
 
         return requestEventIdsList[index]
@@ -188,7 +188,7 @@ class NetworkResponseHandler {
         Log.trace(label: LOG_TAG, "dispatchEventErrors - Processing \(unwrappedErrors.count) errors(s) for request id: \(requestId)")
         for error in unwrappedErrors {
 
-            if let errorAsDictionary = try? error.asDictionary() {
+            if let errorAsDictionary = error.asDictionary() {
                 logErrorMessage(errorAsDictionary, isError: isError, requestId: requestId)
 
                 let requestEventId = extractRequestEventId(forEventIndex: error.eventIndex, requestId: requestId)

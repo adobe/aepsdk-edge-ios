@@ -22,10 +22,14 @@ class ResponseCallbackHandler {
         ThreadSafeDictionary<String, EdgeResponseHandler>(identifier: "com.adobe.edge.responseHandlers")
     private var completionHandlers =
         ThreadSafeDictionary<String, (([EdgeEventHandle], [EdgeEventError]) -> Void)>(identifier: "com.adobe.edge.completionHandlers")
+
+    // edge response handles for a event request id (key)
     private var edgeEventHandles =
-        ThreadSafeDictionary<String, [EdgeEventHandle]>(identifier: "com.adobe.edge.edgeHandlesList") // edge response handles for a event request id (key)
+        ThreadSafeDictionary<String, [EdgeEventHandle]>(identifier: "com.adobe.edge.edgeHandlesList")
+
+    // edge errors for a event request id (key)
     private var edgeEventErrors =
-        ThreadSafeDictionary<String, [EdgeEventError]>(identifier: "com.adobe.edge.edgeErrorsList") // edge errors for a event request id (key)
+        ThreadSafeDictionary<String, [EdgeEventError]>(identifier: "com.adobe.edge.edgeErrorsList")
     static let shared = ResponseCallbackHandler()
 
     /// Registers a `EdgeResponseHandler` for the specified `requestEventId`. This handler is

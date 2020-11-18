@@ -16,6 +16,7 @@ import XCTest
 
 class CompletionHandlerTests: XCTestCase {
     private let requestEventId = "requestEventId"
+    // swiftlint:disable force_try
     private var eventHandle: EdgeEventHandle = {
         let json: [String: Any] = ["payload": [["key1": "value1", "key2": 2]], "type": "testType"]
         let jsonData = try! JSONSerialization.data(withJSONObject: json, options: [])
@@ -26,6 +27,7 @@ class CompletionHandlerTests: XCTestCase {
         let jsonData = try! JSONSerialization.data(withJSONObject: json, options: [])
         return try! JSONDecoder().decode(EdgeEventError.self, from: jsonData)
     }()
+    // swiftlint:enable force_try
     private let uniqueEventId = "123"
 
     override func setUp() {

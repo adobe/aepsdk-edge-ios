@@ -80,12 +80,12 @@ public class Edge: NSObject, Extension {
 
         // get ECID from Identity shared state, this should be resolved based on readyForEvent check
         guard let identityState =
-                getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,
-                               event: event)?.value else {
-            Log.warning(label: LOG_TAG,
-                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', " +
-                            "Identity shared state is nil.")
-            return // drop current event
+            getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,
+                           event: event)?.value else {
+                            Log.warning(label: LOG_TAG,
+                                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', " +
+                                "Identity shared state is nil.")
+                            return // drop current event
         }
 
         if let ecid = identityState[Constants.SharedState.Identity.ECID] as? String {
@@ -133,20 +133,20 @@ public class Edge: NSObject, Extension {
     /// - Returns: the Edge Configuration Id if found, nil otherwise
     private func getEdgeConfigId(event: Event) -> String? {
         guard let configSharedState =
-                getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
-                               event: event)?.value else {
+            getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
+                           event: event)?.value else {
             Log.warning(label: LOG_TAG,
                         "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', Configuration shared state is nil.")
             return nil
         }
 
         guard let configId =
-                configSharedState[Constants.SharedState.Configuration.CONFIG_ID] as? String,
-              !configId.isEmpty else {
-            Log.warning(label: LOG_TAG,
-                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' " +
-                            "because of invalid edge.configId in configuration.")
-            return nil
+            configSharedState[Constants.SharedState.Configuration.CONFIG_ID] as? String,
+            !configId.isEmpty else {
+                Log.warning(label: LOG_TAG,
+                            "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)' " +
+                    "because of invalid edge.configId in configuration.")
+                return nil
         }
 
         return configId
