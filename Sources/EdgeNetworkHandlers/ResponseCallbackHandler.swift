@@ -89,6 +89,10 @@ class ResponseCallbackHandler {
         Log.trace(label: TAG, "Removing completion handlers for Edge response with request unique id \(requestEventId).")
     }
 
+    /// Updates the list of `EdgeEventHandle`(s) for current `requestEventId` and calls onResponseUpdate if a `ResponseHandler` is registered.
+    /// - Parameters:
+    ///   - eventHandle: newly received event handle
+    ///   - requestEventId: the request event identifier associated with this event handle
     func eventHandleReceived(_ eventHandle: EdgeEventHandle, requestEventId: String?) {
         guard let unwrappedRequestEventId = requestEventId, !unwrappedRequestEventId.isEmpty else { return }
         if edgeEventHandles[unwrappedRequestEventId] != nil {
@@ -99,6 +103,10 @@ class ResponseCallbackHandler {
         invokeResponseHandler(eventHandle: eventHandle, eventError: nil, requestEventId: unwrappedRequestEventId)
     }
 
+    /// Updates the list of `EdgeEventError`(s) for current `requestEventId` and calls onErrorUpdate if a `ResponseHandler` is registered.
+    /// - Parameters:
+    ///   - eventError: newly received error/warning message
+    ///   - requestEventId: the request event identifier associated with this event handle
     func eventErrorReceived(_ eventError: EdgeEventError, requestEventId: String?) {
         guard let unwrappedRequestEventId = requestEventId, !unwrappedRequestEventId.isEmpty else {
             return
