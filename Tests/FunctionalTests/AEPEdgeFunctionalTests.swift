@@ -10,8 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
-import AEPEdge
+@testable import AEPCore
+@testable import AEPEdge
 import AEPIdentity
 import AEPServices
 import Foundation
@@ -51,6 +51,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     override func setUp() {
         super.setUp()
         continueAfterFailure = false
+        FileManager.default.clearCache()
 
         // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, Edge), Identity and Config shared state updates
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
@@ -497,6 +498,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(7, requestBody.count)
         resetTestExpectations()
 
+        sleep(1)
+
         // send a new event, should contain previously stored store data
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
@@ -656,6 +659,83 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
         XCTAssertEqual(0, data["eventIndex"] as? Int)
         XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
+    }
+
+    // MARK: test persisted hits
+
+    func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersisting() {
+        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
+        let responseData = try? JSONEncoder().encode(edgeResponse)
+
+        // bad connection, hits will be retried
+        let responseConnection: HttpConnection = HttpConnection(data: responseData,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 502,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm",
+                                                    "testInt": 10,
+                                                    "testBool": false,
+                                                    "testDouble": 12.89,
+                                                    "testArray": ["arrayElem1", 2, true],
+                                                    "testDictionary": ["key": "val"]])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        assertNetworkRequestsCount()
+        resetTestExpectations()
+
+        // good connection, hits sent
+        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                      statusCode: 200,
+                                                                                      httpVersion: nil,
+                                                                                      headerFields: nil),
+                                                            error: nil)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+
+        assertNetworkRequestsCount()
+    }
+
+    func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
+        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
+        let responseData = try? JSONEncoder().encode(edgeResponse)
+
+        // bad connection, hits will be retried
+        let responseConnection: HttpConnection = HttpConnection(data: responseData,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 502,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm",
+                                                    "testInt": 10,
+                                                    "testBool": false,
+                                                    "testDouble": 12.89,
+                                                    "testArray": ["arrayElem1", 2, true],
+                                                    "testDictionary": ["key": "val"]])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        assertNetworkRequestsCount()
+        resetTestExpectations()
+
+        // good connection, hits sent
+        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                      statusCode: 200,
+                                                                                      httpVersion: nil,
+                                                                                      headerFields: nil),
+                                                            error: nil)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+
+        self.assertNetworkRequestsCount()
     }
 }
 
