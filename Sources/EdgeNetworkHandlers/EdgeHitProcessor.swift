@@ -49,7 +49,6 @@ class EdgeHitProcessor: HitProcessing {
 
         // fetch config shared state, this should be resolved based on readyForEvent check
         guard let configId = getEdgeConfigId(event: event) else {
-            Log.debug(label: LOG_TAG, "processHit - Failed get edge config id '\(entity.uniqueIdentifier)'.")
             completion(true)
             return // drop current event
         }
@@ -94,7 +93,7 @@ class EdgeHitProcessor: HitProcessing {
             }
         }
 
-        let edgeHit = EdgeHit(configId: configId, requestId: UUID().uuidString, request: requestPayload, event: event)
+        let edgeHit = EdgeHit(configId: configId, requestId: UUID().uuidString, request: requestPayload)
         // NOTE: the order of these events needs to be maintained as they were sent in the network request
         // otherwise the response callback cannot be matched
         networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
@@ -112,7 +111,7 @@ class EdgeHitProcessor: HitProcessing {
                                                 configId: edgeHit.configId,
                                                 requestId: edgeHit.requestId) else {
                                                         Log.debug(label: LOG_TAG,
-                                                                  "handleExperienceEventRequest - Failed to build the URL, dropping current event '\(edgeHit.event.id.uuidString)'.")
+                                                                  "handleExperienceEventRequest - Failed to build the URL, dropping current request with request id '\(edgeHit.requestId)'.")
                                                         completion(true)
                                                         return
         }

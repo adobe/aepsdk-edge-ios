@@ -23,7 +23,4 @@ struct EdgeHit {
 
     /// The `EdgeRequest` for the corresponding hit
     let request: EdgeRequest
-
-    /// The `Event` associated with the `EdgeHit`
-    let event: Event
 }
