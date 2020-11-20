@@ -208,7 +208,8 @@ class NetworkResponseHandler {
     ///   - eventData: Event data to be dispatched, should not be empty
     ///   - requestId: The request identifier associated with this response event, used for logging
     ///   - isErrorResponseEvent: indicates if this should be dispatched as an error or regular response content event
-    ///   - eventSource: an optional `String` to be used as the event source
+    ///   - eventSource: an optional `String` to be used as the event source.
+    ///   If `eventSource` is nil either Constants.EventSource.ERROR_RESPONSE_CONTENT or Constants.EventSource.RESPONSE_CONTENT will be used for the event source depending on `isErrorResponseEvent`
     private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool, eventSource: String?) {
         guard !eventData.isEmpty else { return }
         var source = isErrorResponseEvent ? Constants.EventSource.ERROR_RESPONSE_CONTENT : Constants.EventSource.RESPONSE_CONTENT
