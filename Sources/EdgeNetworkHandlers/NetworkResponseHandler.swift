@@ -137,8 +137,8 @@ class NetworkResponseHandler {
             let requestEventId = extractRequestEventId(forEventIndex: eventHandle.eventIndex, requestId: requestId)
             handleStoreEventHandle(handle: eventHandle)
 
-            guard let eventHandleAsDictionary = try? eventHandle.asDictionary() else { return }
-            dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary, requestId: requestId, requestEventId: requestEventId)
+            guard let eventHandleAsDictionary = try? eventHandle.asDictionary() else { continue }
+            dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary, requestId: requestId, requestEventId: requestEventId, eventSource: eventHandle.type)
             ResponseCallbackHandler.shared.invokeResponseHandler(eventData: eventHandleAsDictionary, requestEventId: requestEventId)
         }
     }
@@ -164,12 +164,13 @@ class NetworkResponseHandler {
     ///   - handleAsDictionary: represents an `EdgeEventHandle` parsed as [String:Any]
     ///   - requestId: the edge request identifier associated with this response
     ///   - requestEventId: the request event identifier for which this response event handle was received
-    private func dispatchResponseEvent(handleAsDictionary: [String: Any], requestId: String, requestEventId: String?) {
+    ///   - eventSource type of the `EdgeEventHandle`
+    private func dispatchResponseEvent(handleAsDictionary: [String: Any], requestId: String, requestEventId: String?, eventSource: String?) {
         guard !handleAsDictionary.isEmpty else { return }
 
         // set eventRequestId and edge requestId on the response event and dispatch data
         let eventData = addEventAndRequestIdToDictionary(handleAsDictionary, requestId: requestId, requestEventId: requestEventId)
-        dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: false)
+        dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: false, eventSource: eventSource)
     }
 
     /// Iterates over the provided `errorsArray` and dispatches a new error event to the Event Hub.
@@ -196,8 +197,8 @@ class NetworkResponseHandler {
                 let eventData = addEventAndRequestIdToDictionary(errorAsDictionary,
                                                                  requestId: requestId,
                                                                  requestEventId: requestEventId)
-                guard !eventData.isEmpty else { return }
-                dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true)
+                guard !eventData.isEmpty else { continue }
+                dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true, eventSource: nil)
             }
         }
     }
@@ -207,23 +208,21 @@ class NetworkResponseHandler {
     ///   - eventData: Event data to be dispatched, should not be empty
     ///   - requestId: The request identifier associated with this response event, used for logging
     ///   - isErrorResponseEvent: indicates if this should be dispatched as an error or regular response content event
-    private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool) {
+    ///   - eventSource: an optional `String` to be used as the event source.
+    ///   If `eventSource` is nil either Constants.EventSource.ERROR_RESPONSE_CONTENT or Constants.EventSource.RESPONSE_CONTENT will be used for the event source depending on `isErrorResponseEvent`
+    private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool, eventSource: String?) {
         guard !eventData.isEmpty else { return }
-        var responseEvent: Event?
-        if isErrorResponseEvent {
-            responseEvent = Event(name: Constants.EventName.ERROR_RESPONSE_CONTENT,
-                                  type: Constants.EventType.EDGE,
-                                  source: Constants.EventSource.ERROR_RESPONSE_CONTENT,
-                                  data: eventData)
-        } else {
-            responseEvent = Event(name: Constants.EventName.RESPONSE_CONTENT,
-                                  type: Constants.EventType.EDGE,
-                                  source: Constants.EventSource.RESPONSE_CONTENT,
-                                  data: eventData)
+        var source = isErrorResponseEvent ? Constants.EventSource.ERROR_RESPONSE_CONTENT : Constants.EventSource.RESPONSE_CONTENT
+        if let eventSource = eventSource, !eventSource.isEmpty {
+            source = eventSource
         }
 
-        guard let unwrappedResponseEvent = responseEvent else { return }
-        MobileCore.dispatch(event: unwrappedResponseEvent)
+        let responseEvent = Event(name: isErrorResponseEvent ? Constants.EventName.ERROR_RESPONSE_CONTENT : Constants.EventName.RESPONSE_CONTENT,
+                                  type: Constants.EventType.EDGE,
+                                  source: source,
+                                  data: eventData)
+
+        MobileCore.dispatch(event: responseEvent)
     }
 
     /// Attaches the provided `requestId` and `requestEventId` (if provided) to the `dictionary` and returns the result

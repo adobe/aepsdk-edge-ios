@@ -535,7 +535,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                             source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
-                            source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
+                            source: "personalization:decisions",
                             expectedCount: 1)
         // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
@@ -560,7 +560,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                     source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         let requestEventUUID = requestEvents[0].id.uuidString
         let responseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
-                                                     source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
+                                                     source: "personalization:decisions")
         guard let eventDataDict = responseEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
@@ -626,7 +626,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                             source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
-                            source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
+                            source: "personalization:decisions",
                             expectedCount: 1)
         // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
