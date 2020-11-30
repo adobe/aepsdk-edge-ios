@@ -141,7 +141,7 @@ class EdgeNetworkServiceTests: XCTestCase {
 
         // test
         let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
-                                                response: HTTPURLResponse(url: url, statusCode: 204, httpVersion: nil, headerFields: nil),
+                                                response: HTTPURLResponse(url: url, statusCode: 207, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
@@ -150,7 +150,7 @@ class EdgeNetworkServiceTests: XCTestCase {
             XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
             XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
             XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
-            XCTAssertEqual([], self.mockResponseCallback.onResponseJsonResponse)
+            XCTAssertEqual([stringResponseBody], self.mockResponseCallback.onResponseJsonResponse)
             expectation.fulfill()
         })
 
