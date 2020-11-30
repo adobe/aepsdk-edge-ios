@@ -462,7 +462,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        
+
         XCTAssertEqual("query", requestBody["events[0].query.testString"] as? String)
         XCTAssertEqual(10, requestBody["events[0].query.testInt"] as? Int)
         XCTAssertEqual(false, requestBody["events[0].query.testBool"] as? Bool)
@@ -473,7 +473,6 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("val", requestBody["events[0].query.testDictionary.key"] as? String)
     }
 
-    
     // MARK: Client-side store
     func testSendEvent_twoConsecutiveCalls_appendsReceivedClientSideStore() {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)

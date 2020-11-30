@@ -226,7 +226,7 @@ class NetworkResponseHandler {
                                                                  requestId: requestId,
                                                                  requestEventId: requestEventId)
                 guard !eventData.isEmpty else { return }
-                dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true)
+                dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true, eventSource: nil)
             }
         }
     }
