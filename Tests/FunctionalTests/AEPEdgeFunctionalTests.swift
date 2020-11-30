@@ -584,7 +584,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT,
                             expectedCount: 1)
-        let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [],\"warnings\": [{\"eventIndex\": 0,\"code\": \"personalization:0\",\"message\": \"Failed due to unrecoverable system error\"}]}\n"
+        let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [],\"warnings\": [{\"eventIndex\": 0,\"status\": 0,\"title\": \"Failed due to unrecoverable system error\"}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                             response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
@@ -613,8 +613,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         }
         let eventData = flattenDictionary(dict: eventDataDict)
         XCTAssertEqual(5, eventData.count)
-        XCTAssertEqual("personalization:0", eventData["code"] as? String)
-        XCTAssertEqual("Failed due to unrecoverable system error", eventData["message"] as? String)
+        XCTAssertEqual(0, eventData["status"] as? Int)
+        XCTAssertEqual("Failed due to unrecoverable system error", eventData["title"] as? String)
         XCTAssertEqual(0, eventData["eventIndex"] as? Int)
         XCTAssertEqual(requestId, eventData["requestId"] as? String)
         XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
