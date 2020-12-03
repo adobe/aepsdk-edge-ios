@@ -214,15 +214,15 @@ class NetworkResponseHandler {
             return
         }
 
-        Log.trace(label: LOG_TAG, "dispatchEventWarnings - Processing \(unwrappedWarnings.count) errors(s) for request id: \(requestId)")
+        Log.trace(label: LOG_TAG, "dispatchEventWarnings - Processing \(unwrappedWarnings.count) warning(s) for request id: \(requestId)")
         for warning in unwrappedWarnings {
 
-            if let errorAsDictionary = try? warning.asDictionary() {
-                logErrorMessage(errorAsDictionary, isError: false, requestId: requestId)
+            if let warningsAsDictionary = try? warning.asDictionary() {
+                logErrorMessage(warningsAsDictionary, isError: false, requestId: requestId)
 
                 let requestEventId = extractRequestEventId(forEventIndex: warning.eventIndex, requestId: requestId)
                 // set eventRequestId and Edge requestId on the response event and dispatch data
-                let eventData = addEventAndRequestIdToDictionary(errorAsDictionary,
+                let eventData = addEventAndRequestIdToDictionary(warningsAsDictionary,
                                                                  requestId: requestId,
                                                                  requestEventId: requestEventId)
                 guard !eventData.isEmpty else { return }
