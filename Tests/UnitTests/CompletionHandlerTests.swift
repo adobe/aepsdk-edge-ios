@@ -36,6 +36,7 @@ class CompletionHandlerTests: XCTestCase {
 
     func testRegisterCompletionHandler_thenEventHandlerReceived_completionCalled() {
         let expectation = self.expectation(description: "Completion handler invoked")
+        expectation.assertForOverFulfill = true
         ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId, completionHandler: { (handles: [EdgeEventHandle], errors: [EdgeEventError]) in
             XCTAssertEqual(1, handles.count)
             XCTAssertEqual(0, errors.count)
@@ -49,6 +50,7 @@ class CompletionHandlerTests: XCTestCase {
 
     func testRegisterTwoCompletionHandlers_thenEventHandlerReceived_completionCalledForCorrectOne() {
         let expectation = self.expectation(description: "Completion handler invoked")
+        expectation.assertForOverFulfill = true
         ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: "567", completionHandler: { (_ handles: [EdgeEventHandle], _ errors: [EdgeEventError]) in
             XCTFail("Unexpected call")
         })
@@ -98,6 +100,7 @@ class CompletionHandlerTests: XCTestCase {
 
     func testRegisterTwoCompletionHandlers_thenEventErrorReceived_completionCalledForCorrectOne() {
         let expectation = self.expectation(description: "Completion handler invoked")
+        expectation.assertForOverFulfill = true
         ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: "567", completionHandler: { (_ handles: [EdgeEventHandle], _ errors: [EdgeEventError]) in
             XCTFail("Unexpected call")
         })
@@ -129,6 +132,7 @@ class CompletionHandlerTests: XCTestCase {
 
     func testRegisterCompletionHandler_thenUnregisterCallbacks_completionCalled() {
         let expectation = self.expectation(description: "Completion handler invoked")
+        expectation.assertForOverFulfill = true
         ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId, completionHandler: { (handles: [EdgeEventHandle], errors: [EdgeEventError]) in
             XCTAssertEqual(0, handles.count)
             XCTAssertEqual(0, errors.count)

@@ -111,9 +111,4 @@ enum Constants {
         static let HEADER_KEY_AEP_VALIDATION_TOKEN = "X-Adobe-AEP-Validation-Token"
         static let HEADER_VALUE_APPLICATION_JSON = "application/json"
     }
-
-    enum Error {
-        static let ENCODING_ERROR_DOMAIN = "EncodingError"
-        static let ENCODING_ERROR_CODE = 1
-    }
 }
