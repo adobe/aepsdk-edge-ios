@@ -31,7 +31,7 @@ class NetworkResponseCallback: ResponseCallback {
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
     }
 
-    /// Porcesses the error responses
+    /// Processes the error responses
     /// - Parameter jsonError: error response from the server or generic error if unknown, JSON formatted
     func onError(jsonError: String) {
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
