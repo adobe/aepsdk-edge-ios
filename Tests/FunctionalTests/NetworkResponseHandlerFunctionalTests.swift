@@ -43,7 +43,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     func testProcessResponseOnError_WhenGenericJsonError_dispatchesEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
         let jsonError = "{\n" +
-            "\"type\": \"global\",\n" +
+            "\"type\": \"https://ns.adobe.com/aep/errors/EXEG-0201-503\",\n" +
             "\"title\": \"Request to Data platform failed with an unknown exception\"" +
             "\n}"
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
@@ -57,7 +57,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
         let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
         XCTAssertEqual(3, flattenReceivedData.count)
-        XCTAssertEqual("global", flattenReceivedData["type"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0201-503", flattenReceivedData["type"] as? String)
         XCTAssertEqual("Request to Data platform failed with an unknown exception", flattenReceivedData["title"] as? String)
         XCTAssertEqual("123", flattenReceivedData["requestId"] as? String)
     }
@@ -70,7 +70,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "      \"errors\": [\n" +
             "        {\n" +
             "          \"status\": 500,\n" +
-            "          \"type\": \"global\",\n" +
+            "          \"type\": \"https://ns.adobe.com/aep/errors/EXEG-0201-503\",\n" +
             "          \"title\": \"Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases\"\n"
             +
             "        }\n" +
@@ -87,7 +87,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
         let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
         XCTAssertEqual(4, flattenReceivedData.count)
-        XCTAssertEqual("global", flattenReceivedData["type"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0201-503", flattenReceivedData["type"] as? String)
         XCTAssertEqual(500, flattenReceivedData["status"] as? Int)
         XCTAssertEqual("Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases", flattenReceivedData["title"] as? String)
         XCTAssertEqual("123", flattenReceivedData["requestId"] as? String)
@@ -203,7 +203,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "      \"errors\": [\n" +
             "        {\n" +
             "          \"status\": 0,\n" +
-            "          \"type\": \"global\",\n" +
+            "          \"type\": \"https://ns.adobe.com/aep/errors/EXEG-0201-503\",\n" +
             "          \"title\": \"Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases\"\n"
             +
             "        },\n" +
@@ -225,7 +225,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
         XCTAssertEqual(4, flattenReceivedData1.count)
         XCTAssertEqual(0, flattenReceivedData1["status"] as? Int)
-        XCTAssertEqual("global", flattenReceivedData1["type"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0201-503", flattenReceivedData1["type"] as? String)
         XCTAssertEqual("Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases", flattenReceivedData1["title"] as? String)
         XCTAssertEqual(requestId, flattenReceivedData1["requestId"] as? String)
 
