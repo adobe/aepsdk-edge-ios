@@ -340,7 +340,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
-    
+
     func testSendEvent_withXDMSchema_sendsExEdgeNetworkRequest() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                                 response: HTTPURLResponse(url: exEdgeInteractUrl,
@@ -737,6 +737,30 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         self.assertNetworkRequestsCount()
+    }
+
+    func testSendEvent_multiStatusResponse_dispatchesEvents() {
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        let response = """
+                        {"requestId":"72eaa048-207e-4dde-bf16-0cb2b21336d5","handle":[],"errors":[{"type":"https://ns.adobe.com/aep/errors/EXEG-0201-504","status":504,"title":"The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.","eventIndex":0}],"warnings":[{"type":"https://ns.adobe.com/aep/errors/EXEG-0204-200","status":200,"title":"A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.","eventIndex":0,"report":{"cause":{"message":"Cannot read related customer for device id: ...","code":202}}}]}
+                       """
+        let responseConnection: HttpConnection = HttpConnection(data: response.data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 207,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1) // the send event
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 3) // 2 error events (one from the onSuccess callback, one from onError callback), then one warning event.
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        assertNetworkRequestsCount()
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
     }
 }
 

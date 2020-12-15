@@ -120,7 +120,8 @@ class EdgeNetworkService {
                     Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned recoverable error code \(responseCode)")
                     completion(false) // failed, but recoverable so retry
                 } else if responseCode == HttpResponseCodes.multiStatus.rawValue {
-                    Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge was successful but encountered non-fatal errors. \(responseCode)")
+                    Log.debug(label: self.LOG_TAG,
+                              "doRequest - Connection to Experience Edge was successful but encountered non-fatal errors. \(responseCode)")
                     self.handleContent(connection: connection,
                                        streaming: requestBody.meta?.konductorConfig?.streaming,
                                        responseCallback: responseCallback)
