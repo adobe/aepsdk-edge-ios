@@ -761,6 +761,43 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         assertNetworkRequestsCount()
         assertExpectedEvents(ignoreUnexpectedEvents: false)
+        
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                   source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
+        guard let eventDataDict = resultEvents[0].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+        let eventData = flattenDictionary(dict: eventDataDict)
+        XCTAssertEqual(6, eventData.count)
+        XCTAssertEqual(eventData["status"] as? Int, 504)
+        XCTAssertEqual(eventData["eventIndex"] as? Int, 0)
+        XCTAssertEqual(eventData["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0201-504")
+        XCTAssertEqual(eventData["title"] as? String, "The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.")
+
+        guard let eventDataDict1 = resultEvents[1].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+        let eventData1 = flattenDictionary(dict: eventDataDict1)
+        XCTAssertEqual(8, eventData1.count)
+        XCTAssertEqual(eventData1["status"] as? Int, 200)
+        XCTAssertEqual(eventData1["eventIndex"] as? Int, 0)
+        XCTAssertEqual(eventData1["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0204-200")
+        XCTAssertEqual(eventData1["title"] as? String, "A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.")
+        XCTAssertEqual(eventData1["report.cause.message"] as? String, "Cannot read related customer for device id: ...")
+        XCTAssertEqual(eventData1["report.cause.code"] as? Int, 202)
+
+        guard let eventDataDict2 = resultEvents[2].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+        let eventData2 = flattenDictionary(dict: eventDataDict2)
+        XCTAssertEqual(6, eventData2.count)
+        XCTAssertEqual(eventData2["status"] as? Int, 504)
+        XCTAssertEqual(eventData2["eventIndex"] as? Int, 0)
+        XCTAssertEqual(eventData2["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0201-504")
+        XCTAssertEqual(eventData2["title"] as? String, "The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.")
     }
 }
 
