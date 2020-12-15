@@ -49,6 +49,37 @@ class EdgeEventWarningTests: XCTestCase {
         XCTAssertEqual(202, warning?.report?.cause?.code)
     }
 
+    func testCanDecode_eventWarning_allParams_plusInvalidParams() {
+        // setup
+        let jsonData = """
+                        {
+                          "eventIndex": 1,
+                          "type": "https://ns.adobe.com/aep/errors/EXEG-0204-200",
+                          "status": 200,
+                          "title": "test title",
+                          "extraKey": "extraValue",
+                          "report": {
+                            "cause": {
+                              "message": "Cannot read related customer for device id: ...",
+                              "code": 202,
+                              "extraNestedKey": "extraNestedValue"
+                            }
+                          }
+                        }
+                      """.data(using: .utf8)
+
+        // test
+        let warning = try? JSONDecoder().decode(EdgeEventWarning.self, from: jsonData ?? Data())
+
+        // verify
+        XCTAssertEqual(1, warning?.eventIndex)
+        XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0204-200", warning?.type)
+        XCTAssertEqual(200, warning?.status)
+        XCTAssertEqual("test title", warning?.title)
+        XCTAssertEqual("Cannot read related customer for device id: ...", warning?.report?.cause?.message)
+        XCTAssertEqual(202, warning?.report?.cause?.code)
+    }
+
     func testCanDecode_eventWarning_allParams_multipleWarnings() {
         // setup
         let jsonData = """
