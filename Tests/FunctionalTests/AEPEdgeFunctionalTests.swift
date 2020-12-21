@@ -518,9 +518,9 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(13, requestBody.count)
 
         guard let firstStore = requestBody["meta.state.entries[0].key"] as? String,
-            let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
-                XCTFail("Client-side store not found")
-                return
+              let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
+            XCTFail("Client-side store not found")
+            return
         }
         XCTAssertEqual("kndctr_testOrg_AdobeOrg_identity", requestBody["meta.state.entries[\(Int(index))].key"] as? String)
         XCTAssertEqual("hashed_value",

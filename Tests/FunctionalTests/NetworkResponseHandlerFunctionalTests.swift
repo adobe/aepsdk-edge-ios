@@ -45,7 +45,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let jsonError = "{\n" +
             "\"namespace\": \"global\",\n" +
             "\"message\": \"Request to Data platform failed with an unknown exception\"" +
-        "\n}"
+            "\n}"
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, timeout: 5)
         XCTAssertEqual(1, dispatchEvents.count)
@@ -75,7 +75,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             +
             "        }\n" +
             "      ]\n" +
-        "    }"
+            "    }"
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(1, dispatchEvents.count)
@@ -107,7 +107,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "           \"eventIndex\": 0\n" +
             "        }\n" +
             "      ]\n" +
-        "    }"
+            "    }"
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
@@ -142,7 +142,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "           \"eventIndex\": 10\n" +
             "        }\n" +
             "      ]\n" +
-        "    }"
+            "    }"
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
@@ -175,7 +175,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "           \"eventIndex\": 0\n" +
             "        }\n" +
             "      ]\n" +
-        "    }"
+            "    }"
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "567")
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
@@ -213,7 +213,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "          \"message\": \"Failed to process personalization event\"\n" +
             "        }\n" +
             "      ]\n" +
-        "    }"
+            "    }"
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(2, dispatchEvents.count)
@@ -274,7 +274,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "            ]\n" +
             "        }],\n" +
             "      \"errors\": []\n" +
-        "    }"
+            "    }"
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
 
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "state:store")
@@ -386,7 +386,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "            ]\n" +
             "        }],\n" +
             "      \"errors\": []\n" +
-        "    }"
+            "    }"
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
 
         var dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "state:store")
@@ -443,7 +443,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "            ]\n" +
             "        }],\n" +
             "      \"errors\": []\n" +
-        "    }"
+            "    }"
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
@@ -495,7 +495,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "            ]\n" +
             "        }],\n" +
             "      \"errors\": []\n" +
-        "    }"
+            "    }"
 
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
@@ -532,7 +532,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "            ]\n" +
             "        }],\n" +
             "      \"errors\": []\n" +
-        "    }"
+            "    }"
 
         networkResponseHandler.addWaitingEvents(requestId: "567", batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
@@ -581,7 +581,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "          \"message\": \"Failed to process personalization event\"\n" +
             "        }\n" +
             "       ]\n" +
-        "    }"
+            "    }"
 
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
@@ -634,7 +634,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "          \"eventIndex\": 10 \n" +
             "        }\n" +
             "       ]\n" +
-        "    }"
+            "    }"
 
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
