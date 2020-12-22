@@ -75,16 +75,16 @@ class ResponseCallbackHandler {
         guard !requestEventId.isEmpty else { return }
         if let responseHandler = responseHandlers[requestEventId] {
             responseHandler.onComplete()
-            responseHandlers[requestEventId] = nil
+            _ = responseHandlers.removeValue(forKey: requestEventId)
         }
 
         if let completionHandler = completionHandlers[requestEventId] {
             completionHandler(edgeEventHandles[requestEventId] ?? [], edgeEventErrors[requestEventId] ?? [])
-            completionHandlers[requestEventId] = nil
+            _ = completionHandlers.removeValue(forKey: requestEventId)
         }
 
-        edgeEventHandles[requestEventId] = nil
-        edgeEventErrors[requestEventId] = nil
+        _ = edgeEventHandles.removeValue(forKey: requestEventId)
+        _ = edgeEventErrors.removeValue(forKey: requestEventId)
 
         Log.trace(label: TAG, "Removing completion handlers for Edge response with request unique id \(requestEventId).")
     }
