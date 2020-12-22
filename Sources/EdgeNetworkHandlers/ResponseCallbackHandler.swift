@@ -65,6 +65,7 @@ class ResponseCallbackHandler {
             return
         }
 
+        Log.trace(label: TAG, "Registering completion handler for Edge response with request event id \(requestEventId).")
         completionHandlers[requestEventId] = unwrappedCompletion
     }
 
@@ -86,7 +87,7 @@ class ResponseCallbackHandler {
         _ = edgeEventHandles.removeValue(forKey: requestEventId)
         _ = edgeEventErrors.removeValue(forKey: requestEventId)
 
-        Log.trace(label: TAG, "Removing completion handlers for Edge response with request unique id \(requestEventId).")
+        Log.trace(label: TAG, "Removing callback handlers for Edge response with request unique id \(requestEventId).")
     }
 
     /// Updates the list of `EdgeEventHandle`(s) for current `requestEventId` and calls onResponseUpdate if a `ResponseHandler` is registered.
@@ -100,7 +101,10 @@ class ResponseCallbackHandler {
         } else {
             edgeEventHandles[unwrappedRequestEventId] = [eventHandle]
         }
-        invokeResponseHandler(eventHandle: eventHandle, eventError: nil, requestEventId: unwrappedRequestEventId)
+
+        if responseHandlers[unwrappedRequestEventId] != nil {
+            invokeResponseHandler(eventHandle: eventHandle, eventError: nil, requestEventId: unwrappedRequestEventId)
+        }
     }
 
     /// Updates the list of `EdgeEventError`(s) for current `requestEventId` and calls onErrorUpdate if a `ResponseHandler` is registered.
@@ -116,7 +120,10 @@ class ResponseCallbackHandler {
         } else {
             edgeEventErrors[unwrappedRequestEventId] = [eventError]
         }
-        invokeResponseHandler(eventHandle: nil, eventError: eventError, requestEventId: unwrappedRequestEventId)
+
+        if responseHandlers[unwrappedRequestEventId] != nil {
+            invokeResponseHandler(eventHandle: nil, eventError: eventError, requestEventId: unwrappedRequestEventId)
+        }
     }
 
     /// Invokes the response handler for the unique event identifier (if any callback was previously registered for this id).
