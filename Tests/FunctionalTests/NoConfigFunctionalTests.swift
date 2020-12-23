@@ -12,6 +12,8 @@
 
 import AEPCore
 @testable import AEPEdge
+import AEPIdentity
+import AEPServices
 import XCTest
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
@@ -58,14 +60,61 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         wait(for: [handleExperienceEventRequestExpectation], timeout: 1.0)
     }
 
-    // TODO: AMSDK-10665 rewrite the test related to handling the response event
-    // steps:
-    // - set valid configs
-    // - mock network response - multiple chuncks as a response for event1
-    // - send xdm event1
-    // - set invalid config (pending/nil)
-    // - send xdm event2
-    // - check callback is invoked correcly for event1, check xdm event2 not processed
-    //    func testHandleResponseEvent_withPendingConfigurationState_expectResponseEventHandled() {
-    //    }
+    func testResponseHandler_withPendingConfigurationState_thenValidConfig_callsOnResponse() {
+        // initialize test data
+
+        // swiftlint:disable:next line_length
+        let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\"},{\"payload\": [{\"type\": \"url\",\"id\": 411,\"spec\": {\"url\": \"//example.url?d_uuid=9876\",\"hideReferrer\": false,\"ttlMinutes\": 10080}}],\"type\": \"identity:exchange\"}]}\n"
+        let edgeUrl = URL(string: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR)! // swiftlint:disable:this force_unwrapping
+        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                            response: HTTPURLResponse(url: edgeUrl,
+                                                                                      statusCode: 200,
+                                                                                      httpVersion: nil,
+                                                                                      headerFields: nil),
+                                                            error: nil)
+        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        let responseHandler = MockResponseHandler(expectedResponses: 2)
+
+        // test sendEvent does not send the event when config is pending
+        MobileCore.registerExtension(Identity.self)
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
+                                                        data: nil),
+                       responseHandler: responseHandler)
+        var resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post)
+        XCTAssertEqual(0, resultNetworkRequests.count)
+        XCTAssertFalse(responseHandler.onCompleteCalled)
+
+        // test event gets processed when config shared state is resolved
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "123567",
+                                                        "global.privacy": "optedin",
+                                                        "experienceCloud.org": "testOrg@AdobeOrg"])
+
+        // verify
+        assertNetworkRequestsCount()
+        responseHandler.await()
+
+        resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post)
+        XCTAssertEqual(1, resultNetworkRequests.count)
+        XCTAssertEqual(2, responseHandler.onResponseHandles.count)
+        XCTAssertTrue(responseHandler.onCompleteCalled)
+
+        var data = flattenDictionary(dict: responseHandler.onResponseHandles[0].toDictionary() ?? [:])
+        XCTAssertEqual(5, data.count)
+        XCTAssertEqual("personalization:decisions", data["type"] as? String)
+        XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", data["payload[0].id"] as? String)
+        XCTAssertEqual("#D41DBA", data["payload[0].items[0].data.content.value"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/personalization/json-content-item", data["payload[0].items[0].schema"] as? String)
+        XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
+        XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
+
+        data = flattenDictionary(dict: responseHandler.onResponseHandles[1].toDictionary() ?? [:])
+        XCTAssertEqual(6, data.count)
+        XCTAssertEqual("identity:exchange", data["type"] as? String)
+        XCTAssertEqual(411, data["payload[0].id"] as? Int)
+        XCTAssertEqual("url", data["payload[0].type"] as? String)
+        XCTAssertEqual("//example.url?d_uuid=9876", data["payload[0].spec.url"] as? String)
+        XCTAssertEqual(false, data["payload[0].spec.hideReferrer"] as? Bool)
+        XCTAssertEqual(10080, data["payload[0].spec.ttlMinutes"] as? Int)
+    }
 }

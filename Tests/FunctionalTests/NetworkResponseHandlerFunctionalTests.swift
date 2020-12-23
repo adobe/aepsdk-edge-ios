@@ -458,12 +458,13 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
-        XCTAssertEqual(5, flattenReceivedData1.count)
+        XCTAssertEqual(6, flattenReceivedData1.count)
         XCTAssertEqual("state:store", flattenReceivedData1["type"] as? String)
-        XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
         XCTAssertEqual("s_ecid", flattenReceivedData1["payload[0].key"] as? String)
         XCTAssertEqual("MCMID|29068398647607325310376254630528178721", flattenReceivedData1["payload[0].value"] as? String)
         XCTAssertEqual(15552000, flattenReceivedData1["payload[0].maxAge"] as? Int)
+        XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
+        XCTAssertEqual(event1.id.uuidString, flattenReceivedData1["requestEventId"] as? String)
 
         // verify event 2
         guard let receivedData2 = dispatchEvents[1].data else {
@@ -473,10 +474,10 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let flattenReceivedData2: [String: Any] = flattenDictionary(dict: receivedData2)
         XCTAssertEqual(5, flattenReceivedData2.count)
         XCTAssertEqual("pairedeventexample", flattenReceivedData2["type"] as? String)
-        XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
-        XCTAssertEqual(1, flattenReceivedData2["eventIndex"] as? Int)
-        XCTAssertEqual(event2.id.uuidString, flattenReceivedData2["requestEventId"] as? String)
         XCTAssertEqual("123612123812381", flattenReceivedData2["payload[0].id"] as? String)
+        XCTAssertEqual(1, flattenReceivedData2["eventIndex"] as? Int)
+        XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
+        XCTAssertEqual(event2.id.uuidString, flattenReceivedData2["requestEventId"] as? String)
     }
 
     func testProcessResponseOnSuccess_WhenEventHandleWithUnknownEventIndex_dispatchesUnpairedEvent() {
