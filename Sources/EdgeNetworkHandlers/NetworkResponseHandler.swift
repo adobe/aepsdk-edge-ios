@@ -134,7 +134,10 @@ class NetworkResponseHandler {
             handleStoreEventHandle(handle: eventHandle)
 
             guard let eventHandleAsDictionary = eventHandle.asDictionary() else { continue }
-            dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary, requestId: requestId, requestEventId: requestEventId, eventSource: eventHandle.type)
+            dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary,
+                                  requestId: requestId,
+                                  requestEventId: requestEventId,
+                                  eventSource: eventHandle.type)
             ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: requestEventId)
         }
     }

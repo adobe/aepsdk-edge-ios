@@ -166,8 +166,8 @@
 		D4D5B5892432977F00CAB6E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5872432977F00CAB6E4 /* LaunchScreen.storyboard */; };
 		D4DE9B6725927C1700EDCD50 /* MockResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DE9B6625927C1700EDCD50 /* MockResponseHandler.swift */; };
 		D4DE9B6825927C1700EDCD50 /* MockResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DE9B6625927C1700EDCD50 /* MockResponseHandler.swift */; };
-		D4DE9B6C2592B8F900EDCD50 /* AEPEdgeResponseHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DE9B6B2592B8F900EDCD50 /* AEPEdgeResponseHandlerFunctionalTests.swift */; };
 		D4DE9B6D2592B8F900EDCD50 /* AEPEdgeResponseHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DE9B6B2592B8F900EDCD50 /* AEPEdgeResponseHandlerFunctionalTests.swift */; };
+		D4DE9B882593F96700EDCD50 /* CountDownLatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BBB74248DC54F00775DAC /* CountDownLatch.swift */; };
 		D4EED36C2489ACE200D4815C /* FunctionalTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */; };
 		D4F74FE72447A8B800379258 /* MockNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE62447A8B800379258 /* MockNetworking.swift */; };
 		D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE82447A92800379258 /* MockURLSession.swift */; };
@@ -502,10 +502,9 @@
 			children = (
 				D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */,
 				D4A473C52485938D00D31710 /* FunctionalTestConst.swift */,
+				D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */,
 				D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */,
 				BF0C09472465E42100892B5D /* TestableEdge.swift */,
-				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
-				D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */,
 				BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */,
 				D48CBD2124A17EEA00A24BD8 /* TestXDMSchema.swift */,
 				21888AF22555F9FC005677ED /* FileManager+Testable.swift */,
@@ -644,6 +643,7 @@
 		D4655403246DF3B000A150E2 /* TestUtils */ = {
 			isa = PBXGroup;
 			children = (
+				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
 				240E3C9824EF357100D44993 /* MockDataStore.swift */,
 				BF947FA1244587520057A6CC /* TestUtils.swift */,
 				D49A628E250AE4F500B7C4A3 /* EventHub+Test.swift */,
@@ -1384,6 +1384,7 @@
 				1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */,
 				BF947F82243F05BF0057A6CC /* IdentityMapTests.swift in Sources */,
 				D4DE9B6725927C1700EDCD50 /* MockResponseHandler.swift in Sources */,
+				D4DE9B882593F96700EDCD50 /* CountDownLatch.swift in Sources */,
 				D42FB8E124635FA200E9321C /* MockResponseCallback.swift in Sources */,
 				BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */,
 				D46553F3246A138800A150E2 /* MockEdgeResponseHandler.swift in Sources */,
@@ -1403,7 +1404,6 @@
 				D4A81DEC25658F0D0042B00A /* CompletionHandlerTests.swift in Sources */,
 				D4F74FE72447A8B800379258 /* MockNetworking.swift in Sources */,
 				1CB57B262460F2B6000B2DA5 /* EdgeTests.swift in Sources */,
-				D4DE9B6C2592B8F900EDCD50 /* AEPEdgeResponseHandlerFunctionalTests.swift in Sources */,
 				1CCD27DC245A240F00E912B2 /* ExperienceEventTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
