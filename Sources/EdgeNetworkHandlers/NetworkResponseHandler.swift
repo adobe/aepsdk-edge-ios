@@ -147,8 +147,12 @@ class NetworkResponseHandler {
     ///   - requestId: edge request id used to fetch the waiting events associated with it (if any)
     /// - Returns: the request event unique identifier for which this event handle was received, nil if not found
     private func extractRequestEventId(forEventIndex: Int?, requestId: String) -> String? {
-        guard let requestEventIdsList = getWaitingEvents(requestId: requestId),
-              let index = forEventIndex, index >= 0, index < requestEventIdsList.count else {
+        guard let requestEventIdsList = getWaitingEvents(requestId: requestId) else { return nil }
+
+        // Note: ExEdge does not return eventIndex when there is only one event in the request.
+        // The event handles and errrors are associated to that request event, so defaulting to 0 here.
+        let index = forEventIndex ?? 0
+        guard index >= 0, index < requestEventIdsList.count else {
             return nil
         }
 
