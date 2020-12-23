@@ -13,6 +13,7 @@
 @testable import AEPEdge
 import Foundation
 
+/// Mock for the internal `ResponseCallback`, used by the `EdgeNetworkService`
 class MockResponseCallback: ResponseCallback {
     var onResponseCalled: Bool = false
     var onResponseJsonResponse: [String] = []

@@ -13,7 +13,7 @@
 import AEPEdge
 import Foundation
 
-/// Mock class for EdgeResponseHandler used for testing. Initialize it with expected responses and errors count and
+/// Mock class for public `EdgeResponseHandler` used for testing. Initialize it with expected responses and errors count and
 /// call await before making the assertions.
 class MockResponseHandler: EdgeResponseHandler {
     var onResponseHandles: [EdgeEventHandle] = []
