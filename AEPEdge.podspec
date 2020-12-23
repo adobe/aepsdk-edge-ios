@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "AEPEdge"
-  s.version          = "1.0.0-beta-2"
+  s.version          = "1.0.0-beta.2"
   s.summary          = "Experience Platform Edge extension for Adobe Experience Platform Mobile SDK. Written and maintained by Adobe."
 
   s.description      = <<-DESC
