@@ -10,21 +10,24 @@
 // governing permissions and limitations under the License.
 //
 
+@testable import AEPServices
 import Foundation
 
-/// A response from the Adobe Experience Edge server.
-/// An `EdgeResponse` is the top-level response object received from the server.
-struct EdgeResponse: Codable {
+extension FileManager {
 
-    /// The request identifier associated with this response
-    let requestId: String?
+    func clearCache() {
+        if let url = self.urls(for: .cachesDirectory, in: .userDomainMask).first {
 
-    /// List of event handles received from the Experience Edge  Network
-    let handle: [EdgeEventHandle]?
+            do {
+                try self.removeItem(at: URL(fileURLWithPath: "\(url.relativePath)/com.adobe.edge"))
+                if let dqService = ServiceProvider.shared.dataQueueService as? DataQueueService {
+                    _ = dqService.threadSafeDictionary.removeValue(forKey: "com.adobe.edge")
+                }
+            } catch {
+                print("ERROR DESCRIPTION: \(error)")
+            }
+        }
 
-    /// List of errors received from Experience Edge Network
-    let errors: [EdgeEventError]?
+    }
 
-    /// List of warnings received from Experience Edge Network
-    let warnings: [EdgeEventError]?
 }

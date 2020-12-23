@@ -195,4 +195,17 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertNotNil(requestPayload?.events?[2]["xdm"])
         XCTAssertNotNil(requestPayload?.events?[2]["data"])
     }
+
+    func testGetRequestPayload_withQuery_responseContainsQuery() {
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
+
+        let event = Event(name: "Request Test",
+                          type: "type",
+                          source: "source",
+                          data: ["query": ["key": "value"]])
+
+        let requestPayload = request.getRequestPayload([event])
+        XCTAssertNotNil(requestPayload?.events?[0]["query"])
+        XCTAssertEqual(requestPayload?.events?[0]["query"]?.dictionaryValue?["key"] as? String, "value" )
+    }
 }

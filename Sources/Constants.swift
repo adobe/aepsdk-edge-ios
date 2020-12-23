@@ -15,7 +15,7 @@ import Foundation
 enum Constants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
-    static let EXTENSION_VERSION = "1.0.0-beta-1"
+    static let EXTENSION_VERSION = "1.0.0-beta.2"
     static let FRIENDLY_NAME = "AEPEdge"
 
     enum EventType {
@@ -79,6 +79,7 @@ enum Constants {
     enum JsonKeys {
         static let XDM = "xdm"
         static let DATA = "data"
+        static let QUERY = "query"
         static let ECID = "ECID"
         static let TIMESTAMP = "timestamp"
         static let EVENT_ID = "_id"
@@ -109,6 +110,7 @@ enum Constants {
         static let HEADER_KEY_CONTENT_TYPE = "Content-Type"
         static let HEADER_KEY_AEP_VALIDATION_TOKEN = "X-Adobe-AEP-Validation-Token"
         static let HEADER_VALUE_APPLICATION_JSON = "application/json"
+        static let RETRY_INTERVAL: TimeInterval = 5
     }
 
     enum Error {

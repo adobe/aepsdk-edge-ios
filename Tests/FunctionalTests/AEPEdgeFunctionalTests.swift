@@ -10,8 +10,8 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
-import AEPEdge
+@testable import AEPCore
+@testable import AEPEdge
 import AEPIdentity
 import AEPServices
 import Foundation
@@ -51,6 +51,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     override func setUp() {
         super.setUp()
         continueAfterFailure = false
+        FileManager.default.clearCache()
 
         // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, Edge), Identity and Config shared state updates
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
@@ -177,6 +178,78 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         assertUnexpectedEvents()
     }
 
+    func testSendEvent_withXDMDataAndQuery_sendsCorrectRequestEvent() {
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
+        experienceEvent.query = ["testString": "query",
+                                 "testInt": 10,
+                                 "testBool": false,
+                                 "testDouble": 12.89,
+                                 "testArray": ["arrayElem1", 2, true],
+                                 "testDictionary": ["key": "val"]]
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // verify
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                   source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+        guard let eventDataDict = resultEvents[0].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+        let eventData = flattenDictionary(dict: eventDataDict)
+        XCTAssertEqual(9, eventData.count)
+        XCTAssertEqual("query", eventData["query.testString"] as? String)
+        XCTAssertEqual(10, eventData["query.testInt"] as? Int)
+        XCTAssertEqual(false, eventData["query.testBool"] as? Bool)
+        XCTAssertEqual(12.89, eventData["query.testDouble"] as? Double)
+        XCTAssertEqual("arrayElem1", eventData["query.testArray[0]"] as? String)
+        XCTAssertEqual(2, eventData["query.testArray[1]"] as? Int)
+        XCTAssertEqual(true, eventData["query.testArray[2]"] as? Bool)
+        XCTAssertEqual("val", eventData["query.testDictionary.key"] as? String)
+    }
+
+    func testSendEvent_withXDMDataAndEmptyQuery_sendsCorrectRequestEvent() {
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
+        experienceEvent.query = [:]
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // verify
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                   source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+        guard let eventDataDict = resultEvents[0].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+        let eventData = flattenDictionary(dict: eventDataDict)
+        XCTAssertEqual(1, eventData.count)
+        XCTAssertNil(eventDataDict["query"])
+    }
+
+    func testSendEvent_withXDMDataAndNilQuery_sendsCorrectRequestEvent() {
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
+        experienceEvent.query = nil
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // verify
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                   source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+        guard let eventDataDict = resultEvents[0].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+        let eventData = flattenDictionary(dict: eventDataDict)
+        XCTAssertEqual(1, eventData.count)
+        XCTAssertNil(eventDataDict["query"])
+    }
+
     // MARK: test network request format
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest() {
@@ -267,7 +340,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
-
+    
     func testSendEvent_withXDMSchema_sendsExEdgeNetworkRequest() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                                 response: HTTPURLResponse(url: exEdgeInteractUrl,
@@ -365,6 +438,42 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(0, resultNetworkRequests.count)
     }
 
+    func testSendEvent_withXDMDataAndQuery_sendsExEdgeNetworkRequest() {
+        let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 200,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
+        experienceEvent.query = ["testString": "query",
+                                 "testInt": 10,
+                                 "testBool": false,
+                                 "testDouble": 12.89,
+                                 "testArray": ["arrayElem1", 2, true],
+                                 "testDictionary": ["key": "val"]]
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // verify
+        // verify
+        assertNetworkRequestsCount()
+        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
+        let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        
+        XCTAssertEqual("query", requestBody["events[0].query.testString"] as? String)
+        XCTAssertEqual(10, requestBody["events[0].query.testInt"] as? Int)
+        XCTAssertEqual(false, requestBody["events[0].query.testBool"] as? Bool)
+        XCTAssertEqual(12.89, requestBody["events[0].query.testDouble"] as? Double)
+        XCTAssertEqual("arrayElem1", requestBody["events[0].query.testArray[0]"] as? String)
+        XCTAssertEqual(2, requestBody["events[0].query.testArray[1]"] as? Int)
+        XCTAssertEqual(true, requestBody["events[0].query.testArray[2]"] as? Bool)
+        XCTAssertEqual("val", requestBody["events[0].query.testDictionary.key"] as? String)
+    }
+
+    
     // MARK: Client-side store
     func testSendEvent_twoConsecutiveCalls_appendsReceivedClientSideStore() {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
@@ -388,6 +497,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(7, requestBody.count)
         resetTestExpectations()
+
+        sleep(1)
 
         // send a new event, should contain previously stored store data
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
@@ -424,7 +535,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                             source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
-                            source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
+                            source: "personalization:decisions",
                             expectedCount: 1)
         // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
@@ -449,7 +560,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                     source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
         let requestEventUUID = requestEvents[0].id.uuidString
         let responseEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
-                                                     source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
+                                                     source: "personalization:decisions")
         guard let eventDataDict = responseEvents[0].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
@@ -515,7 +626,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                             source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
                             expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
-                            source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
+                            source: "personalization:decisions",
                             expectedCount: 1)
         // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\",\"eventIndex\": 0}]}\n"
@@ -548,6 +659,83 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
         XCTAssertEqual(0, data["eventIndex"] as? Int)
         XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
+    }
+
+    // MARK: test persisted hits
+
+    func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersisting() {
+        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
+        let responseData = try? JSONEncoder().encode(edgeResponse)
+
+        // bad connection, hits will be retried
+        let responseConnection: HttpConnection = HttpConnection(data: responseData,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 502,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm",
+                                                    "testInt": 10,
+                                                    "testBool": false,
+                                                    "testDouble": 12.89,
+                                                    "testArray": ["arrayElem1", 2, true],
+                                                    "testDictionary": ["key": "val"]])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        assertNetworkRequestsCount()
+        resetTestExpectations()
+
+        // good connection, hits sent
+        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                      statusCode: 200,
+                                                                                      httpVersion: nil,
+                                                                                      headerFields: nil),
+                                                            error: nil)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+
+        assertNetworkRequestsCount()
+    }
+
+    func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
+        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
+        let responseData = try? JSONEncoder().encode(edgeResponse)
+
+        // bad connection, hits will be retried
+        let responseConnection: HttpConnection = HttpConnection(data: responseData,
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 502,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm",
+                                                    "testInt": 10,
+                                                    "testBool": false,
+                                                    "testDouble": 12.89,
+                                                    "testArray": ["arrayElem1", 2, true],
+                                                    "testDictionary": ["key": "val"]])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        assertNetworkRequestsCount()
+        resetTestExpectations()
+
+        // good connection, hits sent
+        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                      statusCode: 200,
+                                                                                      httpVersion: nil,
+                                                                                      headerFields: nil),
+                                                            error: nil)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+
+        self.assertNetworkRequestsCount()
     }
 }
 

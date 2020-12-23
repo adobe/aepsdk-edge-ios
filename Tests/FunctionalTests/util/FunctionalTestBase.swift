@@ -45,7 +45,7 @@ class FunctionalTestBase: XCTestCase {
     public class override func setUp() {
         super.setUp()
         UserDefaults.clearAll()
-        MobileCore.setLogLevel(level: LogLevel.trace)
+        MobileCore.setLogLevel(LogLevel.trace)
         networkService = FunctionalTestNetworkService()
         ServiceProvider.shared.networkService = networkService
     }
@@ -263,7 +263,7 @@ class FunctionalTestBase: XCTestCase {
         }
 
         for expectedRequest in expectedNetworkRequests {
-            let waitResult = expectedRequest.value.await(timeout: 2)
+            let waitResult = expectedRequest.value.await(timeout: 10)
             let expectedCount: Int32 = expectedRequest.value.getInitialCount()
             let receivedCount: Int32 = expectedRequest.value.getInitialCount() - expectedRequest.value.getCurrentCount()
             XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(expectedRequest.key.url.absoluteString) and HTTPMethod \(expectedRequest.key.httpMethod.toString()), expected \(expectedCount) but received \(receivedCount)", file: file, line: line)

@@ -10,21 +10,17 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPCore
 import Foundation
 
-/// A response from the Adobe Experience Edge server.
-/// An `EdgeResponse` is the top-level response object received from the server.
-struct EdgeResponse: Codable {
+/// Struct which represents an Edge hit
+struct EdgeHit {
+    /// The Edge configuration identifier
+    let configId: String
 
-    /// The request identifier associated with this response
-    let requestId: String?
+    /// Unique identifier for this hit
+    let requestId: String
 
-    /// List of event handles received from the Experience Edge  Network
-    let handle: [EdgeEventHandle]?
-
-    /// List of errors received from Experience Edge Network
-    let errors: [EdgeEventError]?
-
-    /// List of warnings received from Experience Edge Network
-    let warnings: [EdgeEventError]?
+    /// The `EdgeRequest` for the corresponding hit
+    let request: EdgeRequest
 }
