@@ -202,7 +202,6 @@ class NetworkResponseHandler {
                                                                  requestEventId: requestEventId)
                 guard !eventData.isEmpty else { continue }
                 dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true, eventSource: nil)
-                ResponseCallbackHandler.shared.eventErrorReceived(error, requestEventId: requestEventId)
             }
         }
     }
