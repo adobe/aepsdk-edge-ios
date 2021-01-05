@@ -13,9 +13,12 @@
 import Foundation
 
 /// Error information for a sent EdgeRequest
-struct EdgeEventError: Codable {
+struct EdgeEventError: Codable, Equatable {
     /// Error message
     let title: String?
+
+    /// Detailed message of the error
+    let detail: String?
 
     /// Error code info
     let status: Int?
@@ -25,4 +28,19 @@ struct EdgeEventError: Codable {
 
     /// Encodes the event to which this error is attached as the index in the events array in EdgeRequest
     let eventIndex: Int?
+
+    /// A report for the error containing additional information
+    let report: EdgeErrorReport?
+}
+
+// MARK: - EdgeErrorReport
+struct EdgeErrorReport: Codable, Equatable {
+    // An array of errors represented as strings
+    let errors: [String]?
+
+    /// Request ID corresponding to the error
+    let requestId: String?
+
+    /// The organization ID
+    let orgId: String?
 }

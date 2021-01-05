@@ -237,7 +237,7 @@ class EdgeHitProcessorTests: XCTestCase {
         let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
 
         for code in recoverableNetworkErrorCodes {
-            let error = EdgeEventError(title: "test-title", status: code, type: "test-type", eventIndex: 0)
+            let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", eventIndex: 0, report: nil)
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
 

@@ -92,10 +92,19 @@ class NetworkResponseHandler {
     ///   - requestId: request id associated with current response
     func processResponseOnError(jsonError: String, requestId: String) {
         guard let data = jsonError.data(using: .utf8) else { return }
-
+        
+        // Attempt to decode as an `EdgeResponse` first
         guard let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) else {
-            Log.warning(label: LOG_TAG,
-                        "processResponseOnError - The conversion to JSON failed for server error response: \(jsonError), request id \(requestId)")
+            
+            // If decoding as an `EdgeResponse` fails, attempt to decode as a generic `EdgeEventError`
+            if let edgeErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) {
+                Log.debug(label: LOG_TAG, "processResponseOnError - Processing server error response:\n \(jsonError), request id \(requestId)")
+                dispatchEventErrors(errorsArray: [edgeErrorResponse], requestId: requestId)
+            } else {
+                Log.warning(label: LOG_TAG,
+                            "processResponseOnError - The conversion to JSON failed for server error response: \(jsonError), request id \(requestId)")
+            }
+            
             return
         }
 
