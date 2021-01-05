@@ -51,18 +51,18 @@ class EdgeTests: XCTestCase {
     func testSendEvent_withNonNullXdmAndNonNullData_ExperienceEventData() {
         MobileCore.registerExtensions([Edge.self])
         let experienceEvent = ExperienceEvent(xdm: generateXdm(), data: generateData())
-        XCTAssertTrue(Edge.sendEvent(experienceEvent: experienceEvent, responseHandler: mockResponseHandler) == ())
+        XCTAssertTrue(Edge.sendEvent(experienceEvent: experienceEvent) == ())
     }
 
     func testSendEvent_withNonNullXdmAndNullData_ExperienceEventData() {
         MobileCore.registerExtensions([Edge.self])
         let experienceEvent = ExperienceEvent(xdm: generateXdm(), data: nil)
-        XCTAssertTrue(Edge.sendEvent(experienceEvent: experienceEvent, responseHandler: mockResponseHandler) == ())
+        XCTAssertTrue(Edge.sendEvent(experienceEvent: experienceEvent) == ())
     }
 
     func testSendEvent_withNonNullXdmSchemaAndNonNullData_ExperienceEventData() {
         MobileCore.registerExtensions([Edge.self])
         let experienceEvent = ExperienceEvent(xdm: generateXdmSchema, data: generateData())
-        XCTAssertTrue(Edge.sendEvent(experienceEvent: experienceEvent, responseHandler: mockResponseHandler) == ())
+        XCTAssertTrue(Edge.sendEvent(experienceEvent: experienceEvent) == ())
     }
 }
