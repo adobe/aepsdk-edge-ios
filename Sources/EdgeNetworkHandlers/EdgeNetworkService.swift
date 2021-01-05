@@ -125,7 +125,6 @@ class EdgeNetworkService {
                     self.handleContent(connection: connection,
                                        streaming: requestBody.meta?.konductorConfig?.streaming,
                                        responseCallback: responseCallback)
-                    self.handleError(connection: connection, responseCallback: responseCallback)
                     responseCallback.onComplete()
                     completion(true) // non-fatal error, don't retry
                 } else {

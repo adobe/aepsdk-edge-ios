@@ -134,7 +134,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
     
-    func testDoRequest_whenConnection_ResponseCode207_CallsCompletionTrue_AndResponseCallback_AndErrorCallback() {
+    func testDoRequest_whenConnection_ResponseCode207_CallsCompletionTrue_AndResponseCallback_AndNotErrorCallback() {
         // setup
         let stringResponseBody = "OK"
         let expectation = XCTestExpectation(description: "Network callback is invoked")
@@ -148,7 +148,7 @@ class EdgeNetworkServiceTests: XCTestCase {
             // verify
             XCTAssertTrue(success)
             XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
-            XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
             XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
             XCTAssertEqual([stringResponseBody], self.mockResponseCallback.onResponseJsonResponse)
             expectation.fulfill()
