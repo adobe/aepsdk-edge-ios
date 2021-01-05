@@ -13,18 +13,17 @@
 import Foundation
 
 /// Error or warning information for a sent EdgeRequest
-@objc(AEPEdgeEventError)
-public class EdgeEventError: NSObject, Codable {
+class EdgeEventError: Codable {
 
     /// Encodes the event to which this error/warning is attached as the index in the events array in EdgeRequest
     let eventIndex: Int?
 
     /// Error message
-    public let message: String?
+    let message: String?
 
     /// Error code info
-    public let code: String?
+    let code: String?
 
     /// Error namespace info
-    public let namespace: String?
+    let namespace: String?
 }

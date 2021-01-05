@@ -13,7 +13,8 @@
 import AEPServices
 import Foundation
 
-/// Details and results for a sent EdgeRequest
+/// The `EdgeEventHandle` is a response fragment from Adobe Experience Edge Service for a sent XDM Experience Event.
+/// One event can receive none, one or multiple `EdgeEventHandle`(s) as response.
 @objc(AEPEdgeEventHandle)
 public class EdgeEventHandle: NSObject, Codable {
 
@@ -23,6 +24,6 @@ public class EdgeEventHandle: NSObject, Codable {
     /// Payload type
     public let type: String?
 
-    /// Event payload
+    /// Event payload values
     public let payload: [[String: AnyCodable]]?
 }
