@@ -19,7 +19,7 @@ import Foundation
 public class EdgeEventHandle: NSObject, Codable {
 
     /// Encodes the event to which this handle is attached as the index in the events array in EdgeRequest
-    let eventIndex: Int?
+    internal let eventIndex: Int?
 
     /// Payload type
     @objc public let type: String?

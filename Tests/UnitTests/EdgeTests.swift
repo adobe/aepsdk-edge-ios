@@ -16,11 +16,9 @@ import XCTest
 @testable import AEPEdge
 
 class EdgeTests: XCTestCase {
-    private var mockResponseHandler: MockEdgeResponseHandler?
 
     override func setUp() {
         continueAfterFailure = false
-        mockResponseHandler = MockEdgeResponseHandler()
     }
 
     func generateXdm() -> [String: Any] {

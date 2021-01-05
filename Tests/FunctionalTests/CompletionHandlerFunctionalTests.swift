@@ -17,8 +17,8 @@ import AEPServices
 import Foundation
 import XCTest
 
-/// End-to-end testing for the AEPEdge public APIs with Edge Response Handlers
-class AEPEdgeResponseHandlerFunctionalTests: FunctionalTestBase {
+/// End-to-end testing for the AEPEdge public APIs with completion handlers
+class CompletionHandlerFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let responseBody = "{\"test\": \"json\"}"
@@ -53,7 +53,7 @@ class AEPEdgeResponseHandlerFunctionalTests: FunctionalTestBase {
         resetTestExpectations()
     }
 
-    func testSendEvent_withEdgeResponseHandler_callsResponseHandler() {
+    func testSendEvent_withCompletionHandler_callsCompletionCorrectly() {
         let httpConnection: HttpConnection = HttpConnection(data: responseBodyWithHandle.data(using: .utf8),
                                                             response: HTTPURLResponse(url: edgeUrl,
                                                                                       statusCode: 200,
@@ -63,32 +63,33 @@ class AEPEdgeResponseHandlerFunctionalTests: FunctionalTestBase {
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
-        let responseHandler = MockResponseHandler(expectedResponses: 1)
 
+        var receivedHandles: [EdgeEventHandle] = []
+        let expectation = self.expectation(description: "Completion handler called")
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
-                                                        data: nil),
-                       responseHandler: responseHandler)
+                                                        data: nil), { (handles: [EdgeEventHandle]) in
+                                                            receivedHandles = handles
+                                                            expectation.fulfill()
+                                                        })
 
         assertNetworkRequestsCount()
-        responseHandler.await()
+        wait(for: [expectation], timeout: 0.2)
 
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        XCTAssertEqual(1, responseHandler.onResponseHandles.count)
-        XCTAssertEqual(0, responseHandler.onErrorHandles.count)
-        XCTAssertTrue(responseHandler.onCompleteCalled)
+        XCTAssertEqual(1, receivedHandles.count)
 
-        let data = flattenDictionary(dict: responseHandler.onResponseHandles[0].toDictionary() ?? [:])
-        XCTAssertEqual(5, data.count)
-        XCTAssertEqual("personalization:decisions", data["type"] as? String)
-        XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", data["payload[0].id"] as? String)
-        XCTAssertEqual("#D41DBA", data["payload[0].items[0].data.content.value"] as? String)
-        XCTAssertEqual("https://ns.adobe.com/personalization/json-content-item", data["payload[0].items[0].schema"] as? String)
-        XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
-        XCTAssertEqual("buttonColor", data["payload[0].scope"] as? String)
+        XCTAssertEqual("personalization:decisions", receivedHandles[0].type)
+        XCTAssertEqual(1, receivedHandles[0].payload?.count)
+        let data = flattenDictionary(dict: receivedHandles[0].payload?[0] ?? [:])
+        XCTAssertEqual(4, data.count)
+        XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", data["id"] as? String)
+        XCTAssertEqual("#D41DBA", data["items[0].data.content.value"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/personalization/json-content-item", data["items[0].schema"] as? String)
+        XCTAssertEqual("buttonColor", data["scope"] as? String)
     }
 
-    func testSendEventx2_withEdgeResponseHandlers_whenResponseHandle_callsResponseHandler() {
+    func testSendEventx2_withCompletionHandler_whenResponseHandle_callsCompletionCorrectly() {
         let httpConnection: HttpConnection = HttpConnection(data: responseBodyWithHandle.data(using: .utf8),
                                                             response: HTTPURLResponse(url: edgeUrl,
                                                                                       statusCode: 200,
@@ -97,30 +98,26 @@ class AEPEdgeResponseHandlerFunctionalTests: FunctionalTestBase {
                                                             error: nil)
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 2)
-        let responseHandler1 = MockResponseHandler(expectedResponses: 1)
-        let responseHandler2 = MockResponseHandler(expectedResponses: 1)
 
+        let expectation1 = self.expectation(description: "Completion handler 1 called")
+        let expectation2 = self.expectation(description: "Completion handler 2 called")
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
-                                                        data: nil),
-                       responseHandler: responseHandler1)
+                                                        data: nil), { (handles: [EdgeEventHandle]) in
+                                                            XCTAssertEqual(1, handles.count)
+                                                            expectation1.fulfill()
+                                                        })
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
-                                                        data: nil),
-                       responseHandler: responseHandler2)
+                                                        data: nil), { (handles: [EdgeEventHandle]) in
+                                                            XCTAssertEqual(1, handles.count)
+                                                            expectation2.fulfill()
+                                                        })
 
         // verify
         assertNetworkRequestsCount()
-        responseHandler1.await()
-        responseHandler2.await()
-
-        XCTAssertEqual(1, responseHandler1.onResponseHandles.count)
-        XCTAssertEqual(0, responseHandler1.onErrorHandles.count)
-        XCTAssertTrue(responseHandler1.onCompleteCalled)
-        XCTAssertEqual(1, responseHandler2.onResponseHandles.count)
-        XCTAssertEqual(0, responseHandler2.onErrorHandles.count)
-        XCTAssertTrue(responseHandler2.onCompleteCalled)
+        wait(for: [expectation1, expectation2], timeout: 0.2)
     }
 
-    func testSendEventx2_withEdgeResponseHandler_whenServerError_callsOnError() {
+    func testSendEventx2_withCompletionHandler_whenServerError_callsCompletion() {
         let httpConnection1: HttpConnection = HttpConnection(data: responseBodyWithHandle.data(using: .utf8),
                                                              response: HTTPURLResponse(url: edgeUrl,
                                                                                        statusCode: 200,
@@ -133,38 +130,36 @@ class AEPEdgeResponseHandlerFunctionalTests: FunctionalTestBase {
                                                                                        httpVersion: nil,
                                                                                        headerFields: nil),
                                                              error: nil)
-        let responseHandler1 = MockResponseHandler(expectedErrors: 2)
-        let responseHandler2 = MockResponseHandler(expectedResponses: 1)
 
         // set expectations & send two events
+        let expectation1 = self.expectation(description: "Completion handler 1 called")
+        let expectation2 = self.expectation(description: "Completion handler 2 called")
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection1)
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
-                                                        data: nil),
-                       responseHandler: responseHandler1)
+                                                        data: nil), { (handles: [EdgeEventHandle]) in
+                                                            XCTAssertEqual(1, handles.count)
+                                                            expectation1.fulfill()
+                                                        })
         assertNetworkRequestsCount()
-        responseHandler1.await()
+        wait(for: [expectation1], timeout: 0.2)
 
         resetTestExpectations()
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection2)
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
-                                                        data: nil),
-                       responseHandler: responseHandler2)
+                                                        data: nil), { (handles: [EdgeEventHandle]) in
+                                                            // 0 handles, received errors but still called completion
+                                                            XCTAssertEqual(0, handles.count)
+                                                            expectation2.fulfill()
+                                                        })
 
         // verify
         assertNetworkRequestsCount()
-        responseHandler2.await()
-
-        XCTAssertEqual(1, responseHandler1.onResponseHandles.count)
-        XCTAssertEqual(0, responseHandler1.onErrorHandles.count)
-        XCTAssertTrue(responseHandler1.onCompleteCalled)
-        XCTAssertEqual(0, responseHandler2.onResponseHandles.count)
-        XCTAssertEqual(2, responseHandler2.onErrorHandles.count)
-        XCTAssertTrue(responseHandler2.onCompleteCalled)
+        wait(for: [expectation2], timeout: 0.2)
     }
 
-    func testSendEvent_withEdgeResponseHandler_whenServerErrorAndHandle_callsOnError_callsOnResponse() {
+    func testSendEvent_withCompletionHandler_whenServerErrorAndHandle_callsCompletion() {
         let responseBodyWithHandleAndError = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\"}],\"errors\": [{\"message\": \"An error occurred while calling the 'X' service for this request. Please try again.\", \"code\": \"502\"}, {\"message\": \"An error occurred while calling the 'Y', service unavailable\", \"code\": \"503\"}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBodyWithHandleAndError.data(using: .utf8),
                                                             response: HTTPURLResponse(url: edgeUrl,
@@ -172,21 +167,20 @@ class AEPEdgeResponseHandlerFunctionalTests: FunctionalTestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        let responseHandler = MockResponseHandler(expectedResponses: 1, expectedErrors: 1)
+
+        let expectation = self.expectation(description: "Completion handler called")
 
         // set expectations & send two events
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
-                                                        data: nil),
-                       responseHandler: responseHandler)
+                                                        data: nil), { (handles: [EdgeEventHandle]) in
+                                                            XCTAssertEqual(1, handles.count)
+                                                            expectation.fulfill()
+                                                        })
 
         // verify
         assertNetworkRequestsCount()
-        responseHandler.await()
-
-        XCTAssertEqual(1, responseHandler.onResponseHandles.count)
-        XCTAssertEqual(2, responseHandler.onErrorHandles.count)
-        XCTAssertTrue(responseHandler.onCompleteCalled)
+        wait(for: [expectation], timeout: 0.2)
     }
 }
