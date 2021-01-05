@@ -138,7 +138,7 @@ class NetworkResponseHandler {
                                   requestId: requestId,
                                   requestEventId: requestEventId,
                                   eventSource: eventHandle.type)
-            ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: requestEventId)
+            CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: requestEventId, eventHandle)
         }
     }
 

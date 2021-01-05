@@ -14,10 +14,10 @@ import AEPCore
 import AEPServices
 import Foundation
 
-/// When registering a completion handler for a request event, all the event handles will be returned at once when the entire streamed response was returned.
+/// When registering a completion handler for a request event, all the event handles will be returned at once when the entire streamed response was processed by the AEP Edge extension.
 /// This class uses a `ThreadSafeDictionary` for the internal mapping.
-class ResponseCallbackHandler {
-    private let TAG = "ResponseCallbacksHandler"
+class CompletionHandlersManager {
+    private let TAG = "CompletionHandlersManager"
     private var completionHandlers =
         ThreadSafeDictionary<String, (([EdgeEventHandle]) -> Void)>(identifier: "com.adobe.edge.completionHandlers")
 
@@ -25,47 +25,47 @@ class ResponseCallbackHandler {
     private var edgeEventHandles =
         ThreadSafeDictionary<String, [EdgeEventHandle]>(identifier: "com.adobe.edge.edgeHandlesList")
 
-    static let shared = ResponseCallbackHandler()
+    static let shared = CompletionHandlersManager()
 
     /// Registers a completion handler for the specified `requestEventId`. This handler is invoked when the Edge response content has been
     /// handled entirely by the Edge extension, containing a list of `EdgeEventHandle`(s). This list can be empty or can contain one or multiple items
     /// based on the request and the server side response.
     ///
     /// - Parameters:
-    ///   - requestEventId: unique event identifier for which the response callback is registered; should not be empty
+    ///   - forRequestEventId: unique event identifier for which the completion handler is registered; should not be empty
     ///   - completionHandler: the completion handler that needs to be registered, should not be nil
-    func registerCompletionHandler(requestEventId: String, completion: (([EdgeEventHandle]) -> Void)?) {
+    func registerCompletionHandler(forRequestEventId: String, completion: (([EdgeEventHandle]) -> Void)?) {
         guard let unwrappedCompletion = completion else { return }
-        guard !requestEventId.isEmpty else {
+        guard !forRequestEventId.isEmpty else {
             Log.warning(label: TAG, "Failed to register completion handler because of empty request event id.")
             return
         }
 
-        Log.trace(label: TAG, "Registering completion handler for Edge response with request event id \(requestEventId).")
-        completionHandlers[requestEventId] = unwrappedCompletion
+        Log.trace(label: TAG, "Registering completion handler for Edge response with request event id \(forRequestEventId).")
+        completionHandlers[forRequestEventId] = unwrappedCompletion
     }
 
     /// Calls the registered completion handler (if any) with the collected `EdgeEventHandle`(s). After this operation,
     /// the associated completion handler is removed and no longer called.
-    /// - Parameter requestEventId: unique event identifier for experience events; should not be empty
-    func unregisterCompletionHandler(requestEventId: String) {
-        guard !requestEventId.isEmpty else { return }
+    /// - Parameter forRequestEventId: unique event identifier for experience events; should not be empty
+    func unregisterCompletionHandler(forRequestEventId: String) {
+        guard !forRequestEventId.isEmpty else { return }
 
-        if let completionHandler = completionHandlers[requestEventId] {
-            completionHandler(edgeEventHandles[requestEventId] ?? [])
-            _ = completionHandlers.removeValue(forKey: requestEventId)
-            Log.trace(label: TAG, "Removing completion handler for Edge response with request event id \(requestEventId).")
+        if let completionHandler = completionHandlers[forRequestEventId] {
+            completionHandler(edgeEventHandles[forRequestEventId] ?? [])
+            _ = completionHandlers.removeValue(forKey: forRequestEventId)
+            Log.trace(label: TAG, "Removing completion handler for Edge response with request event id \(forRequestEventId).")
         }
 
-        _ = edgeEventHandles.removeValue(forKey: requestEventId)
+        _ = edgeEventHandles.removeValue(forKey: forRequestEventId)
     }
 
-    /// Updates the list of `EdgeEventHandle`(s) for current `requestEventId` and calls onResponseUpdate if a `ResponseHandler` is registered.
+    /// Updates the list of `EdgeEventHandle`(s) for current `requestEventId`.
     /// - Parameters:
+    ///   - forRequestEventId: the request event identifier associated with this event handle
     ///   - eventHandle: newly received event handle
-    ///   - requestEventId: the request event identifier associated with this event handle
-    func eventHandleReceived(_ eventHandle: EdgeEventHandle, requestEventId: String?) {
-        guard let unwrappedRequestEventId = requestEventId, !unwrappedRequestEventId.isEmpty else { return }
+    func eventHandleReceived(forRequestEventId: String?, _ eventHandle: EdgeEventHandle) {
+        guard let unwrappedRequestEventId = forRequestEventId, !unwrappedRequestEventId.isEmpty else { return }
         if edgeEventHandles[unwrappedRequestEventId] != nil {
             edgeEventHandles[unwrappedRequestEventId]?.append(eventHandle)
         } else {

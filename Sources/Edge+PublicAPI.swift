@@ -33,7 +33,7 @@ public extension Edge {
                           source: Constants.EventSource.REQUEST_CONTENT,
                           data: eventData)
 
-        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: event.id.uuidString, completion: completion)
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: event.id.uuidString, completion: completion)
         MobileCore.dispatch(event: event)
     }
 }

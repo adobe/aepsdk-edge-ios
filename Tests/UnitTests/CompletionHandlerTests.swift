@@ -32,21 +32,21 @@ class CompletionHandlerTests: XCTestCase {
     }
 
     override func tearDown() {
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId2)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId3)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId2)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId3)
     }
 
     // MARK: - register completion handler, expect event handles
     func testRegisterCompletionHandler_thenEventHandleReceived_completionCalled() {
         let expectation = self.expectation(description: "Completion handler invoked")
         expectation.assertForOverFulfill = true
-        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
             XCTAssertEqual(1, handles.count)
             expectation.fulfill()
         })
-        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId)
+        CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: uniqueEventId, eventHandle)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId)
 
         wait(for: [expectation], timeout: 2)
     }
@@ -57,39 +57,39 @@ class CompletionHandlerTests: XCTestCase {
         let expectation2 = self.expectation(description: "Completion handler invoked")
         expectation2.assertForOverFulfill = true
 
-        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId2, completion: { (_ handles: [EdgeEventHandle]) in
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: uniqueEventId2, completion: { (_ handles: [EdgeEventHandle]) in
             expectation1.fulfill()
         })
-        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
             XCTAssertEqual(1, handles.count)
             expectation2.fulfill()
         })
-        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId)
+        CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: uniqueEventId, eventHandle)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId)
         wait(for: [expectation1, expectation2], timeout: 0.2)
     }
 
     func testRegisterCompletionHandlers_thenEventHandleMultipleTimes_completionCalled() {
         let expectation1 = self.expectation(description: "Completion handler 1 invoked")
         expectation1.assertForOverFulfill = true
-        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
             XCTAssertEqual(3, handles.count)
             expectation1.fulfill()
         })
         let expectation2 = self.expectation(description: "Completion handler 2 invoked")
         expectation2.assertForOverFulfill = true
-        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId2, completion: { (handles: [EdgeEventHandle]) in
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: uniqueEventId2, completion: { (handles: [EdgeEventHandle]) in
             XCTAssertEqual(2, handles.count)
             expectation2.fulfill()
         })
 
-        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId2)
-        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId2)
-        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId2)
+        CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: uniqueEventId2, eventHandle)
+        CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: uniqueEventId, eventHandle)
+        CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: uniqueEventId, eventHandle)
+        CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: uniqueEventId2, eventHandle)
+        CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: uniqueEventId, eventHandle)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId2)
         wait(for: [expectation1, expectation2], timeout: 2)
     }
 
@@ -97,38 +97,38 @@ class CompletionHandlerTests: XCTestCase {
     func testRegisterCompletionHandler_thenUnregister_thenNewEventHandleReceived() {
         let expectation = self.expectation(description: "Completion handler invoked")
         expectation.assertForOverFulfill = true
-        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
             XCTAssertEqual(1, handles.count)
             expectation.fulfill()
         })
-        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId)
+        CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: uniqueEventId, eventHandle)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId)
+        CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: uniqueEventId, eventHandle)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId)
         wait(for: [expectation], timeout: 0.2)
     }
 
     func testRegisterCompletionHandler_thenUnregister_completionCalled() {
         let expectation = self.expectation(description: "Completion handler invoked")
         expectation.assertForOverFulfill = true
-        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
             XCTAssertEqual(0, handles.count)
             expectation.fulfill()
         })
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId)
         wait(for: [expectation], timeout: 0.2)
     }
 
     func testRegisterCompletionHandler_thenUnregisterMultipleTimes_completionCalledOnce() {
         let expectation = self.expectation(description: "Completion handler invoked")
         expectation.assertForOverFulfill = true
-        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: uniqueEventId, completion: { (handles: [EdgeEventHandle]) in
             XCTAssertEqual(0, handles.count)
             expectation.fulfill()
         })
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId)
 
         wait(for: [expectation], timeout: 0.2)
     }
@@ -136,36 +136,36 @@ class CompletionHandlerTests: XCTestCase {
     func testRegisterCompletionHandler_thenUnregisterForOtherEventIds_completionNotCalled() {
         let expectation = self.expectation(description: "Unexpected call")
         expectation.isInverted = true
-        ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId, completion: { (_ handles: [EdgeEventHandle]) in
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: uniqueEventId, completion: { (_ handles: [EdgeEventHandle]) in
             expectation.fulfill()
         })
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId2)
-        ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: uniqueEventId3)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId2)
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: uniqueEventId3)
         wait(for: [expectation], timeout: 0.2)
     }
 
     // MARK: - nil, empty
     func testUnregisterCompletionHandler_withEmptyUniqueEvent_doesNotCrash() {
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: ""))
+        XCTAssertNoThrow(CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: ""))
     }
 
     func testRegisterCompletionHandler_withEmptyUniqueEvent_doesNotCrash() {
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: "", completion: { (_ handles: [EdgeEventHandle]) in }))
+        XCTAssertNoThrow(CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: "", completion: { (_ handles: [EdgeEventHandle]) in }))
     }
 
     func testRegisterCompletionHandler_withNilCompletionHandler_doesNotCrash() {
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.registerCompletionHandler(requestEventId: uniqueEventId, completion: nil))
+        XCTAssertNoThrow(CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: uniqueEventId, completion: nil))
     }
 
     func testEventHandleReceived_withEmptyUniqueEvent_doesNotCrash() {
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: ""))
+        XCTAssertNoThrow(CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: "", eventHandle))
     }
 
     func testEventHandleReceived_withNilUniqueEvent_doesNotCrash() {
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: nil))
+        XCTAssertNoThrow(CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: nil, eventHandle))
     }
 
     func testEventHandleReceived_withUnregisteredUniqueEvent_doesNotCrash() {
-        XCTAssertNoThrow(ResponseCallbackHandler.shared.eventHandleReceived(eventHandle, requestEventId: uniqueEventId))
+        XCTAssertNoThrow(CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: uniqueEventId, eventHandle))
     }
 }

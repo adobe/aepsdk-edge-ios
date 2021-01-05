@@ -147,7 +147,7 @@
 		D4C6B446251A76CB0038F4F9 /* RequestContextData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F83243F0D8A0057A6CC /* RequestContextData.swift */; };
 		D4C6B447251A76CB0038F4F9 /* RequestMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F79243BE3C00057A6CC /* RequestMetadata.swift */; };
 		D4C6B448251A76CB0038F4F9 /* ResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8D124610A0000E9321C /* ResponseCallback.swift */; };
-		D4C6B449251A76CB0038F4F9 /* ResponseCallbackHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */; };
+		D4C6B449251A76CB0038F4F9 /* CompletionHandlersManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */; };
 		D4C6B44A251A76CB0038F4F9 /* StateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F8E2440F0940057A6CC /* StateMetadata.swift */; };
 		D4C6B44B251A76CB0038F4F9 /* StoreResponsePayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F85243F24570057A6CC /* StoreResponsePayload.swift */; };
 		D4C6B44C251A76CB0038F4F9 /* StoreResponsePayloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */; };
@@ -344,7 +344,7 @@
 		D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeNetworkServiceTests.swift; sourceTree = "<group>"; };
 		D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseCallback.swift; sourceTree = "<group>"; };
 		D42FB8D124610A0000E9321C /* ResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallback.swift; sourceTree = "<group>"; };
-		D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallbackHandler.swift; sourceTree = "<group>"; };
+		D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionHandlersManager.swift; sourceTree = "<group>"; };
 		D42FB8DA246261E600E9321C /* EdgeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeResponse.swift; sourceTree = "<group>"; };
 		D42FB8E024635FA200E9321C /* MockResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockResponseCallback.swift; sourceTree = "<group>"; };
 		D444995F2519506B0093B364 /* AEPEdge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AEPEdge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -607,7 +607,7 @@
 				BF947F83243F0D8A0057A6CC /* RequestContextData.swift */,
 				BF947F79243BE3C00057A6CC /* RequestMetadata.swift */,
 				D42FB8D124610A0000E9321C /* ResponseCallback.swift */,
-				D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */,
+				D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */,
 				BF947F8E2440F0940057A6CC /* StateMetadata.swift */,
 				BF947F85243F24570057A6CC /* StoreResponsePayload.swift */,
 				BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */,
@@ -1340,7 +1340,7 @@
 				216989782554B61500B2752C /* EdgeHitProcessor.swift in Sources */,
 				D4C6B447251A76CB0038F4F9 /* RequestMetadata.swift in Sources */,
 				D4C6B448251A76CB0038F4F9 /* ResponseCallback.swift in Sources */,
-				D4C6B449251A76CB0038F4F9 /* ResponseCallbackHandler.swift in Sources */,
+				D4C6B449251A76CB0038F4F9 /* CompletionHandlersManager.swift in Sources */,
 				216989652554B39900B2752C /* EdgeHit.swift in Sources */,
 				D4C6B44A251A76CB0038F4F9 /* StateMetadata.swift in Sources */,
 				D4C6B44B251A76CB0038F4F9 /* StoreResponsePayload.swift in Sources */,

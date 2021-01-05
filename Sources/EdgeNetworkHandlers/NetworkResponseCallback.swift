@@ -43,7 +43,7 @@ class NetworkResponseCallback: ResponseCallback {
 
         // unregister currently known completion handlers
         for eventId in removedWaitingEvents {
-            ResponseCallbackHandler.shared.unregisterCompletionHandler(requestEventId: eventId)
+            CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: eventId)
         }
     }
 }
