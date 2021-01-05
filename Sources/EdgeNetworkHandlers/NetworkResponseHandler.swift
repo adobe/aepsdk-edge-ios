@@ -244,14 +244,16 @@ class NetworkResponseHandler {
     /// - Parameter handle: current `EventHandle` to store
     private func handleStoreEventHandle(handle: EdgeEventHandle) {
         guard let type = handle.type, Constants.JsonKeys.Response.EVENT_HANDLE_TYPE_STORE == type.lowercased() else { return }
-        guard let payload: [[String: AnyCodable]] = handle.payload else { return }
+        guard let payload: [[String: Any]] = handle.payload else { return }
 
         var storeResponsePayloads: [StoreResponsePayload] = []
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         let jsonDecoder = JSONDecoder()
         for storeElement in payload {
-            if let data = try? encoder.encode(storeElement), let storePayload = try? jsonDecoder.decode(StorePayload.self, from: data) {
+            if let storeElementAnyCodable = AnyCodable.from(dictionary: storeElement),
+               let data = try? encoder.encode(storeElementAnyCodable),
+               let storePayload = try? jsonDecoder.decode(StorePayload.self, from: data) {
                 storeResponsePayloads.append(StoreResponsePayload(payload: storePayload))
             }
         }

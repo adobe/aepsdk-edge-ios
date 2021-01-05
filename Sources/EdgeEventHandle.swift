@@ -22,8 +22,51 @@ public class EdgeEventHandle: NSObject, Codable {
     let eventIndex: Int?
 
     /// Payload type
-    public let type: String?
+    @objc public let type: String?
 
     /// Event payload values
-    public let payload: [[String: AnyCodable]]?
+    @objc public let payload: [[String: Any]]?
+
+    // MARK: - Codable
+    enum CodingKeys: String, CodingKey {
+        case eventIndex
+        case type
+        case payload
+    }
+
+    public required init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+
+        eventIndex = try values.decodeIfPresent(Int.self, forKey: .eventIndex)
+        type = try values.decodeIfPresent(String.self, forKey: .type)
+
+        var tempPayload: [[String: Any]] = []
+        if let anyCodablePayload = try? values.decodeIfPresent([[String: AnyCodable]].self, forKey: .payload) {
+            for item in anyCodablePayload {
+                if let itemAnyDictionary = AnyCodable.toAnyDictionary(dictionary: item) {
+                    tempPayload.append(itemAnyDictionary)
+                }
+            }
+        }
+
+        payload = tempPayload.isEmpty ? nil : tempPayload
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encodeIfPresent(eventIndex, forKey: .eventIndex)
+        try container.encodeIfPresent(type, forKey: .type)
+
+        if let unwrappedPayload = payload {
+            var tempPayload: [[String: AnyCodable]] = []
+            for item in unwrappedPayload {
+                if let itemAnyCodableDictionary = AnyCodable.from(dictionary: item) {
+                    tempPayload.append(itemAnyCodableDictionary)
+                }
+            }
+
+            try container.encodeIfPresent(tempPayload, forKey: .payload)
+        }
+    }
 }
