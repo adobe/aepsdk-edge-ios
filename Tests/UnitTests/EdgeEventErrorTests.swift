@@ -75,4 +75,60 @@ class EdgeEventErrorTests: XCTestCase {
         XCTAssertEqual("test title 2", errors?.last?.title)
     }
 
+    func testCanDecode_genericError_allParams() {
+        // setup
+        let jsonData = """
+                        {
+                          "type" : "https://ns.adobe.com/aep/errors/EXEG-0104-422",
+                          "status": 422,
+                          "title" : "Unprocessable Entity",
+                          "detail": "Invalid request (report attached). Please check your input and try again.",
+                          "report": {
+                            "errors": [
+                              "Allowed Adobe version is 1.0 for standard 'Adobe' at index 0",
+                              "Allowed IAB version is 2.0 for standard 'IAB TCF' at index 1",
+                              "IAB consent string value must not be empty for standard 'IAB TCF' at index 1"
+                            ],
+                            "requestId": "0f8821e5-ed1a-4301-b445-5f336fb50ee8",
+                            "orgId": "test@AdobeOrg"
+                          }
+                        }
+                      """.data(using: .utf8)
+
+        // test
+        let error = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData ?? Data())
+
+        // verify
+        XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0104-422", error?.type)
+        XCTAssertEqual(422, error?.status)
+        XCTAssertEqual("Unprocessable Entity", error?.title)
+        XCTAssertEqual("Invalid request (report attached). Please check your input and try again.", error?.detail)
+        XCTAssertEqual("Allowed Adobe version is 1.0 for standard 'Adobe' at index 0", error?.report?.errors?.first)
+        XCTAssertEqual("Allowed IAB version is 2.0 for standard 'IAB TCF' at index 1", error?.report?.errors![1])
+        XCTAssertEqual("IAB consent string value must not be empty for standard 'IAB TCF' at index 1", error?.report?.errors?.last)
+        XCTAssertEqual("0f8821e5-ed1a-4301-b445-5f336fb50ee8", error?.report?.requestId)
+        XCTAssertEqual("test@AdobeOrg", error?.report?.orgId)
+    }
+
+    func testCanDecode_genericError_missingReport() {
+        // setup
+        let jsonData = """
+                        {
+                          "type" : "https://ns.adobe.com/aep/errors/EXEG-0104-422",
+                          "status": 422,
+                          "title" : "Unprocessable Entity",
+                          "detail": "Invalid request (report attached). Please check your input and try again."
+                        }
+                      """.data(using: .utf8)
+
+        // test
+        let error = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData ?? Data())
+
+        // verify
+        XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0104-422", error?.type)
+        XCTAssertEqual(422, error?.status)
+        XCTAssertEqual("Unprocessable Entity", error?.title)
+        XCTAssertEqual("Invalid request (report attached). Please check your input and try again.", error?.detail)
+    }
+
 }

@@ -804,7 +804,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                               "IAB consent string value must not be empty for standard 'IAB TCF' at index 1"
                             ],
                             "requestId": "0f8821e5-ed1a-4301-b445-5f336fb50ee8",
-                            "orgId": "53A16ACB5CC1D3760A495C99@AdobeOrg"
+                            "orgId": "test@AdobeOrg"
                           }
                         }
                        """
