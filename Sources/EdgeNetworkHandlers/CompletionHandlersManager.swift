@@ -10,12 +10,9 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
 import AEPServices
 import Foundation
 
-/// When registering a completion handler for a request event, all the event handles will be returned at once when the entire streamed response was processed by the AEP Edge extension.
-/// This class uses a `ThreadSafeDictionary` for the internal mapping.
 class CompletionHandlersManager {
     private let TAG = "CompletionHandlersManager"
     private var completionHandlers =
