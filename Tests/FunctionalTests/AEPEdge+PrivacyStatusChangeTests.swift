@@ -78,16 +78,21 @@ class AEPEdgePrivacyStatusChangeTests: FunctionalTestBase {
     }
 
     func testPrivacyStatus_whenOptUnknown_thenHits_thenOptedIn_hitsSent() {
-        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 5)
-
         // test
         MobileCore.setPrivacyStatus(PrivacyStatus.unknown)
         getPrivacyStatusSync()
         fireManyEvents()
+
+        //verify
+        var resultNetworkRequests = self.getNetworkRequestsWith(url: self.exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
+        XCTAssertEqual(0, resultNetworkRequests.count)
+
+        // test
         MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
 
         // verify
-        assertNetworkRequestsCount()
+        resultNetworkRequests = self.getNetworkRequestsWith(url: self.exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
+        XCTAssertEqual(5, resultNetworkRequests.count)
     }
 
     func testPrivacyStatus_whenOptUnknown_thenHits_thenOptedOut_hitsCleared() {
