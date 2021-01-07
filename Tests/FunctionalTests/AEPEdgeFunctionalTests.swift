@@ -340,7 +340,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
-    
+
     func testSendEvent_withXDMSchema_sendsExEdgeNetworkRequest() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                                 response: HTTPURLResponse(url: exEdgeInteractUrl,
@@ -462,7 +462,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        
+
         XCTAssertEqual("query", requestBody["events[0].query.testString"] as? String)
         XCTAssertEqual(10, requestBody["events[0].query.testInt"] as? Int)
         XCTAssertEqual(false, requestBody["events[0].query.testBool"] as? Bool)
@@ -473,7 +473,6 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("val", requestBody["events[0].query.testDictionary.key"] as? String)
     }
 
-    
     // MARK: Client-side store
     func testSendEvent_twoConsecutiveCalls_appendsReceivedClientSideStore() {
         setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
@@ -585,7 +584,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT,
                             expectedCount: 1)
-        let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [],\"warnings\": [{\"eventIndex\": 0,\"code\": \"personalization:0\",\"message\": \"Failed due to unrecoverable system error\"}]}\n"
+        let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [],\"warnings\": [{\"eventIndex\": 0,\"status\": 0,\"title\": \"Failed due to unrecoverable system error\"}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                             response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                       statusCode: 200,
@@ -614,8 +613,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         }
         let eventData = flattenDictionary(dict: eventDataDict)
         XCTAssertEqual(5, eventData.count)
-        XCTAssertEqual("personalization:0", eventData["code"] as? String)
-        XCTAssertEqual("Failed due to unrecoverable system error", eventData["message"] as? String)
+        XCTAssertEqual(0, eventData["status"] as? Int)
+        XCTAssertEqual("Failed due to unrecoverable system error", eventData["title"] as? String)
         XCTAssertEqual(0, eventData["eventIndex"] as? Int)
         XCTAssertEqual(requestId, eventData["requestId"] as? String)
         XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
@@ -664,7 +663,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     // MARK: test persisted hits
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersisting() {
-        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
+        let error = EdgeEventError(title: nil, detail: nil, status: 502, type: "test-type", eventIndex: 1, report: nil)
+        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
         let responseData = try? JSONEncoder().encode(edgeResponse)
 
         // bad connection, hits will be retried
@@ -701,7 +701,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
-        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: nil, warnings: [EdgeEventError(eventIndex: 0, message: nil, code: "502", namespace: nil)])
+        let error = EdgeEventError(title: nil, detail: nil, status: 502, type: "test-type", eventIndex: 0, report: nil)
+        let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
         let responseData = try? JSONEncoder().encode(edgeResponse)
 
         // bad connection, hits will be retried
@@ -736,6 +737,108 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         self.assertNetworkRequestsCount()
+    }
+
+    func testSendEvent_multiStatusResponse_dispatchesEvents() {
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        let response = """
+                        {"requestId":"72eaa048-207e-4dde-bf16-0cb2b21336d5","handle":[],"errors":[{"type":"https://ns.adobe.com/aep/errors/EXEG-0201-504","status":504,"title":"The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.","eventIndex":0}],"warnings":[{"type":"https://ns.adobe.com/aep/errors/EXEG-0204-200","status":200,"title":"A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.","eventIndex":0,"report":{"cause":{"message":"Cannot read related customer for device id: ...","code":202}}}]}
+                       """
+        let responseConnection: HttpConnection = HttpConnection(data: response.data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 207,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1) // the send event
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 2) // 2 error events
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        assertNetworkRequestsCount()
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                   source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
+        guard let eventDataDict = resultEvents[0].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+        let eventData = flattenDictionary(dict: eventDataDict)
+        XCTAssertEqual(6, eventData.count)
+        XCTAssertEqual(eventData["status"] as? Int, 504)
+        XCTAssertEqual(eventData["eventIndex"] as? Int, 0)
+        XCTAssertEqual(eventData["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0201-504")
+        XCTAssertEqual(eventData["title"] as? String, "The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.")
+
+        guard let eventDataDict1 = resultEvents[1].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+        let eventData1 = flattenDictionary(dict: eventDataDict1)
+        XCTAssertEqual(8, eventData1.count)
+        XCTAssertEqual(eventData1["status"] as? Int, 200)
+        XCTAssertEqual(eventData1["eventIndex"] as? Int, 0)
+        XCTAssertEqual(eventData1["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0204-200")
+        XCTAssertEqual(eventData1["title"] as? String, "A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.")
+        XCTAssertEqual(eventData1["report.cause.message"] as? String, "Cannot read related customer for device id: ...")
+        XCTAssertEqual(eventData1["report.cause.code"] as? Int, 202)
+    }
+
+    func testSendEvent_fatalError() {
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        let response = """
+                        {
+                          "type" : "https://ns.adobe.com/aep/errors/EXEG-0104-422",
+                          "status": 422,
+                          "title" : "Unprocessable Entity",
+                          "detail": "Invalid request (report attached). Please check your input and try again.",
+                          "report": {
+                            "errors": [
+                              "Allowed Adobe version is 1.0 for standard 'Adobe' at index 0",
+                              "Allowed IAB version is 2.0 for standard 'IAB TCF' at index 1",
+                              "IAB consent string value must not be empty for standard 'IAB TCF' at index 1"
+                            ],
+                            "requestId": "0f8821e5-ed1a-4301-b445-5f336fb50ee8",
+                            "orgId": "test@AdobeOrg"
+                          }
+                        }
+                       """
+        let responseConnection: HttpConnection = HttpConnection(data: response.data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 422,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1) // the send event
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1) // 1 error events
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        assertNetworkRequestsCount()
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                   source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
+        guard let eventDataDict = resultEvents[0].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+
+
+        let jsonData = try! JSONSerialization.data(withJSONObject: eventDataDict)
+        let expectedEdgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: response.data(using: .utf8)!)
+        let edgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData)
+
+        XCTAssertEqual(expectedEdgeEventError, edgeEventError)
     }
 }
 
