@@ -57,6 +57,7 @@ class AEPEdgePrivacyStatusChangeTests: FunctionalTestBase {
     func testPrivacyStatus_whenOptedOut_thenHits_hitsCleared() {
         // test
         MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
+        getPrivacyStatusSync()
         fireManyEvents()
 
         // verify
@@ -69,6 +70,7 @@ class AEPEdgePrivacyStatusChangeTests: FunctionalTestBase {
 
         // test
         MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
+        getPrivacyStatusSync()
         fireManyEvents()
 
         // verify
@@ -80,6 +82,7 @@ class AEPEdgePrivacyStatusChangeTests: FunctionalTestBase {
 
         // test
         MobileCore.setPrivacyStatus(PrivacyStatus.unknown)
+        getPrivacyStatusSync()
         fireManyEvents()
         MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
 
@@ -90,6 +93,7 @@ class AEPEdgePrivacyStatusChangeTests: FunctionalTestBase {
     func testPrivacyStatus_whenOptUnknown_thenHits_thenOptedOut_hitsCleared() {
         // test
         MobileCore.setPrivacyStatus(PrivacyStatus.unknown)
+        getPrivacyStatusSync()
         fireManyEvents()
         MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
 
@@ -102,12 +106,40 @@ class AEPEdgePrivacyStatusChangeTests: FunctionalTestBase {
         // test
         MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
         MobileCore.setPrivacyStatus(PrivacyStatus.unknown)
-        fireManyEvents()
+        getPrivacyStatusSync()
+        self.fireManyEvents()
         MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
 
         // verify
-        let resultNetworkRequests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
+        let resultNetworkRequests = self.getNetworkRequestsWith(url: self.exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertEqual(0, resultNetworkRequests.count)
+    }
+
+    func testPrivacyStatus_whenOptOut_thenUnknown_thenHits_thenOut_hitsCleared() {
+        // test
+        MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
+        MobileCore.setPrivacyStatus(PrivacyStatus.unknown)
+        getPrivacyStatusSync()
+        self.fireManyEvents()
+        MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
+
+        // verify
+        let resultNetworkRequests = self.getNetworkRequestsWith(url: self.exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
+        XCTAssertEqual(0, resultNetworkRequests.count)
+    }
+
+    func testPrivacyStatus_whenOptOut_thenUnknown_thenHits_thenIn_hitsSent() {
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 5)
+
+        // test
+        MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
+        MobileCore.setPrivacyStatus(PrivacyStatus.unknown)
+        getPrivacyStatusSync()
+        self.fireManyEvents()
+        MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
+
+        // verify
+        assertNetworkRequestsCount()
     }
 
     private func fireManyEvents() {
@@ -116,5 +148,13 @@ class AEPEdgePrivacyStatusChangeTests: FunctionalTestBase {
         Edge.sendEvent(experienceEvent: experienceEvent)
         Edge.sendEvent(experienceEvent: experienceEvent)
         Edge.sendEvent(experienceEvent: experienceEvent)
+    }
+
+    private func getPrivacyStatusSync() {
+        let expectation = XCTestExpectation(description: "getPrivacyReturned")
+        MobileCore.getPrivacyStatus {_ in
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 1)
     }
 }
