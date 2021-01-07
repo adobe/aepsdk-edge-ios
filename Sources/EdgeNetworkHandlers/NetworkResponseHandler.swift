@@ -92,10 +92,10 @@ class NetworkResponseHandler {
     ///   - requestId: request id associated with current response
     func processResponseOnError(jsonError: String, requestId: String) {
         guard let data = jsonError.data(using: .utf8) else { return }
-        
+
         // Attempt to decode as an `EdgeResponse` first
         guard let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) else {
-            
+
             // If decoding as an `EdgeResponse` fails, attempt to decode as a generic `EdgeEventError`
             if let edgeErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) {
                 Log.debug(label: LOG_TAG, "processResponseOnError - Processing server error response:\n \(jsonError), request id \(requestId)")
@@ -104,7 +104,7 @@ class NetworkResponseHandler {
                 Log.warning(label: LOG_TAG,
                             "processResponseOnError - The conversion to JSON failed for server error response: \(jsonError), request id \(requestId)")
             }
-            
+
             return
         }
 
@@ -249,13 +249,13 @@ class NetworkResponseHandler {
     ///   If `eventSource` is nil either Constants.EventSource.ERROR_RESPONSE_CONTENT or Constants.EventSource.RESPONSE_CONTENT will be used for the event source depending on `isErrorResponseEvent`
     private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool, eventSource: String?) {
         guard !eventData.isEmpty else { return }
-        var source = isErrorResponseEvent ? Constants.EventSource.ERROR_RESPONSE_CONTENT : Constants.EventSource.RESPONSE_CONTENT
+        var source = isErrorResponseEvent ? Constants.EventSource.ERROR_RESPONSE_CONTENT : EventSource.responseContent
         if let eventSource = eventSource, !eventSource.isEmpty {
             source = eventSource
         }
 
         let responseEvent = Event(name: isErrorResponseEvent ? Constants.EventName.ERROR_RESPONSE_CONTENT : Constants.EventName.RESPONSE_CONTENT,
-                                  type: Constants.EventType.EDGE,
+                                  type: EventType.edge,
                                   source: source,
                                   data: eventData)
 

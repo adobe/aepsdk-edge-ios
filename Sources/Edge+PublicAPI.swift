@@ -32,8 +32,8 @@ public extension Edge {
         }
 
         let event = Event(name: "AEP Request Event",
-                          type: Constants.EventType.EDGE,
-                          source: Constants.EventSource.REQUEST_CONTENT,
+                          type: EventType.edge,
+                          source: EventSource.requestContent,
                           data: eventData)
 
         ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: event.id.uuidString, responseHandler: responseHandler)

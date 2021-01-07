@@ -18,16 +18,8 @@ enum Constants {
     static let EXTENSION_VERSION = "1.0.0-beta.2"
     static let FRIENDLY_NAME = "AEPEdge"
 
-    enum EventType {
-        static let EDGE = "com.adobe.eventType.edge"
-        static let HUB = "com.adobe.eventType.hub"
-    }
-
     enum EventSource {
         static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
-        static let SHARED_STATE = "com.adobe.eventSource.sharedState"
-        static let REQUEST_CONTENT = "com.adobe.eventSource.requestContent"
-        static let RESPONSE_CONTENT = "com.adobe.eventSource.responseContent"
     }
 
     enum EventName {
