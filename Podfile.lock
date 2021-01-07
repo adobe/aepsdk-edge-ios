@@ -6,11 +6,11 @@ PODS:
     - AEPRulesEngine
     - AEPServices
     - AEPSignal
-  - AEPAssurance (1.1.0):
-    - ACPCore (>= 2.9.0)
-    - AEPAssurance/xcframeworks (= 1.1.0)
-  - AEPAssurance/xcframeworks (1.1.0):
-    - ACPCore (>= 2.9.0)
+  - AEPAssurance (1.0.0):
+    - ACPCore
+    - AEPAssurance/iOS (= 1.0.0)
+  - AEPAssurance/iOS (1.0.0):
+    - ACPCore
   - AEPCore (3.0.0-beta.2):
     - AEPRulesEngine
     - AEPServices
@@ -85,7 +85,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   ACPCore: 67e4b855bf16cfb6a63024a4ddb73d15c0fd30e5
-  AEPAssurance: c9c21b7e57bf993db210766631db2ef3732d4fa4
+  AEPAssurance: 79480081626b89fc37af26bbbf4522af9718e75f
   AEPCore: 3c5374555adceead3e14503ced175e928969b989
   AEPIdentity: 04558a7692af328c7d30d2fa61e17183f4131117
   AEPLifecycle: 6c29286c403467dce7909292c25732196eafab1d
