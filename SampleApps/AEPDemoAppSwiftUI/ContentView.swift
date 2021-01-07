@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPCore
 import AEPEdge
 import AEPServices
 import SwiftUI
@@ -17,6 +18,25 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
+            HStack {
+                Text("Privacy: ")
+                Button(action: {
+                    MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
+                }) {
+                    Text("in")
+                }
+                Button(action: {
+                    MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
+                }) {
+                    Text("out")
+                }
+                Button(action: {
+                    MobileCore.setPrivacyStatus(PrivacyStatus.unknown)
+                }) {
+                    Text("unknown")
+                }
+            }.padding()
+
             Button(action: {
                 let networkRequest1: NetworkRequest = NetworkRequest(url: URL(string: "https://www.adobe.com")!,
                                                                      httpMethod: HttpMethod.get,
