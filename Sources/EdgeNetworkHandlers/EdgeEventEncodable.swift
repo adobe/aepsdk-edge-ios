@@ -17,8 +17,8 @@ extension Encodable {
     func asDictionary() throws -> [String: Any] {
         let data = try JSONEncoder().encode(self)
         guard let dictionary = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
-            throw NSError(domain: Constants.Error.ENCODING_ERROR_DOMAIN,
-                          code: Constants.Error.ENCODING_ERROR_CODE,
+            throw NSError(domain: EdgeConstants.Error.ENCODING_ERROR_DOMAIN,
+                          code: EdgeConstants.Error.ENCODING_ERROR_CODE,
                           userInfo: [NSLocalizedDescriptionKey: "Unable to serialize EdgeEventError to [String: Any]"])
         }
         return dictionary
