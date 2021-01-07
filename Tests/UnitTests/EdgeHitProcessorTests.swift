@@ -23,12 +23,6 @@ class EdgeHitProcessorTests: XCTestCase {
         return ServiceProvider.shared.networkService as? MockNetworking
     }
     let expectedHeaders = [Constants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN: "test-int-id"]
-    private var eventError: EdgeEventError = {
-        let json: [String: Any] = ["message": "X service is temporarily unable to serve this request. Please try again later.", "code": "503"]
-        let jsonData = try! JSONSerialization.data(withJSONObject: json, options: [])
-        return try! JSONDecoder().decode(EdgeEventError.self, from: jsonData)
-    }()
-
     override func setUp() {
         ServiceProvider.shared.networkService = MockNetworking()
         networkService = EdgeNetworkService()
@@ -242,7 +236,8 @@ class EdgeHitProcessorTests: XCTestCase {
         let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
 
         for code in recoverableNetworkErrorCodes {
-            let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [eventError], warnings: nil)
+            let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", eventIndex: 0, report: nil)
+            let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
 
             mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData, response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: code, httpVersion: nil, headerFields: nil), error: nil)

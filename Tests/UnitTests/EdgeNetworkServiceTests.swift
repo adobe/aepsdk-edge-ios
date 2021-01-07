@@ -134,6 +134,29 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
 
+    func testDoRequest_whenConnection_ResponseCode207_CallsCompletionTrue_AndResponseCallback_AndNotErrorCallback() {
+        // setup
+        let stringResponseBody = "OK"
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
+
+        // test
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 207, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
+        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success in
+            // verify
+            XCTAssertTrue(success)
+            XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
+            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+            XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
+            XCTAssertEqual([stringResponseBody], self.mockResponseCallback.onResponseJsonResponse)
+            expectation.fulfill()
+        })
+
+        wait(for: [expectation], timeout: 0.5)
+    }
+
     func testDoRequest_whenConnection_RecoverableResponseCode_CallsCompletionFalse_AndNoResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "Service Unavailable"
