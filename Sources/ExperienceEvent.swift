@@ -20,7 +20,7 @@ public class ExperienceEvent: NSObject {
 
     /// Optional free-form data associated with this event
     public let data: [String: Any]?
-    
+
     /// Optional free-form query data associated with this event
     public var query: [String: Any]?
 

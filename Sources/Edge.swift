@@ -17,6 +17,7 @@ import Foundation
 @objc(AEPMobileEdge)
 public class Edge: NSObject, Extension {
     private let LOG_TAG = "Edge" // Tag for logging
+    private let DEFAULT_PRIVACY_STATUS = PrivacyStatus.unknown
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
     private var hitQueue: HitQueuing?
@@ -35,9 +36,12 @@ public class Edge: NSObject, Extension {
     }
 
     public func onRegistered() {
-        registerListener(type: Constants.EventType.EDGE,
+        registerListener(type: EventType.edge,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
+        registerListener(type: EventType.configuration,
+                         source: EventSource.responseContent,
+                         listener: handleConfigurationResponse)
     }
 
     public func onUnregistered() {
@@ -46,12 +50,12 @@ public class Edge: NSObject, Extension {
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        if event.type == Constants.EventType.EDGE, event.source == EventSource.requestContent {
+        if event.type == EventType.edge, event.source == EventSource.requestContent {
             let configurationSharedState = getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
             let identitySharedState = getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,
                                                      event: event)
-    
+
             return configurationSharedState?.status == .set && identitySharedState?.status == .set
         }
 
@@ -60,10 +64,12 @@ public class Edge: NSObject, Extension {
 
     /// Handler for Experience Edge Request Content events.
     /// Valid Configuration and Identity shared states are required for processing the event (see `readyForEvent`). If a valid Configuration shared state is
-    /// available, but no `edge.configId ` is found, the event is dropped.
+    /// available, but no `edge.configId ` is found or `shouldIgnore` returns true, the event is dropped.
     ///
     /// - Parameter event: an event containing ExperienceEvent data for processing
     func handleExperienceEventRequest(_ event: Event) {
+        guard !shouldIgnore(event: event) else { return }
+
         if event.data == nil {
             Log.trace(label: LOG_TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
             return
@@ -80,6 +86,34 @@ public class Edge: NSObject, Extension {
         hitQueue?.queue(entity: entity)
     }
 
+    /// Handles the configuration response event and the privacy status change
+    /// - Parameter event: the configuration response event
+    func handleConfigurationResponse(_ event: Event) {
+        if let privacyStatusStr = event.data?[Constants.EventDataKeys.GLOBAL_PRIVACY] as? String {
+            let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? DEFAULT_PRIVACY_STATUS
+            hitQueue?.handlePrivacyChange(status: privacyStatus)
+            if privacyStatus == .optedOut {
+                Log.debug(label: LOG_TAG, "Device has opted-out of tracking. Clearing the Edge queue.")
+            }
+        }
+    }
+
+    /// Determines if the event should be ignored by the Edge extension. This method should be called after
+    /// `readyForEvent` passed and a Configuration shared state is set.
+    ///
+    /// - Parameter event: the event to validate
+    /// - Returns: true when Configuration shared state is nil or the new privacy status is opted out
+    private func shouldIgnore(event: Event) -> Bool {
+        guard let configSharedState = getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME, event: event)?.value else {
+            Log.debug(label: LOG_TAG, "Configuration is unavailable - unable to process event '\(event.id)'.")
+            return true
+        }
+
+        let privacyStatusStr = configSharedState[Constants.EventDataKeys.GLOBAL_PRIVACY] as? String ?? ""
+        let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? DEFAULT_PRIVACY_STATUS
+        return privacyStatus == .optedOut
+    }
+
     /// Sets up the `PersistentHitQueue` to handle `EdgeHit`s
     private func setupHitQueue() {
         guard let dataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: name) else {
@@ -92,6 +126,6 @@ public class Edge: NSObject, Extension {
                                             getSharedState: getSharedState(extensionName:event:),
                                             readyForEvent: readyForEvent(_:))
         hitQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
-        hitQueue?.beginProcessing()
+        hitQueue?.handlePrivacyChange(status: DEFAULT_PRIVACY_STATUS)
     }
 }

@@ -46,6 +46,7 @@ enum Constants {
         static let EDGE_REQUEST_ID = "requestId"
         static let REQUEST_EVENT_ID = "requestEventId"
         static let DATASET_ID = "datasetId"
+        static let GLOBAL_PRIVACY = "global.privacy"
     }
 
     enum DataStoreKeys {

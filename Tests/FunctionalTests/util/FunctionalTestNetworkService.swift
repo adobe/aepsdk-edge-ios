@@ -60,13 +60,14 @@ class FunctionalTestNetworkService: NetworkService {
     }
 
     func getReceivedNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
+        var matchingRequests: [NetworkRequest] = []
         for receivedRequest in receivedNetworkRequests {
             if areNetworkRequestsEqual(lhs: receivedRequest.key, rhs: networkRequest) {
-                return receivedRequest.value
+                matchingRequests.append(receivedRequest.key)
             }
         }
 
-        return []
+        return matchingRequests
     }
 
     func setExpectedNetworkRequest(networkRequest: NetworkRequest, count: Int32) {

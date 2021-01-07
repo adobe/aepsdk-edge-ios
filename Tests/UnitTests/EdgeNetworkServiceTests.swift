@@ -133,7 +133,7 @@ class EdgeNetworkServiceTests: XCTestCase {
 
         wait(for: [expectation], timeout: 0.5)
     }
-    
+
     func testDoRequest_whenConnection_ResponseCode207_CallsCompletionTrue_AndResponseCallback_AndNotErrorCallback() {
         // setup
         let stringResponseBody = "OK"

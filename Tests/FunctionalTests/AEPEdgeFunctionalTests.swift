@@ -833,7 +833,6 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             return
         }
 
-
         let jsonData = try! JSONSerialization.data(withJSONObject: eventDataDict)
         let expectedEdgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: response.data(using: .utf8)!)
         let edgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData)
