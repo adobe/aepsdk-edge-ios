@@ -66,6 +66,7 @@ class FunctionalTestBase: XCTestCase {
         FunctionalTestBase.isFirstRun = false
         EventHub.reset()
         UserDefaults.clearAll()
+        FileManager.default.clearCache()
     }
 
     /// Reset event and network request expectations and drop the items received until this point
