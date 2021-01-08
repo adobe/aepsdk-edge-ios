@@ -36,7 +36,7 @@ class EdgeHitProcessor: HitProcessing {
     // MARK: HitProcessing
 
     func retryInterval(for entity: DataEntity) -> TimeInterval {
-        return entityRetryIntervalMapping[entity.uniqueIdentifier] ?? EdgeConstants.NetworkKeys.RETRY_INTERVAL
+        return entityRetryIntervalMapping[entity.uniqueIdentifier] ?? EdgeConstants.Defaults.RETRY_INTERVAL
     }
 
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
@@ -128,8 +128,8 @@ class EdgeHitProcessor: HitProcessing {
                                  requestBody: edgeHit.request,
                                  requestHeaders: headers,
                                  responseCallback: callback) { [weak self] success, retryInterval in
-            // remove any retry interval if success, add retry interval if failed
-            self?.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval
+            // remove any retry interval if success or has default interval value, add retry interval if failed
+            self?.entityRetryIntervalMapping[entityId] = success || retryInterval == EdgeConstants.Defaults.RETRY_INTERVAL ? nil : retryInterval
             completion(success)
         }
     }

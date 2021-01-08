@@ -37,7 +37,7 @@ enum EdgeConstants {
     }
 
     enum Defaults {
-        static let NETWORK_REQUEST_MAX_RETRIES: UInt = 5
+        static let RETRY_INTERVAL: TimeInterval = 5
         static let RECORD_SEPARATOR: String = "\u{0000}"
         static let LINE_FEED: String = "\n"
     }
@@ -111,7 +111,6 @@ enum EdgeConstants {
         static let HEADER_KEY_AEP_VALIDATION_TOKEN = "X-Adobe-AEP-Validation-Token"
         static let HEADER_VALUE_APPLICATION_JSON = "application/json"
         static let HEADER_KEY_RETRY_AFTER = "Retry-After"
-        static let RETRY_INTERVAL: TimeInterval = 5
     }
 
     enum Error {
