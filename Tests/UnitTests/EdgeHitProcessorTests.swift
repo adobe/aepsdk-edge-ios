@@ -16,13 +16,19 @@ import AEPServices
 import XCTest
 
 class EdgeHitProcessorTests: XCTestCase {
+    private let ASSURANCE_SHARED_STATE = "com.adobe.assurance"
+    private let CONFIGURATION_SHARED_STATE = "com.adobe.module.configuration"
+    private let IDENTITY_SHARED_STATE = "com.adobe.module.identity"
+    private let ASSURANCE_INTEGRATION_ID = "integrationid"
+    private let EDGE_CONFIG_ID = "edge.configId"
     var hitProcessor: EdgeHitProcessor!
     var networkService: EdgeNetworkService!
     var networkResponseHandler: NetworkResponseHandler!
     var mockNetworkService: MockNetworking? {
         return ServiceProvider.shared.networkService as? MockNetworking
     }
-    let expectedHeaders = [Constants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN: "test-int-id"]
+    let expectedHeaders = ["X-Adobe-AEP-Validation-Token": "test-int-id"]
+
     override func setUp() {
         ServiceProvider.shared.networkService = MockNetworking()
         networkService = EdgeNetworkService()
@@ -34,16 +40,16 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     private func resolveSharedState(extensionName: String, event: Event?) -> SharedStateResult? {
-        if extensionName == Constants.SharedState.Assurance.STATE_OWNER_NAME {
-            return SharedStateResult(status: .set, value: [Constants.SharedState.Assurance.INTEGRATION_ID: "test-int-id"])
+        if extensionName == ASSURANCE_SHARED_STATE {
+            return SharedStateResult(status: .set, value: [ASSURANCE_INTEGRATION_ID: "test-int-id"])
         }
 
-        if extensionName == Constants.SharedState.Identity.STATE_OWNER_NAME {
-            return SharedStateResult(status: .set, value: [Constants.SharedState.Identity.STATE_OWNER_NAME: "test-mcid"])
+        if extensionName == IDENTITY_SHARED_STATE {
+            return SharedStateResult(status: .set, value: [IDENTITY_SHARED_STATE: "test-mcid"])
         }
 
-        if extensionName == Constants.SharedState.Configuration.STATE_OWNER_NAME {
-            return SharedStateResult(status: .set, value: [Constants.SharedState.Configuration.CONFIG_ID: "test-config-id"])
+        if extensionName == CONFIGURATION_SHARED_STATE {
+            return SharedStateResult(status: .set, value: [EDGE_CONFIG_ID: "test-config-id"])
         }
 
         return nil
@@ -103,7 +109,7 @@ class EdgeHitProcessorTests: XCTestCase {
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: { extensionName, event -> SharedStateResult? in
-                                            if extensionName == Constants.SharedState.Configuration.STATE_OWNER_NAME {
+                                            if extensionName == self.CONFIGURATION_SHARED_STATE {
                                                 // simulate shared state with no edge config
                                                 return SharedStateResult(status: .pending, value: nil)
                                             }
@@ -130,7 +136,7 @@ class EdgeHitProcessorTests: XCTestCase {
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: { extensionName, event -> SharedStateResult? in
-                                            if extensionName == Constants.SharedState.Configuration.STATE_OWNER_NAME {
+                                            if extensionName == self.CONFIGURATION_SHARED_STATE {
                                                 // simulate shared state with no edge config
                                                 return SharedStateResult(status: .set, value: [:])
                                             }
@@ -157,7 +163,7 @@ class EdgeHitProcessorTests: XCTestCase {
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: { extensionName, event -> SharedStateResult? in
-                                            if extensionName == Constants.SharedState.Identity.STATE_OWNER_NAME {
+                                            if extensionName == self.IDENTITY_SHARED_STATE {
                                                 // simulate pending Identity shared state
                                                 return SharedStateResult(status: .pending, value: nil)
                                             }
@@ -184,7 +190,7 @@ class EdgeHitProcessorTests: XCTestCase {
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: { extensionName, event -> SharedStateResult? in
-                                            if extensionName == Constants.SharedState.Identity.STATE_OWNER_NAME {
+                                            if extensionName == self.IDENTITY_SHARED_STATE {
                                                 // simulate pending Identity shared state
                                                 return SharedStateResult(status: .set, value: [:])
                                             }

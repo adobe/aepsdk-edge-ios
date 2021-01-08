@@ -55,18 +55,18 @@ public class ExperienceEvent: NSObject {
     internal func asDictionary() -> [String: Any]? {
         var dataDict: [String: Any] = [:]
         if let unwrappedXdm = xdm {
-            dataDict = [Constants.JsonKeys.XDM: unwrappedXdm as Any]
+            dataDict = [EdgeConstants.JsonKeys.XDM: unwrappedXdm as Any]
         }
         if let unwrappedData = data {
-            dataDict[Constants.JsonKeys.DATA] = unwrappedData
+            dataDict[EdgeConstants.JsonKeys.DATA] = unwrappedData
         }
 
         if let query = query, !query.isEmpty {
-            dataDict[Constants.JsonKeys.QUERY] = query
+            dataDict[EdgeConstants.JsonKeys.QUERY] = query
         }
 
         if let unwrappedDatasetId = datasetIdentifier {
-            dataDict[Constants.EventDataKeys.DATASET_ID] = unwrappedDatasetId
+            dataDict[EdgeConstants.EventDataKeys.DATASET_ID] = unwrappedDatasetId
         }
         return dataDict.isEmpty ? nil : dataDict
     }

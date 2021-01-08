@@ -22,9 +22,9 @@ public class Edge: NSObject, Extension {
     private var hitQueue: HitQueuing?
 
     // MARK: - Extension
-    public var name = Constants.EXTENSION_NAME
-    public var friendlyName = Constants.FRIENDLY_NAME
-    public static var extensionVersion = Constants.EXTENSION_VERSION
+    public var name = EdgeConstants.EXTENSION_NAME
+    public var friendlyName = EdgeConstants.FRIENDLY_NAME
+    public static var extensionVersion = EdgeConstants.EXTENSION_VERSION
     public var metadata: [String: String]?
     public var runtime: ExtensionRuntime
 
@@ -35,21 +35,21 @@ public class Edge: NSObject, Extension {
     }
 
     public func onRegistered() {
-        registerListener(type: Constants.EventType.EDGE,
+        registerListener(type: EdgeConstants.EventType.EDGE,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
     }
 
     public func onUnregistered() {
         hitQueue?.close()
-        print("Extension unregistered from MobileCore: \(Constants.FRIENDLY_NAME)")
+        print("Extension unregistered from MobileCore: \(EdgeConstants.FRIENDLY_NAME)")
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        if event.type == Constants.EventType.EDGE, event.source == EventSource.requestContent {
-            let configurationSharedState = getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
+        if event.type == EdgeConstants.EventType.EDGE, event.source == EventSource.requestContent {
+            let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
-            let identitySharedState = getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,
+            let identitySharedState = getSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
                                                      event: event)
 
             return configurationSharedState?.status == .set && identitySharedState?.status == .set

@@ -29,8 +29,8 @@ public extension Edge {
         }
 
         let event = Event(name: "AEP Request Event",
-                          type: Constants.EventType.EDGE,
-                          source: Constants.EventSource.REQUEST_CONTENT,
+                          type: EdgeConstants.EventType.EDGE,
+                          source: EdgeConstants.EventSource.REQUEST_CONTENT,
                           data: eventData)
 
         CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: event.id.uuidString, completion: completion)

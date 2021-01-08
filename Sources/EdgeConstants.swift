@@ -12,7 +12,7 @@
 
 import Foundation
 
-enum Constants {
+enum EdgeConstants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
     static let EXTENSION_VERSION = "1.0.0-beta.2"

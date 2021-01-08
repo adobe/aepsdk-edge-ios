@@ -154,7 +154,7 @@
 		D4C6B44A251A76CB0038F4F9 /* StateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F8E2440F0940057A6CC /* StateMetadata.swift */; };
 		D4C6B44B251A76CB0038F4F9 /* StoreResponsePayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F85243F24570057A6CC /* StoreResponsePayload.swift */; };
 		D4C6B44C251A76CB0038F4F9 /* StoreResponsePayloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */; };
-		D4C6B44D251A76CB0038F4F9 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F63243565CC0057A6CC /* Constants.swift */; };
+		D4C6B44D251A76CB0038F4F9 /* EdgeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F63243565CC0057A6CC /* EdgeConstants.swift */; };
 		D4C6B44E251A76CB0038F4F9 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F62243565CC0057A6CC /* Edge.swift */; };
 		D4D5B57D2432977F00CAB6E4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */; };
 		D4D5B57F2432977F00CAB6E4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B57E2432977F00CAB6E4 /* SceneDelegate.swift */; };
@@ -324,7 +324,7 @@
 		BF5EECC2249839DC00C72622 /* AsssuranceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsssuranceViewController.swift; sourceTree = "<group>"; };
 		BF5EECE524983AE000C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF947F62243565CC0057A6CC /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Edge.swift; sourceTree = "<group>"; };
-		BF947F63243565CC0057A6CC /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		BF947F63243565CC0057A6CC /* EdgeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeConstants.swift; sourceTree = "<group>"; };
 		BF947F71243BA0BA0057A6CC /* KonductorConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KonductorConfig.swift; sourceTree = "<group>"; };
 		BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KonductorConfigTests.swift; sourceTree = "<group>"; };
 		BF947F77243BE16C0057A6CC /* EdgeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeRequest.swift; sourceTree = "<group>"; };
@@ -677,7 +677,7 @@
 				1CCD27CD24592B2800E912B2 /* xdm */,
 				D42FB8D52462159300E9321C /* public */,
 				D42FB8D02461086200E9321C /* EdgeNetworkHandlers */,
-				BF947F63243565CC0057A6CC /* Constants.swift */,
+				BF947F63243565CC0057A6CC /* EdgeConstants.swift */,
 				BF947F62243565CC0057A6CC /* Edge.swift */,
 				D4967534251130D3001F5F95 /* Info.plist */,
 				D4D66AA2251910FB00B4866D /* AEPEdge.h */,
@@ -1355,7 +1355,7 @@
 				D4C6B44A251A76CB0038F4F9 /* StateMetadata.swift in Sources */,
 				D4C6B44B251A76CB0038F4F9 /* StoreResponsePayload.swift in Sources */,
 				D4C6B44C251A76CB0038F4F9 /* StoreResponsePayloadManager.swift in Sources */,
-				D4C6B44D251A76CB0038F4F9 /* Constants.swift in Sources */,
+				D4C6B44D251A76CB0038F4F9 /* EdgeConstants.swift in Sources */,
 				D4C6B44E251A76CB0038F4F9 /* Edge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1568,7 +1568,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = "1.0.0.beta.2";
+				MARKETING_VERSION = 1.0.0.beta.2;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1603,7 +1603,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = "1.0.0.beta.2";
+				MARKETING_VERSION = 1.0.0.beta.2;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
