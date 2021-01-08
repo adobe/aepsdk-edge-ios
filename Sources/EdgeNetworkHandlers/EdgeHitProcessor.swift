@@ -21,7 +21,7 @@ class EdgeHitProcessor: HitProcessing {
     private var networkResponseHandler: NetworkResponseHandler
     private var getSharedState: (String, Event?) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
-    private var retryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
+    private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
@@ -36,7 +36,7 @@ class EdgeHitProcessor: HitProcessing {
     // MARK: HitProcessing
 
     func retryInterval(for entity: DataEntity) -> TimeInterval {
-        return retryIntervalMapping[entity.uniqueIdentifier] ?? EdgeConstants.NetworkKeys.RETRY_INTERVAL
+        return entityRetryIntervalMapping[entity.uniqueIdentifier] ?? EdgeConstants.NetworkKeys.RETRY_INTERVAL
     }
 
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
@@ -129,7 +129,7 @@ class EdgeHitProcessor: HitProcessing {
                                  requestHeaders: headers,
                                  responseCallback: callback) { [weak self] success, retryInterval in
             // remove any retry interval if success, add retry interval if failed
-            self?.retryIntervalMapping[entityId] = success ? nil : retryInterval
+            self?.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval
             completion(success)
         }
     }
