@@ -44,9 +44,9 @@ class EdgeNetworkService {
                                                        HttpResponseCodes.badGateway.rawValue,
                                                        HttpResponseCodes.serviceUnavailable.rawValue,
                                                        HttpResponseCodes.gatewayTimeout.rawValue]
-    private let waitTimeout: TimeInterval = max(Constants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT, Constants.NetworkKeys.DEFAULT_READ_TIMEOUT) + 1
-    private var defaultHeaders = [Constants.NetworkKeys.HEADER_KEY_ACCEPT: Constants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON,
-                                  Constants.NetworkKeys.HEADER_KEY_CONTENT_TYPE: Constants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON]
+    private let waitTimeout: TimeInterval = max(EdgeConstants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT, EdgeConstants.NetworkKeys.DEFAULT_READ_TIMEOUT) + 1
+    private var defaultHeaders = [EdgeConstants.NetworkKeys.HEADER_KEY_ACCEPT: EdgeConstants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON,
+                                  EdgeConstants.NetworkKeys.HEADER_KEY_CONTENT_TYPE: EdgeConstants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON]
 
     /// Builds the URL required for connections to Experience Edge with the provided `ExperienceEdgeRequestType`
     /// - Parameters:
@@ -55,12 +55,12 @@ class EdgeNetworkService {
     ///   - requestId: batch request identifier
     /// - Returns: built URL or nil on error
     func buildUrl(requestType: ExperienceEdgeRequestType, configId: String, requestId: String) -> URL? {
-        guard var url = URL(string: Constants.NetworkKeys.EDGE_ENDPOINT) else { return nil }
+        guard var url = URL(string: EdgeConstants.NetworkKeys.EDGE_ENDPOINT) else { return nil }
         url.appendPathComponent(requestType.rawValue)
 
         guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
-        urlComponents.queryItems = [URLQueryItem(name: Constants.NetworkKeys.REQUEST_PARAM_CONFIG_ID, value: configId),
-                                    URLQueryItem(name: Constants.NetworkKeys.REQUEST_PARAM_REQUEST_ID, value: requestId)]
+        urlComponents.queryItems = [URLQueryItem(name: EdgeConstants.NetworkKeys.REQUEST_PARAM_CONFIG_ID, value: configId),
+                                    URLQueryItem(name: EdgeConstants.NetworkKeys.REQUEST_PARAM_REQUEST_ID, value: requestId)]
 
         return urlComponents.url
     }
@@ -90,8 +90,8 @@ class EdgeNetworkService {
                                                             httpMethod: HttpMethod.post,
                                                             connectPayload: payload,
                                                             httpHeaders: headers,
-                                                            connectTimeout: Constants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT,
-                                                            readTimeout: Constants.NetworkKeys.DEFAULT_READ_TIMEOUT)
+                                                            connectTimeout: EdgeConstants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT,
+                                                            readTimeout: EdgeConstants.NetworkKeys.DEFAULT_READ_TIMEOUT)
         Log.debug(label: LOG_TAG, "doRequest - Sending request to URL \(url.absoluteString) with headers: \(headers) and body: \n\(payload)")
 
         ServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest) { (connection: HttpConnection) in
@@ -226,8 +226,8 @@ class EdgeNetworkService {
         var unwrappedErrorMessage = plainTextErrorMessage ?? DEFAULT_GENERIC_ERROR_MESSAGE
         unwrappedErrorMessage = unwrappedErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let errorDictionary = [Constants.JsonKeys.Response.Error.MESSAGE: unwrappedErrorMessage,
-                               Constants.JsonKeys.Response.Error.NAMESPACE: DEFAULT_NAMESPACE]
+        let errorDictionary = [EdgeConstants.JsonKeys.Response.Error.MESSAGE: unwrappedErrorMessage,
+                               EdgeConstants.JsonKeys.Response.Error.NAMESPACE: DEFAULT_NAMESPACE]
         guard let json = try? JSONSerialization.data(withJSONObject: errorDictionary, options: []) else {
             Log.debug(label: LOG_TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
             return nil
