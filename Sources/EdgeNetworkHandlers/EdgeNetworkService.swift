@@ -124,6 +124,7 @@ class EdgeNetworkService {
                     Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned recoverable error code \(responseCode)")
                     let retryHeader = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER)
                     var retryInterval = EdgeConstants.NetworkKeys.RETRY_INTERVAL
+                    // Do not currently support HTTP-date only parsing Ints for now. Konductor will only send back Retry-After as Ints.
                     if let retryHeader = retryHeader, let retryAfterInterval = TimeInterval(retryHeader) {
                         retryInterval = retryAfterInterval
                     }
