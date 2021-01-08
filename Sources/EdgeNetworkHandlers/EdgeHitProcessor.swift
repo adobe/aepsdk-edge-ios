@@ -23,7 +23,7 @@ class EdgeHitProcessor: HitProcessing {
     private var readyForEvent: (Event) -> Bool
 
     func retryInterval(for entity: DataEntity) -> TimeInterval {
-        return Constants.NetworkKeys.RETRY_INTERVAL
+        return EdgeConstants.NetworkKeys.RETRY_INTERVAL
     }
 
     init(networkService: EdgeNetworkService,
@@ -58,7 +58,7 @@ class EdgeHitProcessor: HitProcessing {
 
         // get ECID from Identity shared state, this should be resolved based on readyForEvent check
         guard let identityState =
-                getSharedState(Constants.SharedState.Identity.STATE_OWNER_NAME,
+                getSharedState(EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
                                event)?.value else {
             Log.warning(label: LOG_TAG,
                         "processHit - Unable to process the event '\(event.id.uuidString)', " +
@@ -69,10 +69,10 @@ class EdgeHitProcessor: HitProcessing {
 
         // Build Request object
         let requestBuilder = RequestBuilder()
-        requestBuilder.enableResponseStreaming(recordSeparator: Constants.Defaults.RECORD_SEPARATOR,
-                                               lineFeed: Constants.Defaults.LINE_FEED)
+        requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
+                                               lineFeed: EdgeConstants.Defaults.LINE_FEED)
 
-        if let ecid = identityState[Constants.SharedState.Identity.ECID] as? String {
+        if let ecid = identityState[EdgeConstants.SharedState.Identity.ECID] as? String {
             requestBuilder.experienceCloudId = ecid
         } else {
             // This is not expected to happen. Continue without ECID
@@ -90,9 +90,9 @@ class EdgeHitProcessor: HitProcessing {
 
         // get Assurance integration id and include it in to the requestHeaders
         var requestHeaders: [String: String] = [:]
-        if let assuranceSharedState = getSharedState(Constants.SharedState.Assurance.STATE_OWNER_NAME, event)?.value {
-            if let assuranceIntegrationId = assuranceSharedState[Constants.SharedState.Assurance.INTEGRATION_ID] as? String {
-                requestHeaders[Constants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
+        if let assuranceSharedState = getSharedState(EdgeConstants.SharedState.Assurance.STATE_OWNER_NAME, event)?.value {
+            if let assuranceIntegrationId = assuranceSharedState[EdgeConstants.SharedState.Assurance.INTEGRATION_ID] as? String {
+                requestHeaders[EdgeConstants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
             }
         }
 
@@ -132,7 +132,7 @@ class EdgeHitProcessor: HitProcessing {
     /// - Returns: the Edge Configuration Id if found, nil otherwise
     private func getEdgeConfigId(event: Event) -> String? {
         guard let configSharedState =
-                getSharedState(Constants.SharedState.Configuration.STATE_OWNER_NAME,
+                getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                event)?.value else {
             Log.warning(label: LOG_TAG,
                         "getEdgeConfigId - Unable to process the event '\(event.id.uuidString)', Configuration shared state is nil.")
@@ -140,7 +140,7 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         guard let configId =
-                configSharedState[Constants.SharedState.Configuration.CONFIG_ID] as? String,
+                configSharedState[EdgeConstants.SharedState.Configuration.CONFIG_ID] as? String,
               !configId.isEmpty else {
             Log.warning(label: LOG_TAG,
                         "getEdgeConfigId - Unable to process the event '\(event.id.uuidString)' " +

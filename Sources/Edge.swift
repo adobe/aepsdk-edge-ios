@@ -23,9 +23,9 @@ public class Edge: NSObject, Extension {
     private var hitQueue: HitQueuing?
 
     // MARK: - Extension
-    public var name = Constants.EXTENSION_NAME
-    public var friendlyName = Constants.FRIENDLY_NAME
-    public static var extensionVersion = Constants.EXTENSION_VERSION
+    public var name = EdgeConstants.EXTENSION_NAME
+    public var friendlyName = EdgeConstants.FRIENDLY_NAME
+    public static var extensionVersion = EdgeConstants.EXTENSION_VERSION
     public var metadata: [String: String]?
     public var runtime: ExtensionRuntime
 
@@ -46,14 +46,14 @@ public class Edge: NSObject, Extension {
 
     public func onUnregistered() {
         hitQueue?.close()
-        print("Extension unregistered from MobileCore: \(Constants.FRIENDLY_NAME)")
+        print("Extension unregistered from MobileCore: \(EdgeConstants.FRIENDLY_NAME)")
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
         if event.type == EventType.edge, event.source == EventSource.requestContent {
-            let configurationSharedState = getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME,
+            let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
-            let identitySharedState = getSharedState(extensionName: Constants.SharedState.Identity.STATE_OWNER_NAME,
+            let identitySharedState = getSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
                                                      event: event)
 
             return configurationSharedState?.status == .set && identitySharedState?.status == .set
@@ -89,7 +89,7 @@ public class Edge: NSObject, Extension {
     /// Handles the configuration response event and the privacy status change
     /// - Parameter event: the configuration response event
     func handleConfigurationResponse(_ event: Event) {
-        if let privacyStatusStr = event.data?[Constants.EventDataKeys.GLOBAL_PRIVACY] as? String {
+        if let privacyStatusStr = event.data?[EdgeConstants.EventDataKeys.GLOBAL_PRIVACY] as? String {
             let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? DEFAULT_PRIVACY_STATUS
             hitQueue?.handlePrivacyChange(status: privacyStatus)
             if privacyStatus == .optedOut {
@@ -104,12 +104,13 @@ public class Edge: NSObject, Extension {
     /// - Parameter event: the event to validate
     /// - Returns: true when Configuration shared state is nil or the new privacy status is opted out
     private func shouldIgnore(event: Event) -> Bool {
-        guard let configSharedState = getSharedState(extensionName: Constants.SharedState.Configuration.STATE_OWNER_NAME, event: event)?.value else {
+        guard let configSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
+                                                     event: event)?.value else {
             Log.debug(label: LOG_TAG, "Configuration is unavailable - unable to process event '\(event.id)'.")
             return true
         }
 
-        let privacyStatusStr = configSharedState[Constants.EventDataKeys.GLOBAL_PRIVACY] as? String ?? ""
+        let privacyStatusStr = configSharedState[EdgeConstants.EventDataKeys.GLOBAL_PRIVACY] as? String ?? ""
         let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? DEFAULT_PRIVACY_STATUS
         return privacyStatus == .optedOut
     }

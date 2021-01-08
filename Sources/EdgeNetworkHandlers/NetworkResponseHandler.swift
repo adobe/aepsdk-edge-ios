@@ -249,12 +249,12 @@ class NetworkResponseHandler {
     ///   If `eventSource` is nil either Constants.EventSource.ERROR_RESPONSE_CONTENT or Constants.EventSource.RESPONSE_CONTENT will be used for the event source depending on `isErrorResponseEvent`
     private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool, eventSource: String?) {
         guard !eventData.isEmpty else { return }
-        var source = isErrorResponseEvent ? Constants.EventSource.ERROR_RESPONSE_CONTENT : EventSource.responseContent
+        var source = isErrorResponseEvent ? EdgeConstants.EventSource.ERROR_RESPONSE_CONTENT : EventSource.responseContent
         if let eventSource = eventSource, !eventSource.isEmpty {
             source = eventSource
         }
 
-        let responseEvent = Event(name: isErrorResponseEvent ? Constants.EventName.ERROR_RESPONSE_CONTENT : Constants.EventName.RESPONSE_CONTENT,
+        let responseEvent = Event(name: isErrorResponseEvent ? EdgeConstants.EventName.ERROR_RESPONSE_CONTENT : EdgeConstants.EventName.RESPONSE_CONTENT,
                                   type: EventType.edge,
                                   source: source,
                                   data: eventData)
@@ -269,15 +269,15 @@ class NetworkResponseHandler {
     ///   - requestEventId: the request event id associated with this data
     private func addEventAndRequestIdToDictionary(_ dictionary: [String: Any], requestId: String, requestEventId: String?) -> [String: Any] {
         var eventData: [String: Any] = dictionary
-        eventData[Constants.EventDataKeys.EDGE_REQUEST_ID] = requestId
-        eventData[Constants.EventDataKeys.REQUEST_EVENT_ID] = requestEventId
+        eventData[EdgeConstants.EventDataKeys.EDGE_REQUEST_ID] = requestId
+        eventData[EdgeConstants.EventDataKeys.REQUEST_EVENT_ID] = requestEventId
         return eventData
     }
 
     /// If handle is of type "state:store" persist it to Data Store
     /// - Parameter handle: current `EventHandle` to store
     private func handleStoreEventHandle(handle: EdgeEventHandle) {
-        guard let type = handle.type, Constants.JsonKeys.Response.EVENT_HANDLE_TYPE_STORE == type.lowercased() else { return }
+        guard let type = handle.type, EdgeConstants.JsonKeys.Response.EVENT_HANDLE_TYPE_STORE == type.lowercased() else { return }
         guard let payload: [[String: AnyCodable]] = handle.payload else { return }
 
         var storeResponsePayloads: [StoreResponsePayload] = []
@@ -290,7 +290,7 @@ class NetworkResponseHandler {
             }
         }
 
-        let storeResponsePayloadManager = StoreResponsePayloadManager(Constants.DataStoreKeys.STORE_NAME)
+        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
         storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
         if !storeResponsePayloads.isEmpty {
             Log.debug(label: LOG_TAG, "Processed \(storeResponsePayloads.count) store response payload(s)")
