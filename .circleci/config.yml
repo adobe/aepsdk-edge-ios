@@ -22,6 +22,22 @@ jobs:
       # restore pods related caches
       - restore_cache:
           keys:
+            - 1-gems-{{ checksum "Gemfile.lock" }}
+
+      # make sure we're on the right version of cocoapods
+      - run:
+          name: Verify Cocoapods Version
+          command: bundle check || bundle install --path vendor/bundle
+
+      # save cocoapods version gem data
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+      # restore pods related caches
+      - restore_cache:
+          keys:
             - cocoapods-cache-v4-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
             - cocoapods-cache-v4-{{ arch }}-{{ .Branch }}
             - cocoapods-cache-v4
