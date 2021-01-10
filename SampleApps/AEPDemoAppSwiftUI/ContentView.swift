@@ -38,7 +38,11 @@ struct ContentView: View {
             Button(action: {
                 let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                                       data: ["data": ["test": "data"]])
-                Edge.sendEvent(experienceEvent: experienceEvent, responseHandler: DemoResponseHandler())
+                Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
+                    for handle in handles {
+                        Log.debug(label: "AEPDemoApp", "Received handle with type \(handle.type ?? "unknown"), payload: \(handle.payload ?? [])")
+                    }
+                })
             }) {
                 Text("Ping to ExEdge")
             }
