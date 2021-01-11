@@ -412,7 +412,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
 
-    func testDoRequest_whenRequestNotProcessed_noRetry_CallsOnComplete() {
+    func testDoRequest_whenRequestNotProcessed_shouldRetry_CallsOnComplete() {
         // setup
         let stringResponseBody = "Service Unavailable"
         let expectation = XCTestExpectation(description: "Network callback is invoked")
