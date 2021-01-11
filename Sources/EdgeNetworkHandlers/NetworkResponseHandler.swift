@@ -252,13 +252,13 @@ class NetworkResponseHandler {
     ///   If `eventSource` is nil either Constants.EventSource.ERROR_RESPONSE_CONTENT or Constants.EventSource.RESPONSE_CONTENT will be used for the event source depending on `isErrorResponseEvent`
     private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool, eventSource: String?) {
         guard !eventData.isEmpty else { return }
-        var source = isErrorResponseEvent ? EdgeConstants.EventSource.ERROR_RESPONSE_CONTENT : EdgeConstants.EventSource.RESPONSE_CONTENT
+        var source = isErrorResponseEvent ? EdgeConstants.EventSource.ERROR_RESPONSE_CONTENT : EventSource.responseContent
         if let eventSource = eventSource, !eventSource.isEmpty {
             source = eventSource
         }
 
         let responseEvent = Event(name: isErrorResponseEvent ? EdgeConstants.EventName.ERROR_RESPONSE_CONTENT : EdgeConstants.EventName.RESPONSE_CONTENT,
-                                  type: EdgeConstants.EventType.EDGE,
+                                  type: EventType.edge,
                                   source: source,
                                   data: eventData)
 
