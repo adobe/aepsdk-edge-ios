@@ -105,9 +105,4 @@ enum EdgeConstants {
         static let HEADER_VALUE_APPLICATION_JSON = "application/json"
         static let RETRY_INTERVAL: TimeInterval = 5
     }
-
-    enum Error {
-        static let ENCODING_ERROR_DOMAIN = "EncodingError"
-        static let ENCODING_ERROR_CODE = 1
-    }
 }

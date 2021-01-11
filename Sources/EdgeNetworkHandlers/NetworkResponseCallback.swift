@@ -37,13 +37,13 @@ class NetworkResponseCallback: ResponseCallback {
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
     }
 
-    /// Removes waiting events for current `requestId` and unregisters their corresponding callbacks
+    /// Removes waiting events for current `requestId` and unregisters their corresponding completion handlers
     func onComplete() {
         guard let removedWaitingEvents: [String] = self.networkResponseHandler.removeWaitingEvents(requestId: requestId) else { return }
 
-        // unregister currently known response callbacks
+        // unregister currently known completion handlers
         for eventId in removedWaitingEvents {
-            ResponseCallbackHandler.shared.unregisterResponseHandler(requestEventId: eventId)
+            CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: eventId)
         }
     }
 }
