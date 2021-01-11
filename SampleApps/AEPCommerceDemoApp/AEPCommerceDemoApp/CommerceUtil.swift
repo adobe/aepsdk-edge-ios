@@ -104,7 +104,8 @@ class CommerceUtil {
         if let unwrappedProductItem = productItem {
             createAndSendEvent(itemsList: [unwrappedProductItem], eventType: eventTypeCommerceProductViews)
         } else {
-            Log.debug(label: logTag, "sendProductViewXdmEvent - Cannot create '" + eventTypeCommerceProductViews + "' event as given product item is null.")
+            Log.debug(label: logTag, "sendProductViewXdmEvent - Cannot create '" + eventTypeCommerceProductViews +
+                        "' event as given product item is null.")
         }
     }
 
@@ -201,8 +202,7 @@ class CommerceUtil {
             xdmData.productListItems = itemsList
 
             let event = ExperienceEvent(xdm: xdmData)
-            let responseHandler = ResponseHandler()
-            Edge.sendEvent(experienceEvent: event, responseHandler: responseHandler)
+            Edge.sendEvent(experienceEvent: event)
         } else {
             Log.debug(label: logTag, "sendPurchaseXdmEvent - Cannot create '" + eventTypeCommercePurchases + "' as no items were found in cart.")
         }
@@ -251,8 +251,11 @@ class CommerceUtil {
         xdmData.commerce = commerce
         xdmData.productListItems = itemsList
         let event = ExperienceEvent(xdm: xdmData)
-        let responseHandler = ResponseHandler()
-        Edge.sendEvent(experienceEvent: event, responseHandler: responseHandler)
+        Edge.sendEvent(experienceEvent: event, { (handles: [EdgeEventHandle]) in
+            for handle in handles {
+                Log.debug(label: logTag, "Received handle with type \(handle.type ?? "unknown")")
+            }
+        })
     }
 
     /// Helper method to convert an com.adobe.marketing.mobile.platform.app.ProductContent.ProductItem  to an

@@ -117,10 +117,10 @@ class EdgeHitProcessor: HitProcessing {
         guard let url = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
                                                 configId: edgeHit.configId,
                                                 requestId: edgeHit.requestId) else {
-                                                        Log.debug(label: LOG_TAG,
-                                                                  "handleExperienceEventRequest - Failed to build the URL, dropping current request with request id '\(edgeHit.requestId)'.")
-                                                        completion(true)
-                                                        return
+            Log.debug(label: LOG_TAG,
+                      "handleExperienceEventRequest - Failed to build the URL, dropping current request with request id '\(edgeHit.requestId)'.")
+            completion(true)
+            return
         }
 
         let callback = NetworkResponseCallback(requestId: edgeHit.requestId, responseHandler: networkResponseHandler)

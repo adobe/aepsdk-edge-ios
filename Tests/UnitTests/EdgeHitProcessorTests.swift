@@ -233,9 +233,9 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_whenRecoverableNetworkError_sendsNetworkRequest_returnsFalse_setsRetryInterval() {
         // setup
         let recoverableNetworkErrorCodes = [HttpResponseCodes.clientTimeout.rawValue,
-                                                           HttpResponseCodes.tooManyRequests.rawValue,
-                                                           HttpResponseCodes.serviceUnavailable.rawValue,
-                                                           HttpResponseCodes.gatewayTimeout.rawValue]
+                                            HttpResponseCodes.tooManyRequests.rawValue,
+                                            HttpResponseCodes.serviceUnavailable.rawValue,
+                                            HttpResponseCodes.gatewayTimeout.rawValue]
 
         let expectation = XCTestExpectation(description: "Callback should be invoked with false signaling this hit should be retried")
         expectation.expectedFulfillmentCount = recoverableNetworkErrorCodes.count

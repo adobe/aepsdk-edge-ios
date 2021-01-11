@@ -49,7 +49,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         let name = productData[indexPath.row].name
         let currency = productData[indexPath.row].currency
         let price = String(productData[indexPath.row].price)
-        let textContent = String(format: "%@ %@ %@", name.padding(toLength: 8, withPad: " ", startingAt: 0), currency, price.frontPadding(toLength: 10, withPad: " ", startingAt: 0)  )
+        let textContent = String(format: "%@ %@ %@",
+                                 name.padding(toLength: 8, withPad: " ", startingAt: 0),
+                                 currency,
+                                 price.frontPadding(toLength: 10, withPad: " ", startingAt: 0))
         let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
         cell.backgroundView?.backgroundColor = .black
         cell.imageView?.image = UIImage(named: "\((productData[indexPath.row].imageSmall))")
