@@ -45,7 +45,7 @@ jobs:
       # install CocoaPods - using default CocoaPods version, not the bundle
       - run:
           name: Repo Update & Install CocoaPods
-          command: make pod-install
+          command: make ci-pod-install
 
       # save pods related files
       - save_cache:

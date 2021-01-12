@@ -9,23 +9,27 @@ SIMULATOR_ARCHIVE_PATH = ./build/ios_simulator.xcarchive/Products/Library/Framew
 IOS_ARCHIVE_PATH = ./build/ios.xcarchive/Products/Library/Frameworks/
 
 setup:
-	(bundle exec pod install)
-	(cd SampleApps/$(APP_NAME) && bundle exec pod install)
+	(pod install)
+	(cd SampleApps/$(APP_NAME) && pod install)
 
 setup-tools: install-swiftlint install-githook
 
 pod-repo-update:
-	(bundle exec pod repo update)
-	(cd SampleApps/$(APP_NAME) && bundle exec pod repo update)
+	(pod repo update)
+	(cd SampleApps/$(APP_NAME) && pod repo update)
 
 # pod repo update may fail if there is no repo (issue fixed in v1.8.4). Use pod install --repo-update instead
 pod-install:
+	(pod install --repo-update)
+	(cd SampleApps/$(APP_NAME) && pod install --repo-update)
+
+ci-pod-install:
 	(bundle exec pod install --repo-update)
 	(cd SampleApps/$(APP_NAME) && bundle exec pod install --repo-update)
 
 pod-update: pod-repo-update
-	(bundle exec pod update)
-	(cd SampleApps/$(APP_NAME) && bundle exec pod update)
+	(pod update)
+	(cd SampleApps/$(APP_NAME) && pod update)
 
 open:
 	open $(PROJECT_NAME).xcworkspace
