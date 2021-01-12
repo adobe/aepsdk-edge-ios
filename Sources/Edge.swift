@@ -23,11 +23,11 @@ public class Edge: NSObject, Extension {
     private var hitQueue: HitQueuing?
 
     // MARK: - Extension
-    public var name = EdgeConstants.EXTENSION_NAME
-    public var friendlyName = EdgeConstants.FRIENDLY_NAME
-    public static var extensionVersion = EdgeConstants.EXTENSION_VERSION
-    public var metadata: [String: String]?
-    public var runtime: ExtensionRuntime
+    public let name = EdgeConstants.EXTENSION_NAME
+    public let friendlyName = EdgeConstants.FRIENDLY_NAME
+    public static let extensionVersion = EdgeConstants.EXTENSION_VERSION
+    public let metadata: [String: String]? = nil
+    public let runtime: ExtensionRuntime
 
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
