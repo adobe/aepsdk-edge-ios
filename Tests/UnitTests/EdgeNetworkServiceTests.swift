@@ -40,7 +40,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
-            XCTAssertEqual(0.0, retryInterval)
+            XCTAssertNil(retryInterval)
             XCTAssertTrue(self.mockNetworking.connectAsyncCalled)
             XCTAssertEqual(defaultServiceHeaders.count + self.defaultNetworkingHeaders.count,
                            self.mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
@@ -70,7 +70,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  completion: { success, retryInterval  in
                                     // verify
                                     XCTAssertTrue(success)
-                                    XCTAssertEqual(0.0, retryInterval)
+                                    XCTAssertNil(retryInterval)
                                     XCTAssertTrue(self.mockNetworking.connectAsyncCalled)
                                     XCTAssertEqual(testHeaders.count + self.defaultNetworkingHeaders.count, self.mockNetworking.connectAsyncCalledWithNetworkRequest?.httpHeaders.count)
                                     for header in testHeaders {
@@ -103,7 +103,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  completion: { success, retryInterval in
                                     // verify
                                     XCTAssertTrue(success)
-                                    XCTAssertEqual(0.0, retryInterval)
+                                    XCTAssertNil(retryInterval)
                                     XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
                                     XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
                                     XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
@@ -127,7 +127,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
-            XCTAssertEqual(0.0, retryInterval)
+            XCTAssertNil(retryInterval)
             XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
             XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
             XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
@@ -151,7 +151,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
-            XCTAssertEqual(0.0, retryInterval)
+            XCTAssertNil(retryInterval)
             XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
             XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
             XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
@@ -197,7 +197,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
-            XCTAssertEqual(0.0, retryInterval)
+            XCTAssertNil(retryInterval)
             XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
             XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
             XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
@@ -221,7 +221,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
-            XCTAssertEqual(0.0, retryInterval)
+            XCTAssertNil(retryInterval)
             XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
             XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
             XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
@@ -247,7 +247,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
-            XCTAssertEqual(0.0, retryInterval)
+            XCTAssertNil(retryInterval)
             XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
             XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
             XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
@@ -285,7 +285,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
-            XCTAssertEqual(0.0, retryInterval)
+            XCTAssertNil(retryInterval)
             XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
             XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
             XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
@@ -310,7 +310,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
-            XCTAssertEqual(0.0, retryInterval)
+            XCTAssertNil(retryInterval)
             XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
             XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
             XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
