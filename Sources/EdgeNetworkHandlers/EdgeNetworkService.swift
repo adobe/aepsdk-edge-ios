@@ -76,14 +76,14 @@ class EdgeNetworkService {
                    requestBody: EdgeRequest,
                    requestHeaders: [String: String]? = [:],
                    responseCallback: ResponseCallback,
-                   completion: @escaping (Bool, TimeInterval) -> Void) {
+                   completion: @escaping (Bool, TimeInterval?) -> Void) {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
 
         guard let data = try? encoder.encode(requestBody) else {
             Log.warning(label: LOG_TAG, "doRequest - Failed to encode request to JSON, dropping this request")
             responseCallback.onComplete()
-            completion(true, 0.0)
+            completion(true, nil)
             return
         }
 
@@ -103,7 +103,7 @@ class EdgeNetworkService {
                 // handle generic error
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
-                completion(true, 0.0) // don't retry
+                completion(true, nil) // don't retry
                 return
             }
 
@@ -114,12 +114,12 @@ class EdgeNetworkService {
                                        streaming: requestBody.meta?.konductorConfig?.streaming,
                                        responseCallback: responseCallback)
                     responseCallback.onComplete()
-                    completion(true, 0.0) // successful request, return true
+                    completion(true, nil) // successful request, return true
                 } else if responseCode == HttpResponseCodes.noContent.rawValue {
                     // Successful collect requests do not return content
                     Log.debug(label: self.LOG_TAG, "doRequest - Collect connection to Experience Edge was successful.")
                     responseCallback.onComplete()
-                    completion(true, 0.0) // successful request, return true
+                    completion(true, nil) // successful request, return true
                 } else if self.recoverableNetworkErrorCodes.contains(responseCode) {
                     Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned recoverable error code \(responseCode)")
                     let retryHeader = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER)
@@ -136,18 +136,18 @@ class EdgeNetworkService {
                                        streaming: requestBody.meta?.konductorConfig?.streaming,
                                        responseCallback: responseCallback)
                     responseCallback.onComplete()
-                    completion(true, 0.0) // non-fatal error, don't retry
+                    completion(true, nil) // non-fatal error, don't retry
                 } else {
                     Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unrecoverable error code \(responseCode)")
                     self.handleError(connection: connection, responseCallback: responseCallback)
                     responseCallback.onComplete()
-                    completion(true, 0.0) // failed, but unrecoverable, don't retry
+                    completion(true, nil) // failed, but unrecoverable, don't retry
                 }
             } else {
                 Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unknown error")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
-                completion(true, 0.0) // failed, but unrecoverable, don't retry
+                completion(true, nil) // failed, but unrecoverable, don't retry
             }
         }
     }

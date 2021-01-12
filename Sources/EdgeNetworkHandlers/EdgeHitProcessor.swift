@@ -128,8 +128,8 @@ class EdgeHitProcessor: HitProcessing {
                                  requestBody: edgeHit.request,
                                  requestHeaders: headers,
                                  responseCallback: callback) { [weak self] success, retryInterval in
-            // remove any retry interval if success or has default interval value, add retry interval if failed
-            self?.entityRetryIntervalMapping[entityId] = success || retryInterval == EdgeConstants.Defaults.RETRY_INTERVAL ? nil : retryInterval
+            // remove any retry interval if success, otherwise add to retry mapping
+            self?.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval
             completion(success)
         }
     }
