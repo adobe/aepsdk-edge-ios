@@ -2,7 +2,7 @@
 
 This document details the APIs provided by the AEP Edge extension, along with sample code snippets on how to properly use the APIs depending on if you are a mobile application developer or an AEP mobile extension developer.
 
-## API usage for application developers
+## Edge extension usage for application developers
 
 **Create Experience Event from Dictionary:**
 
@@ -192,7 +192,7 @@ Edge.sendEvent(event, new EdgeCallback() {
 
 
 
-## API usage for extension developers
+## Edge extension usage for extension developers
 
 **Create Experience Event:**
 
@@ -307,7 +307,9 @@ class SampleExtension extends Extension {
 
 It is always recommended that you register listeners with reduced scope, for a particular Edge event handle type, as in the example above. If you would like to receive all the Experience Edge event handles, you can use `EventSource.wildcard` (iOS) / `com.adobe.eventSource._wildcard_` (Android) as Event source.
 
+## Sample events handled by the Edge extension
 
+##### Handled events
 
 ###### Sample Experience Event
 
@@ -320,9 +322,9 @@ It is always recommended that you register listeners with reduced scope, for a p
 | Timestamp         | The timestamp when the event was created, used as XDM timestamp when sending data to Experience Edge |
 | Event data        | Dictionary/Map containing XDM formatted data and free form data. Optional dataset identifier.<br/>{<br/>  "xdm": {<br/>    "eventType": "commerce.productViews",<br/>    "commerce": {<br/>      "productViews": {<br/>        "value": 1<br/>      }<br/>    },<br/>    "productListItems": [<br/>      {<br/>        "name": "Red",<br/>        "quantity": 0,<br/>        "SKU": "625–740",<br/>        "priceTotal": 0<br/>      }<br/>    ]<br/>  },<br/>  "datasetId": "1234567"<br/>} |
 
+##### Dispatched events
 
-
-###### Sample Experience Edge response:
+###### Sample Experience Edge response
 
 | Event info        | Value                                                        |
 | ----------------- | ------------------------------------------------------------ |
@@ -347,3 +349,9 @@ It is always recommended that you register listeners with reduced scope, for a p
 | Unique identifier | Event UUID generated when the event is created               |
 | Timestamp         | The timestamp when the event was created, after the response error/warning is received from the Experience Edge service |
 | Event data        | Dictionary/Map containing error details, usually a type, status and title. Other optional error details include detail, report errors and report cause:<br/>- **type**: the error type <br/>- **status**: error status <br/>- **title**: the error type for which the request has failed<br/>- **eventIndex**: if one was provided by the upstream service or 0 by default<br/>- **requestId**: the UUID of the ExEdge batch request (may be associated with multiple request events)<br/>- **eventRequestId**: the UUID of the request event for which this error event was received.<br/>**example 1**:<br/>{<br/>  "requestId": "12345UUID",<br/>  "eventRequestId": "AEPRequestEventUUIDvalue",<br/>  "type": "https://ns.adobe.com/aep/errors/EXEG-0201-503",<br/>  "status": 503,<br/>  "title": "The 'com.adobe.experience.platform.example' service is temporarily unable to serve this request. Please try again later."<br/>}<br/>**example 2:**{<br/>  "requestId": "12345UUID",<br/>  "eventRequestId": "AEPRequestEventUUIDvalue",<br/>  "type" : "https://ns.adobe.com/aep/errors/EXEG-0104-422",<br/>  "status": 422,<br/>  "title" : "Unprocessable Entity",<br/>  "detail": "Invalid request (report attached). Please check your input and try again.",<br/>  "report": {<br/>    "errors": [<br/>      "error message 1",<br/>      "error message 2",<br/>      "error message 3"<br/>    ]<br/>  }<br/>} |
+
+**Shared state and extension name**
+
+com.adobe.edge
+
+No data is shared as Shared state by the Edge extension in current version. 
