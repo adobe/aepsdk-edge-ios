@@ -17,7 +17,7 @@ import Foundation
 struct EdgeResponse: Codable {
 
     /// The request identifier associated with this response
-    let requestId: String?
+    let requestId: String
 
     /// List of event handles received from the Experience Edge  Network
     let handle: [EdgeEventHandle]?
