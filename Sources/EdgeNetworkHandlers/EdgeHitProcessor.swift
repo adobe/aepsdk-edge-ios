@@ -22,6 +22,7 @@ class EdgeHitProcessor: HitProcessing {
     private var getSharedState: (String, Event?) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
+    var batchLimit: Int = 0
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
