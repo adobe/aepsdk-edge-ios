@@ -379,11 +379,13 @@ _Event data example for Experience event:_
     "productListItems": [
       {
         "name": "Red",
-        "quantity": 0,
-        "SKU": "625–740",
-        "priceTotal": 0
+        "SKU": "625–740"
       }
     ]
+  },
+  "data": {
+    "free": "form",
+    "data": "example"
   },
   "datasetId": "1234567"
 }
