@@ -77,7 +77,6 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("1234", flattenRequestBody["xdm.identityMap.ECID[0].id"] as? String)
     }
 
-    // TODO AMSDK-10674 - investigate intermittent failures in test case
     func testSendEvent_withNoECIDInIdentityState_requestSentWithoutECID() {
         FakeIdentityExtension.setSharedState(state: ["blob": "testing"]) // set state without ECID
 
