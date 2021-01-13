@@ -363,7 +363,33 @@ It is always recommended that you register listeners with reduced scope, for a p
 | Event source      | com.adobe.eventsource.requestcontent                         |
 | Unique Identifier | Event UUID generated when the event is created, used as _id when sending the event to Experience Edge |
 | Timestamp         | The timestamp when the event was created, used as XDM timestamp when sending data to Experience Edge |
-| Event data        | Dictionary/Map containing XDM formatted data and free form data. Optional dataset identifier.<br/>{<br/>  "xdm": {<br/>    "eventType": "commerce.productViews",<br/>    "commerce": {<br/>      "productViews": {<br/>        "value": 1<br/>      }<br/>    },<br/>    "productListItems": [<br/>      {<br/>        "name": "Red",<br/>        "quantity": 0,<br/>        "SKU": "625–740",<br/>        "priceTotal": 0<br/>      }<br/>    ]<br/>  },<br/>  "datasetId": "1234567"<br/>} |
+| Event data        | Dictionary/Map containing XDM formatted data and free form data. Optional dataset identifier. |
+
+_Event data example for Experience event:_
+
+```json
+{
+  "xdm": {
+    "eventType": "commerce.productViews",
+    "commerce": {
+      "productViews": {
+        "value": 1
+      }
+    },
+    "productListItems": [
+      {
+        "name": "Red",
+        "quantity": 0,
+        "SKU": "625–740",
+        "priceTotal": 0
+      }
+    ]
+  },
+  "datasetId": "1234567"
+}
+```
+
+
 
 ##### Dispatched events
 
@@ -376,9 +402,38 @@ It is always recommended that you register listeners with reduced scope, for a p
 | Event source      | personalization:decisions                                    |
 | Unique identifier | Event UUID generated when the event is created               |
 | Timestamp         | The timestamp when the event was created, after the response is received from the Experience Edge service |
-| Event data        | Dictionary/Map containing:<br/>- **payload**: the event handle payloads list<br/>- **type**: the type of the payload, set by Konductor/Solutions. E.g. values: "state:store", "identity:exchange", "personalization:decisions"<br/>- **eventIndex**: if one was provided by the upstream service or 0 by default<br/>- **requestId**: the UUID of the ExEdge batch request (may be associated with multiple request events)<br/>- **eventRequestId** : the UUID of the request event for which this response event was received.<br/>{<br/>    "payload":[<br/>       {<br/>          "id":"4bc1df4b-dd63-4695-9d0b-27f06e03b631",<br/>          "scope":"scopeExample",<br/>          "items":[<br/>             {<br/>                "id":"xcore:fallback-offer:123",<br/>                "schema":"https://ns.adobe.com/experience/offer-management/content-component-text",<br/>                "data":{<br/>                   "id":"xcore:fallback-offer:123",<br/>                   "format":"text/plain",<br/>                   "language":[<br/>                      "en-us"<br/>                   ],<br/>                   "content":"sampleContent"<br/>                }<br/>             }<br/>          ]<br/>       }<br/>    ],<br/>    "type":"personalization:decisions",<br/>    "eventIndex":0,<br/>    "requestId": "12345UUID",<br/>     "eventRequestId": "AEPRequestEventUUIDvalue",<br/> } |
+| Event data        | Dictionary/Map containing:<br/>- **payload**: the event handle payloads list<br/>- **type**: the type of the payload, set by Konductor/Solutions. E.g. values: "state:store", "identity:exchange", "personalization:decisions"<br/>- **eventIndex**: if one was provided by the upstream service or 0 by default<br/>- **requestId**: the UUID of the ExEdge batch request (may be associated with multiple request events)<br/>- **eventRequestId** : the UUID of the request event for which this response event was received. |
 
+_Event data example for Experience Edge Response event:_
 
+```json
+{
+  "payload": [
+    {
+      "id": "4bc1df4b-dd63-4695-9d0b-27f06e03b631",
+      "scope": "scopeExample",
+      "items": [
+        {
+          "id": "xcore:fallback-offer:123",
+          "schema": "https://ns.adobe.com/experience/offer-management/content-component-text",
+          "data": {
+            "id": "xcore:fallback-offer:123",
+            "format": "text/plain",
+            "language": [
+              "en-us"
+            ],
+            "content": "sampleContent"
+          }
+        }
+      ]
+    }
+  ],
+  "type": "personalization:decisions",
+  "eventIndex": 0,
+  "requestId": "12345UUID",
+  "eventRequestId": "AEPRequestEventUUIDvalue"
+}
+```
 
 ###### Sample Experience Edge error
 
@@ -391,7 +446,39 @@ It is always recommended that you register listeners with reduced scope, for a p
 | Event source      | com.adobe.eventsource.errorresponsecontent                   |
 | Unique identifier | Event UUID generated when the event is created               |
 | Timestamp         | The timestamp when the event was created, after the response error/warning is received from the Experience Edge service |
-| Event data        | Dictionary/Map containing error details, usually a type, status and title. Other optional error details include detail, report errors and report cause:<br/>- **type**: the error type <br/>- **status**: error status <br/>- **title**: the error type for which the request has failed<br/>- **eventIndex**: if one was provided by the upstream service or 0 by default<br/>- **requestId**: the UUID of the ExEdge batch request (may be associated with multiple request events)<br/>- **eventRequestId**: the UUID of the request event for which this error event was received.<br/>**example 1**:<br/>{<br/>  "requestId": "12345UUID",<br/>  "eventRequestId": "AEPRequestEventUUIDvalue",<br/>  "type": "https://ns.adobe.com/aep/errors/EXEG-0201-503",<br/>  "status": 503,<br/>  "title": "The 'com.adobe.experience.platform.example' service is temporarily unable to serve this request. Please try again later."<br/>}<br/>**example 2:**{<br/>  "requestId": "12345UUID",<br/>  "eventRequestId": "AEPRequestEventUUIDvalue",<br/>  "type" : "https://ns.adobe.com/aep/errors/EXEG-0104-422",<br/>  "status": 422,<br/>  "title" : "Unprocessable Entity",<br/>  "detail": "Invalid request (report attached). Please check your input and try again.",<br/>  "report": {<br/>    "errors": [<br/>      "error message 1",<br/>      "error message 2",<br/>      "error message 3"<br/>    ]<br/>  }<br/>} |
+| Event data        | Dictionary/Map containing error details, usually a type, status and title. Other optional error details include detail, report errors and report cause:<br/>- **type**: the error type <br/>- **status**: error status <br/>- **title**: the error type for which the request has failed<br/>- **eventIndex**: if one was provided by the upstream service or 0 by default<br/>- **requestId**: the UUID of the ExEdge batch request (may be associated with multiple request events)<br/>- **eventRequestId**: the UUID of the request event for which this error event was received. |
+
+_Event data example for Experience Edge Error event:_
+
+```json
+// example 1
+{
+  "requestId": "12345UUID",
+  "eventRequestId": "AEPRequestEventUUIDvalue",
+  "type": "https://ns.adobe.com/aep/errors/EXEG-0201-503",
+  "status": 503,
+  "title": "The 'com.adobe.experience.platform.example' service is temporarily unable to serve this request. Please try again later."
+}
+
+// example 2
+{
+  "requestId": "12345UUID",
+  "eventRequestId": "AEPRequestEventUUIDvalue",
+  "type": "https://ns.adobe.com/aep/errors/EXEG-0104-422",
+  "status": 422,
+  "title": "Unprocessable Entity",
+  "detail": "Invalid request (report attached). Please check your input and try again.",
+  "report": {
+    "errors": [
+      "error message 1",
+      "error message 2",
+      "error message 3"
+    ]
+  }
+}
+```
+
+
 
 **Shared state and extension name**
 
