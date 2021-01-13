@@ -4,6 +4,49 @@ This document details the APIs provided by the AEP Edge extension, along with sa
 
 ## Edge extension usage for application developers
 
+**Register the Edge extension with the AEP Mobile Core.**
+
+###### Swift
+
+In the AppDelegate application:didFinishLaunchingWithOptions, register the Edge extension along with the other AEP SDK extensions.
+
+```swift
+MobileCore.registerExtensions([..., Edge.self])
+```
+
+###### Android
+
+In the Application class in the onCreate() method, register the Edge extension along with the other AEP SDK extensions before calling MobileCore.start(...)
+
+```java
+Edge.registerExtension();
+...
+MobileCore.start(new AdobeCallback() {
+			@Override
+			public void call(final Object o) {
+					
+      }
+}
+```
+
+
+
+**Read the Edge extension version**
+
+###### Swift
+
+```swift
+print("Edge extension version: \(Edge.extensionVersion)")
+```
+
+###### Android
+
+```java
+Log.d(LOG_TAG, String.format("Edge extension version: ", Edge.extensionVersion()));
+```
+
+
+
 **Create Experience Event from Dictionary:**
 
 ###### Swift
@@ -267,7 +310,7 @@ MobileCore.dispatchEvent(experienceEvent, null);
 
 **Wait for responses from Adobe Experience Edge:**
 
-In order to process an Experience Edge event handle which is received as a response for an Experience Edge event, register a listener for the Edge event handle type you are interested in. Here are a few examples of Edge event handle type are: `personalization:decisions`, `identity:exchange` etc.
+In order to process an Experience Edge event handle which is received as a response for an Experience Edge event, register a listener for the Edge event handle type you are interested in. Here are a few examples of Edge event handle type: `personalization:decisions`, `identity:exchange` etc.
 
 ###### Swift
 
