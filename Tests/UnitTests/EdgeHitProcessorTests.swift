@@ -230,7 +230,7 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     /// Tests that when the network request fails but has a recoverable error that we will retry the hit and do not invoke the response handler for that hit
-    func testProcessHit_whenRecoverableNetworkError_sendsNetworkRequest_returnsFalse() {
+    func testProcessHit_whenRecoverableNetworkError_sendsNetworkRequest_returnsFalse_setsRetryInterval() {
         // setup
         let recoverableNetworkErrorCodes = [HttpResponseCodes.clientTimeout.rawValue,
                                             HttpResponseCodes.tooManyRequests.rawValue,
@@ -241,18 +241,27 @@ class EdgeHitProcessorTests: XCTestCase {
         expectation.expectedFulfillmentCount = recoverableNetworkErrorCodes.count
         let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
 
-        for code in recoverableNetworkErrorCodes {
+        // (headerValue, actualRetryValue)
+        let retryValues = [("60", 60.0), ("InvalidHeader", 5.0), ("", 5.0), ("1", 1.0)]
+
+        for (code, retryValueTuple) in zip(recoverableNetworkErrorCodes, retryValues) {
             let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", eventIndex: 0, report: nil)
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
 
-            mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData, response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: code, httpVersion: nil, headerFields: nil), error: nil)
+            mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData,
+                                                                                  response: HTTPURLResponse(url: URL(string: "adobe.com")!,
+                                                                                  statusCode: code,
+                                                                                  httpVersion: nil,
+                                                                                  headerFields: ["Retry-After": retryValueTuple.0]),
+                                                                                  error: nil)
 
             let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
 
             // test
             hitProcessor.processHit(entity: entity) { success in
                 XCTAssertFalse(success)
+                XCTAssertEqual(self.hitProcessor.retryInterval(for: entity), retryValueTuple.1)
                 expectation.fulfill()
             }
         }

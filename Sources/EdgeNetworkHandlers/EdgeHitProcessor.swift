@@ -21,10 +21,7 @@ class EdgeHitProcessor: HitProcessing {
     private var networkResponseHandler: NetworkResponseHandler
     private var getSharedState: (String, Event?) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
-
-    func retryInterval(for entity: DataEntity) -> TimeInterval {
-        return EdgeConstants.NetworkKeys.RETRY_INTERVAL
-    }
+    private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
@@ -34,6 +31,12 @@ class EdgeHitProcessor: HitProcessing {
         self.networkResponseHandler = networkResponseHandler
         self.getSharedState = getSharedState
         self.readyForEvent = readyForEvent
+    }
+
+    // MARK: HitProcessing
+
+    func retryInterval(for entity: DataEntity) -> TimeInterval {
+        return entityRetryIntervalMapping[entity.uniqueIdentifier] ?? EdgeConstants.Defaults.RETRY_INTERVAL
     }
 
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
@@ -101,15 +104,16 @@ class EdgeHitProcessor: HitProcessing {
         // otherwise the response callback cannot be matched
         networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
                                                 batchedEvents: listOfEvents)
-        sendHit(edgeHit: edgeHit, headers: requestHeaders, completion: completion)
+        sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: requestHeaders, completion: completion)
     }
 
     /// Sends the `edgeHit` to the network service
     /// - Parameters:
+    ///   - entityId: unique id of the `DataEntity`
     ///   - edgeHit: the hit to be sent
     ///   - headers: headers for the request
     ///   - completion: completion handler for the hit processor
-    private func sendHit(edgeHit: EdgeHit, headers: [String: String], completion: @escaping (Bool) -> Void) {
+    private func sendHit(entityId: String, edgeHit: EdgeHit, headers: [String: String], completion: @escaping (Bool) -> Void) {
         guard let url = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
                                                 configId: edgeHit.configId,
                                                 requestId: edgeHit.requestId) else {
@@ -123,8 +127,11 @@ class EdgeHitProcessor: HitProcessing {
         networkService.doRequest(url: url,
                                  requestBody: edgeHit.request,
                                  requestHeaders: headers,
-                                 responseCallback: callback,
-                                 completion: completion)
+                                 responseCallback: callback) { [weak self] success, retryInterval in
+            // remove any retry interval if success, otherwise add to retry mapping
+            self?.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval
+            completion(success)
+        }
     }
 
     /// Extracts the Edge Configuration identifier from the Configuration Shared State
