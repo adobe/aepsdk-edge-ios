@@ -29,7 +29,7 @@ DEPENDENCIES:
   - "AEPCore (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `dev`)"
   - "AEPIdentity (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `dev`)"
   - "AEPLifecycle (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `dev`)"
-  - "AEPRulesEngine (from `git@github.com:adobe/aepsdk-rulesengine-ios.git`, tag `1.0.0-beta.1`)"
+  - "AEPRulesEngine (from `git@github.com:adobe/aepsdk-rulesengine-ios.git`, tag `dev`)"
   - "AEPServices (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `dev`)"
   - "AEPSignal (from `git@github.com:adobe/aepsdk-core-ios.git`, branch `dev`)"
 
@@ -52,7 +52,7 @@ EXTERNAL SOURCES:
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPRulesEngine:
     :git: "git@github.com:adobe/aepsdk-rulesengine-ios.git"
-    :tag: 1.0.0-beta.1
+    :tag: dev
   AEPServices:
     :branch: dev
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
@@ -65,22 +65,22 @@ CHECKOUT OPTIONS:
     :commit: 05daaa8d6b219c20db981d0165312018708d625d
     :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
   AEPCore:
-    :commit: 8af4af177ddf86bf51631d96dbe51f7491d5998b
+    :commit: b38d7573b8239c44b6550199b5bfb26623769376
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPIdentity:
-    :commit: 8af4af177ddf86bf51631d96dbe51f7491d5998b
+    :commit: b38d7573b8239c44b6550199b5bfb26623769376
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPLifecycle:
-    :commit: 8af4af177ddf86bf51631d96dbe51f7491d5998b
+    :commit: b38d7573b8239c44b6550199b5bfb26623769376
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPRulesEngine:
     :git: "git@github.com:adobe/aepsdk-rulesengine-ios.git"
-    :tag: 1.0.0-beta.1
+    :tag: dev
   AEPServices:
-    :commit: 8af4af177ddf86bf51631d96dbe51f7491d5998b
+    :commit: b38d7573b8239c44b6550199b5bfb26623769376
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
   AEPSignal:
-    :commit: 8af4af177ddf86bf51631d96dbe51f7491d5998b
+    :commit: b38d7573b8239c44b6550199b5bfb26623769376
     :git: "git@github.com:adobe/aepsdk-core-ios.git"
 
 SPEC CHECKSUMS:
@@ -89,10 +89,10 @@ SPEC CHECKSUMS:
   AEPCore: 3c5374555adceead3e14503ced175e928969b989
   AEPIdentity: 3354495c0cea32da48bd7d785e6b2462f7ed8c1c
   AEPLifecycle: f1f276b6873efc4b1e5e91e66f4618a71fd738c6
-  AEPRulesEngine: 3860846bc56a1b1e3e69194016e168358b4b8efd
+  AEPRulesEngine: ce93638c34ae4cc7767ef0f2cefdabc27dae1137
   AEPServices: b95e3f8ce2ba8c7e0cac8b3d06301db0dc1471b1
   AEPSignal: 2e8ed059ad17cf03fca1857c515fa26069585feb
 
-PODFILE CHECKSUM: 91648516d0dbaef264e0fc21010f9093a5438eeb
+PODFILE CHECKSUM: 04a4c64017fe6a172eb6b518ab3ae32ab7bb0f06
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1

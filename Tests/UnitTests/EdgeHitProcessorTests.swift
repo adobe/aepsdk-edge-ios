@@ -251,9 +251,9 @@ class EdgeHitProcessorTests: XCTestCase {
 
             mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData,
                                                                                   response: HTTPURLResponse(url: URL(string: "adobe.com")!,
-                                                                                  statusCode: code,
-                                                                                  httpVersion: nil,
-                                                                                  headerFields: ["Retry-After": retryValueTuple.0]),
+                                                                                                            statusCode: code,
+                                                                                                            httpVersion: nil,
+                                                                                                            headerFields: ["Retry-After": retryValueTuple.0]),
                                                                                   error: nil)
 
             let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
