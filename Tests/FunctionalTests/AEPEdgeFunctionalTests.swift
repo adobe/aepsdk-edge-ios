@@ -780,6 +780,50 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         XCTAssertEqual(expectedEdgeEventError, edgeEventError)
     }
+    
+    func testSendEvent_fatalError400() {
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        let response = """
+                            {
+                               "type":"https://ns.adobe.com/aep/errors/EXEG-0003-400",
+                               "status":400,
+                               "title":"The referenced Config 'bad-edge-config:prod' doesn't exist. Update the reference and try again.",
+                               "report":{
+                                  "requestId":"FF9E7DBA-128B-4222-9563-F75131219257"
+                               }
+                            }
+                           """
+        let responseConnection: HttpConnection = HttpConnection(data: response.data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 422,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1) // the send event
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1) // 1 error events
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        assertNetworkRequestsCount()
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                   source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
+        guard let eventDataDict = resultEvents[0].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+
+        let jsonData = try! JSONSerialization.data(withJSONObject: eventDataDict)
+        let expectedEdgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: response.data(using: .utf8)!)
+        let edgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData)
+
+        XCTAssertEqual(expectedEdgeEventError, edgeEventError)
+    }
 
     func getEdgeEventError(message: String, code: String) -> EdgeEventError {
         let data = """
