@@ -90,8 +90,7 @@ class NetworkResponseHandler {
         guard let data = jsonError.data(using: .utf8) else { return }
         Log.debug(label: LOG_TAG, "processResponseOnError - Processing server error response:\n \(jsonError), request id \(requestId)")
 
-        if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) {
-            guard edgeResponse.errors != nil else { return }
+        if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data), edgeResponse.errors != nil {
             // this is an error coming from Konductor, read the error from the errors node
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId)
         } else if let edgeErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) {
