@@ -8,7 +8,7 @@ This document details the APIs provided by the AEP Edge extension, along with sa
 
 ###### Swift
 
-In the AppDelegate application:didFinishLaunchingWithOptions, register the Edge extension along with the other AEP SDK extensions.
+In the AppDelegate application:didFinishLaunchingWithOptions, register the Edge extension along with the other AEP mobile SDK extensions.
 
 ```swift
 MobileCore.registerExtensions([..., Edge.self])
@@ -16,7 +16,7 @@ MobileCore.registerExtensions([..., Edge.self])
 
 ###### Android
 
-In the Application class in the onCreate() method, register the Edge extension along with the other AEP SDK extensions before calling MobileCore.start(...)
+In the Application class in the onCreate() method, register the Edge extension along with the other AEP mobile SDK extensions before calling MobileCore.start(...)
 
 ```java
 Edge.registerExtension();
@@ -24,7 +24,7 @@ Edge.registerExtension();
 MobileCore.start(new AdobeCallback() {
 			@Override
 			public void call(final Object o) {
-					
+					// processing after start
       }
 }
 ```
@@ -48,6 +48,8 @@ Log.d(LOG_TAG, String.format("Edge extension version: ", Edge.extensionVersion()
 
 
 **Create Experience Event from Dictionary:**
+
+**Note:** the xdmData passed in when creating an ExperienceEvent is a required parameter and it should be in XDM format based on the schema that is used in your Edge Configuration in Adobe Experience Launch UI.
 
 ###### Swift
 
@@ -73,7 +75,7 @@ ExperienceEvent experienceEvent = new ExperienceEvent.Builder()
 
 **Create Experience Event from XDM Schema implementations:**
 
-The AEP Edge extension provides an XDM Schema interface / protocol for you to create Classes for XDM Schema representations. In the example below the `XDMSchemaExample` is a representation of an XDM Schema originating from an Experience event, with two fields: `eventType` and `otherField`. It is recommended to use this example for complex XDM Schema implementations when you want to easily track the schema version of your implementation and update it with new fields in the future.
+The AEP Edge extension provides an XDM Schema interface / protocol for you to create Classes for XDM Schema representations. In the example below the `XDMSchemaExample` is a representation of an XDM Schema originating from an Experience event, with two fields: `eventType` and `otherField`. It is recommended to use this example for complex XDM Schema implementations when you want to easily track the schema version of your implementation and update it with new fields in the future, as well as when you store these objects in memory or serialize/desialized them in your own implementation.
 
 ###### Swift
 
@@ -183,6 +185,50 @@ ExperienceEvent experienceEvent = new ExperienceEvent.Builder()
 
 
 
+**Add free form data to the Experience event:**
+
+If you would like to add non-XDM formatted data to the Experience event, follow the examples below. This may be useful for data elements or rules use-cases.
+
+###### Swift
+
+```swift
+let experienceEvent = ExperienceEvent(xdm: xdmData, data: ["free": "form", "data": "example"])
+```
+
+###### Android
+
+```java
+Map<String, Object> data = new HashMap<>();
+data.put("free", "form");
+data.put("data", "example");
+ExperienceEvent experienceEvent = new ExperienceEvent.Builder()
+  .setXdmSchema(xdmData)
+  .setData(data)
+  .build();
+```
+
+
+
+**Set the destination Dataset identifier to the current Experience event:**
+
+If you would like to send an Experience event a specific Dataset in Adobe Experience Platform which is not the default Experience Event dataset configured in your Edge Configuration, follow the examples below:
+
+###### Swift
+
+```swift
+let experienceEvent = ExperienceEvent(xdm: xdmData, datasetIdentifier: "datasetIdExample")
+```
+
+###### Android
+
+```java
+ExperienceEvent experienceEvent = new ExperienceEvent.Builder()
+				.setXdmSchema(xdmData, "datasetIdExample")
+				.build();
+```
+
+
+
 **Send an Experience Event:**
 
 ###### Swift
@@ -197,7 +243,9 @@ Edge.sendEvent(experienceEvent: experienceEvent)
 Edge.sendEvent(experienceEvent, null);
 ```
 
-By default this API sends the `experienceEvent` to Adobe Experience Edge Network to the Adobe Experience Platform Experience dataset configured in your Edge configuration.
+By default this API sends the `experienceEvent` to Adobe Experience Edge Network to the Adobe Experience Platform Experience dataset configured in your Edge Configuration.
+
+
 
 **Wait for responses from Adobe Experience Edge:**
 
@@ -206,7 +254,7 @@ By default this API sends the `experienceEvent` to Adobe Experience Edge Network
 ```swift
 Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
 	for handle in handles {
-  	// process the handle (see handle.type and handle.payload)
+  	// filter the handle you are interested in and process the handle (see handle.type and handle.payload)
     if handle.type == "personalization:decisions" && handle.payload != nil {
       // process handle.payload of type [[String: Any]]?
     }
@@ -225,7 +273,8 @@ Edge.sendEvent(event, new EdgeCallback() {
     }
 
     for (EdgeEventHandle handle : handles) {
-      // process the handle (see handle.getType() and handle.getPayload())
+      // filter the handle you are interested in and process the handle 
+      // (see handle.getType() and handle.getPayload())
       if ("personalization:decisions".equals(handle.getType()) && handle.getPayload() != null) {
 				// process the payload of type List<Map<String, Object>>
       }
@@ -272,12 +321,16 @@ Event experienceEvent = new Event.Builder("Sample Experience Event", "com.adobe.
 				.build();
 ```
 
-If you need to overwrite the destination dataset identifier for Adobe Experience Platform for your implementation, you can specify that in the event data as in the example below:
+
+
+**Set the destination Dataset identifier to the current Experience event:**
+
+If you need to overwrite the destination dataset identifier for Adobe Experience Platform for your implementation, you can specify that in the event data as in the examples below:
 
 ###### Swift
 
 ```swift
-let eventData : [String: Any] = ["xdm": xdmData, "datasetId": "example123456"]
+let eventData : [String: Any] = ["xdm": xdmData, "datasetId": "datasetIdExample"]
 ...
 ```
 
@@ -286,7 +339,7 @@ let eventData : [String: Any] = ["xdm": xdmData, "datasetId": "example123456"]
 ```java
 Map<String, Object> eventData = new HashMap<>();
 eventData.put("xdm", eventData);
-eventData.put("datasetId", "example123456");
+eventData.put("datasetId", "datasetIdExample");
 ...
 ```
 
@@ -310,7 +363,7 @@ MobileCore.dispatchEvent(experienceEvent, null);
 
 **Wait for responses from Adobe Experience Edge:**
 
-In order to process an Experience Edge event handle which is received as a response for an Experience Edge event, register a listener for the Edge event handle type you are interested in. Here are a few examples of Edge event handle type: `personalization:decisions`, `identity:exchange` etc.
+In order to process an Experience Edge event handle which is received as a response for an Experience event, register a listener for the Edge event handle type you are interested in. Here are a few examples of Edge event handle type: `personalization:decisions`, `identity:exchange` etc.
 
 ###### Swift
 
@@ -318,7 +371,7 @@ In order to process an Experience Edge event handle which is received as a respo
 public class SampleExtension: Extension {
 	...
   public func onRegistered() {
-          registerListener(type: EventType.edge, source: "eventHandleType", listener: receiveEdgeResponse(event:))
+          registerListener(type: EventType.edge, source: "personalization:decisions", listener: receiveEdgeResponse(event:))
           ...
   }
   
@@ -343,12 +396,12 @@ class SampleExtension extends Extension {
   protected SampleExtension(final ExtensionApi extensionApi) {
   	super(extensionApi);
   	...
-    getApi().registerEventListener("com.adobe.eventType.edge", "eventHandleType", SampleExtensionListener.class, null);
+    getApi().registerEventListener("com.adobe.eventType.edge", "personalization:decisions", SampleExtensionListener.class, null);
   }
 }
 ```
 
-It is always recommended that you register listeners with reduced scope, for a particular Edge event handle type, as in the example above. If you would like to receive all the Experience Edge event handles, you can use `EventSource.wildcard` (iOS) / `com.adobe.eventSource._wildcard_` (Android) as Event source.
+It is always recommended that you register listeners with reduced scope, for a particular Edge event handle type such as `personalization:decisions` in the example above. If you would like to be notified for all the Experience Edge event handles, you can use `EventSource.wildcard` (iOS) / `com.adobe.eventSource._wildcard_` (Android) as Event source.
 
 ## Sample events handled by the Edge extension
 
