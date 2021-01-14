@@ -31,6 +31,24 @@ struct EdgeEventWarning: Codable {
 
     /// Encodes the event to which this warning is attached as the index in the events array in EdgeRequest
     let eventIndex: Int?
+
+    // MARK: - Codable
+    enum CodingKeys: String, CodingKey {
+        case type
+        case status
+        case title
+        case report
+        case eventIndex
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        // skip eventIndex when encoding
+        if let unwrapped = title { try container.encodeIfPresent(unwrapped, forKey: .title) }
+        if let unwrapped = status { try container.encodeIfPresent(unwrapped, forKey: .status) }
+        if let unwrapped = type { try container.encodeIfPresent(unwrapped, forKey: .type) }
+        if let unwrapped = report { try container.encodeIfPresent(unwrapped, forKey: .report) }
+    }
 }
 
 // MARK: - EdgeEventWarningReport
