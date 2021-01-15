@@ -96,12 +96,13 @@ class NetworkResponseHandler {
         } else if let edgeErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) {
             // generic server error, return the error as is
             Log.warning(label: LOG_TAG,
-                                    "processResponseOnError - The conversion to JSON failed for server error response: \(jsonError), request id \(requestId), attempting to decode as a fatal error")
+                        "processResponseOnError - The conversion to JSON failed for server " +
+                            "error response: \(jsonError), request id \(requestId), attempting to decode as a fatal error")
             dispatchEventErrors(errorsArray: [edgeErrorResponse], requestId: requestId)
         } else {
             Log.warning(label: LOG_TAG,
-                                        "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), " +
-                                            "request id \(requestId)")
+                        "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), " +
+                            "request id \(requestId)")
         }
     }
 
@@ -210,7 +211,7 @@ class NetworkResponseHandler {
         Log.trace(label: LOG_TAG, "dispatchEventWarnings - Processing \(unwrappedWarnings.count) warning(s) for request id: \(requestId)")
         for warning in unwrappedWarnings {
 
-            if let warningsAsDictionary = try? warning.asDictionary() {
+            if let warningsAsDictionary = warning.asDictionary() {
                 logErrorMessage(warningsAsDictionary, isError: false, requestId: requestId)
 
                 let requestEventId = extractRequestEventId(forEventIndex: warning.eventIndex, requestId: requestId)
@@ -238,7 +239,8 @@ class NetworkResponseHandler {
             source = eventSource
         }
 
-        let responseEvent = Event(name: isErrorResponseEvent ? EdgeConstants.EventName.ERROR_RESPONSE_CONTENT : EdgeConstants.EventName.RESPONSE_CONTENT,
+        let responseEvent = Event(name: isErrorResponseEvent ?
+                                    EdgeConstants.EventName.ERROR_RESPONSE_CONTENT : EdgeConstants.EventName.RESPONSE_CONTENT,
                                   type: EventType.edge,
                                   source: source,
                                   data: eventData)
