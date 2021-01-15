@@ -12,15 +12,15 @@
 
 import Foundation
 
-struct AEPDemoConstants {
+enum AEPDemoConstants {
 
-    struct Numbers {
+    enum Numbers {
 
         static let minQty = 1
         static let maxQty = 25
     }
 
-    struct Strings {
+    enum Strings {
 
         // MARK: Commerce App : Labels of UI Components
         static let appName = "AEP Extension Demo"

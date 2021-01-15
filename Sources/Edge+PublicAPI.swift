@@ -17,26 +17,23 @@ private let LOG_TAG = "Edge"
 
 public extension Edge {
 
-    private static var responseCallbacksHandlers: [String: ([String: Any]) -> Void] = [:]
-
-    /// Sends an event to Adobe Experience Edge and registers a handler for responses coming from the Edge Network
+    /// Sends an event to Adobe Experience Edge and registers a completion handler for responses coming from the Edge Network
     /// - Parameters:
     ///   - experienceEvent: Event to be sent to Adobe Experience Edge
-    ///   - responseHandler: Optional callback to be invoked when the response handles are received from
-    ///                     Adobe Experience Edge. It may be invoked on a different thread and may be invoked multiple times
-    static func sendEvent(experienceEvent: ExperienceEvent, responseHandler: EdgeResponseHandler? = nil) {
-
+    ///   - completion: Optional completion handler to be invoked when the request is complete, returning the associated response handles
+    ///                 received from the Adobe Experience Edge. It may be invoked on a different thread.
+    static func sendEvent(experienceEvent: ExperienceEvent, _ completion: (([EdgeEventHandle]) -> Void)? = nil) {
         guard let xdmData = experienceEvent.xdm, !xdmData.isEmpty, let eventData = experienceEvent.asDictionary() else {
             Log.debug(label: LOG_TAG, "Failed to dispatch the experience event because the XDM data was nil/empty.")
             return
         }
 
         let event = Event(name: "AEP Request Event",
-                          type: Constants.EventType.EDGE,
-                          source: Constants.EventSource.REQUEST_CONTENT,
+                          type: EventType.edge,
+                          source: EventSource.requestContent,
                           data: eventData)
 
-        ResponseCallbackHandler.shared.registerResponseHandler(requestEventId: event.id.uuidString, responseHandler: responseHandler)
+        CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: event.id.uuidString, completion: completion)
         MobileCore.dispatch(event: event)
     }
 }
