@@ -93,6 +93,8 @@ public class Edge: NSObject, Extension {
             let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? DEFAULT_PRIVACY_STATUS
             hitQueue?.handlePrivacyChange(status: privacyStatus)
             if privacyStatus == .optedOut {
+                let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+                storeResponsePayloadManager.deleteAllStorePayloads()
                 Log.debug(label: LOG_TAG, "Device has opted-out of tracking. Clearing the Edge queue.")
             }
         }
