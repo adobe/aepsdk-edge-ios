@@ -22,7 +22,8 @@ public extension Edge {
     ///   - experienceEvent: Event to be sent to Adobe Experience Edge
     ///   - completion: Optional completion handler to be invoked when the request is complete, returning the associated response handles
     ///                 received from the Adobe Experience Edge. It may be invoked on a different thread.
-    @objc static func sendEvent(experienceEvent: ExperienceEvent, _ completion: (([EdgeEventHandle]) -> Void)? = nil) {
+    @objc(sendEvent:experienceEvent:)
+    static func sendEvent(experienceEvent: ExperienceEvent, _ completion: (([EdgeEventHandle]) -> Void)? = nil) {
         guard let xdmData = experienceEvent.xdm, !xdmData.isEmpty, let eventData = experienceEvent.asDictionary() else {
             Log.debug(label: LOG_TAG, "Failed to dispatch the experience event because the XDM data was nil/empty.")
             return
