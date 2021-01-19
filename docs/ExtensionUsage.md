@@ -462,7 +462,7 @@ _Event data example for Experience event:_
 | Event source      | personalization:decisions                                    |
 | Unique identifier | Event UUID generated when the event is created               |
 | Timestamp         | The timestamp when the event was created, after the response is received from the Experience Edge service |
-| Event data        | Dictionary/Map containing:<br/>- **payload**: the event handle payloads list<br/>- **type**: the type of the payload, set by Konductor/Solutions. E.g. values: "state:store", "identity:exchange", "personalization:decisions"<br/>- **eventIndex**: if one was provided by the upstream service or 0 by default<br/>- **requestId**: the UUID of the ExEdge batch request (may be associated with multiple request events)<br/>- **eventRequestId** : the UUID of the request event for which this response event was received. |
+| Event data        | Dictionary/Map containing:<br/>- **payload**: the event handle payloads list<br/>- **type**: the type of the payload, set by Konductor/Solutions. E.g. values: "state:store", "identity:exchange", "personalization:decisions"<br/>- **requestId**: the UUID of the ExEdge batch request (may be associated with multiple request events)<br/>- **eventRequestId** : the UUID of the request event for which this response event was received. |
 
 _Event data example for Experience Edge Response event:_
 
@@ -489,7 +489,6 @@ _Event data example for Experience Edge Response event:_
     }
   ],
   "type": "personalization:decisions",
-  "eventIndex": 0,
   "requestId": "12345UUID",
   "eventRequestId": "AEPRequestEventUUIDvalue"
 }
@@ -506,7 +505,7 @@ _Event data example for Experience Edge Response event:_
 | Event source      | com.adobe.eventsource.errorresponsecontent                   |
 | Unique identifier | Event UUID generated when the event is created               |
 | Timestamp         | The timestamp when the event was created, after the response error/warning is received from the Experience Edge service |
-| Event data        | Dictionary/Map containing error details, usually a type, status and title. Other optional error details include detail, report errors and report cause:<br/>- **type**: the error type <br/>- **status**: error status <br/>- **title**: the error type for which the request has failed<br/>- **eventIndex**: if one was provided by the upstream service or 0 by default<br/>- **requestId**: the UUID of the ExEdge batch request (may be associated with multiple request events)<br/>- **eventRequestId**: the UUID of the request event for which this error event was received. |
+| Event data        | Dictionary/Map containing error details, usually a type, status and title. Other optional error details include detail, report errors and report cause:<br/>- **type**: the error type <br/>- **status**: error status <br/>- **title**: the error type for which the request has failed<br/>- **requestId**: the UUID of the ExEdge batch request (may be associated with multiple request events)<br/>- **eventRequestId**: the UUID of the request event for which this error event was received. |
 
 _Event data example for Experience Edge Error event:_
 
