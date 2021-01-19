@@ -20,6 +20,7 @@ public class Edge: NSObject, Extension {
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
     private var hitQueue: HitQueuing?
+    static var currentPrivacyStatus: PrivacyStatus = EdgeConstants.DEFAULT_PRIVACY_STATUS
 
     // MARK: - Extension
     public let name = EdgeConstants.EXTENSION_NAME
@@ -30,7 +31,9 @@ public class Edge: NSObject, Extension {
 
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
-        NetworkResponseHandler.currentPrivacyStatus = EdgeConstants.DEFAULT_PRIVACY_STATUS
+
+        // set default on init for register/unregister use-case
+        Edge.currentPrivacyStatus = EdgeConstants.DEFAULT_PRIVACY_STATUS
         super.init()
         setupHitQueue()
     }
@@ -91,7 +94,7 @@ public class Edge: NSObject, Extension {
     func handleConfigurationResponse(_ event: Event) {
         if let privacyStatusStr = event.data?[EdgeConstants.EventDataKeys.GLOBAL_PRIVACY] as? String {
             let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? EdgeConstants.DEFAULT_PRIVACY_STATUS
-            NetworkResponseHandler.currentPrivacyStatus = privacyStatus // update privacy status to be used for async network response processing
+            Edge.currentPrivacyStatus = privacyStatus
             hitQueue?.handlePrivacyChange(status: privacyStatus)
             if privacyStatus == .optedOut {
                 let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
