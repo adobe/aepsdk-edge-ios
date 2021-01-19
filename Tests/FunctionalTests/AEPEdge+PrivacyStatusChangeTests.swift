@@ -18,8 +18,34 @@ import Foundation
 import XCTest
 
 class AEPEdgePrivacyStatusChangeTests: FunctionalTestBase {
+    private let EXPECTED_COUNT: Int32 = 5
     private let exEdgeInteractUrlString = "https://edge.adobedc.net/ee/v1/interact"
     private let experienceEvent = ExperienceEvent(xdm: ["test": "xdm"])
+    private let responseBody = "\u{0000}{" +
+        "      \"requestId\": \"e94835b0-e0b1-4038-b943-80d98fd9e2c7\"," +
+        "      \"handle\": [" +
+        "        {" +
+        "          \"payload\": [" +
+        "            {" +
+        "              \"key\": \"kndctr_example_AdobeOrg_consent\"," +
+        "              \"value\": \"\"," +
+        "              \"maxAge\": 5552000" +
+        "            }," +
+        "            {" +
+        "              \"key\": \"kndctr_example_AdobeOrg_identity\"," +
+        "              \"value\": \"abcd\"," +
+        "              \"maxAge\": 34128000" +
+        "            }," +
+        "            {" +
+        "              \"key\": \"kndctr_example_AdobeOrg_consent_check\"," +
+        "              \"value\": \"1\"," +
+        "              \"maxAge\": 7200" +
+        "            }" +
+        "          ]," +
+        "          \"type\": \"state:store\"" +
+        "        }" +
+        "      ]" +
+        "    }\n"
 
     public class override func setUp() {
         super.setUp()
@@ -145,6 +171,81 @@ class AEPEdgePrivacyStatusChangeTests: FunctionalTestBase {
 
         // verify
         assertNetworkRequestsCount()
+    }
+
+    func testPrivacyStatus_whenOptedIn_thenOptedOut_thenOptedIn_correctPersistence() {
+        let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                                // swiftlint:disable:next force_unwrapping
+                                                                response: HTTPURLResponse(url: URL(string: exEdgeInteractUrlString)!,
+                                                                                          statusCode: 200,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: EXPECTED_COUNT)
+
+        MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
+        getPrivacyStatusSync()
+        fireManyEvents()
+        assertNetworkRequestsCount()
+        resetTestExpectations()
+        var storePayloads = ServiceProvider.shared.namedKeyValueService.get(
+            collectionName: FunctionalTestConst.DataStoreKeys.STORE_NAME,
+            key: FunctionalTestConst.DataStoreKeys.STORE_PAYLOADS) as? [String: Any]
+        XCTAssertEqual(3, storePayloads?.count)
+
+        MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
+        getPrivacyStatusSync()
+        usleep(100000) //.1sec - wait for privacy update event to be processed
+        storePayloads = ServiceProvider.shared.namedKeyValueService.get(
+            collectionName: FunctionalTestConst.DataStoreKeys.STORE_NAME,
+            key: FunctionalTestConst.DataStoreKeys.STORE_PAYLOADS) as? [String: Any]
+        XCTAssertNil(storePayloads)
+
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: EXPECTED_COUNT)
+        MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
+        getPrivacyStatusSync()
+        fireManyEvents()
+        assertNetworkRequestsCount()
+        storePayloads = ServiceProvider.shared.namedKeyValueService.get(
+            collectionName: FunctionalTestConst.DataStoreKeys.STORE_NAME,
+            key: FunctionalTestConst.DataStoreKeys.STORE_PAYLOADS) as? [String: Any]
+        XCTAssertEqual(3, storePayloads?.count)
+    }
+
+    func testPrivacyStatus_whenOptedIn_thenOptedOut_delayedResponse_correctPersistence() {
+        let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                                // swiftlint:disable:next force_unwrapping
+                                                                response: HTTPURLResponse(url: URL(string: exEdgeInteractUrlString)!,
+                                                                                          statusCode: 200,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
+        getPrivacyStatusSync()
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        assertNetworkRequestsCount()
+        resetTestExpectations()
+
+        // delay next request
+        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        enableNetworkResponseDelay(delaySec: 1) // delay response with 1 sec
+
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        usleep(200000) //.2sec - wait for the experience event network request to be initiated
+        MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
+        usleep(1300000) //1.3sec - wait for the experience event network response to be processed after privacy status
+
+        assertNetworkRequestsCount()
+
+        let storePayloads = ServiceProvider.shared.namedKeyValueService.get(
+            collectionName: FunctionalTestConst.DataStoreKeys.STORE_NAME,
+            key: FunctionalTestConst.DataStoreKeys.STORE_PAYLOADS) as? [String: Any]
+        XCTAssertNil(storePayloads)
     }
 
     private func fireManyEvents() {

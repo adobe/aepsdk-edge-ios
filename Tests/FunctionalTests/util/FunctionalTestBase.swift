@@ -318,6 +318,12 @@ class FunctionalTestBase: XCTestCase {
         return [:]
     }
 
+    /// Sets the provided delay for all network responses, until reset
+    /// - Parameter delaySec: delay in seconds
+    func enableNetworkResponseDelay(delaySec: UInt32) {
+        FunctionalTestBase.networkService.enableDelayedResponse(delaySec: delaySec)
+    }
+
     /// Print message to console if `FunctionalTestBase.debug` is true
     /// - Parameter message: message to log to console
     func log(_ message: String) {

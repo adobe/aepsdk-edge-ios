@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPCore
 import Foundation
 
 enum EdgeConstants {
@@ -17,6 +18,7 @@ enum EdgeConstants {
     static let EXTENSION_NAME = "com.adobe.edge"
     static let EXTENSION_VERSION = "1.0.0"
     static let FRIENDLY_NAME = "AEPEdge"
+    static let DEFAULT_PRIVACY_STATUS = PrivacyStatus.unknown
 
     enum EventSource {
         static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
