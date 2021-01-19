@@ -18,9 +18,9 @@ import Foundation
 public class Edge: NSObject, Extension {
     private let LOG_TAG = "Edge" // Tag for logging
     private var networkService: EdgeNetworkService = EdgeNetworkService()
-    private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
+    private var networkResponseHandler: NetworkResponseHandler?
     private var hitQueue: HitQueuing?
-    static var currentPrivacyStatus: PrivacyStatus = EdgeConstants.DEFAULT_PRIVACY_STATUS
+    private var currentPrivacyStatus: PrivacyStatus?
 
     // MARK: - Extension
     public let name = EdgeConstants.EXTENSION_NAME
@@ -31,10 +31,11 @@ public class Edge: NSObject, Extension {
 
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
+        super.init()
 
         // set default on init for register/unregister use-case
-        Edge.currentPrivacyStatus = EdgeConstants.DEFAULT_PRIVACY_STATUS
-        super.init()
+        currentPrivacyStatus = EdgeConstants.DEFAULT_PRIVACY_STATUS
+        networkResponseHandler = NetworkResponseHandler(getPrivacyStatus: getPrivacyStatus)
         setupHitQueue()
     }
 
@@ -94,7 +95,7 @@ public class Edge: NSObject, Extension {
     func handleConfigurationResponse(_ event: Event) {
         if let privacyStatusStr = event.data?[EdgeConstants.EventDataKeys.GLOBAL_PRIVACY] as? String {
             let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? EdgeConstants.DEFAULT_PRIVACY_STATUS
-            Edge.currentPrivacyStatus = privacyStatus
+            currentPrivacyStatus = privacyStatus
             hitQueue?.handlePrivacyChange(status: privacyStatus)
             if privacyStatus == .optedOut {
                 let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
@@ -102,6 +103,12 @@ public class Edge: NSObject, Extension {
                 Log.debug(label: LOG_TAG, "Device has opted-out of tracking. Clearing the Edge queue.")
             }
         }
+    }
+
+    /// Current privacy status set based on configuration update events
+    /// - Returns: the current `PrivacyStatus` known by the Edge extension
+    func getPrivacyStatus() -> PrivacyStatus {
+        return currentPrivacyStatus ?? EdgeConstants.DEFAULT_PRIVACY_STATUS
     }
 
     /// Determines if the event should be ignored by the Edge extension. This method should be called after
@@ -125,6 +132,11 @@ public class Edge: NSObject, Extension {
     private func setupHitQueue() {
         guard let dataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: name) else {
             Log.error(label: "\(name):\(#function)", "Failed to create Data Queue, Edge could not be initialized")
+            return
+        }
+
+        guard let networkResponseHandler = networkResponseHandler else {
+            Log.warning(label: LOG_TAG, "Failed to create Data Queue, the NetworkResponseHandler is not initialized")
             return
         }
 

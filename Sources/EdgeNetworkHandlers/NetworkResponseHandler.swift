@@ -20,9 +20,14 @@ import Foundation
 class NetworkResponseHandler {
     private let LOG_TAG = "NetworkResponseHandler"
     private let serialQueue = DispatchQueue(label: "com.adobe.edge.eventsDictionary") // serial queue for atomic operations
+    private var getPrivacyStatus: () -> PrivacyStatus
 
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [String]>()
+
+    init(getPrivacyStatus: @escaping() -> PrivacyStatus) {
+        self.getPrivacyStatus = getPrivacyStatus
+    }
 
     /// Adds the requestId in the internal `sentEventsWaitingResponse` with the associated list of events.
     /// This list should maintain the order of the received events for matching with the response event index.
@@ -265,7 +270,7 @@ class NetworkResponseHandler {
     private func handleStoreEventHandle(handle: EdgeEventHandle) {
         let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
         // handling async scenario when in-flight response is handled after the privacy status update was handled by the Edge extension
-        if Edge.currentPrivacyStatus == .optedOut {
+        if getPrivacyStatus() == .optedOut {
             storeResponsePayloadManager.deleteAllStorePayloads()
             return
         }
