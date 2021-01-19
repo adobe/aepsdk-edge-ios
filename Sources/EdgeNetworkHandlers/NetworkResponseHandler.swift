@@ -270,10 +270,7 @@ class NetworkResponseHandler {
     private func handleStoreEventHandle(handle: EdgeEventHandle) {
         let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
         // handling async scenario when in-flight response is handled after the privacy status update was handled by the Edge extension
-        if getPrivacyStatus() == .optedOut {
-            storeResponsePayloadManager.deleteAllStorePayloads()
-            return
-        }
+        if getPrivacyStatus() == .optedOut { return }
 
         guard let type = handle.type, EdgeConstants.JsonKeys.Response.EVENT_HANDLE_TYPE_STORE == type.lowercased() else { return }
         guard let payload: [[String: Any]] = handle.payload else { return }
