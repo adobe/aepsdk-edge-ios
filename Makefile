@@ -66,3 +66,12 @@ lint-autocorrect:
 
 lint:
 	(swiftlint lint Sources SampleApps/AEPCommerceDemoApp)
+
+check-version:
+	(sh ./Script/version.sh $(VERSION))
+
+test-SPM-integration:
+	(sh ./Script/test-SPM.sh)
+
+test-podspec:
+	(sh ./Script/test-podspec.sh)
