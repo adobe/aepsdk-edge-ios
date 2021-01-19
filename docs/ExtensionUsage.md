@@ -11,7 +11,7 @@ This document details the APIs provided by the AEP Edge extension, along with sa
 In the AppDelegate application:didFinishLaunchingWithOptions, register the Edge extension along with the other AEP mobile SDK extensions.
 
 ```swift
-MobileCore.registerExtensions([..., Edge.self])
+MobileCore.registerExtensions([..., Identity.self, Edge.self])
 ```
 
 ###### Android
@@ -19,8 +19,13 @@ MobileCore.registerExtensions([..., Edge.self])
 In the Application class in the onCreate() method, register the Edge extension along with the other AEP mobile SDK extensions before calling MobileCore.start(...)
 
 ```java
-Edge.registerExtension();
-...
+try {
+  ...
+  Identity.registerExtension();
+  Edge.registerExtension();
+} catch (Exception e) {
+  e.printStackTrace();
+}
 MobileCore.start(new AdobeCallback() {
 			@Override
 			public void call(final Object o) {
@@ -42,7 +47,7 @@ print("Edge extension version: \(Edge.extensionVersion)")
 ###### Android
 
 ```java
-Log.d(LOG_TAG, String.format("Edge extension version: ", Edge.extensionVersion()));
+Log.d("ExampleActivity", String.format("Edge extension version: ", Edge.extensionVersion()));
 ```
 
 
@@ -75,7 +80,7 @@ ExperienceEvent experienceEvent = new ExperienceEvent.Builder()
 
 **Create Experience Event from XDM Schema implementations:**
 
-The AEP Edge extension provides an XDM Schema interface / protocol for you to create Classes for XDM Schema representations. In the example below the `XDMSchemaExample` is a representation of an XDM Schema originating from an Experience event, with two fields: `eventType` and `otherField`. It is recommended to use this example for complex XDM Schema implementations when you want to easily track the schema version of your implementation and update it with new fields in the future, as well as when you store these objects in memory or serialize/desialized them in your own implementation.
+The AEP Edge extension provides an XDM Schema interface / protocol for you to create Classes for XDM Schema representations. In the example below the `XDMSchemaExample` is a representation of an XDM Schema originating from an Experience event, with two fields: `eventType` and `otherField`. It is recommended to use this example for complex XDM Schema implementations when you want to easily track the schema version of your implementation and update it with new fields in the future, as well as when you store these objects in memory or serialize/deserialize them in your own implementation.
 
 ###### Swift
 
@@ -120,7 +125,7 @@ let event = ExperienceEvent(xdm: xdmData)
 ```swift
 public class XDMSchemaExample implements com.adobe.marketing.mobile.xdm.Schema {
   private String eventType;
-	private String otherField;
+  private String otherField;
   
   public XDMSchemaExample() {}
 
@@ -243,7 +248,7 @@ Edge.sendEvent(experienceEvent: experienceEvent)
 Edge.sendEvent(experienceEvent, null);
 ```
 
-By default this API sends the `experienceEvent` to Adobe Experience Edge Network to the Adobe Experience Platform Experience dataset configured in your Edge Configuration.
+The `sendEvent` API sends the `experienceEvent` to the Adobe Experience Edge Network. If a dataset ID is not set in the ExperienceEvent, then by default the `experienceEvent` is sent to the dataset configured in the application's Edge Configuration.
 
 
 
@@ -288,7 +293,7 @@ Edge.sendEvent(event, new EdgeCallback() {
 
 **Create Experience Event:**
 
-The XDM data is required for any Experience Event being sent using the AEP Edge mobile extension. Make sure that the data sent in the `xdm` data block, is following the XDM format of a known, publicly available mixin. Along with your XDM data it is encouraged that you set the `eventType` for the requests made by your extension, for easier tracking in the upstream services.
+The XDM data is required for any Experience Event being sent using the AEP Edge mobile extension. Make sure that the `xdm` data block is following the XDM format of a known mixin, either publicly available or defined by the Adobe organization used by the application. Along with your XDM data it is encouraged that you set the `eventType` for the requests made by your extension, for easier tracking in the upstream services.
 
 ###### Swift
 
@@ -539,4 +544,4 @@ _Event data example for Experience Edge Error event:_
 
 com.adobe.edge
 
-No data is shared as Shared state by the Edge extension in current version. 
+No data is shared as Shared state by the Edge extension in the current version. 
