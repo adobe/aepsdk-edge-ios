@@ -13,13 +13,6 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 
-#  ---- enable the following code after the new pod has been released. ----
-# LATEST_PUBLIC_VERSION=$(pod spec cat AEPRulesEngine | jq '.version' | tr -d '"')
-# echo "Latest public version is: ${BLUE}$LATEST_PUBLIC_VERSION${NC}"
-# if [[ "$1" == "$LATEST_PUBLIC_VERSION" ]]; then
-#     echo "${RED}[Error]${NC} $LATEST_PUBLIC_VERSION has been released!"
-#     exit -1
-# fi
 echo "Target version - ${BLUE}$1${NC}"
 echo "------------------AEPEdge-------------------"
 PODSPEC_VERSION_IN_AEPEdge=$(pod ipc spec AEPEdge.podspec | jq '.version' | tr -d '"')
