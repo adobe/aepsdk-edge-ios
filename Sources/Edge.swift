@@ -17,7 +17,6 @@ import Foundation
 @objc(AEPMobileEdge)
 public class Edge: NSObject, Extension {
     private let LOG_TAG = "Edge" // Tag for logging
-    private let DEFAULT_PRIVACY_STATUS = PrivacyStatus.unknown
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler = NetworkResponseHandler()
     private var hitQueue: HitQueuing?
@@ -31,6 +30,7 @@ public class Edge: NSObject, Extension {
 
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
+        NetworkResponseHandler.currentPrivacyStatus = EdgeConstants.DEFAULT_PRIVACY_STATUS
         super.init()
         setupHitQueue()
     }
@@ -90,7 +90,8 @@ public class Edge: NSObject, Extension {
     /// - Parameter event: the configuration response event
     func handleConfigurationResponse(_ event: Event) {
         if let privacyStatusStr = event.data?[EdgeConstants.EventDataKeys.GLOBAL_PRIVACY] as? String {
-            let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? DEFAULT_PRIVACY_STATUS
+            let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? EdgeConstants.DEFAULT_PRIVACY_STATUS
+            NetworkResponseHandler.currentPrivacyStatus = privacyStatus // update privacy status to be used for async network response processing
             hitQueue?.handlePrivacyChange(status: privacyStatus)
             if privacyStatus == .optedOut {
                 let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
@@ -113,7 +114,7 @@ public class Edge: NSObject, Extension {
         }
 
         let privacyStatusStr = configSharedState[EdgeConstants.EventDataKeys.GLOBAL_PRIVACY] as? String ?? ""
-        let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? DEFAULT_PRIVACY_STATUS
+        let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? EdgeConstants.DEFAULT_PRIVACY_STATUS
         return privacyStatus == .optedOut
     }
 
@@ -129,6 +130,6 @@ public class Edge: NSObject, Extension {
                                             getSharedState: getSharedState(extensionName:event:),
                                             readyForEvent: readyForEvent(_:))
         hitQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
-        hitQueue?.handlePrivacyChange(status: DEFAULT_PRIVACY_STATUS)
+        hitQueue?.handlePrivacyChange(status: EdgeConstants.DEFAULT_PRIVACY_STATUS)
     }
 }

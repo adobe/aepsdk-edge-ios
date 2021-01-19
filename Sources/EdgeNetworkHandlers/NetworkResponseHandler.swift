@@ -23,6 +23,7 @@ class NetworkResponseHandler {
 
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [String]>()
+    static var currentPrivacyStatus: PrivacyStatus = EdgeConstants.DEFAULT_PRIVACY_STATUS
 
     /// Adds the requestId in the internal `sentEventsWaitingResponse` with the associated list of events.
     /// This list should maintain the order of the received events for matching with the response event index.
@@ -263,6 +264,13 @@ class NetworkResponseHandler {
     /// If handle is of type "state:store" persist it to Data Store
     /// - Parameter handle: current `EventHandle` to store
     private func handleStoreEventHandle(handle: EdgeEventHandle) {
+        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        // handling async scenario when in-flight response is handled after the privacy status update was handled by the Edge extension
+        if NetworkResponseHandler.currentPrivacyStatus == .optedOut {
+            storeResponsePayloadManager.deleteAllStorePayloads()
+            return
+        }
+
         guard let type = handle.type, EdgeConstants.JsonKeys.Response.EVENT_HANDLE_TYPE_STORE == type.lowercased() else { return }
         guard let payload: [[String: Any]] = handle.payload else { return }
 
@@ -278,7 +286,6 @@ class NetworkResponseHandler {
             }
         }
 
-        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
         storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
         if !storeResponsePayloads.isEmpty {
             Log.debug(label: LOG_TAG, "Processed \(storeResponsePayloads.count) store response payload(s)")
