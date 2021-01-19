@@ -68,10 +68,10 @@ lint:
 	(swiftlint lint Sources SampleApps/AEPCommerceDemoApp)
 
 check-version:
-	(sh ./script/version.sh $(VERSION))
+	(sh ./Script/version.sh $(VERSION))
 
 test-SPM-integration:
-	(sh ./script/test-SPM.sh)
+	(sh ./Script/test-SPM.sh)
 
 test-podspec:
-	(sh ./script/test-podspec.sh)
+	(sh ./Script/test-podspec.sh)
