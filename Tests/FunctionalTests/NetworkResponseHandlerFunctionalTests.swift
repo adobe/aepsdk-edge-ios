@@ -17,7 +17,9 @@ import XCTest
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private let networkResponseHandler = NetworkResponseHandler()
+    private let networkResponseHandler = NetworkResponseHandler { () -> PrivacyStatus in
+        return PrivacyStatus.optedIn
+    }
 
     override func setUp() {
         super.setUp()
@@ -119,11 +121,10 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         }
 
         let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
-        XCTAssertEqual(6, flattenReceivedData.count)
+        XCTAssertEqual(5, flattenReceivedData.count)
         XCTAssertEqual("personalization", flattenReceivedData["type"] as? String)
         XCTAssertEqual(100, flattenReceivedData["status"] as? Int)
         XCTAssertEqual("Button color not found", flattenReceivedData["title"] as? String)
-        XCTAssertEqual(0, flattenReceivedData["eventIndex"] as? Int)
         XCTAssertEqual(requestId, flattenReceivedData["requestId"] as? String)
         XCTAssertEqual(event1.id.uuidString, flattenReceivedData["requestEventId"] as? String)
     }
@@ -154,11 +155,10 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         }
 
         let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
-        XCTAssertEqual(5, flattenReceivedData.count)
+        XCTAssertEqual(4, flattenReceivedData.count)
         XCTAssertEqual("personalization", flattenReceivedData["type"] as? String)
         XCTAssertEqual(100, flattenReceivedData["status"] as? Int)
         XCTAssertEqual("Button color not found", flattenReceivedData["title"] as? String)
-        XCTAssertEqual(10, flattenReceivedData["eventIndex"] as? Int)
         XCTAssertEqual(requestId, flattenReceivedData["requestId"] as? String)
     }
     func testProcessResponseOnError_WhenUnknownRequestId_doesNotCrash() {
@@ -187,11 +187,10 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         }
 
         let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
-        XCTAssertEqual(5, flattenReceivedData.count)
+        XCTAssertEqual(4, flattenReceivedData.count)
         XCTAssertEqual("personalization", flattenReceivedData["type"] as? String)
         XCTAssertEqual(100, flattenReceivedData["status"] as? Int)
         XCTAssertEqual("Button color not found", flattenReceivedData["title"] as? String)
-        XCTAssertEqual(0, flattenReceivedData["eventIndex"] as? Int)
         XCTAssertEqual("567", flattenReceivedData["requestId"] as? String)
     }
     func testProcessResponseOnError_WhenTwoEventJsonError_dispatchesTwoEvents() {
@@ -472,10 +471,9 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         let flattenReceivedData2: [String: Any] = flattenDictionary(dict: receivedData2)
-        XCTAssertEqual(5, flattenReceivedData2.count)
+        XCTAssertEqual(4, flattenReceivedData2.count)
         XCTAssertEqual("pairedeventexample", flattenReceivedData2["type"] as? String)
         XCTAssertEqual("123612123812381", flattenReceivedData2["payload[0].id"] as? String)
-        XCTAssertEqual(1, flattenReceivedData2["eventIndex"] as? Int)
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
         XCTAssertEqual(event2.id.uuidString, flattenReceivedData2["requestEventId"] as? String)
     }
@@ -508,10 +506,9 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
-        XCTAssertEqual(4, flattenReceivedData1.count)
+        XCTAssertEqual(3, flattenReceivedData1.count)
         XCTAssertEqual("pairedeventexample", flattenReceivedData1["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
-        XCTAssertEqual(10, flattenReceivedData1["eventIndex"] as? Int)
         XCTAssertEqual("123612123812381", flattenReceivedData1["payload[0].id"] as? String)
     }
 
@@ -546,10 +543,9 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
-        XCTAssertEqual(4, flattenReceivedData1.count)
+        XCTAssertEqual(3, flattenReceivedData1.count)
         XCTAssertEqual("pairedeventexample", flattenReceivedData1["type"] as? String)
         XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
-        XCTAssertEqual(0, flattenReceivedData1["eventIndex"] as? Int)
         XCTAssertEqual("123612123812381", flattenReceivedData1["payload[0].id"] as? String)
     }
 
@@ -653,10 +649,9 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         let flattenReceivedData1: [String: Any] = flattenDictionary(dict: receivedData1)
-        XCTAssertEqual(4, flattenReceivedData1.count)
+        XCTAssertEqual(3, flattenReceivedData1.count)
         XCTAssertEqual(2003, flattenReceivedData1["status"] as? Int)
         XCTAssertEqual("Failed to process personalization event", flattenReceivedData1["title"] as? String)
-        XCTAssertEqual(2, flattenReceivedData1["eventIndex"] as? Int)
         XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
 
         guard let receivedData2 = dispatchEvents[1].data else {
@@ -664,13 +659,12 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             return
         }
         let flattenReceivedData2: [String: Any] = flattenDictionary(dict: receivedData2)
-        XCTAssertEqual(7, flattenReceivedData2.count)
+        XCTAssertEqual(6, flattenReceivedData2.count)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0204-200", flattenReceivedData2["type"] as? String)
         XCTAssertEqual(98, flattenReceivedData2["status"] as? Int)
         XCTAssertEqual("Some Informative stuff here", flattenReceivedData2["title"] as? String)
         XCTAssertEqual("Some Informative stuff here", flattenReceivedData2["report.cause.message"] as? String)
         XCTAssertEqual(202, flattenReceivedData2["report.cause.code"] as? Int)
-        XCTAssertEqual(10, flattenReceivedData2["eventIndex"] as? Int)
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
     }
 }

@@ -16,6 +16,7 @@ import XCTest
 
 class StoreResponsePayloadManagerTests: XCTestCase {
     let testDataStoreName = "StoreResponsePayloadManagerTests"
+    let storePayloadsDataStoreKey = "storePayloads"
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -24,7 +25,7 @@ class StoreResponsePayloadManagerTests: XCTestCase {
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
-        ServiceProvider.shared.namedKeyValueService.remove(collectionName: testDataStoreName, key: "storePayloads")
+        ServiceProvider.shared.namedKeyValueService.remove(collectionName: testDataStoreName, key: storePayloadsDataStoreKey)
     }
 
     func testGetActiveStores_isCorrect_whenRecordsInDataStore() {
@@ -107,6 +108,36 @@ class StoreResponsePayloadManagerTests: XCTestCase {
         } else {
             XCTFail("Failed to get payload with key kndctr_testOrg_AdobeOrg_optin from active stores.")
         }
+    }
+
+    func testDeleteStorePayloads_whenStoredValues_deletesAll() {
+        let manager = StoreResponsePayloadManager(testDataStoreName)
+        manager.saveStorePayloads(buildStorePayloads())
+
+        var storePayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: testDataStoreName, key: storePayloadsDataStoreKey)
+        XCTAssertNotNil(storePayloads)
+
+        // test
+        manager.deleteAllStorePayloads()
+        XCTAssertTrue(manager.getActiveStores().isEmpty)
+        storePayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: testDataStoreName, key: storePayloadsDataStoreKey)
+        XCTAssertNil(storePayloads)
+    }
+
+    func testDeleteAllStorePayloads_whenNoStoredValues_deletesAll() {
+        let manager = StoreResponsePayloadManager(testDataStoreName)
+        var storePayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: testDataStoreName, key: storePayloadsDataStoreKey)
+        XCTAssertNil(storePayloads)
+
+        // test
+        manager.deleteAllStorePayloads()
+        XCTAssertTrue(manager.getActiveStores().isEmpty)
+        storePayloads = ServiceProvider.shared.namedKeyValueService.get(collectionName: testDataStoreName, key: storePayloadsDataStoreKey)
+        XCTAssertNil(storePayloads)
+    }
+
+    func testDeleteAllStorePayloads_whenDataStoreIsNull_doesNotCrash() {
+        XCTAssertNoThrow(StoreResponsePayloadManager("").deleteAllStorePayloads())
     }
 
     func buildStorePayloads() -> [StoreResponsePayload] {

@@ -19,6 +19,7 @@ class FunctionalTestNetworkService: NetworkService {
     private var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [NetworkRequest: [NetworkRequest]]()
     private var responseMatchers: [NetworkRequest: HttpConnection] = [NetworkRequest: HttpConnection]()
     private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [NetworkRequest: CountDownLatch]()
+    private var delayedResponse: UInt32 = 0
 
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         FunctionalTestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
@@ -30,6 +31,11 @@ class FunctionalTestNetworkService: NetworkService {
 
         countDownExpected(networkRequest: networkRequest)
         guard let unwrappedCompletionHandler = completionHandler else { return }
+
+        if delayedResponse > 0 {
+            sleep(delayedResponse)
+        }
+
         if let response = getMarchedResponseForUrlAndHttpMethod(networkRequest: networkRequest) {
             unwrappedCompletionHandler(response)
         } else {
@@ -43,10 +49,15 @@ class FunctionalTestNetworkService: NetworkService {
         }
     }
 
+    func enableDelayedResponse(delaySec: UInt32) {
+        delayedResponse = delaySec
+    }
+
     func reset() {
         expectedNetworkRequests.removeAll()
         receivedNetworkRequests.removeAll()
         responseMatchers.removeAll()
+        delayedResponse = 0
     }
 
     func awaitFor(networkRequest: NetworkRequest, timeout: TimeInterval) -> DispatchTimeoutResult? {

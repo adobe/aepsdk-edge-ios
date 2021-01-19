@@ -546,13 +546,12 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             return
         }
         let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(8, eventData.count)
+        XCTAssertEqual(7, eventData.count)
         XCTAssertEqual("personalization:decisions", eventData["type"] as? String)
         XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", eventData["payload[0].id"] as? String)
         XCTAssertEqual("#D41DBA", eventData["payload[0].items[0].data.content.value"] as? String)
         XCTAssertEqual("https://ns.adobe.com/personalization/json-content-item", eventData["payload[0].items[0].schema"] as? String)
         XCTAssertEqual("buttonColor", eventData["payload[0].scope"] as? String)
-        XCTAssertEqual(0, eventData["eventIndex"] as? Int)
         XCTAssertEqual("buttonColor", eventData["payload[0].scope"] as? String)
         XCTAssertEqual(requestId, eventData["requestId"] as? String)
         XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
@@ -593,10 +592,9 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             return
         }
         let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(5, eventData.count)
+        XCTAssertEqual(4, eventData.count)
         XCTAssertEqual(0, eventData["status"] as? Int)
         XCTAssertEqual("Failed due to unrecoverable system error", eventData["title"] as? String)
-        XCTAssertEqual(0, eventData["eventIndex"] as? Int)
         XCTAssertEqual(requestId, eventData["requestId"] as? String)
         XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
     }
@@ -710,9 +708,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             return
         }
         let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(6, eventData.count)
+        XCTAssertEqual(5, eventData.count)
         XCTAssertEqual(eventData["status"] as? Int, 504)
-        XCTAssertEqual(eventData["eventIndex"] as? Int, 0)
         XCTAssertEqual(eventData["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0201-504")
         XCTAssertEqual(eventData["title"] as? String, "The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.")
 
@@ -721,9 +718,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             return
         }
         let eventData1 = flattenDictionary(dict: eventDataDict1)
-        XCTAssertEqual(8, eventData1.count)
+        XCTAssertEqual(7, eventData1.count)
         XCTAssertEqual(eventData1["status"] as? Int, 200)
-        XCTAssertEqual(eventData1["eventIndex"] as? Int, 0)
         XCTAssertEqual(eventData1["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0204-200")
         XCTAssertEqual(eventData1["title"] as? String, "A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.")
         XCTAssertEqual(eventData1["report.cause.message"] as? String, "Cannot read related customer for device id: ...")
@@ -747,6 +743,50 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                 "requestId": "0f8821e5-ed1a-4301-b445-5f336fb50ee8",
                                 "orgId": "test@AdobeOrg"
                               }
+                            }
+                           """
+        let responseConnection: HttpConnection = HttpConnection(data: response.data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeInteractUrl,
+                                                                                          statusCode: 422,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1) // the send event
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1) // 1 error events
+
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        assertNetworkRequestsCount()
+        assertExpectedEvents(ignoreUnexpectedEvents: false)
+
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                   source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
+        guard let eventDataDict = resultEvents[0].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+
+        let jsonData = try! JSONSerialization.data(withJSONObject: eventDataDict)
+        let expectedEdgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: response.data(using: .utf8)!)
+        let edgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData)
+
+        XCTAssertEqual(expectedEdgeEventError, edgeEventError)
+    }
+
+    func testSendEvent_fatalError400() {
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        let response = """
+                            {
+                               "type":"https://ns.adobe.com/aep/errors/EXEG-0003-400",
+                               "status":400,
+                               "title":"The referenced Config 'bad-edge-config:prod' doesn't exist. Update the reference and try again.",
+                               "report":{
+                                  "requestId":"FF9E7DBA-128B-4222-9563-F75131219257"
+                               }
                             }
                            """
         let responseConnection: HttpConnection = HttpConnection(data: response.data(using: .utf8),

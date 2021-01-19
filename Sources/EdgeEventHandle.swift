@@ -54,8 +54,8 @@ public class EdgeEventHandle: NSObject, Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        // skip eventIndex when encoding
 
-        try container.encodeIfPresent(eventIndex, forKey: .eventIndex)
         try container.encodeIfPresent(type, forKey: .type)
 
         if let unwrappedPayload = payload {

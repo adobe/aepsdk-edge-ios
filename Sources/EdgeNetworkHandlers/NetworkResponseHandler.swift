@@ -20,9 +20,14 @@ import Foundation
 class NetworkResponseHandler {
     private let LOG_TAG = "NetworkResponseHandler"
     private let serialQueue = DispatchQueue(label: "com.adobe.edge.eventsDictionary") // serial queue for atomic operations
+    private var getPrivacyStatus: () -> PrivacyStatus
 
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [String]>()
+
+    init(getPrivacyStatus: @escaping() -> PrivacyStatus) {
+        self.getPrivacyStatus = getPrivacyStatus
+    }
 
     /// Adds the requestId in the internal `sentEventsWaitingResponse` with the associated list of events.
     /// This list should maintain the order of the received events for matching with the response event index.
@@ -88,39 +93,21 @@ class NetworkResponseHandler {
     ///   - requestId: request id associated with current response
     func processResponseOnError(jsonError: String, requestId: String) {
         guard let data = jsonError.data(using: .utf8) else { return }
-
-        // Attempt to decode as an `EdgeResponse` first
-        guard let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) else {
-
-            // If decoding as an `EdgeResponse` fails, attempt to decode as a generic `EdgeEventError`
-            if let edgeErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) {
-                Log.debug(label: LOG_TAG, "processResponseOnError - Processing server error response:\n \(jsonError), request id \(requestId)")
-                dispatchEventErrors(errorsArray: [edgeErrorResponse], requestId: requestId)
-            } else {
-                Log.warning(label: LOG_TAG,
-                            "processResponseOnError - The conversion to JSON failed for server error response: \(jsonError), request id \(requestId)")
-            }
-
-            return
-        }
-
         Log.debug(label: LOG_TAG, "processResponseOnError - Processing server error response:\n \(jsonError), request id \(requestId)")
 
-        // Note: if the Edge error doesn't have an eventIndex it means that this error is a generic request error,
-        // otherwise it is an event specific error. There can be multiple errors returned for the same event
-        if edgeErrorResponse.errors != nil {
+        if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data), edgeResponse.errors != nil {
             // this is an error coming from Konductor, read the error from the errors node
-            dispatchEventErrors(errorsArray: edgeErrorResponse.errors, requestId: requestId)
-        } else {
+            dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId)
+        } else if let edgeErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) {
             // generic server error, return the error as is
-            guard let genericErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) else {
-                Log.warning(label: LOG_TAG,
-                            "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), " +
-                                "request id \(requestId)")
-                return
-            }
-
-            dispatchEventErrors(errorsArray: [genericErrorResponse], requestId: requestId)
+            Log.warning(label: LOG_TAG,
+                        "processResponseOnError - The conversion to JSON failed for server " +
+                            "error response: \(jsonError), request id \(requestId), attempting to decode as a fatal error")
+            dispatchEventErrors(errorsArray: [edgeErrorResponse], requestId: requestId)
+        } else {
+            Log.warning(label: LOG_TAG,
+                        "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), " +
+                            "request id \(requestId)")
         }
     }
 
@@ -229,7 +216,7 @@ class NetworkResponseHandler {
         Log.trace(label: LOG_TAG, "dispatchEventWarnings - Processing \(unwrappedWarnings.count) warning(s) for request id: \(requestId)")
         for warning in unwrappedWarnings {
 
-            if let warningsAsDictionary = try? warning.asDictionary() {
+            if let warningsAsDictionary = warning.asDictionary() {
                 logErrorMessage(warningsAsDictionary, isError: false, requestId: requestId)
 
                 let requestEventId = extractRequestEventId(forEventIndex: warning.eventIndex, requestId: requestId)
@@ -257,7 +244,8 @@ class NetworkResponseHandler {
             source = eventSource
         }
 
-        let responseEvent = Event(name: isErrorResponseEvent ? EdgeConstants.EventName.ERROR_RESPONSE_CONTENT : EdgeConstants.EventName.RESPONSE_CONTENT,
+        let responseEvent = Event(name: isErrorResponseEvent ?
+                                    EdgeConstants.EventName.ERROR_RESPONSE_CONTENT : EdgeConstants.EventName.RESPONSE_CONTENT,
                                   type: EventType.edge,
                                   source: source,
                                   data: eventData)
@@ -280,6 +268,10 @@ class NetworkResponseHandler {
     /// If handle is of type "state:store" persist it to Data Store
     /// - Parameter handle: current `EventHandle` to store
     private func handleStoreEventHandle(handle: EdgeEventHandle) {
+        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        // handling async scenario when in-flight response is handled after the privacy status update was handled by the Edge extension
+        if getPrivacyStatus() == .optedOut { return }
+
         guard let type = handle.type, EdgeConstants.JsonKeys.Response.EVENT_HANDLE_TYPE_STORE == type.lowercased() else { return }
         guard let payload: [[String: Any]] = handle.payload else { return }
 
@@ -295,7 +287,6 @@ class NetworkResponseHandler {
             }
         }
 
-        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
         storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
         if !storeResponsePayloads.isEmpty {
             Log.debug(label: LOG_TAG, "Processed \(storeResponsePayloads.count) store response payload(s)")
