@@ -8,11 +8,7 @@ The AEP Edge Mobile Extension is an extension for the [Adobe Experience Platform
 
 To learn more about this extension, read [Adobe Experience Platform Edge Mobile Extension](https://aep-sdks.gitbook.io/docs/beta/experience-platform-extension).
 
-[![Cocoapods](https://img.shields.io/cocoapods/v/AEPEdge.svg?color=orange&label=AEPEdge&logo=apple&logoColor=white)](https://cocoapods.org/pods/AEPEdge)
-
-[![SPM](https://img.shields.io/badge/SPM-Supported-orange.svg?logo=apple&logoColor=white)](https://swift.org/package-manager/)
-[![CircleCI](https://img.shields.io/circleci/project/github/adobe/aepsdk-edge-ios/master.svg?logo=circleci)](https://circleci.com/gh/adobe/workflows/aepsdk-edge-ios)
-[![Code Coverage](https://img.shields.io/codecov/c/github/adobe/aepsdk-edge-ios/main.svg?logo=codecov)](https://codecov.io/gh/adobe/aepsdk-edge-ios/branch/main)
+[![Cocoapods](https://img.shields.io/cocoapods/v/AEPEdge.svg?color=orange&label=AEPEdge&logo=apple&logoColor=white)](https://cocoapods.org/pods/AEPEdge)[![SPM](https://img.shields.io/badge/SPM-Supported-orange.svg?logo=apple&logoColor=white)](https://swift.org/package-manager/)[![CircleCI](https://img.shields.io/circleci/project/github/adobe/aepsdk-edge-ios/master.svg?logo=circleci)](https://circleci.com/gh/adobe/workflows/aepsdk-edge-ios)[![Code Coverage](https://img.shields.io/codecov/c/github/adobe/aepsdk-edge-ios/main.svg?logo=codecov)](https://codecov.io/gh/adobe/aepsdk-edge-ios/branch/main)
 
 ## Requirements
 - Xcode 11.0 (or newer)
@@ -30,7 +26,7 @@ use_frameworks!
 
 # for app development, include all the following pods
 target 'YOUR_TARGET_NAME' do
-	  pod 'AEPEdge'
+  	pod 'AEPEdge'
   	pod 'AEPCore'
   	pod 'AEPIdentity'
 end
