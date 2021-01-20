@@ -1,33 +1,22 @@
 # Adobe Experience Platform Edge Mobile Extension
 
-## BETA
-
-AEPEdge is currently in beta. Use of this code is by invitation only and not otherwise supported by Adobe. Please contact your Adobe Customer Success Manager to learn more.
-
-By using the Beta, you hereby acknowledge that the Beta is provided "as is" without warranty of any kind. Adobe shall have no obligation to maintain, correct, update, change, modify or otherwise support the Beta. You are advised to use caution and not to rely in any way on the correct functioning or performance of such Beta and/or accompanying materials.
-
 ## About this project
 
-The AEP Edge Mobile extension allows you to send data to the Adobe Experience Platform (AEP) from a mobile application. This extension allows you to implement Adobe Experience Cloud capabilities in a more robust way, serve multiple Adobe solutions though one network call, and simultaneously forward this information to the Adobe Experience Platform.
+The Adobe Experience Platform Edge Mobile extension allows you to send data to the Adobe Experience Platform (AEP) from a mobile application. This extension allows you to implement Adobe Experience Cloud capabilities in a more robust way, serve multiple Adobe solutions though one network call, and simultaneously forward this information to the Adobe Experience Platform.
 
-The Adobe Experience Platform Edge Mobile Extension is an extension for the [Adobe Experience Platform SDK](https://github.com/Adobe-Marketing-Cloud/acp-sdks).
+The AEP Edge Mobile Extension is an extension for the [Adobe Experience Platform SDK](https://github.com/Adobe-Marketing-Cloud/acp-sdks) and requires the `AEPCore` and `AEPServices` extensions for event handling, as well as the `AEPIdentity` extension for retrieving the ECID. 
 
 To learn more about this extension, read [Adobe Experience Platform Edge Mobile Extension](https://aep-sdks.gitbook.io/docs/beta/experience-platform-extension).
 
-## Current version
-The Adobe Experience Platform Edge Mobile extension for iOS is currently in Beta development.
+[![Cocoapods](https://img.shields.io/cocoapods/v/AEPEdge.svg?color=orange&label=AEPEdge&logo=apple&logoColor=white)](https://cocoapods.org/pods/AEPEdge)[![SPM](https://img.shields.io/badge/SPM-Supported-orange.svg?logo=apple&logoColor=white)](https://swift.org/package-manager/)[![CircleCI](https://img.shields.io/circleci/project/github/adobe/aepsdk-edge-ios/main.svg?logo=circleci)](https://circleci.com/gh/adobe/workflows/aepsdk-edge-ios)[![Code Coverage](https://img.shields.io/codecov/c/github/adobe/aepsdk-edge-ios/main.svg?logo=codecov)](https://codecov.io/gh/adobe/aepsdk-edge-ios/branch/main)
+
+## Requirements
+- Xcode 11.0 (or newer)
+- Swift 5.1 (or newer)
 
 ## Installation
 
-### Binaries
-
-To generate an `AEPEdge.xcframework`, run the following command:
-
-```
-make archive
-```
-
-This will generate the xcframework under the `build` folder. Drag and drop all the .xcframeworks to your app target.
+These are currently the supported installation options:
 
 ### [CocoaPods](https://guides.cocoapods.org/using/using-cocoapods.html)
 
@@ -35,12 +24,24 @@ This will generate the xcframework under the `build` folder. Drag and drop all t
 # Podfile
 use_frameworks!
 
+# for app development, include all the following pods
 target 'YOUR_TARGET_NAME' do
-	pod 'AEPEdge', :git => 'git@github.com:adobe/aepsdk-edge-ios.git', :branch => 'main'
-  	pod 'AEPCore', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
-  	pod 'AEPServices', :git => 'git@github.com:adobe/aepsdk-core-ios.git', :branch => 'main'
-  	pod 'AEPRulesEngine', :git => 'git@github.com:adobe/aepsdk-rulesengine-ios.git', :branch => 'main'
+  	pod 'AEPEdge'
+  	pod 'AEPCore'
+  	pod 'AEPIdentity'
 end
+
+# for extension development, include AEPCore, AEPEdge and their dependencies
+target 'YOUR_TARGET_NAME' do
+  	pod 'AEPEdge'
+  	pod 'AEPCore'
+end
+```
+
+Replace `YOUR_TARGET_NAME` and then, in the `Podfile` directory, type:
+
+```ruby
+$ pod install
 ```
 
 ### [Swift Package Manager](https://github.com/apple/swift-package-manager)
@@ -57,7 +58,7 @@ Alternatively, if your project has a `Package.swift` file, you can add AEPEdge d
 
 ```
 dependencies: [
-	.package(url: "https://github.com/adobe/aepsdk-edge-ios.git", .branch: "dev"),
+	.package(url: "https://github.com/adobe/aepsdk-edge-ios.git", .branch: "main"),
 targets: [
    	.target(name: "YourTarget",
     				dependencies: ["AEPEdge"],
@@ -65,6 +66,16 @@ targets: [
     ]
 ]
 ```
+
+### Binaries
+
+To generate an `AEPEdge.xcframework`, run the following command:
+
+```ruby
+$ make archive
+```
+
+This generates the xcframework under the `build` folder. Drag and drop all the `.xcframeworks` to your app target in Xcode.
 
 ## Development
 
@@ -95,33 +106,13 @@ You can run all the test suites from command line:
 make test
 ~~~
 
-## Setup Demo Application
-The AEP Commerce Demo application is a sample app which demonstrates how to send commerce data to Adobe Experience Platform by using the Adobe Experience Platform Mobile Extension.
+## Related Projects
 
-If this is the first time you use this application, start by creating the XDM Schema and Dataset required for it, as well as creating your Edge Configuration identifier. Here are the steps to [Generate Environment Identifier](https://aep-sdks.gitbook.io/docs/beta/experience-platform-extension/experience-platform-setup).
-
-Setup the environment by running the following from the root directory of the repository:
-
-~~~
-make pod-install
-~~~
-
-Subsequently, you can make sure your environment is updated by running the following:
-
-~~~
-make pod-update
-~~~
-
-Open the AEPCommerceDemoApp workspace in Xcode by running the following command from the root directory of the repository:
-
-~~~
-make open-app
-~~~
-
-Configure the Launch Mobile Property and set up the Environment File ID in the app. Follow these steps to [Configure the demo app](https://aep-sdks.gitbook.io/docs/beta/experience-platform-extension/commerce-demo-app-setup#configure-the-demo-app).
-
-You are now all set to start testing with this app.
-
+| Project                                                      | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [AEPCore Extensions](https://github.com/adobe/aepsdk-core-ios) | The AEPCore, AEPServices and AEPIdentity represent the foundation of the Adobe Experience Platform SDK. |
+| [AEP SDK Sample App for iOS](https://github.com/adobe/aepsdk-sample-app-ios) | Contains iOS sample apps for the AEP SDK. Apps are provided for both Objective-C and Swift implementations. |
+| [AEP SDK Sample App for Android](https://github.com/adobe/aepsdk-sample-app-android) | Contains Android sample app for the AEP SDK.                 |
 ## Contributing
 
 Contributions are welcomed! Read the [Contributing Guide](./.github/CONTRIBUTING.md) for more information.
