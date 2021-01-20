@@ -12,6 +12,7 @@
 
 import AEPCore
 import AEPServices
+import Foundation
 
 private let LOG_TAG = "Edge"
 
