@@ -16,7 +16,6 @@ PODS:
     - AEPServices (= 3.0.0)
   - AEPEdge (1.0.0):
     - AEPCore
-    - AEPServices
   - AEPIdentity (3.0.0):
     - AEPCore (= 3.0.0)
   - AEPLifecycle (3.0.0):
@@ -56,14 +55,14 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   ACPCore:
-    :commit: 00a664a625077e064158155d856480c866b186a5
+    :commit: 9db676f0a42fc19ceba06d56e032c0d13119b031
     :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
 
 SPEC CHECKSUMS:
   ACPCore: 67e4b855bf16cfb6a63024a4ddb73d15c0fd30e5
   AEPAssurance: c9c21b7e57bf993db210766631db2ef3732d4fa4
   AEPCore: 9ced1f1fddcbfd61517461e548e36aee740bf7c8
-  AEPEdge: 701a3b2a937deabe6b0de5634110a75347090747
+  AEPEdge: 90ccd6aa9901a79be123ddee03e038f0d1837508
   AEPIdentity: 79c57508bbabc8c2cf7f90e2baed15b03f4e97e6
   AEPLifecycle: ed9b2fca314eb91da83766986bad8cb914555499
   AEPRulesEngine: 8bbc694fce6900cd33b2496c7d4b33ee2eeffc46
