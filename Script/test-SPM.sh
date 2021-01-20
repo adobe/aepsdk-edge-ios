@@ -29,8 +29,8 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/adobe/aepsdk-core-ios.git", from: "3.0.0-beta.3"),
-        .package(name: \"AEPEdge\", path: \"../\"),
+        .package(name: \"AEPCore\", url: \"https://github.com/adobe/aepsdk-core-ios.git\", .branch(\"main\")),
+        .package(name: \"AEPEdge\", path: \"../\")
     ],
     targets: [
         .target(
