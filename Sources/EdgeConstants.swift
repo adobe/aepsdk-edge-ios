@@ -10,24 +10,18 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPCore
 import Foundation
 
-enum Constants {
+enum EdgeConstants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
-    static let EXTENSION_VERSION = "1.0.0-beta.2"
+    static let EXTENSION_VERSION = "1.0.0"
     static let FRIENDLY_NAME = "AEPEdge"
-
-    enum EventType {
-        static let EDGE = "com.adobe.eventType.edge"
-        static let HUB = "com.adobe.eventType.hub"
-    }
+    static let DEFAULT_PRIVACY_STATUS = PrivacyStatus.unknown
 
     enum EventSource {
         static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
-        static let SHARED_STATE = "com.adobe.eventSource.sharedState"
-        static let REQUEST_CONTENT = "com.adobe.eventSource.requestContent"
-        static let RESPONSE_CONTENT = "com.adobe.eventSource.responseContent"
     }
 
     enum EventName {
@@ -37,7 +31,7 @@ enum Constants {
     }
 
     enum Defaults {
-        static let NETWORK_REQUEST_MAX_RETRIES: UInt = 5
+        static let RETRY_INTERVAL: TimeInterval = 5
         static let RECORD_SEPARATOR: String = "\u{0000}"
         static let LINE_FEED: String = "\n"
     }
@@ -46,6 +40,7 @@ enum Constants {
         static let EDGE_REQUEST_ID = "requestId"
         static let REQUEST_EVENT_ID = "requestEventId"
         static let DATASET_ID = "datasetId"
+        static let GLOBAL_PRIVACY = "global.privacy"
     }
 
     enum DataStoreKeys {
@@ -110,11 +105,6 @@ enum Constants {
         static let HEADER_KEY_CONTENT_TYPE = "Content-Type"
         static let HEADER_KEY_AEP_VALIDATION_TOKEN = "X-Adobe-AEP-Validation-Token"
         static let HEADER_VALUE_APPLICATION_JSON = "application/json"
-        static let RETRY_INTERVAL: TimeInterval = 5
-    }
-
-    enum Error {
-        static let ENCODING_ERROR_DOMAIN = "EncodingError"
-        static let ENCODING_ERROR_CODE = 1
+        static let HEADER_KEY_RETRY_AFTER = "Retry-After"
     }
 }

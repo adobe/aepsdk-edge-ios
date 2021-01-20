@@ -16,18 +16,20 @@ import Foundation
 extension FileManager {
 
     func clearCache() {
-        if let url = self.urls(for: .cachesDirectory, in: .userDomainMask).first {
+        let knownCacheItems: [String] = ["com.adobe.edge", "com.adobe.module.identity"]
+        guard let url = self.urls(for: .cachesDirectory, in: .userDomainMask).first else {
+            return
+        }
 
+        for cacheItem in knownCacheItems {
             do {
-                try self.removeItem(at: URL(fileURLWithPath: "\(url.relativePath)/com.adobe.edge"))
+                try self.removeItem(at: URL(fileURLWithPath: "\(url.relativePath)/\(cacheItem)"))
                 if let dqService = ServiceProvider.shared.dataQueueService as? DataQueueService {
-                    _ = dqService.threadSafeDictionary.removeValue(forKey: "com.adobe.edge")
+                    _ = dqService.threadSafeDictionary.removeValue(forKey: cacheItem)
                 }
             } catch {
                 print("ERROR DESCRIPTION: \(error)")
             }
         }
-
     }
-
 }

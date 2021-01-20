@@ -66,6 +66,7 @@ class FunctionalTestBase: XCTestCase {
         FunctionalTestBase.isFirstRun = false
         EventHub.reset()
         UserDefaults.clearAll()
+        FileManager.default.clearCache()
     }
 
     /// Reset event and network request expectations and drop the items received until this point
@@ -172,7 +173,7 @@ class FunctionalTestBase: XCTestCase {
     /// Returns the `ACPExtensionEvent`(s) dispatched through the Event Hub, or empty if none was found.
     /// Use this API after calling `setExpectationEvent(type:source:count:)` to wait for the right amount of time
     /// - Parameters:
-    ///   - type: the event type as in the exectation
+    ///   - type: the event type as in the expectation
     ///   - source: the event source as in the expectation
     ///   - timeout: how long should this method wait for the expected event, in seconds; by default it waits up to 1 second
     /// - Returns: list of events with the provided `type` and `source`, or empty if none was dispatched
@@ -315,6 +316,12 @@ class FunctionalTestBase: XCTestCase {
 
         log("Connection payload is empty for network request with URL \(networkRequest.url.absoluteString), HTTPMethod \(networkRequest.httpMethod.toString())")
         return [:]
+    }
+
+    /// Sets the provided delay for all network responses, until reset
+    /// - Parameter delaySec: delay in seconds
+    func enableNetworkResponseDelay(delaySec: UInt32) {
+        FunctionalTestBase.networkService.enableDelayedResponse(delaySec: delaySec)
     }
 
     /// Print message to console if `FunctionalTestBase.debug` is true

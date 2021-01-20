@@ -15,14 +15,18 @@ import AEPCore
 import XCTest
 
 class NetworkResponseHandlerTests: XCTestCase {
-    private var networkResponseHandler = NetworkResponseHandler()
+    private var networkResponseHandler = NetworkResponseHandler { () -> PrivacyStatus in
+        return PrivacyStatus.optedIn
+    }
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let event3 = Event(name: "e3", type: "eventType", source: "eventSource", data: nil)
 
     override func setUp() {
         continueAfterFailure = false // fail so nil checks stop execution
-        networkResponseHandler = NetworkResponseHandler()
+        networkResponseHandler = NetworkResponseHandler { () -> PrivacyStatus in
+            return PrivacyStatus.optedIn
+        }
     }
 
     // MARK: addWaitingEvents, getWaitingEvents, removeWaitingEvents

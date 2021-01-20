@@ -16,23 +16,23 @@ import Foundation
 public class ExperienceEvent: NSObject {
 
     /// XDM formatted data, use an `XDMSchema` implementation for a better XDM data injestion and format control
-    public let xdm: [String: Any]?
+    @objc public let xdm: [String: Any]?
 
     /// Optional free-form data associated with this event
-    public let data: [String: Any]?
-    
+    @objc public let data: [String: Any]?
+
     /// Optional free-form query data associated with this event
-    public var query: [String: Any]?
+    @objc public var query: [String: Any]?
 
     /// Adobe Experience Platform dataset identifier, if not set the default dataset identifier set in the Edge Configuration is used
-    public let datasetIdentifier: String?
+    @objc public let datasetIdentifier: String?
 
     /// Initialize an Experience Event with the provided event data
     /// - Parameters:
     ///   - xdm:  XDM formatted data for this event, passed as a raw XDM Schema data dictionary.
     ///   - data: Any free form data in a [String : Any] dictionary structure.
     ///   - datasetIdentifier: The Experience Platform dataset identifier where this event should be sent to; if not provided, the default dataset identifier set in the Edge configuration is used
-    public init(xdm: [String: Any], data: [String: Any]? = nil, datasetIdentifier: String? = nil) {
+    @objc public init(xdm: [String: Any], data: [String: Any]? = nil, datasetIdentifier: String? = nil) {
         self.xdm = xdm
         self.data = data
         self.datasetIdentifier = datasetIdentifier
@@ -55,18 +55,18 @@ public class ExperienceEvent: NSObject {
     internal func asDictionary() -> [String: Any]? {
         var dataDict: [String: Any] = [:]
         if let unwrappedXdm = xdm {
-            dataDict = [Constants.JsonKeys.XDM: unwrappedXdm as Any]
+            dataDict = [EdgeConstants.JsonKeys.XDM: unwrappedXdm as Any]
         }
         if let unwrappedData = data {
-            dataDict[Constants.JsonKeys.DATA] = unwrappedData
+            dataDict[EdgeConstants.JsonKeys.DATA] = unwrappedData
         }
 
-        if let query = query, query.count > 0 {
-            dataDict[Constants.JsonKeys.QUERY] = query
+        if let query = query, !query.isEmpty {
+            dataDict[EdgeConstants.JsonKeys.QUERY] = query
         }
 
         if let unwrappedDatasetId = datasetIdentifier {
-            dataDict[Constants.EventDataKeys.DATASET_ID] = unwrappedDatasetId
+            dataDict[EdgeConstants.EventDataKeys.DATASET_ID] = unwrappedDatasetId
         }
         return dataDict.isEmpty ? nil : dataDict
     }

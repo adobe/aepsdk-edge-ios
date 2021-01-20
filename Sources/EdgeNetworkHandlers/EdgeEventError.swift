@@ -12,18 +12,55 @@
 
 import Foundation
 
-/// Error or warning information for a sent EdgeRequest
-struct EdgeEventError: Codable {
-
-    /// Encodes the event to which this error/warning is attached as the index in the events array in EdgeRequest
-    let eventIndex: Int?
-
+/// Error information for a sent EdgeRequest
+struct EdgeEventError: Codable, Equatable {
     /// Error message
-    let message: String?
+    let title: String?
+
+    /// Detailed message of the error
+    let detail: String?
 
     /// Error code info
-    let code: String?
+    let status: Int?
 
-    /// Error namespace info
-    let namespace: String?
+    /// Namespaced error code
+    let type: String?
+
+    /// Encodes the event to which this error is attached as the index in the events array in EdgeRequest
+    let eventIndex: Int?
+
+    /// A report for the error containing additional information
+    let report: EdgeErrorReport?
+
+    // MARK: - Codable
+    enum CodingKeys: String, CodingKey {
+        case title
+        case detail
+        case status
+        case type
+        case report
+        case eventIndex
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        // skip eventIndex when encoding
+        if let unwrapped = title { try container.encodeIfPresent(unwrapped, forKey: .title) }
+        if let unwrapped = detail { try container.encodeIfPresent(unwrapped, forKey: .detail) }
+        if let unwrapped = status { try container.encodeIfPresent(unwrapped, forKey: .status) }
+        if let unwrapped = type { try container.encodeIfPresent(unwrapped, forKey: .type) }
+        if let unwrapped = report { try container.encodeIfPresent(unwrapped, forKey: .report) }
+    }
+}
+
+// MARK: - EdgeErrorReport
+struct EdgeErrorReport: Codable, Equatable {
+    // An array of errors represented as strings
+    let errors: [String]?
+
+    /// Request ID corresponding to the error
+    let requestId: String?
+
+    /// The organization ID
+    let orgId: String?
 }

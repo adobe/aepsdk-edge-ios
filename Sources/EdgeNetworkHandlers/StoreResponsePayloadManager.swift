@@ -17,7 +17,7 @@ import Foundation
 class StoreResponsePayloadManager {
     private let LOG_TAG: String = "StoreResponsePayloadManager"
     private let dataStoreName: String
-    private let storePayloadKeyName: String = Constants.DataStoreKeys.STORE_PAYLOADS
+    private let storePayloadKeyName: String = EdgeConstants.DataStoreKeys.STORE_PAYLOADS
 
     init(_ storeName: String) {
         dataStoreName = storeName
@@ -123,6 +123,12 @@ class StoreResponsePayloadManager {
 
         ServiceProvider.shared.namedKeyValueService.set(collectionName: dataStoreName, key: storePayloadKeyName, value: serializedPayloads)
         deleteStoredResponses(keys: expiredList)
+    }
+
+    /// Deletes all the stores from the data store
+    func deleteAllStorePayloads() {
+        let dataStore = NamedCollectionDataStore(name: dataStoreName)
+        dataStore.remove(key: EdgeConstants.DataStoreKeys.STORE_PAYLOADS)
     }
 
     /// Deletes a list of stores from the data store

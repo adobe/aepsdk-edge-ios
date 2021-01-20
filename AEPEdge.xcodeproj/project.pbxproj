@@ -28,6 +28,9 @@
 		216989782554B61500B2752C /* EdgeHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989772554B61500B2752C /* EdgeHitProcessor.swift */; };
 		216989B32555376A00B2752C /* EdgeHitProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */; };
 		21888AF32555F9FC005677ED /* FileManager+Testable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21888AF22555F9FC005677ED /* FileManager+Testable.swift */; };
+		21D7B7B22562F89C0010AE25 /* EdgeEventWarning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */; };
+		21FFBD5925631E3E00B48A8F /* EdgeEventWarningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */; };
+		21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */; };
 		240E3C9924EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
 		240E3C9A24EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
 		5804F75855E57988DC5C245B /* Pods_UnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38ACBDAC9AE339F84DF409D1 /* Pods_UnitTests.framework */; };
@@ -86,7 +89,6 @@
 		BF5EECF424983B7000C72622 /* ProductData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA5249839DC00C72622 /* ProductData.swift */; };
 		BF5EECF524983B7000C72622 /* ProductDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA0249839DC00C72622 /* ProductDataLoader.swift */; };
 		BF5EECF624983B7000C72622 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA1249839DC00C72622 /* ProductViewController.swift */; };
-		BF5EECF724983B7000C72622 /* ResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EEC9C249839DC00C72622 /* ResponseHandler.swift */; };
 		BF5EECF824983B7000C72622 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECC1249839DC00C72622 /* SceneDelegate.swift */; };
 		BF5EECF924983B7000C72622 /* ShoppingCart.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECAE249839DC00C72622 /* ShoppingCart.swift */; };
 		BF5EECFA24983B7000C72622 /* ShoppingItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA4249839DC00C72622 /* ShoppingItemCell.swift */; };
@@ -105,13 +107,11 @@
 		BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */; };
 		BF947FA6244619E80057A6CC /* RequestContextDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA5244619E80057A6CC /* RequestContextDataTests.swift */; };
 		D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */; };
+		D42AEFD725A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42AEFD625A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift */; };
 		D42F36BA251C185000490C0D /* AEPEdge.h in Headers */ = {isa = PBXBuildFile; fileRef = D4D66AA2251910FB00B4866D /* AEPEdge.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D42FB8E124635FA200E9321C /* MockResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8E024635FA200E9321C /* MockResponseCallback.swift */; };
 		D44BBB75248DC54F00775DAC /* CountDownLatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BBB74248DC54F00775DAC /* CountDownLatch.swift */; };
 		D44BBB982492F5C900775DAC /* UnitTestAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BBB972492F5C900775DAC /* UnitTestAssertions.swift */; };
-		D46553F1246A123900A150E2 /* RequestCallbackHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F0246A123900A150E2 /* RequestCallbackHandlerTests.swift */; };
-		D46553F3246A138800A150E2 /* MockEdgeResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F2246A138800A150E2 /* MockEdgeResponseHandler.swift */; };
-		D46553F5246A2C7900A150E2 /* DemoResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F4246A2C7900A150E2 /* DemoResponseHandler.swift */; };
 		D46553F7246A384900A150E2 /* NetworkResponseHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F6246A384900A150E2 /* NetworkResponseHandlerTests.swift */; };
 		D4655400246CBF5E00A150E2 /* FunctionalTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */; };
 		D4655402246CD0B000A150E2 /* InstrumentedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */; };
@@ -127,6 +127,7 @@
 		D4A473CB2485A8F300D31710 /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA1244587520057A6CC /* TestUtils.swift */; };
 		D4A473CD2485AA3D00D31710 /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA1244587520057A6CC /* TestUtils.swift */; };
 		D4A473D02485B86D00D31710 /* AEPEdgeFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A473CF2485B86D00D31710 /* AEPEdgeFunctionalTests.swift */; };
+		D4A81DEC25658F0D0042B00A /* CompletionHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A81DEB25658F0D0042B00A /* CompletionHandlerTests.swift */; };
 		D4ABABAB251A7D41008076BF /* AEPEdge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D444995F2519506B0093B364 /* AEPEdge.framework */; };
 		D4ABABAE251A7D95008076BF /* AEPEdge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D444995F2519506B0093B364 /* AEPEdge.framework */; };
 		D4ABABC0251A7F5E008076BF /* AEPEdge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D444995F2519506B0093B364 /* AEPEdge.framework */; };
@@ -135,7 +136,6 @@
 		D4C6B436251A76CB0038F4F9 /* XDMFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */; };
 		D4C6B437251A76CB0038F4F9 /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */; };
 		D4C6B438251A76CB0038F4F9 /* Edge+PublicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B4EA242EBB1600CAB6E4 /* Edge+PublicAPI.swift */; };
-		D4C6B439251A76CB0038F4F9 /* EdgeResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553EC2469FBE100A150E2 /* EdgeResponseHandler.swift */; };
 		D4C6B43A251A76CB0038F4F9 /* ExperienceEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C52458CB2300E912B2 /* ExperienceEvent.swift */; };
 		D4C6B43B251A76CB0038F4F9 /* EdgeEventEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */; };
 		D4C6B43C251A76CB0038F4F9 /* EdgeEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */; };
@@ -151,11 +151,11 @@
 		D4C6B446251A76CB0038F4F9 /* RequestContextData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F83243F0D8A0057A6CC /* RequestContextData.swift */; };
 		D4C6B447251A76CB0038F4F9 /* RequestMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F79243BE3C00057A6CC /* RequestMetadata.swift */; };
 		D4C6B448251A76CB0038F4F9 /* ResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8D124610A0000E9321C /* ResponseCallback.swift */; };
-		D4C6B449251A76CB0038F4F9 /* ResponseCallbackHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */; };
+		D4C6B449251A76CB0038F4F9 /* CompletionHandlersManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */; };
 		D4C6B44A251A76CB0038F4F9 /* StateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F8E2440F0940057A6CC /* StateMetadata.swift */; };
 		D4C6B44B251A76CB0038F4F9 /* StoreResponsePayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F85243F24570057A6CC /* StoreResponsePayload.swift */; };
 		D4C6B44C251A76CB0038F4F9 /* StoreResponsePayloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */; };
-		D4C6B44D251A76CB0038F4F9 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F63243565CC0057A6CC /* Constants.swift */; };
+		D4C6B44D251A76CB0038F4F9 /* EdgeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F63243565CC0057A6CC /* EdgeConstants.swift */; };
 		D4C6B44E251A76CB0038F4F9 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F62243565CC0057A6CC /* Edge.swift */; };
 		D4D5B57D2432977F00CAB6E4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */; };
 		D4D5B57F2432977F00CAB6E4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B57E2432977F00CAB6E4 /* SceneDelegate.swift */; };
@@ -163,6 +163,7 @@
 		D4D5B5832432977F00CAB6E4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5822432977F00CAB6E4 /* Assets.xcassets */; };
 		D4D5B5862432977F00CAB6E4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5852432977F00CAB6E4 /* Preview Assets.xcassets */; };
 		D4D5B5892432977F00CAB6E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4D5B5872432977F00CAB6E4 /* LaunchScreen.storyboard */; };
+		D4DE9B6D2592B8F900EDCD50 /* CompletionHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DE9B6B2592B8F900EDCD50 /* CompletionHandlerFunctionalTests.swift */; };
 		D4EED36C2489ACE200D4815C /* FunctionalTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */; };
 		D4F74FE72447A8B800379258 /* MockNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE62447A8B800379258 /* MockNetworking.swift */; };
 		D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE82447A92800379258 /* MockURLSession.swift */; };
@@ -249,6 +250,9 @@
 		216989772554B61500B2752C /* EdgeHitProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessor.swift; sourceTree = "<group>"; };
 		216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessorTests.swift; sourceTree = "<group>"; };
 		21888AF22555F9FC005677ED /* FileManager+Testable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Testable.swift"; sourceTree = "<group>"; };
+		21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarning.swift; sourceTree = "<group>"; };
+		21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarningTests.swift; sourceTree = "<group>"; };
+		21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventErrorTests.swift; sourceTree = "<group>"; };
 		240E3C9824EF357100D44993 /* MockDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDataStore.swift; sourceTree = "<group>"; };
 		38ACBDAC9AE339F84DF409D1 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		48A9314EEF94AB3655402E38 /* Pods_AEPDemoAppSwiftUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPDemoAppSwiftUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -299,7 +303,6 @@
 		BF0C09472465E42100892B5D /* TestableEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestableEdge.swift; sourceTree = "<group>"; };
 		BF5EEC9A249839DC00C72622 /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
 		BF5EEC9B249839DC00C72622 /* CommerceUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceUtil.swift; sourceTree = "<group>"; };
-		BF5EEC9C249839DC00C72622 /* ResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseHandler.swift; sourceTree = "<group>"; };
 		BF5EEC9E249839DC00C72622 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		BF5EEC9F249839DC00C72622 /* CheckOutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOutViewController.swift; sourceTree = "<group>"; };
 		BF5EECA0249839DC00C72622 /* ProductDataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDataLoader.swift; sourceTree = "<group>"; };
@@ -322,7 +325,7 @@
 		BF5EECC2249839DC00C72622 /* AsssuranceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsssuranceViewController.swift; sourceTree = "<group>"; };
 		BF5EECE524983AE000C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF947F62243565CC0057A6CC /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Edge.swift; sourceTree = "<group>"; };
-		BF947F63243565CC0057A6CC /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		BF947F63243565CC0057A6CC /* EdgeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeConstants.swift; sourceTree = "<group>"; };
 		BF947F71243BA0BA0057A6CC /* KonductorConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KonductorConfig.swift; sourceTree = "<group>"; };
 		BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KonductorConfigTests.swift; sourceTree = "<group>"; };
 		BF947F77243BE16C0057A6CC /* EdgeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeRequest.swift; sourceTree = "<group>"; };
@@ -347,8 +350,9 @@
 		D4000F322459E2300052C536 /* EdgeNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeNetworkService.swift; sourceTree = "<group>"; };
 		D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeNetworkServiceTests.swift; sourceTree = "<group>"; };
 		D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseCallback.swift; sourceTree = "<group>"; };
+		D42AEFD625A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AEPEdge+PrivacyStatusChangeTests.swift"; sourceTree = "<group>"; };
 		D42FB8D124610A0000E9321C /* ResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallback.swift; sourceTree = "<group>"; };
-		D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallbackHandler.swift; sourceTree = "<group>"; };
+		D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionHandlersManager.swift; sourceTree = "<group>"; };
 		D42FB8DA246261E600E9321C /* EdgeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeResponse.swift; sourceTree = "<group>"; };
 		D42FB8E024635FA200E9321C /* MockResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockResponseCallback.swift; sourceTree = "<group>"; };
 		D444995F2519506B0093B364 /* AEPEdge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AEPEdge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -356,10 +360,6 @@
 		D4449B282519964E0093B364 /* libAEPServices.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAEPServices.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D44BBB74248DC54F00775DAC /* CountDownLatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountDownLatch.swift; sourceTree = "<group>"; };
 		D44BBB972492F5C900775DAC /* UnitTestAssertions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitTestAssertions.swift; sourceTree = "<group>"; };
-		D46553EC2469FBE100A150E2 /* EdgeResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeResponseHandler.swift; sourceTree = "<group>"; };
-		D46553F0246A123900A150E2 /* RequestCallbackHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestCallbackHandlerTests.swift; sourceTree = "<group>"; };
-		D46553F2246A138800A150E2 /* MockEdgeResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockEdgeResponseHandler.swift; sourceTree = "<group>"; };
-		D46553F4246A2C7900A150E2 /* DemoResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoResponseHandler.swift; sourceTree = "<group>"; };
 		D46553F6246A384900A150E2 /* NetworkResponseHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseHandlerTests.swift; sourceTree = "<group>"; };
 		D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventHandle.swift; sourceTree = "<group>"; };
 		D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventError.swift; sourceTree = "<group>"; };
@@ -372,6 +372,7 @@
 		D49A62DB250C311100B7C4A3 /* SampleFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleFunctionalTests.swift; sourceTree = "<group>"; };
 		D4A473C52485938D00D31710 /* FunctionalTestConst.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestConst.swift; sourceTree = "<group>"; };
 		D4A473CF2485B86D00D31710 /* AEPEdgeFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEPEdgeFunctionalTests.swift; sourceTree = "<group>"; };
+		D4A81DEB25658F0D0042B00A /* CompletionHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionHandlerTests.swift; sourceTree = "<group>"; };
 		D4ABABDA251A8142008076BF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		D4D5B4EA242EBB1600CAB6E4 /* Edge+PublicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Edge+PublicAPI.swift"; sourceTree = "<group>"; };
 		D4D5B5212432599B00CAB6E4 /* UnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -397,6 +398,7 @@
 		D4D66A5A25190B9800B4866D /* AEPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D66A7425190C8400B4866D /* AEPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D66AA2251910FB00B4866D /* AEPEdge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEPEdge.h; sourceTree = "<group>"; };
+		D4DE9B6B2592B8F900EDCD50 /* CompletionHandlerFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionHandlerFunctionalTests.swift; sourceTree = "<group>"; };
 		D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestNetworkService.swift; sourceTree = "<group>"; };
 		D4F74FE62447A8B800379258 /* MockNetworking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworking.swift; sourceTree = "<group>"; };
 		D4F74FE82447A92800379258 /* MockURLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLSession.swift; sourceTree = "<group>"; };
@@ -492,15 +494,15 @@
 		BF0C093B2462159400892B5D /* util */ = {
 			isa = PBXGroup;
 			children = (
+				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
+				BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */,
+				21888AF22555F9FC005677ED /* FileManager+Testable.swift */,
 				D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */,
 				D4A473C52485938D00D31710 /* FunctionalTestConst.swift */,
+				D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */,
 				D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */,
 				BF0C09472465E42100892B5D /* TestableEdge.swift */,
-				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
-				D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */,
-				BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */,
 				D48CBD2124A17EEA00A24BD8 /* TestXDMSchema.swift */,
-				21888AF22555F9FC005677ED /* FileManager+Testable.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -579,7 +581,6 @@
 				BF5EECA5249839DC00C72622 /* ProductData.swift */,
 				BF5EECA0249839DC00C72622 /* ProductDataLoader.swift */,
 				BF5EECA1249839DC00C72622 /* ProductViewController.swift */,
-				BF5EEC9C249839DC00C72622 /* ResponseHandler.swift */,
 				BF5EECC1249839DC00C72622 /* SceneDelegate.swift */,
 				BF5EECAE249839DC00C72622 /* ShoppingCart.swift */,
 				BF5EECA4249839DC00C72622 /* ShoppingItemCell.swift */,
@@ -599,11 +600,11 @@
 		D42FB8D02461086200E9321C /* EdgeNetworkHandlers */ = {
 			isa = PBXGroup;
 			children = (
-				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
 				216989642554B39900B2752C /* EdgeHit.swift */,
 				216989772554B61500B2752C /* EdgeHitProcessor.swift */,
 				D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */,
-				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
+				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
+				21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */,
 				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
 				D42FB8DA246261E600E9321C /* EdgeResponse.swift */,
 				D4000F322459E2300052C536 /* EdgeNetworkService.swift */,
@@ -615,7 +616,7 @@
 				BF947F83243F0D8A0057A6CC /* RequestContextData.swift */,
 				BF947F79243BE3C00057A6CC /* RequestMetadata.swift */,
 				D42FB8D124610A0000E9321C /* ResponseCallback.swift */,
-				D42FB8D324610F3C00E9321C /* ResponseCallbackHandler.swift */,
+				D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */,
 				BF947F8E2440F0940057A6CC /* StateMetadata.swift */,
 				BF947F85243F24570057A6CC /* StoreResponsePayload.swift */,
 				BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */,
@@ -627,7 +628,7 @@
 			isa = PBXGroup;
 			children = (
 				D4D5B4EA242EBB1600CAB6E4 /* Edge+PublicAPI.swift */,
-				D46553EC2469FBE100A150E2 /* EdgeResponseHandler.swift */,
+				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
 				1CCD27C52458CB2300E912B2 /* ExperienceEvent.swift */,
 			);
 			name = public;
@@ -678,7 +679,7 @@
 				1CCD27CD24592B2800E912B2 /* xdm */,
 				D42FB8D52462159300E9321C /* public */,
 				D42FB8D02461086200E9321C /* EdgeNetworkHandlers */,
-				BF947F63243565CC0057A6CC /* Constants.swift */,
+				BF947F63243565CC0057A6CC /* EdgeConstants.swift */,
 				BF947F62243565CC0057A6CC /* Edge.swift */,
 				D4967534251130D3001F5F95 /* Info.plist */,
 				D4D66AA2251910FB00B4866D /* AEPEdge.h */,
@@ -691,21 +692,23 @@
 			children = (
 				D4F74FEC2447A95400379258 /* utils */,
 				D4D5B5252432599B00CAB6E4 /* Info.plist */,
+				D4A81DEB25658F0D0042B00A /* CompletionHandlerTests.swift */,
 				BF947F9F244569190057A6CC /* EdgeRequestTests.swift */,
+				21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */,
+				21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */,
 				216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */,
 				D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */,
 				1CB57B242460EF0C000B2DA5 /* EdgeTests.swift */,
+				1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */,
 				BF947F81243F05BF0057A6CC /* IdentityMapTests.swift */,
 				BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */,
 				D46553F6246A384900A150E2 /* NetworkResponseHandlerTests.swift */,
 				BF947F7D243EA1300057A6CC /* RequestBuilderTests.swift */,
-				D46553F0246A123900A150E2 /* RequestCallbackHandlerTests.swift */,
 				BF947FA5244619E80057A6CC /* RequestContextDataTests.swift */,
 				BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */,
 				BF947F902440F6660057A6CC /* StateMetadataTests.swift */,
 				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */,
-				1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */,
 				1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */,
 			);
 			name = UnitTests;
@@ -717,6 +720,8 @@
 			children = (
 				BF0C093B2462159400892B5D /* util */,
 				D4A473CF2485B86D00D31710 /* AEPEdgeFunctionalTests.swift */,
+				D4DE9B6B2592B8F900EDCD50 /* CompletionHandlerFunctionalTests.swift */,
+				D42AEFD625A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift */,
 				BF024B7E24C62BED002131E9 /* IdentityStateFunctionalTests.swift */,
 				D4D5B53524325AB700CAB6E4 /* NetworkResponseHandlerFunctionalTests.swift */,
 				BF0C092324608EEC00892B5D /* NoConfigFunctionalTests.swift */,
@@ -733,7 +738,6 @@
 				D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */,
 				D4D5B57E2432977F00CAB6E4 /* SceneDelegate.swift */,
 				D4D5B5802432977F00CAB6E4 /* ContentView.swift */,
-				D46553F4246A2C7900A150E2 /* DemoResponseHandler.swift */,
 				D4D5B5822432977F00CAB6E4 /* Assets.xcassets */,
 				D4D5B5872432977F00CAB6E4 /* LaunchScreen.storyboard */,
 				D4D5B58A2432977F00CAB6E4 /* Info.plist */,
@@ -758,7 +762,6 @@
 				D4F74FE82447A92800379258 /* MockURLSession.swift */,
 				D4F74FEA2447A94900379258 /* MockTask.swift */,
 				D42FB8E024635FA200E9321C /* MockResponseCallback.swift */,
-				D46553F2246A138800A150E2 /* MockEdgeResponseHandler.swift */,
 				D44BBB972492F5C900775DAC /* UnitTestAssertions.swift */,
 			);
 			name = utils;
@@ -1315,7 +1318,6 @@
 				BF024B5B24B8FE42002131E9 /* Crashes.swift in Sources */,
 				BF5EECF524983B7000C72622 /* ProductDataLoader.swift in Sources */,
 				BF5EECF624983B7000C72622 /* ProductViewController.swift in Sources */,
-				BF5EECF724983B7000C72622 /* ResponseHandler.swift in Sources */,
 				BF024B5224B8FE42002131E9 /* Items.swift in Sources */,
 				BF5EECF824983B7000C72622 /* SceneDelegate.swift in Sources */,
 				BF024B6724B8FE42002131E9 /* Purchases.swift in Sources */,
@@ -1334,7 +1336,6 @@
 				D4C6B436251A76CB0038F4F9 /* XDMFormatters.swift in Sources */,
 				D4C6B437251A76CB0038F4F9 /* XDMProtocols.swift in Sources */,
 				D4C6B438251A76CB0038F4F9 /* Edge+PublicAPI.swift in Sources */,
-				D4C6B439251A76CB0038F4F9 /* EdgeResponseHandler.swift in Sources */,
 				D4C6B43A251A76CB0038F4F9 /* ExperienceEvent.swift in Sources */,
 				D4C6B43B251A76CB0038F4F9 /* EdgeEventEncodable.swift in Sources */,
 				D4C6B43C251A76CB0038F4F9 /* EdgeEventError.swift in Sources */,
@@ -1351,12 +1352,13 @@
 				216989782554B61500B2752C /* EdgeHitProcessor.swift in Sources */,
 				D4C6B447251A76CB0038F4F9 /* RequestMetadata.swift in Sources */,
 				D4C6B448251A76CB0038F4F9 /* ResponseCallback.swift in Sources */,
-				D4C6B449251A76CB0038F4F9 /* ResponseCallbackHandler.swift in Sources */,
+				D4C6B449251A76CB0038F4F9 /* CompletionHandlersManager.swift in Sources */,
 				216989652554B39900B2752C /* EdgeHit.swift in Sources */,
+				21D7B7B22562F89C0010AE25 /* EdgeEventWarning.swift in Sources */,
 				D4C6B44A251A76CB0038F4F9 /* StateMetadata.swift in Sources */,
 				D4C6B44B251A76CB0038F4F9 /* StoreResponsePayload.swift in Sources */,
 				D4C6B44C251A76CB0038F4F9 /* StoreResponsePayloadManager.swift in Sources */,
-				D4C6B44D251A76CB0038F4F9 /* Constants.swift in Sources */,
+				D4C6B44D251A76CB0038F4F9 /* EdgeConstants.swift in Sources */,
 				D4C6B44E251A76CB0038F4F9 /* Edge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1367,14 +1369,13 @@
 			files = (
 				240E3C9924EF357100D44993 /* MockDataStore.swift in Sources */,
 				D4A473CD2485AA3D00D31710 /* TestUtils.swift in Sources */,
+				21FFBD5925631E3E00B48A8F /* EdgeEventWarningTests.swift in Sources */,
 				BF947F912440F6660057A6CC /* StateMetadataTests.swift in Sources */,
-				D46553F1246A123900A150E2 /* RequestCallbackHandlerTests.swift in Sources */,
 				BF947FA0244569190057A6CC /* EdgeRequestTests.swift in Sources */,
 				1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */,
 				BF947F82243F05BF0057A6CC /* IdentityMapTests.swift in Sources */,
 				D42FB8E124635FA200E9321C /* MockResponseCallback.swift in Sources */,
 				BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */,
-				D46553F3246A138800A150E2 /* MockEdgeResponseHandler.swift in Sources */,
 				BF947F7E243EA1300057A6CC /* RequestBuilderTests.swift in Sources */,
 				BF947F88243F2EF70057A6CC /* StoreResponsePayloadTests.swift in Sources */,
 				D49A6294250AEEF000B7C4A3 /* UserDefaults+Test.swift in Sources */,
@@ -1388,6 +1389,8 @@
 				D4F74FEB2447A94900379258 /* MockTask.swift in Sources */,
 				D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */,
 				D46553F7246A384900A150E2 /* NetworkResponseHandlerTests.swift in Sources */,
+				21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */,
+				D4A81DEC25658F0D0042B00A /* CompletionHandlerTests.swift in Sources */,
 				D4F74FE72447A8B800379258 /* MockNetworking.swift in Sources */,
 				1CB57B262460F2B6000B2DA5 /* EdgeTests.swift in Sources */,
 				1CCD27DC245A240F00E912B2 /* ExperienceEventTests.swift in Sources */,
@@ -1398,11 +1401,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4DE9B6D2592B8F900EDCD50 /* CompletionHandlerFunctionalTests.swift in Sources */,
 				D44BBB75248DC54F00775DAC /* CountDownLatch.swift in Sources */,
 				D4A473CB2485A8F300D31710 /* TestUtils.swift in Sources */,
 				D4A473C7248595CA00D31710 /* FunctionalTestConst.swift in Sources */,
 				D4655400246CBF5E00A150E2 /* FunctionalTestBase.swift in Sources */,
 				BF0C09482465E42100892B5D /* TestableEdge.swift in Sources */,
+				D42AEFD725A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift in Sources */,
 				D4A473D02485B86D00D31710 /* AEPEdgeFunctionalTests.swift in Sources */,
 				D49A62DC250C311100B7C4A3 /* SampleFunctionalTests.swift in Sources */,
 				BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */,
@@ -1425,7 +1430,6 @@
 			files = (
 				D4D5B57D2432977F00CAB6E4 /* AppDelegate.swift in Sources */,
 				D4D5B57F2432977F00CAB6E4 /* SceneDelegate.swift in Sources */,
-				D46553F5246A2C7900A150E2 /* DemoResponseHandler.swift in Sources */,
 				D4D5B5812432977F00CAB6E4 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1549,7 +1553,6 @@
 			baseConfigurationReference = 86E54A7D2D9AB8229F95C9F8 /* Pods-AEPEdge.debug.xcconfig */;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1568,7 +1571,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = "1.0.0.beta.2";
+				MARKETING_VERSION = 1.0.0.3;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1585,7 +1588,6 @@
 			baseConfigurationReference = F1D7BF4C7EDD6B2D863FC6B0 /* Pods-AEPEdge.release.xcconfig */;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1603,7 +1605,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = "1.0.0.beta.2";
+				MARKETING_VERSION = 1.0.0.3;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
