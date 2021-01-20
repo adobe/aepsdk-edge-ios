@@ -19,9 +19,7 @@ let package = Package(
     name: "AEPEdge",
     platforms: [.iOS(.v10)],
     products: [
-        .library(name: "AEPEdge", targets: ["AEPEdge"]),
-        .library(name: "AEPEdgeStatic", type: .static, targets: ["AEPEdge"]),
-        .library(name: "AEPEdgeDynamic", type: .dynamic, targets: ["AEPEdge"])
+        .library(name: "AEPEdge", targets: ["AEPEdge"])
     ],
     dependencies: [
         .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .branch("main"))
