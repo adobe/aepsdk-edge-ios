@@ -50,7 +50,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   ACPCore:
-    :commit: 00a664a625077e064158155d856480c866b186a5
+    :commit: 9db676f0a42fc19ceba06d56e032c0d13119b031
     :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
 
 SPEC CHECKSUMS:
