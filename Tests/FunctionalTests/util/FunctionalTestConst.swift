@@ -50,5 +50,10 @@ enum FunctionalTestConst {
         static let WAIT_TIMEOUT: UInt32 = 1 // used when no expectation is set
     }
 
+    enum DataStoreKeys {
+        static let STORE_NAME = "AEPEdge"
+        static let STORE_PAYLOADS = "storePayloads"
+    }
+
     static let EX_EDGE_INTERACT_URL_STR = "https://edge.adobedc.net/ee/v1/interact"
 }

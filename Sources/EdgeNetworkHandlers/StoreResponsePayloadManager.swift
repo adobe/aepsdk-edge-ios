@@ -125,6 +125,12 @@ class StoreResponsePayloadManager {
         deleteStoredResponses(keys: expiredList)
     }
 
+    /// Deletes all the stores from the data store
+    func deleteAllStorePayloads() {
+        let dataStore = NamedCollectionDataStore(name: dataStoreName)
+        dataStore.remove(key: EdgeConstants.DataStoreKeys.STORE_PAYLOADS)
+    }
+
     /// Deletes a list of stores from the data store
     /// - Parameter keys: a list of `StoreResponsePayload.key`
     private func deleteStoredResponses(keys: [String]) {

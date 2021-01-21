@@ -17,7 +17,9 @@ import XCTest
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private let networkResponseHandler = NetworkResponseHandler()
+    private let networkResponseHandler = NetworkResponseHandler { () -> PrivacyStatus in
+        return PrivacyStatus.optedIn
+    }
 
     override func setUp() {
         super.setUp()
