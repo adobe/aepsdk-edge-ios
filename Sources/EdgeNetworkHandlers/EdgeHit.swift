@@ -14,13 +14,79 @@ import AEPCore
 import Foundation
 
 /// Struct which represents an Edge hit
-struct EdgeHit {
+protocol EdgeHit {
     /// The Edge configuration identifier
-    let configId: String
+    var configId: String { get }
 
     /// Unique identifier for this hit
-    let requestId: String
+    var requestId: String { get }
+
+    /// The `ExperienceEdgeRequestType` to be used for this `EdgeHit`
+    func getType() -> ExperienceEdgeRequestType
+
+    /// The network request payload for this `EdgeHit`
+    func getPayload() -> String?
+
+    /// Retrieves the `Streaming` settings for this `EdgHit` or nil if not enabled
+    func getStreamingSettings() -> Streaming?
+}
+
+class ExperienceEventsEdgeHit: EdgeHit {
+    var configId: String
+    var requestId: String
 
     /// The `EdgeRequest` for the corresponding hit
-    let request: EdgeRequest
+    let request: EdgeRequest?
+
+    init(configId: String, request: EdgeRequest) {
+        self.configId = configId
+        self.requestId = UUID().uuidString
+        self.request = request
+    }
+
+    func getType() -> ExperienceEdgeRequestType {
+        ExperienceEdgeRequestType.interact
+    }
+
+    func getPayload() -> String? {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted]
+
+        guard let data = try? encoder.encode(self.request) else { return nil }
+        return String(decoding: data, as: UTF8.self)
+    }
+
+    func getStreamingSettings() -> Streaming? {
+        return request?.meta?.konductorConfig?.streaming
+    }
+}
+
+class ConsentEdgeHit: EdgeHit {
+    var configId: String
+    var requestId: String
+
+    /// The `EdgeConsentUpdate` for the corresponding hit
+    let consents: EdgeConsentUpdate?
+
+    init(configId: String, consents: EdgeConsentUpdate) {
+        self.configId = configId
+        self.requestId = UUID().uuidString
+        self.consents = consents
+    }
+
+    func getType() -> ExperienceEdgeRequestType {
+        ExperienceEdgeRequestType.consent
+    }
+
+    func getPayload() -> String? {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted]
+
+        guard let data = try? encoder.encode(self.consents) else { return nil }
+        return String(decoding: data, as: UTF8.self)
+    }
+
+    func getStreamingSettings() -> Streaming? {
+        return nil
+    }
 }

@@ -72,9 +72,6 @@ class EdgeHitProcessor: HitProcessing {
 
         // Build Request object
         let requestBuilder = RequestBuilder()
-        requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
-                                               lineFeed: EdgeConstants.Defaults.LINE_FEED)
-
         if let ecid = identityState[EdgeConstants.SharedState.Identity.ECID] as? String {
             requestBuilder.experienceCloudId = ecid
         } else {
@@ -82,29 +79,37 @@ class EdgeHitProcessor: HitProcessing {
             Log.warning(label: LOG_TAG, "processHit - An unexpected error has occurred, ECID is nil.")
         }
 
-        // Build and send the network request to Experience Edge
-        let listOfEvents: [Event] = [event]
-        guard let requestPayload = requestBuilder.getRequestPayload(listOfEvents) else {
-            Log.debug(label: LOG_TAG,
-                      "processHit - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
-            completion(true)
-            return
-        }
+        if event.type == EventType.edge && event.source == EventSource.requestContent {
+            requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
+                                                   lineFeed: EdgeConstants.Defaults.LINE_FEED)
 
-        // get Assurance integration id and include it in to the requestHeaders
-        var requestHeaders: [String: String] = [:]
-        if let assuranceSharedState = getSharedState(EdgeConstants.SharedState.Assurance.STATE_OWNER_NAME, event)?.value {
-            if let assuranceIntegrationId = assuranceSharedState[EdgeConstants.SharedState.Assurance.INTEGRATION_ID] as? String {
-                requestHeaders[EdgeConstants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
+            // Build and send the network request to Experience Edge
+            let listOfEvents: [Event] = [event]
+            guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents) else {
+                Log.debug(label: LOG_TAG,
+                          "processHit - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
+                completion(true)
+                return
             }
-        }
 
-        let edgeHit = EdgeHit(configId: configId, requestId: UUID().uuidString, request: requestPayload)
-        // NOTE: the order of these events needs to be maintained as they were sent in the network request
-        // otherwise the response callback cannot be matched
-        networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
-                                                batchedEvents: listOfEvents)
-        sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: requestHeaders, completion: completion)
+            let edgeHit = ExperienceEventsEdgeHit(configId: configId, request: requestPayload)
+            // NOTE: the order of these events needs to be maintained as they were sent in the network request
+            // otherwise the response callback cannot be matched
+            networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
+                                                    batchedEvents: listOfEvents)
+            sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
+        } else if event.type == EventType.edge && event.source == EdgeConstants.EventSource.CONSENT_UPDATE {
+            // Build and send the consent network request to Experience Edge
+            guard let consentPayload = requestBuilder.getConsentPayload(event) else {
+                Log.debug(label: LOG_TAG,
+                          "processHit - Failed to build the consent payload, dropping current event '\(event.id.uuidString)'.")
+                completion(true)
+                return
+            }
+
+            let edgeHit = ConsentEdgeHit(configId: configId, consents: consentPayload)
+            sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
+        }
     }
 
     /// Sends the `edgeHit` to the network service
@@ -114,7 +119,7 @@ class EdgeHitProcessor: HitProcessing {
     ///   - headers: headers for the request
     ///   - completion: completion handler for the hit processor
     private func sendHit(entityId: String, edgeHit: EdgeHit, headers: [String: String], completion: @escaping (Bool) -> Void) {
-        guard let url = networkService.buildUrl(requestType: ExperienceEdgeRequestType.interact,
+        guard let url = networkService.buildUrl(requestType: edgeHit.getType(),
                                                 configId: edgeHit.configId,
                                                 requestId: edgeHit.requestId) else {
             Log.debug(label: LOG_TAG,
@@ -124,9 +129,11 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         let callback = NetworkResponseCallback(requestId: edgeHit.requestId, responseHandler: networkResponseHandler)
+        // todo: fix streaming retrieve
         networkService.doRequest(url: url,
-                                 requestBody: edgeHit.request,
+                                 requestBody: edgeHit.getPayload(),
                                  requestHeaders: headers,
+                                 streaming: edgeHit.getStreamingSettings(),
                                  responseCallback: callback) { [weak self] success, retryInterval in
             // remove any retry interval if success, otherwise add to retry mapping
             self?.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval
@@ -156,6 +163,20 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         return configId
+    }
+
+    /// Computes the request headers for provided `event`, including the `Assurance` integration identifier when `Assurance` is enabled
+    /// - Returns: the network request headers as `[String: String]`
+    private func getRequestHeaders(_ event: Event) -> [String: String] {
+        // get Assurance integration id and include it in to the requestHeaders
+        var requestHeaders: [String: String] = [:]
+        if let assuranceSharedState = getSharedState(EdgeConstants.SharedState.Assurance.STATE_OWNER_NAME, event)?.value {
+            if let assuranceIntegrationId = assuranceSharedState[EdgeConstants.SharedState.Assurance.INTEGRATION_ID] as? String {
+                requestHeaders[EdgeConstants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
+            }
+        }
+
+        return requestHeaders
     }
 
 }

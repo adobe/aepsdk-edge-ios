@@ -17,9 +17,11 @@ import Foundation
 /// ExperienceEdge Request Types:
 ///     - interact - makes request and expects a response
 ///     - collect - makes request without expecting a response
+///     - consent - sets user consent and expects a response
 enum ExperienceEdgeRequestType: String {
     case interact
     case collect
+    case consent = "privacy/set-consent"
 }
 
 /// Convenience enum for the known error codes
@@ -73,22 +75,19 @@ class EdgeNetworkService {
     ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
     ///   - completion: a closure that is invoked with true if the hit should not be retried, false if the hit should be retried, along with the time interval that should elapse before retrying the hit
     func doRequest(url: URL,
-                   requestBody: EdgeRequest,
+                   requestBody: String?,
                    requestHeaders: [String: String]? = [:],
+                   streaming: Streaming?,
                    responseCallback: ResponseCallback,
                    completion: @escaping (Bool, TimeInterval?) -> Void) {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted]
-
-        guard let data = try? encoder.encode(requestBody) else {
-            Log.warning(label: LOG_TAG, "doRequest - Failed to encode request to JSON, dropping this request")
+        guard let payload = requestBody, !payload.isEmpty else {
+            Log.warning(label: LOG_TAG, "doRequest - Request body is nil/empty, dropping this request")
             responseCallback.onComplete()
             completion(true, nil)
             return
         }
 
         let headers = defaultHeaders.merging(requestHeaders ?? [:]) { _, new in new}
-        let payload = String(decoding: data, as: UTF8.self)
 
         let networkRequest: NetworkRequest = NetworkRequest(url: url,
                                                             httpMethod: HttpMethod.post,
@@ -111,7 +110,7 @@ class EdgeNetworkService {
                 if responseCode == HttpResponseCodes.ok.rawValue {
                     Log.debug(label: self.LOG_TAG, "doRequest - Interact connection to Experience Edge was successful.")
                     self.handleContent(connection: connection,
-                                       streaming: requestBody.meta?.konductorConfig?.streaming,
+                                       streaming: streaming,
                                        responseCallback: responseCallback)
                     responseCallback.onComplete()
                     completion(true, nil) // successful request, return true
@@ -133,7 +132,7 @@ class EdgeNetworkService {
                     Log.debug(label: self.LOG_TAG,
                               "doRequest - Connection to Experience Edge was successful but encountered non-fatal errors/warnings. \(responseCode)")
                     self.handleContent(connection: connection,
-                                       streaming: requestBody.meta?.konductorConfig?.streaming,
+                                       streaming: streaming,
                                        responseCallback: responseCallback)
                     responseCallback.onComplete()
                     completion(true, nil) // non-fatal error, don't retry

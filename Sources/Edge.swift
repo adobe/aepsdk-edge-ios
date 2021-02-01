@@ -46,6 +46,9 @@ public class Edge: NSObject, Extension {
         registerListener(type: EventType.configuration,
                          source: EventSource.responseContent,
                          listener: handleConfigurationResponse)
+        registerListener(type: EventType.edge,
+                         source: EdgeConstants.EventSource.CONSENT_UPDATE,
+                         listener: handleConsentUpdate)
     }
 
     public func onUnregistered() {
@@ -54,7 +57,7 @@ public class Edge: NSObject, Extension {
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        if event.type == EventType.edge, event.source == EventSource.requestContent {
+        if event.type == EventType.edge, (event.source == EventSource.requestContent || event.source == EdgeConstants.EventSource.CONSENT_UPDATE) {
             let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
             let identitySharedState = getSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
@@ -105,6 +108,20 @@ public class Edge: NSObject, Extension {
         }
     }
 
+    /// Handles the Consent Update event
+    /// - Parameter event: current event to process
+    func handleConsentUpdate(_ event: Event) {
+        guard !shouldIgnore(event: event) else { return }
+
+        guard let eventData = try? JSONEncoder().encode(event) else {
+            Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode consent event with id: '\(event.id.uuidString)'.")
+            return
+        }
+
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: eventData)
+        hitQueue?.queue(entity: entity)
+    }
+
     /// Current privacy status set based on configuration update events
     /// - Returns: the current `PrivacyStatus` known by the Edge extension
     func getPrivacyStatus() -> PrivacyStatus {
@@ -115,17 +132,19 @@ public class Edge: NSObject, Extension {
     /// `readyForEvent` passed and a Configuration shared state is set.
     ///
     /// - Parameter event: the event to validate
-    /// - Returns: true when Configuration shared state is nil or the new privacy status is opted out
+    /// - Returns: true when Configuration shared state is nil or the new privacy status is opted out or collect consent is no
     private func shouldIgnore(event: Event) -> Bool {
-        guard let configSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
-                                                     event: event)?.value else {
-            Log.debug(label: LOG_TAG, "Configuration is unavailable - unable to process event '\(event.id)'.")
+        // Always ignore event when Privacy Status opted out
+        if isPrivacyOptout(event) {
             return true
         }
 
-        let privacyStatusStr = configSharedState[EdgeConstants.EventDataKeys.GLOBAL_PRIVACY] as? String ?? ""
-        let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? EdgeConstants.DEFAULT_PRIVACY_STATUS
-        return privacyStatus == .optedOut
+        if event.source == EdgeConstants.EventSource.CONSENT_UPDATE {
+            return false
+        }
+
+        let consentForEvent = getConsentForEvent(event) ?? EdgeConstants.Defaults.CONSENT
+        return consentForEvent == ConsentStatus.no
     }
 
     /// Sets up the `PersistentHitQueue` to handle `EdgeHit`s
@@ -146,5 +165,35 @@ public class Edge: NSObject, Extension {
                                             readyForEvent: readyForEvent(_:))
         hitQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
         hitQueue?.handlePrivacyChange(status: EdgeConstants.DEFAULT_PRIVACY_STATUS)
+    }
+
+    /// Retrieves the `ConsentStatus` from the Consent XDM Shared state for current `event`.
+    /// - Returns: `ConsentStatus` value or nil if not found
+    private func getConsentForEvent(_ event: Event) -> ConsentStatus? {
+        guard let consentXDMSharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Consent.XDM_SHARED_OWNER_NAME,
+                                                            event: event)?.value else {
+            Log.debug(label: LOG_TAG, "Consent XDM Shared state is unavailable for event '\(event.id)'.")
+            return nil
+        }
+
+        guard let consents = consentXDMSharedState[EdgeConstants.SharedState.Consent.CONSENTS] as? [String: Any],
+              let collectConsent = consents[EdgeConstants.SharedState.Consent.COLLECT] as? String else { return nil }
+        return ConsentStatus(rawValue: collectConsent)
+    }
+
+    /// Retrieves the `PrivacyStatus` from the Configuration Shared state for current `event`. This method should be called after
+    /// `readyForEvent` passed and a Configuration shared state is set.
+    /// - Returns: `true` when privacy is optout  or the Configuration shared state is nil
+    private func isPrivacyOptout(_ event: Event) -> Bool {
+        guard let configSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
+                                                     event: event)?.value else {
+            Log.debug(label: LOG_TAG, "Configuration is unavailable - unable to process event '\(event.id)'.")
+            return true
+        }
+
+        let privacyStatusStr = configSharedState[EdgeConstants.EventDataKeys.GLOBAL_PRIVACY] as? String ?? ""
+        let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? EdgeConstants.DEFAULT_PRIVACY_STATUS
+
+        return privacyStatus == .optedOut
     }
 }

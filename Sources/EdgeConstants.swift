@@ -22,6 +22,7 @@ enum EdgeConstants {
 
     enum EventSource {
         static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
+        static let CONSENT_UPDATE = "com.adobe.eventSource.consentUpdate"
     }
 
     enum EventName {
@@ -34,6 +35,7 @@ enum EdgeConstants {
         static let RETRY_INTERVAL: TimeInterval = 5
         static let RECORD_SEPARATOR: String = "\u{0000}"
         static let LINE_FEED: String = "\n"
+        static let CONSENT = ConsentStatus.yes // used when Consent extension not installed
     }
 
     enum EventDataKeys {
@@ -41,6 +43,7 @@ enum EdgeConstants {
         static let REQUEST_EVENT_ID = "requestEventId"
         static let DATASET_ID = "datasetId"
         static let GLOBAL_PRIVACY = "global.privacy"
+        static let CONSENTS = "consents"
     }
 
     enum DataStoreKeys {
@@ -69,6 +72,12 @@ enum EdgeConstants {
         enum Lifecycle {
             static let STATE_OWNER_NAME = "com.adobe.module.lifecycle"
         }
+
+        enum Consent {
+            static let XDM_SHARED_OWNER_NAME = "xdm.com.adobe.consent"
+            static let CONSENTS = "consents"
+            static let COLLECT = "collect"
+        }
     }
 
     enum JsonKeys {
@@ -93,6 +102,11 @@ enum EdgeConstants {
                 static let NAMESPACE = "namespace"
             }
         }
+    }
+
+    enum JsonValues {
+        static let CONSENT_STANDARD = "Adobe"
+        static let CONSENT_VERSION = "2.0"
     }
 
     enum NetworkKeys {
