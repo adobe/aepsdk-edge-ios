@@ -20,7 +20,7 @@ class EdgeNetworkServiceTests: XCTestCase {
     private var mockNetworking = MockNetworking()
     private var mockResponseCallback = MockResponseCallback()
     private var networkService = EdgeNetworkService()
-    private let edgeRequest = EdgeRequest(meta: nil, xdm: nil, events: nil)
+    private let edgeHitPayload = ExperienceEventsEdgeHit(configId: "configIdExample", request: EdgeRequest(meta: nil, xdm: nil, events: nil)).getPayload()
     private let url = URL(string: "https://test.com")! // swiftlint:disable:this force_unwrapping
     private let defaultNetworkingHeaders: [String] = ["User-Agent", "Accept-Language"]
 
@@ -37,7 +37,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // test
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url, requestBody: edgeHitPayload, requestHeaders: [:], streaming: nil, responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
             XCTAssertNil(retryInterval)
@@ -64,8 +64,9 @@ class EdgeNetworkServiceTests: XCTestCase {
 
         // test
         networkService.doRequest(url: url,
-                                 requestBody: edgeRequest,
+                                 requestBody: edgeHitPayload,
                                  requestHeaders: testHeaders,
+                                 streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval  in
                                     // verify
@@ -97,8 +98,9 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
         networkService.doRequest(url: url,
-                                 requestBody: edgeRequest,
+                                 requestBody: edgeHitPayload,
                                  requestHeaders: [:],
+                                 streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
                                     // verify
@@ -124,7 +126,12 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 204, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
             XCTAssertNil(retryInterval)
@@ -148,7 +155,12 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 207, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
             XCTAssertNil(retryInterval)
@@ -172,7 +184,12 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": "60"]),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertFalse(success)
             XCTAssertEqual(60.0, retryInterval)
@@ -194,7 +211,12 @@ class EdgeNetworkServiceTests: XCTestCase {
         // test
         let mockHttpConnection = HttpConnection(data: nil, response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: error)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
             XCTAssertNil(retryInterval)
@@ -218,7 +240,12 @@ class EdgeNetworkServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
             XCTAssertNil(retryInterval)
@@ -244,7 +271,12 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
             XCTAssertNil(retryInterval)
@@ -282,7 +314,12 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming:nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
             XCTAssertNil(retryInterval)
@@ -307,7 +344,12 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertTrue(success)
             XCTAssertNil(retryInterval)
@@ -330,7 +372,12 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": "60"]),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming:nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertFalse(success)
             XCTAssertEqual(60.0, retryInterval)
@@ -353,7 +400,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url, requestBody: edgeHitPayload, requestHeaders: [:], streaming: nil, responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
             XCTAssertFalse(success)
             XCTAssertEqual(5.0, retryInterval)
@@ -376,7 +423,12 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": ""]),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertFalse(success)
             XCTAssertEqual(5.0, retryInterval)
@@ -399,7 +451,12 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": "NotAValidRetryInterval"]),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertFalse(success)
             XCTAssertEqual(5.0, retryInterval)
@@ -422,7 +479,12 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": "60"]),
                                                 error: nil)
         mockNetworking.connectAsyncMockReturnConnection = mockHttpConnection
-        networkService.doRequest(url: url, requestBody: edgeRequest, requestHeaders: [:], responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
             // verify
             XCTAssertFalse(success)
             XCTAssertEqual(60.0, retryInterval)

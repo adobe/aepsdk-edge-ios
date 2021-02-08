@@ -28,6 +28,7 @@ class EdgeHitProcessorTests: XCTestCase {
         return ServiceProvider.shared.networkService as? MockNetworking
     }
     let expectedHeaders = ["X-Adobe-AEP-Validation-Token": "test-int-id"]
+    let experienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: nil)
 
     override func setUp() {
         ServiceProvider.shared.networkService = MockNetworking()
@@ -82,8 +83,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_readyForEventReturnsFalse() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should be retried")
-        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: resolveSharedState(extensionName:event:),
@@ -106,8 +106,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_nilConfiguration() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: { extensionName, event -> SharedStateResult? in
@@ -133,8 +132,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_noEdgeConfigId() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: { extensionName, event -> SharedStateResult? in
@@ -160,8 +158,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_noIdentitySharedState() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: { extensionName, event -> SharedStateResult? in
@@ -187,8 +184,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_noECID() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: { extensionName, event -> SharedStateResult? in
@@ -214,11 +210,10 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_happy_sendsNetworkRequest_returnsTrue() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
 
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
 
         // test
         hitProcessor.processHit(entity: entity) { success in
@@ -241,7 +236,6 @@ class EdgeHitProcessorTests: XCTestCase {
 
         let expectation = XCTestExpectation(description: "Callback should be invoked with false signaling this hit should be retried")
         expectation.expectedFulfillmentCount = recoverableNetworkErrorCodes.count
-        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
 
         // (headerValue, actualRetryValue)
         let retryValues = [("60", 60.0), ("InvalidHeader", 5.0), ("", 5.0), ("1", 1.0)]
@@ -258,7 +252,7 @@ class EdgeHitProcessorTests: XCTestCase {
                                                                                                             headerFields: ["Retry-After": retryValueTuple.0]),
                                                                                   error: nil)
 
-            let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+            let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
 
             // test
             hitProcessor.processHit(entity: entity) { success in
@@ -277,10 +271,9 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_whenUnrecoverableNetworkError_sendsNetworkRequest_returnsTrue() {
         // setup
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        let event = Event(name: "test-event", type: EventType.custom, source: EventSource.requestContent, data: nil)
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: -1, httpVersion: nil, headerFields: nil), error: nil)
 
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(event))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
 
         // test
         hitProcessor.processHit(entity: entity) { success in
