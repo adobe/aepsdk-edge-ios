@@ -35,7 +35,7 @@ enum EdgeConstants {
         static let RETRY_INTERVAL: TimeInterval = 5
         static let RECORD_SEPARATOR: String = "\u{0000}"
         static let LINE_FEED: String = "\n"
-        static let CONSENT = ConsentStatus.yes // used when Consent extension not installed
+        static let CONSENT = ConsentStatus.yes // used until Consent is first set
     }
 
     enum EventDataKeys {
@@ -74,7 +74,7 @@ enum EdgeConstants {
         }
 
         enum Consent {
-            static let XDM_SHARED_OWNER_NAME = "xdm.com.adobe.consent"
+            static let SHARED_OWNER_NAME = "com.adobe.consent"
             static let CONSENTS = "consents"
             static let COLLECT = "collect"
         }
