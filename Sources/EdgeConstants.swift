@@ -22,7 +22,6 @@ enum EdgeConstants {
 
     enum EventSource {
         static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
-        static let CONSENT_UPDATE = "com.adobe.eventSource.consentUpdate"
     }
 
     enum EventName {

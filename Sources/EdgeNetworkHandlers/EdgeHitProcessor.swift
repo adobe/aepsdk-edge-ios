@@ -100,7 +100,7 @@ class EdgeHitProcessor: HitProcessing {
             networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
                                                     batchedEvents: listOfEvents)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
-        } else if event.type == EventType.edge && event.source == EdgeConstants.EventSource.CONSENT_UPDATE {
+        } else if event.type == EventType.edge && event.source == EventSource.updateConsent {
             // Build and send the consent network request to Experience Edge
             guard let consentPayload = requestBuilder.getConsentPayload(event) else {
                 Log.debug(label: LOG_TAG,

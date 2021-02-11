@@ -47,7 +47,7 @@ public class Edge: NSObject, Extension {
                          source: EventSource.responseContent,
                          listener: handleConfigurationResponse)
         registerListener(type: EventType.edge,
-                         source: EdgeConstants.EventSource.CONSENT_UPDATE,
+                         source: EventSource.updateConsent,
                          listener: handleConsentUpdate)
     }
 
@@ -57,7 +57,7 @@ public class Edge: NSObject, Extension {
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        if event.type == EventType.edge, (event.source == EventSource.requestContent || event.source == EdgeConstants.EventSource.CONSENT_UPDATE) {
+        if event.type == EventType.edge, (event.source == EventSource.requestContent || event.source == EventSource.updateConsent) {
             let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
             let identitySharedState = getSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
@@ -112,6 +112,11 @@ public class Edge: NSObject, Extension {
     func handleConsentUpdate(_ event: Event) {
         guard !shouldIgnore(event: event) else { return }
 
+        if event.data == nil {
+            Log.trace(label: LOG_TAG, "handleConsentUpdate - Event with id \(event.id.uuidString) contained no data, ignoring.")
+            return
+        }
+
         guard let eventData = try? JSONEncoder().encode(event) else {
             Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode consent event with id: '\(event.id.uuidString)'.")
             return
@@ -139,7 +144,7 @@ public class Edge: NSObject, Extension {
             return true
         }
 
-        if event.source == EdgeConstants.EventSource.CONSENT_UPDATE {
+        if event.source == EventSource.updateConsent {
             return false
         }
 
