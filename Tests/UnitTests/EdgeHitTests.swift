@@ -44,7 +44,7 @@ class EdgeHitTests: XCTestCase {
         encoder.outputFormatting = [.prettyPrinted]
         let json = """
                     {"events" : [{"test" : "data"}]}
-                    """.data(using: .utf8)!
+                    """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
 
         let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let edgeHit = ExperienceEventsEdgeHit(configId: CONFIG_ID, request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]]))
@@ -61,7 +61,7 @@ class EdgeHitTests: XCTestCase {
                         }
                     },
                 "events" : [{  "test" : "data"}]}
-                """.data(using: .utf8)!
+                """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
         let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit = ExperienceEventsEdgeHit(configId: CONFIG_ID, request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil), xdm: nil, events: [["test": "data"]]))
@@ -88,7 +88,7 @@ class EdgeHitTests: XCTestCase {
                     }}
                 ]
             }
-            """.data(using: .utf8)!
+            """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
         let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let edgeHit = ConsentEdgeHit(configId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
 

@@ -32,6 +32,7 @@ class EdgeHitProcessorTests: XCTestCase {
     let expectedHeaders = ["X-Adobe-AEP-Validation-Token": "test-int-id"]
     let experienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
     let consentUpdateEvent = Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]]])
+    let url = URL(string: "adobe.com")! // swiftlint:disable:this force_unwrapping
 
     override func setUp() {
         ServiceProvider.shared.networkService = MockNetworking()
@@ -164,7 +165,7 @@ class EdgeHitProcessorTests: XCTestCase {
     /// Tests that when a good hit is processed that a network request is made and the request returns 200
     func testProcessHit_experienceEvent_happy_sendsNetworkRequest_returnsTrue() {
         // setup
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
 
@@ -192,7 +193,7 @@ class EdgeHitProcessorTests: XCTestCase {
             let responseData = try? JSONEncoder().encode(edgeResponse)
 
             mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData,
-                                                                                  response: HTTPURLResponse(url: URL(string: "adobe.com")!,
+                                                                                  response: HTTPURLResponse(url: url,
                                                                                                             statusCode: code,
                                                                                                             httpVersion: nil,
                                                                                                             headerFields: ["Retry-After": retryValueTuple.0]),
@@ -216,7 +217,7 @@ class EdgeHitProcessorTests: XCTestCase {
     /// Tests that when the network request fails and does not have a recoverable response code that we invoke the response handler and do not retry the hit
     func testProcessHit_experienceEvent_whenUnrecoverableNetworkError_sendsNetworkRequest_returnsTrue() {
         // setup
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: -1, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: -1, httpVersion: nil, headerFields: nil), error: nil)
 
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
 
@@ -227,7 +228,7 @@ class EdgeHitProcessorTests: XCTestCase {
 
     func testProcessHit_experienceEvent_nilData_doesNotSendNetworkRequest_returnsTrue() {
         // setup
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: nil)))
 
         // test
@@ -242,7 +243,7 @@ class EdgeHitProcessorTests: XCTestCase {
     // MARK: - Consent Update
     func testProcessHit_consentUpdateEvent_happy_sendsNetworkRequest_returnsTrue() {
         // setup
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(consentUpdateEvent))
 
         // test
@@ -263,7 +264,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func assertProcessHit(entity: DataEntity, sendsNetworkRequest: Bool, returns: Bool, line: UInt = #line) {
         let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
 
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
         // test
         hitProcessor.processHit(entity: entity) { success in

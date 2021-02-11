@@ -831,7 +831,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
              }
          """.data(using: .utf8)
         let decoder = JSONDecoder()
-        return try! decoder.decode(EdgeEventError.self, from: data!)
+        return try! decoder.decode(EdgeEventError.self, from: data!) // swiftlint:disable:this force_unwrapping
     }
 
     func getEdgeEventError(message: String, code: String, namespace: String, index: Int) -> EdgeEventError {
@@ -844,7 +844,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
              }
          """.data(using: .utf8)
         let decoder = JSONDecoder()
-        return try! decoder.decode(EdgeEventError.self, from: data!)
+        return try! decoder.decode(EdgeEventError.self, from: data!) // swiftlint:disable:this force_unwrapping
     }
 }
 
