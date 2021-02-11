@@ -160,6 +160,7 @@ class CompletionHandlerFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_withCompletionHandler_whenServerErrorAndHandle_callsCompletion() {
+        // swiftlint:disable:next line_length
         let responseBodyWithHandleAndError = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\"}],\"errors\": [{\"message\": \"An error occurred while calling the 'X' service for this request. Please try again.\", \"code\": \"502\"}, {\"message\": \"An error occurred while calling the 'Y', service unavailable\", \"code\": \"503\"}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBodyWithHandleAndError.data(using: .utf8),
                                                             response: HTTPURLResponse(url: edgeUrl,

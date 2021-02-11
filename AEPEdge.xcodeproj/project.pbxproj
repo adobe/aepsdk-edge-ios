@@ -107,6 +107,7 @@
 		BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */; };
 		BF947FA6244619E80057A6CC /* RequestContextDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA5244619E80057A6CC /* RequestContextDataTests.swift */; };
 		D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */; };
+		D4145F4025D1D3200019EA4C /* EdgeHitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */; };
 		D42AEFD725A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42AEFD625A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift */; };
 		D42F36BA251C185000490C0D /* AEPEdge.h in Headers */ = {isa = PBXBuildFile; fileRef = D4D66AA2251910FB00B4866D /* AEPEdge.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D42FB8E124635FA200E9321C /* MockResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8E024635FA200E9321C /* MockResponseCallback.swift */; };
@@ -353,6 +354,7 @@
 		D4000F322459E2300052C536 /* EdgeNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeNetworkService.swift; sourceTree = "<group>"; };
 		D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeNetworkServiceTests.swift; sourceTree = "<group>"; };
 		D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseCallback.swift; sourceTree = "<group>"; };
+		D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitTests.swift; sourceTree = "<group>"; };
 		D42AEFD625A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AEPEdge+PrivacyStatusChangeTests.swift"; sourceTree = "<group>"; };
 		D42FB8D124610A0000E9321C /* ResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallback.swift; sourceTree = "<group>"; };
 		D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionHandlersManager.swift; sourceTree = "<group>"; };
@@ -705,6 +707,7 @@
 				BF947F9F244569190057A6CC /* EdgeRequestTests.swift */,
 				21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */,
 				21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */,
+				D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */,
 				216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */,
 				D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */,
 				1CB57B242460EF0C000B2DA5 /* EdgeTests.swift */,
@@ -1397,6 +1400,7 @@
 				BF947F74243BA0E10057A6CC /* KonductorConfigTests.swift in Sources */,
 				BF947FA6244619E80057A6CC /* RequestContextDataTests.swift in Sources */,
 				D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */,
+				D4145F4025D1D3200019EA4C /* EdgeHitTests.swift in Sources */,
 				216989B32555376A00B2752C /* EdgeHitProcessorTests.swift in Sources */,
 				D4F74FEB2447A94900379258 /* MockTask.swift in Sources */,
 				D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */,

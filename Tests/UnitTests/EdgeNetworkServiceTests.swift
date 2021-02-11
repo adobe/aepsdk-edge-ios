@@ -20,7 +20,7 @@ class EdgeNetworkServiceTests: XCTestCase {
     private var mockNetworking = MockNetworking()
     private var mockResponseCallback = MockResponseCallback()
     private var networkService = EdgeNetworkService()
-    private let edgeHitPayload = ExperienceEventsEdgeHit(configId: "configIdExample", request: EdgeRequest(meta: nil, xdm: nil, events: nil)).getPayload()
+    private let edgeHitPayload = ExperienceEventsEdgeHit(configId: "configIdExample", request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]])).getPayload()
     private let url = URL(string: "https://test.com")! // swiftlint:disable:this force_unwrapping
     private let defaultNetworkingHeaders: [String] = ["User-Agent", "Accept-Language"]
 
@@ -132,15 +132,15 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertTrue(success)
-            XCTAssertNil(retryInterval)
-            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-            XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
-            XCTAssertEqual([], self.mockResponseCallback.onResponseJsonResponse)
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertTrue(success)
+                                    XCTAssertNil(retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
+                                    XCTAssertEqual([], self.mockResponseCallback.onResponseJsonResponse)
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -161,15 +161,15 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertTrue(success)
-            XCTAssertNil(retryInterval)
-            XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
-            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-            XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
-            XCTAssertEqual([stringResponseBody], self.mockResponseCallback.onResponseJsonResponse)
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertTrue(success)
+                                    XCTAssertNil(retryInterval)
+                                    XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
+                                    XCTAssertEqual([stringResponseBody], self.mockResponseCallback.onResponseJsonResponse)
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -190,15 +190,15 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertFalse(success)
-            XCTAssertEqual(60.0, retryInterval)
-            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-            XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
-            XCTAssertEqual([], self.mockResponseCallback.onResponseJsonResponse)
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertFalse(success)
+                                    XCTAssertEqual(60.0, retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
+                                    XCTAssertEqual([], self.mockResponseCallback.onResponseJsonResponse)
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -217,17 +217,17 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertTrue(success)
-            XCTAssertNil(retryInterval)
-            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-            XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
-            XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
-            let errorJson = self.mockResponseCallback.onErrorJsonError[0]
-            XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
-            XCTAssertTrue(errorJson.contains("\"message\":\"service unavailable\""))
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertTrue(success)
+                                    XCTAssertNil(retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
+                                    let errorJson = self.mockResponseCallback.onErrorJsonError[0]
+                                    XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
+                                    XCTAssertTrue(errorJson.contains("\"message\":\"service unavailable\""))
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -246,17 +246,17 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertTrue(success)
-            XCTAssertNil(retryInterval)
-            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-            XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
-            XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
-            let errorJson = self.mockResponseCallback.onErrorJsonError[0]
-            XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
-            XCTAssertTrue(errorJson.contains("\"message\":\"Request to Experience Edge failed with an unknown exception\""))
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertTrue(success)
+                                    XCTAssertNil(retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
+                                    let errorJson = self.mockResponseCallback.onErrorJsonError[0]
+                                    XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
+                                    XCTAssertTrue(errorJson.contains("\"message\":\"Request to Experience Edge failed with an unknown exception\""))
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -277,17 +277,17 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertTrue(success)
-            XCTAssertNil(retryInterval)
-            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-            XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
-            XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
-            let errorJson = self.mockResponseCallback.onErrorJsonError[0]
-            XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
-            XCTAssertTrue(errorJson.contains("\"message\":\"Internal Server Error\""))
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertTrue(success)
+                                    XCTAssertNil(retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
+                                    let errorJson = self.mockResponseCallback.onErrorJsonError[0]
+                                    XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
+                                    XCTAssertTrue(errorJson.contains("\"message\":\"Internal Server Error\""))
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -317,19 +317,19 @@ class EdgeNetworkServiceTests: XCTestCase {
         networkService.doRequest(url: url,
                                  requestBody: edgeHitPayload,
                                  requestHeaders: [:],
-                                 streaming:nil,
+                                 streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertTrue(success)
-            XCTAssertNil(retryInterval)
-            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-            XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
-            XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
-            let errorJson = self.mockResponseCallback.onErrorJsonError[0]
-            XCTAssertTrue(errorJson.contains(stringResponseBody))
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertTrue(success)
+                                    XCTAssertNil(retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
+                                    let errorJson = self.mockResponseCallback.onErrorJsonError[0]
+                                    XCTAssertTrue(errorJson.contains(stringResponseBody))
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -350,14 +350,14 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertTrue(success)
-            XCTAssertNil(retryInterval)
-            XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
-            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-            XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertTrue(success)
+                                    XCTAssertNil(retryInterval)
+                                    XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -375,17 +375,17 @@ class EdgeNetworkServiceTests: XCTestCase {
         networkService.doRequest(url: url,
                                  requestBody: edgeHitPayload,
                                  requestHeaders: [:],
-                                 streaming:nil,
+                                 streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertFalse(success)
-            XCTAssertEqual(60.0, retryInterval)
-            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-            XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertFalse(success)
+                                    XCTAssertEqual(60.0, retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -429,14 +429,14 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertFalse(success)
-            XCTAssertEqual(5.0, retryInterval)
-            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-            XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertFalse(success)
+                                    XCTAssertEqual(5.0, retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -457,14 +457,14 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertFalse(success)
-            XCTAssertEqual(5.0, retryInterval)
-            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-            XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertFalse(success)
+                                    XCTAssertEqual(5.0, retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -485,14 +485,14 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval in
-            // verify
-            XCTAssertFalse(success)
-            XCTAssertEqual(60.0, retryInterval)
-            XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-            XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-            XCTAssertFalse(self.mockResponseCallback.onCompleteCalled) // hit can be retried don't invoke onComplete
-            expectation.fulfill()
-        })
+                                    // verify
+                                    XCTAssertFalse(success)
+                                    XCTAssertEqual(60.0, retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onCompleteCalled) // hit can be retried don't invoke onComplete
+                                    expectation.fulfill()
+                                 })
 
         wait(for: [expectation], timeout: 0.5)
     }

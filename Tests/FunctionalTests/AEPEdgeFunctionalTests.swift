@@ -680,9 +680,11 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
     func testSendEvent_multiStatusResponse_dispatchesEvents() {
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        // swiftlint:disable line_length
         let response = """
                             {"requestId":"72eaa048-207e-4dde-bf16-0cb2b21336d5","handle":[],"errors":[{"type":"https://ns.adobe.com/aep/errors/EXEG-0201-504","status":504,"title":"The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.","eventIndex":0}],"warnings":[{"type":"https://ns.adobe.com/aep/errors/EXEG-0204-200","status":200,"title":"A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.","eventIndex":0,"report":{"cause":{"message":"Cannot read related customer for device id: ...","code":202}}}]}
                            """
+        // swiftlint:enable line_length
         let responseConnection: HttpConnection = HttpConnection(data: response.data(using: .utf8),
                                                                 response: HTTPURLResponse(url: exEdgeInteractUrl,
                                                                                           statusCode: 207,

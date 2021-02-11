@@ -40,9 +40,11 @@ class EdgeHitProcessor: HitProcessing {
     }
 
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
-        guard let data = entity.data, let event = try? JSONDecoder().decode(Event.self, from: data) else {
+        guard let data = entity.data, let event = try? JSONDecoder().decode(Event.self, from: data),
+              let eventData = event.data, !eventData.isEmpty
+        else {
             // can't convert data to hit, unrecoverable error, move to next hit
-            Log.debug(label: LOG_TAG, "processHit - Failed to decode edge hit with id '\(entity.uniqueIdentifier)'.")
+            Log.debug(label: LOG_TAG, "processHit - Failed to decode edge hit with id '\(entity.uniqueIdentifier)' or empty data.")
             completion(true)
             return
         }
@@ -123,7 +125,7 @@ class EdgeHitProcessor: HitProcessing {
                                                 configId: edgeHit.configId,
                                                 requestId: edgeHit.requestId) else {
             Log.debug(label: LOG_TAG,
-                      "handleExperienceEventRequest - Failed to build the URL, dropping current request with request id '\(edgeHit.requestId)'.")
+                      "sendHit - Failed to build the URL, dropping current request with request id '\(edgeHit.requestId)'.")
             completion(true)
             return
         }

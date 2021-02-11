@@ -32,8 +32,8 @@ protocol EdgeHit {
 }
 
 class ExperienceEventsEdgeHit: EdgeHit {
-    var configId: String
-    var requestId: String
+    let configId: String
+    let requestId: String
 
     /// The `EdgeRequest` for the corresponding hit
     let request: EdgeRequest?
@@ -49,6 +49,10 @@ class ExperienceEventsEdgeHit: EdgeHit {
     }
 
     func getPayload() -> String? {
+        guard let events = request?.events, !events.isEmpty else {
+            return nil
+        }
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
 
@@ -62,8 +66,8 @@ class ExperienceEventsEdgeHit: EdgeHit {
 }
 
 class ConsentEdgeHit: EdgeHit {
-    var configId: String
-    var requestId: String
+    let configId: String
+    let requestId: String
 
     /// The `EdgeConsentUpdate` for the corresponding hit
     let consents: EdgeConsentUpdate?
