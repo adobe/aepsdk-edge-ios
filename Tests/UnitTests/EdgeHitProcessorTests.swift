@@ -31,7 +31,7 @@ class EdgeHitProcessorTests: XCTestCase {
     }
     let expectedHeaders = ["X-Adobe-AEP-Validation-Token": "test-int-id"]
     let experienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
-    let consentUpdateEvent = Event(name: "test-consent-event", type: EventType.edge, source: EventSource.consentUpdate, data: ["consents": ["collect": ["val": "y"]]])
+    let consentUpdateEvent = Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]]])
 
     override func setUp() {
         ServiceProvider.shared.networkService = MockNetworking()
@@ -228,7 +228,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_experienceEvent_nilData_doesNotSendNetworkRequest_returnsTrue() {
         // setup
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: URL(string: "adobe.com")!, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(Event(name: "test-consent-event", type: EventType.edge, source: EventSource.consentUpdate, data: nil)))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: nil)))
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
@@ -251,12 +251,12 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     func testProcessHit_consentUpdateEvent_emptyData_doesNotSendNetworkRequest_returnsTrue() {
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(Event(name: "test-consent-event", type: EventType.edge, source: EventSource.consentUpdate, data: nil)))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: nil)))
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
 
     func testProcessHit_consentUpdateEvent_emptyPayloadDueToInvalidData_doesNotSendNetworkRequest_returnsTrue() {
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(Event(name: "test-consent-event", type: EventType.edge, source: EventSource.consentUpdate, data: ["some": "consent"])))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: ["some": "consent"])))
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
 
