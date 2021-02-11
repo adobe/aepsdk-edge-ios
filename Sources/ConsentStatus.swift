@@ -15,5 +15,4 @@ import Foundation
 enum ConsentStatus: String, Codable, Equatable {
     case yes = "y"
     case no = "n"
-    case pending = "p"
 }
