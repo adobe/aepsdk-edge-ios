@@ -57,7 +57,7 @@ public class Edge: NSObject, Extension {
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        if event.type == EventType.edge, (event.source == EventSource.requestContent || event.source == EventSource.updateConsent) {
+        if event.isExperienceEvent || event.isUpdateConsentEvent {
             let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
             let identitySharedState = getSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,

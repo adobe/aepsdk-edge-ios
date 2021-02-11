@@ -81,7 +81,7 @@ class EdgeHitProcessor: HitProcessing {
             Log.warning(label: LOG_TAG, "processHit - An unexpected error has occurred, ECID is nil.")
         }
 
-        if event.type == EventType.edge && event.source == EventSource.requestContent {
+        if event.isExperienceEvent {
             requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                    lineFeed: EdgeConstants.Defaults.LINE_FEED)
 
@@ -100,7 +100,7 @@ class EdgeHitProcessor: HitProcessing {
             networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
                                                     batchedEvents: listOfEvents)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
-        } else if event.type == EventType.edge && event.source == EventSource.updateConsent {
+        } else if event.isUpdateConsentEvent {
             // Build and send the consent network request to Experience Edge
             guard let consentPayload = requestBuilder.getConsentPayload(event) else {
                 Log.debug(label: LOG_TAG,
@@ -131,7 +131,6 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         let callback = NetworkResponseCallback(requestId: edgeHit.requestId, responseHandler: networkResponseHandler)
-        // todo: fix streaming retrieve
         networkService.doRequest(url: url,
                                  requestBody: edgeHit.getPayload(),
                                  requestHeaders: headers,
