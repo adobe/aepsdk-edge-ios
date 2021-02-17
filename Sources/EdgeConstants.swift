@@ -76,6 +76,7 @@ enum EdgeConstants {
             static let SHARED_OWNER_NAME = "com.adobe.consent"
             static let CONSENTS = "consents"
             static let COLLECT = "collect"
+            static let VAL = "val"
         }
     }
 

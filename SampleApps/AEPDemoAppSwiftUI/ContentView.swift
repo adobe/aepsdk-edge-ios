@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPConsent
 import AEPCore
 import AEPEdge
 import AEPIdentity
@@ -49,22 +50,18 @@ struct ContentView: View {
             HStack {
                 Text("Collect consent: ")
                 Button(action: {
-                    let consentUpdate = Event(name: "Consent Update", type: EventType.consent, source: EventSource.updateConsent, data: [
-                        "consents": [
-                            "collect": ["val": "y"]
-                        ]
-                    ])
-                    MobileCore.dispatch(event: consentUpdate)
+                    let consents = Consents()
+                    consents.collect = ConsentValue(.yes)
+                    Consent.updateConsents(consents: consents)
+                    printCurrentConsent()
                 }) {
                     Text("yes")
                 }
                 Button(action: {
-                    let consentUpdate = Event(name: "Consent Update", type: EventType.consent, source: EventSource.updateConsent, data: [
-                        "consents": [
-                            "collect": ["val": "n"]
-                        ]
-                    ])
-                    MobileCore.dispatch(event: consentUpdate)
+                    let consents = Consents()
+                    consents.collect = ConsentValue(.no)
+                    Consent.updateConsents(consents: consents)
+                    printCurrentConsent()
                 }) {
                     Text("no")
                 }
@@ -78,9 +75,17 @@ struct ContentView: View {
                         Log.debug(label: "AEPDemoApp", "Received handle with type \(handle.type ?? "unknown"), payload: \(handle.payload ?? [])")
                     }
                 })
+                printCurrentConsent()
             }) {
                 Text("Ping to ExEdge")
             }
+        }
+    }
+
+    private func printCurrentConsent() {
+        Consent.getConsents { (consents: Consents?, error: Error?) in
+            guard error == nil, let consents = consents else { return }
+            print("Current consent \(consents.asDictionary(dateEncodingStrategy: .iso8601) ?? [:])")
         }
     }
 

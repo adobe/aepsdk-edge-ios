@@ -191,8 +191,9 @@ public class Edge: NSObject, Extension {
 
     private func extractConsentStatus(eventData: [String: Any]) -> ConsentStatus? {
         guard let consents = eventData[EdgeConstants.SharedState.Consent.CONSENTS] as? [String: Any],
-              let collectConsent = consents[EdgeConstants.SharedState.Consent.COLLECT] as? String else { return nil }
-        return ConsentStatus(rawValue: collectConsent)
+              let collectConsent = consents[EdgeConstants.SharedState.Consent.COLLECT] as? [String: Any],
+              let collectConsentValue = collectConsent[EdgeConstants.SharedState.Consent.VAL] as? String else { return nil }
+        return ConsentStatus(rawValue: collectConsentValue)
     }
 
     /// Retrieves the `PrivacyStatus` from the Configuration Shared state for current `event`. This method should be called after
