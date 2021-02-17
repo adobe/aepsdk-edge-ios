@@ -59,7 +59,6 @@ enum EdgeConstants {
 
         enum Identity {
             static let STATE_OWNER_NAME = "com.adobe.module.identity"
-            static let ECID = "mid"
             static let IDENTITY_MAP = "identityMap"
         }
         enum Assurance {
