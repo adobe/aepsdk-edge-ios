@@ -12,7 +12,7 @@
 
 @testable import AEPCore
 @testable import AEPEdge
-import AEPIdentity
+import AEPIdentityEdge
 import AEPServices
 import Foundation
 import XCTest
@@ -34,15 +34,12 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false
         FileManager.default.clearCache()
 
-        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, Edge), Identity and Config shared state updates
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
+        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge), IdentityEdge standard, IdentityEdge XDM and Config shared state updates
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 5)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
-
-        // expectations for Identity force sync
-        setExpectationEvent(type: FunctionalTestConst.EventType.IDENTITY, source: FunctionalTestConst.EventSource.RESPONSE_IDENTITY, expectedCount: 2)
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)

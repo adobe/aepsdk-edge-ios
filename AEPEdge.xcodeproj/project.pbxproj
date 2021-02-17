@@ -137,7 +137,6 @@
 		D4C6B437251A76CB0038F4F9 /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */; };
 		D4C6B438251A76CB0038F4F9 /* Edge+PublicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B4EA242EBB1600CAB6E4 /* Edge+PublicAPI.swift */; };
 		D4C6B43A251A76CB0038F4F9 /* ExperienceEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C52458CB2300E912B2 /* ExperienceEvent.swift */; };
-		D4C6B43B251A76CB0038F4F9 /* EdgeEventEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */; };
 		D4C6B43C251A76CB0038F4F9 /* EdgeEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */; };
 		D4C6B43D251A76CB0038F4F9 /* EdgeEventHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */; };
 		D4C6B43E251A76CB0038F4F9 /* EdgeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F77243BE16C0057A6CC /* EdgeRequest.swift */; };
@@ -388,7 +387,6 @@
 		D4D5B5852432977F00CAB6E4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D4D5B5882432977F00CAB6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D4D5B58A2432977F00CAB6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventEncodable.swift; sourceTree = "<group>"; };
 		D4D669112514278200B4866D /* AEPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D669132514278200B4866D /* AEPRulesEngine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPRulesEngine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D669152514278200B4866D /* AEPServices.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPServices.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -602,7 +600,6 @@
 			children = (
 				216989642554B39900B2752C /* EdgeHit.swift */,
 				216989772554B61500B2752C /* EdgeHitProcessor.swift */,
-				D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */,
 				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
 				21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */,
 				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
@@ -1337,7 +1334,6 @@
 				D4C6B437251A76CB0038F4F9 /* XDMProtocols.swift in Sources */,
 				D4C6B438251A76CB0038F4F9 /* Edge+PublicAPI.swift in Sources */,
 				D4C6B43A251A76CB0038F4F9 /* ExperienceEvent.swift in Sources */,
-				D4C6B43B251A76CB0038F4F9 /* EdgeEventEncodable.swift in Sources */,
 				D4C6B43C251A76CB0038F4F9 /* EdgeEventError.swift in Sources */,
 				D4C6B43D251A76CB0038F4F9 /* EdgeEventHandle.swift in Sources */,
 				D4C6B43E251A76CB0038F4F9 /* EdgeRequest.swift in Sources */,

@@ -31,7 +31,9 @@ class RequestBuilderTests: XCTestCase {
     func testGetRequestPayload_allParameters_verifyMetadata() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        var identityMap = IdentityMap()
+        identityMap.addItem(namespace: "ECID", id: "ecid")
+        request.identityMap = identityMap
 
         let event = Event(name: "Request Test",
                           type: "type",
@@ -53,7 +55,9 @@ class RequestBuilderTests: XCTestCase {
     func testGetRequestPayload_withEventXdm_verifyEventId_verifyTimestamp() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        var identityMap = IdentityMap()
+        identityMap.addItem(namespace: "ECID", id: "ecid")
+        request.identityMap = identityMap
 
         var events: [Event] = []
 
@@ -86,7 +90,9 @@ class RequestBuilderTests: XCTestCase {
 
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        var identityMap = IdentityMap()
+        identityMap.addItem(namespace: "ECID", id: "ecid")
+        request.identityMap = identityMap
 
         let event = Event(name: "Request Test",
                           type: "type",
@@ -103,7 +109,9 @@ class RequestBuilderTests: XCTestCase {
     func testGetRequestPayload_withoutStorePayload_responseDoesNotContainsStateEntries() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        var identityMap = IdentityMap()
+        identityMap.addItem(namespace: "ECID", id: "ecid")
+        request.identityMap = identityMap
 
         let event = Event(name: "Request Test",
                           type: "type",

@@ -8,42 +8,42 @@ workspace 'AEPEdge'
 project 'AEPEdge.xcodeproj'
 
 target 'AEPEdge' do
-  pod 'AEPCore'
-  pod 'AEPServices'
+  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
+  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
   pod 'AEPRulesEngine'
 end
 
 target 'UnitTests' do
-  pod 'AEPCore'
-  pod 'AEPServices'
+  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
+  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
   pod 'AEPRulesEngine'
 end
 
 target 'FunctionalTests' do
-  pod 'AEPCore'
-  pod 'AEPServices'
+  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
+  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
   pod 'AEPRulesEngine'
-  pod 'AEPIdentity'
+  pod 'AEPIdentityEdge', :git => 'git@github.com:adobe/aepsdk-identityedge-ios.git', :branch => 'dev'
 end
 
 target 'AEPDemoAppSwiftUI' do
-  pod 'AEPCore'
-  pod 'AEPServices'
+  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
+  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
   pod 'AEPRulesEngine'
-  pod 'AEPLifecycle'
-  pod 'AEPIdentity'
-  pod 'AEPSignal'
+  pod 'AEPLifecycle', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
+  pod 'AEPIdentityEdge', :git => 'git@github.com:adobe/aepsdk-identityedge-ios.git', :branch => 'dev'
+  pod 'AEPSignal', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
   pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
   pod 'AEPAssurance'
 end
 
 target 'AEPCommerceDemoApp' do
-  pod 'AEPCore'
-  pod 'AEPServices'
+  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
+  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
   pod 'AEPRulesEngine'
-  pod 'AEPLifecycle'
-  pod 'AEPIdentity'
-  pod 'AEPSignal'
+  pod 'AEPLifecycle', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
+  pod 'AEPIdentityEdge', :git => 'git@github.com:adobe/aepsdk-identityedge-ios.git', :branch => 'dev'
+  pod 'AEPSignal', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
   pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
   pod 'AEPAssurance'
 end

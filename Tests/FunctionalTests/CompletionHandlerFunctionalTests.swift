@@ -12,7 +12,7 @@
 
 @testable import AEPCore
 @testable import AEPEdge
-import AEPIdentity
+import AEPIdentityEdge
 import AEPServices
 import Foundation
 import XCTest

@@ -57,8 +57,8 @@ public class Edge: NSObject, Extension {
         if event.type == EventType.edge, event.source == EventSource.requestContent {
             let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
-            let identitySharedState = getSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
-                                                     event: event)
+            let identitySharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                                        event: event)
 
             return configurationSharedState?.status == .set && identitySharedState?.status == .set
         }
@@ -143,6 +143,7 @@ public class Edge: NSObject, Extension {
         let hitProcessor = EdgeHitProcessor(networkService: networkService,
                                             networkResponseHandler: networkResponseHandler,
                                             getSharedState: getSharedState(extensionName:event:),
+                                            getXDMSharedState: getXDMSharedState(extensionName:event:),
                                             readyForEvent: readyForEvent(_:))
         hitQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
         hitQueue?.handlePrivacyChange(status: EdgeConstants.DEFAULT_PRIVACY_STATUS)

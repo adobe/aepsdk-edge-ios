@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import Foundation
 
 enum AuthenticationState: String, Codable {
@@ -21,6 +22,7 @@ enum AuthenticationState: String, Codable {
 /// Defines a map containing a set of end user identities, keyed on either namespace integration code or the namespace ID of the identity.
 /// Within each namespace, the identity is unique. The values of the map are an array, meaning that more than one identity of each namespace may be carried.
 struct IdentityMap {
+    private static let LOG_TAG = "IdentityMap"
     private var items: [String: [IdentityItem]] = [:]
 
     /// Adds an `IdentityItem` to this map. If an item is added which shares the same `namespace` and `id` as an item
@@ -53,6 +55,23 @@ struct IdentityMap {
     /// - Returns: An array of `IdentityItem` for the given `namespace` or nil if this `IdentityMap` does not contain the `namespace`.
     func getItemsFor(namespace: String) -> [IdentityItem]? {
         return items[namespace]
+    }
+
+    /// Decodes a [String: Any] dictionary into an `IdentityMap`
+    /// - Parameter eventData: the event data representing `IdentityMap`
+    /// - Returns: an `IdentityMap` that is represented in the event data, nil if data is not in the correct format
+    static func from(eventData: [String: Any]) -> IdentityMap? {
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: eventData) else {
+            Log.debug(label: LOG_TAG, "Unable to serialize identity event data.")
+            return nil
+        }
+
+        guard let identityMap = try? JSONDecoder().decode(IdentityMap.self, from: jsonData) else {
+            Log.debug(label: LOG_TAG, "Unable to decode identity data into an IdentityMap.")
+            return nil
+        }
+
+        return identityMap
     }
 }
 

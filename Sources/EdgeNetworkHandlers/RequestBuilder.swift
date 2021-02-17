@@ -23,8 +23,8 @@ class RequestBuilder {
     /// Control character used at the end of each response fragment. Response streaming is enabled when both `recordSeparator` and `lineFeed` are non nil.
     private var lineFeed: String?
 
-    /// The Experience Cloud ID to be sent with this request
-    var experienceCloudId: String?
+    /// The`IdentityMap` to be attached to the request
+    var identityMap: IdentityMap?
 
     /// Data store manager for retrieving store response payloads for `StateMetadata`
     private let storeResponsePayloadManager: StoreResponsePayloadManager
@@ -63,12 +63,7 @@ class RequestBuilder {
         let experienceEvents = extractExperienceEvents(events)
         var contextData: RequestContextData?
 
-        // set ECID if available
-        if let ecid = experienceCloudId {
-            var identityMap = IdentityMap()
-            identityMap.addItem(namespace: EdgeConstants.JsonKeys.ECID, id: ecid)
-            contextData = RequestContextData(identityMap: identityMap)
-        }
+        contextData = RequestContextData(identityMap: identityMap)
 
         return EdgeRequest(meta: requestMetadata, xdm: contextData, events: experienceEvents)
     }
