@@ -57,8 +57,8 @@ class AEPEdgePrivacyStatusChangeTests: FunctionalTestBase {
         continueAfterFailure = false
         FileManager.default.clearCache()
 
-        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, Edge), Identity and Config shared state updates
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
+        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge), IdentityEdge (standard & XDM) and Config shared state updates
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 5)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
