@@ -27,7 +27,7 @@ class EdgeHitTests: XCTestCase {
         let edgeHit = ExperienceEventsEdgeHit(configId: CONFIG_ID, request: EDGE_REQUEST)
         XCTAssertEqual(CONFIG_ID, edgeHit.configId)
         XCTAssertNotNil(edgeHit.requestId)
-        XCTAssertEqual(EDGE_REQUEST.events, edgeHit.request?.events)
+        XCTAssertEqual(EDGE_REQUEST.events, edgeHit.request.events)
     }
 
     func testExperienceEventsEdgeHit_streamingSettings() {

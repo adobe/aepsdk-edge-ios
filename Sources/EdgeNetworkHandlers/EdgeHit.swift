@@ -13,7 +13,7 @@
 import AEPCore
 import Foundation
 
-/// Struct which represents an Edge hit
+/// Protocol used for defining hits to Experience Edge service
 protocol EdgeHit {
     /// The Edge configuration identifier
     var configId: String { get }
@@ -29,68 +29,4 @@ protocol EdgeHit {
 
     /// Retrieves the `Streaming` settings for this `EdgHit` or nil if not enabled
     func getStreamingSettings() -> Streaming?
-}
-
-class ExperienceEventsEdgeHit: EdgeHit {
-    let configId: String
-    let requestId: String
-
-    /// The `EdgeRequest` for the corresponding hit
-    let request: EdgeRequest?
-
-    init(configId: String, request: EdgeRequest) {
-        self.configId = configId
-        self.requestId = UUID().uuidString
-        self.request = request
-    }
-
-    func getType() -> ExperienceEdgeRequestType {
-        ExperienceEdgeRequestType.interact
-    }
-
-    func getPayload() -> String? {
-        guard let events = request?.events, !events.isEmpty else {
-            return nil
-        }
-
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted]
-
-        guard let data = try? encoder.encode(self.request) else { return nil }
-        return String(decoding: data, as: UTF8.self)
-    }
-
-    func getStreamingSettings() -> Streaming? {
-        return request?.meta?.konductorConfig?.streaming
-    }
-}
-
-class ConsentEdgeHit: EdgeHit {
-    let configId: String
-    let requestId: String
-
-    /// The `EdgeConsentUpdate` for the corresponding hit
-    let consents: EdgeConsentUpdate?
-
-    init(configId: String, consents: EdgeConsentUpdate) {
-        self.configId = configId
-        self.requestId = UUID().uuidString
-        self.consents = consents
-    }
-
-    func getType() -> ExperienceEdgeRequestType {
-        ExperienceEdgeRequestType.consent
-    }
-
-    func getPayload() -> String? {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted]
-
-        guard let data = try? encoder.encode(self.consents) else { return nil }
-        return String(decoding: data, as: UTF8.self)
-    }
-
-    func getStreamingSettings() -> Streaming? {
-        return nil
-    }
 }

@@ -109,6 +109,8 @@
 		D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */; };
 		D4145F4025D1D3200019EA4C /* EdgeHitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */; };
 		D4145FB525D5D0430019EA4C /* Event+Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145FB425D5D0430019EA4C /* Event+Edge.swift */; };
+		D4145FCD25DCB3270019EA4C /* ExperienceEventsEdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145FCC25DCB3260019EA4C /* ExperienceEventsEdgeHit.swift */; };
+		D4145FD325DCB3890019EA4C /* ConsentEdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */; };
 		D42AEFD725A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42AEFD625A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift */; };
 		D42F36BA251C185000490C0D /* AEPEdge.h in Headers */ = {isa = PBXBuildFile; fileRef = D4D66AA2251910FB00B4866D /* AEPEdge.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D42FB8E124635FA200E9321C /* MockResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8E024635FA200E9321C /* MockResponseCallback.swift */; };
@@ -357,6 +359,8 @@
 		D4000F36245B7E200052C536 /* NetworkResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseCallback.swift; sourceTree = "<group>"; };
 		D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitTests.swift; sourceTree = "<group>"; };
 		D4145FB425D5D0430019EA4C /* Event+Edge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Event+Edge.swift"; sourceTree = "<group>"; };
+		D4145FCC25DCB3260019EA4C /* ExperienceEventsEdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceEventsEdgeHit.swift; sourceTree = "<group>"; };
+		D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentEdgeHit.swift; sourceTree = "<group>"; };
 		D42AEFD625A6B7D300986E1C /* AEPEdge+PrivacyStatusChangeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AEPEdge+PrivacyStatusChangeTests.swift"; sourceTree = "<group>"; };
 		D42FB8D124610A0000E9321C /* ResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallback.swift; sourceTree = "<group>"; };
 		D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionHandlersManager.swift; sourceTree = "<group>"; };
@@ -611,6 +615,8 @@
 			isa = PBXGroup;
 			children = (
 				216989642554B39900B2752C /* EdgeHit.swift */,
+				D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */,
+				D4145FCC25DCB3260019EA4C /* ExperienceEventsEdgeHit.swift */,
 				216989772554B61500B2752C /* EdgeHitProcessor.swift */,
 				D4D5D7D42477397700CC317E /* EdgeEventEncodable.swift */,
 				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
@@ -1363,6 +1369,8 @@
 				D4C6B440251A76CB0038F4F9 /* EdgeNetworkService.swift in Sources */,
 				D4C6B441251A76CB0038F4F9 /* IdentityMap.swift in Sources */,
 				D4C6B442251A76CB0038F4F9 /* KonductorConfig.swift in Sources */,
+				D4145FD325DCB3890019EA4C /* ConsentEdgeHit.swift in Sources */,
+				D4145FCD25DCB3270019EA4C /* ExperienceEventsEdgeHit.swift in Sources */,
 				D4C6B443251A76CB0038F4F9 /* NetworkResponseCallback.swift in Sources */,
 				D4C6B444251A76CB0038F4F9 /* NetworkResponseHandler.swift in Sources */,
 				D4C6B445251A76CB0038F4F9 /* RequestBuilder.swift in Sources */,
