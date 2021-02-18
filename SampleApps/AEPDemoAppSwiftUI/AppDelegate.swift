@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPConsent
 import AEPCore
 import AEPEdge
 import AEPIdentity
@@ -26,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         MobileCore.setLogLevel(.trace)
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
-        MobileCore.registerExtensions([Identity.self, Edge.self])
+        MobileCore.registerExtensions([Identity.self, Edge.self, Consent.self])
         return true
     }
 

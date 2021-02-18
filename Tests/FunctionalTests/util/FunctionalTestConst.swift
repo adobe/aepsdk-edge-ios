@@ -42,6 +42,8 @@ enum FunctionalTestConst {
 
     enum SharedState {
         static let CONFIGURATION = "com.adobe.module.configuration"
+        static let CONSENT = "com.adobe.consent"
+        static let IDENTITY = "com.adobe.module.identity"
     }
     enum Defaults {
         static let WAIT_EVENT_TIMEOUT: TimeInterval = 2
@@ -56,4 +58,5 @@ enum FunctionalTestConst {
     }
 
     static let EX_EDGE_INTERACT_URL_STR = "https://edge.adobedc.net/ee/v1/interact"
+    static let EX_EDGE_CONSENT_URL_STR = "https://edge.adobedc.net/ee/v1/privacy/set-consent"
 }

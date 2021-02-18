@@ -10,49 +10,61 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPConsent
 import AEPCore
 import AEPEdge
+import AEPIdentity
 import AEPServices
 import SwiftUI
 
 struct ContentView: View {
+    // swiftlint:disable multiple_closures_with_trailing_closure
+    @State private var ecid: String = ""
+
     var body: some View {
         VStack {
+            Text("ECID:")
+            Text(ecid)
             HStack {
                 Text("Privacy: ")
                 Button(action: {
                     MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
+                    getECID()
                 }) {
                     Text("in")
                 }
                 Button(action: {
                     MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
+                    getECID()
                 }) {
                     Text("out")
                 }
                 Button(action: {
                     MobileCore.setPrivacyStatus(PrivacyStatus.unknown)
+                    getECID()
                 }) {
                     Text("unknown")
                 }
             }.padding()
 
-            Button(action: {
-                let networkRequest1: NetworkRequest = NetworkRequest(url: URL(string: "https://www.adobe.com")!,
-                                                                     httpMethod: HttpMethod.get,
-                                                                     connectPayload: "test",
-                                                                     httpHeaders: [:],
-                                                                     connectTimeout: 5,
-                                                                     readTimeout: 5)
-
-                ServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest1, completionHandler: {connection in
-                    // function body goes here
-                    print(connection.responseHttpHeader(forKey: "Content-Type") ?? "no content-type header")
-                    print(connection.responseCode ?? "no response code")
-                    print(connection.responseMessage ?? "no response message")
-                })
-            }) {
-                Text("Network Service ping")
+            HStack {
+                Text("Collect consent: ")
+                Button(action: {
+                    let consents = Consents()
+                    consents.collect = ConsentValue(.yes)
+                    Consent.updateConsents(consents: consents)
+                    printCurrentConsent()
+                }) {
+                    Text("yes")
+                }
+                Button(action: {
+                    let consents = Consents()
+                    consents.collect = ConsentValue(.no)
+                    Consent.updateConsents(consents: consents)
+                    printCurrentConsent()
+                }) {
+                    Text("no")
+                }
             }.padding()
 
             Button(action: {
@@ -63,9 +75,28 @@ struct ContentView: View {
                         Log.debug(label: "AEPDemoApp", "Received handle with type \(handle.type ?? "unknown"), payload: \(handle.payload ?? [])")
                     }
                 })
+                printCurrentConsent()
             }) {
                 Text("Ping to ExEdge")
             }
+        }
+    }
+
+    private func printCurrentConsent() {
+        Consent.getConsents { (consents: Consents?, error: Error?) in
+            guard error == nil, let consents = consents else { return }
+            print("Current consent \(consents.asDictionary(dateEncodingStrategy: .iso8601) ?? [:])")
+        }
+    }
+
+    private func getECID() {
+        Identity.getExperienceCloudId { value, error in
+            if error != nil {
+                self.ecid = ""
+                return
+            }
+
+            self.ecid = value ?? ""
         }
     }
 }
