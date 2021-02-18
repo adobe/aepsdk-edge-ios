@@ -56,9 +56,23 @@ class EdgeHitProcessorTests: XCTestCase {
 
     private func resolveXDMSharedState(extensionName: String, event: Event?) -> SharedStateResult? {
         if extensionName == IDENTITY_SHARED_STATE {
-            var identityMap = IdentityMap()
-            identityMap.addItem(namespace: "ECID", id: "test-mcid")
-            return SharedStateResult(status: .set, value: identityMap.asDictionary())
+            guard let identityMapData = """
+                {
+                  "ECID" : [
+                    {
+                      "authenticationState" : "ambiguous",
+                      "id" : "test-mcid",
+                      "primary" : false
+                    }
+                  ]
+                }
+            """.data(using: .utf8) else {
+                XCTFail("Failed to convert json string to data")
+                return nil
+            }
+            let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+
+            return SharedStateResult(status: .set, value: identityMap)
         }
 
         return nil

@@ -63,7 +63,7 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
-        guard let identityState =
+        guard let identityMap =
                 getXDMSharedState(EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
                                   event)?.value else {
             Log.warning(label: LOG_TAG,
@@ -78,12 +78,7 @@ class EdgeHitProcessor: HitProcessing {
         requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                lineFeed: EdgeConstants.Defaults.LINE_FEED)
 
-        if let identityMap = IdentityMap.from(eventData: identityState[EdgeConstants.SharedState.Identity.IDENTITY_MAP] as? [String: Any] ?? [:]) {
-            requestBuilder.identityMap = identityMap
-        } else {
-            // This is not expected to happen. Continue without IdentityMap
-            Log.warning(label: LOG_TAG, "processHit - An unexpected error has occurred, IdentityMap is nil.")
-        }
+        requestBuilder.identityMap = identityMap
 
         // Build and send the network request to Experience Edge
         let listOfEvents: [Event] = [event]

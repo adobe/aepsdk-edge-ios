@@ -24,7 +24,7 @@ class RequestBuilder {
     private var lineFeed: String?
 
     /// The`IdentityMap` to be attached to the request
-    var identityMap: IdentityMap?
+    var identityMap: [String: Any]?
 
     /// Data store manager for retrieving store response payloads for `StateMetadata`
     private let storeResponsePayloadManager: StoreResponsePayloadManager
@@ -63,7 +63,7 @@ class RequestBuilder {
         let experienceEvents = extractExperienceEvents(events)
         var contextData: RequestContextData?
 
-        contextData = RequestContextData(identityMap: identityMap)
+        contextData = RequestContextData(identityMap: AnyCodable.from(dictionary: identityMap))
 
         return EdgeRequest(meta: requestMetadata, xdm: contextData, events: experienceEvents)
     }

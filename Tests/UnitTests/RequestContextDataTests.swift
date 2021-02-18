@@ -50,7 +50,7 @@ class RequestContextDataTests: XCTestCase {
     }
 
     func testEncode_paramIdentityMap() {
-        let context = RequestContextData(identityMap: IdentityMap())
+        let context = RequestContextData(identityMap: [:])
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
