@@ -65,7 +65,7 @@ class EdgeHitProcessor: HitProcessing {
         // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
         guard let identityState =
                 getXDMSharedState(EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
-                                  event)?.value, let identityMap = identityState[EdgeConstants.SharedState.Identity.IDENTITY_MAP] as? [String: Any] else {
+                                  event)?.value else {
             Log.warning(label: LOG_TAG,
                         "processHit - Unable to process the event '\(event.id.uuidString)', " +
                             "Identity shared state is nil.")
@@ -77,8 +77,9 @@ class EdgeHitProcessor: HitProcessing {
         let requestBuilder = RequestBuilder()
         requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                lineFeed: EdgeConstants.Defaults.LINE_FEED)
-
-        requestBuilder.identityMap = identityMap
+        if let identityMap = identityState[EdgeConstants.SharedState.Identity.IDENTITY_MAP] as? [String: Any] {
+            requestBuilder.identityMap = identityMap
+        }
 
         // Build and send the network request to Experience Edge
         let listOfEvents: [Event] = [event]
