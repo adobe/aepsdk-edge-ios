@@ -25,19 +25,22 @@ class EdgeRequestTests: XCTestCase {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
         guard let identityMapData = """
-            {
-              "email" : [
-                {
-                  "id" : "example@adobe.com"
-                }
-              ]
-            }
+        {
+          "identityMap" : {
+            "email" : [
+              {
+                "id" : "example@adobe.com"
+              }
+            ]
+          }
+        }
         """.data(using: .utf8) else {
             XCTFail("Failed to convert json string to data")
             return
         }
         let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
-        let requestContext = RequestContextData(identityMap: AnyCodable.from(dictionary: identityMap))
+        var requestContext = RequestContextData()
+        requestContext.xdmPayloads += [AnyCodable.from(dictionary: identityMap)!]
 
         let events: [[String: AnyCodable]] = [
             [
@@ -92,19 +95,22 @@ class EdgeRequestTests: XCTestCase {
 
     func testEncode_onlyRequestContext() {
         guard let identityMapData = """
-            {
+        {
+            "identityMap": {
                 "email" : [
                   {
                     "id" : "example@adobe.com"
                   }
                 ]
-              }
+            }
+        }
         """.data(using: .utf8) else {
             XCTFail("Failed to convert json string to data")
             return
         }
         let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
-        let requestContext = RequestContextData(identityMap: AnyCodable.from(dictionary: identityMap))
+        var requestContext = RequestContextData()
+        requestContext.xdmPayloads += [AnyCodable.from(dictionary: identityMap)!]
         let edgeRequest = EdgeRequest(meta: nil,
                                       xdm: requestContext,
                                       events: nil)

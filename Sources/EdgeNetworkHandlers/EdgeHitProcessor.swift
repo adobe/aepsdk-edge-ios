@@ -77,9 +77,7 @@ class EdgeHitProcessor: HitProcessing {
         let requestBuilder = RequestBuilder()
         requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                lineFeed: EdgeConstants.Defaults.LINE_FEED)
-        if let identityMap = identityState[EdgeConstants.SharedState.Identity.IDENTITY_MAP] as? [String: Any] {
-            requestBuilder.identityMap = identityMap
-        }
+        requestBuilder.xdmPayloads = [AnyCodable.from(dictionary: identityState) ?? [:]]
 
         // Build and send the network request to Experience Edge
         let listOfEvents: [Event] = [event]

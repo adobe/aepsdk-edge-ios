@@ -11,6 +11,7 @@
 //
 
 @testable import AEPEdge
+@testable import AEPServices
 import XCTest
 
 class RequestContextDataTests: XCTestCase {
@@ -27,7 +28,7 @@ class RequestContextDataTests: XCTestCase {
     // MARK: encoder tests
 
     func testEncode_noParameters() {
-        let context = RequestContextData(identityMap: nil)
+        let context = RequestContextData()
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
@@ -50,7 +51,26 @@ class RequestContextDataTests: XCTestCase {
     }
 
     func testEncode_paramIdentityMap() {
-        let context = RequestContextData(identityMap: [:])
+        let identityMapStr = """
+        {
+          "identityMap" : {
+            "email" : [
+              {
+                "id" : "example@adobe.com",
+                "primary" : false,
+                "authenticationState" : "ambiguous",
+              }
+            ]
+          }
+        }
+        """
+        guard let identityMapData = identityMapStr.data(using: .utf8) else {
+            XCTFail("Failed to convert json string to data")
+            return
+        }
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        var context = RequestContextData()
+        context.xdmPayloads += [AnyCodable.from(dictionary: identityMap) ?? [:]]
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
@@ -62,15 +82,10 @@ class RequestContextDataTests: XCTestCase {
         }
 
         XCTAssertNotNil(data)
-        let expected = """
-            {
-              "identityMap" : {
 
-              }
-            }
-            """
-        let jsonString = String(data: data, encoding: .utf8)
-        XCTAssertEqual(expected, jsonString)
+        let actualDict = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+        let expectedDict = try! JSONSerialization.jsonObject(with: identityMapData, options: []) as! [String: Any]
+        assertEqual(actualDict, expectedDict)
     }
 
 }

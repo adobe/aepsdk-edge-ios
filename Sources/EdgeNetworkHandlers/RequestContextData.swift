@@ -16,5 +16,28 @@ import Foundation
 /// Property that holds the global XDM context data within an `EdgeRequest` object.
 /// It is contained within the `EdgeRequest` request property.
 struct RequestContextData: Encodable {
-    let identityMap: [String: AnyCodable]?
+    var xdmPayloads: [[String: AnyCodable]] = []
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: DynamicKey.self)
+        for payload in xdmPayloads {
+            guard let firstKey = payload.keys.first, let nestedPayload = payload[firstKey] else { continue }
+            guard let dynamicKey = DynamicKey(stringValue: firstKey) else { continue }
+            try container.encodeIfPresent(nestedPayload, forKey: dynamicKey)
+        }
+    }
+}
+
+// Helper struct to encode payloads dynamically
+private struct DynamicKey: CodingKey {
+
+    var stringValue: String
+
+    init?(stringValue: String) {
+        self.stringValue = stringValue
+    }
+
+    var intValue: Int? { return nil }
+
+    init?(intValue: Int) { return nil }
 }

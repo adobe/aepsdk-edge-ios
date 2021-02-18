@@ -32,7 +32,8 @@ class RequestBuilderTests: XCTestCase {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         guard let identityMapData = """
-            {
+        {
+            "identityMap": {
               "ECID" : [
                 {
                   "authenticationState" : "ambiguous",
@@ -41,11 +42,13 @@ class RequestBuilderTests: XCTestCase {
                 }
               ]
             }
+        }
         """.data(using: .utf8) else {
             XCTFail("Failed to convert json string to data")
             return
         }
-        request.identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        request.xdmPayloads += [AnyCodable.from(dictionary: identityMap)!]
 
         let event = Event(name: "Request Test",
                           type: "type",
@@ -57,7 +60,9 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertEqual("A", requestPayload?.meta?.konductorConfig?.streaming?.recordSeparator)
         XCTAssertEqual("B", requestPayload?.meta?.konductorConfig?.streaming?.lineFeed)
         XCTAssertTrue(requestPayload?.meta?.konductorConfig?.streaming?.enabled ?? false)
-        guard let ecidArr = requestPayload?.xdm?.identityMap?["ECID"]?.arrayValue,
+
+        guard let requestIdentityMap = requestPayload?.xdm?.xdmPayloads.first?["identityMap"]?.dictionaryValue,
+              let ecidArr = requestIdentityMap["ECID"] as? [Any],
               let ecidDict = ecidArr.first as? [String: Any],
               let ecid = ecidDict["id"] as? String else {
             XCTFail("ECID missing")
@@ -70,7 +75,8 @@ class RequestBuilderTests: XCTestCase {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         guard let identityMapData = """
-            {
+        {
+            "identityMap": {
               "ECID" : [
                 {
                   "authenticationState" : "ambiguous",
@@ -79,11 +85,13 @@ class RequestBuilderTests: XCTestCase {
                 }
               ]
             }
+        }
         """.data(using: .utf8) else {
             XCTFail("Failed to convert json string to data")
             return
         }
-        request.identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        request.xdmPayloads += [AnyCodable.from(dictionary: identityMap)!]
 
         var events: [Event] = []
 
@@ -117,7 +125,8 @@ class RequestBuilderTests: XCTestCase {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         guard let identityMapData = """
-            {
+        {
+            "identityMap": {
               "ECID" : [
                 {
                   "authenticationState" : "ambiguous",
@@ -126,11 +135,13 @@ class RequestBuilderTests: XCTestCase {
                 }
               ]
             }
+        }
         """.data(using: .utf8) else {
             XCTFail("Failed to convert json string to data")
             return
         }
-        request.identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        request.xdmPayloads += [AnyCodable.from(dictionary: identityMap)!]
 
         let event = Event(name: "Request Test",
                           type: "type",
@@ -148,7 +159,8 @@ class RequestBuilderTests: XCTestCase {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         guard let identityMapData = """
-            {
+        {
+            "identityMap": {
               "ECID" : [
                 {
                   "authenticationState" : "ambiguous",
@@ -157,11 +169,13 @@ class RequestBuilderTests: XCTestCase {
                 }
               ]
             }
+        }
         """.data(using: .utf8) else {
             XCTFail("Failed to convert json string to data")
             return
         }
-        request.identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        request.xdmPayloads += [AnyCodable.from(dictionary: identityMap)!]
 
         let event = Event(name: "Request Test",
                           type: "type",
