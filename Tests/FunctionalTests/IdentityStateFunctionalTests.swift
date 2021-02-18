@@ -68,7 +68,24 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
 
         // Once the shared state is set, the Edge Extension is expected to reprocess the original
         // Send Event request once the Hub Shared State event is received.
-        FakeIdentityExtension.setSharedState(state: ["mid": "1234"])
+        guard let identityMapData = """
+                {
+                  "identityMap" : {
+                    "ECID" : [
+                      {
+                        "authenticationState" : "ambiguous",
+                        "id" : "1234",
+                        "primary" : false
+                      }
+                    ]
+                  }
+                }
+        """.data(using: .utf8) else {
+            XCTFail("Failed to convert json string to data")
+            return
+        }
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        FakeIdentityExtension.setXDMSharedState(state: identityMap!)
         assertNetworkRequestsCount()
 
         requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
@@ -78,7 +95,25 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_withNoECIDInIdentityState_requestSentWithoutECID() {
-        FakeIdentityExtension.setSharedState(state: ["blob": "testing"]) // set state without ECID
+        // set state without ECID
+        guard let identityMapData = """
+                    {
+                      "identityMap" : {
+                        "email" : [
+                          {
+                            "authenticationState" : "ambiguous",
+                            "id" : "example@adobe.com",
+                            "primary" : false
+                          }
+                        ]
+                      }
+                    }
+        """.data(using: .utf8) else {
+            XCTFail("Failed to convert json string to data")
+            return
+        }
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        FakeIdentityExtension.setXDMSharedState(state: identityMap!)
 
         guard let responseBody = "{\"test\": \"json\"}".data(using: .utf8) else {
             XCTFail("Failed to convert json to data")

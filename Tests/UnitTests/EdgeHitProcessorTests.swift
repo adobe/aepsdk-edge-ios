@@ -58,13 +58,15 @@ class EdgeHitProcessorTests: XCTestCase {
         if extensionName == IDENTITY_SHARED_STATE {
             guard let identityMapData = """
                 {
-                  "ECID" : [
-                    {
-                      "authenticationState" : "ambiguous",
-                      "id" : "test-mcid",
-                      "primary" : false
-                    }
-                  ]
+                  "identityMap" : {
+                    "ECID" : [
+                      {
+                        "authenticationState" : "ambiguous",
+                        "id" : "test-mcid",
+                        "primary" : false
+                      }
+                    ]
+                  }
                 }
             """.data(using: .utf8) else {
                 XCTFail("Failed to convert json string to data")

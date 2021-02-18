@@ -28,9 +28,7 @@ class EdgeRequestTests: XCTestCase {
             {
               "email" : [
                 {
-                  "authenticationState" : "ambiguous",
-                  "id" : "example@adobe.com",
-                  "primary" : false
+                  "id" : "example@adobe.com"
                 }
               ]
             }
@@ -95,14 +93,12 @@ class EdgeRequestTests: XCTestCase {
     func testEncode_onlyRequestContext() {
         guard let identityMapData = """
             {
-              "email" : [
-                {
-                  "authenticationState" : "ambiguous",
-                  "id" : "example@adobe.com",
-                  "primary" : false
-                }
-              ]
-            }
+                "email" : [
+                  {
+                    "id" : "example@adobe.com"
+                  }
+                ]
+              }
         """.data(using: .utf8) else {
             XCTFail("Failed to convert json string to data")
             return

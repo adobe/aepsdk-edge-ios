@@ -63,9 +63,9 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
-        guard let identityMap =
+        guard let identityState =
                 getXDMSharedState(EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
-                                  event)?.value else {
+                                  event)?.value, let identityMap = identityState["identityMap"] as? [String: Any] else {
             Log.warning(label: LOG_TAG,
                         "processHit - Unable to process the event '\(event.id.uuidString)', " +
                             "Identity shared state is nil.")
