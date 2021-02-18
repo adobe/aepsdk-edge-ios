@@ -19,17 +19,17 @@ struct RequestContextData: Encodable {
     var xdmPayloads: [[String: AnyCodable]] = []
 
     func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: DynamicKey.self)
+        var container = encoder.container(keyedBy: DynamicCodingKey.self)
         for payload in xdmPayloads {
             guard let firstKey = payload.keys.first, let nestedPayload = payload[firstKey] else { continue }
-            guard let dynamicKey = DynamicKey(stringValue: firstKey) else { continue }
+            guard let dynamicKey = DynamicCodingKey(stringValue: firstKey) else { continue }
             try container.encodeIfPresent(nestedPayload, forKey: dynamicKey)
         }
     }
 }
 
 // Helper struct to encode payloads dynamically
-private struct DynamicKey: CodingKey {
+private struct DynamicCodingKey: CodingKey {
 
     var stringValue: String
 
