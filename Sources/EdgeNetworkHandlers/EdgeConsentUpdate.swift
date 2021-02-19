@@ -17,7 +17,7 @@ import Foundation
 /// An `EdgeConsentUpdate` is the top-level request object sent to Experience Edge to the set-consent endpoint.
 struct EdgeConsentUpdate: Encodable {
     /// The IdentityMap at the moment of this request
-    let identityMap: IdentityMap?
+    let identityMap: [String: AnyCodable]?
 
     // Consent payload
     let consent: [EdgeConsentPayload]?

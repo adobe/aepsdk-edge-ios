@@ -76,13 +76,12 @@ class RequestBuilder {
         guard event.data != nil,
               let consents = event.data?[EdgeConstants.EventDataKeys.CONSENTS] as? [String: Any] else { return nil }
 
-        // set ECID if available
-        var identityMap = IdentityMap()
-        if let ecid = experienceCloudId {
-            identityMap.addItem(namespace: EdgeConstants.JsonKeys.ECID, id: ecid)
+        // set IdentityMap if available
+        var identityMap = [String: AnyCodable]()
+        if let identityMapDict = xdmPayloads.first(where: {$0.keys.first == "identityMap"}) {
+            identityMap = identityMapDict
         }
 
-        // todo: add identitymap to EdgeHit
         return EdgeConsentUpdate(identityMap: identityMap,
                                  consent: [EdgeConsentPayload(standard: EdgeConstants.JsonValues.CONSENT_STANDARD,
                                                               version: EdgeConstants.JsonValues.CONSENT_VERSION,
