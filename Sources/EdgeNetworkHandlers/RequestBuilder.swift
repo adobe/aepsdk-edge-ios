@@ -78,7 +78,7 @@ class RequestBuilder {
 
         // set IdentityMap if available
         var identityMap = [String: AnyCodable]()
-        if let identityMapDict = xdmPayloads.first(where: {$0.keys.first == "identityMap"}) {
+        if let identityMapDict = xdmPayloads.first(where: {$0.keys.first == EdgeConstants.SharedState.Identity.IDENTITY_MAP}) {
             identityMap = identityMapDict
         }
 
