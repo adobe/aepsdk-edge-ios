@@ -1,3 +1,7 @@
+disabled_rules:
+- force_unwrapping
+- force_cast
+- force_try
 line_length:
     warning: 250
     error: 300

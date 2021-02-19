@@ -11,6 +11,8 @@ PODS:
     - AEPAssurance/xcframeworks (= 1.1.0)
   - AEPAssurance/xcframeworks (1.1.0):
     - ACPCore (>= 2.9.0)
+  - AEPConsent (1.0.0-alpha.1):
+    - AEPCore
   - AEPCore (3.0.0):
     - AEPRulesEngine (= 1.0.0)
     - AEPServices (= 3.0.0)
@@ -28,6 +30,7 @@ PODS:
 DEPENDENCIES:
   - ACPCore (from `https://github.com/adobe/aep-sdk-compatibility-ios.git`, branch `main`)
   - AEPAssurance
+  - "AEPConsent (from `git@github.com:adobe/aepsdk-consentedge-ios.git`, branch `dev`)"
   - AEPCore (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v3.0.1`)
   - "AEPIdentityEdge (from `git@github.com:adobe/aepsdk-identityedge-ios.git`, branch `dev`)"
   - AEPLifecycle (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v3.0.1`)
@@ -45,6 +48,9 @@ EXTERNAL SOURCES:
   ACPCore:
     :branch: main
     :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
+  AEPConsent:
+    :branch: dev
+    :git: "git@github.com:adobe/aepsdk-consentedge-ios.git"
   AEPCore:
     :branch: dev-v3.0.1
     :git: https://github.com/adobe/aepsdk-core-ios.git
@@ -65,25 +71,29 @@ CHECKOUT OPTIONS:
   ACPCore:
     :commit: 748779dd93ae14a9b7241c93fe9fd190abb816a5
     :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
+  AEPConsent:
+    :commit: 6cacca641cf2f96a1a3591144023503bb39225ca
+    :git: "git@github.com:adobe/aepsdk-consentedge-ios.git"
   AEPCore:
-    :commit: 508914a00c2cf01c30a53a94820ccf7c3062e3d0
+    :commit: c7988ba73e4fce57349008fb4893afe98e36d4d7
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPIdentityEdge:
-    :commit: 46db09cbedf43769a5f399225fdc050a6784e33f
+    :commit: 3b89188eef096884444c19b9f38b6d8de02f96a7
     :git: "git@github.com:adobe/aepsdk-identityedge-ios.git"
   AEPLifecycle:
-    :commit: 508914a00c2cf01c30a53a94820ccf7c3062e3d0
+    :commit: c7988ba73e4fce57349008fb4893afe98e36d4d7
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPServices:
-    :commit: 508914a00c2cf01c30a53a94820ccf7c3062e3d0
+    :commit: c7988ba73e4fce57349008fb4893afe98e36d4d7
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPSignal:
-    :commit: 508914a00c2cf01c30a53a94820ccf7c3062e3d0
+    :commit: c7988ba73e4fce57349008fb4893afe98e36d4d7
     :git: https://github.com/adobe/aepsdk-core-ios.git
 
 SPEC CHECKSUMS:
   ACPCore: 67e4b855bf16cfb6a63024a4ddb73d15c0fd30e5
   AEPAssurance: c9c21b7e57bf993db210766631db2ef3732d4fa4
+  AEPConsent: 8eed2ca6af3364efb7db5d182264863df81126c1
   AEPCore: 9ced1f1fddcbfd61517461e548e36aee740bf7c8
   AEPIdentity: 79c57508bbabc8c2cf7f90e2baed15b03f4e97e6
   AEPIdentityEdge: 30741c9ca65c3c90e7f0cea226928da737a3f1ca
@@ -92,6 +102,6 @@ SPEC CHECKSUMS:
   AEPServices: 21ea64149483fdfbd5f88f546b9f5ad7d4987400
   AEPSignal: b4ac5c8e8c68e8902739426d70c01ed3ce229ac9
 
-PODFILE CHECKSUM: 2c404466fa6d0782d78a8729ecfdd01cbf021df2
+PODFILE CHECKSUM: 80e6d7c0a2d0e1ba38f4b39a02842822609280d1
 
 COCOAPODS: 1.10.0

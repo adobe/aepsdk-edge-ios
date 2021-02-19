@@ -33,6 +33,7 @@ target 'AEPDemoAppSwiftUI' do
   pod 'AEPLifecycle', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
   pod 'AEPIdentityEdge', :git => 'git@github.com:adobe/aepsdk-identityedge-ios.git', :branch => 'dev'
   pod 'AEPSignal', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.0.1'
+  pod 'AEPConsent', :git => 'git@github.com:adobe/aepsdk-consentedge-ios.git', :branch => 'dev'
   pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
   pod 'AEPAssurance'
 end

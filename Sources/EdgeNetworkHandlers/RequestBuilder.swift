@@ -50,7 +50,7 @@ class RequestBuilder {
     /// - Parameter events: List of `Event` objects. Each event is expected to contain a serialized `ExperienceEvent`
     /// encoded in the `Event.data` property.
     /// - Returns: A `EdgeRequest` object or nil if the events list is empty
-    func getRequestPayload(_ events: [Event]) -> EdgeRequest? {
+    func getPayloadWithExperienceEvents(_ events: [Event]) -> EdgeRequest? {
         guard !events.isEmpty else { return nil }
 
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
@@ -67,6 +67,26 @@ class RequestBuilder {
         contextData?.xdmPayloads += xdmPayloads
 
         return EdgeRequest(meta: requestMetadata, xdm: contextData, events: experienceEvents)
+    }
+
+    /// Builds the request payload to update the consent.
+    /// - Parameter event: The Consent Update event containing XDM formatted data
+    /// - Returns: A `EdgeConsentUpdate` object or nil if the events list is empty
+    func getConsentPayload(_ event: Event) -> EdgeConsentUpdate? {
+        guard event.data != nil,
+              let consents = event.data?[EdgeConstants.EventDataKeys.CONSENTS] as? [String: Any] else { return nil }
+
+        // set ECID if available
+        var identityMap = IdentityMap()
+        if let ecid = experienceCloudId {
+            identityMap.addItem(namespace: EdgeConstants.JsonKeys.ECID, id: ecid)
+        }
+
+        // todo: add identitymap to EdgeHit
+        return EdgeConsentUpdate(identityMap: identityMap,
+                                 consent: [EdgeConsentPayload(standard: EdgeConstants.JsonValues.CONSENT_STANDARD,
+                                                              version: EdgeConstants.JsonValues.CONSENT_VERSION,
+                                                              value: AnyCodable.from(dictionary: consents))])
     }
 
     /// Extract the `ExperienceEvent` from each `Event` and return as a list of maps.

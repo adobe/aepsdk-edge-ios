@@ -13,14 +13,20 @@
 import AEPCore
 import Foundation
 
-/// Struct which represents an Edge hit
-struct EdgeHit {
+/// Protocol used for defining hits to Experience Edge service
+protocol EdgeHit {
     /// The Edge configuration identifier
-    let configId: String
+    var configId: String { get }
 
     /// Unique identifier for this hit
-    let requestId: String
+    var requestId: String { get }
 
-    /// The `EdgeRequest` for the corresponding hit
-    let request: EdgeRequest
+    /// The `ExperienceEdgeRequestType` to be used for this `EdgeHit`
+    func getType() -> ExperienceEdgeRequestType
+
+    /// The network request payload for this `EdgeHit`
+    func getPayload() -> String?
+
+    /// Retrieves the `Streaming` settings for this `EdgHit` or nil if not enabled
+    func getStreamingSettings() -> Streaming?
 }

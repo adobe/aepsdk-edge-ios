@@ -53,7 +53,7 @@ class FunctionalTestBase: XCTestCase {
     public override func setUp() {
         super.setUp()
         continueAfterFailure = false
-        MobileCore.registerExtensions([InstrumentedExtension.self])
+        MobileCore.registerExtension(InstrumentedExtension.self)
     }
 
     public override func tearDown() {
