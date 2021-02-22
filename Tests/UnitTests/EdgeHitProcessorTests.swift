@@ -67,7 +67,7 @@ class EdgeHitProcessorTests: XCTestCase {
                     "ECID" : [
                       {
                         "authenticationState" : "ambiguous",
-                        "id" : "test-mcid",
+                        "id" : "test-ecid",
                         "primary" : false
                       }
                     ]
