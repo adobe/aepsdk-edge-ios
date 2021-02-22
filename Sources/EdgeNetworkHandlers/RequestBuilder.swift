@@ -61,10 +61,8 @@ class RequestBuilder {
                                               state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads))
 
         let experienceEvents = extractExperienceEvents(events)
-        var contextData: RequestContextData?
-
-        contextData = RequestContextData()
-        contextData?.xdmPayloads += xdmPayloads
+        var contextData = RequestContextData()
+        contextData.xdmPayloads += xdmPayloads
 
         return EdgeRequest(meta: requestMetadata, xdm: contextData, events: experienceEvents)
     }
