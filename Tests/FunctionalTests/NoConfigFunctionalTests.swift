@@ -75,7 +75,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         // test sendEvent does not send the event when config is pending
-        MobileCore.registerExtension(Identity.self)
+        MobileCore.registerExtension(IdentityEdge.self)
         var receivedHandles: [EdgeEventHandle] = []
         let expectation = self.expectation(description: "Completion handler called")
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],

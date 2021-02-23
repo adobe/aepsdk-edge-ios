@@ -18,7 +18,7 @@ import XCTest
 class EdgeHitProcessorTests: XCTestCase {
     private let ASSURANCE_SHARED_STATE = "com.adobe.assurance"
     private let CONFIGURATION_SHARED_STATE = "com.adobe.module.configuration"
-    private let IDENTITY_SHARED_STATE = "com.adobe.module.identity"
+    private let IDENTITY_SHARED_STATE = "com.adobe.identityedge"
     private let ASSURANCE_INTEGRATION_ID = "integrationid"
     private let EDGE_CONFIG_ID = "edge.configId"
     private let CONSENT_ENDPOINT = "https://edge.adobedc.net/ee/v1/privacy/set-consent"

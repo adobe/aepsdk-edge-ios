@@ -43,7 +43,7 @@ enum FunctionalTestConst {
     enum SharedState {
         static let CONFIGURATION = "com.adobe.module.configuration"
         static let CONSENT = "com.adobe.consent"
-        static let IDENTITY = "com.adobe.module.identity"
+        static let IDENTITY = "com.adobe.identityedge"
     }
     enum Defaults {
         static let WAIT_EVENT_TIMEOUT: TimeInterval = 2

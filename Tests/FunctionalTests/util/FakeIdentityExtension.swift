@@ -24,7 +24,7 @@ class FakeIdentityExtension: Extension {
     private static let eventClearState = "com.adobe.request.clearstate"
     private static let eventResponse = "com.adobe.response"
 
-    var name: String = "com.adobe.module.identity"
+    var name: String = "com.adobe.identityedge"
 
     var friendlyName: String = "Identity"
 

@@ -41,7 +41,7 @@ class CompletionHandlerFunctionalTests: FunctionalTestBase {
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
-        MobileCore.registerExtensions([Identity.self, Edge.self], {
+        MobileCore.registerExtensions([IdentityEdge.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
