@@ -77,7 +77,7 @@ class EdgeHitProcessor: HitProcessing {
 
         // Build Request object
         let requestBuilder = RequestBuilder()
-        requestBuilder.xdmPayloads = [AnyCodable.from(dictionary: identityState) ?? [:]]
+        requestBuilder.xdmPayloads[identityState.first?.key ?? ""] = AnyCodable(identityState.first?.value)
 
         if event.isExperienceEvent {
             requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,

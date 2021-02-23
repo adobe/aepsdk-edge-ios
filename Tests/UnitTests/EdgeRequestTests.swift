@@ -39,8 +39,6 @@ class EdgeRequestTests: XCTestCase {
             return
         }
         let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
-        var requestContext = RequestContextData()
-        requestContext.xdmPayloads += [AnyCodable.from(dictionary: identityMap)!]
 
         let events: [[String: AnyCodable]] = [
             [
@@ -54,7 +52,7 @@ class EdgeRequestTests: XCTestCase {
                     ]
                 ]
             ]]
-        let edgeRequest = EdgeRequest(meta: requestMetadata, xdm: requestContext, events: events)
+        let edgeRequest = EdgeRequest(meta: requestMetadata, xdm: AnyCodable.from(dictionary: identityMap)!, events: events)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
@@ -109,10 +107,8 @@ class EdgeRequestTests: XCTestCase {
             return
         }
         let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
-        var requestContext = RequestContextData()
-        requestContext.xdmPayloads += [AnyCodable.from(dictionary: identityMap)!]
         let edgeRequest = EdgeRequest(meta: nil,
-                                      xdm: requestContext,
+                                      xdm: AnyCodable.from(dictionary: identityMap)!,
                                       events: nil)
 
         let encoder = JSONEncoder()

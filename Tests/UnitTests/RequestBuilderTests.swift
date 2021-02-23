@@ -31,7 +31,7 @@ class RequestBuilderTests: XCTestCase {
     func testGetPayloadWithExperienceEvents_allParameters_verifyMetadata() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.xdmPayloads += [AnyCodable.from(dictionary: buildIdentityMap())!]
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         let event = Event(name: "Request Test",
                           type: "type",
@@ -44,7 +44,7 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertEqual("B", requestPayload?.meta?.konductorConfig?.streaming?.lineFeed)
         XCTAssertTrue(requestPayload?.meta?.konductorConfig?.streaming?.enabled ?? false)
 
-        guard let requestIdentityMap = requestPayload?.xdm?.xdmPayloads.first?["identityMap"]?.dictionaryValue,
+        guard let requestIdentityMap = requestPayload?.xdm?["identityMap"]?.dictionaryValue,
               let ecidArr = requestIdentityMap["ECID"] as? [Any],
               let ecidDict = ecidArr.first as? [String: Any],
               let ecid = ecidDict["id"] as? String else {
@@ -57,7 +57,7 @@ class RequestBuilderTests: XCTestCase {
     func testGetPayloadWithExperienceEvents_withEventXdm_verifyEventId_verifyTimestamp() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.xdmPayloads += [AnyCodable.from(dictionary: buildIdentityMap())!]
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         var events: [Event] = []
 
@@ -90,7 +90,7 @@ class RequestBuilderTests: XCTestCase {
 
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.xdmPayloads += [AnyCodable.from(dictionary: buildIdentityMap())!]
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         let event = Event(name: "Request Test",
                           type: "type",
@@ -107,7 +107,7 @@ class RequestBuilderTests: XCTestCase {
     func testGetPayloadWithExperienceEvents_withoutStorePayload_responseDoesNotContainsStateEntries() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.xdmPayloads += [AnyCodable.from(dictionary: buildIdentityMap())!]
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         let event = Event(name: "Request Test",
                           type: "type",

@@ -24,7 +24,7 @@ class RequestBuilder {
     private var lineFeed: String?
 
     /// XDM payloads to be attached to the request
-    var xdmPayloads: [[String: AnyCodable]] = []
+    var xdmPayloads: [String: AnyCodable] = [:]
 
     /// Data store manager for retrieving store response payloads for `StateMetadata`
     private let storeResponsePayloadManager: StoreResponsePayloadManager
@@ -61,10 +61,8 @@ class RequestBuilder {
                                               state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads))
 
         let experienceEvents = extractExperienceEvents(events)
-        var contextData = RequestContextData()
-        contextData.xdmPayloads += xdmPayloads
 
-        return EdgeRequest(meta: requestMetadata, xdm: contextData, events: experienceEvents)
+        return EdgeRequest(meta: requestMetadata, xdm: xdmPayloads, events: experienceEvents)
     }
 
     /// Builds the request payload to update the consent.
@@ -76,8 +74,8 @@ class RequestBuilder {
 
         // set IdentityMap if available
         var identityMap = [String: AnyCodable]()
-        if let identityMapDict = xdmPayloads.first(where: {$0.keys.first == EdgeConstants.SharedState.Identity.IDENTITY_MAP}) {
-            identityMap = identityMapDict
+        if let identityMapDict = xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] {
+            identityMap = AnyCodable.from(dictionary: identityMapDict.dictionaryValue) ?? [:]
         }
 
         return EdgeConsentUpdate(identityMap: identityMap,
