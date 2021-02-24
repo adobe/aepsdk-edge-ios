@@ -18,7 +18,7 @@ import XCTest
 class EdgeHitProcessorTests: XCTestCase {
     private let ASSURANCE_SHARED_STATE = "com.adobe.assurance"
     private let CONFIGURATION_SHARED_STATE = "com.adobe.module.configuration"
-    private let IDENTITY_SHARED_STATE = "com.adobe.module.identity"
+    private let IDENTITY_SHARED_STATE = "com.adobe.identityedge"
     private let ASSURANCE_INTEGRATION_ID = "integrationid"
     private let EDGE_CONFIG_ID = "edge.configId"
     private let CONSENT_ENDPOINT = "https://edge.adobedc.net/ee/v1/privacy/set-consent"
@@ -43,6 +43,7 @@ class EdgeHitProcessorTests: XCTestCase {
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: resolveSharedState(extensionName:event:),
+                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:),
                                         readyForEvent: readyForEvent(_:))
     }
 
@@ -51,12 +52,34 @@ class EdgeHitProcessorTests: XCTestCase {
             return SharedStateResult(status: .set, value: [ASSURANCE_INTEGRATION_ID: "test-int-id"])
         }
 
-        if extensionName == IDENTITY_SHARED_STATE {
-            return SharedStateResult(status: .set, value: [IDENTITY_SHARED_STATE: "test-mcid"])
-        }
-
         if extensionName == CONFIGURATION_SHARED_STATE {
             return SharedStateResult(status: .set, value: [EDGE_CONFIG_ID: "test-config-id"])
+        }
+
+        return nil
+    }
+
+    private func resolveXDMSharedState(extensionName: String, event: Event?) -> SharedStateResult? {
+        if extensionName == IDENTITY_SHARED_STATE {
+            guard let identityMapData = """
+                {
+                  "identityMap" : {
+                    "ECID" : [
+                      {
+                        "authenticationState" : "ambiguous",
+                        "id" : "test-ecid",
+                        "primary" : false
+                      }
+                    ]
+                  }
+                }
+            """.data(using: .utf8) else {
+                XCTFail("Failed to convert json string to data")
+                return nil
+            }
+            let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+
+            return SharedStateResult(status: .set, value: identityMap)
         }
 
         return nil
@@ -82,6 +105,7 @@ class EdgeHitProcessorTests: XCTestCase {
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: resolveSharedState(extensionName:event:),
+                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:),
                                         readyForEvent: { _ -> Bool in
                                             return false
                                         })
@@ -102,7 +126,9 @@ class EdgeHitProcessorTests: XCTestCase {
                                                 return SharedStateResult(status: .pending, value: nil)
                                             }
                                             return self.resolveSharedState(extensionName: extensionName, event: event)
-                                        }, readyForEvent: readyForEvent(_:))
+                                        },
+                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:),
+                                        readyForEvent: readyForEvent(_:))
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
@@ -120,7 +146,9 @@ class EdgeHitProcessorTests: XCTestCase {
                                                 return SharedStateResult(status: .set, value: [:])
                                             }
                                             return self.resolveSharedState(extensionName: extensionName, event: event)
-                                        }, readyForEvent: readyForEvent(_:))
+                                        },
+                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:),
+                                        readyForEvent: readyForEvent(_:))
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
@@ -132,12 +160,13 @@ class EdgeHitProcessorTests: XCTestCase {
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, event -> SharedStateResult? in
+                                        getSharedState: resolveXDMSharedState(extensionName:event:),
+                                        getXDMSharedState: { extensionName, event -> SharedStateResult? in
                                             if extensionName == self.IDENTITY_SHARED_STATE {
                                                 // simulate pending Identity shared state
                                                 return SharedStateResult(status: .pending, value: nil)
                                             }
-                                            return self.resolveSharedState(extensionName: extensionName, event: event)
+                                            return self.resolveXDMSharedState(extensionName: extensionName, event: event)
                                         }, readyForEvent: readyForEvent(_:))
 
         // test
@@ -150,12 +179,13 @@ class EdgeHitProcessorTests: XCTestCase {
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, event -> SharedStateResult? in
+                                        getSharedState: resolveSharedState(extensionName:event:),
+                                        getXDMSharedState: { extensionName, event -> SharedStateResult? in
                                             if extensionName == self.IDENTITY_SHARED_STATE {
                                                 // simulate pending Identity shared state
                                                 return SharedStateResult(status: .set, value: [:])
                                             }
-                                            return self.resolveSharedState(extensionName: extensionName, event: event)
+                                            return self.resolveXDMSharedState(extensionName: extensionName, event: event)
                                         }, readyForEvent: readyForEvent(_:))
 
         // test

@@ -12,7 +12,7 @@
 
 import AEPCore
 import AEPEdge
-import AEPIdentity
+import AEPIdentityEdge
 import AEPServices
 import Foundation
 import XCTest
@@ -34,19 +34,16 @@ class SampleFunctionalTests: FunctionalTestBase {
         super.setUp()
         continueAfterFailure = false
 
-        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, Edge), Identity and Config shared state updates
+        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge), IdentityEdge XDM shared state and Config shared state updates
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
-        // expectations for Identity force sync
-        setExpectationEvent(type: FunctionalTestConst.EventType.IDENTITY, source: FunctionalTestConst.EventSource.RESPONSE_IDENTITY, expectedCount: 2)
-
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
-        MobileCore.registerExtensions([Identity.self, Edge.self], {
+        MobileCore.registerExtensions([IdentityEdge.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })

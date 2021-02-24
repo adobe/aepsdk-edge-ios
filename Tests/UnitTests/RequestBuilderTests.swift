@@ -31,7 +31,7 @@ class RequestBuilderTests: XCTestCase {
     func testGetPayloadWithExperienceEvents_allParameters_verifyMetadata() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         let event = Event(name: "Request Test",
                           type: "type",
@@ -43,17 +43,21 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertEqual("A", requestPayload?.meta?.konductorConfig?.streaming?.recordSeparator)
         XCTAssertEqual("B", requestPayload?.meta?.konductorConfig?.streaming?.lineFeed)
         XCTAssertTrue(requestPayload?.meta?.konductorConfig?.streaming?.enabled ?? false)
-        guard let ecid = requestPayload?.xdm?.identityMap?.getItemsFor(namespace: "ECID")?[0] else {
+
+        guard let requestIdentityMap = requestPayload?.xdm?["identityMap"]?.dictionaryValue,
+              let ecidArr = requestIdentityMap["ECID"] as? [Any],
+              let ecidDict = ecidArr.first as? [String: Any],
+              let ecid = ecidDict["id"] as? String else {
             XCTFail("ECID missing")
             return
         }
-        XCTAssertEqual("ecid", ecid.id)
+        XCTAssertEqual("ecid", ecid)
     }
 
     func testGetPayloadWithExperienceEvents_withEventXdm_verifyEventId_verifyTimestamp() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         var events: [Event] = []
 
@@ -86,7 +90,7 @@ class RequestBuilderTests: XCTestCase {
 
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         let event = Event(name: "Request Test",
                           type: "type",
@@ -103,7 +107,7 @@ class RequestBuilderTests: XCTestCase {
     func testGetPayloadWithExperienceEvents_withoutStorePayload_responseDoesNotContainsStateEntries() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         let event = Event(name: "Request Test",
                           type: "type",
@@ -207,5 +211,26 @@ class RequestBuilderTests: XCTestCase {
         let requestPayload = request.getPayloadWithExperienceEvents([event])
         XCTAssertNotNil(requestPayload?.events?[0]["query"])
         XCTAssertEqual(requestPayload?.events?[0]["query"]?.dictionaryValue?["key"] as? String, "value" )
+    }
+    
+    private func buildIdentityMap() -> [String: Any]? {
+        guard let identityMapData = """
+        {
+            "identityMap": {
+              "ECID" : [
+                {
+                  "authenticationState" : "ambiguous",
+                  "id" : "ecid",
+                  "primary" : false
+                }
+              ]
+            }
+        }
+        """.data(using: .utf8) else {
+            XCTFail("Failed to convert json string to data")
+            return nil
+        }
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        return identityMap
     }
 }

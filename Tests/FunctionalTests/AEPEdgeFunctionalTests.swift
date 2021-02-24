@@ -12,7 +12,7 @@
 
 @testable import AEPCore
 @testable import AEPEdge
-import AEPIdentity
+import AEPIdentityEdge
 import AEPServices
 import Foundation
 import XCTest
@@ -34,19 +34,16 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false
         FileManager.default.clearCache()
 
-        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, Edge), Identity and Config shared state updates
+        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge) IdentityEdge XDM and Config shared state updates
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
-        // expectations for Identity force sync
-        setExpectationEvent(type: FunctionalTestConst.EventType.IDENTITY, source: FunctionalTestConst.EventSource.RESPONSE_IDENTITY, expectedCount: 2)
-
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
-        MobileCore.registerExtensions([Identity.self, Edge.self], {
+        MobileCore.registerExtensions([IdentityEdge.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
@@ -255,11 +252,13 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(14, requestBody.count)
+        XCTAssertEqual(16, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
+        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticationState"] as? String)
+        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].primary"] as? Bool)
         XCTAssertNotNil(requestBody["events[0].xdm._id"] as? String)
         XCTAssertNotNil(requestBody["events[0].xdm.timestamp"] as? String)
         XCTAssertEqual("xdm", requestBody["events[0].xdm.testString"] as? String)
@@ -299,11 +298,13 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(15, requestBody.count)
+        XCTAssertEqual(17, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
+        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticationState"] as? String)
+        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].primary"] as? Bool)
         XCTAssertNotNil(requestBody["events[0].xdm._id"] as? String)
         XCTAssertNotNil(requestBody["events[0].xdm.timestamp"] as? String)
         XCTAssertEqual("xdm", requestBody["events[0].xdm.testString"] as? String)
@@ -348,11 +349,13 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(12, requestBody.count)
+        XCTAssertEqual(14, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
+        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticationState"] as? String)
+        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].primary"] as? Bool)
         XCTAssertNotNil(requestBody["events[0].xdm._id"] as? String)
         XCTAssertNotNil(requestBody["events[0].xdm.timestamp"] as? String)
         XCTAssertEqual(true, requestBody["events[0].xdm.boolObject"] as? Bool)
@@ -475,7 +478,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         var resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(7, requestBody.count)
+        XCTAssertEqual(9, requestBody.count)
         resetTestExpectations()
 
         sleep(1)
@@ -488,7 +491,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(13, requestBody.count)
+        XCTAssertEqual(15, requestBody.count)
 
         guard let firstStore = requestBody["meta.state.entries[0].key"] as? String,
               let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {

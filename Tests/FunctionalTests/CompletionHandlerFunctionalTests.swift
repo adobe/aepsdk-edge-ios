@@ -12,7 +12,7 @@
 
 @testable import AEPCore
 @testable import AEPEdge
-import AEPIdentity
+import AEPIdentityEdge
 import AEPServices
 import Foundation
 import XCTest
@@ -41,7 +41,7 @@ class CompletionHandlerFunctionalTests: FunctionalTestBase {
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
-        MobileCore.registerExtensions([Identity.self, Edge.self], {
+        MobileCore.registerExtensions([IdentityEdge.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })

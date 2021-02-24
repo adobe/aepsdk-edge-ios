@@ -23,8 +23,8 @@ class RequestBuilder {
     /// Control character used at the end of each response fragment. Response streaming is enabled when both `recordSeparator` and `lineFeed` are non nil.
     private var lineFeed: String?
 
-    /// The Experience Cloud ID to be sent with this request
-    var experienceCloudId: String?
+    /// XDM payloads to be attached to the request
+    var xdmPayloads: [String: AnyCodable] = [:]
 
     /// Data store manager for retrieving store response payloads for `StateMetadata`
     private let storeResponsePayloadManager: StoreResponsePayloadManager
@@ -61,16 +61,8 @@ class RequestBuilder {
                                               state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads))
 
         let experienceEvents = extractExperienceEvents(events)
-        var contextData: RequestContextData?
 
-        // set ECID if available
-        if let ecid = experienceCloudId {
-            var identityMap = IdentityMap()
-            identityMap.addItem(namespace: EdgeConstants.JsonKeys.ECID, id: ecid)
-            contextData = RequestContextData(identityMap: identityMap)
-        }
-
-        return EdgeRequest(meta: requestMetadata, xdm: contextData, events: experienceEvents)
+        return EdgeRequest(meta: requestMetadata, xdm: xdmPayloads, events: experienceEvents)
     }
 
     /// Builds the request payload to update the consent.
@@ -80,13 +72,12 @@ class RequestBuilder {
         guard event.data != nil,
               let consents = event.data?[EdgeConstants.EventDataKeys.CONSENTS] as? [String: Any] else { return nil }
 
-        // set ECID if available
-        var identityMap = IdentityMap()
-        if let ecid = experienceCloudId {
-            identityMap.addItem(namespace: EdgeConstants.JsonKeys.ECID, id: ecid)
+        // set IdentityMap if available
+        var identityMap = [String: AnyCodable]()
+        if let identityMapDict = xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] {
+            identityMap = AnyCodable.from(dictionary: identityMapDict.dictionaryValue) ?? [:]
         }
 
-        // todo: add identitymap to EdgeHit
         return EdgeConsentUpdate(identityMap: identityMap,
                                  consent: [EdgeConsentPayload(standard: EdgeConstants.JsonValues.CONSENT_STANDARD,
                                                               version: EdgeConstants.JsonValues.CONSENT_VERSION,

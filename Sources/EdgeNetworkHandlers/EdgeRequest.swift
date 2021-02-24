@@ -20,7 +20,7 @@ struct EdgeRequest: Encodable {
     let meta: RequestMetadata?
 
     /// XDM data applied for the entire request
-    let xdm: RequestContextData?
+    let xdm: [String: AnyCodable]?
 
     /// List of Experience events
     let events: [[String: AnyCodable]]?

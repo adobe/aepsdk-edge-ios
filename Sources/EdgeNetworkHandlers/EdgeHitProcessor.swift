@@ -20,16 +20,19 @@ class EdgeHitProcessor: HitProcessing {
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
     private var getSharedState: (String, Event?) -> SharedStateResult?
+    private var getXDMSharedState: (String, Event?) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
          getSharedState: @escaping (String, Event?) -> SharedStateResult?,
+         getXDMSharedState: @escaping (String, Event?) -> SharedStateResult?,
          readyForEvent: @escaping (Event) -> Bool) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
         self.getSharedState = getSharedState
+        self.getXDMSharedState = getXDMSharedState
         self.readyForEvent = readyForEvent
     }
 
@@ -61,10 +64,10 @@ class EdgeHitProcessor: HitProcessing {
             return // drop current event
         }
 
-        // get ECID from Identity shared state, this should be resolved based on readyForEvent check
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
         guard let identityState =
-                getSharedState(EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
-                               event)?.value else {
+                getXDMSharedState(EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                  event)?.value else {
             Log.warning(label: LOG_TAG,
                         "processHit - Unable to process the event '\(event.id.uuidString)', " +
                             "Identity shared state is nil.")
@@ -74,12 +77,9 @@ class EdgeHitProcessor: HitProcessing {
 
         // Build Request object
         let requestBuilder = RequestBuilder()
-        if let ecid = identityState[EdgeConstants.SharedState.Identity.ECID] as? String {
-            requestBuilder.experienceCloudId = ecid
-        } else {
-            // This is not expected to happen. Continue without ECID
-            Log.warning(label: LOG_TAG, "processHit - An unexpected error has occurred, ECID is nil.")
-        }
+        // attach identity map
+        requestBuilder.xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] =
+            AnyCodable(identityState[EdgeConstants.SharedState.Identity.IDENTITY_MAP])
 
         if event.isExperienceEvent {
             requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
