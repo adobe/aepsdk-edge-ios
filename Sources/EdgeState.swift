@@ -24,7 +24,7 @@ class EdgeState {
     init(hitQueue: HitQueuing) {
         self.hitQueue = hitQueue
     }
-    
+
     /// Completes init for the `Edge` extension and the collect consent is set based on either Consent shared state
     /// or the default value if this extension is not registered
     ///
@@ -33,7 +33,7 @@ class EdgeState {
     ///   - getXDMSharedState
     func bootupIfNeeded(event: Event, getXDMSharedState: @escaping (String, Event?) -> SharedStateResult?) {
         guard !hasBooted else { return }
-        
+
         // check if consent extension is registered
         let consentSharedState = getXDMSharedState(EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME, nil)
         if consentSharedState?.status == SharedStateStatus.none {
@@ -42,10 +42,10 @@ class EdgeState {
         } else {
             currentCollectConsent = EdgeConsentStatus.getCollectConsentOrDefault(eventData: consentSharedState?.value ?? [:])
         }
-        
+
         // update hitQueue based on current collect consent status
         hitQueue.handleCollectConsentChange(status: currentCollectConsent)
-        
+
         hasBooted = true
         Log.debug(label: LOG_TAG, "Edge has successfully booted up")
     }

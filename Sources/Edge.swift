@@ -58,7 +58,7 @@ public class Edge: NSObject, Extension {
 
     public func readyForEvent(_ event: Event) -> Bool {
         guard canProcessEvents(event: event) else { return false }
-        
+
         if event.isExperienceEvent || event.isUpdateConsentEvent {
             let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
@@ -138,7 +138,7 @@ public class Edge: NSObject, Extension {
 
         return false
     }
-    
+
     /// Determines if `Edge` is ready to handle events, if the bootup can be executed successfully
     /// - Parameter event: An `Event`
     /// - Returns: True if we can process events, false otherwise

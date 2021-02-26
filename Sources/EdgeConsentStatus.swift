@@ -34,7 +34,7 @@ enum ConsentStatus: String, RawRepresentable, Codable {
 }
 
 struct EdgeConsentStatus {
-    
+
     /// Extracts the collect consent value from the provided event data payload, if encoding fails it returns the default `EdgeConstants.Defaults.CONSENT_PENDING`
     /// - Parameter eventData: consent prefereneces update payload
     /// - Returns: the collect consent value extracted from the payload, or pending if the decoding failed
