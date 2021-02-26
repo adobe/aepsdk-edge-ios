@@ -212,7 +212,7 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertNotNil(requestPayload?.events?[0]["query"])
         XCTAssertEqual(requestPayload?.events?[0]["query"]?.dictionaryValue?["key"] as? String, "value" )
     }
-    
+
     private func buildIdentityMap() -> [String: Any]? {
         guard let identityMapData = """
         {

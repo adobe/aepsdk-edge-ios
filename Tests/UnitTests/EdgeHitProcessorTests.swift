@@ -37,9 +37,7 @@ class EdgeHitProcessorTests: XCTestCase {
     override func setUp() {
         ServiceProvider.shared.networkService = MockNetworking()
         networkService = EdgeNetworkService()
-        networkResponseHandler = NetworkResponseHandler(getPrivacyStatus: { () -> PrivacyStatus in
-            return PrivacyStatus.optedIn
-        })
+        networkResponseHandler = NetworkResponseHandler()
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: resolveSharedState(extensionName:event:),
