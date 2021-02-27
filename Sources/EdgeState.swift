@@ -30,17 +30,17 @@ class EdgeState {
     ///
     /// - Parameters:
     ///   - event: The `Event` triggering the bootup
-    ///   - getXDMSharedState
+    ///   - getXDMSharedState: used to fetch the Consent data
     func bootupIfNeeded(event: Event, getXDMSharedState: @escaping (String, Event?) -> SharedStateResult?) {
         guard !hasBooted else { return }
 
         // check if consent extension is registered
         let consentSharedState = getXDMSharedState(EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME, nil)
-        if consentSharedState?.status == SharedStateStatus.none {
+        if consentSharedState == nil {
             Log.warning(label: LOG_TAG, "Consent extension is not registered yet, using default collect status (yes)")
             currentCollectConsent = EdgeConstants.Defaults.COLLECT_CONSENT_YES
         } else {
-            currentCollectConsent = EdgeConsentStatus.getCollectConsentOrDefault(eventData: consentSharedState?.value ?? [:])
+            currentCollectConsent = ConsentStatus.getCollectConsentOrDefault(eventData: consentSharedState?.value ?? [:])
         }
 
         // update hitQueue based on current collect consent status

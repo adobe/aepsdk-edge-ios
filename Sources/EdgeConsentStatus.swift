@@ -13,9 +13,9 @@
 import Foundation
 
 enum ConsentStatus: String, RawRepresentable, Codable {
-    case yes
-    case no
-    case pending
+    case yes = "y"
+    case no = "n"
+    case pending = "p"
 
     typealias RawValue = String
 
@@ -28,12 +28,9 @@ enum ConsentStatus: String, RawRepresentable, Codable {
         case "n":
             self = .no
         default:
-            self = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
+            self = .pending
         }
     }
-}
-
-struct EdgeConsentStatus {
 
     /// Extracts the collect consent value from the provided event data payload, if encoding fails it returns the default `EdgeConstants.Defaults.CONSENT_PENDING`
     /// - Parameter eventData: consent prefereneces update payload

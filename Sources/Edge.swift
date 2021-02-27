@@ -98,7 +98,7 @@ public class Edge: NSObject, Extension {
     /// - Parameter event: the consent preferences response event
     func handleConsentPreferencesUpdate(_ event: Event) {
         guard let data = event.data else { return }
-        state?.hitQueue.handleCollectConsentChange(status: EdgeConsentStatus.getCollectConsentOrDefault(eventData: data))
+        state?.hitQueue.handleCollectConsentChange(status: ConsentStatus.getCollectConsentOrDefault(eventData: data))
     }
 
     /// Handles the Consent Update event
@@ -173,11 +173,11 @@ public class Edge: NSObject, Extension {
     private func getConsentForEvent(_ event: Event) -> ConsentStatus {
         guard let consentXDMSharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME,
                                                             event: event)?.value else {
-            Log.debug(label: LOG_TAG, "Consent XDM Shared state is unavailable for event '\(event.id)', using default collect (yes).")
-            return EdgeConstants.Defaults.COLLECT_CONSENT_YES
+            Log.debug(label: LOG_TAG, "Consent XDM Shared state is unavailable for event '\(event.id)', using currect consent.")
+            return state?.currentCollectConsent ?? EdgeConstants.Defaults.COLLECT_CONSENT_YES
         }
 
-        return EdgeConsentStatus.getCollectConsentOrDefault(eventData: consentXDMSharedState)
+        return ConsentStatus.getCollectConsentOrDefault(eventData: consentXDMSharedState)
     }
 
 }
