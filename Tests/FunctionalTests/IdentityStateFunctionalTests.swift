@@ -18,8 +18,7 @@ import XCTest
 /// Functional test suite for tests which require no Identity shared state at startup to simulate a missing or pending state.
 class IdentityStateFunctionalTests: FunctionalTestBase {
 
-    private let exEdgeInteractUrlString = "https://edge.adobedc.net/ee/v1/interact"
-    private let exEdgeInteractUrl = URL(string: "https://edge.adobedc.net/ee/v1/interact")! // swiftlint:disable:this force_unwrapping
+    private let exEdgeInteractUrl = URL(string: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR)! // swiftlint:disable:this force_unwrapping
 
     override func setUp() {
         super.setUp()
@@ -32,7 +31,14 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
-        MobileCore.registerExtensions([TestableEdge.self, FakeIdentityExtension.self])
+
+        // wait for async registration because the EventHub is already started in FunctionalTestBase
+        let waitForRegistration = CountDownLatch(1)
+        MobileCore.registerExtensions([TestableEdge.self, FakeIdentityExtension.self], {
+            print("Extensions registration is complete")
+            waitForRegistration.countDown()
+        })
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
         MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
                                                         "experienceCloud.org": "testOrg@AdobeOrg",
                                                         "edge.configId": "12345-example"])
@@ -43,14 +49,14 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
     func testSendEvent_withPendingIdentityState_noRequestSent() {
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
-        let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
+        let requests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertTrue(requests.isEmpty)
     }
 
     func testSendEvent_withPendingIdentityState_thenValidIdentityState_requestSentAfterChange() {
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
-        var requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: 2)
+        var requests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertTrue(requests.isEmpty) // no network request sent yet
 
         guard let responseBody = "{\"test\": \"json\"}".data(using: .utf8) else {
@@ -63,8 +69,8 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         // Once the shared state is set, the Edge Extension is expected to reprocess the original
         // Send Event request once the Hub Shared State event is received.
@@ -88,7 +94,7 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         FakeIdentityExtension.setXDMSharedState(state: identityMap!)
         assertNetworkRequestsCount()
 
-        requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
+        requests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, requests.count)
         let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])
         XCTAssertEqual("1234", flattenRequestBody["xdm.identityMap.ECID[0].id"] as? String)
@@ -125,15 +131,15 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
         assertNetworkRequestsCount()
 
         // Assert network request does not contain an ECID
-        let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
+        let requests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, requests.count)
         let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])
         XCTAssertNil(flattenRequestBody["xdm.identityMap.ECID[0].id"])

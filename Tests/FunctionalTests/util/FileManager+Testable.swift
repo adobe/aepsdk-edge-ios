@@ -16,7 +16,7 @@ import Foundation
 extension FileManager {
 
     func clearCache() {
-        let knownCacheItems: [String] = ["com.adobe.edge", "com.adobe.module.identity"]
+        let knownCacheItems: [String] = ["com.adobe.edge", "com.adobe.identityedge"]
         guard let url = self.urls(for: .cachesDirectory, in: .userDomainMask).first else {
             return
         }

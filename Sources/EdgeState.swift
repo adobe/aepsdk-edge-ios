@@ -49,4 +49,13 @@ class EdgeState {
         hasBooted = true
         Log.debug(label: LOG_TAG, "Edge has successfully booted up")
     }
+
+    /// Updates `currentCollectConsent` value and updates the hitQueue state based on it.
+    ///
+    /// - Parameters:
+    ///   - status: The new collect consent status
+    func updateCurrentConsent(status: ConsentStatus) {
+        currentCollectConsent = status
+        hitQueue.handleCollectConsentChange(status: status)
+    }
 }

@@ -80,6 +80,7 @@ class EdgeConsentTests: FunctionalTestBase {
         resetTestExpectations()
     }
 
+    // MARK: test experience events handling based on collect consent value
     func testCollectConsent_whenNo_thenHits_hitsCleared() {
         // setup
         updateCollectConsent(status: ConsentStatus.no)
@@ -189,6 +190,68 @@ class EdgeConsentTests: FunctionalTestBase {
         assertNetworkRequestsCount()
     }
 
+    // MARK: test consent events are being sent to Edge Network
+    func testCollectConsentNo_sendsRequestToEdgeNetwork() {
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_CONSENT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        // test
+        updateCollectConsent(status: ConsentStatus.no)
+
+        // verify
+        assertNetworkRequestsCount()
+        let interactRequests = self.getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        XCTAssertEqual(0, interactRequests.count)
+        let consentRequests = self.getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_CONSENT_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
+        let requestBody = getFlattenNetworkRequestBody(consentRequests[0])
+        print(requestBody)
+        XCTAssertEqual(7, requestBody.count)
+        XCTAssertNotNil(requestBody["identityMap.ECID[0].id"] as? String)
+        XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticationState"] as? String)
+        XCTAssertEqual(true, requestBody["identityMap.ECID[0].primary"] as? Bool)
+        XCTAssertEqual("Adobe", requestBody["consent[0].standard"] as? String)
+        XCTAssertEqual("2.0", requestBody["consent[0].version"] as? String)
+        XCTAssertEqual("n", requestBody["consent[0].value.collect.val"] as? String)
+        XCTAssertNotNil(requestBody["consent[0].value.metadata.time"] as? String)
+    }
+
+    func testCollectConsentYes_sendsRequestToEdgeNetwork() {
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_CONSENT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        // test
+        updateCollectConsent(status: ConsentStatus.yes)
+
+        // verify
+        assertNetworkRequestsCount()
+        let interactRequests = self.getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        XCTAssertEqual(0, interactRequests.count)
+        let consentRequests = self.getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_CONSENT_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
+        let requestBody = getFlattenNetworkRequestBody(consentRequests[0])
+        print(requestBody)
+        XCTAssertEqual(7, requestBody.count)
+        XCTAssertNotNil(requestBody["identityMap.ECID[0].id"] as? String)
+        XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticationState"] as? String)
+        XCTAssertEqual(true, requestBody["identityMap.ECID[0].primary"] as? Bool)
+        XCTAssertEqual("Adobe", requestBody["consent[0].standard"] as? String)
+        XCTAssertEqual("2.0", requestBody["consent[0].version"] as? String)
+        XCTAssertEqual("y", requestBody["consent[0].value.collect.val"] as? String)
+        XCTAssertNotNil(requestBody["consent[0].value.metadata.time"] as? String)
+    }
+
+    func testCollectConsentOtherThanYesNo_doesNotSendRequestToEdgeNetwork() {
+        // test
+        updateCollectConsent(status: ConsentStatus.pending)
+        updateCollectConsent(status: "u")
+        updateCollectConsent(status: "some value")
+
+        // verify
+        let interactRequests = self.getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        XCTAssertEqual(0, interactRequests.count)
+        let consentRequests = self.getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_CONSENT_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        XCTAssertEqual(0, consentRequests.count)
+    }
+
     private func fireManyEvents() {
         for _ in 1 ... EVENTS_COUNT {
             Edge.sendEvent(experienceEvent: experienceEvent)
@@ -197,6 +260,10 @@ class EdgeConsentTests: FunctionalTestBase {
 
     private func updateCollectConsent(status: ConsentStatus) {
         Consent.update(with: ["consents": ["collect": ["val": status.rawValue]]])
+    }
+
+    private func updateCollectConsent(status: String) {
+        Consent.update(with: ["consents": ["collect": ["val": status]]])
     }
 
     private func getConsentsSync() {

@@ -98,14 +98,13 @@ public class Edge: NSObject, Extension {
     /// - Parameter event: the consent preferences response event
     func handleConsentPreferencesUpdate(_ event: Event) {
         guard let data = event.data else { return }
-        state?.hitQueue.handleCollectConsentChange(status: ConsentStatus.getCollectConsentOrDefault(eventData: data))
+
+        state?.updateCurrentConsent(status: ConsentStatus.getCollectConsentOrDefault(eventData: data))
     }
 
     /// Handles the Consent Update event
     /// - Parameter event: current event to process
     func handleConsentUpdate(_ event: Event) {
-        guard !shouldIgnore(event: event) else { return }
-
         if event.data == nil {
             Log.trace(label: LOG_TAG, "handleConsentUpdate - Event with id \(event.id.uuidString) contained no data, ignoring.")
             return
@@ -124,7 +123,7 @@ public class Edge: NSObject, Extension {
     /// `readyForEvent` passed.
     ///
     /// - Parameter event: the event to validate
-    /// - Returns: true when collect consent is no and the event source is not `updateConsent`, false otherwise
+    /// - Returns: true when collect consent is no, false otherwise
     private func shouldIgnore(event: Event) -> Bool {
         if event.source == EventSource.updateConsent {
             return false
