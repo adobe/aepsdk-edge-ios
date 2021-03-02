@@ -14,15 +14,18 @@ import AEPCore
 import AEPServices
 import Foundation
 
+/// Updates the state of the  `Edge` extension based on the Collect consent status
 class EdgeState {
     private let LOG_TAG = "EdgeState"
     private(set) var hitQueue: HitQueuing
     private(set) var hasBooted = false
-    private(set) var currentCollectConsent = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
+    private(set) var currentCollectConsent: ConsentStatus
 
-    /// Creates a new `EdgeState` and initializes the required properties
+    /// Creates a new `EdgeState` and initializes the required properties and sets the initial collect consent
     init(hitQueue: HitQueuing) {
         self.hitQueue = hitQueue
+        self.currentCollectConsent = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
+        hitQueue.handleCollectConsentChange(status: currentCollectConsent)
     }
 
     /// Completes init for the `Edge` extension and the collect consent is set based on either Consent shared state
