@@ -19,7 +19,7 @@ public class Edge: NSObject, Extension {
     private let LOG_TAG = "Edge" // Tag for logging
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler?
-    private(set) var state: EdgeState?
+    internal var state: EdgeState?
 
     // MARK: - Extension
     public let name = EdgeConstants.EXTENSION_NAME
@@ -79,7 +79,7 @@ public class Edge: NSObject, Extension {
     func handleExperienceEventRequest(_ event: Event) {
         guard !shouldIgnore(event: event) else { return }
 
-        if event.data == nil {
+        guard let data = event.data, !data.isEmpty else {
             Log.trace(label: LOG_TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
             return
         }
@@ -105,7 +105,7 @@ public class Edge: NSObject, Extension {
     /// Handles the Consent Update event
     /// - Parameter event: current event to process
     func handleConsentUpdate(_ event: Event) {
-        if event.data == nil {
+        guard let data = event.data, !data.isEmpty else {
             Log.trace(label: LOG_TAG, "handleConsentUpdate - Event with id \(event.id.uuidString) contained no data, ignoring.")
             return
         }
@@ -125,10 +125,6 @@ public class Edge: NSObject, Extension {
     /// - Parameter event: the event to validate
     /// - Returns: true when collect consent is no, false otherwise
     private func shouldIgnore(event: Event) -> Bool {
-        if event.source == EventSource.updateConsent {
-            return false
-        }
-
         let consentForEvent = getConsentForEvent(event)
         if consentForEvent == ConsentStatus.no {
             Log.debug(label: LOG_TAG, "Ignoring event with id \(event.id.uuidString) due to collect consent setting (n) .")
@@ -168,12 +164,12 @@ public class Edge: NSObject, Extension {
     }
 
     /// Retrieves the `ConsentStatus` from the Consent XDM Shared state for current `event`.
-    /// - Returns: `ConsentStatus` value or nil if not found
-    private func getConsentForEvent(_ event: Event) -> ConsentStatus {
+    /// - Returns: `ConsentStatus` value from shared state or, if not found, current consent value
+    private func getConsentForEvent(_ event: Event) -> ConsentStatus? {
         guard let consentXDMSharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME,
                                                             event: event)?.value else {
             Log.debug(label: LOG_TAG, "Consent XDM Shared state is unavailable for event '\(event.id)', using currect consent.")
-            return state?.currentCollectConsent ?? EdgeConstants.Defaults.COLLECT_CONSENT_YES
+            return state?.currentCollectConsent
         }
 
         return ConsentStatus.getCollectConsentOrDefault(eventData: consentXDMSharedState)
