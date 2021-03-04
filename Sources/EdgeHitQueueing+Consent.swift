@@ -15,7 +15,7 @@ import Foundation
 
 extension HitQueuing {
     /// Based on `status` determines if we should continue processing hits or if we should suspend processing and clear hits
-    /// - Parameter status: the current collect consent status status
+    /// - Parameter status: the current collect consent status
     func handleCollectConsentChange(status: ConsentStatus) {
         switch status {
         case .yes:

@@ -136,7 +136,7 @@ public class Edge: NSObject, Extension {
 
     /// Determines if `Edge` is ready to handle events, if the bootup can be executed successfully
     /// - Parameter event: An `Event`
-    /// - Returns: True if we can process events, false otherwise
+    /// - Returns: true if events can be processed at the moment, false otherwise
     private func canProcessEvents(event: Event) -> Bool {
         guard let state = state else { return false }
         state.bootupIfNeeded(event: event, getXDMSharedState: getXDMSharedState(extensionName:event:))
