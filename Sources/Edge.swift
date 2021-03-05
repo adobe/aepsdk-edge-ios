@@ -97,7 +97,10 @@ public class Edge: NSObject, Extension {
     /// Handles the `EventType.consent` -`EventSource.responseContent` event for the collect consent change
     /// - Parameter event: the consent preferences response event
     func handleConsentPreferencesUpdate(_ event: Event) {
-        guard let data = event.data else { return }
+        guard let data = event.data, !data.isEmpty else {
+            Log.trace(label: LOG_TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
+            return
+        }
 
         state?.updateCurrentConsent(status: ConsentStatus.getCollectConsentOrDefault(eventData: data))
     }

@@ -38,12 +38,11 @@ class EdgeState {
         guard !hasBooted else { return }
 
         // check if consent extension is registered
-        let consentSharedState = getXDMSharedState(EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME, nil)
-        if consentSharedState == nil {
+        if let consentSharedState = getXDMSharedState(EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME, nil) {
+            currentCollectConsent = ConsentStatus.getCollectConsentOrDefault(eventData: consentSharedState.value ?? [:])
+        } else {
             Log.warning(label: LOG_TAG, "Consent extension is not registered yet, using default collect status (yes)")
             currentCollectConsent = EdgeConstants.Defaults.COLLECT_CONSENT_YES
-        } else {
-            currentCollectConsent = ConsentStatus.getCollectConsentOrDefault(eventData: consentSharedState?.value ?? [:])
         }
 
         // update hitQueue based on current collect consent status

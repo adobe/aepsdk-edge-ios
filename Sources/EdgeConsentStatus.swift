@@ -28,7 +28,7 @@ enum ConsentStatus: String, RawRepresentable, Codable {
         case "n":
             self = .no
         default:
-            self = .pending
+            self = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
         }
     }
 
