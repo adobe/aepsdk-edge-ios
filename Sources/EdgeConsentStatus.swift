@@ -12,7 +12,37 @@
 
 import Foundation
 
-enum ConsentStatus: String, Codable, Equatable {
+enum ConsentStatus: String, RawRepresentable, Codable {
     case yes = "y"
     case no = "n"
+    case pending = "p"
+
+    typealias RawValue = String
+
+    /// Initializes the appropriate `ConsentStatus` enum for the given `rawValue`
+    /// - Parameter rawValue: a `RawValue` representation of a `ConsentStatus` enum, default is pending
+    public init(rawValue: RawValue) {
+        switch rawValue {
+        case "y":
+            self = .yes
+        case "n":
+            self = .no
+        default:
+            self = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
+        }
+    }
+
+    /// Extracts the collect consent value from the provided event data payload, if encoding fails it returns the default `EdgeConstants.Defaults.CONSENT_PENDING`
+    /// - Parameter eventData: consent prefereneces update payload
+    /// - Returns: the collect consent value extracted from the payload, or pending if the decoding failed
+    static func getCollectConsentOrDefault(eventData: [String: Any]) -> ConsentStatus {
+        // if collect consent not set yet, use default (pending)
+        guard let consents = eventData[EdgeConstants.SharedState.Consent.CONSENTS] as? [String: Any],
+              let collectConsent = consents[EdgeConstants.SharedState.Consent.COLLECT] as? [String: Any],
+              let collectConsentValue = collectConsent[EdgeConstants.SharedState.Consent.VAL] as? String else {
+            return EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
+        }
+
+        return ConsentStatus(rawValue: collectConsentValue)
+    }
 }

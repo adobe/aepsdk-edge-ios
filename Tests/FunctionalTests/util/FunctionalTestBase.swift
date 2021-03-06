@@ -45,6 +45,7 @@ class FunctionalTestBase: XCTestCase {
     public class override func setUp() {
         super.setUp()
         UserDefaults.clearAll()
+        FileManager.default.clearCache()
         MobileCore.setLogLevel(LogLevel.trace)
         networkService = FunctionalTestNetworkService()
         ServiceProvider.shared.networkService = networkService

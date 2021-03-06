@@ -13,7 +13,7 @@
 import AEPConsent
 import AEPCore
 import AEPEdge
-import AEPIdentity
+import AEPIdentityEdge
 import AEPServices
 import SwiftUI
 
@@ -50,20 +50,19 @@ struct ContentView: View {
             HStack {
                 Text("Collect consent: ")
                 Button(action: {
-                    let consents = Consents()
-                    consents.collect = ConsentValue(.yes)
-                    Consent.updateConsents(consents: consents)
-                    printCurrentConsent()
+                    Consent.update(with: ["consents": ["collect": ["val": "y"]]])
                 }) {
                     Text("yes")
                 }
                 Button(action: {
-                    let consents = Consents()
-                    consents.collect = ConsentValue(.no)
-                    Consent.updateConsents(consents: consents)
-                    printCurrentConsent()
+                    Consent.update(with: ["consents": ["collect": ["val": "n"]]])
                 }) {
                     Text("no")
+                }
+                Button(action: {
+                    Consent.update(with: ["consents": ["collect": ["val": "p"]]])
+                }) {
+                    Text("pending")
                 }
             }.padding()
 
@@ -75,7 +74,6 @@ struct ContentView: View {
                         Log.debug(label: "AEPDemoApp", "Received handle with type \(handle.type ?? "unknown"), payload: \(handle.payload ?? [])")
                     }
                 })
-                printCurrentConsent()
             }) {
                 Text("Ping to ExEdge")
             }
@@ -83,14 +81,14 @@ struct ContentView: View {
     }
 
     private func printCurrentConsent() {
-        Consent.getConsents { (consents: Consents?, error: Error?) in
+        Consent.getConsents { (consents: [String: Any]?, error: Error?) in
             guard error == nil, let consents = consents else { return }
-            print("Current consent \(consents.asDictionary(dateEncodingStrategy: .iso8601) ?? [:])")
+            print("Current consent \(consents)")
         }
     }
 
     private func getECID() {
-        Identity.getExperienceCloudId { value, error in
+        IdentityEdge.getExperienceCloudId { value, error in
             if error != nil {
                 self.ecid = ""
                 return

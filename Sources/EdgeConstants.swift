@@ -18,7 +18,6 @@ enum EdgeConstants {
     static let EXTENSION_NAME = "com.adobe.edge"
     static let EXTENSION_VERSION = "1.0.0"
     static let FRIENDLY_NAME = "AEPEdge"
-    static let DEFAULT_PRIVACY_STATUS = PrivacyStatus.unknown
 
     enum EventSource {
         static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
@@ -34,14 +33,14 @@ enum EdgeConstants {
         static let RETRY_INTERVAL: TimeInterval = 5
         static let RECORD_SEPARATOR: String = "\u{0000}"
         static let LINE_FEED: String = "\n"
-        static let CONSENT = ConsentStatus.yes // used until Consent is first set
+        static let COLLECT_CONSENT_YES = ConsentStatus.yes // used if Consent extension is not registered
+        static let COLLECT_CONSENT_PENDING = ConsentStatus.pending // used when Consent encoding failed or the value different than y/n
     }
 
     enum EventDataKeys {
         static let EDGE_REQUEST_ID = "requestId"
         static let REQUEST_EVENT_ID = "requestEventId"
         static let DATASET_ID = "datasetId"
-        static let GLOBAL_PRIVACY = "global.privacy"
         static let CONSENTS = "consents"
     }
 
