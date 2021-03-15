@@ -43,7 +43,6 @@ enum FunctionalTestConst {
 
     enum SharedState {
         static let CONFIGURATION = "com.adobe.module.configuration"
-        static let CONSENT = "com.adobe.consent"
         static let IDENTITY = "com.adobe.edge.identity"
     }
     enum Defaults {
