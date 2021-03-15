@@ -20,6 +20,7 @@ enum FunctionalTestConst {
         static let HUB = "com.adobe.eventType.hub"
         static let CONFIGURATION = "com.adobe.eventType.configuration"
         static let IDENTITY = "com.adobe.eventType.identity"
+        static let CONSENT = "com.adobe.eventType.edgeConsent"
     }
 
     enum EventSource {
@@ -43,7 +44,7 @@ enum FunctionalTestConst {
     enum SharedState {
         static let CONFIGURATION = "com.adobe.module.configuration"
         static let CONSENT = "com.adobe.consent"
-        static let IDENTITY = "com.adobe.identityedge"
+        static let IDENTITY = "com.adobe.edge.identity"
     }
     enum Defaults {
         static let WAIT_EVENT_TIMEOUT: TimeInterval = 2

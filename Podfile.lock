@@ -11,15 +11,15 @@ PODS:
     - AEPAssurance/xcframeworks (= 1.1.0)
   - AEPAssurance/xcframeworks (1.1.0):
     - ACPCore (>= 2.9.0)
-  - AEPConsent (1.0.0-alpha.1):
-    - AEPCore
   - AEPCore (3.0.0):
     - AEPRulesEngine (= 1.0.0)
     - AEPServices (= 3.0.0)
+  - AEPEdgeConsent (1.0.0-alpha.1):
+    - AEPCore
+  - AEPEdgeIdentity (1.0.0-alpha.1):
+    - AEPCore
   - AEPIdentity (3.0.0):
     - AEPCore (= 3.0.0)
-  - AEPIdentityEdge (1.0.0-alpha.1):
-    - AEPCore
   - AEPLifecycle (3.0.0):
     - AEPCore (= 3.0.0)
   - AEPRulesEngine (1.0.0)
@@ -30,9 +30,9 @@ PODS:
 DEPENDENCIES:
   - ACPCore (from `https://github.com/adobe/aep-sdk-compatibility-ios.git`, branch `main`)
   - AEPAssurance
-  - "AEPConsent (from `git@github.com:adobe/aepsdk-consentedge-ios.git`, branch `dev`)"
   - AEPCore (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v3.0.1`)
-  - "AEPIdentityEdge (from `git@github.com:adobe/aepsdk-identityedge-ios.git`, branch `dev`)"
+  - "AEPEdgeConsent (from `git@github.com:adobe/aepsdk-consentedge-ios.git`, branch `dev`)"
+  - "AEPEdgeIdentity (from `git@github.com:adobe/aepsdk-identityedge-ios.git`, branch `dev`)"
   - AEPLifecycle (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v3.0.1`)
   - AEPRulesEngine
   - AEPServices (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v3.0.1`)
@@ -48,13 +48,13 @@ EXTERNAL SOURCES:
   ACPCore:
     :branch: main
     :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
-  AEPConsent:
-    :branch: dev
-    :git: "git@github.com:adobe/aepsdk-consentedge-ios.git"
   AEPCore:
     :branch: dev-v3.0.1
     :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPIdentityEdge:
+  AEPEdgeConsent:
+    :branch: dev
+    :git: "git@github.com:adobe/aepsdk-consentedge-ios.git"
+  AEPEdgeIdentity:
     :branch: dev
     :git: "git@github.com:adobe/aepsdk-identityedge-ios.git"
   AEPLifecycle:
@@ -71,37 +71,37 @@ CHECKOUT OPTIONS:
   ACPCore:
     :commit: bbb8bd6a47844a627d8055c5a8005ae5d7eee103
     :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
-  AEPConsent:
-    :commit: 7c2b3df21b542dd6618d79486e9586f1505113b7
-    :git: "git@github.com:adobe/aepsdk-consentedge-ios.git"
   AEPCore:
-    :commit: d3d244d729cf6893dec6792a9401c87222ecd77c
+    :commit: 4a9e080bda003d8e7ccf0e9e087dd59ea83b8b6b
     :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPIdentityEdge:
-    :commit: ab74727431d565844e9fe5c7d2f95763ab56a1fb
+  AEPEdgeConsent:
+    :commit: 0e9ea58d7303eb5eaf3e6bca6210aa5bc9f4e80c
+    :git: "git@github.com:adobe/aepsdk-consentedge-ios.git"
+  AEPEdgeIdentity:
+    :commit: 477ecfc221651a702970a119bf955f388d0c9703
     :git: "git@github.com:adobe/aepsdk-identityedge-ios.git"
   AEPLifecycle:
-    :commit: d3d244d729cf6893dec6792a9401c87222ecd77c
+    :commit: 4a9e080bda003d8e7ccf0e9e087dd59ea83b8b6b
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPServices:
-    :commit: d3d244d729cf6893dec6792a9401c87222ecd77c
+    :commit: 4a9e080bda003d8e7ccf0e9e087dd59ea83b8b6b
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPSignal:
-    :commit: d3d244d729cf6893dec6792a9401c87222ecd77c
+    :commit: 4a9e080bda003d8e7ccf0e9e087dd59ea83b8b6b
     :git: https://github.com/adobe/aepsdk-core-ios.git
 
 SPEC CHECKSUMS:
   ACPCore: 67e4b855bf16cfb6a63024a4ddb73d15c0fd30e5
   AEPAssurance: c9c21b7e57bf993db210766631db2ef3732d4fa4
-  AEPConsent: 8eed2ca6af3364efb7db5d182264863df81126c1
   AEPCore: 9ced1f1fddcbfd61517461e548e36aee740bf7c8
+  AEPEdgeConsent: e252fc03f4adeb236832a86dc2f030716b38860f
+  AEPEdgeIdentity: f2ad204531f9e9b6494a14ac50338d690c07183b
   AEPIdentity: 79c57508bbabc8c2cf7f90e2baed15b03f4e97e6
-  AEPIdentityEdge: 30741c9ca65c3c90e7f0cea226928da737a3f1ca
   AEPLifecycle: ed9b2fca314eb91da83766986bad8cb914555499
   AEPRulesEngine: 8bbc694fce6900cd33b2496c7d4b33ee2eeffc46
   AEPServices: 21ea64149483fdfbd5f88f546b9f5ad7d4987400
   AEPSignal: b4ac5c8e8c68e8902739426d70c01ed3ce229ac9
 
-PODFILE CHECKSUM: 4311bf5e60d9a6c872d52f4eaed0d85b0aa61258
+PODFILE CHECKSUM: 6a9fde460a668d4d8a1d1d79bd3ad8ebd8abac4b
 
 COCOAPODS: 1.10.1

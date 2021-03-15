@@ -12,7 +12,7 @@
 
 import AEPCore
 @testable import AEPEdge
-import AEPIdentityEdge
+import AEPEdgeIdentity
 import AEPServices
 import XCTest
 
@@ -75,7 +75,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         // test sendEvent does not send the event when config is pending
-        MobileCore.registerExtension(IdentityEdge.self)
+        MobileCore.registerExtension(Identity.self)
         var receivedHandles: [EdgeEventHandle] = []
         let expectation = self.expectation(description: "Completion handler called")
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],

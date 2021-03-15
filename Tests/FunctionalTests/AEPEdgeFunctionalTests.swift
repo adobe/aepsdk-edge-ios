@@ -12,7 +12,7 @@
 
 @testable import AEPCore
 @testable import AEPEdge
-import AEPIdentityEdge
+import AEPEdgeIdentity
 import AEPServices
 import Foundation
 import XCTest
@@ -43,7 +43,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
-        MobileCore.registerExtensions([IdentityEdge.self, Edge.self], {
+        MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
@@ -257,7 +257,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
-        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticationState"] as? String)
+        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].primary"] as? Bool)
         XCTAssertNotNil(requestBody["events[0].xdm._id"] as? String)
         XCTAssertNotNil(requestBody["events[0].xdm.timestamp"] as? String)
@@ -303,7 +303,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
-        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticationState"] as? String)
+        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].primary"] as? Bool)
         XCTAssertNotNil(requestBody["events[0].xdm._id"] as? String)
         XCTAssertNotNil(requestBody["events[0].xdm.timestamp"] as? String)
@@ -354,7 +354,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
-        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticationState"] as? String)
+        XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].primary"] as? Bool)
         XCTAssertNotNil(requestBody["events[0].xdm._id"] as? String)
         XCTAssertNotNil(requestBody["events[0].xdm.timestamp"] as? String)

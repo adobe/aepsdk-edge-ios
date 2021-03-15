@@ -107,15 +107,15 @@ class EdgeExtensionTests: XCTestCase {
     // MARK: Consent preferences update
     func testHandlePreferencesUpdate_nilEmptyData_keepsPendingConsent() {
         mockRuntime.simulateComingEvents(
-            Event(name: "Consent nil data", type: EventType.consent, source: EventSource.responseContent, data: nil),
-            Event(name: "Consent empty data", type: EventType.consent, source: EventSource.responseContent, data: [:])
+            Event(name: "Consent nil data", type: EventType.edgeConsent, source: EventSource.responseContent, data: nil),
+            Event(name: "Consent empty data", type: EventType.edgeConsent, source: EventSource.responseContent, data: [:])
         )
 
         XCTAssertEqual(ConsentStatus.pending, edge.state?.currentCollectConsent)
     }
 
     func testHandlePreferencesUpdate_validData() {
-        mockRuntime.simulateComingEvents(Event(name: "Consent update", type: EventType.consent, source: EventSource.responseContent, data: ["consents": ["collect": ["val": "y"]]]))
+        mockRuntime.simulateComingEvents(Event(name: "Consent update", type: EventType.edgeConsent, source: EventSource.responseContent, data: ["consents": ["collect": ["val": "y"]]]))
 
         XCTAssertEqual(ConsentStatus.yes, edge.state?.currentCollectConsent)
     }
