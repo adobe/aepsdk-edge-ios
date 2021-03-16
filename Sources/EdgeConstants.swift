@@ -59,7 +59,7 @@ enum EdgeConstants {
         }
 
         enum Identity {
-            static let STATE_OWNER_NAME = "com.adobe.identityedge"
+            static let STATE_OWNER_NAME = "com.adobe.edge.identity"
             static let IDENTITY_MAP = "identityMap"
         }
         enum Assurance {
@@ -72,7 +72,7 @@ enum EdgeConstants {
         }
 
         enum Consent {
-            static let SHARED_OWNER_NAME = "com.adobe.consent"
+            static let SHARED_OWNER_NAME = "com.adobe.edge.consent"
             static let CONSENTS = "consents"
             static let COLLECT = "collect"
             static let VAL = "val"

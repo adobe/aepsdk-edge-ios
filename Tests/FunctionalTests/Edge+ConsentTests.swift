@@ -10,10 +10,10 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPConsent
 import AEPCore
 @testable import AEPEdge
-import AEPIdentityEdge
+import AEPEdgeConsent
+import AEPEdgeIdentity
 import AEPServices
 import Foundation
 import XCTest
@@ -57,8 +57,9 @@ class EdgeConsentTests: FunctionalTestBase {
         continueAfterFailure = false
         FileManager.default.clearCache()
 
-        // hub shared state update for 4 extensions (InstrumentedExtension (registered in FunctionalTestBase), Edge, Consent, IdentityEdge)
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
+        // hub shared state update for 5 extensions (InstrumentedExtension (registered in FunctionalTestBase), Configuration, Edge, Consent, Edge Identity)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 5)
+        setExpectationEvent(type: FunctionalTestConst.EventType.CONSENT, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
@@ -66,7 +67,7 @@ class EdgeConsentTests: FunctionalTestBase {
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
-        MobileCore.registerExtensions([IdentityEdge.self, Edge.self, Consent.self], {
+        MobileCore.registerExtensions([Identity.self, Edge.self, Consent.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
@@ -207,7 +208,7 @@ class EdgeConsentTests: FunctionalTestBase {
         print(requestBody)
         XCTAssertEqual(7, requestBody.count)
         XCTAssertNotNil(requestBody["identityMap.ECID[0].id"] as? String)
-        XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticationState"] as? String)
+        XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertEqual(true, requestBody["identityMap.ECID[0].primary"] as? Bool)
         XCTAssertEqual("Adobe", requestBody["consent[0].standard"] as? String)
         XCTAssertEqual("2.0", requestBody["consent[0].version"] as? String)
@@ -231,7 +232,7 @@ class EdgeConsentTests: FunctionalTestBase {
         print(requestBody)
         XCTAssertEqual(7, requestBody.count)
         XCTAssertNotNil(requestBody["identityMap.ECID[0].id"] as? String)
-        XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticationState"] as? String)
+        XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertEqual(true, requestBody["identityMap.ECID[0].primary"] as? Bool)
         XCTAssertEqual("Adobe", requestBody["consent[0].standard"] as? String)
         XCTAssertEqual("2.0", requestBody["consent[0].version"] as? String)

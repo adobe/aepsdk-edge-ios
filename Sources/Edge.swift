@@ -43,7 +43,7 @@ public class Edge: NSObject, Extension {
         registerListener(type: EventType.edge,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
-        registerListener(type: EventType.consent,
+        registerListener(type: EventType.edgeConsent,
                          source: EventSource.responseContent,
                          listener: handleConsentPreferencesUpdate)
         registerListener(type: EventType.edge,
