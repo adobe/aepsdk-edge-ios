@@ -10,16 +10,17 @@ xcuserdata/
 *.xcscmblueprint
 *.xccheckout
 
-## Build generated 
+## Build generated
 DerivedData/
 bin/*
-build/xcode/*/out
-build/xcode/genhtml
-demo/AEPDemoAppSwiftUI/build
-demo/AEPCommerceDemoApp/build
+build/*.xcarchive
+build/*.xcframework
+build/*
+SampleApps/AEPDemoAppSwiftUI/build
+SampleApps/AEPCommerceDemoApp/build
 ci/*
 out/*
-build/xcode/*/out
+
 DerivedData/
 *.moved-aside
 *.pbxuser
@@ -53,7 +54,7 @@ playground.xcworkspace
 #
 # Xcode automatically generates this directory with a .xcworkspacedata file and xcuserdata
 # hence it is not needed unless you have added a package configuration file to your project
-# .swiftpm
+.swiftpm
 
 .build/
 
@@ -93,4 +94,4 @@ fastlane/test_output
 
 ## Cocoapods
 Pods/
-build/xcode/Pods
+
