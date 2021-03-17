@@ -10,12 +10,15 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPCore
 import Foundation
 
 /// Implementation of `EdgeHit` for Consent update requests
 struct ConsentEdgeHit: EdgeHit, Codable {
     let configId: String
-    let requestId: String = UUID().uuidString
+    let requestId: String
+    var headers: [String: String]
+    var listOfEvents: [Event]?
 
     /// The `EdgeConsentUpdate` for the corresponding hit
     let consents: EdgeConsentUpdate

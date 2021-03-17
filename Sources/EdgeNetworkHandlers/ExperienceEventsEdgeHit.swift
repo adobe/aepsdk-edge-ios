@@ -10,12 +10,15 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPCore
 import Foundation
 
 /// Implementation of `EdgeHit` for ExperienceEvents requests
 struct ExperienceEventsEdgeHit: EdgeHit, Codable {
     let configId: String
-    let requestId: String = UUID().uuidString
+    let requestId: String
+    let headers: [String: String]
+    let listOfEvents: [Event]?
 
     /// The `EdgeRequest` for the corresponding hit
     let request: EdgeRequest

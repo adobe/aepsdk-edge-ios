@@ -84,13 +84,51 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        guard let eventData = try? JSONEncoder().encode(event) else {
-            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode event with id: '\(event.id.uuidString)'.")
+        // fetch config shared state, this should be resolved based on readyForEvent check
+        guard let configId = getEdgeConfigId(event: event) else {
+            Log.debug(label: LOG_TAG, "Unable to read Edge config id, dropping event with id: \(event.id.uuidString)")
+            return // drop current event
+        }
+
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState =
+                getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                  event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            return // drop current event
+        }
+
+        // Build Request object
+        let requestBuilder = RequestBuilder()
+        // attach identity map
+        requestBuilder.xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] =
+            AnyCodable(identityState[EdgeConstants.SharedState.Identity.IDENTITY_MAP])
+
+        requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
+                                               lineFeed: EdgeConstants.Defaults.LINE_FEED)
+
+        // Build and send the network request to Experience Edge
+        let listOfEvents: [Event] = [event]
+        guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents) else {
+            Log.debug(label: LOG_TAG,
+                      "handleExperienceEventRequest - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
+            return
+        }
+
+        let edgeHit = ExperienceEventsEdgeHit(configId: configId,
+                                              requestId: UUID().uuidString,
+                                              headers: getRequestHeaders(event),
+                                              listOfEvents: listOfEvents,
+                                              request: requestPayload)
+        guard let hitData = try? JSONEncoder().encode(edgeHit) else {
+            Log.debug(label: LOG_TAG, "Failed to encode Edge hit, dropping event with id: \(event.id.uuidString).")
             return
         }
 
         Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Queuing event with id \(event.id.uuidString).")
-        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: eventData)
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: hitData)
         state?.hitQueue.queue(entity: entity)
     }
 
@@ -113,12 +151,46 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        guard let eventData = try? JSONEncoder().encode(event) else {
-            Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode consent event with id: '\(event.id.uuidString)'.")
+        // fetch config shared state, this should be resolved based on readyForEvent check
+        guard let configId = getEdgeConfigId(event: event) else {
+            Log.debug(label: LOG_TAG, "Unable to read Edge config id, dropping event with id: \(event.id.uuidString)")
+            return // drop current event
+        }
+
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState =
+                getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                  event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleConsentUpdate - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            return // drop current event
+        }
+
+        // Build Request object
+        let requestBuilder = RequestBuilder()
+        // attach identity map
+        requestBuilder.xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] =
+            AnyCodable(identityState[EdgeConstants.SharedState.Identity.IDENTITY_MAP])
+
+        // Build and send the consent network request to Experience Edge
+        guard let consentPayload = requestBuilder.getConsentPayload(event) else {
+            Log.debug(label: LOG_TAG,
+                      "handleConsentUpdate - Failed to build the consent payload, dropping current event '\(event.id.uuidString)'.")
             return
         }
 
-        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: eventData)
+        let consentEdgeHit = ConsentEdgeHit(configId: configId,
+                                            requestId: UUID().uuidString,
+                                            headers: getRequestHeaders(event),
+                                            listOfEvents: nil,
+                                            consents: consentPayload)
+        guard let hitData = try? JSONEncoder().encode(consentEdgeHit) else {
+            Log.debug(label: LOG_TAG, "Failed to encode Edge Consent hit, dropping event with id: \(event.id.uuidString).")
+            return
+        }
+
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: hitData)
         state?.hitQueue.queue(entity: entity)
     }
 
@@ -159,10 +231,7 @@ public class Edge: NSObject, Extension {
         }
 
         let hitProcessor = EdgeHitProcessor(networkService: networkService,
-                                            networkResponseHandler: networkResponseHandler,
-                                            getSharedState: getSharedState(extensionName:event:),
-                                            getXDMSharedState: getXDMSharedState(extensionName:event:),
-                                            readyForEvent: readyForEvent(_:))
+                                            networkResponseHandler: networkResponseHandler)
         return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }
 
@@ -176,6 +245,44 @@ public class Edge: NSObject, Extension {
         }
 
         return ConsentStatus.getCollectConsentOrDefault(eventData: consentXDMSharedState)
+    }
+
+    /// Extracts the Edge Configuration identifier from the Configuration Shared State
+    /// - Parameter event: current event for which the configuration is required
+    /// - Returns: the Edge Configuration Id if found, nil otherwise
+    private func getEdgeConfigId(event: Event) -> String? {
+        guard let configSharedState =
+                getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
+                               event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "getEdgeConfigId - Unable to process the event '\(event.id.uuidString)', Configuration shared state is nil.")
+            return nil
+        }
+
+        guard let configId =
+                configSharedState[EdgeConstants.SharedState.Configuration.CONFIG_ID] as? String,
+              !configId.isEmpty else {
+            Log.warning(label: LOG_TAG,
+                        "getEdgeConfigId - Unable to process the event '\(event.id.uuidString)' " +
+                            "because of invalid edge.configId in configuration.")
+            return nil
+        }
+
+        return configId
+    }
+
+    /// Computes the request headers for provided `event`, including the `Assurance` integration identifier when `Assurance` is enabled
+    /// - Returns: the network request headers as `[String: String]`
+    private func getRequestHeaders(_ event: Event) -> [String: String] {
+        // get Assurance integration id and include it in to the requestHeaders
+        var requestHeaders: [String: String] = [:]
+        if let assuranceSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Assurance.STATE_OWNER_NAME, event: event)?.value {
+            if let assuranceIntegrationId = assuranceSharedState[EdgeConstants.SharedState.Assurance.INTEGRATION_ID] as? String {
+                requestHeaders[EdgeConstants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
+            }
+        }
+
+        return requestHeaders
     }
 
 }

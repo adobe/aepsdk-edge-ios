@@ -30,8 +30,19 @@ class EdgeHitProcessorTests: XCTestCase {
         return ServiceProvider.shared.networkService as? MockNetworking
     }
     let expectedHeaders = ["X-Adobe-AEP-Validation-Token": "test-int-id"]
-    let experienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
-    let consentUpdateEvent = Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]]])
+    let consentHit = ConsentEdgeHit(configId: "test-config-id",
+                                    requestId: UUID().uuidString,
+                                    headers: [:],
+                                    listOfEvents: nil,
+                                    consents: EdgeConsentUpdate(identityMap: nil,
+                                                                consent: [EdgeConsentPayload(standard: "Test", version: "1.0", value: [:])]))
+    let experienceHit = ExperienceEventsEdgeHit(configId: "test-config-id",
+                                                requestId: UUID().uuidString,
+                                                headers: [:], listOfEvents: nil,
+                                                request: EdgeRequest(meta: nil,
+                                                                     xdm: ["xdm": ["test": "data"]],
+                                                                     events: [["string": AnyCodable("any")]]))
+
     let url = URL(string: "adobe.com")! // swiftlint:disable:this force_unwrapping
 
     override func setUp() {
@@ -39,10 +50,7 @@ class EdgeHitProcessorTests: XCTestCase {
         networkService = EdgeNetworkService()
         networkResponseHandler = NetworkResponseHandler()
         hitProcessor = EdgeHitProcessor(networkService: networkService,
-                                        networkResponseHandler: networkResponseHandler,
-                                        getSharedState: resolveSharedState(extensionName:event:),
-                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:),
-                                        readyForEvent: readyForEvent(_:))
+                                        networkResponseHandler: networkResponseHandler)
     }
 
     private func resolveSharedState(extensionName: String, event: Event?) -> SharedStateResult? {
@@ -96,106 +104,12 @@ class EdgeHitProcessorTests: XCTestCase {
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
 
-    /// Tests that when `readyForEvent` returns false that we retry the hit
-    func testProcessHit_experienceEvent_readyForEventReturnsFalse() {
-        // setup
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
-        hitProcessor = EdgeHitProcessor(networkService: networkService,
-                                        networkResponseHandler: networkResponseHandler,
-                                        getSharedState: resolveSharedState(extensionName:event:),
-                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:),
-                                        readyForEvent: { _ -> Bool in
-                                            return false
-                                        })
-
-        // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: false)
-    }
-
-    /// Tests that when an nil configuration is provided that the hit is dropped
-    func testProcessHit_experienceEvent_nilConfiguration() {
-        // setup
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
-        hitProcessor = EdgeHitProcessor(networkService: networkService,
-                                        networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, event -> SharedStateResult? in
-                                            if extensionName == self.CONFIGURATION_SHARED_STATE {
-                                                // simulate shared state with no edge config
-                                                return SharedStateResult(status: .pending, value: nil)
-                                            }
-                                            return self.resolveSharedState(extensionName: extensionName, event: event)
-                                        },
-                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:),
-                                        readyForEvent: readyForEvent(_:))
-
-        // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
-    }
-
-    /// Tests that when no edge config id is in configuration shared state that we drop the hit
-    func testProcessHit_experienceEvent_noEdgeConfigId() {
-        // setup
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
-        hitProcessor = EdgeHitProcessor(networkService: networkService,
-                                        networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, event -> SharedStateResult? in
-                                            if extensionName == self.CONFIGURATION_SHARED_STATE {
-                                                // simulate shared state with no edge config
-                                                return SharedStateResult(status: .set, value: [:])
-                                            }
-                                            return self.resolveSharedState(extensionName: extensionName, event: event)
-                                        },
-                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:),
-                                        readyForEvent: readyForEvent(_:))
-
-        // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
-    }
-
-    /// Tests that when Identity shared state is not set that we drop the hit
-    func testProcessHit_experienceEvent_noIdentitySharedState() {
-        // setup
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
-        hitProcessor = EdgeHitProcessor(networkService: networkService,
-                                        networkResponseHandler: networkResponseHandler,
-                                        getSharedState: resolveXDMSharedState(extensionName:event:),
-                                        getXDMSharedState: { extensionName, event -> SharedStateResult? in
-                                            if extensionName == self.IDENTITY_SHARED_STATE {
-                                                // simulate pending Identity shared state
-                                                return SharedStateResult(status: .pending, value: nil)
-                                            }
-                                            return self.resolveXDMSharedState(extensionName: extensionName, event: event)
-                                        }, readyForEvent: readyForEvent(_:))
-
-        // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
-    }
-
-    /// Tests that when Identity shared state does not contain ECID that we still process the hit
-    func testProcessHit_experienceEvent_noECID() {
-        // setup
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
-        hitProcessor = EdgeHitProcessor(networkService: networkService,
-                                        networkResponseHandler: networkResponseHandler,
-                                        getSharedState: resolveSharedState(extensionName:event:),
-                                        getXDMSharedState: { extensionName, event -> SharedStateResult? in
-                                            if extensionName == self.IDENTITY_SHARED_STATE {
-                                                // simulate pending Identity shared state
-                                                return SharedStateResult(status: .set, value: [:])
-                                            }
-                                            return self.resolveXDMSharedState(extensionName: extensionName, event: event)
-                                        }, readyForEvent: readyForEvent(_:))
-
-        // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-    }
-
     /// Tests that when a good hit is processed that a network request is made and the request returns 200
     func testProcessHit_experienceEvent_happy_sendsNetworkRequest_returnsTrue() {
         // setup
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceHit))
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
@@ -227,7 +141,7 @@ class EdgeHitProcessorTests: XCTestCase {
                                                                                                             headerFields: ["Retry-After": retryValueTuple.0]),
                                                                                   error: nil)
 
-            let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
+            let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceHit))
 
             // test
             hitProcessor.processHit(entity: entity) { success in
@@ -247,7 +161,7 @@ class EdgeHitProcessorTests: XCTestCase {
         // setup
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: -1, httpVersion: nil, headerFields: nil), error: nil)
 
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceEvent))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(experienceHit))
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
@@ -272,7 +186,7 @@ class EdgeHitProcessorTests: XCTestCase {
     func testProcessHit_consentUpdateEvent_happy_sendsNetworkRequest_returnsTrue() {
         // setup
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(consentUpdateEvent))
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(consentHit))
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)

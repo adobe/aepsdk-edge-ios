@@ -21,6 +21,12 @@ protocol EdgeHit: Codable {
     /// Unique identifier for this hit
     var requestId: String { get }
 
+    /// Request headers for this hit
+    var headers: [String: String] { get }
+
+    /// Returns the list of `Event`s for this hit
+    var listOfEvents: [Event]? { get }
+
     /// The `ExperienceEdgeRequestType` to be used for this `EdgeHit`
     func getType() -> ExperienceEdgeRequestType
 
