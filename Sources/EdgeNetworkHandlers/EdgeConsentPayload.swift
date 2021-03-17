@@ -13,7 +13,7 @@
 import AEPServices
 import Foundation
 
-struct EdgeConsentPayload: Encodable {
+struct EdgeConsentPayload: Codable {
     /// The consent standard to be used for this request
     let standard: String
 

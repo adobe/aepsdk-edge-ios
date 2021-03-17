@@ -13,7 +13,7 @@
 import Foundation
 
 /// Implementation of `EdgeHit` for ExperienceEvents requests
-struct ExperienceEventsEdgeHit: EdgeHit {
+struct ExperienceEventsEdgeHit: EdgeHit, Codable {
     let configId: String
     let requestId: String = UUID().uuidString
 

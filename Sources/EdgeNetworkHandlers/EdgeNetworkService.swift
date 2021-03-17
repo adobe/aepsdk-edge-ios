@@ -18,7 +18,7 @@ import Foundation
 ///     - interact - makes request and expects a response
 ///     - collect - makes request without expecting a response
 ///     - consent - sets user consent and expects a response
-enum ExperienceEdgeRequestType: String {
+enum ExperienceEdgeRequestType: String, Codable {
     case interact
     case collect
     case consent = "privacy/set-consent"

@@ -13,7 +13,7 @@
 import Foundation
 
 /// Implementation of `EdgeHit` for Consent update requests
-struct ConsentEdgeHit: EdgeHit {
+struct ConsentEdgeHit: EdgeHit, Codable {
     let configId: String
     let requestId: String = UUID().uuidString
 

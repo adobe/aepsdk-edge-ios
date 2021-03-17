@@ -14,7 +14,7 @@ import AEPCore
 import Foundation
 
 /// Protocol used for defining hits to Experience Edge service
-protocol EdgeHit {
+protocol EdgeHit: Codable {
     /// The Edge configuration identifier
     var configId: String { get }
 
@@ -27,6 +27,6 @@ protocol EdgeHit {
     /// The network request payload for this `EdgeHit`
     func getPayload() -> String?
 
-    /// Retrieves the `Streaming` settings for this `EdgHit` or nil if not enabled
+    /// Retrieves the `Streaming` settings for this `EdgeHit` or nil if not enabled
     func getStreamingSettings() -> Streaming?
 }
