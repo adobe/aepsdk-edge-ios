@@ -48,15 +48,15 @@ class RequestBuilder {
 
     /// Builds the request payload with all the provided parameters and events.
     /// - Parameter events: List of `Event` objects. Each event is expected to contain a serialized `ExperienceEvent`
+    /// - Parameter storedPayloads: List of `StorePayload` which were present when these `Event`s were queued
     /// encoded in the `Event.data` property.
     /// - Returns: A `EdgeRequest` object or nil if the events list is empty
-    func getPayloadWithExperienceEvents(_ events: [Event]) -> EdgeRequest? {
+    func getPayloadWithExperienceEvents(_ events: [Event], storedPayloads: [StorePayload]) -> EdgeRequest? {
         guard !events.isEmpty else { return nil }
 
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
         let konductorConfig = KonductorConfig(streaming: streamingMetadata)
 
-        let storedPayloads = storeResponsePayloadManager.getActivePayloadList()
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig,
                                               state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads))
 

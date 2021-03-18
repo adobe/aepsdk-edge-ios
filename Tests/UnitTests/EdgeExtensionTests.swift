@@ -98,7 +98,15 @@ class EdgeExtensionTests: XCTestCase {
         XCTAssertEqual(0, mockDataQueue.count())
     }
 
+    func testHandleConsentUpdate_noIdentitySharedState_doesNotQueue() {
+        mockRuntime.simulateComingEvents(Event(name: "Consent update", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]]]))
+
+        XCTAssertEqual(0, mockDataQueue.count())
+    }
+
     func testHandleConsentUpdate_validData_queues() {
+        mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                           data: ([:], .set))
         mockRuntime.simulateComingEvents(Event(name: "Consent update", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]]]))
 
         XCTAssertEqual(1, mockDataQueue.count())
@@ -121,7 +129,16 @@ class EdgeExtensionTests: XCTestCase {
     }
 
     // MARK: Experience event
+    func testHandleExperienceEventRequest_noIdentitySharedState_doesNotQueue() {
+        edge.state?.updateCurrentConsent(status: ConsentStatus.yes)
+        mockRuntime.simulateComingEvents(experienceEvent)
+
+        XCTAssertEqual(0, mockDataQueue.count())
+    }
+
     func testHandleExperienceEventRequest_validData_consentYes_queues() {
+        mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                           data: ([:], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.yes)
         mockRuntime.simulateComingEvents(experienceEvent)
 
@@ -129,6 +146,8 @@ class EdgeExtensionTests: XCTestCase {
     }
 
     func testHandleExperienceEventRequest_validData_consentPending_queues() {
+        mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                           data: ([:], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.pending)
         mockRuntime.simulateComingEvents(experienceEvent)
 
@@ -160,6 +179,8 @@ class EdgeExtensionTests: XCTestCase {
     }
 
     func testHandleExperienceEventRequest_consentXDMSharedStateInvalid_usesDefaultPending() {
+        mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                           data: ([:], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.no)
         mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME, data: (["consents": ["invalid": "data"]], .set))
         mockRuntime.simulateComingEvents(experienceEvent)

@@ -84,13 +84,28 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        guard let eventData = try? JSONEncoder().encode(event) else {
-            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode event with id: '\(event.id.uuidString)'.")
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState =
+                getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                  event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            return // drop current event
+        }
+
+        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        let edgeEntity = EdgeDataEntity(event: event,
+                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:],
+                                        storedPayloads: storeResponsePayloadManager.getActivePayloadList())
+
+        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
+            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode Edge data entity with id: '\(event.id.uuidString)'.")
             return
         }
 
         Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Queuing event with id \(event.id.uuidString).")
-        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: eventData)
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
         state?.hitQueue.queue(entity: entity)
     }
 
@@ -113,12 +128,26 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        guard let eventData = try? JSONEncoder().encode(event) else {
-            Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode consent event with id: '\(event.id.uuidString)'.")
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState =
+                getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                  event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleConsentUpdate - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            return // drop current event
+        }
+
+        let edgeEntity = EdgeDataEntity(event: event,
+                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:],
+                                        storedPayloads: nil)
+
+        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
+            Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode Edge data entity with id: '\(event.id.uuidString)'.")
             return
         }
 
-        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: eventData)
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
         state?.hitQueue.queue(entity: entity)
     }
 

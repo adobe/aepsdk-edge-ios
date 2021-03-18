@@ -23,11 +23,6 @@ class RequestBuilderTests: XCTestCase {
         continueAfterFailure = false // fail so nil checks stop execution
     }
 
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        ServiceProvider.shared.namedKeyValueService.remove(collectionName: testDataStoreName, key: "storePayloads")
-    }
-
     func testGetPayloadWithExperienceEvents_allParameters_verifyMetadata() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
@@ -38,7 +33,7 @@ class RequestBuilderTests: XCTestCase {
                           source: "source",
                           data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getPayloadWithExperienceEvents([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event], storedPayloads: [])
 
         XCTAssertEqual("A", requestPayload?.meta?.konductorConfig?.streaming?.recordSeparator)
         XCTAssertEqual("B", requestPayload?.meta?.konductorConfig?.streaming?.lineFeed)
@@ -71,7 +66,7 @@ class RequestBuilderTests: XCTestCase {
                             source: "source",
                             data: ["xdm": ["environment": ["type": "widget"]]]))
 
-        let requestPayload = request.getPayloadWithExperienceEvents(events)
+        let requestPayload = request.getPayloadWithExperienceEvents(events, storedPayloads: [])
 
         let flattenEvent0: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
         let flattenEvent1: [String: Any] = flattenDictionary(dict: requestPayload?.events?[1]["xdm"]?.dictionaryValue ?? [:])
@@ -85,9 +80,6 @@ class RequestBuilderTests: XCTestCase {
     }
 
     func testGetPayloadWithExperienceEvents_withStorePayload_responseContainsStateEntries() {
-        let manager = StoreResponsePayloadManager(testDataStoreName)
-        manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))])
-
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
@@ -97,7 +89,7 @@ class RequestBuilderTests: XCTestCase {
                           source: "source",
                           data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getPayloadWithExperienceEvents([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event], storedPayloads: [StorePayload(key: "key", value: "value", maxAge: 3600)])
 
         XCTAssertEqual("key", requestPayload?.meta?.state?.entries?[0].key)
         XCTAssertEqual(3600.0, requestPayload?.meta?.state?.entries?[0].maxAge)
@@ -114,7 +106,7 @@ class RequestBuilderTests: XCTestCase {
                           source: "source",
                           data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getPayloadWithExperienceEvents([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event], storedPayloads: [])
 
         XCTAssertNil(requestPayload?.meta?.state)
     }
@@ -129,7 +121,7 @@ class RequestBuilderTests: XCTestCase {
                                  "xdm": ["application": ["name": "myapp"]],
                                  "datasetId": "customDatasetId"])
 
-        let requestPayload = request.getPayloadWithExperienceEvents([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event], storedPayloads: [])
 
         let flattenEventMeta: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["meta"]?.dictionaryValue ?? [:])
         XCTAssertEqual(1, flattenEventMeta.count)
@@ -150,7 +142,7 @@ class RequestBuilderTests: XCTestCase {
                           data: ["data": ["key": "value"],
                                  "xdm": ["application": ["name": "myapp"]]])
 
-        let requestPayload = request.getPayloadWithExperienceEvents([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event], storedPayloads: [])
 
         XCTAssertNil(requestPayload?.events?[0]["meta"])
         XCTAssertNotNil(requestPayload?.events?[0]["xdm"])
@@ -181,7 +173,7 @@ class RequestBuilderTests: XCTestCase {
                            source: "source",
                            data: eventData)
 
-        let requestPayload = request.getPayloadWithExperienceEvents([event1, event2, event3])
+        let requestPayload = request.getPayloadWithExperienceEvents([event1, event2, event3], storedPayloads: [])
 
         XCTAssertEqual(3, requestPayload?.events?.count)
         XCTAssertNil(requestPayload?.events?[0]["meta"])
@@ -208,7 +200,7 @@ class RequestBuilderTests: XCTestCase {
                           source: "source",
                           data: ["query": ["key": "value"]])
 
-        let requestPayload = request.getPayloadWithExperienceEvents([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event], storedPayloads: [])
         XCTAssertNotNil(requestPayload?.events?[0]["query"])
         XCTAssertEqual(requestPayload?.events?[0]["query"]?.dictionaryValue?["key"] as? String, "value" )
     }

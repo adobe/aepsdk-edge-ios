@@ -43,8 +43,8 @@ class EdgeHitProcessor: HitProcessing {
     }
 
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
-        guard let data = entity.data, let event = try? JSONDecoder().decode(Event.self, from: data),
-              let eventData = event.data, !eventData.isEmpty
+        guard let data = entity.data, let edgeEntity = try? JSONDecoder().decode(EdgeDataEntity.self, from: data),
+              let eventData = edgeEntity.event.data, !eventData.isEmpty
         else {
             // can't convert data to hit, unrecoverable error, move to next hit
             Log.debug(label: LOG_TAG, "processHit - Failed to decode edge hit with id '\(entity.uniqueIdentifier)' or empty data.")
@@ -52,6 +52,7 @@ class EdgeHitProcessor: HitProcessing {
             return
         }
 
+        let event = edgeEntity.event
         guard readyForEvent(event) else {
             Log.debug(label: LOG_TAG, "processHit - readyForEvent returned false, will retry hit with id '\(entity.uniqueIdentifier)'.")
             completion(false)
@@ -64,22 +65,12 @@ class EdgeHitProcessor: HitProcessing {
             return // drop current event
         }
 
-        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
-        guard let identityState =
-                getXDMSharedState(EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
-                                  event)?.value else {
-            Log.warning(label: LOG_TAG,
-                        "processHit - Unable to process the event '\(event.id.uuidString)', " +
-                            "Identity shared state is nil.")
-            completion(true)
-            return // drop current event
-        }
-
         // Build Request object
         let requestBuilder = RequestBuilder()
         // attach identity map
+        let identityState = AnyCodable.toAnyDictionary(dictionary: edgeEntity.identityMap)
         requestBuilder.xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] =
-            AnyCodable(identityState[EdgeConstants.SharedState.Identity.IDENTITY_MAP])
+            AnyCodable(identityState?[EdgeConstants.SharedState.Identity.IDENTITY_MAP])
 
         if event.isExperienceEvent {
             requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
@@ -87,7 +78,8 @@ class EdgeHitProcessor: HitProcessing {
 
             // Build and send the network request to Experience Edge
             let listOfEvents: [Event] = [event]
-            guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents) else {
+            guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents,
+                                                                                     storedPayloads: edgeEntity.storedPayloads ?? []) else {
                 Log.debug(label: LOG_TAG,
                           "processHit - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
                 completion(true)
