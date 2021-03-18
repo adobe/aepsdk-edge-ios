@@ -97,7 +97,7 @@ public class Edge: NSObject, Extension {
         let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
         let edgeEntity = EdgeDataEntity(event: event,
                                         identityMap: AnyCodable.from(dictionary: identityState) ?? [:],
-                                        storedPayloads: storeResponsePayloadManager.getActivePayloadList())
+                                        storedPayloads: storeResponsePayloadManager.getActiveStores())
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
             Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode Edge data entity with id: '\(event.id.uuidString)'.")

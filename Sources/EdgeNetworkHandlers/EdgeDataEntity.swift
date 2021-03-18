@@ -18,10 +18,10 @@ import Foundation
 struct EdgeDataEntity: Codable {
     /// The `Event` responsible for the hit
     let event: Event
-    
+
     /// The current identity shared state at the time `Event` was queued
     let identityMap: [String: AnyCodable]
-    
+
     /// The stored payloads present when `Event` was queued
-    let storedPayloads: [StorePayload]?
+    let storedPayloads: [String: StoreResponsePayload]?
 }

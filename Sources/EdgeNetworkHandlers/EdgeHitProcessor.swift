@@ -78,8 +78,11 @@ class EdgeHitProcessor: HitProcessing {
 
             // Build and send the network request to Experience Edge
             let listOfEvents: [Event] = [event]
+            // filter out expired payloads
+            let filteredPayloads = edgeEntity.storedPayloads?.values.filter({!$0.isExpired}).map({$0.payload})
+
             guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents,
-                                                                                     storedPayloads: edgeEntity.storedPayloads ?? []) else {
+                                                                                     storedPayloads: filteredPayloads ?? []) else {
                 Log.debug(label: LOG_TAG,
                           "processHit - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
                 completion(true)
