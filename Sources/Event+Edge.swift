@@ -25,4 +25,8 @@ extension Event {
     var isExperienceEvent: Bool {
         return type == EventType.edge && source == EventSource.requestContent
     }
+
+    var isResetIdentitiesEvent: Bool {
+        return type == EventType.genericIdentity && source == EventSource.requestReset
+    }
 }

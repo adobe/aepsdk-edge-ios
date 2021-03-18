@@ -20,14 +20,14 @@ class EdgeHitProcessor: HitProcessing {
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
     private var getSharedState: (String, Event?) -> SharedStateResult?
-    private var getXDMSharedState: (String, Event?) -> SharedStateResult?
+    private var getXDMSharedState: (String, Event?, Bool) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
          getSharedState: @escaping (String, Event?) -> SharedStateResult?,
-         getXDMSharedState: @escaping (String, Event?) -> SharedStateResult?,
+         getXDMSharedState: @escaping (String, Event?, Bool) -> SharedStateResult?,
          readyForEvent: @escaping (Event) -> Bool) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
@@ -78,11 +78,8 @@ class EdgeHitProcessor: HitProcessing {
 
             // Build and send the network request to Experience Edge
             let listOfEvents: [Event] = [event]
-            // filter out expired payloads
-            let filteredPayloads = edgeEntity.storedPayloads?.values.filter({!$0.isExpired}).map({$0.payload})
 
-            guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents,
-                                                                                     storedPayloads: filteredPayloads ?? []) else {
+            guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents) else {
                 Log.debug(label: LOG_TAG,
                           "processHit - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
                 completion(true)
@@ -106,6 +103,11 @@ class EdgeHitProcessor: HitProcessing {
 
             let edgeHit = ConsentEdgeHit(configId: configId, consents: consentPayload)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
+        } else if event.isResetIdentitiesEvent {
+            // reset stored payloads as part of processing the reset hit
+            let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+            storeResponsePayloadManager.deleteAllStorePayloads()
+            completion(true)
         }
     }
 

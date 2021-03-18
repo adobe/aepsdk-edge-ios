@@ -21,7 +21,4 @@ struct EdgeDataEntity: Codable {
 
     /// The current identity shared state at the time `Event` was queued
     let identityMap: [String: AnyCodable]
-
-    /// The stored payloads present when `Event` was queued
-    let storedPayloads: [String: StoreResponsePayload]?
 }
