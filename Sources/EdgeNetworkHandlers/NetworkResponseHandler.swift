@@ -76,6 +76,7 @@ class NetworkResponseHandler {
     ///   - requestId: request id associated with current response
     func processResponseOnSuccess(jsonResponse: String, requestId: String) {
         guard let data = jsonResponse.data(using: .utf8) else { return }
+        // Multiple events cannot be batched if there was a reset in between them
         let ignoreStorePayloads = shouldIgnoreStorePayload(requestId: requestId)
 
         if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) {
