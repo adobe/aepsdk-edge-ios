@@ -29,6 +29,7 @@
 		216989B32555376A00B2752C /* EdgeHitProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */; };
 		21888AF32555F9FC005677ED /* FileManager+Testable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21888AF22555F9FC005677ED /* FileManager+Testable.swift */; };
 		2198DEE22604F8BE008ADB6A /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2198DEE12604F8BE008ADB6A /* Atomic.swift */; };
+		2198DEE826050458008ADB6A /* AtomicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2198DEE726050458008ADB6A /* AtomicTests.swift */; };
 		21D7B7B22562F89C0010AE25 /* EdgeEventWarning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */; };
 		21FFBD5925631E3E00B48A8F /* EdgeEventWarningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */; };
 		21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */; };
@@ -264,6 +265,7 @@
 		216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessorTests.swift; sourceTree = "<group>"; };
 		21888AF22555F9FC005677ED /* FileManager+Testable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Testable.swift"; sourceTree = "<group>"; };
 		2198DEE12604F8BE008ADB6A /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
+		2198DEE726050458008ADB6A /* AtomicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtomicTests.swift; sourceTree = "<group>"; };
 		21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarning.swift; sourceTree = "<group>"; };
 		21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarningTests.swift; sourceTree = "<group>"; };
 		21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventErrorTests.swift; sourceTree = "<group>"; };
@@ -726,6 +728,7 @@
 				D4F74FEC2447A95400379258 /* utils */,
 				D4D5B5252432599B00CAB6E4 /* Info.plist */,
 				D4A81DEB25658F0D0042B00A /* CompletionHandlerTests.swift */,
+				2198DEE726050458008ADB6A /* AtomicTests.swift */,
 				BF947F9F244569190057A6CC /* EdgeRequestTests.swift */,
 				21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */,
 				21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */,
@@ -1433,6 +1436,7 @@
 				D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */,
 				D46553F7246A384900A150E2 /* NetworkResponseHandlerTests.swift in Sources */,
 				21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */,
+				2198DEE826050458008ADB6A /* AtomicTests.swift in Sources */,
 				D4A81DEC25658F0D0042B00A /* CompletionHandlerTests.swift in Sources */,
 				D4F74FE72447A8B800379258 /* MockNetworking.swift in Sources */,
 				1CCD27DC245A240F00E912B2 /* ExperienceEventTests.swift in Sources */,
