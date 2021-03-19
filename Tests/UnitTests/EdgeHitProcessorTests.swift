@@ -271,6 +271,23 @@ class EdgeHitProcessorTests: XCTestCase {
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
 
+    func testProcessHit_resetIdentitiesEvent_clearsStateStore_returnsTrue() {
+        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        storeResponsePayloadManager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key",
+                                                                                                  value: "val",
+                                                                                                  maxAge: 100000))])
+        let event = Event(name: "test-reset-event",
+                          type: EventType.genericIdentity,
+                          source: EventSource.requestReset,
+                          data: nil)
+        let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
+
+        XCTAssertTrue(storeResponsePayloadManager.getActiveStores().isEmpty)
+    }
+
     func assertProcessHit(entity: DataEntity, sendsNetworkRequest: Bool, returns: Bool, line: UInt = #line) {
         let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
 

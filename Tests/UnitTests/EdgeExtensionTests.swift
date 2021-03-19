@@ -195,4 +195,17 @@ class EdgeExtensionTests: XCTestCase {
 
         XCTAssertEqual(0, mockDataQueue.count())
     }
+
+    // MARK: Identities reset event tests
+
+    func testHandleIdentitiesReset() {
+        let event = Event(name: "Reset Event",
+                          type: EventType.genericIdentity,
+                          source: EventSource.requestReset,
+                          data: nil)
+
+        mockRuntime.simulateComingEvents(event)
+
+        XCTAssertEqual(1, mockDataQueue.count())
+    }
 }

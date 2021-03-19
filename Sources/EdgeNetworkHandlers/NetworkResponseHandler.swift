@@ -23,7 +23,7 @@ class NetworkResponseHandler {
 
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [Event]>()
-    
+
     /// Date of the last generic identity reset request event
     var lastResetDate: Date?
 

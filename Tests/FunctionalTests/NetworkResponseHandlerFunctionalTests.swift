@@ -12,6 +12,7 @@
 
 import AEPCore
 @testable import AEPEdge
+import AEPServices
 import XCTest
 
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
@@ -22,6 +23,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     override func setUp() {
         super.setUp()
         MobileCore.registerExtensions([InstrumentedExtension.self]) // start MobileCore
+        ServiceProvider.shared.namedKeyValueService = MockDataStore()
         continueAfterFailure = false
     }
 
@@ -249,11 +251,72 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
 
     func testProcessResponseOnSuccess_WhenInvalidJsonResponse_doesNotDispatchEvent() {
-        let jsonResponse = "{ ivalid json }"
+        let jsonResponse = "{ invalid json }"
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
                                                      source: FunctionalTestConst.EventSource.RESPONSE_CONTENT)
         XCTAssertEqual(0, dispatchEvents.count)
+    }
+
+    /// Tests that when an event is processed after a reset event that the store payloads are saved
+    func testProcessResponseOnSuccess_afterResetEvent_savesStorePayloads() {
+        networkResponseHandler.lastResetDate = Date() // date is before `event.timestamp`
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"state:store\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"key\": \"s_ecid\",\n" +
+            "                    \"value\": \"MCMID|29068398647607325310376254630528178721\",\n" +
+            "                    \"maxAge\": 15552000\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify saved to store manager
+        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        XCTAssertFalse(storeResponsePayloadManager.getActivePayloadList().isEmpty)
+    }
+
+    func testProcessResponseOnSuccess_beforeResetEvent_doesNotSaveStorePayloads() {
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        networkResponseHandler.lastResetDate = Date() // date is after `event.timestamp`
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"state:store\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"key\": \"s_ecid\",\n" +
+            "                    \"value\": \"MCMID|29068398647607325310376254630528178721\",\n" +
+            "                    \"maxAge\": 15552000\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify not saved to store manager
+        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        XCTAssertTrue(storeResponsePayloadManager.getActivePayloadList().isEmpty)
     }
 
     func testProcessResponseOnSuccess_WhenOneEventHandle_dispatchesEvent() {
