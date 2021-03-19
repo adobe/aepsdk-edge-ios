@@ -110,7 +110,7 @@ public class Edge: NSObject, Extension {
                                         identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
-            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode Edge data entity with id: '\(event.id.uuidString)'.")
+            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
             return
         }
 
@@ -136,12 +136,12 @@ public class Edge: NSObject, Extension {
         let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
-            Log.debug(label: LOG_TAG, "handleIdentitiesReset - Failed to encode Edge data entity with id: '\(event.id.uuidString)'.")
+            Log.debug(label: LOG_TAG, "handleIdentitiesReset - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
             return
         }
 
         let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
-        networkResponseHandler?.lastResetDate = event.timestamp
+        networkResponseHandler?.setLastReset(date: event.timestamp)
         state?.hitQueue.queue(entity: entity)
     }
 
@@ -167,7 +167,7 @@ public class Edge: NSObject, Extension {
                                         identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
-            Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode Edge data entity with id: '\(event.id.uuidString)'.")
+            Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
             return
         }
 

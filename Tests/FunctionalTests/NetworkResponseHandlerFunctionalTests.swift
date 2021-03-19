@@ -12,7 +12,7 @@
 
 import AEPCore
 @testable import AEPEdge
-import AEPServices
+@testable import AEPServices
 import XCTest
 
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
@@ -23,7 +23,6 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     override func setUp() {
         super.setUp()
         MobileCore.registerExtensions([InstrumentedExtension.self]) // start MobileCore
-        ServiceProvider.shared.namedKeyValueService = MockDataStore()
         continueAfterFailure = false
     }
 
@@ -37,7 +36,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     }
 
     func testProcessResponseOnError_WhenInvalidJsonError_doesNotHandleError() {
-        let jsonError = "{ ivalid json }"
+        let jsonError = "{ invalid json }"
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(0, dispatchEvents.count)
@@ -260,7 +259,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
     /// Tests that when an event is processed after a reset event that the store payloads are saved
     func testProcessResponseOnSuccess_afterResetEvent_savesStorePayloads() {
-        networkResponseHandler.lastResetDate = Date() // date is before `event.timestamp`
+        networkResponseHandler.setLastReset(date: Date()) // date is before `event.timestamp`
         let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
 
         networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
@@ -294,7 +293,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
                                                 batchedEvents: [event])
 
-        networkResponseHandler.lastResetDate = Date() // date is after `event.timestamp`
+        networkResponseHandler.setLastReset(date: Date()) // date is after `event.timestamp`
 
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         let jsonResponse = "{\n" +

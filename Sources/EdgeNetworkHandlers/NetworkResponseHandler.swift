@@ -25,7 +25,7 @@ class NetworkResponseHandler {
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [(uuid: String, date: Date)]>()
 
     /// Date of the last generic identity reset request event
-    var lastResetDate: Date?
+    private var lastResetDate = Atomic<Date>(Date(timeIntervalSince1970: 0))
 
     /// Adds the requestId in the internal `sentEventsWaitingResponse` with the associated list of events.
     /// This list should maintain the order of the received events for matching with the response event index.
@@ -63,6 +63,11 @@ class NetworkResponseHandler {
         guard !requestId.isEmpty else { return nil }
         return sentEventsWaitingResponse[requestId]?.map({$0.uuid})
     }
+
+    /// Sets the last reset date
+    /// - Parameter date: a `Date`
+    func setLastReset(date: Date) {
+        lastResetDate.mutate {$0 = date}
     }
 
     /// Decodes the response as `EdgeResponse` and handles the event handles, errors and warnings received from the server

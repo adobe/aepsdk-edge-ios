@@ -46,7 +46,7 @@ class EdgeHitProcessor: HitProcessing {
         guard let data = entity.data, let edgeEntity = try? JSONDecoder().decode(EdgeDataEntity.self, from: data)
         else {
             // can't convert data to hit, unrecoverable error, move to next hit
-            Log.debug(label: LOG_TAG, "processHit - Failed to decode edge hit with id '\(entity.uniqueIdentifier)'.")
+            Log.debug(label: LOG_TAG, "processHit - Failed to decode EdgeDataEntity with id '\(entity.uniqueIdentifier)'.")
             completion(true)
             return
         }
