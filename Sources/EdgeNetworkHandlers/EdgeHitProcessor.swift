@@ -102,7 +102,7 @@ class EdgeHitProcessor: HitProcessing {
                 completion(true)
                 return
             }
-            
+
             // Build and send the consent network request to Experience Edge
             guard let consentPayload = requestBuilder.getConsentPayload(event) else {
                 Log.debug(label: LOG_TAG,
