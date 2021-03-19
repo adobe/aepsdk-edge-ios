@@ -263,7 +263,7 @@
 		216989772554B61500B2752C /* EdgeHitProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessor.swift; sourceTree = "<group>"; };
 		216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessorTests.swift; sourceTree = "<group>"; };
 		21888AF22555F9FC005677ED /* FileManager+Testable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Testable.swift"; sourceTree = "<group>"; };
-		2198DEE12604F8BE008ADB6A /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Atomic.swift; path = Sources/EdgeNetworkHandlers/Atomic.swift; sourceTree = "<group>"; };
+		2198DEE12604F8BE008ADB6A /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarning.swift; sourceTree = "<group>"; };
 		21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarningTests.swift; sourceTree = "<group>"; };
 		21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventErrorTests.swift; sourceTree = "<group>"; };
@@ -623,6 +623,7 @@
 		D42FB8D02461086200E9321C /* EdgeNetworkHandlers */ = {
 			isa = PBXGroup;
 			children = (
+				2198DEE12604F8BE008ADB6A /* Atomic.swift */,
 				216989642554B39900B2752C /* EdgeHit.swift */,
 				211BCB8026030DCD00AACFEF /* EdgeDataEntity.swift */,
 				D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */,
@@ -677,7 +678,6 @@
 		D4D5B4DE242EBB1600CAB6E4 = {
 			isa = PBXGroup;
 			children = (
-				2198DEE12604F8BE008ADB6A /* Atomic.swift */,
 				D4D5B4E9242EBB1600CAB6E4 /* Sources */,
 				D4D5B4F1242EBD2200CAB6E4 /* UnitTests */,
 				D4D5B4F2242EBFAE00CAB6E4 /* FunctionalTests */,
