@@ -22,7 +22,7 @@ class NetworkResponseHandler {
     private let serialQueue = DispatchQueue(label: "com.adobe.edge.eventsDictionary") // serial queue for atomic operations
 
     // the order of the request events matter for matching them with the response events
-    private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [Event]>()
+    private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [(uuid: String, date: Date)]>()
 
     /// Date of the last generic identity reset request event
     var lastResetDate: Date?
@@ -40,8 +40,10 @@ class NetworkResponseHandler {
             if self.sentEventsWaitingResponse[requestId] != nil {
                 Log.warning(label: self.LOG_TAG, "Name collision for requestId \(requestId), events list is overwritten.")
             }
-
-            self.sentEventsWaitingResponse[requestId] = batchedEvents
+            
+            let uuids = batchedEvents.map { $0.id.uuidString }
+            let timestamps = batchedEvents.map { $0.timestamp }
+            self.sentEventsWaitingResponse[requestId] = zip(uuids, timestamps).map { ($0, $1) }
         }
     }
 
@@ -51,7 +53,7 @@ class NetworkResponseHandler {
     func removeWaitingEvents(requestId: String) -> [String]? {
         guard !requestId.isEmpty else { return nil }
 
-        return sentEventsWaitingResponse.removeValue(forKey: requestId)?.map({$0.id.uuidString})
+        return sentEventsWaitingResponse.removeValue(forKey: requestId)?.map({$0.uuid})
     }
 
     /// Returns the list of unique event ids associated with the provided requestId or empty if not found.
@@ -59,7 +61,8 @@ class NetworkResponseHandler {
     /// - Returns: the list of unique event ids associated with the requestId or nil if none found
     func getWaitingEvents(requestId: String) -> [String]? {
         guard !requestId.isEmpty else { return nil }
-        return sentEventsWaitingResponse[requestId]?.map({$0.id.uuidString})
+        return sentEventsWaitingResponse[requestId]?.map({$0.uuid})
+    }
     }
 
     /// Decodes the response as `EdgeResponse` and handles the event handles, errors and warnings received from the server
@@ -69,8 +72,8 @@ class NetworkResponseHandler {
     func processResponseOnSuccess(jsonResponse: String, requestId: String) {
         guard let data = jsonResponse.data(using: .utf8) else { return }
         var ignoreStorePayloads = false
-        if let firstEvent = sentEventsWaitingResponse[requestId]?.first, let lastResetDate = lastResetDate {
-            ignoreStorePayloads = firstEvent.timestamp < lastResetDate
+        if let firstEvent = sentEventsWaitingResponse[requestId]?.first {
+            ignoreStorePayloads = firstEvent.date < lastResetDate.value
         }
 
         if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) {
