@@ -40,7 +40,7 @@ class NetworkResponseHandler {
             if self.sentEventsWaitingResponse[requestId] != nil {
                 Log.warning(label: self.LOG_TAG, "Name collision for requestId \(requestId), events list is overwritten.")
             }
-            
+
             let uuids = batchedEvents.map { $0.id.uuidString }
             let timestamps = batchedEvents.map { $0.timestamp }
             self.sentEventsWaitingResponse[requestId] = zip(uuids, timestamps).map { ($0, $1) }
@@ -76,10 +76,7 @@ class NetworkResponseHandler {
     ///   - requestId: request id associated with current response
     func processResponseOnSuccess(jsonResponse: String, requestId: String) {
         guard let data = jsonResponse.data(using: .utf8) else { return }
-        var ignoreStorePayloads = false
-        if let firstEvent = sentEventsWaitingResponse[requestId]?.first {
-            ignoreStorePayloads = firstEvent.date < lastResetDate.value
-        }
+        let ignoreStorePayloads = shouldIgnoreStorePayload(requestId: requestId)
 
         if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) {
             Log.debug(label: LOG_TAG,
@@ -318,5 +315,16 @@ class NetworkResponseHandler {
         } else {
             Log.warning(label: LOG_TAG, "Received event error for request id (\(requestId)), error details:\n\(error as AnyObject)")
         }
+    }
+
+    /// Determines if we should ignore the store payload response for a given request id
+    /// - Parameter requestId: the request id
+    /// - Returns: true if we should ignore store payload responses for `requestId`
+    private func shouldIgnoreStorePayload(requestId: String) -> Bool {
+        if let firstEvent = sentEventsWaitingResponse[requestId]?.first {
+            return firstEvent.date < lastResetDate.value
+        }
+
+        return false
     }
 }
