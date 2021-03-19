@@ -20,12 +20,12 @@ class AtomicTests: XCTestCase {
 
     func testAtomicWrite() {
         let atomic = Atomic<Int>(0)
-        for _ in 0..<1_000 {
+        for _ in 0..<1000 {
             queue.async {
                 atomic.mutate { $0 += 1 }
             }
         }
         queue.sync(flags: .barrier) {}
-        XCTAssertEqual(atomic.value, 1_000)
+        XCTAssertEqual(atomic.value, 1000)
     }
 }
