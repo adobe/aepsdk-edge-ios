@@ -72,6 +72,11 @@ class EdgeHitProcessor: HitProcessing {
             AnyCodable(identityState?[EdgeConstants.SharedState.Identity.IDENTITY_MAP])
 
         if event.isExperienceEvent {
+            guard let eventData = event.data, !eventData.isEmpty else {
+                Log.debug(label: LOG_TAG, "processHit - Failed to process Experience event, data was nil or empty")
+                completion(true)
+                return
+            }
             requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                    lineFeed: EdgeConstants.Defaults.LINE_FEED)
 
@@ -92,6 +97,12 @@ class EdgeHitProcessor: HitProcessing {
                                                     batchedEvents: listOfEvents)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
         } else if event.isUpdateConsentEvent {
+            guard let eventData = event.data, !eventData.isEmpty else {
+                Log.debug(label: LOG_TAG, "processHit - Failed to process Consent event, data was nil or empty")
+                completion(true)
+                return
+            }
+            
             // Build and send the consent network request to Experience Edge
             guard let consentPayload = requestBuilder.getConsentPayload(event) else {
                 Log.debug(label: LOG_TAG,
