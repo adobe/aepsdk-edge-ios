@@ -24,7 +24,7 @@ class NetworkResponseHandler {
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [(uuid: String, date: Date)]>()
 
-    /// Date of the last generic identity reset request event
+    /// Date of the last generic identity reset request event, for more info see `shouldIgnoreStorePayload`
     private var lastResetDate = Atomic<Date>(Date(timeIntervalSince1970: 0))
 
     /// Adds the requestId in the internal `sentEventsWaitingResponse` with the associated list of events.
@@ -138,6 +138,7 @@ class NetworkResponseHandler {
         for eventHandle in unwrappedEventHandles {
             let requestEventId = extractRequestEventId(forEventIndex: eventHandle.eventIndex, requestId: requestId)
             if !ignoreStorePayloads {
+                Log.debug(label: LOG_TAG, "Ignoring state:store payload for request with id: \(requestId)")
                 handleStoreEventHandle(handle: eventHandle)
             }
 
@@ -318,7 +319,9 @@ class NetworkResponseHandler {
         }
     }
 
-    /// Determines if we should ignore the store payload response for a given request id
+    /// Determines if we should ignore the store payload response for a given request id.
+    /// A store payload should be ignored when a reset happened and the persisted state store was removed while processing a network request, in order to avoid an identity overwrite.
+    /// The first network request after reset will update the state store with the new information.
     /// - Parameter requestId: the request id
     /// - Returns: true if we should ignore store payload responses for `requestId`
     private func shouldIgnoreStorePayload(requestId: String) -> Bool {
