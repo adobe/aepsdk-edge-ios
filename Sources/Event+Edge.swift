@@ -25,4 +25,9 @@ extension Event {
     var isExperienceEvent: Bool {
         return type == EventType.edge && source == EventSource.requestContent
     }
+
+    /// Returns true if this `Event` has `EventType.genericIdentity` and `EventSource.requestReset`, otherwise false
+    var isResetIdentitiesEvent: Bool {
+        return type == EventType.genericIdentity && source == EventSource.requestReset
+    }
 }

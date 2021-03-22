@@ -49,6 +49,9 @@ public class Edge: NSObject, Extension {
         registerListener(type: EventType.edge,
                          source: EventSource.updateConsent,
                          listener: handleConsentUpdate)
+        registerListener(type: EventType.genericIdentity,
+                         source: EventSource.requestReset,
+                         listener: handleIdentitiesReset)
     }
 
     public func onUnregistered() {
@@ -64,6 +67,15 @@ public class Edge: NSObject, Extension {
                                                           event: event)
             let identitySharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
                                                         event: event)
+
+            return configurationSharedState?.status == .set && identitySharedState?.status == .set
+        } else if event.isResetIdentitiesEvent {
+            let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
+                                                          event: event)
+            // use barrier to wait for EdgeIdentity to handle the reset
+            let identitySharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                                        event: event,
+                                                        barrier: true)
 
             return configurationSharedState?.status == .set && identitySharedState?.status == .set
         }
@@ -84,13 +96,26 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        guard let eventData = try? JSONEncoder().encode(event) else {
-            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode event with id: '\(event.id.uuidString)'.")
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState =
+                getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                  event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            return // drop current event
+        }
+
+        let edgeEntity = EdgeDataEntity(event: event,
+                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
+
+        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
+            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
             return
         }
 
         Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Queuing event with id \(event.id.uuidString).")
-        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: eventData)
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
         state?.hitQueue.queue(entity: entity)
     }
 
@@ -105,6 +130,21 @@ public class Edge: NSObject, Extension {
         state?.updateCurrentConsent(status: ConsentStatus.getCollectConsentOrDefault(eventData: data))
     }
 
+    /// Handles the generic identities reset event
+    /// - Parameter event: an `Event`
+    func handleIdentitiesReset(_ event: Event) {
+        let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
+
+        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
+            Log.debug(label: LOG_TAG, "handleIdentitiesReset - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
+            return
+        }
+
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
+        networkResponseHandler?.setLastReset(date: event.timestamp)
+        state?.hitQueue.queue(entity: entity)
+    }
+
     /// Handles the Consent Update event
     /// - Parameter event: current event to process
     func handleConsentUpdate(_ event: Event) {
@@ -113,12 +153,25 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        guard let eventData = try? JSONEncoder().encode(event) else {
-            Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode consent event with id: '\(event.id.uuidString)'.")
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState =
+                getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                  event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleConsentUpdate - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            return // drop current event
+        }
+
+        let edgeEntity = EdgeDataEntity(event: event,
+                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
+
+        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
+            Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
             return
         }
 
-        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: eventData)
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
         state?.hitQueue.queue(entity: entity)
     }
 
@@ -142,7 +195,7 @@ public class Edge: NSObject, Extension {
     /// - Returns: true if events can be processed at the moment, false otherwise
     private func canProcessEvents(event: Event) -> Bool {
         guard let state = state else { return false }
-        state.bootupIfNeeded(event: event, getXDMSharedState: getXDMSharedState(extensionName:event:))
+        state.bootupIfNeeded(event: event, getXDMSharedState: getXDMSharedState(extensionName:event:barrier:))
         return true
     }
 
@@ -161,7 +214,7 @@ public class Edge: NSObject, Extension {
         let hitProcessor = EdgeHitProcessor(networkService: networkService,
                                             networkResponseHandler: networkResponseHandler,
                                             getSharedState: getSharedState(extensionName:event:),
-                                            getXDMSharedState: getXDMSharedState(extensionName:event:),
+                                            getXDMSharedState: getXDMSharedState(extensionName:event:barrier:),
                                             readyForEvent: readyForEvent(_:))
         return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }

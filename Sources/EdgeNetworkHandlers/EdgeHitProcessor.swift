@@ -20,14 +20,14 @@ class EdgeHitProcessor: HitProcessing {
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
     private var getSharedState: (String, Event?) -> SharedStateResult?
-    private var getXDMSharedState: (String, Event?) -> SharedStateResult?
+    private var getXDMSharedState: (String, Event?, Bool) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
          getSharedState: @escaping (String, Event?) -> SharedStateResult?,
-         getXDMSharedState: @escaping (String, Event?) -> SharedStateResult?,
+         getXDMSharedState: @escaping (String, Event?, Bool) -> SharedStateResult?,
          readyForEvent: @escaping (Event) -> Bool) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
@@ -43,15 +43,15 @@ class EdgeHitProcessor: HitProcessing {
     }
 
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
-        guard let data = entity.data, let event = try? JSONDecoder().decode(Event.self, from: data),
-              let eventData = event.data, !eventData.isEmpty
+        guard let data = entity.data, let edgeEntity = try? JSONDecoder().decode(EdgeDataEntity.self, from: data)
         else {
             // can't convert data to hit, unrecoverable error, move to next hit
-            Log.debug(label: LOG_TAG, "processHit - Failed to decode edge hit with id '\(entity.uniqueIdentifier)' or empty data.")
+            Log.debug(label: LOG_TAG, "processHit - Failed to decode EdgeDataEntity with id '\(entity.uniqueIdentifier)'.")
             completion(true)
             return
         }
 
+        let event = edgeEntity.event
         guard readyForEvent(event) else {
             Log.debug(label: LOG_TAG, "processHit - readyForEvent returned false, will retry hit with id '\(entity.uniqueIdentifier)'.")
             completion(false)
@@ -64,29 +64,25 @@ class EdgeHitProcessor: HitProcessing {
             return // drop current event
         }
 
-        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
-        guard let identityState =
-                getXDMSharedState(EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
-                                  event)?.value else {
-            Log.warning(label: LOG_TAG,
-                        "processHit - Unable to process the event '\(event.id.uuidString)', " +
-                            "Identity shared state is nil.")
-            completion(true)
-            return // drop current event
-        }
-
         // Build Request object
         let requestBuilder = RequestBuilder()
         // attach identity map
+        let identityState = AnyCodable.toAnyDictionary(dictionary: edgeEntity.identityMap)
         requestBuilder.xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] =
-            AnyCodable(identityState[EdgeConstants.SharedState.Identity.IDENTITY_MAP])
+            AnyCodable(identityState?[EdgeConstants.SharedState.Identity.IDENTITY_MAP])
 
         if event.isExperienceEvent {
+            guard let eventData = event.data, !eventData.isEmpty else {
+                Log.debug(label: LOG_TAG, "processHit - Failed to process Experience event, data was nil or empty")
+                completion(true)
+                return
+            }
             requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                    lineFeed: EdgeConstants.Defaults.LINE_FEED)
 
             // Build and send the network request to Experience Edge
             let listOfEvents: [Event] = [event]
+
             guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents) else {
                 Log.debug(label: LOG_TAG,
                           "processHit - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
@@ -101,6 +97,12 @@ class EdgeHitProcessor: HitProcessing {
                                                     batchedEvents: listOfEvents)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
         } else if event.isUpdateConsentEvent {
+            guard let eventData = event.data, !eventData.isEmpty else {
+                Log.debug(label: LOG_TAG, "processHit - Failed to process Consent event, data was nil or empty")
+                completion(true)
+                return
+            }
+
             // Build and send the consent network request to Experience Edge
             guard let consentPayload = requestBuilder.getConsentPayload(event) else {
                 Log.debug(label: LOG_TAG,
@@ -111,6 +113,11 @@ class EdgeHitProcessor: HitProcessing {
 
             let edgeHit = ConsentEdgeHit(configId: configId, consents: consentPayload)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
+        } else if event.isResetIdentitiesEvent {
+            // reset stored payloads as part of processing the reset hit
+            let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+            storeResponsePayloadManager.deleteAllStorePayloads()
+            completion(true)
         }
     }
 
