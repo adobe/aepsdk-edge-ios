@@ -31,18 +31,17 @@ DEPENDENCIES:
   - ACPCore (from `https://github.com/adobe/aep-sdk-compatibility-ios.git`, branch `main`)
   - AEPAssurance
   - AEPCore (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v3.1.0`)
-  - "AEPEdgeConsent (from `git@github.com:adobe/aepsdk-consentedge-ios.git`, branch `dev`)"
-  - "AEPEdgeIdentity (from `git@github.com:adobe/aepsdk-identityedge-ios.git`, branch `dev`)"
-  - AEPLifecycle (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v3.1.0`)
-  - AEPRulesEngine
-  - AEPServices (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v3.1.0`)
-  - AEPSignal (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v3.1.0`)
+  - "AEPEdgeConsent (from `git@github.com:adobe/aepsdk-edgeconsent-ios.git`, branch `dev`)"
+  - "AEPEdgeIdentity (from `git@github.com:adobe/aepsdk-edgeidentity-ios.git`, branch `dev`)"
 
 SPEC REPOS:
   trunk:
     - AEPAssurance
     - AEPIdentity
+    - AEPLifecycle
     - AEPRulesEngine
+    - AEPServices
+    - AEPSignal
 
 EXTERNAL SOURCES:
   ACPCore:
@@ -53,19 +52,10 @@ EXTERNAL SOURCES:
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPEdgeConsent:
     :branch: dev
-    :git: "git@github.com:adobe/aepsdk-consentedge-ios.git"
+    :git: "git@github.com:adobe/aepsdk-edgeconsent-ios.git"
   AEPEdgeIdentity:
     :branch: dev
-    :git: "git@github.com:adobe/aepsdk-identityedge-ios.git"
-  AEPLifecycle:
-    :branch: dev-v3.1.0
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPServices:
-    :branch: dev-v3.1.0
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPSignal:
-    :branch: dev-v3.1.0
-    :git: https://github.com/adobe/aepsdk-core-ios.git
+    :git: "git@github.com:adobe/aepsdk-edgeidentity-ios.git"
 
 CHECKOUT OPTIONS:
   ACPCore:
@@ -75,20 +65,11 @@ CHECKOUT OPTIONS:
     :commit: af9fe509080bf9b1e76e9f352503cdd3c1021675
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPEdgeConsent:
-    :commit: 0e9ea58d7303eb5eaf3e6bca6210aa5bc9f4e80c
-    :git: "git@github.com:adobe/aepsdk-consentedge-ios.git"
+    :commit: 0b6c196af2218818522acb737a83b9dc38eb406b
+    :git: "git@github.com:adobe/aepsdk-edgeconsent-ios.git"
   AEPEdgeIdentity:
-    :commit: e925c5cf4354c634d7d41dd828fade5f6cb2f47f
-    :git: "git@github.com:adobe/aepsdk-identityedge-ios.git"
-  AEPLifecycle:
-    :commit: af9fe509080bf9b1e76e9f352503cdd3c1021675
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPServices:
-    :commit: af9fe509080bf9b1e76e9f352503cdd3c1021675
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPSignal:
-    :commit: af9fe509080bf9b1e76e9f352503cdd3c1021675
-    :git: https://github.com/adobe/aepsdk-core-ios.git
+    :commit: b039516f079630acfd6e8b3cf90586f0a91e5d15
+    :git: "git@github.com:adobe/aepsdk-edgeidentity-ios.git"
 
 SPEC CHECKSUMS:
   ACPCore: 67e4b855bf16cfb6a63024a4ddb73d15c0fd30e5
@@ -102,6 +83,6 @@ SPEC CHECKSUMS:
   AEPServices: 21ea64149483fdfbd5f88f546b9f5ad7d4987400
   AEPSignal: b4ac5c8e8c68e8902739426d70c01ed3ce229ac9
 
-PODFILE CHECKSUM: 930b6a2520366153a1620e2a335f6d3e3b64bec4
+PODFILE CHECKSUM: 62bfdbf7eca22dace7ce3b3476bd725f8f078513
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1

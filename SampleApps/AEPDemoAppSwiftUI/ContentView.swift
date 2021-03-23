@@ -10,10 +10,10 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPConsent
 import AEPCore
 import AEPEdge
-import AEPIdentityEdge
+import AEPEdgeConsent
+import AEPEdgeIdentity
 import AEPServices
 import SwiftUI
 
@@ -88,7 +88,7 @@ struct ContentView: View {
     }
 
     private func getECID() {
-        IdentityEdge.getExperienceCloudId { value, error in
+        Identity.getExperienceCloudId { value, error in
             if error != nil {
                 self.ecid = ""
                 return
