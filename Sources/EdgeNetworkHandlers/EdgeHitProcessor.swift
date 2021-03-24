@@ -112,6 +112,7 @@ class EdgeHitProcessor: HitProcessing {
             }
 
             let edgeHit = ConsentEdgeHit(configId: configId, consents: consentPayload)
+            networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
         } else if event.isResetIdentitiesEvent {
             // reset stored payloads as part of processing the reset hit

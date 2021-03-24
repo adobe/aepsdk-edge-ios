@@ -47,6 +47,15 @@ class NetworkResponseHandler {
         }
     }
 
+    /// Adds the requestId in the internal `sentEventsWaitingResponse` with the associated event.
+    /// If the same requestId was stored before, the new list will replace the existing event(s).
+    /// - Parameters:
+    ///   - requestId: batch request id
+    ///   - event: the event sent to ExEdge
+    func addWaitingEvent(requestId: String, event: Event) {
+        addWaitingEvents(requestId: requestId, batchedEvents: [event])
+    }
+
     /// Remove the requestId in the internal `sentEventsWaitingResponse` along with the associated list of events.
     /// - Parameter requestId: batch request id
     /// - Returns: the list of unique event ids associated with the requestId that were removed
