@@ -16,7 +16,7 @@ import Foundation
 
 @objc(AEPMobileEdge)
 public class Edge: NSObject, Extension {
-    private let LOG_TAG = "Edge" // Tag for logging
+        private let LOG_TAG = "Edge" // Tag for logging
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler?
     private var hitQueue: HitQueuing?
