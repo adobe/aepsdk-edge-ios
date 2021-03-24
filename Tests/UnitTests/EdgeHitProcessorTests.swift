@@ -242,6 +242,34 @@ class EdgeHitProcessorTests: XCTestCase {
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
 
+    func testProcessHit_experienceEvent_addsEventToWaitingEventsList() {
+        let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
+        // return recoverable error so the waiting event is not removed onComplete() before the assertion
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 408, httpVersion: nil, headerFields: nil), error: nil)
+
+        // test
+        hitProcessor.processHit(entity: entity) { _ in
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        guard let requestUrl = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url else {
+            XCTFail("unexpected nil request url")
+            return
+        }
+        guard let requestId = requestUrl["requestId"] else {
+            XCTFail("missing requestId in the request url")
+            return
+        }
+
+        // verify
+        let waitingEvents = networkResponseHandler.getWaitingEvents(requestId: requestId)
+        XCTAssertEqual(1, waitingEvents?.count)
+    }
+
     // MARK: - Consent Update
     func testProcessHit_consentUpdateEvent_happy_sendsNetworkRequest_returnsTrue() {
         // setup
@@ -269,6 +297,34 @@ class EdgeHitProcessorTests: XCTestCase {
 
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
+    }
+
+    func testProcessHit_consentUpdateEvent_addsEventToWaitingEventsList() {
+        let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, identityMap: [:])
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
+        // return recoverable error so the waiting event is not removed onComplete() before the assertion
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 408, httpVersion: nil, headerFields: nil), error: nil)
+
+        // test
+        hitProcessor.processHit(entity: entity) { _ in
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        guard let requestUrl = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url else {
+            XCTFail("unexpected nil request url")
+            return
+        }
+        guard let requestId = requestUrl["requestId"] else {
+            XCTFail("missing requestId in the request url")
+            return
+        }
+
+        // verify
+        let waitingEvents = networkResponseHandler.getWaitingEvents(requestId: requestId)
+        XCTAssertEqual(1, waitingEvents?.count)
     }
 
     func testProcessHit_resetIdentitiesEvent_clearsStateStore_returnsTrue() {
@@ -302,5 +358,12 @@ class EdgeHitProcessorTests: XCTestCase {
         // verify
         wait(for: [expectation], timeout: 1)
         XCTAssertEqual(sendsNetworkRequest, mockNetworkService?.connectAsyncCalled, "Expected network request to be \(sendsNetworkRequest), but it was \(mockNetworkService?.connectAsyncCalled ?? false)", line: line)
+    }
+}
+
+extension URL {
+    subscript(queryParam: String) -> String? {
+        guard let url = URLComponents(string: self.absoluteString) else { return nil }
+        return url.queryItems?.first(where: { $0.name == queryParam })?.value
     }
 }
