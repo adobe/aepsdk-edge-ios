@@ -38,14 +38,18 @@ class EdgeState {
         guard !hasBooted else { return }
 
         // check if consent extension is registered
+        var consentRegistered = false
         if let registeredExtensionsWithHub = getSharedState(EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, event, false)?.value,
-           let extensions = registeredExtensionsWithHub[EdgeConstants.EventDataKeys.EXTENSIONS] as? [String: Any],
+           let extensions = registeredExtensionsWithHub[EdgeConstants.SharedState.Hub.EXTENSIONS] as? [String: Any],
            extensions[EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME] as? [String: Any] != nil {
-            // keep consent pending until the consent preferences update event is received
-        } else {
+            consentRegistered = true
+        }
+
+        if !consentRegistered {
             Log.warning(label: LOG_TAG, "Consent extension is not registered yet, using default collect status (yes)")
             updateCurrentConsent(status: EdgeConstants.Defaults.COLLECT_CONSENT_YES)
         }
+        // else keep consent pending until the consent preferences update event is received
 
         hasBooted = true
         Log.debug(label: LOG_TAG, "Edge has successfully booted up")
