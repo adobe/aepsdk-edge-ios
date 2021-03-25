@@ -146,8 +146,9 @@ class NetworkResponseHandler {
 
         for eventHandle in unwrappedEventHandles {
             let requestEventId = extractRequestEventId(forEventIndex: eventHandle.eventIndex, requestId: requestId)
-            if !ignoreStorePayloads {
-                Log.debug(label: LOG_TAG, "Ignoring state:store payload for request with id: \(requestId)")
+            if ignoreStorePayloads {
+                Log.debug(label: LOG_TAG, "Identities were reset recently, ignoring state:store payload for request with id: \(requestId)")
+            } else {
                 handleStoreEventHandle(handle: eventHandle)
             }
 
