@@ -42,6 +42,7 @@ enum EdgeConstants {
         static let REQUEST_EVENT_ID = "requestEventId"
         static let DATASET_ID = "datasetId"
         static let CONSENTS = "consents"
+        static let EXTENSIONS = "extensions"
     }
 
     enum DataStoreKeys {
@@ -76,6 +77,10 @@ enum EdgeConstants {
             static let CONSENTS = "consents"
             static let COLLECT = "collect"
             static let VAL = "val"
+        }
+
+        enum Hub {
+            static let SHARED_OWNER_NAME = "com.adobe.module.eventhub"
         }
     }
 
