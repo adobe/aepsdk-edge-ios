@@ -78,7 +78,13 @@ class RequestBuilder {
             identityMap = AnyCodable.from(dictionary: identityMapDict.dictionaryValue) ?? [:]
         }
 
-        return EdgeConsentUpdate(identityMap: identityMap,
+        // set streaming metadata
+        let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
+        let konductorConfig = KonductorConfig(streaming: streamingMetadata)
+        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
+
+        return EdgeConsentUpdate(meta: requestMetadata,
+                                 identityMap: identityMap,
                                  consent: [EdgeConsentPayload(standard: EdgeConstants.JsonValues.CONSENT_STANDARD,
                                                               version: EdgeConstants.JsonValues.CONSENT_VERSION,
                                                               value: AnyCodable.from(dictionary: consents))])
