@@ -77,6 +77,11 @@ enum EdgeConstants {
             static let COLLECT = "collect"
             static let VAL = "val"
         }
+
+        enum Hub {
+            static let SHARED_OWNER_NAME = "com.adobe.module.eventhub"
+            static let EXTENSIONS = "extensions"
+        }
     }
 
     enum JsonKeys {

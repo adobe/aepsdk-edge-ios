@@ -33,20 +33,23 @@ class EdgeState {
     ///
     /// - Parameters:
     ///   - event: The `Event` triggering the bootup
-    ///   - getXDMSharedState: used to fetch the Consent data
-    func bootupIfNeeded(event: Event, getXDMSharedState: @escaping (_ name: String, _ event: Event?, _ barrier: Bool) -> SharedStateResult?) {
+    ///   - getSharedState: used to fetch the `Event Hub` shared state
+    func bootupIfNeeded(event: Event, getSharedState: @escaping (_ name: String, _ event: Event?, _ barrier: Bool) -> SharedStateResult?) {
         guard !hasBooted else { return }
 
         // check if consent extension is registered
-        if let consentSharedState = getXDMSharedState(EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME, nil, false) {
-            currentCollectConsent = ConsentStatus.getCollectConsentOrDefault(eventData: consentSharedState.value ?? [:])
-        } else {
-            Log.warning(label: LOG_TAG, "Consent extension is not registered yet, using default collect status (yes)")
-            currentCollectConsent = EdgeConstants.Defaults.COLLECT_CONSENT_YES
+        var consentRegistered = false
+        if let registeredExtensionsWithHub = getSharedState(EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, event, false)?.value,
+           let extensions = registeredExtensionsWithHub[EdgeConstants.SharedState.Hub.EXTENSIONS] as? [String: Any],
+           extensions[EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME] as? [String: Any] != nil {
+            consentRegistered = true
         }
 
-        // update hitQueue based on current collect consent status
-        hitQueue.handleCollectConsentChange(status: currentCollectConsent)
+        if !consentRegistered {
+            Log.warning(label: LOG_TAG, "Consent extension is not registered yet, using default collect status (yes)")
+            updateCurrentConsent(status: EdgeConstants.Defaults.COLLECT_CONSENT_YES)
+        }
+        // else keep consent pending until the consent preferences update event is received
 
         hasBooted = true
         Log.debug(label: LOG_TAG, "Edge has successfully booted up")

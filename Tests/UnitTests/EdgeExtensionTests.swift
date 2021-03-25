@@ -37,8 +37,16 @@ class EdgeExtensionTests: XCTestCase {
     }
 
     // MARK: Bootup scenarios
-    func testBootup_whenNoConsentSharedState_usesDefaultYes() {
-        // consent XDM shared state not set
+    func testBootup_hubSharedState_consentNotRegistered_setsConsentYes() {
+        // consent extension not present in hub shared state
+        let hubSharedState: [String: Any] = [
+            "extensions": [
+                "com.adobe.edge": [
+                    "version": "1.1.0",
+                    "friendlyName": "AEPEdge"
+                ]
+            ]]
+        mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, data: (hubSharedState, .set))
 
         // dummy event to invoke readyForEvent
         _ = edge.readyForEvent(Event(name: "Dummy event", type: EventType.custom, source: EventSource.none, data: nil))
@@ -47,23 +55,19 @@ class EdgeExtensionTests: XCTestCase {
         XCTAssertEqual(ConsentStatus.yes, edge.state?.currentCollectConsent)
     }
 
-    func testBootup_whenConsentSharedState_usesPostedConsentStatus() {
-        let consentXDMSharedState = ["consents":
-                                        ["collect": ["val": "n"],
-                                         "adID": ["val": "y"],
-                                         "metadata": ["time": Date().getISO8601Date()]
-                                        ]]
-        mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME, data: (consentXDMSharedState, .set))
-
-        // dummy event to invoke readyForEvent
-        _ = edge.readyForEvent(Event(name: "Dummy event", type: EventType.custom, source: EventSource.none, data: nil))
-
-        // verify
-        XCTAssertEqual(ConsentStatus.no, edge.state?.currentCollectConsent)
-    }
-
-    func testBootup_whenConsentSharedStateWithNilData_usesDefaultPending() {
-        mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME, data: (nil, .set))
+    func testBootup_hubSharedState_consentRegistered_keepsPending() {
+        let hubSharedState: [String: Any] = [
+            "extensions": [
+                "com.adobe.edge": [
+                    "version": "1.1.0",
+                    "friendlyName": "AEPEdge"
+                ],
+                "com.adobe.edge.consent": [
+                    "version": "1.0.0",
+                    "friendlyName": "Consent"
+                ]
+            ]]
+        mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, data: (hubSharedState, .set))
 
         // dummy event to invoke readyForEvent
         _ = edge.readyForEvent(Event(name: "Dummy event", type: EventType.custom, source: EventSource.none, data: nil))

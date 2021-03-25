@@ -195,7 +195,7 @@ public class Edge: NSObject, Extension {
     /// - Returns: true if events can be processed at the moment, false otherwise
     private func canProcessEvents(event: Event) -> Bool {
         guard let state = state else { return false }
-        state.bootupIfNeeded(event: event, getXDMSharedState: getXDMSharedState(extensionName:event:barrier:))
+        state.bootupIfNeeded(event: event, getSharedState: getSharedState(extensionName:event:barrier:))
         return true
     }
 
