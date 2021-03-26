@@ -71,14 +71,15 @@ class EdgeHitProcessor: HitProcessing {
         requestBuilder.xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] =
             AnyCodable(identityState?[EdgeConstants.SharedState.Identity.IDENTITY_MAP])
 
+        // Enable response streaming for all events
+        requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
+                                               lineFeed: EdgeConstants.Defaults.LINE_FEED)
         if event.isExperienceEvent {
             guard let eventData = event.data, !eventData.isEmpty else {
                 Log.debug(label: LOG_TAG, "processHit - Failed to process Experience event, data was nil or empty")
                 completion(true)
                 return
             }
-            requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
-                                                   lineFeed: EdgeConstants.Defaults.LINE_FEED)
 
             // Build and send the network request to Experience Edge
             let listOfEvents: [Event] = [event]

@@ -17,11 +17,13 @@ import XCTest
 class EdgeHitTests: XCTestCase {
     private let CONFIG_ID = "testConfigId"
     private let EDGE_REQUEST = EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]])
-    private let CONSENT_UPDATE_REQUEST = EdgeConsentUpdate(identityMap: nil, consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
+    private let CONSENT_UPDATE_REQUEST = EdgeConsentUpdate(meta: nil, identityMap: nil, consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
 
     override func setUp() {
         continueAfterFailure = false
     }
+
+    // MARK: ExperienceEventsEdgeHit tests
 
     func testExperienceEventsEdgeHit() {
         let edgeHit = ExperienceEventsEdgeHit(configId: CONFIG_ID, request: EDGE_REQUEST)
@@ -74,6 +76,8 @@ class EdgeHitTests: XCTestCase {
         XCTAssertEqual(ExperienceEdgeRequestType.interact, edgeHit.getType())
     }
 
+    // MARK: ConsentEgeHit tests
+
     func testConsentEdgeHit_getPayload() {
         let json =
             """
@@ -95,14 +99,54 @@ class EdgeHitTests: XCTestCase {
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
 
+    func testConsentEdgeHit_getPayloadWithStraming() {
+        let json =
+            """
+            {"meta" :
+                    {"konductorConfig" :
+                        {"streaming" :
+                            {"enabled" : true,"recordSeparator" : "A","lineFeed" : "B"}
+                        }
+                    },
+            "consent" :
+                [{
+                    "standard" : "Adobe",
+                    "version" : "2.0",
+                    "value" : {
+                        "consent" : {
+                            "collect" : "y"
+                        }
+                    }}
+                ]
+            }
+            """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
+        let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
+        let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
+        let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil),
+                                              identityMap: nil,
+                                              consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
+        let edgeHit = ConsentEdgeHit(configId: CONFIG_ID, consents: consentUpdate)
+
+        XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
+    }
+
     func testConsentEdgeHit_getType() {
         let edgeHit = ConsentEdgeHit(configId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
         XCTAssertEqual(ExperienceEdgeRequestType.consent, edgeHit.getType())
     }
 
-    func testConsentEdgeHit_getStreamingSettings() {
+    func testConsentEdgeHit_getStreamingSettings_streamingNotEnabled() {
         let edgeHit = ConsentEdgeHit(configId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
         XCTAssertNil(edgeHit.getStreamingSettings())
+    }
+
+    func testConsentEdgeHit_getStreamingSettings_streamingEnabled() {
+        let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
+        let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil),
+                                              identityMap: nil,
+                                              consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
+        let edgeHit = ConsentEdgeHit(configId: CONFIG_ID, consents: consentUpdate)
+        XCTAssertNotNil(edgeHit.getStreamingSettings())
     }
 
     private func payloadToDict(payload: String?) -> [String: Any] {

@@ -206,7 +206,7 @@ class EdgeConsentTests: FunctionalTestBase {
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
         let requestBody = getFlattenNetworkRequestBody(consentRequests[0])
         print(requestBody)
-        XCTAssertEqual(7, requestBody.count)
+        XCTAssertEqual(10, requestBody.count)
         XCTAssertNotNil(requestBody["identityMap.ECID[0].id"] as? String)
         XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertEqual(false, requestBody["identityMap.ECID[0].primary"] as? Bool)
@@ -214,6 +214,9 @@ class EdgeConsentTests: FunctionalTestBase {
         XCTAssertEqual("2.0", requestBody["consent[0].version"] as? String)
         XCTAssertEqual("n", requestBody["consent[0].value.collect.val"] as? String)
         XCTAssertNotNil(requestBody["consent[0].value.metadata.time"] as? String)
+        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
+        XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
+        XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
     }
 
     func testCollectConsentYes_sendsRequestToEdgeNetwork() {
@@ -230,7 +233,7 @@ class EdgeConsentTests: FunctionalTestBase {
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
         let requestBody = getFlattenNetworkRequestBody(consentRequests[0])
         print(requestBody)
-        XCTAssertEqual(7, requestBody.count)
+        XCTAssertEqual(10, requestBody.count)
         XCTAssertNotNil(requestBody["identityMap.ECID[0].id"] as? String)
         XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertEqual(false, requestBody["identityMap.ECID[0].primary"] as? Bool)
@@ -238,6 +241,9 @@ class EdgeConsentTests: FunctionalTestBase {
         XCTAssertEqual("2.0", requestBody["consent[0].version"] as? String)
         XCTAssertEqual("y", requestBody["consent[0].value.collect.val"] as? String)
         XCTAssertNotNil(requestBody["consent[0].value.metadata.time"] as? String)
+        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
+        XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
+        XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
     }
 
     func testCollectConsentOtherThanYesNo_doesNotSendRequestToEdgeNetwork() {

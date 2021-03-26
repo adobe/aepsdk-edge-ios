@@ -32,6 +32,6 @@ struct ConsentEdgeHit: EdgeHit {
     }
 
     func getStreamingSettings() -> Streaming? {
-        return nil
+        return consents.meta?.konductorConfig?.streaming
     }
 }
