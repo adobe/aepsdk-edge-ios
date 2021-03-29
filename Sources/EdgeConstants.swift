@@ -47,6 +47,7 @@ enum EdgeConstants {
     enum DataStoreKeys {
         static let STORE_NAME = "AEPEdge"
         static let STORE_PAYLOADS = "storePayloads"
+        static let RESET_DATE = "reset.date"
     }
 
     enum SharedState {

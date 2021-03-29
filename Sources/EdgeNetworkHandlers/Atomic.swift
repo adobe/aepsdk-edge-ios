@@ -14,7 +14,7 @@ import Foundation
 
 /// Represents a thread-safe type for read and write operations
 final class Atomic<A> {
-    private let queue = DispatchQueue(label: "Atomic type serial queue")
+    private let queue = DispatchQueue(label: "com.adobe.atomic.queue")
     private var _value: A
 
     /// Creates a new `Atomic` type with `value`

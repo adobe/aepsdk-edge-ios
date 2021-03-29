@@ -18,11 +18,13 @@ import XCTest
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private let networkResponseHandler = NetworkResponseHandler()
+    private var networkResponseHandler = NetworkResponseHandler()
+    private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
 
     override func setUp() {
         super.setUp()
         MobileCore.registerExtensions([InstrumentedExtension.self]) // start MobileCore
+        ServiceProvider.shared.namedKeyValueService = MockDataStore()
         continueAfterFailure = false
     }
 
@@ -294,6 +296,71 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
                                                 batchedEvents: [event])
 
         networkResponseHandler.setLastReset(date: Date()) // date is after `event.timestamp`
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"state:store\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"key\": \"s_ecid\",\n" +
+            "                    \"value\": \"MCMID|29068398647607325310376254630528178721\",\n" +
+            "                    \"maxAge\": 15552000\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify not saved to store manager
+        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        XCTAssertTrue(storeResponsePayloadManager.getActivePayloadList().isEmpty)
+    }
+
+    /// Tests that when an event is processed after a persisted reset event that the store payloads are saved
+    func testProcessResponseOnSuccess_afterPersistedResetEvent_savesStorePayloads() {
+        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_DATE, value: Date().timeIntervalSince1970) // date is before `event.timestamp`
+        networkResponseHandler = NetworkResponseHandler() // loads reset time on init
+
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"state:store\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"key\": \"s_ecid\",\n" +
+            "                    \"value\": \"MCMID|29068398647607325310376254630528178721\",\n" +
+            "                    \"maxAge\": 15552000\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify saved to store manager
+        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        XCTAssertFalse(storeResponsePayloadManager.getActivePayloadList().isEmpty)
+    }
+
+    /// Tests that when an event is processed before a persisted reset event that the store payloads are not saved
+    func testProcessResponseOnSuccess_beforePersistedResetEvent_doesNotSaveStorePayloads() {
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_DATE, value: Date().timeIntervalSince1970) // date is after `event.timestamp`
+        networkResponseHandler = NetworkResponseHandler() // loads reset time on init
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
 
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         let jsonResponse = "{\n" +
