@@ -24,7 +24,6 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     override func setUp() {
         super.setUp()
         MobileCore.registerExtensions([InstrumentedExtension.self]) // start MobileCore
-        ServiceProvider.shared.namedKeyValueService = MockDataStore()
         continueAfterFailure = false
     }
 
