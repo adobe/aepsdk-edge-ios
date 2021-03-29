@@ -29,7 +29,7 @@ class NetworkResponseHandler {
     private var lastResetDate = Atomic<Date>(Date(timeIntervalSince1970: 0))
 
     init() {
-        lastResetDate = Atomic<Date>(loadResetDateFromPersistence())
+        lastResetDate = Atomic<Date>(loadResetDateFromPersistence() ?? Date(timeIntervalSince1970: 0))
     }
 
     /// Adds the requestId in the internal `sentEventsWaitingResponse` with the associated list of events.
@@ -82,7 +82,7 @@ class NetworkResponseHandler {
     /// - Parameter date: a `Date`
     func setLastReset(date: Date) {
         lastResetDate.mutate {$0 = date}
-        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_DATE, value: date.timeIntervalSince1970)
+        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: date.timeIntervalSince1970)
     }
 
     /// Decodes the response as `EdgeResponse` and handles the event handles, errors and warnings received from the server
@@ -348,10 +348,10 @@ class NetworkResponseHandler {
         return false
     }
 
-    /// Loads the reset date from persistence, if not present defaults to the earliest `Date` possible, `Date().timeIntervalSince1970`.
-    /// - Returns: the `Date` representing the earliest known reset date
-    private func loadResetDateFromPersistence() -> Date {
-        let storedResetDate = dataStore.getDouble(key: EdgeConstants.DataStoreKeys.RESET_DATE)
-        return Date(timeIntervalSince1970: storedResetDate ?? Date().timeIntervalSince1970)
+    /// Loads the reset date from persistence, if not found returns nil
+    /// - Returns: the `Date` representing the earliest known reset date, nil if not found
+    private func loadResetDateFromPersistence() -> Date? {
+        guard let storedResetDate = dataStore.getDouble(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE) else { return nil }
+        return Date(timeIntervalSince1970: storedResetDate)
     }
 }

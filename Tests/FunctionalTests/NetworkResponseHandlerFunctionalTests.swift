@@ -321,7 +321,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
 
     /// Tests that when an event is processed after a persisted reset event that the store payloads are saved
     func testProcessResponseOnSuccess_afterPersistedResetEvent_savesStorePayloads() {
-        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_DATE, value: Date().timeIntervalSince1970) // date is before `event.timestamp`
+        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: Date().timeIntervalSince1970) // date is before `event.timestamp`
         networkResponseHandler = NetworkResponseHandler() // loads reset time on init
 
         let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
@@ -356,7 +356,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     func testProcessResponseOnSuccess_beforePersistedResetEvent_doesNotSaveStorePayloads() {
         let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
 
-        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_DATE, value: Date().timeIntervalSince1970) // date is after `event.timestamp`
+        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: Date().timeIntervalSince1970) // date is after `event.timestamp`
         networkResponseHandler = NetworkResponseHandler() // loads reset time on init
         networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
                                                 batchedEvents: [event])
