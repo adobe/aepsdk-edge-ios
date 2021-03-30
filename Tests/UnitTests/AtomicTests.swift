@@ -1,5 +1,5 @@
 //
-// Copyright 2020 Adobe. All rights reserved.
+// Copyright 2021 Adobe. All rights reserved.
 // This file is licensed to you under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy
 // of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,15 +10,22 @@
 // governing permissions and limitations under the License.
 //
 
+@testable import AEPEdge
 import Foundation
+import XCTest
 
-/// Encodable extension used by `EdgeEventHandle` and `EdgeEventError`
-extension Encodable {
-    func asDictionary() -> [String: Any]? {
-        guard let data = try? JSONEncoder().encode(self),
-              let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
-            return nil
+class AtomicTests: XCTestCase {
+    private let queue = DispatchQueue(label: "test queue",
+                                      attributes: .concurrent)
+
+    func testAtomicWrite() {
+        let atomic = Atomic<Int>(0)
+        for _ in 0..<1000 {
+            queue.async {
+                atomic.mutate { $0 += 1 }
+            }
         }
-        return dictionary
+        queue.sync(flags: .barrier) {}
+        XCTAssertEqual(atomic.value, 1000)
     }
 }

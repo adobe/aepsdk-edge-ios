@@ -20,13 +20,16 @@ import Foundation
 class NetworkResponseHandler {
     private let LOG_TAG = "NetworkResponseHandler"
     private let serialQueue = DispatchQueue(label: "com.adobe.edge.eventsDictionary") // serial queue for atomic operations
-    private var getPrivacyStatus: () -> PrivacyStatus
+    private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
 
     // the order of the request events matter for matching them with the response events
-    private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [String]>()
+    private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [(uuid: String, date: Date)]>()
 
-    init(getPrivacyStatus: @escaping() -> PrivacyStatus) {
-        self.getPrivacyStatus = getPrivacyStatus
+    /// Date of the last generic identity reset request event, for more info see `shouldIgnoreStorePayload`
+    private var lastResetDate = Atomic<Date>(Date(timeIntervalSince1970: 0))
+
+    init() {
+        lastResetDate = Atomic<Date>(loadResetDateFromPersistence() ?? Date(timeIntervalSince1970: 0))
     }
 
     /// Adds the requestId in the internal `sentEventsWaitingResponse` with the associated list of events.
@@ -38,14 +41,24 @@ class NetworkResponseHandler {
     func addWaitingEvents(requestId: String, batchedEvents: [Event]) {
         guard !requestId.isEmpty, !batchedEvents.isEmpty else { return }
 
-        let eventIds = batchedEvents.map { $0.id.uuidString }
         serialQueue.sync {
             if self.sentEventsWaitingResponse[requestId] != nil {
                 Log.warning(label: self.LOG_TAG, "Name collision for requestId \(requestId), events list is overwritten.")
             }
 
-            self.sentEventsWaitingResponse[requestId] = eventIds
+            let uuids = batchedEvents.map { $0.id.uuidString }
+            let timestamps = batchedEvents.map { $0.timestamp }
+            self.sentEventsWaitingResponse[requestId] = zip(uuids, timestamps).map { ($0, $1) }
         }
+    }
+
+    /// Adds the requestId in the internal `sentEventsWaitingResponse` with the associated event.
+    /// If the same requestId was stored before, the new list will replace the existing event(s).
+    /// - Parameters:
+    ///   - requestId: batch request id
+    ///   - event: the event sent to ExEdge
+    func addWaitingEvent(requestId: String, event: Event) {
+        addWaitingEvents(requestId: requestId, batchedEvents: [event])
     }
 
     /// Remove the requestId in the internal `sentEventsWaitingResponse` along with the associated list of events.
@@ -54,7 +67,7 @@ class NetworkResponseHandler {
     func removeWaitingEvents(requestId: String) -> [String]? {
         guard !requestId.isEmpty else { return nil }
 
-        return sentEventsWaitingResponse.removeValue(forKey: requestId)
+        return sentEventsWaitingResponse.removeValue(forKey: requestId)?.map({$0.uuid})
     }
 
     /// Returns the list of unique event ids associated with the provided requestId or empty if not found.
@@ -62,7 +75,14 @@ class NetworkResponseHandler {
     /// - Returns: the list of unique event ids associated with the requestId or nil if none found
     func getWaitingEvents(requestId: String) -> [String]? {
         guard !requestId.isEmpty else { return nil }
-        return sentEventsWaitingResponse[requestId]
+        return sentEventsWaitingResponse[requestId]?.map({$0.uuid})
+    }
+
+    /// Sets the last reset date
+    /// - Parameter date: a `Date`
+    func setLastReset(date: Date) {
+        lastResetDate.mutate {$0 = date}
+        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: date.timeIntervalSince1970)
     }
 
     /// Decodes the response as `EdgeResponse` and handles the event handles, errors and warnings received from the server
@@ -71,13 +91,17 @@ class NetworkResponseHandler {
     ///   - requestId: request id associated with current response
     func processResponseOnSuccess(jsonResponse: String, requestId: String) {
         guard let data = jsonResponse.data(using: .utf8) else { return }
+        // Multiple events cannot be batched if there was a reset in between them
+        let ignoreStorePayloads = shouldIgnoreStorePayload(requestId: requestId)
 
         if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data) {
             Log.debug(label: LOG_TAG,
                       "processResponseOnSuccess - Received server response:\n \(jsonResponse), request id \(requestId)")
 
             // handle the event handles, errors and warnings coming from server
-            processEventHandles(handlesArray: edgeResponse.handle, requestId: requestId)
+            processEventHandles(handlesArray: edgeResponse.handle,
+                                requestId: requestId,
+                                ignoreStorePayloads: ignoreStorePayloads)
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId)
             dispatchEventWarnings(warningsArray: edgeResponse.warnings, requestId: requestId)
         } else {
@@ -116,8 +140,9 @@ class NetworkResponseHandler {
     /// - Parameters:
     ///   - handlesArray: `[EdgeEventHandle]` containing all the event handles to be processed; this list should not be nil/empty
     ///   - requestId: the request identifier, used for logging and to identify the request events associated with this response
+    ///   - ignoreStorePayloads: if true, the store payloads for this response will not be processed
     /// - See also: handleStoreEventHandle(handle: EdgeEventHandle)
-    private func processEventHandles(handlesArray: [EdgeEventHandle]?, requestId: String) {
+    private func processEventHandles(handlesArray: [EdgeEventHandle]?, requestId: String, ignoreStorePayloads: Bool) {
         guard let unwrappedEventHandles = handlesArray, !unwrappedEventHandles.isEmpty else {
             Log.trace(label: LOG_TAG, "processEventHandles - Received nil/empty event handle array, nothing to handle")
             return
@@ -127,7 +152,11 @@ class NetworkResponseHandler {
 
         for eventHandle in unwrappedEventHandles {
             let requestEventId = extractRequestEventId(forEventIndex: eventHandle.eventIndex, requestId: requestId)
-            handleStoreEventHandle(handle: eventHandle)
+            if ignoreStorePayloads {
+                Log.debug(label: LOG_TAG, "Identities were reset recently, ignoring state:store payload for request with id: \(requestId)")
+            } else {
+                handleStoreEventHandle(handle: eventHandle)
+            }
 
             guard let eventHandleAsDictionary = eventHandle.asDictionary() else { continue }
             dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary,
@@ -149,7 +178,7 @@ class NetworkResponseHandler {
         guard let requestEventIdsList = getWaitingEvents(requestId: requestId) else { return nil }
 
         // Note: ExEdge does not return eventIndex when there is only one event in the request.
-        // The event handles and errrors are associated to that request event, so defaulting to 0 here.
+        // The event handles and errors are associated to that request event, so defaulting to 0 here.
         let index = forEventIndex ?? 0
         guard index >= 0, index < requestEventIdsList.count else {
             return nil
@@ -269,8 +298,6 @@ class NetworkResponseHandler {
     /// - Parameter handle: current `EventHandle` to store
     private func handleStoreEventHandle(handle: EdgeEventHandle) {
         let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
-        // handling async scenario when in-flight response is handled after the privacy status update was handled by the Edge extension
-        if getPrivacyStatus() == .optedOut { return }
 
         guard let type = handle.type, EdgeConstants.JsonKeys.Response.EVENT_HANDLE_TYPE_STORE == type.lowercased() else { return }
         guard let payload: [[String: Any]] = handle.payload else { return }
@@ -306,5 +333,25 @@ class NetworkResponseHandler {
         } else {
             Log.warning(label: LOG_TAG, "Received event error for request id (\(requestId)), error details:\n\(error as AnyObject)")
         }
+    }
+
+    /// Determines if we should ignore the store payload response for a given request id.
+    /// A store payload should be ignored when a reset happened and the persisted state store was removed while processing a network request, in order to avoid an identity overwrite.
+    /// The first network request after reset will update the state store with the new information.
+    /// - Parameter requestId: the request id
+    /// - Returns: true if we should ignore store payload responses for `requestId`
+    private func shouldIgnoreStorePayload(requestId: String) -> Bool {
+        if let firstEvent = sentEventsWaitingResponse[requestId]?.first {
+            return firstEvent.date < lastResetDate.value
+        }
+
+        return false
+    }
+
+    /// Loads the reset date from persistence, if not found returns nil
+    /// - Returns: the `Date` representing the earliest known reset date, nil if not found
+    private func loadResetDateFromPersistence() -> Date? {
+        guard let storedResetDate = dataStore.getDouble(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE) else { return nil }
+        return Date(timeIntervalSince1970: storedResetDate)
     }
 }

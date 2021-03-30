@@ -19,8 +19,7 @@ public class Edge: NSObject, Extension {
     private let LOG_TAG = "Edge" // Tag for logging
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler?
-    private var hitQueue: HitQueuing?
-    private var currentPrivacyStatus: PrivacyStatus?
+    internal var state: EdgeState?
 
     // MARK: - Extension
     public let name = EdgeConstants.EXTENSION_NAME
@@ -34,31 +33,49 @@ public class Edge: NSObject, Extension {
         super.init()
 
         // set default on init for register/unregister use-case
-        currentPrivacyStatus = EdgeConstants.DEFAULT_PRIVACY_STATUS
-        networkResponseHandler = NetworkResponseHandler(getPrivacyStatus: getPrivacyStatus)
-        setupHitQueue()
+        networkResponseHandler = NetworkResponseHandler()
+        if let hitQueue = setupHitQueue() {
+            state = EdgeState(hitQueue: hitQueue)
+        }
     }
 
     public func onRegistered() {
         registerListener(type: EventType.edge,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
-        registerListener(type: EventType.configuration,
+        registerListener(type: EventType.edgeConsent,
                          source: EventSource.responseContent,
-                         listener: handleConfigurationResponse)
+                         listener: handleConsentPreferencesUpdate)
+        registerListener(type: EventType.edge,
+                         source: EventSource.updateConsent,
+                         listener: handleConsentUpdate)
+        registerListener(type: EventType.genericIdentity,
+                         source: EventSource.requestReset,
+                         listener: handleIdentitiesReset)
     }
 
     public func onUnregistered() {
-        hitQueue?.close()
+        state?.hitQueue.close()
         print("Extension unregistered from MobileCore: \(EdgeConstants.FRIENDLY_NAME)")
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        if event.type == EventType.edge, event.source == EventSource.requestContent {
+        guard canProcessEvents(event: event) else { return false }
+
+        if event.isExperienceEvent || event.isUpdateConsentEvent {
             let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
-            let identitySharedState = getSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
-                                                     event: event)
+            let identitySharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                                        event: event)
+
+            return configurationSharedState?.status == .set && identitySharedState?.status == .set
+        } else if event.isResetIdentitiesEvent {
+            let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
+                                                          event: event)
+            // use barrier to wait for EdgeIdentity to handle the reset
+            let identitySharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                                        event: event,
+                                                        barrier: true)
 
             return configurationSharedState?.status == .set && identitySharedState?.status == .set
         }
@@ -74,77 +91,144 @@ public class Edge: NSObject, Extension {
     func handleExperienceEventRequest(_ event: Event) {
         guard !shouldIgnore(event: event) else { return }
 
-        if event.data == nil {
+        guard let data = event.data, !data.isEmpty else {
             Log.trace(label: LOG_TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
             return
         }
 
-        Log.trace(label: LOG_TAG, "handleExperienceEventRequest - Queuing event with id \(event.id.uuidString).")
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState =
+                getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                  event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            return // drop current event
+        }
 
-        guard let eventData = try? JSONEncoder().encode(event) else {
-            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode event with id: '\(event.id.uuidString)'.")
+        let edgeEntity = EdgeDataEntity(event: event,
+                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
+
+        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
+            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
             return
         }
 
-        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: eventData)
-        hitQueue?.queue(entity: entity)
+        Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Queuing event with id \(event.id.uuidString).")
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
+        state?.hitQueue.queue(entity: entity)
     }
 
-    /// Handles the configuration response event and the privacy status change
-    /// - Parameter event: the configuration response event
-    func handleConfigurationResponse(_ event: Event) {
-        if let privacyStatusStr = event.data?[EdgeConstants.EventDataKeys.GLOBAL_PRIVACY] as? String {
-            let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? EdgeConstants.DEFAULT_PRIVACY_STATUS
-            currentPrivacyStatus = privacyStatus
-            hitQueue?.handlePrivacyChange(status: privacyStatus)
-            if privacyStatus == .optedOut {
-                let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
-                storeResponsePayloadManager.deleteAllStorePayloads()
-                Log.debug(label: LOG_TAG, "Device has opted-out of tracking. Clearing the Edge queue.")
-            }
+    /// Handles the `EventType.consent` -`EventSource.responseContent` event for the collect consent change
+    /// - Parameter event: the consent preferences response event
+    func handleConsentPreferencesUpdate(_ event: Event) {
+        guard let data = event.data, !data.isEmpty else {
+            Log.trace(label: LOG_TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
+            return
         }
+
+        state?.updateCurrentConsent(status: ConsentStatus.getCollectConsentOrDefault(eventData: data))
     }
 
-    /// Current privacy status set based on configuration update events
-    /// - Returns: the current `PrivacyStatus` known by the Edge extension
-    func getPrivacyStatus() -> PrivacyStatus {
-        return currentPrivacyStatus ?? EdgeConstants.DEFAULT_PRIVACY_STATUS
+    /// Handles the generic identities reset event
+    /// - Parameter event: an `Event`
+    func handleIdentitiesReset(_ event: Event) {
+        let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
+
+        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
+            Log.debug(label: LOG_TAG, "handleIdentitiesReset - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
+            return
+        }
+
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
+        networkResponseHandler?.setLastReset(date: event.timestamp)
+        state?.hitQueue.queue(entity: entity)
+    }
+
+    /// Handles the Consent Update event
+    /// - Parameter event: current event to process
+    func handleConsentUpdate(_ event: Event) {
+        guard let data = event.data, !data.isEmpty else {
+            Log.trace(label: LOG_TAG, "handleConsentUpdate - Event with id \(event.id.uuidString) contained no data, ignoring.")
+            return
+        }
+
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState =
+                getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                  event: event)?.value else {
+            Log.warning(label: LOG_TAG,
+                        "handleConsentUpdate - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            return // drop current event
+        }
+
+        let edgeEntity = EdgeDataEntity(event: event,
+                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
+
+        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
+            Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
+            return
+        }
+
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
+        state?.hitQueue.queue(entity: entity)
     }
 
     /// Determines if the event should be ignored by the Edge extension. This method should be called after
-    /// `readyForEvent` passed and a Configuration shared state is set.
+    /// `readyForEvent` passed.
     ///
     /// - Parameter event: the event to validate
-    /// - Returns: true when Configuration shared state is nil or the new privacy status is opted out
+    /// - Returns: true when collect consent is no, false otherwise
     private func shouldIgnore(event: Event) -> Bool {
-        guard let configSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
-                                                     event: event)?.value else {
-            Log.debug(label: LOG_TAG, "Configuration is unavailable - unable to process event '\(event.id)'.")
+        let consentForEvent = getConsentForEvent(event)
+        if consentForEvent == ConsentStatus.no {
+            Log.debug(label: LOG_TAG, "Ignoring event with id \(event.id.uuidString) due to collect consent setting (n) .")
             return true
         }
 
-        let privacyStatusStr = configSharedState[EdgeConstants.EventDataKeys.GLOBAL_PRIVACY] as? String ?? ""
-        let privacyStatus = PrivacyStatus(rawValue: privacyStatusStr) ?? EdgeConstants.DEFAULT_PRIVACY_STATUS
-        return privacyStatus == .optedOut
+        return false
+    }
+
+    /// Determines if `Edge` is ready to handle events, if the bootup can be executed successfully
+    /// - Parameter event: An `Event`
+    /// - Returns: true if events can be processed at the moment, false otherwise
+    private func canProcessEvents(event: Event) -> Bool {
+        guard let state = state else { return false }
+        state.bootupIfNeeded(event: event, getSharedState: getSharedState(extensionName:event:barrier:))
+        return true
     }
 
     /// Sets up the `PersistentHitQueue` to handle `EdgeHit`s
-    private func setupHitQueue() {
+    private func setupHitQueue() -> HitQueuing? {
         guard let dataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: name) else {
             Log.error(label: "\(name):\(#function)", "Failed to create Data Queue, Edge could not be initialized")
-            return
+            return nil
         }
 
         guard let networkResponseHandler = networkResponseHandler else {
             Log.warning(label: LOG_TAG, "Failed to create Data Queue, the NetworkResponseHandler is not initialized")
-            return
+            return nil
         }
 
         let hitProcessor = EdgeHitProcessor(networkService: networkService,
                                             networkResponseHandler: networkResponseHandler,
                                             getSharedState: getSharedState(extensionName:event:),
+                                            getXDMSharedState: getXDMSharedState(extensionName:event:barrier:),
                                             readyForEvent: readyForEvent(_:))
-        hitQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
-        hitQueue?.handlePrivacyChange(status: EdgeConstants.DEFAULT_PRIVACY_STATUS)
+        return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }
+
+    /// Retrieves the `ConsentStatus` from the Consent XDM Shared state for current `event`.
+    /// - Returns: `ConsentStatus` value from shared state or, if not found, current consent value
+    private func getConsentForEvent(_ event: Event) -> ConsentStatus? {
+        guard let consentXDMSharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME,
+                                                            event: event)?.value else {
+            Log.debug(label: LOG_TAG, "Consent XDM Shared state is unavailable for event '\(event.id)', using currect consent.")
+            return state?.currentCollectConsent
+        }
+
+        return ConsentStatus.getCollectConsentOrDefault(eventData: consentXDMSharedState)
+    }
+
 }

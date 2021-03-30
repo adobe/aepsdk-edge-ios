@@ -1,5 +1,5 @@
 //
-// Copyright 2020 Adobe. All rights reserved.
+// Copyright 2021 Adobe. All rights reserved.
 // This file is licensed to you under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy
 // of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -13,15 +13,16 @@
 import AEPServices
 import Foundation
 
-/// A request for pushing events to the Adobe Experience Edge.
-/// An `EdgeRequest` is the top-level request object sent to Experience Edge.
-struct EdgeRequest: Encodable {
-    /// Metadata passed to the Experience Cloud Solutions and even to the Edge itself with possibility of overriding at event level
+/// A request for sending a consent update to the Adobe Experience Edge.
+/// An `EdgeConsentUpdate` is the top-level request object sent to Experience Edge to the set-consent endpoint.
+struct EdgeConsentUpdate: Encodable {
+    /// Metadata passed with the Consent request
     let meta: RequestMetadata?
 
-    /// XDM data applied for the entire request
-    let xdm: [String: AnyCodable]?
+    /// The IdentityMap at the moment of this request
+    let identityMap: [String: AnyCodable]?
 
-    /// List of Experience events
-    let events: [[String: AnyCodable]]?
+    /// Consent payload
+    let consent: [EdgeConsentPayload]?
+
 }

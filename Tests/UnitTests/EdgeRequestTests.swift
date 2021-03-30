@@ -24,9 +24,21 @@ class EdgeRequestTests: XCTestCase {
     func testEncode_allProperties() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
-        var identityMap = IdentityMap()
-        identityMap.addItem(namespace: "email", id: "example@adobe.com")
-        let requestContext = RequestContextData(identityMap: identityMap)
+        guard let identityMapData = """
+        {
+          "identityMap" : {
+            "email" : [
+              {
+                "id" : "example@adobe.com"
+              }
+            ]
+          }
+        }
+        """.data(using: .utf8) else {
+            XCTFail("Failed to convert json string to data")
+            return
+        }
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
 
         let events: [[String: AnyCodable]] = [
             [
@@ -40,7 +52,7 @@ class EdgeRequestTests: XCTestCase {
                     ]
                 ]
             ]]
-        let edgeRequest = EdgeRequest(meta: requestMetadata, xdm: requestContext, events: events)
+        let edgeRequest = EdgeRequest(meta: requestMetadata, xdm: AnyCodable.from(dictionary: identityMap)!, events: events)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
@@ -80,11 +92,23 @@ class EdgeRequestTests: XCTestCase {
     }
 
     func testEncode_onlyRequestContext() {
-        var identityMap = IdentityMap()
-        identityMap.addItem(namespace: "email", id: "example@adobe.com")
-        let requestContext = RequestContextData(identityMap: identityMap)
+        guard let identityMapData = """
+        {
+            "identityMap": {
+                "email" : [
+                  {
+                    "id" : "example@adobe.com"
+                  }
+                ]
+            }
+        }
+        """.data(using: .utf8) else {
+            XCTFail("Failed to convert json string to data")
+            return
+        }
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
         let edgeRequest = EdgeRequest(meta: nil,
-                                      xdm: requestContext,
+                                      xdm: AnyCodable.from(dictionary: identityMap)!,
                                       events: nil)
 
         let encoder = JSONEncoder()
