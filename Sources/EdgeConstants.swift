@@ -16,7 +16,7 @@ import Foundation
 enum EdgeConstants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
-    static let EXTENSION_VERSION = "1.0.0"
+    static let EXTENSION_VERSION = "1.1.0"
     static let FRIENDLY_NAME = "AEPEdge"
 
     enum EventSource {
