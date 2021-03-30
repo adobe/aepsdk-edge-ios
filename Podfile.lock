@@ -77,10 +77,10 @@ CHECKOUT OPTIONS:
     :commit: 5aaf3a0a916bc7d2de4d44b1563dae4c9056395f
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPEdgeConsent:
-    :commit: e97b652c7801cfde2db18c0d6148af30d87099e3
+    :commit: c41f60f466162ced7873c90edeb1dcf5deb79fde
     :git: "git@github.com:adobe/aepsdk-edgeconsent-ios.git"
   AEPEdgeIdentity:
-    :commit: 62e8f8eae65f7802a07b3ddc379818b1bac76c31
+    :commit: 29d215e7412da123dfd9cd2b648eb6f81bcd7a7a
     :git: "git@github.com:adobe/aepsdk-edgeidentity-ios.git"
   AEPIdentity:
     :commit: 5aaf3a0a916bc7d2de4d44b1563dae4c9056395f
