@@ -38,7 +38,7 @@ enum HttpResponseCodes: Int {
 
 /// Network service for requests to the Adobe Experience Edge
 class EdgeNetworkService {
-    private let LOG_TAG: String = "EdgeNetworkService"
+    private let SELF_TAG: String = "EdgeNetworkService"
     private let DEFAULT_GENERIC_ERROR_MESSAGE = "Request to Experience Edge failed with an unknown exception"
     private let DEFAULT_NAMESPACE = "global"
     private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.clientTimeout.rawValue,
@@ -81,7 +81,7 @@ class EdgeNetworkService {
                    responseCallback: ResponseCallback,
                    completion: @escaping (Bool, TimeInterval?) -> Void) {
         guard let payload = requestBody, !payload.isEmpty else {
-            Log.warning(label: LOG_TAG, "doRequest - Request body is nil/empty, dropping this request")
+            Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Request body is nil/empty, dropping this request")
             responseCallback.onComplete()
             completion(true, nil)
             return
@@ -96,7 +96,7 @@ class EdgeNetworkService {
                            httpHeaders: headers,
                            connectTimeout: EdgeConstants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT,
                            readTimeout: EdgeConstants.NetworkKeys.DEFAULT_READ_TIMEOUT)
-        Log.debug(label: LOG_TAG, "doRequest - Sending request to URL \(url.absoluteString) with headers: \(headers) and body: \n\(payload)")
+        Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Sending request to URL \(url.absoluteString) with headers: \(headers) and body: \n\(payload)")
 
         ServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest) { (connection: HttpConnection) in
             if connection.error != nil {
@@ -108,7 +108,7 @@ class EdgeNetworkService {
             }
 
             guard let responseCode = connection.responseCode else {
-                Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unknown error")
+                Log.warning(label: EdgeConstants.LOG_TAG, "\(self.SELF_TAG) - Connection to Experience Edge returned unknown error")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
                 completion(true, nil) // failed, but unrecoverable, don't retry
@@ -131,7 +131,7 @@ class EdgeNetworkService {
     ///   - responseCallback: `ResponseCallback` that is invoked for each individual stream if streaming is enabled or once with the unwrapped response content
     func handleContent(connection: HttpConnection, streaming: Streaming?, responseCallback: ResponseCallback) {
         guard let unwrappedResponseString = connection.responseString else {
-            Log.trace(label: LOG_TAG, "handleContent - No data to handle")
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - No content to handle")
             return
         }
         if let unwrappedStreaming = streaming {
@@ -182,7 +182,7 @@ class EdgeNetworkService {
 
         switch responseCode {
         case HttpResponseCodes.ok.rawValue:
-            Log.debug(label: self.LOG_TAG, "doRequest - Interact connection to Experience Edge was successful.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Interact connection to Experience Edge was successful.")
             self.handleContent(connection: connection,
                                streaming: streaming,
                                responseCallback: responseCallback)
@@ -190,12 +190,12 @@ class EdgeNetworkService {
             completion(true, nil) // successful request, return true
         case HttpResponseCodes.noContent.rawValue:
             // Successful collect requests do not return content
-            Log.debug(label: self.LOG_TAG, "doRequest - Collect connection to Experience Edge was successful.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Collect connection to Experience Edge was successful.")
             responseCallback.onComplete()
             completion(true, nil) // successful request, return true
         case HttpResponseCodes.multiStatus.rawValue:
-            Log.debug(label: self.LOG_TAG,
-                      "doRequest - Connection to Experience Edge was successful but encountered non-fatal errors/warnings. \(responseCode)")
+            Log.debug(label: EdgeConstants.LOG_TAG,
+                      "\(SELF_TAG) - Connection to Experience Edge was successful but encountered non-fatal errors/warnings. \(responseCode)")
             self.handleContent(connection: connection,
                                streaming: streaming,
                                responseCallback: responseCallback)
@@ -203,7 +203,7 @@ class EdgeNetworkService {
             completion(true, nil) // non-fatal error, don't retry
         default:
             if self.recoverableNetworkErrorCodes.contains(responseCode) {
-                Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned recoverable error code \(responseCode)")
+                Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge returned recoverable error code \(responseCode)")
                 let retryHeader = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER)
                 var retryInterval = EdgeConstants.Defaults.RETRY_INTERVAL
                 // Do not currently support HTTP-date only parsing Ints for now. Konductor will only send back Retry-After as Ints.
@@ -212,7 +212,7 @@ class EdgeNetworkService {
                 }
                 completion(false, retryInterval) // failed, but recoverable so retry
             } else {
-                Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unrecoverable error code \(responseCode)")
+                Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge returned unrecoverable error code \(responseCode)")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
                 completion(true, nil) // failed, but unrecoverable, don't retry
@@ -232,7 +232,7 @@ class EdgeNetworkService {
         guard let lineFeedDelimiter: String = streaming.lineFeed else { return }
         guard let lineFeedCharacter: Character = lineFeedDelimiter.convertToCharacter() else { return }
 
-        Log.trace(label: LOG_TAG, "handleStreamingResponse - Handle server response with streaming enabled")
+        Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Handle server response with streaming enabled")
 
         let splitResult = unwrappedResponseString.split(separator: lineFeedCharacter)
 
@@ -263,11 +263,11 @@ class EdgeNetworkService {
         let errorDictionary = [EdgeConstants.JsonKeys.Response.Error.MESSAGE: unwrappedErrorMessage,
                                EdgeConstants.JsonKeys.Response.Error.NAMESPACE: DEFAULT_NAMESPACE]
         guard let json = try? JSONSerialization.data(withJSONObject: errorDictionary, options: []) else {
-            Log.debug(label: LOG_TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to serialize the error message.")
             return nil
         }
         guard let jsonString = String(data: json, encoding: .utf8) else {
-            Log.debug(label: LOG_TAG, "composeGenericErrorAsJson - Failed to serialize the error message.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to convert the error message to string.")
             return nil
         }
 
@@ -281,11 +281,11 @@ extension String {
     /// - Returns: the result Character or nil if the conversion failed
     func convertToCharacter() -> Character? {
         guard self.count == 1 else {
-            Log.trace(label: "convertToCharacter", "Unable to decode Character with multiple characters (\(self))")
+            Log.trace(label: EdgeConstants.LOG_TAG, "convertToCharacter - Unable to decode Character with multiple characters (\(self))")
             return nil
         }
         guard let character = self.first else {
-            Log.trace(label: "convertToCharacter", "Unable to decode empty Character (\(self)")
+            Log.trace(label: EdgeConstants.LOG_TAG, "convertToCharacter - Unable to decode empty Character (\(self)")
             return nil
         }
         return character
