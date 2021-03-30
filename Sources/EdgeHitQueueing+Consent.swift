@@ -23,10 +23,10 @@ extension HitQueuing {
         case .no:
             clear()
             beginProcessing()
-            Log.debug(label: "EdgeHitQueue", "Collect consent set to (n), clearing the Edge queue.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "EdgeHitQueue - Collect consent set to (n), clearing the Edge queue.")
         case .pending:
             suspend()
-            Log.debug(label: "EdgeHitQueue", "Collect consent is pending, suspending the Edge queue until (y/n).")
+            Log.debug(label: EdgeConstants.LOG_TAG, "EdgeHitQueue - Collect consent is pending, suspending the Edge queue until (y/n).")
         }
     }
 }

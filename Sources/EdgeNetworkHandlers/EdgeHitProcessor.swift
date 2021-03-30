@@ -16,7 +16,7 @@ import Foundation
 
 /// A `HitProcessing` which handles the processing of `EdgeHit`s
 class EdgeHitProcessor: HitProcessing {
-    private let LOG_TAG = "EdgeHitProcessor"
+    private let SELF_TAG = "EdgeHitProcessor"
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
     private var getSharedState: (String, Event?) -> SharedStateResult?
@@ -46,14 +46,14 @@ class EdgeHitProcessor: HitProcessing {
         guard let data = entity.data, let edgeEntity = try? JSONDecoder().decode(EdgeDataEntity.self, from: data)
         else {
             // can't convert data to hit, unrecoverable error, move to next hit
-            Log.debug(label: LOG_TAG, "processHit - Failed to decode EdgeDataEntity with id '\(entity.uniqueIdentifier)'.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to decode EdgeDataEntity with id '\(entity.uniqueIdentifier)'.")
             completion(true)
             return
         }
 
         let event = edgeEntity.event
         guard readyForEvent(event) else {
-            Log.debug(label: LOG_TAG, "processHit - readyForEvent returned false, will retry hit with id '\(entity.uniqueIdentifier)'.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Not ready for event, will retry hit with id '\(entity.uniqueIdentifier)'.")
             completion(false)
             return
         }
@@ -76,7 +76,7 @@ class EdgeHitProcessor: HitProcessing {
                                                lineFeed: EdgeConstants.Defaults.LINE_FEED)
         if event.isExperienceEvent {
             guard let eventData = event.data, !eventData.isEmpty else {
-                Log.debug(label: LOG_TAG, "processHit - Failed to process Experience event, data was nil or empty")
+                Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to process Experience event, data was nil or empty")
                 completion(true)
                 return
             }
@@ -85,8 +85,8 @@ class EdgeHitProcessor: HitProcessing {
             let listOfEvents: [Event] = [event]
 
             guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents) else {
-                Log.debug(label: LOG_TAG,
-                          "processHit - Failed to build the request payload, dropping current event '\(event.id.uuidString)'.")
+                Log.debug(label: EdgeConstants.LOG_TAG,
+                          "\(SELF_TAG) - Failed to build the request payload, dropping event '\(event.id.uuidString)'.")
                 completion(true)
                 return
             }
@@ -99,15 +99,15 @@ class EdgeHitProcessor: HitProcessing {
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
         } else if event.isUpdateConsentEvent {
             guard let eventData = event.data, !eventData.isEmpty else {
-                Log.debug(label: LOG_TAG, "processHit - Failed to process Consent event, data was nil or empty")
+                Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to process Consent event, data was nil or empty")
                 completion(true)
                 return
             }
 
             // Build and send the consent network request to Experience Edge
             guard let consentPayload = requestBuilder.getConsentPayload(event) else {
-                Log.debug(label: LOG_TAG,
-                          "processHit - Failed to build the consent payload, dropping current event '\(event.id.uuidString)'.")
+                Log.debug(label: EdgeConstants.LOG_TAG,
+                          "\(SELF_TAG) - Failed to build the consent payload, dropping event '\(event.id.uuidString)'.")
                 completion(true)
                 return
             }
@@ -133,8 +133,8 @@ class EdgeHitProcessor: HitProcessing {
         guard let url = networkService.buildUrl(requestType: edgeHit.getType(),
                                                 configId: edgeHit.configId,
                                                 requestId: edgeHit.requestId) else {
-            Log.debug(label: LOG_TAG,
-                      "sendHit - Failed to build the URL, dropping current request with request id '\(edgeHit.requestId)'.")
+            Log.debug(label: EdgeConstants.LOG_TAG,
+                      "\(SELF_TAG) - Failed to build the URL, dropping request with id '\(edgeHit.requestId)'.")
             completion(true)
             return
         }
@@ -158,17 +158,17 @@ class EdgeHitProcessor: HitProcessing {
         guard let configSharedState =
                 getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                event)?.value else {
-            Log.warning(label: LOG_TAG,
-                        "getEdgeConfigId - Unable to process the event '\(event.id.uuidString)', Configuration shared state is nil.")
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', Configuration is nil.")
             return nil
         }
 
         guard let configId =
                 configSharedState[EdgeConstants.SharedState.Configuration.CONFIG_ID] as? String,
               !configId.isEmpty else {
-            Log.warning(label: LOG_TAG,
-                        "getEdgeConfigId - Unable to process the event '\(event.id.uuidString)' " +
-                            "because of invalid edge.configId in configuration.")
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)' " +
+                            "due to invalid edge.configId in configuration.")
             return nil
         }
 

@@ -15,7 +15,7 @@ import AEPServices
 import Foundation
 
 class RequestBuilder {
-    private let LOG_TAG = "RequestBuilder"
+    private let SELF_TAG = "RequestBuilder"
 
     /// Control character used before each response fragment. Response streaming is enabled when both `recordSeparator` and `lineFeed` are non nil.
     private var recordSeparator: String?
@@ -126,7 +126,7 @@ class RequestBuilder {
             }
 
             guard let wrappedEventData = AnyCodable.from(dictionary: eventData) else {
-                Log.debug(label: LOG_TAG, "Failed to add event data to ExperienceEvent - unable to convert to [String : AnyCodable]")
+                Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to add ExperienceEvent data, unable to convert to [String:AnyCodable]")
                 continue
             }
 

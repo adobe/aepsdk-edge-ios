@@ -16,7 +16,7 @@ import Foundation
 
 /// Updates the state of the  `Edge` extension based on the Collect consent status
 class EdgeState {
-    private let LOG_TAG = "EdgeState"
+    private let SELF_TAG = "EdgeState"
     private(set) var hitQueue: HitQueuing
     private(set) var hasBooted = false
     private(set) var currentCollectConsent: ConsentStatus
@@ -46,13 +46,13 @@ class EdgeState {
         }
 
         if !consentRegistered {
-            Log.warning(label: LOG_TAG, "Consent extension is not registered yet, using default collect status (yes)")
+            Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Consent extension is not registered yet, using default collect status (yes)")
             updateCurrentConsent(status: EdgeConstants.Defaults.COLLECT_CONSENT_YES)
         }
         // else keep consent pending until the consent preferences update event is received
 
         hasBooted = true
-        Log.debug(label: LOG_TAG, "Edge has successfully booted up")
+        Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Edge has successfully booted up")
     }
 
     /// Updates `currentCollectConsent` value and updates the hitQueue state based on it.
