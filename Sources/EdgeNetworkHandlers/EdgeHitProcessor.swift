@@ -43,10 +43,8 @@ class EdgeHitProcessor: HitProcessing {
     }
 
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
-        guard let data = entity.data, let edgeEntity = try? JSONDecoder().decode(EdgeDataEntity.self, from: data)
-        else {
+        guard let edgeEntity = decode(dataEntity: entity) else {
             // can't convert data to hit, unrecoverable error, move to next hit
-            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to decode EdgeDataEntity with id '\(entity.uniqueIdentifier)'.")
             completion(true)
             return
         }
@@ -121,6 +119,17 @@ class EdgeHitProcessor: HitProcessing {
             storeResponsePayloadManager.deleteAllStorePayloads()
             completion(true)
         }
+    }
+
+    private func decode(dataEntity: DataEntity) -> EdgeDataEntity? {
+        guard let data = dataEntity.data, let edgeDataEntity = try? JSONDecoder().decode(EdgeDataEntity.self, from: data)
+        else {
+
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to decode EdgeDataEntity with id '\(dataEntity.uniqueIdentifier)'.")
+            return nil
+        }
+
+        return edgeDataEntity
     }
 
     /// Sends the `edgeHit` to the network service

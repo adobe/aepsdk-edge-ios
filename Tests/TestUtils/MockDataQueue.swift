@@ -15,6 +15,7 @@ import Foundation
 
 /// MockDataQueue - see also AEPServices/Mocks
 public class MockDataQueue: DataQueue {
+    // swiftlint:disable identifier_name
     let queue = ThreadSafeArray<DataEntity>()
 
     public init() {}

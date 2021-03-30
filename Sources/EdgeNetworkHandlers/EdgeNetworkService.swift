@@ -89,12 +89,13 @@ class EdgeNetworkService {
 
         let headers = defaultHeaders.merging(requestHeaders ?? [:]) { _, new in new}
 
-        let networkRequest: NetworkRequest = NetworkRequest(url: url,
-                                                            httpMethod: HttpMethod.post,
-                                                            connectPayload: payload,
-                                                            httpHeaders: headers,
-                                                            connectTimeout: EdgeConstants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT,
-                                                            readTimeout: EdgeConstants.NetworkKeys.DEFAULT_READ_TIMEOUT)
+        let networkRequest: NetworkRequest =
+            NetworkRequest(url: url,
+                           httpMethod: HttpMethod.post,
+                           connectPayload: payload,
+                           httpHeaders: headers,
+                           connectTimeout: EdgeConstants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT,
+                           readTimeout: EdgeConstants.NetworkKeys.DEFAULT_READ_TIMEOUT)
         Log.debug(label: LOG_TAG, "doRequest - Sending request to URL \(url.absoluteString) with headers: \(headers) and body: \n\(payload)")
 
         ServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest) { (connection: HttpConnection) in
@@ -106,48 +107,19 @@ class EdgeNetworkService {
                 return
             }
 
-            if let responseCode = connection.responseCode {
-                if responseCode == HttpResponseCodes.ok.rawValue {
-                    Log.debug(label: self.LOG_TAG, "doRequest - Interact connection to Experience Edge was successful.")
-                    self.handleContent(connection: connection,
-                                       streaming: streaming,
-                                       responseCallback: responseCallback)
-                    responseCallback.onComplete()
-                    completion(true, nil) // successful request, return true
-                } else if responseCode == HttpResponseCodes.noContent.rawValue {
-                    // Successful collect requests do not return content
-                    Log.debug(label: self.LOG_TAG, "doRequest - Collect connection to Experience Edge was successful.")
-                    responseCallback.onComplete()
-                    completion(true, nil) // successful request, return true
-                } else if self.recoverableNetworkErrorCodes.contains(responseCode) {
-                    Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned recoverable error code \(responseCode)")
-                    let retryHeader = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER)
-                    var retryInterval = EdgeConstants.Defaults.RETRY_INTERVAL
-                    // Do not currently support HTTP-date only parsing Ints for now. Konductor will only send back Retry-After as Ints.
-                    if let retryHeader = retryHeader, let retryAfterInterval = TimeInterval(retryHeader) {
-                        retryInterval = retryAfterInterval
-                    }
-                    completion(false, retryInterval) // failed, but recoverable so retry
-                } else if responseCode == HttpResponseCodes.multiStatus.rawValue {
-                    Log.debug(label: self.LOG_TAG,
-                              "doRequest - Connection to Experience Edge was successful but encountered non-fatal errors/warnings. \(responseCode)")
-                    self.handleContent(connection: connection,
-                                       streaming: streaming,
-                                       responseCallback: responseCallback)
-                    responseCallback.onComplete()
-                    completion(true, nil) // non-fatal error, don't retry
-                } else {
-                    Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unrecoverable error code \(responseCode)")
-                    self.handleError(connection: connection, responseCallback: responseCallback)
-                    responseCallback.onComplete()
-                    completion(true, nil) // failed, but unrecoverable, don't retry
-                }
-            } else {
+            guard let responseCode = connection.responseCode else {
                 Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unknown error")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
                 completion(true, nil) // failed, but unrecoverable, don't retry
+                return
             }
+
+            self.handleResponseWith(responseCode: responseCode,
+                                    connection: connection,
+                                    streaming: streaming,
+                                    responseCallback: responseCallback,
+                                    completion: completion)
         }
     }
 
@@ -192,6 +164,59 @@ class EdgeNetworkService {
 
         if let unwrappedErrorJson = errorJson {
             responseCallback.onError(jsonError: unwrappedErrorJson)
+        }
+    }
+
+    /// Handles the network response based on the response code
+    /// - Parameters:
+    ///   - responseCode: response code from the `HttpConnection`
+    ///   - connection: `HttpConnection` containing the network response info
+    ///   - streaming: `Streaming` settings if they were enabled for this response
+    ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
+    ///   - completion: a closure that is invoked with true if the hit should not be retried, false if the hit should be retried, along with the time interval that should elapse b
+    private func handleResponseWith(responseCode: Int,
+                                    connection: HttpConnection,
+                                    streaming: Streaming?,
+                                    responseCallback: ResponseCallback,
+                                    completion: @escaping (Bool, TimeInterval?) -> Void) {
+
+        switch responseCode {
+        case HttpResponseCodes.ok.rawValue:
+            Log.debug(label: self.LOG_TAG, "doRequest - Interact connection to Experience Edge was successful.")
+            self.handleContent(connection: connection,
+                               streaming: streaming,
+                               responseCallback: responseCallback)
+            responseCallback.onComplete()
+            completion(true, nil) // successful request, return true
+        case HttpResponseCodes.noContent.rawValue:
+            // Successful collect requests do not return content
+            Log.debug(label: self.LOG_TAG, "doRequest - Collect connection to Experience Edge was successful.")
+            responseCallback.onComplete()
+            completion(true, nil) // successful request, return true
+        case HttpResponseCodes.multiStatus.rawValue:
+            Log.debug(label: self.LOG_TAG,
+                      "doRequest - Connection to Experience Edge was successful but encountered non-fatal errors/warnings. \(responseCode)")
+            self.handleContent(connection: connection,
+                               streaming: streaming,
+                               responseCallback: responseCallback)
+            responseCallback.onComplete()
+            completion(true, nil) // non-fatal error, don't retry
+        default:
+            if self.recoverableNetworkErrorCodes.contains(responseCode) {
+                Log.debug(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned recoverable error code \(responseCode)")
+                let retryHeader = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER)
+                var retryInterval = EdgeConstants.Defaults.RETRY_INTERVAL
+                // Do not currently support HTTP-date only parsing Ints for now. Konductor will only send back Retry-After as Ints.
+                if let retryHeader = retryHeader, let retryAfterInterval = TimeInterval(retryHeader) {
+                    retryInterval = retryAfterInterval
+                }
+                completion(false, retryInterval) // failed, but recoverable so retry
+            } else {
+                Log.warning(label: self.LOG_TAG, "doRequest - Connection to Experience Edge returned unrecoverable error code \(responseCode)")
+                self.handleError(connection: connection, responseCallback: responseCallback)
+                responseCallback.onComplete()
+                completion(true, nil) // failed, but unrecoverable, don't retry
+            }
         }
     }
 
