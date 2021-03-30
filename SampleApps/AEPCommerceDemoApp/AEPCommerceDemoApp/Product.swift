@@ -19,7 +19,7 @@ struct Product: Equatable {
 }
 
 extension Product {
-    static func ==(lhs: Product, rhs: Product) -> Bool {
+    static func == (lhs: Product, rhs: Product) -> Bool {
         return lhs.productData.sku == rhs.productData.sku
     }
 }

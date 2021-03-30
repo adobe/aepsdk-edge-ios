@@ -88,9 +88,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
 
         // test event gets processed when config shared state is resolved\
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
-        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "123567",
-                                                        "global.privacy": "optedin",
-                                                        "experienceCloud.org": "testOrg@AdobeOrg"])
+        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "123567"])
 
         // verify
         assertNetworkRequestsCount()

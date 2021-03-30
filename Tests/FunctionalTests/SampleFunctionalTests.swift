@@ -48,9 +48,7 @@ class SampleFunctionalTests: FunctionalTestBase {
             waitForRegistration.countDown()
         })
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
-        MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
-                                                        "experienceCloud.org": "testOrg@AdobeOrg",
-                                                        "edge.configId": "12345-example"])
+        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()

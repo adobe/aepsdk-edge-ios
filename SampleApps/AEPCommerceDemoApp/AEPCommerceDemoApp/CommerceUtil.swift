@@ -30,7 +30,7 @@ import Foundation
 /// <a href="https://github.com/adobe/xdm/blob/master/docs/reference/context/experienceevent-commerce.schema.md">Experience Event Commerce Schema</a>
 ///  Mixin for more information.
 
-class CommerceUtil {
+enum CommerceUtil {
 
     private static let logTag: String = "CommerceUtil"
 
@@ -86,7 +86,7 @@ class CommerceUtil {
             if let unwrappedProductItem = productItem {
                 itemsList.append(unwrappedProductItem)
             } else {
-                Log.debug(label: logTag, "sendPurchaseXdmEvent - Cannot create '" + eventTypeCommercePurchases + "' event as given product item is null.")
+                Log.debug(label: logTag, "Cannot create '" + eventTypeCommercePurchases + "' event, product item is null.")
             }
         }
         return itemsList
@@ -104,7 +104,7 @@ class CommerceUtil {
         if let unwrappedProductItem = productItem {
             createAndSendEvent(itemsList: [unwrappedProductItem], eventType: eventTypeCommerceProductViews)
         } else {
-            Log.debug(label: logTag, "sendProductViewXdmEvent - Cannot create '" + eventTypeCommerceProductViews +
+            Log.debug(label: logTag, "Cannot create '" + eventTypeCommerceProductViews +
                         "' event as given product item is null.")
         }
     }
@@ -122,7 +122,7 @@ class CommerceUtil {
         if let unwrappedProductItem = productItem {
             createAndSendEvent(itemsList: [unwrappedProductItem], eventType: eventTypeCommerceProductListAdds)
         } else {
-            Log.debug(label: logTag, "sendProductListAddXdmEvent - Cannot create '" + eventTypeCommerceProductListAdds + "' event as given product item is null.")
+            Log.debug(label: logTag, "Cannot create '" + eventTypeCommerceProductListAdds + "' event, product item is nil.")
         }
     }
 
@@ -139,7 +139,7 @@ class CommerceUtil {
         if let unwrappedProductItem = productItem {
             createAndSendEvent(itemsList: [unwrappedProductItem], eventType: eventTypeCommerceProductListRemovals)
         } else {
-            Log.debug(label: logTag, "sendProductListRemoveXdmEvent - Cannot create '" + eventTypeCommerceProductListRemovals + "' event as given product item is null.")
+            Log.debug(label: logTag, "Cannot create '" + eventTypeCommerceProductListRemovals + "' event, product item is nil.")
         }
     }
 
@@ -152,7 +152,7 @@ class CommerceUtil {
         if let itemsList = prepareProductList() {
             createAndSendEvent(itemsList: itemsList, eventType: eventTypeCommerceCheckouts)
         } else {
-            Log.debug(label: logTag, "sendCheckoutXdmEvent - Cannot create '" + eventTypeCommerceCheckouts + "' event as given product item is null.")
+            Log.debug(label: logTag, "Cannot create '" + eventTypeCommerceCheckouts + "' event, product item is nil.")
         }
     }
 
@@ -164,7 +164,7 @@ class CommerceUtil {
         if let itemsList = prepareProductList() {
             createAndSendEvent(itemsList: itemsList, eventType: eventTypeCommerceProductListRemovals)
         } else {
-            Log.debug(label: logTag, "sendCartClearXdmEvent - Cannot create '" + eventTypeCommerceProductListRemovals + "' event as given product item is null.")
+            Log.debug(label: logTag, "Cannot create '" + eventTypeCommerceProductListRemovals + "' event, product item is nil.")
         }
     }
 

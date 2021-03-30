@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
 import AEPEdge
 import AEPEdgeConsent
 import AEPEdgeIdentity
@@ -25,28 +24,6 @@ struct ContentView: View {
         VStack {
             Text("ECID:")
             Text(ecid)
-            HStack {
-                Text("Privacy: ")
-                Button(action: {
-                    MobileCore.setPrivacyStatus(PrivacyStatus.optedIn)
-                    getECID()
-                }) {
-                    Text("in")
-                }
-                Button(action: {
-                    MobileCore.setPrivacyStatus(PrivacyStatus.optedOut)
-                    getECID()
-                }) {
-                    Text("out")
-                }
-                Button(action: {
-                    MobileCore.setPrivacyStatus(PrivacyStatus.unknown)
-                    getECID()
-                }) {
-                    Text("unknown")
-                }
-            }.padding()
-
             HStack {
                 Text("Collect consent: ")
                 Button(action: {
@@ -77,6 +54,8 @@ struct ContentView: View {
             }) {
                 Text("Ping to ExEdge")
             }
+        }.onAppear {
+            getECID()
         }
     }
 
