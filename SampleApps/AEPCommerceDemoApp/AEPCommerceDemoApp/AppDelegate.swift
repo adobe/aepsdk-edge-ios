@@ -27,9 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         MobileCore.setLogLevel(.trace)
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
-
-        AEPAssurance.registerExtension()
-        ACPCore.registerExtensions([Identity.self, Edge.self])
+        MobileCore.registerExtensions([Identity.self, Edge.self, AEPAssurance.self])
 
         return true
     }
