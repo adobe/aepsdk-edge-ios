@@ -65,7 +65,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     @available(iOS 13.0, *)
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         // to note : this method is not called when an app not in memory (forceclosed) is opened with deeplink
-        AEPAssurance.startSession(URLContexts.first!.url)
+        if let url = URLContexts.first?.url {
+            AEPAssurance.startSession(url)
+        }
     }
 
 }

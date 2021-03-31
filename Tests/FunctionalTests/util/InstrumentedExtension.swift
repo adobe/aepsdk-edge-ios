@@ -15,7 +15,7 @@ import AEPServices
 import XCTest
 
 /// Instrumented extension that registers a wildcard listener for intercepting events in current session. Use it along with `FunctionalTestBase`
-class InstrumentedExtension: Extension {
+class InstrumentedExtension: NSObject, Extension {
     private static let logTag = "InstrumentedExtension"
     var name = "com.adobe.InstrumentedExtension"
     var friendlyName = "InstrumentedExtension"

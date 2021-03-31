@@ -28,32 +28,36 @@ class RequestBuilderTests: XCTestCase {
         ServiceProvider.shared.namedKeyValueService.remove(collectionName: testDataStoreName, key: "storePayloads")
     }
 
-    func testGetRequestPayload_allParameters_verifyMetadata() {
+    func testGetPayloadWithExperienceEvents_allParameters_verifyMetadata() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         let event = Event(name: "Request Test",
                           type: "type",
                           source: "source",
                           data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getRequestPayload([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         XCTAssertEqual("A", requestPayload?.meta?.konductorConfig?.streaming?.recordSeparator)
         XCTAssertEqual("B", requestPayload?.meta?.konductorConfig?.streaming?.lineFeed)
         XCTAssertTrue(requestPayload?.meta?.konductorConfig?.streaming?.enabled ?? false)
-        guard let ecid = requestPayload?.xdm?.identityMap?.getItemsFor(namespace: "ECID")?[0] else {
+
+        guard let requestIdentityMap = requestPayload?.xdm?["identityMap"]?.dictionaryValue,
+              let ecidArr = requestIdentityMap["ECID"] as? [Any],
+              let ecidDict = ecidArr.first as? [String: Any],
+              let ecid = ecidDict["id"] as? String else {
             XCTFail("ECID missing")
             return
         }
-        XCTAssertEqual("ecid", ecid.id)
+        XCTAssertEqual("ecid", ecid)
     }
 
-    func testGetRequestPayload_withEventXdm_verifyEventId_verifyTimestamp() {
+    func testGetPayloadWithExperienceEvents_withEventXdm_verifyEventId_verifyTimestamp() {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         var events: [Event] = []
 
@@ -67,7 +71,7 @@ class RequestBuilderTests: XCTestCase {
                             source: "source",
                             data: ["xdm": ["environment": ["type": "widget"]]]))
 
-        let requestPayload = request.getRequestPayload(events)
+        let requestPayload = request.getPayloadWithExperienceEvents(events)
 
         let flattenEvent0: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
         let flattenEvent1: [String: Any] = flattenDictionary(dict: requestPayload?.events?[1]["xdm"]?.dictionaryValue ?? [:])
@@ -80,42 +84,42 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertEqual(timestampToISO8601(events[1].timestamp), flattenEvent1["timestamp"] as? String)
     }
 
-    func testGetRequestPayload_withStorePayload_responseContainsStateEntries() {
+    func testGetPayloadWithExperienceEvents_withStorePayload_responseContainsStateEntries() {
         let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))])
 
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         let event = Event(name: "Request Test",
                           type: "type",
                           source: "source",
                           data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getRequestPayload([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         XCTAssertEqual("key", requestPayload?.meta?.state?.entries?[0].key)
         XCTAssertEqual(3600.0, requestPayload?.meta?.state?.entries?[0].maxAge)
         XCTAssertEqual("value", requestPayload?.meta?.state?.entries?[0].value)
     }
 
-    func testGetRequestPayload_withoutStorePayload_responseDoesNotContainsStateEntries() {
+    func testGetPayloadWithExperienceEvents_withoutStorePayload_responseDoesNotContainsStateEntries() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
-        request.experienceCloudId = "ecid"
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
 
         let event = Event(name: "Request Test",
                           type: "type",
                           source: "source",
                           data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getRequestPayload([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         XCTAssertNil(requestPayload?.meta?.state)
     }
 
-    func testGetRequestPayload_withDatasetId_responseContainsCollectMeta() {
+    func testGetPayloadWithExperienceEvents_withDatasetId_responseContainsCollectMeta() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
 
         let event = Event(name: "Request Test",
@@ -125,7 +129,7 @@ class RequestBuilderTests: XCTestCase {
                                  "xdm": ["application": ["name": "myapp"]],
                                  "datasetId": "customDatasetId"])
 
-        let requestPayload = request.getRequestPayload([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         let flattenEventMeta: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["meta"]?.dictionaryValue ?? [:])
         XCTAssertEqual(1, flattenEventMeta.count)
@@ -137,7 +141,7 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertNil(requestPayload?.meta?.state)
     }
 
-    func testGetRequestPayload_withoutDatasetId_responseDoesNotContainCollectMeta() {
+    func testGetPayloadWithExperienceEvents_withoutDatasetId_responseDoesNotContainCollectMeta() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
 
         let event = Event(name: "Request Test",
@@ -146,14 +150,14 @@ class RequestBuilderTests: XCTestCase {
                           data: ["data": ["key": "value"],
                                  "xdm": ["application": ["name": "myapp"]]])
 
-        let requestPayload = request.getRequestPayload([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         XCTAssertNil(requestPayload?.events?[0]["meta"])
         XCTAssertNotNil(requestPayload?.events?[0]["xdm"])
         XCTAssertNotNil(requestPayload?.events?[0]["data"])
     }
 
-    func testGetRequestPayload_withNilOrEmptyDatasetId_responseDoesNotContainCollectMeta() {
+    func testGetPayloadWithExperienceEvents_withNilOrEmptyDatasetId_responseDoesNotContainCollectMeta() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
 
         let event1 = Event(name: "Request Test1",
@@ -177,7 +181,7 @@ class RequestBuilderTests: XCTestCase {
                            source: "source",
                            data: eventData)
 
-        let requestPayload = request.getRequestPayload([event1, event2, event3])
+        let requestPayload = request.getPayloadWithExperienceEvents([event1, event2, event3])
 
         XCTAssertEqual(3, requestPayload?.events?.count)
         XCTAssertNil(requestPayload?.events?[0]["meta"])
@@ -196,7 +200,7 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertNotNil(requestPayload?.events?[2]["data"])
     }
 
-    func testGetRequestPayload_withQuery_responseContainsQuery() {
+    func testGetPayloadWithExperienceEvents_withQuery_responseContainsQuery() {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
 
         let event = Event(name: "Request Test",
@@ -204,8 +208,29 @@ class RequestBuilderTests: XCTestCase {
                           source: "source",
                           data: ["query": ["key": "value"]])
 
-        let requestPayload = request.getRequestPayload([event])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
         XCTAssertNotNil(requestPayload?.events?[0]["query"])
         XCTAssertEqual(requestPayload?.events?[0]["query"]?.dictionaryValue?["key"] as? String, "value" )
+    }
+
+    private func buildIdentityMap() -> [String: Any]? {
+        guard let identityMapData = """
+        {
+            "identityMap": {
+              "ECID" : [
+                {
+                  "authenticationState" : "ambiguous",
+                  "id" : "ecid",
+                  "primary" : false
+                }
+              ]
+            }
+        }
+        """.data(using: .utf8) else {
+            XCTFail("Failed to convert json string to data")
+            return nil
+        }
+        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        return identityMap
     }
 }
