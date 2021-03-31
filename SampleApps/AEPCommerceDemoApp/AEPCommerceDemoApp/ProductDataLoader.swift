@@ -12,7 +12,7 @@
 
 import Foundation
 
-public class ProductDataLoader {
+class ProductDataLoader {
 
     var productData = [ProductData]()
 

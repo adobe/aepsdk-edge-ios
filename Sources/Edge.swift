@@ -16,7 +16,7 @@ import Foundation
 
 @objc(AEPMobileEdge)
 public class Edge: NSObject, Extension {
-    private let LOG_TAG = "Edge" // Tag for logging
+    private let SELF_TAG = "Edge"
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler?
     internal var state: EdgeState?
@@ -92,7 +92,7 @@ public class Edge: NSObject, Extension {
         guard !shouldIgnore(event: event) else { return }
 
         guard let data = event.data, !data.isEmpty else {
-            Log.trace(label: LOG_TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Event with id \(event.id.uuidString) contained no data, ignoring.")
             return
         }
 
@@ -100,8 +100,8 @@ public class Edge: NSObject, Extension {
         guard let identityState =
                 getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
                                   event: event)?.value else {
-            Log.warning(label: LOG_TAG,
-                        "handleExperienceEventRequest - Unable to process the event '\(event.id.uuidString)', " +
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', " +
                             "Identity shared state is nil.")
             return // drop current event
         }
@@ -110,11 +110,11 @@ public class Edge: NSObject, Extension {
                                         identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
-            Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to encode EdgeDataEntity for event with id: '\(event.id.uuidString)'.")
             return
         }
 
-        Log.debug(label: LOG_TAG, "handleExperienceEventRequest - Queuing event with id \(event.id.uuidString).")
+        Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Queuing event with id \(event.id.uuidString).")
         let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
         state?.hitQueue.queue(entity: entity)
     }
@@ -123,7 +123,7 @@ public class Edge: NSObject, Extension {
     /// - Parameter event: the consent preferences response event
     func handleConsentPreferencesUpdate(_ event: Event) {
         guard let data = event.data, !data.isEmpty else {
-            Log.trace(label: LOG_TAG, "Event with id \(event.id.uuidString) contained no data, ignoring.")
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Consent preferences event \(event.id.uuidString) contained no data, ignoring.")
             return
         }
 
@@ -136,7 +136,7 @@ public class Edge: NSObject, Extension {
         let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
-            Log.debug(label: LOG_TAG, "handleIdentitiesReset - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to encode EdgeDataEntity for event with id: '\(event.id.uuidString)'.")
             return
         }
 
@@ -149,7 +149,7 @@ public class Edge: NSObject, Extension {
     /// - Parameter event: current event to process
     func handleConsentUpdate(_ event: Event) {
         guard let data = event.data, !data.isEmpty else {
-            Log.trace(label: LOG_TAG, "handleConsentUpdate - Event with id \(event.id.uuidString) contained no data, ignoring.")
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Consent update request event \(event.id.uuidString) contained no data, ignoring.")
             return
         }
 
@@ -157,8 +157,8 @@ public class Edge: NSObject, Extension {
         guard let identityState =
                 getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
                                   event: event)?.value else {
-            Log.warning(label: LOG_TAG,
-                        "handleConsentUpdate - Unable to process the event '\(event.id.uuidString)', " +
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', " +
                             "Identity shared state is nil.")
             return // drop current event
         }
@@ -167,7 +167,7 @@ public class Edge: NSObject, Extension {
                                         identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
-            Log.debug(label: LOG_TAG, "handleConsentUpdate - Failed to encode EdgeDataEntity with id: '\(event.id.uuidString)'.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to encode EdgeDataEntity for event with id: '\(event.id.uuidString)'.")
             return
         }
 
@@ -183,7 +183,7 @@ public class Edge: NSObject, Extension {
     private func shouldIgnore(event: Event) -> Bool {
         let consentForEvent = getConsentForEvent(event)
         if consentForEvent == ConsentStatus.no {
-            Log.debug(label: LOG_TAG, "Ignoring event with id \(event.id.uuidString) due to collect consent setting (n) .")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Ignoring event with id \(event.id.uuidString) due to collect consent setting (n).")
             return true
         }
 
@@ -202,12 +202,12 @@ public class Edge: NSObject, Extension {
     /// Sets up the `PersistentHitQueue` to handle `EdgeHit`s
     private func setupHitQueue() -> HitQueuing? {
         guard let dataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: name) else {
-            Log.error(label: "\(name):\(#function)", "Failed to create Data Queue, Edge could not be initialized")
+            Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to create DataQueue, Edge could not be initialized")
             return nil
         }
 
         guard let networkResponseHandler = networkResponseHandler else {
-            Log.warning(label: LOG_TAG, "Failed to create Data Queue, the NetworkResponseHandler is not initialized")
+            Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to create DataQueue, the NetworkResponseHandler is not initialized")
             return nil
         }
 
@@ -224,7 +224,7 @@ public class Edge: NSObject, Extension {
     private func getConsentForEvent(_ event: Event) -> ConsentStatus? {
         guard let consentXDMSharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME,
                                                             event: event)?.value else {
-            Log.debug(label: LOG_TAG, "Consent XDM Shared state is unavailable for event '\(event.id)', using currect consent.")
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Consent XDM Shared state is unavailable for event '\(event.id)', using current consent.")
             return state?.currentCollectConsent
         }
 
