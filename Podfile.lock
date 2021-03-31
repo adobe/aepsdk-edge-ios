@@ -16,7 +16,7 @@ PODS:
     - AEPServices (= 3.1.0)
   - AEPEdgeConsent (1.0.0-alpha.1):
     - AEPCore
-  - AEPEdgeIdentity (1.0.0-alpha.1):
+  - AEPEdgeIdentity (1.0.0):
     - AEPCore
   - AEPIdentity (3.1.0):
     - AEPCore (= 3.1.0)
@@ -74,25 +74,25 @@ CHECKOUT OPTIONS:
     :commit: deec3800bce117f7f760eb6644af4559489c2aae
     :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
   AEPCore:
-    :commit: 5aaf3a0a916bc7d2de4d44b1563dae4c9056395f
+    :commit: d311c2936684aac1b0430b1e68e92984255e6d43
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPEdgeConsent:
     :commit: c41f60f466162ced7873c90edeb1dcf5deb79fde
     :git: "git@github.com:adobe/aepsdk-edgeconsent-ios.git"
   AEPEdgeIdentity:
-    :commit: 29d215e7412da123dfd9cd2b648eb6f81bcd7a7a
+    :commit: 5a12ac1e0f6ff85c9649de6fa34b9327c62cdfdf
     :git: "git@github.com:adobe/aepsdk-edgeidentity-ios.git"
   AEPIdentity:
-    :commit: 5aaf3a0a916bc7d2de4d44b1563dae4c9056395f
+    :commit: d311c2936684aac1b0430b1e68e92984255e6d43
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPLifecycle:
-    :commit: 5aaf3a0a916bc7d2de4d44b1563dae4c9056395f
+    :commit: d311c2936684aac1b0430b1e68e92984255e6d43
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPServices:
-    :commit: 5aaf3a0a916bc7d2de4d44b1563dae4c9056395f
+    :commit: d311c2936684aac1b0430b1e68e92984255e6d43
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPSignal:
-    :commit: 5aaf3a0a916bc7d2de4d44b1563dae4c9056395f
+    :commit: d311c2936684aac1b0430b1e68e92984255e6d43
     :git: https://github.com/adobe/aepsdk-core-ios.git
 
 SPEC CHECKSUMS:
@@ -100,7 +100,7 @@ SPEC CHECKSUMS:
   AEPAssurance: c9c21b7e57bf993db210766631db2ef3732d4fa4
   AEPCore: 026568b04d8c302ad801a6b4ed6ec3c160817ef6
   AEPEdgeConsent: e252fc03f4adeb236832a86dc2f030716b38860f
-  AEPEdgeIdentity: f2ad204531f9e9b6494a14ac50338d690c07183b
+  AEPEdgeIdentity: 93dc2d415e438067bc30dc8cf587d80e7797733b
   AEPIdentity: 2ca611ed7f2bf081657b311cbffb210900558fa8
   AEPLifecycle: 59b2de8c96a93647a258a982f1d5b2e16a425360
   AEPRulesEngine: 8bbc694fce6900cd33b2496c7d4b33ee2eeffc46
