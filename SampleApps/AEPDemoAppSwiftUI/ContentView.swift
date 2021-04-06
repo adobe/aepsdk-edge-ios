@@ -21,7 +21,6 @@ struct ContentView: View {
     // swiftlint:disable multiple_closures_with_trailing_closure
     @State private var ecid: String = ""
     @State private var dataContent: String = "data is displayed here"
-    
     var body: some View {
         VStack {
             VStack {
@@ -48,21 +47,21 @@ struct ContentView: View {
                     Spacer()
                     Button("Yes", action: {
                         Consent.update(with: ["consents": ["collect": ["val": "y"]]])
-                        getConsent()
+                        self.getConsents()
                     })
                     Spacer()
                     Button("No", action: {
                         Consent.update(with: ["consents": ["collect": ["val": "n"]]])
-                        getConsent()
+                        self.getConsents()
                     })
                     Spacer()
                     Button("Pending", action: {
                         Consent.update(with: ["consents": ["collect": ["val": "p"]]])
-                        getConsent()
+                        self.getConsents()
                     })
                     Spacer()
-                    Button("Get Consent", action: {
-                        getConsent()
+                    Button("Get Consents", action: {
+                        self.getConsents()
                     })
                     Spacer()
                 }.padding()
@@ -72,15 +71,15 @@ struct ContentView: View {
                 HStack(alignment: .top) {
                     Spacer()
                     Button("Update", action: {
-                        updateIdentities()
+                        self.updateIdentities()
                     })
                     Spacer()
                     Button("Remove", action: {
-                        removeIdentities()
+                        self.removeIdentities()
                     })
                     Spacer()
-                    Button("Get Identity", action: {
-                        getIdentities()
+                    Button("Get Identities", action: {
+                        self.getIdentities()
                     })
                     Spacer()
                 }.padding()
@@ -103,7 +102,7 @@ struct ContentView: View {
                 Text(dataContent).frame(maxWidth: .infinity, maxHeight: .infinity)
             }.background(Color(red: 0.97, green: 0.97, blue: 0.97, opacity: 1))
         }.onAppear {
-            getECID()
+            self.getECID()
         }
     }
     
@@ -149,12 +148,12 @@ struct ContentView: View {
         }
     }
     
-    private func getConsent() {
+    private func getConsents() {
         Consent.getConsents { consents, error in
             guard error == nil, let consents = consents else { return }
             guard let jsonData = try? JSONSerialization.data(withJSONObject: consents, options: .prettyPrinted) else { return }
             guard let jsonStr = String(data: jsonData, encoding: .utf8) else { return }
-            dataContent = jsonStr
+            self.dataContent = jsonStr
         }
     }
     
