@@ -8,38 +8,38 @@ workspace 'AEPEdge'
 project 'AEPEdge.xcodeproj'
 
 target 'AEPEdge' do
-  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
+  pod 'AEPCore'
 end
 
 target 'UnitTests' do
-  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
+  pod 'AEPCore'
 end
 
 target 'FunctionalTests' do
-  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPEdgeIdentity', :git => 'git@github.com:adobe/aepsdk-edgeidentity-ios.git', :branch => 'staging'
-  pod 'AEPEdgeConsent', :git => 'git@github.com:adobe/aepsdk-edgeconsent-ios.git', :branch => 'staging'
+  pod 'AEPCore'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPEdgeConsent'
 end
 
 target 'AEPDemoAppSwiftUI' do
-  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPLifecycle', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPIdentity', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPSignal', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPEdgeIdentity', :git => 'git@github.com:adobe/aepsdk-edgeidentity-ios.git', :branch => 'staging'
-  pod 'AEPEdgeConsent', :git => 'git@github.com:adobe/aepsdk-edgeconsent-ios.git', :branch => 'staging'
+  pod 'AEPCore'
+  pod 'AEPServices'
+  pod 'AEPLifecycle'
+  pod 'AEPIdentity'
+  pod 'AEPSignal'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPEdgeConsent'
   pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
   pod 'AEPAssurance'
 end
 
 target 'AEPCommerceDemoApp' do
-  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPLifecycle', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPIdentity', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPSignal', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'
-  pod 'AEPEdgeIdentity', :git => 'git@github.com:adobe/aepsdk-edgeidentity-ios.git', :branch => 'staging'
+  pod 'AEPCore'
+  pod 'AEPServices'
+  pod 'AEPLifecycle'
+  pod 'AEPIdentity'
+  pod 'AEPSignal'
+  pod 'AEPEdgeIdentity'
   pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
   pod 'AEPAssurance'
 end
