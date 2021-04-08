@@ -19,42 +19,42 @@ jobs:
     steps:
       - checkout
 
-      # restore pods related caches
-      - restore_cache:
-          keys:
-            - 1-gems-{{ checksum "Gemfile.lock" }}
-
-      # make sure we're on the right version of cocoapods
-      - run:
-          name: Verify Cocoapods Version
-          command: bundle check || bundle install --path vendor/bundle
-
-      # save cocoapods version gem data
-      - save_cache:
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
-
-      # restore pods related caches
-      - restore_cache:
-          keys:
-            - cocoapods-cache-v4-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
-            - cocoapods-cache-v4-{{ arch }}-{{ .Branch }}
-            - cocoapods-cache-v4
+      # # restore pods related caches
+      # - restore_cache:
+      #     keys:
+      #       - 1-gems-{{ checksum "Gemfile.lock" }}
+      #
+      # # make sure we're on the right version of cocoapods
+      # - run:
+      #     name: Verify Cocoapods Version
+      #     command: bundle check || bundle install --path vendor/bundle
+      #
+      # # save cocoapods version gem data
+      # - save_cache:
+      #     key: 1-gems-{{ checksum "Gemfile.lock" }}
+      #     paths:
+      #       - vendor/bundle
+      #
+      # # restore pods related caches
+      # - restore_cache:
+      #     keys:
+      #       - cocoapods-cache-v4-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
+      #       - cocoapods-cache-v4-{{ arch }}-{{ .Branch }}
+      #       - cocoapods-cache-v4
 
       # install CocoaPods - using default CocoaPods version, not the bundle
       - run:
           name: Repo Update & Install CocoaPods
           command: make ci-pod-install
 
-      # save pods related files
-      - save_cache:
-          name: Saving CocoaPods Cache
-          key: cocoapods-cache-v4-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
-          paths:
-            - ./Pods
-            - ./SampleApps/AEPCommerceDemoApp/Pods
-            - ~/.cocoapods
+      # # save pods related files
+      # - save_cache:
+      #     name: Saving CocoaPods Cache
+      #     key: cocoapods-cache-v4-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
+      #     paths:
+      #       - ./Pods
+      #       - ./SampleApps/AEPCommerceDemoApp/Pods
+      #       - ~/.cocoapods
 
       - run:
           name: Install SwiftLint
