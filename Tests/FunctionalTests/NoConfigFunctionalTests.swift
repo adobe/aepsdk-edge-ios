@@ -24,8 +24,8 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false // fail so nil checks stop execution
         FunctionalTestBase.debugEnabled = false
 
-        // 2 event hub shared states for registered extensions (TestableEdge and InstrumentedExtension registered in FunctionalTestBase)
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 2)
+        // 1 event hub shared state for registered extensions (TestableEdge and InstrumentedExtension registered in FunctionalTestBase)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 1)
 
         MobileCore.registerExtensions([TestableEdge.self])
 
