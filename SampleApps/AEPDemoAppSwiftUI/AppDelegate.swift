@@ -12,8 +12,8 @@
 
 import AEPCore
 import AEPEdge
-import AEPIdentity
-import AEPServices
+import AEPEdgeConsent
+import AEPEdgeIdentity
 import Compression
 import UIKit
 
@@ -24,9 +24,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        MobileCore.setLogLevel(.trace)
+        MobileCore.setLogLevel(.debug)
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
-        MobileCore.registerExtensions([Identity.self, Edge.self])
+        MobileCore.registerExtensions([Identity.self, Edge.self, Consent.self])
         return true
     }
 

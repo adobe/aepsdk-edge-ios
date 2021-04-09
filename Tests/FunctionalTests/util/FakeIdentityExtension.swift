@@ -15,15 +15,16 @@ import XCTest
 
 /// Extension used to 'fake' an Identity extension and allows tests to clear and set the Identity shared state. Use it along with `FunctionalTestBase`
 /// Cannot be used along with another Identity Extension which is registered with ACPCore.
-class FakeIdentityExtension: Extension {
+class FakeIdentityExtension: NSObject, Extension {
     private static let logTag = "FakeIdentityExtension"
 
     private static let eventType = "com.adobe.fakeidentity"
     private static let eventSetState = "com.adobe.request.setstate"
+    private static let eventSetXDMState = "com.adobe.request.setxdmstate"
     private static let eventClearState = "com.adobe.request.clearstate"
     private static let eventResponse = "com.adobe.response"
 
-    var name: String = "com.adobe.module.identity"
+    var name: String = "com.adobe.edge.identity"
 
     var friendlyName: String = "Identity"
 
@@ -36,6 +37,7 @@ class FakeIdentityExtension: Extension {
     func onRegistered() {
         registerListener(type: FakeIdentityExtension.eventType, source: FakeIdentityExtension.eventSetState, listener: processRequest)
         registerListener(type: FakeIdentityExtension.eventType, source: FakeIdentityExtension.eventClearState, listener: processRequest)
+        registerListener(type: FakeIdentityExtension.eventType, source: FakeIdentityExtension.eventSetXDMState, listener: processRequest)
     }
 
     func onUnregistered() {}
@@ -85,6 +87,26 @@ class FakeIdentityExtension: Extension {
         _ = latch.await(timeout: 5)
     }
 
+    /// Set a new XDM shared state for this `FakeIdentityExtension`. Setting an XDM shared state will trigger a Hub Shared State event
+    /// from the EventHub just like any other extension.
+    /// Calls `ACPExtensionApi.setSharedEventState` to perform the operation.
+    /// This is a synchronous call, which waits for a response from the extension before returning.
+    /// - Parameter state: the state to set
+    public static func setXDMSharedState(state: [String: Any]) {
+
+        let event = Event(name: "Set Fake Identity XDM State",
+                          type: FakeIdentityExtension.eventType,
+                          source: FakeIdentityExtension.eventSetXDMState,
+                          data: state)
+
+        let latch = CountDownLatch(1)
+        MobileCore.dispatch(event: event, responseCallback: { _ in
+            latch.countDown()
+        })
+
+        _ = latch.await(timeout: 5)
+    }
+
     // MARK: Event Processors
 
     /// Processes events received from the event listener. If the event is handled, a paired response event is dispatched to notify the caller
@@ -100,6 +122,10 @@ class FakeIdentityExtension: Extension {
         } else if event.source == FakeIdentityExtension.eventSetState {
             guard let eventData = event.data, !eventData.isEmpty  else { return }
             runtime.createSharedState(data: eventData, event: event)
+            doDispatch = true
+        } else if event.source == FakeIdentityExtension.eventSetXDMState {
+            guard let eventData = event.data, !eventData.isEmpty  else { return }
+            runtime.createXDMSharedState(data: eventData, event: event)
             doDispatch = true
         }
 

@@ -12,7 +12,7 @@
 
 import AEPCore
 import AEPEdge
-import AEPIdentity
+import AEPEdgeIdentity
 import AEPServices
 import Foundation
 import XCTest
@@ -34,15 +34,12 @@ class SampleFunctionalTests: FunctionalTestBase {
         super.setUp()
         continueAfterFailure = false
 
-        // hub shared state update for 2 extension versions (InstrumentedExtension (registered in FunctionalTestBase), Identity, Edge), Identity and Config shared state updates
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
+        // hub shared state update for 1 extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge), IdentityEdge XDM shared state and Config shared state updates
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 3)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
-
-        // expectations for Identity force sync
-        setExpectationEvent(type: FunctionalTestConst.EventType.IDENTITY, source: FunctionalTestConst.EventSource.RESPONSE_IDENTITY, expectedCount: 2)
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
@@ -51,9 +48,7 @@ class SampleFunctionalTests: FunctionalTestBase {
             waitForRegistration.countDown()
         })
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
-        MobileCore.updateConfigurationWith(configDict: ["global.privacy": "optedin",
-                                                        "experienceCloud.org": "testOrg@AdobeOrg",
-                                                        "edge.configId": "12345-example"])
+        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()

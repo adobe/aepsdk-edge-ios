@@ -16,9 +16,9 @@ import Foundation
 enum EdgeConstants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
-    static let EXTENSION_VERSION = "1.0.0"
+    static let EXTENSION_VERSION = "1.1.0"
     static let FRIENDLY_NAME = "AEPEdge"
-    static let DEFAULT_PRIVACY_STATUS = PrivacyStatus.unknown
+    static let LOG_TAG = FRIENDLY_NAME
 
     enum EventSource {
         static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
@@ -34,18 +34,21 @@ enum EdgeConstants {
         static let RETRY_INTERVAL: TimeInterval = 5
         static let RECORD_SEPARATOR: String = "\u{0000}"
         static let LINE_FEED: String = "\n"
+        static let COLLECT_CONSENT_YES = ConsentStatus.yes // used if Consent extension is not registered
+        static let COLLECT_CONSENT_PENDING = ConsentStatus.pending // used when Consent encoding failed or the value different than y/n
     }
 
     enum EventDataKeys {
         static let EDGE_REQUEST_ID = "requestId"
         static let REQUEST_EVENT_ID = "requestEventId"
         static let DATASET_ID = "datasetId"
-        static let GLOBAL_PRIVACY = "global.privacy"
+        static let CONSENTS = "consents"
     }
 
     enum DataStoreKeys {
         static let STORE_NAME = "AEPEdge"
         static let STORE_PAYLOADS = "storePayloads"
+        static let RESET_IDENTITIES_DATE = "reset.identities.date"
     }
 
     enum SharedState {
@@ -58,8 +61,8 @@ enum EdgeConstants {
         }
 
         enum Identity {
-            static let STATE_OWNER_NAME = "com.adobe.module.identity"
-            static let ECID = "mid"
+            static let STATE_OWNER_NAME = "com.adobe.edge.identity"
+            static let IDENTITY_MAP = "identityMap"
         }
         enum Assurance {
             static let STATE_OWNER_NAME = "com.adobe.assurance"
@@ -68,6 +71,18 @@ enum EdgeConstants {
 
         enum Lifecycle {
             static let STATE_OWNER_NAME = "com.adobe.module.lifecycle"
+        }
+
+        enum Consent {
+            static let SHARED_OWNER_NAME = "com.adobe.edge.consent"
+            static let CONSENTS = "consents"
+            static let COLLECT = "collect"
+            static let VAL = "val"
+        }
+
+        enum Hub {
+            static let SHARED_OWNER_NAME = "com.adobe.module.eventhub"
+            static let EXTENSIONS = "extensions"
         }
     }
 
@@ -93,6 +108,11 @@ enum EdgeConstants {
                 static let NAMESPACE = "namespace"
             }
         }
+    }
+
+    enum JsonValues {
+        static let CONSENT_STANDARD = "Adobe"
+        static let CONSENT_VERSION = "2.0"
     }
 
     enum NetworkKeys {

@@ -15,7 +15,7 @@ import AEPServices
 import Foundation
 
 class RequestBuilder {
-    private let LOG_TAG = "RequestBuilder"
+    private let SELF_TAG = "RequestBuilder"
 
     /// Control character used before each response fragment. Response streaming is enabled when both `recordSeparator` and `lineFeed` are non nil.
     private var recordSeparator: String?
@@ -23,8 +23,8 @@ class RequestBuilder {
     /// Control character used at the end of each response fragment. Response streaming is enabled when both `recordSeparator` and `lineFeed` are non nil.
     private var lineFeed: String?
 
-    /// The Experience Cloud ID to be sent with this request
-    var experienceCloudId: String?
+    /// XDM payloads to be attached to the request
+    var xdmPayloads: [String: AnyCodable] = [:]
 
     /// Data store manager for retrieving store response payloads for `StateMetadata`
     private let storeResponsePayloadManager: StoreResponsePayloadManager
@@ -50,7 +50,7 @@ class RequestBuilder {
     /// - Parameter events: List of `Event` objects. Each event is expected to contain a serialized `ExperienceEvent`
     /// encoded in the `Event.data` property.
     /// - Returns: A `EdgeRequest` object or nil if the events list is empty
-    func getRequestPayload(_ events: [Event]) -> EdgeRequest? {
+    func getPayloadWithExperienceEvents(_ events: [Event]) -> EdgeRequest? {
         guard !events.isEmpty else { return nil }
 
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
@@ -61,16 +61,33 @@ class RequestBuilder {
                                               state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads))
 
         let experienceEvents = extractExperienceEvents(events)
-        var contextData: RequestContextData?
 
-        // set ECID if available
-        if let ecid = experienceCloudId {
-            var identityMap = IdentityMap()
-            identityMap.addItem(namespace: EdgeConstants.JsonKeys.ECID, id: ecid)
-            contextData = RequestContextData(identityMap: identityMap)
+        return EdgeRequest(meta: requestMetadata, xdm: xdmPayloads, events: experienceEvents)
+    }
+
+    /// Builds the request payload to update the consent.
+    /// - Parameter event: The Consent Update event containing XDM formatted data
+    /// - Returns: A `EdgeConsentUpdate` object or nil if the events list is empty
+    func getConsentPayload(_ event: Event) -> EdgeConsentUpdate? {
+        guard event.data != nil,
+              let consents = event.data?[EdgeConstants.EventDataKeys.CONSENTS] as? [String: Any] else { return nil }
+
+        // set IdentityMap if available
+        var identityMap = [String: AnyCodable]()
+        if let identityMapDict = xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] {
+            identityMap = AnyCodable.from(dictionary: identityMapDict.dictionaryValue) ?? [:]
         }
 
-        return EdgeRequest(meta: requestMetadata, xdm: contextData, events: experienceEvents)
+        // set streaming metadata
+        let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
+        let konductorConfig = KonductorConfig(streaming: streamingMetadata)
+        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
+
+        return EdgeConsentUpdate(meta: requestMetadata,
+                                 identityMap: identityMap,
+                                 consent: [EdgeConsentPayload(standard: EdgeConstants.JsonValues.CONSENT_STANDARD,
+                                                              version: EdgeConstants.JsonValues.CONSENT_VERSION,
+                                                              value: AnyCodable.from(dictionary: consents))])
     }
 
     /// Extract the `ExperienceEvent` from each `Event` and return as a list of maps.
@@ -109,7 +126,7 @@ class RequestBuilder {
             }
 
             guard let wrappedEventData = AnyCodable.from(dictionary: eventData) else {
-                Log.debug(label: LOG_TAG, "Failed to add event data to ExperienceEvent - unable to convert to [String : AnyCodable]")
+                Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to add ExperienceEvent data, unable to convert to [String:AnyCodable]")
                 continue
             }
 

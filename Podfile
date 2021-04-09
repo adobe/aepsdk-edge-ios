@@ -9,30 +9,26 @@ project 'AEPEdge.xcodeproj'
 
 target 'AEPEdge' do
   pod 'AEPCore'
-  pod 'AEPServices'
-  pod 'AEPRulesEngine'
 end
 
 target 'UnitTests' do
   pod 'AEPCore'
-  pod 'AEPServices'
-  pod 'AEPRulesEngine'
 end
 
 target 'FunctionalTests' do
   pod 'AEPCore'
-  pod 'AEPServices'
-  pod 'AEPRulesEngine'
-  pod 'AEPIdentity'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPEdgeConsent'
 end
 
 target 'AEPDemoAppSwiftUI' do
   pod 'AEPCore'
   pod 'AEPServices'
-  pod 'AEPRulesEngine'
   pod 'AEPLifecycle'
   pod 'AEPIdentity'
   pod 'AEPSignal'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPEdgeConsent'
   pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
   pod 'AEPAssurance'
 end
@@ -40,10 +36,10 @@ end
 target 'AEPCommerceDemoApp' do
   pod 'AEPCore'
   pod 'AEPServices'
-  pod 'AEPRulesEngine'
   pod 'AEPLifecycle'
   pod 'AEPIdentity'
   pod 'AEPSignal'
+  pod 'AEPEdgeIdentity'
   pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
   pod 'AEPAssurance'
 end

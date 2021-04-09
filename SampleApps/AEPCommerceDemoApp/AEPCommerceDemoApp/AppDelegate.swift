@@ -14,9 +14,7 @@ import ACPCore
 import AEPAssurance
 import AEPCore
 import AEPEdge
-import AEPIdentity
-import AEPLifecycle
-import AEPServices
+import AEPEdgeIdentity
 import UIKit
 
 @UIApplicationMain
@@ -29,23 +27,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         MobileCore.setLogLevel(.trace)
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
+        MobileCore.registerExtensions([Identity.self, Edge.self, AEPAssurance.self])
 
-        AEPAssurance.registerExtension()
-        ACPCore.registerExtensions([Identity.self, Lifecycle.self, Edge.self])
-
-        // only start lifecycle if the application is not in the background
-        if application.applicationState != .background {
-            MobileCore.lifecycleStart(additionalContextData: nil)
-        }
         return true
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        MobileCore.lifecycleStart(additionalContextData: nil)
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        MobileCore.lifecyclePause()
     }
 
     // To handle deeplink on iOS versions 12 and below

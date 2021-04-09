@@ -1,5 +1,5 @@
 //
-// Copyright 2020 Adobe. All rights reserved.
+// Copyright 2021 Adobe. All rights reserved.
 // This file is licensed to you under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy
 // of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,10 +10,16 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import Foundation
 
-/// Property that holds the global XDM context data within an `EdgeRequest` object.
-/// It is contained within the `EdgeRequest` request property.
-struct RequestContextData: Encodable {
-    let identityMap: IdentityMap?
+struct EdgeConsentPayload: Encodable {
+    /// The consent standard to be used for this request
+    let standard: String
+
+    /// The consent version targeted for this request
+    let version: String
+
+    /// XDM Consents payload
+    let value: [String: AnyCodable]?
 }

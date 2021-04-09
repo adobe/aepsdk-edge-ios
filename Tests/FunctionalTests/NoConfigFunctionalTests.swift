@@ -12,7 +12,7 @@
 
 import AEPCore
 @testable import AEPEdge
-import AEPIdentity
+import AEPEdgeIdentity
 import AEPServices
 import XCTest
 
@@ -24,8 +24,8 @@ class NoConfigFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false // fail so nil checks stop execution
         FunctionalTestBase.debugEnabled = false
 
-        // 2 event hub shared states for registered extensions (TestableEdge and InstrumentedExtension registered in FunctionalTestBase)
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 2)
+        // 1 event hub shared state for registered extensions (TestableEdge and InstrumentedExtension registered in FunctionalTestBase)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 1)
 
         MobileCore.registerExtensions([TestableEdge.self])
 
@@ -88,9 +88,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
 
         // test event gets processed when config shared state is resolved\
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
-        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "123567",
-                                                        "global.privacy": "optedin",
-                                                        "experienceCloud.org": "testOrg@AdobeOrg"])
+        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "123567"])
 
         // verify
         assertNetworkRequestsCount()
