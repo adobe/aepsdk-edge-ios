@@ -23,7 +23,7 @@ target '$PROJECT_NAME' do
   pod 'AEPLifecycle', '~> 3'
   pod 'AEPServices', '~> 3'
   pod 'AEPSignal', '~> 3'
-  pod 'AEPRulesEngine', '~> 1.0.0'
+  pod 'AEPRulesEngine', '~> 1'
   pod 'AEPEdge', :path => '../AEPEdge.podspec'
 end
 " >>Podfile
