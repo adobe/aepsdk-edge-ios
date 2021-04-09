@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPCore
 import AEPEdge
 import AEPEdgeConsent
 import AEPEdgeIdentity
@@ -19,63 +20,143 @@ import SwiftUI
 struct ContentView: View {
     // swiftlint:disable multiple_closures_with_trailing_closure
     @State private var ecid: String = ""
-
+    @State private var dataContent: String = "data is displayed here"
     var body: some View {
         VStack {
-            Text("ECID:")
-            Text(ecid)
-            HStack {
-                Text("Collect consent: ")
-                Button(action: {
-                    Consent.update(with: ["consents": ["collect": ["val": "y"]]])
-                }) {
-                    Text("yes")
+            VStack {
+                Text("Edge").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
+                Button("Send Event", action: {
+                    let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                                          data: ["data": ["test": "data"]])
+                    Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
+                            let encoder = JSONEncoder()
+                            encoder.outputFormatting = .prettyPrinted
+                            guard let data = try? encoder.encode(handles) else {
+                                self.dataContent = "failed to encode EdgeEventHandle"
+                                return
+                            }
+                            self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+                        })
+                    })
+                .frame(maxWidth: .infinity)
+                .padding()
+            }.background(Color("InputColor1"))
+            VStack {
+                Text("Collect Consent").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
+                HStack {
+                    Spacer()
+                    Button("Yes", action: {
+                        Consent.update(with: ["consents": ["collect": ["val": "y"]]])
+                        self.getConsents()
+                    })
+                    Spacer()
+                    Button("No", action: {
+                        Consent.update(with: ["consents": ["collect": ["val": "n"]]])
+                        self.getConsents()
+                    })
+                    Spacer()
+                    Button("Pending", action: {
+                        Consent.update(with: ["consents": ["collect": ["val": "p"]]])
+                        self.getConsents()
+                    })
+                    Spacer()
+                    Button("Get Consents", action: {
+                        self.getConsents()
+                    })
+                    Spacer()
+                }.padding()
+            }.background(Color("InputColor2"))
+            VStack {
+                Text("Edge Identity").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
+                HStack(alignment: .top) {
+                    Spacer()
+                    Button("Update", action: {
+                        self.updateIdentities()
+                    })
+                    Spacer()
+                    Button("Remove", action: {
+                        self.removeIdentities()
+                    })
+                    Spacer()
+                    Button("Get Identities", action: {
+                        self.getIdentities()
+                    })
+                    Spacer()
+                }.padding()
+            }.background(Color("InputColor1"))
+            VStack {
+                Text("Mobile Core").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
+                HStack {
+                    Button("Reset IDs", action: {
+                        MobileCore.resetIdentities()
+                    }).padding()
                 }
-                Button(action: {
-                    Consent.update(with: ["consents": ["collect": ["val": "n"]]])
-                }) {
-                    Text("no")
-                }
-                Button(action: {
-                    Consent.update(with: ["consents": ["collect": ["val": "p"]]])
-                }) {
-                    Text("pending")
-                }
-            }.padding()
-
-            Button(action: {
-                let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                                      data: ["data": ["test": "data"]])
-                Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
-                    for handle in handles {
-                        Log.debug(label: "AEPDemoApp", "Received handle with type \(handle.type ?? "unknown"), payload: \(handle.payload ?? [])")
-                    }
-                })
-            }) {
-                Text("Ping to ExEdge")
+            }.background(Color("InputColor2"))
+            Divider()
+            VStack {
+                Text("ECID:").bold().frame(maxWidth: .infinity, alignment: .leading).padding(10)
+                Text(ecid)
             }
+            Divider()
+            ScrollView {
+                Text(dataContent).frame(maxWidth: .infinity, maxHeight: .infinity)
+            }.background(Color(red: 0.97, green: 0.97, blue: 0.97, opacity: 1))
         }.onAppear {
-            getECID()
+            self.getECID()
         }
     }
-
-    private func printCurrentConsent() {
-        Consent.getConsents { (consents: [String: Any]?, error: Error?) in
-            guard error == nil, let consents = consents else { return }
-            print("Current consent \(consents)")
-        }
-    }
-
+    
     private func getECID() {
         Identity.getExperienceCloudId { value, error in
             if error != nil {
                 self.ecid = ""
                 return
             }
-
+            
             self.ecid = value ?? ""
         }
     }
+    
+    private func updateIdentities() {
+        let map = IdentityMap()
+        map.add(item: IdentityItem.init(id: "primary@email.com", authenticatedState: .ambiguous, primary: true), withNamespace: "Email")
+        map.add(item: IdentityItem(id: "secondary@email.com"), withNamespace: "Email")
+        map.add(item: IdentityItem(id: "zzzyyyxxx"), withNamespace: "UserId")
+        map.add(item: IdentityItem(id: "John Doe"), withNamespace: "UserName")
+        Identity.updateIdentities(with: map)
+        getIdentities()
+    }
+    
+    private func removeIdentities() {
+        Identity.removeIdentity(item: IdentityItem(id: "secondary@email.com"), withNamespace: "Email")
+        getIdentities()
+    }
+    
+    private func getIdentities() {
+        Identity.getIdentities { identityMap, _ in
+            if let identityMap = identityMap {
+                let encoder = JSONEncoder()
+                encoder.outputFormatting = .prettyPrinted
+                guard let data = try? encoder.encode(identityMap) else {
+                    self.dataContent = "failed to encode IdentityMap"
+                    return
+                }
+                self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+            } else {
+                self.dataContent = "IdentityMap was nil"
+            }
+        }
+    }
+    
+    private func getConsents() {
+        Consent.getConsents { consents, error in
+            guard error == nil, let consents = consents else { return }
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: consents, options: .prettyPrinted) else { return }
+            guard let jsonStr = String(data: jsonData, encoding: .utf8) else { return }
+            self.dataContent = jsonStr
+        }
+    }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
