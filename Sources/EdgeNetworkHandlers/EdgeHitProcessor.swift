@@ -57,7 +57,7 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         // fetch config shared state, this should be resolved based on readyForEvent check
-        guard let configId = getEdgeConfigId(event: event) else {
+        guard let (configId, edgeEndpoint) = getEdgeConfig(event: event) else {
             completion(true)
             return // drop current event
         }
@@ -72,6 +72,7 @@ class EdgeHitProcessor: HitProcessing {
         // Enable response streaming for all events
         requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                lineFeed: EdgeConstants.Defaults.LINE_FEED)
+
         if event.isExperienceEvent {
             guard let eventData = event.data, !eventData.isEmpty else {
                 Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to process Experience event, data was nil or empty")
@@ -89,7 +90,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let edgeHit = ExperienceEventsEdgeHit(configId: configId, request: requestPayload)
+            let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: edgeEndpoint, configId: configId, request: requestPayload)
             // NOTE: the order of these events needs to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
             networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
@@ -110,7 +111,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let edgeHit = ConsentEdgeHit(configId: configId, consents: consentPayload)
+            let edgeHit = ConsentEdgeHit(edgeEndpoint: edgeEndpoint, configId: configId, consents: consentPayload)
             networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
         } else if event.isResetIdentitiesEvent {
@@ -141,7 +142,8 @@ class EdgeHitProcessor: HitProcessing {
     private func sendHit(entityId: String, edgeHit: EdgeHit, headers: [String: String], completion: @escaping (Bool) -> Void) {
         guard let url = networkService.buildUrl(requestType: edgeHit.getType(),
                                                 configId: edgeHit.configId,
-                                                requestId: edgeHit.requestId) else {
+                                                requestId: edgeHit.requestId,
+                                                edgeEndpoint: edgeHit.edgeEndpoint) else {
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Failed to build the URL, dropping request with id '\(edgeHit.requestId)'.")
             completion(true)
@@ -160,10 +162,10 @@ class EdgeHitProcessor: HitProcessing {
         }
     }
 
-    /// Extracts the Edge Configuration identifier from the Configuration Shared State
+    /// Extracts the Edge Configuration identifier and Edge Configuration endpoint from the Configuration Shared State
     /// - Parameter event: current event for which the configuration is required
-    /// - Returns: the Edge Configuration Id if found, nil otherwise
-    private func getEdgeConfigId(event: Event) -> String? {
+    /// - Returns: the Edge Configuration Id if found and Edge Configuration endpoint, nil if Edge Configuration Id was not found
+    private func getEdgeConfig(event: Event) -> (String, EdgeEndpoint)? {
         guard let configSharedState =
                 getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                event)?.value else {
@@ -171,6 +173,9 @@ class EdgeHitProcessor: HitProcessing {
                         "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', Configuration is nil.")
             return nil
         }
+
+        let edgeEndpointStr = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] as? String ?? EdgeEndpoint.production.rawValue
+        let edgeEndpoint = EdgeEndpoint(rawValue: edgeEndpointStr.lowercased()) ?? EdgeEndpoint.production
 
         guard let configId =
                 configSharedState[EdgeConstants.SharedState.Configuration.CONFIG_ID] as? String,
@@ -181,7 +186,7 @@ class EdgeHitProcessor: HitProcessing {
             return nil
         }
 
-        return configId
+        return (configId, edgeEndpoint)
     }
 
     /// Computes the request headers for provided `event`, including the `Assurance` integration identifier when `Assurance` is enabled

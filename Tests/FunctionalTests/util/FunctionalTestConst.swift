@@ -57,6 +57,11 @@ enum FunctionalTestConst {
         static let STORE_PAYLOADS = "storePayloads"
     }
 
-    static let EX_EDGE_INTERACT_URL_STR = "https://edge.adobedc.net/ee/v1/interact"
-    static let EX_EDGE_CONSENT_URL_STR = "https://edge.adobedc.net/ee/v1/privacy/set-consent"
+    static let EX_EDGE_INTERACT_PROD_URL_STR = "https://edge.adobedc.net/ee/v1/interact"
+    static let EX_EDGE_INTERACT_PRE_PROD_URL_STR = "https://edge.adobedc.net/ee-pre-prd/v1/interact"
+    static let EX_EDGE_INTERACT_INTEGRATION_URL_STR = "https://edge-int.adobedc.net/ee/v1/interact"
+
+    static let EX_EDGE_CONSENT_PROD_URL_STR = "https://edge.adobedc.net/ee/v1/privacy/set-consent"
+    static let EX_EDGE_CONSENT_PRE_PROD_URL_STR = "https://edge.adobedc.net/ee-pre-prd/v1/privacy/set-consent"
+    static let EX_EDGE_CONSENT_INTEGRATION_URL_STR = "https://edge-int.adobedc.net/ee/v1/privacy/set-consent"
 }
