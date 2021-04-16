@@ -23,6 +23,18 @@ enum EdgeEndpoint: String {
     /// The integration Edge Network endpoint
     case integration = "int"
 
+    /// Initializes the appropriate `EdgeEndpoint` enum for the given `optionalRawValue`
+    /// - Parameter optionalRawValue: a `RawValue` representation of a `EdgeEndpoint` enum, default is `production`
+    init(optionalRawValue: RawValue?) {
+        guard let rawValue = optionalRawValue,
+              let validEndpoint = EdgeEndpoint(rawValue: rawValue) else {
+            self = EdgeConstants.Defaults.DEFAULT_ENDPOINT
+            return
+        }
+
+        self = validEndpoint
+    }
+
     /// Computes the endpoint URL based on this
     var endpointUrl: String {
         switch self {
