@@ -36,7 +36,7 @@ enum EdgeConstants {
         static let LINE_FEED: String = "\n"
         static let COLLECT_CONSENT_YES = ConsentStatus.yes // used if Consent extension is not registered
         static let COLLECT_CONSENT_PENDING = ConsentStatus.pending // used when Consent encoding failed or the value different than y/n
-        static let DEFAULT_ENDPOINT = EdgeEndpoint.production
+        static let ENDPOINT = EdgeEndpoint.production
     }
 
     enum EventDataKeys {

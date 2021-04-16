@@ -28,7 +28,7 @@ enum EdgeEndpoint: String {
     init(optionalRawValue: RawValue?) {
         guard let rawValue = optionalRawValue,
               let validEndpoint = EdgeEndpoint(rawValue: rawValue) else {
-            self = EdgeConstants.Defaults.DEFAULT_ENDPOINT
+            self = EdgeConstants.Defaults.ENDPOINT
             return
         }
 
