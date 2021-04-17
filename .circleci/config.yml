@@ -79,11 +79,16 @@ jobs:
           name: Upload Code Coverage Report
           command: |
             VERSION=$(grep 'VERSION=\".*\"' codecov | cut -d'"' -f2);
+            count=0
             for i in 1 256 512
             do
-              shasum -a $i -c <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM)
+              shasum -a $i -c <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM) && ((count=count+1))
             done
-            bash <(curl -s https://codecov.io/bash) -v -X s3 -c -D "./build/out" -J "AEPEdge" -t ${CODECOV_TOKEN}
+            if [ $count -eq 3 ]; then
+              bash <(curl -s https://codecov.io/bash) -v -X s3 -c -D "./build/out" -J "AEPEdge" -t ${CODECOV_TOKEN}
+            else
+              echo "Shasum check failed."
+            fi
 
       # verify XCFramework archive builds
       - run:
