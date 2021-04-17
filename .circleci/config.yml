@@ -83,7 +83,7 @@ jobs:
             do
               shasum -a $i -c <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM)
             done
-            bash <(curl -s https://codecov.io/bash) -v -X s3 -c -D "./build/out" -J "AEPEdge" -t ${CODECOV_TOKEN}
+            bash ./codecov -v -X s3 -c -D "./build/out" -J "AEPEdge" -t ${CODECOV_TOKEN}
 
       # verify XCFramework archive builds
       - run:
