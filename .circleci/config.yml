@@ -75,17 +75,13 @@ jobs:
 
       # code coverage
       - run:
+          shell: /bin/bash
           name: Upload Code Coverage Report
           command: |
             VERSION=$(grep 'VERSION=\".*\"' codecov | cut -d'"' -f2);
             for i in 1 256 512
             do
-              result=$(shasum -a $i -c <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM) 2>&1)
-              exit=$?
-              if [ $exit -ne 0 ]; then
-               echo "Codecov failed SHA$i check; $result"
-               exit 0
-              fi
+              shasum -a $i -c <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM)
             done
             bash <(curl -s https://codecov.io/bash) -v -X s3 -c -D "./build/out" -J "AEPEdge" -t ${CODECOV_TOKEN}
 
