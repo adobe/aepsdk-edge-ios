@@ -20,7 +20,7 @@ class EdgeNetworkServiceTests: XCTestCase {
     private var mockNetworking = MockNetworking()
     private var mockResponseCallback = MockResponseCallback()
     private var networkService = EdgeNetworkService()
-    private let edgeHitPayload = ExperienceEventsEdgeHit(configId: "configIdExample", request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]])).getPayload()
+    private let edgeHitPayload = ExperienceEventsEdgeHit(edgeEndpoint: .production, configId: "configIdExample", request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]])).getPayload()
     private let url = URL(string: "https://test.com")! // swiftlint:disable:this force_unwrapping
     private let defaultNetworkingHeaders: [String] = ["User-Agent", "Accept-Language"]
 
