@@ -55,9 +55,10 @@ class EdgeNetworkService {
     ///   - requestType: see `ExperienceEdgeRequestType`
     ///   - configId: Edge configuration identifier
     ///   - requestId: batch request identifier
+    ///   - edgeEndpoint: the endpoint for this URL to be based off of
     /// - Returns: built URL or nil on error
-    func buildUrl(requestType: ExperienceEdgeRequestType, configId: String, requestId: String) -> URL? {
-        guard var url = URL(string: EdgeConstants.NetworkKeys.EDGE_ENDPOINT) else { return nil }
+    func buildUrl(requestType: ExperienceEdgeRequestType, configId: String, requestId: String, edgeEndpoint: EdgeEndpoint) -> URL? {
+        guard var url = URL(string: edgeEndpoint.endpointUrl) else { return nil }
         url.appendPathComponent(requestType.rawValue)
 
         guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }

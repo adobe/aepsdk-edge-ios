@@ -33,7 +33,7 @@ enum ConsentStatus: String, RawRepresentable, Codable {
     }
 
     /// Extracts the collect consent value from the provided event data payload, if encoding fails it returns the default `EdgeConstants.Defaults.CONSENT_PENDING`
-    /// - Parameter eventData: consent prefereneces update payload
+    /// - Parameter eventData: consent preferences update payload
     /// - Returns: the collect consent value extracted from the payload, or pending if the decoding failed
     static func getCollectConsentOrDefault(eventData: [String: Any]) -> ConsentStatus {
         // if collect consent not set yet, use default (pending)
