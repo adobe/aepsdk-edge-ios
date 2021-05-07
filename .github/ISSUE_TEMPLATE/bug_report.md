@@ -1,6 +1,6 @@
 ---
 name: Bug Report 
-about: Report an issue
+about: Create a report to help us improve
 ---
 ## Prerequisites
 <!--- Go through the items below before logging an issue -->
@@ -34,14 +34,14 @@ Which SDK version(s)?
 Which IDE version?
 
 ## Sample Code that illustrates the problem
-<!---Please provide sample code below or provide a link with the sample code to help us investigating the bug-->
+<!---Please provide sample code below or provide a link with the sample code to help us investigate the bug-->
 
-```
+```swift
 // sample code
 
 ```
 ## Logs taken while reproducing the problem
-<!---Please provide Trace Console Log below or provide a link with the log to help us looking into the issue-->
+<!---Please provide Trace Console Log below or provide a link with the log to help us look into the issue-->
 
 ```
 //logs

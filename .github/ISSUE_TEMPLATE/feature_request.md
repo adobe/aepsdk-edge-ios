@@ -1,6 +1,6 @@
 ---
 name: Feature Request 
-about: Add a feature request
+about: Suggest an idea for this project
 ---
 ##  Before Logging a feature request
 - [ ] I have searched in this repository's issues to see if it has already been reported.
