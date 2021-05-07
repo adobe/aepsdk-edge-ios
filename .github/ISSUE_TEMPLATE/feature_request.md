@@ -19,7 +19,7 @@ about: Suggest an idea for this project
 <!---Optional: Please provide details about the desired behavior-->
 
 ## Sample Code that illustrates the request
-```
+```swift
 //sample code
 
 ```
