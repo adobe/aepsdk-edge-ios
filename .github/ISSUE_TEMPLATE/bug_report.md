@@ -4,9 +4,9 @@ about: Report an issue
 ---
 ## Prerequisites
 <!--- Go through the items below before logging an issue -->
-- [ ] Please search this repository's issues to see if it has already been reported. This helps reduce duplicate issues from being created.
-- [ ] If this is a Security Disclosure please follow the guidelines in [CONTRIBUTING](../CONTRIBUTING.md). This helps keep folks from accidentally releasing vulnerabilities before the maintainers get a chance to fix the issue.
-
+- [ ] I have searched in this repository's issues to see if it has already been reported.
+- [ ] This is not a Security Disclosure, otherwise please follow the guidelines in [Security Policy](https://github.com/adobe/aepsdk-edge-ios/security/policy).
+- [ ] I have updated to the latest released version of the SDK and the issue still persists.
 
 ## Bug Summary 
 
@@ -30,18 +30,20 @@ about: Report an issue
 ## Platform and Version
 
 Which platform? 
-Which SDK versions?
+Which SDK version(s)?
 Which IDE version?
 
 ## Sample Code that illustrates the problem
 <!---Please provide sample code below or provide a link with the sample code to help us investigating the bug-->
 
 ```
+// sample code
 
 ```
 ## Logs taken while reproducing the problem
 <!---Please provide Trace Console Log below or provide a link with the log to help us looking into the issue-->
 
 ```
+//logs
 
 ```

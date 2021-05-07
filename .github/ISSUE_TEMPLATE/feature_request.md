@@ -3,8 +3,8 @@ name: Feature Request
 about: Add a feature request
 ---
 ##  Before Logging a feature request
-[ ] Please search this repository's issues to see if it has already been reported. This helps reduce duplicate issues from being created.
-
+- [ ] I have searched in this repository's issues to see if it has already been reported.
+- [ ] This is not a Security Disclosure, otherwise please follow the guidelines in [Security Policy](https://github.com/adobe/aepsdk-edge-ios/security/policy).
 
 ## Feature Request Summary 
 
@@ -12,13 +12,14 @@ about: Add a feature request
 
 ## Current Behavior
 
-<!---Please provide details about the current behavior-->
+<!---Optional: Please provide details about the current behavior-->
 
 ## Desired Behavior
 
-<!---Please provide details about the desired behavior-->
+<!---Optional: Please provide details about the desired behavior-->
 
 ## Sample Code that illustrates the request
 ```
+//sample code
 
 ```
