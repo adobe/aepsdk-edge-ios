@@ -29,7 +29,7 @@ about: Create a report to help us improve
 
 ## Platform and Version
 
-Which platform? 
+Which platform and OS version?
 Which SDK version(s)?
 Which IDE version?
 
