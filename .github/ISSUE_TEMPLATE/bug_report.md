@@ -5,7 +5,7 @@ about: Create a report to help us improve
 ## Prerequisites
 <!--- Go through the items below before logging an issue -->
 - [ ] I have searched in this repository's issues to see if it has already been reported.
-- [ ] This is not a Security Disclosure, otherwise please follow the guidelines in [Security Policy](../../SECURITY.md).
+- [ ] This is not a Security Disclosure, otherwise please follow the guidelines in [Security Policy](https://github.com/adobe/aepsdk-edge-ios/security/policy).
 - [ ] I have updated to the latest released version of the SDK and the issue still persists.
 
 ## Bug Summary 
