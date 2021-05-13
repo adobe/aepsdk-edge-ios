@@ -24,6 +24,15 @@
 		1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */; };
 		1CCD27DC245A240F00E912B2 /* ExperienceEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */; };
 		211BCB8126030DCD00AACFEF /* EdgeDataEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211BCB8026030DCD00AACFEF /* EdgeDataEntity.swift */; };
+		21397F33264DBDE5008387A4 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F23264DBDE3008387A4 /* Application.swift */; };
+		21397F34264DBDE5008387A4 /* ScreenOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F24264DBDE3008387A4 /* ScreenOrientation.swift */; };
+		21397F39264DBDE5008387A4 /* MobileLifecycleDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F29264DBDE3008387A4 /* MobileLifecycleDetails.swift */; };
+		21397F3A264DBDE5008387A4 /* EnvironmentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F2A264DBDE3008387A4 /* EnvironmentType.swift */; };
+		21397F3B264DBDE5008387A4 /* CloseType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F2B264DBDE4008387A4 /* CloseType.swift */; };
+		21397F3C264DBDE5008387A4 /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F2C264DBDE4008387A4 /* ConnectionType.swift */; };
+		21397F40264DBDE5008387A4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F30264DBDE4008387A4 /* Device.swift */; };
+		21397F41264DBDE5008387A4 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F31264DBDE4008387A4 /* Environment.swift */; };
+		21397F47264DDC86008387A4 /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F46264DDC86008387A4 /* DeviceType.swift */; };
 		216989652554B39900B2752C /* EdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989642554B39900B2752C /* EdgeHit.swift */; };
 		216989782554B61500B2752C /* EdgeHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989772554B61500B2752C /* EdgeHitProcessor.swift */; };
 		216989B32555376A00B2752C /* EdgeHitProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */; };
@@ -261,6 +270,15 @@
 		1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMProtocols.swift; sourceTree = "<group>"; };
 		1ED3CB89A749953625CC5616 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		211BCB8026030DCD00AACFEF /* EdgeDataEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeDataEntity.swift; sourceTree = "<group>"; };
+		21397F23264DBDE3008387A4 /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
+		21397F24264DBDE3008387A4 /* ScreenOrientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenOrientation.swift; sourceTree = "<group>"; };
+		21397F29264DBDE3008387A4 /* MobileLifecycleDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileLifecycleDetails.swift; sourceTree = "<group>"; };
+		21397F2A264DBDE3008387A4 /* EnvironmentType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvironmentType.swift; sourceTree = "<group>"; };
+		21397F2B264DBDE4008387A4 /* CloseType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloseType.swift; sourceTree = "<group>"; };
+		21397F2C264DBDE4008387A4 /* ConnectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionType.swift; sourceTree = "<group>"; };
+		21397F30264DBDE4008387A4 /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		21397F31264DBDE4008387A4 /* Environment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
+		21397F46264DDC86008387A4 /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
 		216989642554B39900B2752C /* EdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHit.swift; sourceTree = "<group>"; };
 		216989772554B61500B2752C /* EdgeHitProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessor.swift; sourceTree = "<group>"; };
 		216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessorTests.swift; sourceTree = "<group>"; };
@@ -489,6 +507,15 @@
 		1CCD27CD24592B2800E912B2 /* xdm */ = {
 			isa = PBXGroup;
 			children = (
+				21397F23264DBDE3008387A4 /* Application.swift */,
+				21397F29264DBDE3008387A4 /* MobileLifecycleDetails.swift */,
+				21397F2B264DBDE4008387A4 /* CloseType.swift */,
+				21397F2C264DBDE4008387A4 /* ConnectionType.swift */,
+				21397F30264DBDE4008387A4 /* Device.swift */,
+				21397F46264DDC86008387A4 /* DeviceType.swift */,
+				21397F31264DBDE4008387A4 /* Environment.swift */,
+				21397F24264DBDE3008387A4 /* ScreenOrientation.swift */,
+				21397F2A264DBDE3008387A4 /* EnvironmentType.swift */,
 				1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */,
 				1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */,
 			);
@@ -1374,31 +1401,39 @@
 			files = (
 				D4EC0DBB25E73FF10026EBAA /* EdgeState.swift in Sources */,
 				D4C6B436251A76CB0038F4F9 /* XDMFormatters.swift in Sources */,
+				21397F33264DBDE5008387A4 /* Application.swift in Sources */,
 				D4C6B437251A76CB0038F4F9 /* XDMProtocols.swift in Sources */,
 				D4C6B438251A76CB0038F4F9 /* Edge+PublicAPI.swift in Sources */,
+				21397F3B264DBDE5008387A4 /* CloseType.swift in Sources */,
 				2198DEE22604F8BE008ADB6A /* Atomic.swift in Sources */,
+				21397F34264DBDE5008387A4 /* ScreenOrientation.swift in Sources */,
 				D4C6B43A251A76CB0038F4F9 /* ExperienceEvent.swift in Sources */,
 				D4C6B43C251A76CB0038F4F9 /* EdgeEventError.swift in Sources */,
 				D447C82725C3EF0500FE12E5 /* EdgeConsentPayload.swift in Sources */,
 				D4145FB525D5D0430019EA4C /* Event+Edge.swift in Sources */,
 				D4C6B43D251A76CB0038F4F9 /* EdgeEventHandle.swift in Sources */,
 				D4C6B43E251A76CB0038F4F9 /* EdgeRequest.swift in Sources */,
+				21397F41264DBDE5008387A4 /* Environment.swift in Sources */,
 				D43BAB0325BB758400B08CC0 /* EdgeConsentStatus.swift in Sources */,
 				D4C6B43F251A76CB0038F4F9 /* EdgeResponse.swift in Sources */,
 				D4C6B440251A76CB0038F4F9 /* EdgeNetworkService.swift in Sources */,
 				D4C6B442251A76CB0038F4F9 /* KonductorConfig.swift in Sources */,
 				21C0F88A2627B9D9003872DC /* EdgeEndpoint.swift in Sources */,
 				D4145FD325DCB3890019EA4C /* ConsentEdgeHit.swift in Sources */,
+				21397F39264DBDE5008387A4 /* MobileLifecycleDetails.swift in Sources */,
+				21397F3C264DBDE5008387A4 /* ConnectionType.swift in Sources */,
 				D4145FCD25DCB3270019EA4C /* ExperienceEventsEdgeHit.swift in Sources */,
 				D4C6B443251A76CB0038F4F9 /* NetworkResponseCallback.swift in Sources */,
 				D4C6B444251A76CB0038F4F9 /* NetworkResponseHandler.swift in Sources */,
 				D4C6B445251A76CB0038F4F9 /* RequestBuilder.swift in Sources */,
+				21397F3A264DBDE5008387A4 /* EnvironmentType.swift in Sources */,
 				D447C82125C3E85D00FE12E5 /* EdgeConsentUpdate.swift in Sources */,
 				D4EC0D9725E6CEA00026EBAA /* EdgeHitQueueing+Consent.swift in Sources */,
 				216989782554B61500B2752C /* EdgeHitProcessor.swift in Sources */,
 				D4C6B447251A76CB0038F4F9 /* RequestMetadata.swift in Sources */,
 				D4C6B448251A76CB0038F4F9 /* ResponseCallback.swift in Sources */,
 				D4C6B449251A76CB0038F4F9 /* CompletionHandlersManager.swift in Sources */,
+				21397F47264DDC86008387A4 /* DeviceType.swift in Sources */,
 				216989652554B39900B2752C /* EdgeHit.swift in Sources */,
 				21D7B7B22562F89C0010AE25 /* EdgeEventWarning.swift in Sources */,
 				D4C6B44A251A76CB0038F4F9 /* StateMetadata.swift in Sources */,
@@ -1407,6 +1442,7 @@
 				D4C6B44C251A76CB0038F4F9 /* StoreResponsePayloadManager.swift in Sources */,
 				D4C6B44D251A76CB0038F4F9 /* EdgeConstants.swift in Sources */,
 				D4C6B44E251A76CB0038F4F9 /* Edge.swift in Sources */,
+				21397F40264DBDE5008387A4 /* Device.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
