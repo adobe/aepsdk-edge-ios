@@ -18,4 +18,17 @@ enum EnvironmentType: String, Encodable {
     case iot
     case external
     case widget
+
+    /// Creates an `EnvironmentType` from a run mode `String`
+    /// - Parameter runMode: The current run mode for the system as described by the `SystemInfoService`
+    /// - Returns: The matching `EnvironmentType` for the run mode, nil if no matches found
+    static func from(runMode: String?) -> EnvironmentType? {
+        if runMode == "Application" {
+            return .application
+        } else if runMode == "Extension" {
+            return .widget
+        }
+
+        return nil
+    }
 }

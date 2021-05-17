@@ -23,16 +23,25 @@
 /* Begin PBXBuildFile section */
 		1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */; };
 		1CCD27DC245A240F00E912B2 /* ExperienceEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */; };
+		210835AC2652B74500492705 /* EnvironmentTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210835AB2652B74500492705 /* EnvironmentTypeTests.swift */; };
+		210835B02652B81A00492705 /* ScreenOrientationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210835AF2652B81A00492705 /* ScreenOrientationTests.swift */; };
+		210835B42652B9FE00492705 /* DeviceTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210835B32652B9FE00492705 /* DeviceTypeTests.swift */; };
+		210835BA2652BB6300492705 /* CloseTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210835B92652BB6300492705 /* CloseTypeTests.swift */; };
+		210835BE2652BD3200492705 /* EnvironmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210835BD2652BD3200492705 /* EnvironmentTests.swift */; };
+		210835C22652BD9700492705 /* MockSystemInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210835C12652BD9700492705 /* MockSystemInfoService.swift */; };
+		210835C62652C30900492705 /* DeviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210835C52652C30900492705 /* DeviceTests.swift */; };
+		210835CA2652C94B00492705 /* ApplicationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210835C92652C94B00492705 /* ApplicationTests.swift */; };
+		210835CE2652D14600492705 /* MobileLifecycleDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210835CD2652D14600492705 /* MobileLifecycleDetailsTests.swift */; };
 		211BCB8126030DCD00AACFEF /* EdgeDataEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211BCB8026030DCD00AACFEF /* EdgeDataEntity.swift */; };
 		21397F33264DBDE5008387A4 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F23264DBDE3008387A4 /* Application.swift */; };
 		21397F34264DBDE5008387A4 /* ScreenOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F24264DBDE3008387A4 /* ScreenOrientation.swift */; };
 		21397F39264DBDE5008387A4 /* MobileLifecycleDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F29264DBDE3008387A4 /* MobileLifecycleDetails.swift */; };
 		21397F3A264DBDE5008387A4 /* EnvironmentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F2A264DBDE3008387A4 /* EnvironmentType.swift */; };
 		21397F3B264DBDE5008387A4 /* CloseType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F2B264DBDE4008387A4 /* CloseType.swift */; };
-		21397F3C264DBDE5008387A4 /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F2C264DBDE4008387A4 /* ConnectionType.swift */; };
 		21397F40264DBDE5008387A4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F30264DBDE4008387A4 /* Device.swift */; };
 		21397F41264DBDE5008387A4 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F31264DBDE4008387A4 /* Environment.swift */; };
 		21397F47264DDC86008387A4 /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F46264DDC86008387A4 /* DeviceType.swift */; };
+		21397F59264EC688008387A4 /* XDMDirectMappable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21397F58264EC688008387A4 /* XDMDirectMappable.swift */; };
 		216989652554B39900B2752C /* EdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989642554B39900B2752C /* EdgeHit.swift */; };
 		216989782554B61500B2752C /* EdgeHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989772554B61500B2752C /* EdgeHitProcessor.swift */; };
 		216989B32555376A00B2752C /* EdgeHitProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */; };
@@ -269,16 +278,25 @@
 		1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMFormatters.swift; sourceTree = "<group>"; };
 		1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDMProtocols.swift; sourceTree = "<group>"; };
 		1ED3CB89A749953625CC5616 /* Pods-AEPCommerceDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEPCommerceDemoApp.release.xcconfig"; path = "Target Support Files/Pods-AEPCommerceDemoApp/Pods-AEPCommerceDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		210835AB2652B74500492705 /* EnvironmentTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTypeTests.swift; sourceTree = "<group>"; };
+		210835AF2652B81A00492705 /* ScreenOrientationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenOrientationTests.swift; sourceTree = "<group>"; };
+		210835B32652B9FE00492705 /* DeviceTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTypeTests.swift; sourceTree = "<group>"; };
+		210835B92652BB6300492705 /* CloseTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseTypeTests.swift; sourceTree = "<group>"; };
+		210835BD2652BD3200492705 /* EnvironmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTests.swift; sourceTree = "<group>"; };
+		210835C12652BD9700492705 /* MockSystemInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSystemInfoService.swift; sourceTree = "<group>"; };
+		210835C52652C30900492705 /* DeviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTests.swift; sourceTree = "<group>"; };
+		210835C92652C94B00492705 /* ApplicationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationTests.swift; sourceTree = "<group>"; };
+		210835CD2652D14600492705 /* MobileLifecycleDetailsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileLifecycleDetailsTests.swift; sourceTree = "<group>"; };
 		211BCB8026030DCD00AACFEF /* EdgeDataEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeDataEntity.swift; sourceTree = "<group>"; };
 		21397F23264DBDE3008387A4 /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		21397F24264DBDE3008387A4 /* ScreenOrientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenOrientation.swift; sourceTree = "<group>"; };
 		21397F29264DBDE3008387A4 /* MobileLifecycleDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileLifecycleDetails.swift; sourceTree = "<group>"; };
 		21397F2A264DBDE3008387A4 /* EnvironmentType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvironmentType.swift; sourceTree = "<group>"; };
 		21397F2B264DBDE4008387A4 /* CloseType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloseType.swift; sourceTree = "<group>"; };
-		21397F2C264DBDE4008387A4 /* ConnectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionType.swift; sourceTree = "<group>"; };
 		21397F30264DBDE4008387A4 /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		21397F31264DBDE4008387A4 /* Environment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		21397F46264DDC86008387A4 /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
+		21397F58264EC688008387A4 /* XDMDirectMappable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDMDirectMappable.swift; sourceTree = "<group>"; };
 		216989642554B39900B2752C /* EdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHit.swift; sourceTree = "<group>"; };
 		216989772554B61500B2752C /* EdgeHitProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessor.swift; sourceTree = "<group>"; };
 		216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessorTests.swift; sourceTree = "<group>"; };
@@ -507,10 +525,9 @@
 		1CCD27CD24592B2800E912B2 /* xdm */ = {
 			isa = PBXGroup;
 			children = (
-				21397F23264DBDE3008387A4 /* Application.swift */,
 				21397F29264DBDE3008387A4 /* MobileLifecycleDetails.swift */,
+				21397F23264DBDE3008387A4 /* Application.swift */,
 				21397F2B264DBDE4008387A4 /* CloseType.swift */,
-				21397F2C264DBDE4008387A4 /* ConnectionType.swift */,
 				21397F30264DBDE4008387A4 /* Device.swift */,
 				21397F46264DDC86008387A4 /* DeviceType.swift */,
 				21397F31264DBDE4008387A4 /* Environment.swift */,
@@ -518,6 +535,7 @@
 				21397F2A264DBDE3008387A4 /* EnvironmentType.swift */,
 				1CCD27CE24592B2800E912B2 /* XDMFormatters.swift */,
 				1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */,
+				21397F58264EC688008387A4 /* XDMDirectMappable.swift */,
 			);
 			path = xdm;
 			sourceTree = "<group>";
@@ -767,6 +785,7 @@
 				216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */,
 				D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */,
 				1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */,
+				210835BD2652BD3200492705 /* EnvironmentTests.swift */,
 				BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */,
 				D46553F6246A384900A150E2 /* NetworkResponseHandlerTests.swift */,
 				BF947F7D243EA1300057A6CC /* RequestBuilderTests.swift */,
@@ -775,6 +794,13 @@
 				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */,
 				1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */,
+				210835AB2652B74500492705 /* EnvironmentTypeTests.swift */,
+				210835B32652B9FE00492705 /* DeviceTypeTests.swift */,
+				210835B92652BB6300492705 /* CloseTypeTests.swift */,
+				210835AF2652B81A00492705 /* ScreenOrientationTests.swift */,
+				210835C92652C94B00492705 /* ApplicationTests.swift */,
+				210835CD2652D14600492705 /* MobileLifecycleDetailsTests.swift */,
+				210835C52652C30900492705 /* DeviceTests.swift */,
 			);
 			name = UnitTests;
 			path = Tests/UnitTests;
@@ -829,6 +855,7 @@
 				D4F74FEA2447A94900379258 /* MockTask.swift */,
 				D42FB8E024635FA200E9321C /* MockResponseCallback.swift */,
 				D44BBB972492F5C900775DAC /* UnitTestAssertions.swift */,
+				210835C12652BD9700492705 /* MockSystemInfoService.swift */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -1417,11 +1444,11 @@
 				D43BAB0325BB758400B08CC0 /* EdgeConsentStatus.swift in Sources */,
 				D4C6B43F251A76CB0038F4F9 /* EdgeResponse.swift in Sources */,
 				D4C6B440251A76CB0038F4F9 /* EdgeNetworkService.swift in Sources */,
+				21397F59264EC688008387A4 /* XDMDirectMappable.swift in Sources */,
 				D4C6B442251A76CB0038F4F9 /* KonductorConfig.swift in Sources */,
 				21C0F88A2627B9D9003872DC /* EdgeEndpoint.swift in Sources */,
 				D4145FD325DCB3890019EA4C /* ConsentEdgeHit.swift in Sources */,
 				21397F39264DBDE5008387A4 /* MobileLifecycleDetails.swift in Sources */,
-				21397F3C264DBDE5008387A4 /* ConnectionType.swift in Sources */,
 				D4145FCD25DCB3270019EA4C /* ExperienceEventsEdgeHit.swift in Sources */,
 				D4C6B443251A76CB0038F4F9 /* NetworkResponseCallback.swift in Sources */,
 				D4C6B444251A76CB0038F4F9 /* NetworkResponseHandler.swift in Sources */,
@@ -1454,13 +1481,17 @@
 				240E3C9924EF357100D44993 /* MockDataStore.swift in Sources */,
 				D45F2E7D25EE190A000AC350 /* MockDataQueue.swift in Sources */,
 				D4A473CD2485AA3D00D31710 /* TestUtils.swift in Sources */,
+				210835BA2652BB6300492705 /* CloseTypeTests.swift in Sources */,
 				21FFBD5925631E3E00B48A8F /* EdgeEventWarningTests.swift in Sources */,
 				BF947F912440F6660057A6CC /* StateMetadataTests.swift in Sources */,
 				BF947FA0244569190057A6CC /* EdgeRequestTests.swift in Sources */,
 				1CCD27D82459EEB900E912B2 /* XDMFormattersTests.swift in Sources */,
+				210835CE2652D14600492705 /* MobileLifecycleDetailsTests.swift in Sources */,
+				210835AC2652B74500492705 /* EnvironmentTypeTests.swift in Sources */,
 				D42FB8E124635FA200E9321C /* MockResponseCallback.swift in Sources */,
 				BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */,
 				BF947F7E243EA1300057A6CC /* RequestBuilderTests.swift in Sources */,
+				210835BE2652BD3200492705 /* EnvironmentTests.swift in Sources */,
 				BF947F88243F2EF70057A6CC /* StoreResponsePayloadTests.swift in Sources */,
 				D49A6294250AEEF000B7C4A3 /* UserDefaults+Test.swift in Sources */,
 				BF947F9E244182B30057A6CC /* StoreResponsePayloadManagerTests.swift in Sources */,
@@ -1469,12 +1500,17 @@
 				D49A628F250AE4F500B7C4A3 /* EventHub+Test.swift in Sources */,
 				BF947F74243BA0E10057A6CC /* KonductorConfigTests.swift in Sources */,
 				D45F2E7E25EE190A000AC350 /* MockHitProcessor.swift in Sources */,
+				210835CA2652C94B00492705 /* ApplicationTests.swift in Sources */,
+				210835B42652B9FE00492705 /* DeviceTypeTests.swift in Sources */,
 				D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */,
 				D4145F4025D1D3200019EA4C /* EdgeHitTests.swift in Sources */,
+				210835B02652B81A00492705 /* ScreenOrientationTests.swift in Sources */,
+				210835C62652C30900492705 /* DeviceTests.swift in Sources */,
 				216989B32555376A00B2752C /* EdgeHitProcessorTests.swift in Sources */,
 				D4F74FEB2447A94900379258 /* MockTask.swift in Sources */,
 				D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */,
 				D46553F7246A384900A150E2 /* NetworkResponseHandlerTests.swift in Sources */,
+				210835C22652BD9700492705 /* MockSystemInfoService.swift in Sources */,
 				21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */,
 				2198DEE826050458008ADB6A /* AtomicTests.swift in Sources */,
 				D4A81DEC25658F0D0042B00A /* CompletionHandlerTests.swift in Sources */,

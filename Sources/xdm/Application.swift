@@ -10,9 +10,10 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import Foundation
 
-struct Application {
+struct Application: XDMDirectMappable {
     init() {}
 
     var closeType: CloseType?
@@ -37,6 +38,32 @@ struct Application {
         case name
         case sessionLength
         case version
+    }
+
+    static func fromDirect(data: [String: Any]) -> XDMDirectMappable? {
+        let systemInfoService = ServiceProvider.shared.systemInfoService
+        var application = Application()
+    
+        application.id = systemInfoService.getApplicationBundleId()
+        application.name = systemInfoService.getApplicationName()
+        application.version = systemInfoService.getApplicationVersion()
+        // TODO: Close type AMSDK-9271
+        // TODO: isClose AMSDK-9271
+
+        if let lifecycleContextData = data[EdgeConstants.SharedState.Lifecycle.CONTEXT_DATA] as? [String: Any] {
+            application.isInstall = lifecycleContextData[EdgeConstants.SharedState.Lifecycle.ContextData.INSTALL_EVENT] != nil
+            application.isLaunch = lifecycleContextData[EdgeConstants.SharedState.Lifecycle.ContextData.LAUNCH_EVENT] != nil
+            application.isUpgrade = lifecycleContextData[EdgeConstants.SharedState.Lifecycle.ContextData.UPGRADE_EVENT] != nil
+            application.sessionLength = Int64(lifecycleContextData[EdgeConstants.SharedState.Lifecycle.ContextData.PREV_SESSION_LENGTH] as? String ?? "")
+
+            if let installDateString = lifecycleContextData[EdgeConstants.SharedState.Lifecycle.ContextData.INSTALL_DATE] as? String {
+                let formatter = DateFormatter()
+                formatter.dateFormat = EdgeConstants.SharedState.Lifecycle.ContextData.DATE_FORMAT
+                application.installDate = formatter.date(from: installDateString)
+            }
+        }
+
+        return application
     }
 }
 

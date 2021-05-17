@@ -10,9 +10,10 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import Foundation
 
-struct Device {
+struct Device: Encodable, XDMDirectMappable {
     init() {}
 
     var manufacturer: String?
@@ -23,26 +24,18 @@ struct Device {
     var screenWidth: Int64?
     var type: DeviceType?
 
-    enum CodingKeys: String, CodingKey {
-        case manufacturer
-        case model
-        case modelNumber
-        case screenHeight
-        case screenOrientation
-        case screenWidth
-        case type
-    }
-}
+    static func fromDirect(data: [String: Any]) -> XDMDirectMappable? {
+        var device = Device()
+        let systemInfoService = ServiceProvider.shared.systemInfoService
+        device.manufacturer = "apple"
+        device.model = systemInfoService.getDeviceName()
+//        device.modelNumber = systemInfoService.getDeviceBuildId() uncomment once new API is merged
+        let (width, height) = systemInfoService.getDisplayInformation()
+        device.screenWidth = Int64(width)
+        device.screenHeight = Int64(height)
+        device.screenOrientation = ScreenOrientation.from(deviceOrientation: systemInfoService.getCurrentOrientation())
+        device.type = DeviceType.from(servicesDeviceType: systemInfoService.getDeviceType())
 
-extension Device: Encodable {
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        if let unwrapped = manufacturer { try container.encode(unwrapped, forKey: .manufacturer) }
-        if let unwrapped = model { try container.encode(unwrapped, forKey: .model) }
-        if let unwrapped = modelNumber { try container.encode(unwrapped, forKey: .modelNumber) }
-        if let unwrapped = screenHeight { try container.encode(unwrapped, forKey: .screenHeight) }
-        if let unwrapped = screenOrientation { try container.encode(unwrapped, forKey: .screenOrientation) }
-        if let unwrapped = screenWidth { try container.encode(unwrapped, forKey: .screenWidth) }
-        if let unwrapped = type { try container.encode(unwrapped, forKey: .type) }
+        return device
     }
 }

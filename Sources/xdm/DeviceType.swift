@@ -10,11 +10,28 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import Foundation
 
-enum DeviceType: String, Codable {
+enum DeviceType: String, Encodable {
     case mobile = "mobile"
     case tablet = "tablet"
     case desktop = "desktop"
     case tvScreens = "tv screens"
+
+    /// Creates a new `DeviceType` from the already known `AEPServices.DeviceType`
+    /// - Parameter servicesDeviceType: a `AEPServices.DeviceType` value
+    /// - Returns: The `servicesDeviceType` mapped to an `AEPEdge.DeviceType`, nil if no mappings found
+    static func from(servicesDeviceType: AEPServices.DeviceType) -> DeviceType? {
+        switch servicesDeviceType {
+        case .PHONE:
+            return .mobile
+        case .PAD:
+            return .tablet
+        case .TV:
+            return .tvScreens
+        default:
+            return nil
+        }
+    }
 }

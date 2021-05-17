@@ -10,9 +10,24 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import Foundation
 
 enum ScreenOrientation: String, Encodable {
     case portrait
     case landscape
+
+    /// Creates a `ScreenOrientation` from a `DeviceOrientation`
+    /// - Parameter deviceOrientation: a `DeviceOrientation`
+    /// - Returns: The `ScreenOrientation` corresponding to the `DeviceOrientation`, nil if no match found
+    static func from(deviceOrientation: DeviceOrientation) -> ScreenOrientation? {
+        switch deviceOrientation {
+        case .PORTRAIT:
+            return .portrait
+        case .LANDSCAPE:
+            return .landscape
+        default:
+            return nil
+        }
+    }
 }

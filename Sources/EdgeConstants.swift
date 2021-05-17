@@ -73,6 +73,17 @@ enum EdgeConstants {
 
         enum Lifecycle {
             static let STATE_OWNER_NAME = "com.adobe.module.lifecycle"
+            static let CONTEXT_DATA = "lifecyclecontextdata"
+            enum ContextData {
+                static let INSTALL_EVENT = "installevent"
+                static let LAUNCH_EVENT = "launchevent"
+                static let UPGRADE_EVENT = "upgradeevent"
+                static let PREV_SESSION_LENGTH = "prevsessionlength"
+                static let INSTALL_DATE = "installdate"
+                static let RUN_MODE = "runmode"
+                static let LOCALE = "locale"
+                static let DATE_FORMAT = "MM/dd/yyyy"
+            }
         }
 
         enum Consent {

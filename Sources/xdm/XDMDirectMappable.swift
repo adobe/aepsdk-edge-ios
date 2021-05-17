@@ -12,21 +12,10 @@
 
 import Foundation
 
-enum ConnectionType: String, Encodable {
-    case dialup = "dialup" // Dial-up
-    case isdn = "isdn" // ISDN
-    case bisdn = "bisdn" // BISDN
-    case dsl = "dsl" // DSL
-    case cable = "cable" // Cable
-    case wirelessWifi = "wireless_wifi" // Wireless wifi
-    case mobile = "mobile" // Mobile
-    case mobileEdge = "mobile_edge" // Mobile Edge
-    case mobile2g = "mobile_2g" // Mobile 2G
-    case mobile3g = "mobile_3g" // Mobile 3G
-    case mobileLte = "mobile_lte" // Mobile LTE
-    case t1 = "t1" // T1
-    case t3 = "t3" // T3
-    case oc3 = "oc3" // OC3
-    case lan = "lan" // LAN
-    case modem = "modem" // Modem
+/// Represents a type that can take data in the form from a direct solution and map to XDM data
+protocol XDMDirectMappable {
+
+    /// Creates a new `XDMDirectMappable` which is represented in the direct data
+    /// - Parameter data: The newly created `XDMDirectMappable`, nil if creation fails
+    static func fromDirect(data: [String: Any]) -> XDMDirectMappable?
 }

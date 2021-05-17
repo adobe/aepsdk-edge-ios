@@ -10,16 +10,34 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPServices
 import Foundation
 
-struct Environment: Encodable {
+struct Environment: Encodable, XDMDirectMappable {
     init() {}
 
     var carrier: String?
-    var connectionType: ConnectionType?
+    // Connection type not supported in iOS
     var language: String?
     var operatingSystemVendor: String?
     var operatingSystem: String?
     var operatingSystemVersion: String?
     var type: EnvironmentType?
+
+    static func fromDirect(data: [String: Any]) -> XDMDirectMappable? {
+        var env = Environment()
+
+        let systemInfoService = ServiceProvider.shared.systemInfoService
+        env.carrier = systemInfoService.getMobileCarrierName()
+        env.operatingSystemVendor = systemInfoService.getCanonicalPlatformName()
+        env.operatingSystem = systemInfoService.getOperatingSystemName()
+        env.operatingSystemVersion = systemInfoService.getOperatingSystemVersion()
+
+        if let lifecycleContextData = data[EdgeConstants.SharedState.Lifecycle.CONTEXT_DATA] as? [String: Any] {
+            env.type = EnvironmentType.from(runMode: lifecycleContextData[EdgeConstants.SharedState.Lifecycle.ContextData.RUN_MODE] as? String)
+            env.language = lifecycleContextData[EdgeConstants.SharedState.Lifecycle.ContextData.LOCALE] as? String
+        }
+
+        return env
+    }
 }
