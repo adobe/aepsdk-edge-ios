@@ -30,6 +30,7 @@
 		21888AF32555F9FC005677ED /* FileManager+Testable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21888AF22555F9FC005677ED /* FileManager+Testable.swift */; };
 		2198DEE22604F8BE008ADB6A /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2198DEE12604F8BE008ADB6A /* Atomic.swift */; };
 		2198DEE826050458008ADB6A /* AtomicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2198DEE726050458008ADB6A /* AtomicTests.swift */; };
+		21C0F88A2627B9D9003872DC /* EdgeEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C0F8892627B9D9003872DC /* EdgeEndpoint.swift */; };
 		21D7B7B22562F89C0010AE25 /* EdgeEventWarning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */; };
 		21FFBD5925631E3E00B48A8F /* EdgeEventWarningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */; };
 		21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */; };
@@ -266,6 +267,7 @@
 		21888AF22555F9FC005677ED /* FileManager+Testable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Testable.swift"; sourceTree = "<group>"; };
 		2198DEE12604F8BE008ADB6A /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		2198DEE726050458008ADB6A /* AtomicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtomicTests.swift; sourceTree = "<group>"; };
+		21C0F8892627B9D9003872DC /* EdgeEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEndpoint.swift; sourceTree = "<group>"; };
 		21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarning.swift; sourceTree = "<group>"; };
 		21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarningTests.swift; sourceTree = "<group>"; };
 		21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventErrorTests.swift; sourceTree = "<group>"; };
@@ -626,6 +628,7 @@
 			isa = PBXGroup;
 			children = (
 				2198DEE12604F8BE008ADB6A /* Atomic.swift */,
+				21C0F8892627B9D9003872DC /* EdgeEndpoint.swift */,
 				216989642554B39900B2752C /* EdgeHit.swift */,
 				211BCB8026030DCD00AACFEF /* EdgeDataEntity.swift */,
 				D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */,
@@ -1384,6 +1387,7 @@
 				D4C6B43F251A76CB0038F4F9 /* EdgeResponse.swift in Sources */,
 				D4C6B440251A76CB0038F4F9 /* EdgeNetworkService.swift in Sources */,
 				D4C6B442251A76CB0038F4F9 /* KonductorConfig.swift in Sources */,
+				21C0F88A2627B9D9003872DC /* EdgeEndpoint.swift in Sources */,
 				D4145FD325DCB3890019EA4C /* ConsentEdgeHit.swift in Sources */,
 				D4145FCD25DCB3270019EA4C /* ExperienceEventsEdgeHit.swift in Sources */,
 				D4C6B443251A76CB0038F4F9 /* NetworkResponseCallback.swift in Sources */,
@@ -1621,7 +1625,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1655,7 +1659,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
