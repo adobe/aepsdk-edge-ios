@@ -1,109 +1,68 @@
 PODS:
-  - ACPCore (2.9.9):
+  - ACPCore (2.9.3):
+    - ACPCore/main (= 2.9.3)
+  - ACPCore/main (2.9.3)
+  - AEPAssurance (1.1.1):
+    - ACPCore (>= 2.9.0)
+    - AEPAssurance/xcframeworks (= 1.1.1)
+  - AEPAssurance/xcframeworks (1.1.1):
+    - ACPCore (>= 2.9.0)
+  - AEPCore (3.1.3):
+    - AEPRulesEngine (= 1.0.1)
+    - AEPServices (= 3.1.3)
+  - AEPEdge (1.1.1):
+    - AEPCore (>= 3.1.1)
+    - AEPEdgeIdentity
+  - AEPEdgeIdentity (1.0.0):
+    - AEPCore (>= 3.1.1)
+  - AEPIdentity (3.1.3):
+    - AEPCore (= 3.1.3)
+  - AEPLifecycle (3.1.3):
+    - AEPCore (= 3.1.3)
+  - AEPRulesEngine (1.0.1)
+  - AEPServices (3.1.3)
+  - AEPSignal (3.1.3):
+    - AEPCore (= 3.1.3)
+
+DEPENDENCIES:
+  - ACPCore
+  - AEPAssurance
+  - AEPCore
+  - AEPEdge (from `../../`)
+  - AEPEdgeIdentity
+  - AEPIdentity
+  - AEPLifecycle
+  - AEPServices
+  - AEPSignal
+
+SPEC REPOS:
+  trunk:
+    - ACPCore
+    - AEPAssurance
     - AEPCore
+    - AEPEdgeIdentity
     - AEPIdentity
     - AEPLifecycle
     - AEPRulesEngine
     - AEPServices
     - AEPSignal
-  - AEPAssurance (1.1.0):
-    - ACPCore (>= 2.9.0)
-    - AEPAssurance/xcframeworks (= 1.1.0)
-  - AEPAssurance/xcframeworks (1.1.0):
-    - ACPCore (>= 2.9.0)
-  - AEPCore (3.1.1):
-    - AEPRulesEngine (= 1.0.0)
-    - AEPServices (= 3.1.1)
-  - AEPEdge (1.1.0):
-    - AEPCore (>= 3.1.1)
-    - AEPEdgeIdentity
-  - AEPEdgeIdentity (1.0.0):
-    - AEPCore (>= 3.1.1)
-  - AEPIdentity (3.1.1):
-    - AEPCore (= 3.1.1)
-  - AEPLifecycle (3.1.1):
-    - AEPCore (= 3.1.1)
-  - AEPRulesEngine (1.0.0)
-  - AEPServices (3.1.1)
-  - AEPSignal (3.1.1):
-    - AEPCore (= 3.1.1)
-
-DEPENDENCIES:
-  - ACPCore (from `https://github.com/adobe/aep-sdk-compatibility-ios.git`, branch `main`)
-  - AEPAssurance
-  - AEPCore (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `staging`)
-  - AEPEdge (from `../../`)
-  - "AEPEdgeIdentity (from `git@github.com:adobe/aepsdk-edgeidentity-ios.git`, branch `staging`)"
-  - AEPIdentity (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `staging`)
-  - AEPLifecycle (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `staging`)
-  - AEPServices (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `staging`)
-  - AEPSignal (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `staging`)
-
-SPEC REPOS:
-  trunk:
-    - AEPAssurance
-    - AEPRulesEngine
 
 EXTERNAL SOURCES:
-  ACPCore:
-    :branch: main
-    :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
-  AEPCore:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPEdge:
     :path: "../../"
-  AEPEdgeIdentity:
-    :branch: staging
-    :git: "git@github.com:adobe/aepsdk-edgeidentity-ios.git"
-  AEPIdentity:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPLifecycle:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPServices:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPSignal:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-
-CHECKOUT OPTIONS:
-  ACPCore:
-    :commit: deec3800bce117f7f760eb6644af4559489c2aae
-    :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
-  AEPCore:
-    :commit: 6eb99ca4ec73a407eaf27f36633ae4903c859e82
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPEdgeIdentity:
-    :commit: 637e642990010a5e56fd8ac9743cd2c9ffcea09c
-    :git: "git@github.com:adobe/aepsdk-edgeidentity-ios.git"
-  AEPIdentity:
-    :commit: 6eb99ca4ec73a407eaf27f36633ae4903c859e82
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPLifecycle:
-    :commit: 6eb99ca4ec73a407eaf27f36633ae4903c859e82
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPServices:
-    :commit: 6eb99ca4ec73a407eaf27f36633ae4903c859e82
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPSignal:
-    :commit: 6eb99ca4ec73a407eaf27f36633ae4903c859e82
-    :git: https://github.com/adobe/aepsdk-core-ios.git
 
 SPEC CHECKSUMS:
-  ACPCore: 67e4b855bf16cfb6a63024a4ddb73d15c0fd30e5
-  AEPAssurance: c9c21b7e57bf993db210766631db2ef3732d4fa4
-  AEPCore: 46ed4c5ed27ba49490990e397bb7454cf9906601
-  AEPEdge: 818ca6ea6ac1a9e16a876036c78908996033599f
+  ACPCore: 5f00fcf7aba597b29b359e4c14f7f4f1f95503f3
+  AEPAssurance: b62fc1be16efbc8d137b945b29da7e5ec7c7965a
+  AEPCore: 6ec14ec9b1ff45999ea53be112aba85522ad00c4
+  AEPEdge: ff0cf67e25c342a7a9d48e9a77e9485869dad043
   AEPEdgeIdentity: 40d312b4434b710a46c1738ab2a221dda4cfd67e
-  AEPIdentity: 017d2ee5e49dd7a7cd29761339c535924e89d968
-  AEPLifecycle: 580d11bb4262e7b154751540852a2ff9febbde0d
-  AEPRulesEngine: 8bbc694fce6900cd33b2496c7d4b33ee2eeffc46
-  AEPServices: bdd8a78f1d6cda0165f6a58e42cce0d7e9f43ae1
-  AEPSignal: 4259aed43857c9e0ae89590a682c6d12865b7ce3
+  AEPIdentity: 49e6c742238be0f77d5ae8928c13acfd1d8bec3c
+  AEPLifecycle: 9ed7ceabd98cc5c94b13c3b085c9f1eef2c714fe
+  AEPRulesEngine: 5075ed294026a12e37bd26fe260f74604d205354
+  AEPServices: e032bfacfcb31f3a583b2aa1e87df5d427cca95d
+  AEPSignal: c0619814fbf50dbb1dde4e79141d528aa2606e9e
 
-PODFILE CHECKSUM: 7387fd5b54b6330d3c7c54c99b5534b39707772b
+PODFILE CHECKSUM: 472a5cbff61ec98fdaf4bda641c412518ea987e4
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1

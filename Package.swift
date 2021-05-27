@@ -22,11 +22,11 @@ let package = Package(
         .library(name: "AEPEdge", targets: ["AEPEdge"])
     ],
     dependencies: [
-        .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .branch("main"))
+        .package(url: "https://github.com/adobe/aepsdk-core-ios.git", from: "3.1.1"),
     ],
     targets: [
         .target(name: "AEPEdge",
-                dependencies: ["AEPCore"],
+                dependencies: ["AEPCore", .product(name: "AEPServices", package: "AEPCore")],
                 path: "Sources"),
         .testTarget(name: "AEPDemoAppSwiftUI",
                     dependencies: ["AEPEdge", "AEPIdentity"],
