@@ -61,8 +61,8 @@ dependencies: [
 	.package(url: "https://github.com/adobe/aepsdk-edge-ios.git", from: "1.1.0"),
 targets: [
    	.target(name: "YourTarget",
-    				dependencies: ["AEPEdge"],
-          	path: "your/path"),
+    		dependencies: ["AEPEdge"],
+          	path: "your/path")
     ]
 ]
 ```
