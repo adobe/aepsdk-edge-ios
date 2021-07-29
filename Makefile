@@ -62,7 +62,7 @@ install-githook:
 	./tools/git-hooks/setup.sh
 
 lint-autocorrect:
-	(swiftlint autocorrect --format)
+	(swiftlint --fix --format)
 
 lint:
 	(swiftlint lint Sources SampleApps/AEPCommerceDemoApp)

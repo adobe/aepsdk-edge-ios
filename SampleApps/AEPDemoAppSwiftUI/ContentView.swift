@@ -29,15 +29,15 @@ struct ContentView: View {
                     let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                                           data: ["data": ["test": "data"]])
                     Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
-                            let encoder = JSONEncoder()
-                            encoder.outputFormatting = .prettyPrinted
-                            guard let data = try? encoder.encode(handles) else {
-                                self.dataContent = "failed to encode EdgeEventHandle"
-                                return
-                            }
-                            self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
-                        })
+                        let encoder = JSONEncoder()
+                        encoder.outputFormatting = .prettyPrinted
+                        guard let data = try? encoder.encode(handles) else {
+                            self.dataContent = "failed to encode EdgeEventHandle"
+                            return
+                        }
+                        self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
                     })
+                })
                 .frame(maxWidth: .infinity)
                 .padding()
             }.background(Color("InputColor1"))
@@ -105,18 +105,18 @@ struct ContentView: View {
             self.getECID()
         }
     }
-    
+
     private func getECID() {
         Identity.getExperienceCloudId { value, error in
             if error != nil {
                 self.ecid = ""
                 return
             }
-            
+
             self.ecid = value ?? ""
         }
     }
-    
+
     private func updateIdentities() {
         let map = IdentityMap()
         map.add(item: IdentityItem.init(id: "primary@email.com", authenticatedState: .ambiguous, primary: true), withNamespace: "Email")
@@ -126,12 +126,12 @@ struct ContentView: View {
         Identity.updateIdentities(with: map)
         getIdentities()
     }
-    
+
     private func removeIdentities() {
         Identity.removeIdentity(item: IdentityItem(id: "secondary@email.com"), withNamespace: "Email")
         getIdentities()
     }
-    
+
     private func getIdentities() {
         Identity.getIdentities { identityMap, _ in
             if let identityMap = identityMap {
@@ -147,7 +147,7 @@ struct ContentView: View {
             }
         }
     }
-    
+
     private func getConsents() {
         Consent.getConsents { consents, error in
             guard error == nil, let consents = consents else { return }
@@ -156,7 +156,7 @@ struct ContentView: View {
             self.dataContent = jsonStr
         }
     }
-    
+
 }
 
 struct ContentView_Previews: PreviewProvider {

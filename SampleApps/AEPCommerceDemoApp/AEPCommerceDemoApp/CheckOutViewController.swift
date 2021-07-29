@@ -31,7 +31,7 @@ class CheckOutViewController: UIViewController {
         static let allValues = [cash, visa, master, amex]
     }
 
-    private var selectedPaymentMethod: String  = "Cash"
+    private var selectedPaymentMethod: String = "Cash"
 
     override func viewDidLoad() {
         super.viewDidLoad()
