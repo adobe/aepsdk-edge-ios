@@ -19,7 +19,7 @@ done
 
 if [ "$count" -ne 0 ]; then
 	export SCRIPT_INPUT_FILE_COUNT=$count
-	$SWIFTLINT autocorrect --config $CONFIG --use-script-input-files --force-exclude --format
+	$SWIFTLINT --fix --config $CONFIG --use-script-input-files --force-exclude --format
 else
 	echo "No files to lint!"
 	exit 0
