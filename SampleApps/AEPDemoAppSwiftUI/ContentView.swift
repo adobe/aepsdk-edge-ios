@@ -18,7 +18,6 @@ import AEPServices
 import SwiftUI
 
 struct ContentView: View {
-    // swiftlint:disable multiple_closures_with_trailing_closure
     @State private var ecid: String = ""
     @State private var dataContent: String = "data is displayed here"
     var body: some View {
