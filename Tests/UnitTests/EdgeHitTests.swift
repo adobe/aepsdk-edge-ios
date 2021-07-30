@@ -38,7 +38,10 @@ class EdgeHitTests: XCTestCase {
         XCTAssertNil(edgeHit1.getStreamingSettings())
 
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
-        let edgeHit2 = ExperienceEventsEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil), xdm: nil, events: [["test": "data"]]))
+        let edgeHit2 = ExperienceEventsEdgeHit(edgeEndpoint: .production,
+                                               configId: CONFIG_ID,
+                                               request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil),
+                                                                    xdm: nil, events: [["test": "data"]]))
         XCTAssertNotNil(edgeHit2.getStreamingSettings())
     }
 
@@ -67,7 +70,9 @@ class EdgeHitTests: XCTestCase {
                 """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
         let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
-        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil), xdm: nil, events: [["test": "data"]]))
+        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: .production,
+                                              configId: CONFIG_ID,
+                                              request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil), xdm: nil, events: [["test": "data"]]))
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
