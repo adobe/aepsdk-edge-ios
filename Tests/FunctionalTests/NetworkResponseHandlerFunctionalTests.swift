@@ -99,7 +99,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     func testProcessResponseOnError_WhenValidEventIndex_dispatchesPairedEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
         let requestId = "123"
-        let jsonError =  "{\n" +
+        let jsonError = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [],\n" +
             "      \"errors\": [\n" +
@@ -133,7 +133,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     func testProcessResponseOnError_WhenUnknownEventIndex_doesNotCrash() {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
         let requestId = "123"
-        let jsonError =  "{\n" +
+        let jsonError = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [],\n" +
             "      \"errors\": [\n" +
@@ -165,7 +165,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     func testProcessResponseOnError_WhenUnknownRequestId_doesNotCrash() {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
         let requestId = "123"
-        let jsonError =  "{\n" +
+        let jsonError = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [],\n" +
             "      \"errors\": [\n" +
@@ -197,7 +197,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     func testProcessResponseOnError_WhenTwoEventJsonError_dispatchesTwoEvents() {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 2)
         let requestId = "123"
-        let jsonError =  "{\n" +
+        let jsonError = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [],\n" +
             "      \"errors\": [\n" +

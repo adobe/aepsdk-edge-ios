@@ -106,6 +106,16 @@ You can run all the test suites from command line:
 make test
 ~~~
 
+### Code Style
+
+This project uses [SwiftLint](https://github.com/realm/SwiftLint) to check and enforce the Swift style and conventions. Style checks are automatically applied when the project is built from Xcode.
+
+To install the necessary tools and enable the Git pre-commit hook to autocorrect the style on each commit, run the following to update the project's git config `core.hooksPath`:
+
+~~~
+make setup-tools
+~~~
+
 ## Related Projects
 
 | Project                                                      | Description                                                  |
