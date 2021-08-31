@@ -58,12 +58,12 @@ Alternatively, if your project has a `Package.swift` file, you can add AEPEdge d
 
 ```
 dependencies: [
-	.package(url: "https://github.com/adobe/aepsdk-edge-ios.git", from: "1.1.0"),
+	.package(url: "https://github.com/adobe/aepsdk-edge-ios.git", .upToNextMajor(from: "1.1.0"))
+],
 targets: [
    	.target(name: "YourTarget",
-    				dependencies: ["AEPEdge"],
-          	path: "your/path"),
-    ]
+    		dependencies: ["AEPEdge"],
+          	path: "your/path")
 ]
 ```
 
@@ -104,6 +104,16 @@ You can run all the test suites from command line:
 
 ~~~
 make test
+~~~
+
+### Code Style
+
+This project uses [SwiftLint](https://github.com/realm/SwiftLint) to check and enforce the Swift style and conventions. Style checks are automatically applied when the project is built from Xcode.
+
+To install the necessary tools and enable the Git pre-commit hook to autocorrect the style on each commit, run the following to update the project's git config `core.hooksPath`:
+
+~~~
+make setup-tools
 ~~~
 
 ## Related Projects

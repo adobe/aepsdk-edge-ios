@@ -35,7 +35,7 @@ class AssuranceViewController: UIViewController {
             if assuranceURLText.contains(AEPDemoConstants.Strings.assuranceUrlValidationString) {
                 if let url = URL(string: assuranceURLText) {
                     isConnected = true
-                    AEPAssurance.startSession(url)
+                    Assurance.startSession(url: url)
                 } else {
                     snackbar(message: AEPDemoConstants.Strings.assuranceUrlInvalid)
                 }

@@ -29,7 +29,6 @@ target 'AEPDemoAppSwiftUI' do
   pod 'AEPSignal'
   pod 'AEPEdgeIdentity'
   pod 'AEPEdgeConsent'
-  pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
   pod 'AEPAssurance'
 end
 
@@ -40,6 +39,5 @@ target 'AEPCommerceDemoApp' do
   pod 'AEPIdentity'
   pod 'AEPSignal'
   pod 'AEPEdgeIdentity'
-  pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
   pod 'AEPAssurance'
 end

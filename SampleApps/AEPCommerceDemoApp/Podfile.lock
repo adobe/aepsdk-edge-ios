@@ -1,28 +1,26 @@
 PODS:
-  - ACPCore (2.9.3):
-    - ACPCore/main (= 2.9.3)
-  - ACPCore/main (2.9.3)
-  - AEPAssurance (1.1.1):
-    - ACPCore (>= 2.9.0)
-    - AEPAssurance/xcframeworks (= 1.1.1)
-  - AEPAssurance/xcframeworks (1.1.1):
-    - ACPCore (>= 2.9.0)
-  - AEPCore (3.1.3):
+  - ACPCore (2.9.4):
+    - ACPCore/main (= 2.9.4)
+  - ACPCore/main (2.9.4)
+  - AEPAssurance (3.0.0):
+    - AEPCore (>= 3.1.0)
+    - AEPServices (>= 3.1.0)
+  - AEPCore (3.2.4):
     - AEPRulesEngine (= 1.0.1)
-    - AEPServices (= 3.1.3)
-  - AEPEdge (1.1.1):
+    - AEPServices (= 3.2.4)
+  - AEPEdge (1.1.2):
     - AEPCore (>= 3.1.1)
     - AEPEdgeIdentity
   - AEPEdgeIdentity (1.0.0):
     - AEPCore (>= 3.1.1)
-  - AEPIdentity (3.1.3):
-    - AEPCore (= 3.1.3)
-  - AEPLifecycle (3.1.3):
-    - AEPCore (= 3.1.3)
+  - AEPIdentity (3.2.4):
+    - AEPCore (= 3.2.4)
+  - AEPLifecycle (3.2.4):
+    - AEPCore (= 3.2.4)
   - AEPRulesEngine (1.0.1)
-  - AEPServices (3.1.3)
-  - AEPSignal (3.1.3):
-    - AEPCore (= 3.1.3)
+  - AEPServices (3.2.4)
+  - AEPSignal (3.2.4):
+    - AEPCore (= 3.2.4)
 
 DEPENDENCIES:
   - ACPCore
@@ -52,16 +50,16 @@ EXTERNAL SOURCES:
     :path: "../../"
 
 SPEC CHECKSUMS:
-  ACPCore: 5f00fcf7aba597b29b359e4c14f7f4f1f95503f3
-  AEPAssurance: b62fc1be16efbc8d137b945b29da7e5ec7c7965a
-  AEPCore: 6ec14ec9b1ff45999ea53be112aba85522ad00c4
-  AEPEdge: ff0cf67e25c342a7a9d48e9a77e9485869dad043
+  ACPCore: 7d09a5b7233d72fa7cb4369c99a8250fd7240305
+  AEPAssurance: 18068627111e366a851dc2166239f22b665101bd
+  AEPCore: 517f1375860222a12c6226c50d0782e51d27abf2
+  AEPEdge: 4208614f134d86131df95fd3420da20530fac275
   AEPEdgeIdentity: 40d312b4434b710a46c1738ab2a221dda4cfd67e
-  AEPIdentity: 49e6c742238be0f77d5ae8928c13acfd1d8bec3c
-  AEPLifecycle: 9ed7ceabd98cc5c94b13c3b085c9f1eef2c714fe
+  AEPIdentity: 6580a2a0359931cb7e32be934341df7d86ca73ed
+  AEPLifecycle: d822d28e71d201debfcbfc0f1c60cdee61412925
   AEPRulesEngine: 5075ed294026a12e37bd26fe260f74604d205354
-  AEPServices: e032bfacfcb31f3a583b2aa1e87df5d427cca95d
-  AEPSignal: c0619814fbf50dbb1dde4e79141d528aa2606e9e
+  AEPServices: ffa6f91c0799f0a8651d89978a4b2a3d024ee6c4
+  AEPSignal: 0be73545905731da4768d5ece48faf29b2cae764
 
 PODFILE CHECKSUM: 472a5cbff61ec98fdaf4bda641c412518ea987e4
 

@@ -213,6 +213,89 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertEqual(requestPayload?.events?[0]["query"]?.dictionaryValue?["key"] as? String, "value" )
     }
 
+    func testGetPayloadWithExperienceEventsDoesNotOverwriteTimestampWhenValidTimestampPresent() {
+        // setup
+        let testTimestamp = "2021-06-01T00:00:20Z"
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
+
+        let event = Event(name: "Request Test",
+                          type: "type",
+                          source: "source",
+                          data: ["data": ["key": "value"],
+                                 "xdm": ["application": ["name": "myapp"], "timestamp": testTimestamp]])
+
+        // test
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
+
+        // verify
+        XCTAssertNotNil(requestPayload)
+        XCTAssertEqual(1, requestPayload?.events?.count)
+        let flattenEvent = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
+        XCTAssertEqual(testTimestamp, flattenEvent["timestamp"] as? String)
+    }
+
+    func testGetPayloadWithExperienceEventsDoesNotOverwriteTimestampWhenInvalidTimestampPresent() {
+        // setup
+        let testTimestamp = "invalidTimestamp"
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
+
+        let event = Event(name: "Request Test",
+                          type: "type",
+                          source: "source",
+                          data: ["data": ["key": "value"],
+                                 "xdm": ["application": ["name": "myapp"], "timestamp": testTimestamp]])
+
+        // test
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
+
+        // verify
+        XCTAssertNotNil(requestPayload)
+        XCTAssertEqual(1, requestPayload?.events?.count)
+        let flattenEvent = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
+        XCTAssertEqual(testTimestamp, flattenEvent["timestamp"] as? String)
+    }
+
+    func testGetPayloadWithExperienceEventsSetsEventTimestampWhenProvidedTimestampIsEmpty() {
+        // setup
+        let testTimestamp = ""
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
+
+        let event = Event(name: "Request Test",
+                          type: "type",
+                          source: "source",
+                          data: ["data": ["key": "value"],
+                                 "xdm": ["application": ["name": "myapp"], "timestamp": testTimestamp]])
+
+        // test
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
+
+        // verify
+        XCTAssertNotNil(requestPayload)
+        XCTAssertEqual(1, requestPayload?.events?.count)
+        let flattenEvent = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
+        XCTAssertEqual(XDMFormatters.dateToISO8601String(from: event.timestamp), flattenEvent["timestamp"] as? String)
+    }
+
+    func testGetPayloadWithExperienceEventsSetsEventTimestampWhenProvidedTimestampIsMissing() {
+        // setup
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
+
+        let event = Event(name: "Request Test",
+                          type: "type",
+                          source: "source",
+                          data: ["data": ["key": "value"],
+                                 "xdm": ["application": ["name": "myapp"]]])
+
+        // test
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
+
+        // verify
+        XCTAssertNotNil(requestPayload)
+        XCTAssertEqual(1, requestPayload?.events?.count)
+        let flattenEvent = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
+        XCTAssertEqual(XDMFormatters.dateToISO8601String(from: event.timestamp), flattenEvent["timestamp"] as? String)
+    }
+
     private func buildIdentityMap() -> [String: Any]? {
         guard let identityMapData = """
         {

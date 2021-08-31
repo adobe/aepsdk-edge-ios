@@ -85,7 +85,7 @@ class ProductViewController: UIViewController {
         let product = Product(productData: prodData, quantity: qtyOrdered)
         adbMobileShoppingCart.add(product: product)
 
-        let message  = "\(product.quantity) quantities of " + product.productData.name + AEPDemoConstants.Strings.itemAddedMsg
+        let message = "\(product.quantity) quantities of " + product.productData.name + AEPDemoConstants.Strings.itemAddedMsg
         snackbar(message: message)
         CommerceUtil.sendProductListAddXdmEvent(productData: prodData, quantity: qtyOrdered)
     }
