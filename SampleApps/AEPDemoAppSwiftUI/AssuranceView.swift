@@ -11,9 +11,7 @@
 //
 
 import AEPAssurance
-import AEPCore
 import SwiftUI
-import UIKit
 
 struct AssuranceView: View {
     @State private var assuranceSessionUrl: String = ""
