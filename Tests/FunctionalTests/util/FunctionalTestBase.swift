@@ -307,8 +307,7 @@ class FunctionalTestBase: XCTestCase {
     func getFlattenNetworkRequestBody(_ networkRequest: NetworkRequest, file: StaticString = #file, line: UInt = #line) -> [String: Any] {
 
         if !networkRequest.connectPayload.isEmpty {
-            let data = Data(networkRequest.connectPayload.utf8)
-            if let payloadAsDictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+            if let payloadAsDictionary = try? JSONSerialization.jsonObject(with: networkRequest.connectPayload, options: []) as? [String: Any] {
                 return flattenDictionary(dict: payloadAsDictionary)
             } else {
                 XCTFail("Failed to parse networkRequest.connectionPayload to JSON", file: file, line: line)
