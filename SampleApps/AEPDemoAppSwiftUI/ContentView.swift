@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPAssurance
 import AEPCore
 import AEPEdge
 import AEPEdgeConsent
@@ -20,88 +21,94 @@ import SwiftUI
 struct ContentView: View {
     @State private var ecid: String = ""
     @State private var dataContent: String = "data is displayed here"
+
     var body: some View {
-        VStack {
+        NavigationView {
             VStack {
-                Text("Edge").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
-                Button("Send Event", action: {
-                    let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                                          data: ["data": ["test": "data"]])
-                    Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
-                        let encoder = JSONEncoder()
-                        encoder.outputFormatting = .prettyPrinted
-                        guard let data = try? encoder.encode(handles) else {
-                            self.dataContent = "failed to encode EdgeEventHandle"
-                            return
-                        }
-                        self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
-                    })
-                })
-                .frame(maxWidth: .infinity)
-                .padding()
-            }.background(Color("InputColor1"))
-            VStack {
-                Text("Collect Consent").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
-                HStack {
-                    Spacer()
-                    Button("Yes", action: {
-                        Consent.update(with: ["consents": ["collect": ["val": "y"]]])
-                        self.getConsents()
-                    })
-                    Spacer()
-                    Button("No", action: {
-                        Consent.update(with: ["consents": ["collect": ["val": "n"]]])
-                        self.getConsents()
-                    })
-                    Spacer()
-                    Button("Pending", action: {
-                        Consent.update(with: ["consents": ["collect": ["val": "p"]]])
-                        self.getConsents()
-                    })
-                    Spacer()
-                    Button("Get Consents", action: {
-                        self.getConsents()
-                    })
-                    Spacer()
-                }.padding()
-            }.background(Color("InputColor2"))
-            VStack {
-                Text("Edge Identity").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
-                HStack(alignment: .top) {
-                    Spacer()
-                    Button("Update", action: {
-                        self.updateIdentities()
-                    })
-                    Spacer()
-                    Button("Remove", action: {
-                        self.removeIdentities()
-                    })
-                    Spacer()
-                    Button("Get Identities", action: {
-                        self.getIdentities()
-                    })
-                    Spacer()
-                }.padding()
-            }.background(Color("InputColor1"))
-            VStack {
-                Text("Mobile Core").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
-                HStack {
-                    Button("Reset IDs", action: {
-                        MobileCore.resetIdentities()
-                    }).padding()
+                NavigationLink(destination: AssuranceView()) {
+                    Text("Assurance")
                 }
-            }.background(Color("InputColor2"))
-            Divider()
-            VStack {
-                Text("ECID:").bold().frame(maxWidth: .infinity, alignment: .leading).padding(10)
-                Text(ecid)
+                VStack {
+                    Text("Edge").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
+                    Button("Send Event", action: {
+                        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                                              data: ["data": ["test": "data"]])
+                        Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
+                            let encoder = JSONEncoder()
+                            encoder.outputFormatting = .prettyPrinted
+                            guard let data = try? encoder.encode(handles) else {
+                                self.dataContent = "failed to encode EdgeEventHandle"
+                                return
+                            }
+                            self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+                        })
+                    })
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                }.background(Color("InputColor1"))
+                VStack {
+                    Text("Collect Consent").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
+                    HStack {
+                        Spacer()
+                        Button("Yes", action: {
+                            Consent.update(with: ["consents": ["collect": ["val": "y"]]])
+                            self.getConsents()
+                        })
+                        Spacer()
+                        Button("No", action: {
+                            Consent.update(with: ["consents": ["collect": ["val": "n"]]])
+                            self.getConsents()
+                        })
+                        Spacer()
+                        Button("Pending", action: {
+                            Consent.update(with: ["consents": ["collect": ["val": "p"]]])
+                            self.getConsents()
+                        })
+                        Spacer()
+                        Button("Get Consents", action: {
+                            self.getConsents()
+                        })
+                        Spacer()
+                    }.padding()
+                }.background(Color("InputColor2"))
+                VStack {
+                    Text("Edge Identity").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
+                    HStack(alignment: .top) {
+                        Spacer()
+                        Button("Update", action: {
+                            self.updateIdentities()
+                        })
+                        Spacer()
+                        Button("Remove", action: {
+                            self.removeIdentities()
+                        })
+                        Spacer()
+                        Button("Get Identities", action: {
+                            self.getIdentities()
+                        })
+                        Spacer()
+                    }.padding()
+                }.background(Color("InputColor1"))
+                VStack {
+                    Text("Mobile Core").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
+                    HStack {
+                        Button("Reset IDs", action: {
+                            MobileCore.resetIdentities()
+                        }).padding()
+                    }
+                }.background(Color("InputColor2"))
+                Divider()
+                VStack {
+                    Text("ECID:").bold().frame(maxWidth: .infinity, alignment: .leading).padding(10)
+                    Text(ecid)
+                }
+                Divider()
+                ScrollView {
+                    Text(dataContent).frame(maxWidth: .infinity, maxHeight: .infinity)
+                }.background(Color(red: 0.97, green: 0.97, blue: 0.97, opacity: 1))
+            }.onAppear {
+                self.getECID()
             }
-            Divider()
-            ScrollView {
-                Text(dataContent).frame(maxWidth: .infinity, maxHeight: .infinity)
-            }.background(Color(red: 0.97, green: 0.97, blue: 0.97, opacity: 1))
-        }.onAppear {
-            self.getECID()
         }
     }
 

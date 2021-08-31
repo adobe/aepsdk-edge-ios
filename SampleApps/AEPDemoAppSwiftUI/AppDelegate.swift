@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPAssurance
 import AEPCore
 import AEPEdge
 import AEPEdgeConsent
@@ -26,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         MobileCore.setLogLevel(.debug)
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
-        MobileCore.registerExtensions([Identity.self, Edge.self, Consent.self])
+        MobileCore.registerExtensions([Identity.self, Edge.self, Consent.self, Assurance.self])
         return true
     }
 
@@ -38,9 +39,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
 
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+    // To handle deeplink on iOS versions 12 and below
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        Assurance.startSession(url: url)
+        return true
     }
 }

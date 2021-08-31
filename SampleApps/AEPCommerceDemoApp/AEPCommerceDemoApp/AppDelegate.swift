@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-import ACPCore
 import AEPAssurance
 import AEPCore
 import AEPEdge
@@ -27,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         MobileCore.setLogLevel(.trace)
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
-        MobileCore.registerExtensions([Identity.self, Edge.self, AEPAssurance.self])
+        MobileCore.registerExtensions([Identity.self, Edge.self, Assurance.self])
 
         return true
     }
@@ -40,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // To handle deeplink on iOS versions 12 and below
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        AEPAssurance.startSession(url)
+        Assurance.startSession(url: url)
         return true
     }
 }

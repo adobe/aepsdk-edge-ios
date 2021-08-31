@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPAssurance
 import SwiftUI
 import UIKit
 
@@ -60,6 +61,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
+    }
+
+    @available(iOS 13.0, *)
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        // to note : this method is not called when an app not in memory (forceclosed) is opened with deeplink
+        if let url = URLContexts.first?.url {
+            Assurance.startSession(url: url)
+        }
     }
 
 }
