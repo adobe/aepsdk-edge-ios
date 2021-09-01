@@ -14,7 +14,6 @@ target 'AEPCommerceDemoApp' do
   pod 'AEPIdentity'
   pod 'AEPSignal'
   pod 'AEPEdgeIdentity'
-  pod 'ACPCore'
   pod 'AEPAssurance'
 
 end
