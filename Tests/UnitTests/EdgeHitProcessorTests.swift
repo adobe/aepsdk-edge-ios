@@ -243,7 +243,7 @@ class EdgeHitProcessorTests: XCTestCase {
         // setup
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, event -> SharedStateResult? in
+                                        getSharedState: { extensionName, _ -> SharedStateResult? in
                                             if extensionName == self.CONFIGURATION_SHARED_STATE {
                                                 return SharedStateResult(status: .set, value: [self.EDGE_CONFIG_ID: "test-config-id", self.EDGE_ENV: "invalid-env"])
                                             }
@@ -267,7 +267,7 @@ class EdgeHitProcessorTests: XCTestCase {
         // setup
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, event -> SharedStateResult? in
+                                        getSharedState: { extensionName, _ -> SharedStateResult? in
                                             if extensionName == self.CONFIGURATION_SHARED_STATE {
                                                 return SharedStateResult(status: .set, value: [self.EDGE_CONFIG_ID: "test-config-id", self.EDGE_ENV: "prod"])
                                             }
@@ -291,7 +291,7 @@ class EdgeHitProcessorTests: XCTestCase {
         // setup
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, event -> SharedStateResult? in
+                                        getSharedState: { extensionName, _ -> SharedStateResult? in
                                             if extensionName == self.CONFIGURATION_SHARED_STATE {
                                                 return SharedStateResult(status: .set, value: [self.EDGE_CONFIG_ID: "test-config-id", self.EDGE_ENV: "pre-prod"])
                                             }
@@ -315,7 +315,7 @@ class EdgeHitProcessorTests: XCTestCase {
         // setup
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, event -> SharedStateResult? in
+                                        getSharedState: { extensionName, _ -> SharedStateResult? in
                                             if extensionName == self.CONFIGURATION_SHARED_STATE {
                                                 return SharedStateResult(status: .set, value: [self.EDGE_CONFIG_ID: "test-config-id", self.EDGE_ENV: "int"])
                                             }

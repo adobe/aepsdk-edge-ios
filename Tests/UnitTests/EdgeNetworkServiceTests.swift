@@ -294,7 +294,7 @@ class EdgeNetworkServiceTests: XCTestCase {
 
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithValidJsonContent() {
         // setup
-        let stringResponseBody =  "{\n" +
+        let stringResponseBody = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [],\n" +
             "      \"errors\": [\n" +
@@ -682,7 +682,7 @@ class EdgeNetworkServiceTests: XCTestCase {
     }
 
     func testHandleNonStreamingResponse_WhenValidJsonWithNewLine_ShouldReturnResponse() {
-        let responseStr: String =  "{\"some\":\"thing\"},\n" +
+        let responseStr: String = "{\"some\":\"thing\"},\n" +
             "{" +
             "  \"may\": {" +
             "    \"include\": \"nested\"," +

@@ -1,34 +1,24 @@
 PODS:
-  - ACPCore (2.9.9):
-    - AEPCore
-    - AEPIdentity
-    - AEPLifecycle
-    - AEPRulesEngine
-    - AEPServices
-    - AEPSignal
-  - AEPAssurance (1.1.0):
-    - ACPCore (>= 2.9.0)
-    - AEPAssurance/xcframeworks (= 1.1.0)
-  - AEPAssurance/xcframeworks (1.1.0):
-    - ACPCore (>= 2.9.0)
-  - AEPCore (3.1.1):
-    - AEPRulesEngine (= 1.0.0)
-    - AEPServices (= 3.1.1)
+  - AEPAssurance (3.0.0):
+    - AEPCore (>= 3.1.0)
+    - AEPServices (>= 3.1.0)
+  - AEPCore (3.2.4):
+    - AEPRulesEngine (= 1.0.1)
+    - AEPServices (= 3.2.4)
   - AEPEdgeConsent (1.0.0):
     - AEPCore (>= 3.1.0)
   - AEPEdgeIdentity (1.0.0):
     - AEPCore (>= 3.1.1)
-  - AEPIdentity (3.1.1):
-    - AEPCore (= 3.1.1)
-  - AEPLifecycle (3.1.1):
-    - AEPCore (= 3.1.1)
-  - AEPRulesEngine (1.0.0)
-  - AEPServices (3.1.1)
-  - AEPSignal (3.1.1):
-    - AEPCore (= 3.1.1)
+  - AEPIdentity (3.2.4):
+    - AEPCore (= 3.2.4)
+  - AEPLifecycle (3.2.4):
+    - AEPCore (= 3.2.4)
+  - AEPRulesEngine (1.0.1)
+  - AEPServices (3.2.4)
+  - AEPSignal (3.2.4):
+    - AEPCore (= 3.2.4)
 
 DEPENDENCIES:
-  - ACPCore (from `https://github.com/adobe/aep-sdk-compatibility-ios.git`, branch `main`)
   - AEPAssurance
   - AEPCore
   - AEPEdgeConsent
@@ -50,28 +40,17 @@ SPEC REPOS:
     - AEPServices
     - AEPSignal
 
-EXTERNAL SOURCES:
-  ACPCore:
-    :branch: main
-    :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
-
-CHECKOUT OPTIONS:
-  ACPCore:
-    :commit: deec3800bce117f7f760eb6644af4559489c2aae
-    :git: https://github.com/adobe/aep-sdk-compatibility-ios.git
-
 SPEC CHECKSUMS:
-  ACPCore: 67e4b855bf16cfb6a63024a4ddb73d15c0fd30e5
-  AEPAssurance: c9c21b7e57bf993db210766631db2ef3732d4fa4
-  AEPCore: 46ed4c5ed27ba49490990e397bb7454cf9906601
+  AEPAssurance: 18068627111e366a851dc2166239f22b665101bd
+  AEPCore: 517f1375860222a12c6226c50d0782e51d27abf2
   AEPEdgeConsent: dd46002b0c4bf55443f5441990e799248975713e
   AEPEdgeIdentity: 40d312b4434b710a46c1738ab2a221dda4cfd67e
-  AEPIdentity: 017d2ee5e49dd7a7cd29761339c535924e89d968
-  AEPLifecycle: 580d11bb4262e7b154751540852a2ff9febbde0d
-  AEPRulesEngine: 8bbc694fce6900cd33b2496c7d4b33ee2eeffc46
-  AEPServices: bdd8a78f1d6cda0165f6a58e42cce0d7e9f43ae1
-  AEPSignal: 4259aed43857c9e0ae89590a682c6d12865b7ce3
+  AEPIdentity: 6580a2a0359931cb7e32be934341df7d86ca73ed
+  AEPLifecycle: d822d28e71d201debfcbfc0f1c60cdee61412925
+  AEPRulesEngine: 5075ed294026a12e37bd26fe260f74604d205354
+  AEPServices: ffa6f91c0799f0a8651d89978a4b2a3d024ee6c4
+  AEPSignal: 0be73545905731da4768d5ece48faf29b2cae764
 
-PODFILE CHECKSUM: 9bcc3ec8826faab0b27aea5b17e17ba478e5cd6e
+PODFILE CHECKSUM: 047a30e8b8f93dfcf239634f40f9b4e3252b2d3e
 
 COCOAPODS: 1.10.1

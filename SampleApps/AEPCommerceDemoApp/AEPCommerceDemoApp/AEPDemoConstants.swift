@@ -42,7 +42,7 @@ enum AEPDemoConstants {
         // MARK: Commerce App : Snackbar messages
         static let itemAddedMsg = " item added to shopping cart."
         static let purchaseCompleteMsg = "Thank you for your purchase!"
-        static let cartEmptyErrorMsg  = "Sorry!, No item in the shopping cart to place an order. Add at least one item to place an order."
+        static let cartEmptyErrorMsg = "Sorry!, No item in the shopping cart to place an order. Add at least one item to place an order."
         static let cartEmptyMsg = "There are no item in the shopping cart to clear."
         static let cartClearMsg = "Sure!, all the selected items are removed from the Shopping Cart."
 

@@ -114,7 +114,7 @@ class EdgeConsentTests: FunctionalTestBase {
         getConsentsSync()
         fireManyEvents()
 
-        //verify
+        // verify
         var resultNetworkRequests = self.getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertEqual(0, resultNetworkRequests.count)
 

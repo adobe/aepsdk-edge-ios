@@ -80,6 +80,7 @@
 		BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
 		BF0C0935246120B200892B5D /* NetworkResponseHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* NetworkResponseHandlerFunctionalTests.swift */; };
 		BF0C09482465E42100892B5D /* TestableEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableEdge.swift */; };
+		BF4A717926DDAE4C00612434 /* AssuranceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4A717826DDAE4B00612434 /* AssuranceView.swift */; };
 		BF5EECE724983B7000C72622 /* AEPDemoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA3249839DC00C72622 /* AEPDemoConstants.swift */; };
 		BF5EECE824983B7000C72622 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECAF249839DC00C72622 /* AppDelegate.swift */; };
 		BF5EECE924983B7000C72622 /* CartItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECAC249839DC00C72622 /* CartItem.swift */; };
@@ -319,6 +320,7 @@
 		BF024B7E24C62BED002131E9 /* IdentityStateFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityStateFunctionalTests.swift; sourceTree = "<group>"; };
 		BF0C092324608EEC00892B5D /* NoConfigFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConfigFunctionalTests.swift; sourceTree = "<group>"; };
 		BF0C09472465E42100892B5D /* TestableEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestableEdge.swift; sourceTree = "<group>"; };
+		BF4A717826DDAE4B00612434 /* AssuranceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssuranceView.swift; sourceTree = "<group>"; };
 		BF5EEC9A249839DC00C72622 /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
 		BF5EEC9B249839DC00C72622 /* CommerceUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceUtil.swift; sourceTree = "<group>"; };
 		BF5EEC9E249839DC00C72622 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -781,6 +783,7 @@
 				D4D5B5872432977F00CAB6E4 /* LaunchScreen.storyboard */,
 				D4D5B58A2432977F00CAB6E4 /* Info.plist */,
 				D4D5B5842432977F00CAB6E4 /* Preview Content */,
+				BF4A717826DDAE4B00612434 /* AssuranceView.swift */,
 			);
 			name = AEPDemoAppSwiftUI;
 			path = SampleApps/AEPDemoAppSwiftUI;
@@ -1153,7 +1156,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config ${SRCROOT}/.swiftlint.yml SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if [[ -z ${ADB_SKIP_LINT} || ${ADB_SKIP_LINT} -ne \"YES\" ]]; then\n    if which swiftlint >/dev/null; then\n        swiftlint lint --config ${SRCROOT}/.swiftlint.yml SampleApps/AEPCommerceDemoApp/AEPCommerceDemoApp\n    else\n        echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n    fi\nelse\n    echo \"Skipping linting build phase as ADB_SKIP_LINT flag is YES.\"\nfi\n";
 		};
 		BF024B7424BFDC8B002131E9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1170,7 +1173,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config ${SRCROOT}/.swiftlint.yml SampleApps/AEPDemoAppSwiftUI\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if [[ -z ${ADB_SKIP_LINT} || ${ADB_SKIP_LINT} -ne \"YES\" ]]; then\n    if which swiftlint >/dev/null; then\n        swiftlint lint --config ${SRCROOT}/.swiftlint.yml SampleApps/AEPDemoAppSwiftUI\n    else\n        echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n    fi\nelse\n    echo \"Skipping linting build phase as ADB_SKIP_LINT flag is YES.\"\nfi\n";
 		};
 		BF024B7524C01AB2002131E9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1187,7 +1190,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config Tests/TestUtils/.swiftlint.yml --lenient Tests/UnitTests Tests/TestUtils\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if [[ -z ${ADB_SKIP_LINT} || ${ADB_SKIP_LINT} -ne \"YES\" ]]; then\n    if which swiftlint >/dev/null; then\n        swiftlint lint --config Tests/TestUtils/.swiftlint.yml --lenient Tests/UnitTests Tests/TestUtils\n    else\n        echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n    fi\nelse\n    echo \"Skipping linting build phase as ADB_SKIP_LINT flag is YES.\"\nfi\n";
 		};
 		BF024B7624C01D02002131E9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1204,7 +1207,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config Tests/TestUtils/.swiftlint.yml --lenient Tests/FunctionalTests Tests/TestUtils\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if [[ -z ${ADB_SKIP_LINT} || ${ADB_SKIP_LINT} -ne \"YES\" ]]; then\n    if which swiftlint >/dev/null; then\n        swiftlint lint --config Tests/TestUtils/.swiftlint.yml --lenient Tests/FunctionalTests Tests/TestUtils\n    else\n        echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n    fi\nelse\n    echo \"Skipping linting build phase as ADB_SKIP_LINT flag is YES.\"\nfi\n";
 		};
 		D21A27F708935A727C0BD980 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1243,7 +1246,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n    swiftlint lint --config ${SRCROOT}/.swiftlint.yml Sources\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n\n";
+			shellScript = "if [[ -z ${ADB_SKIP_LINT} || ${ADB_SKIP_LINT} -ne \"YES\" ]]; then\n    if which swiftlint >/dev/null; then\n        swiftlint lint --config ${SRCROOT}/.swiftlint.yml Sources\n    else\n        echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n    fi\nelse\n    echo \"Skipping linting build phase as ADB_SKIP_LINT flag is YES.\"\nfi\n";
 		};
 		DCF202D068A8FE8F671EDC00 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1484,6 +1487,7 @@
 			files = (
 				D4D5B57D2432977F00CAB6E4 /* AppDelegate.swift in Sources */,
 				D4D5B57F2432977F00CAB6E4 /* SceneDelegate.swift in Sources */,
+				BF4A717926DDAE4C00612434 /* AssuranceView.swift in Sources */,
 				D4D5B5812432977F00CAB6E4 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1625,7 +1629,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.1.2;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1659,7 +1663,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.1.2;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";

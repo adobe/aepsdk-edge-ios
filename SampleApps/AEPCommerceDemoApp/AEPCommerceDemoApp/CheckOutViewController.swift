@@ -26,12 +26,12 @@ class CheckOutViewController: UIViewController {
     enum PaymentMethods: String, CaseIterable {
         case cash = "Cash"
         case visa = "Visa"
-        case master = "Master"
+        case masterCard = "Master"
         case amex = "Amex"
-        static let allValues = [cash, visa, master, amex]
+        static let allValues = [cash, visa, masterCard, amex]
     }
 
-    private var selectedPaymentMethod: String  = "Cash"
+    private var selectedPaymentMethod: String = "Cash"
 
     override func viewDidLoad() {
         super.viewDidLoad()

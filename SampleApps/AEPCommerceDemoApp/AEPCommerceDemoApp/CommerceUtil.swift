@@ -51,7 +51,7 @@ enum CommerceUtil {
     /// Removal(s) of a product entry from a product list. Example a product is removed from a
     /// shopping cart.
     /// See <a href="https://github.com/adobe/xdm/blob/master/docs/reference/context/experienceevent.schema.md#xdmeventtype">Experience Event</a>
-    private static let eventTypeCommerceProductListRemovals: String   = "commerce.productListRemovals"
+    private static let eventTypeCommerceProductListRemovals: String = "commerce.productListRemovals"
 
     /// An action during a checkout process of a product list, there can be more than one checkout
     /// event if there are multiple steps in a checkout process. If there are multiple steps the
