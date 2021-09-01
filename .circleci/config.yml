@@ -89,18 +89,16 @@ jobs:
             done
             bash ./codecov -v -X s3 -c -D "./build/out" -J "AEPEdge"
 
-      # verify XCFramework archive builds
-      - run:
-          name: Build XCFramework
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              make ci-archive
-            fi
-
       # verify demo app builds
       - run:
           name: Build Demo App
           command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
               make build-app
-            fi
+
+      # verify XCFramework archive builds
+      # ci-archive updates Pods so run this step last
+      - run:
+          name: Build XCFramework
+          command: |
+              make ci-archive
+
