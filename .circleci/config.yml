@@ -94,7 +94,7 @@ jobs:
           name: Build XCFramework
           command: |
             if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              make archive
+              make ci-archive
             fi
 
       # verify demo app builds
