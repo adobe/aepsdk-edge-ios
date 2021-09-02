@@ -89,12 +89,6 @@ jobs:
             done
             bash ./codecov -v -X s3 -c -D "./build/out" -J "AEPEdge"
 
-      # verify demo app builds
-      - run:
-          name: Build Demo App
-          command: |
-              make build-app
-
       # verify XCFramework archive builds
       # ci-archive updates Pods so run this step last
       - run:
