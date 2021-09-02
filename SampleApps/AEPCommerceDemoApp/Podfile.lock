@@ -1,7 +1,4 @@
 PODS:
-  - ACPCore (2.9.4):
-    - ACPCore/main (= 2.9.4)
-  - ACPCore/main (2.9.4)
   - AEPAssurance (3.0.0):
     - AEPCore (>= 3.1.0)
     - AEPServices (>= 3.1.0)
@@ -23,7 +20,6 @@ PODS:
     - AEPCore (= 3.2.4)
 
 DEPENDENCIES:
-  - ACPCore
   - AEPAssurance
   - AEPCore
   - AEPEdge (from `../../`)
@@ -35,7 +31,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - ACPCore
     - AEPAssurance
     - AEPCore
     - AEPEdgeIdentity
@@ -50,7 +45,6 @@ EXTERNAL SOURCES:
     :path: "../../"
 
 SPEC CHECKSUMS:
-  ACPCore: 7d09a5b7233d72fa7cb4369c99a8250fd7240305
   AEPAssurance: 18068627111e366a851dc2166239f22b665101bd
   AEPCore: 517f1375860222a12c6226c50d0782e51d27abf2
   AEPEdge: 4208614f134d86131df95fd3420da20530fac275
@@ -61,6 +55,6 @@ SPEC CHECKSUMS:
   AEPServices: ffa6f91c0799f0a8651d89978a4b2a3d024ee6c4
   AEPSignal: 0be73545905731da4768d5ece48faf29b2cae764
 
-PODFILE CHECKSUM: 472a5cbff61ec98fdaf4bda641c412518ea987e4
+PODFILE CHECKSUM: 050b2e4d2a867cf8cf6ccae97ea4e4ba1ce000c1
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.0
