@@ -40,7 +40,7 @@ enum HttpResponseCodes: Int {
 class EdgeNetworkService {
     private let SELF_TAG: String = "EdgeNetworkService"
     private let DEFAULT_GENERIC_ERROR_MESSAGE = "Request to Experience Edge failed with an unknown exception"
-    private let DEFAULT_NAMESPACE = "global"
+    private let DEFAULT_GENERIC_ERROR_TITLE = "Unexpected Error"
     private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.clientTimeout.rawValue,
                                                        HttpResponseCodes.tooManyRequests.rawValue,
                                                        HttpResponseCodes.badGateway.rawValue,
@@ -261,9 +261,9 @@ class EdgeNetworkService {
         var unwrappedErrorMessage = plainTextErrorMessage ?? DEFAULT_GENERIC_ERROR_MESSAGE
         unwrappedErrorMessage = unwrappedErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let errorDictionary = [EdgeConstants.JsonKeys.Response.Error.MESSAGE: unwrappedErrorMessage,
-                               EdgeConstants.JsonKeys.Response.Error.NAMESPACE: DEFAULT_NAMESPACE]
-        guard let json = try? JSONSerialization.data(withJSONObject: errorDictionary, options: []) else {
+        let eventError = EdgeEventError(title: DEFAULT_GENERIC_ERROR_TITLE, detail: unwrappedErrorMessage)
+
+        guard let json = try? JSONEncoder().encode(eventError) else {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to serialize the error message.")
             return nil
         }
