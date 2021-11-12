@@ -85,6 +85,8 @@ enum EdgeConstants {
         enum Hub {
             static let SHARED_OWNER_NAME = "com.adobe.module.eventhub"
             static let EXTENSIONS = "extensions"
+            static let WRAPPER = "wrapper"
+            static let WRAPPER_TYPE = "type"
         }
     }
 

@@ -17,9 +17,11 @@ import Foundation
 /// Updates the state of the  `Edge` extension based on the Collect consent status
 class EdgeState {
     private let SELF_TAG = "EdgeState"
+    private static let DEFAULT_WRAPPER_TYPE = "N"
     private(set) var hitQueue: HitQueuing
     private(set) var hasBooted = false
     private(set) var currentCollectConsent: ConsentStatus
+    private(set) var wrapperType = DEFAULT_WRAPPER_TYPE
 
     /// Creates a new `EdgeState` and initializes the required properties and sets the initial collect consent
     init(hitQueue: HitQueuing) {
@@ -50,6 +52,14 @@ class EdgeState {
             updateCurrentConsent(status: EdgeConstants.Defaults.COLLECT_CONSENT_YES)
         }
         // else keep consent pending until the consent preferences update event is received
+
+        // extract wrapper type from hub shared state
+        if let registeredExtensionsWithHub = getSharedState(EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, event, false)?.value,
+           let wrapperInfo = registeredExtensionsWithHub[EdgeConstants.SharedState.Hub.WRAPPER] as? [String: Any],
+           let type = wrapperInfo[EdgeConstants.SharedState.Hub.WRAPPER_TYPE] as? String {
+            wrapperType = type
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Wrapper type set to (\(wrapperType)), extracted from hub shared state")
+        }
 
         hasBooted = true
         Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Edge has successfully booted up")

@@ -212,4 +212,36 @@ class EdgeExtensionTests: XCTestCase {
 
         XCTAssertEqual(1, mockDataQueue.count())
     }
+
+    func testWrapperTypeInfo_hubSharedState_valid() {
+        let hubSharedState: [String: Any] = [
+            "wrapper": [
+                "type": "R",
+                "friendlyName": "React Native"
+            ]]
+        mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, data: (hubSharedState, .set))
+
+        _ = edge.readyForEvent(Event(name: "Dummy event", type: EventType.custom, source: EventSource.none, data: nil))
+        // verify
+        XCTAssertEqual("R", edge.state?.wrapperType)
+    }
+
+    func testWrapperTypeInfo_hubSharedState_invalid() {
+        let hubSharedState: [String: Any] = [
+            "extensions": [
+                "com.adobe.edge": [
+                    "version": "1.1.0",
+                    "friendlyName": "AEPEdge"
+                ],
+                "com.adobe.edge.consent": [
+                    "version": "1.0.0",
+                    "friendlyName": "Consent"
+                ]
+            ]]
+        mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, data: (hubSharedState, .set))
+
+        _ = edge.readyForEvent(Event(name: "Dummy event", type: EventType.custom, source: EventSource.none, data: nil))
+        // verify
+        XCTAssertEqual("N", edge.state?.wrapperType)
+    }
 }
