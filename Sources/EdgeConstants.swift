@@ -85,6 +85,9 @@ enum EdgeConstants {
         enum Hub {
             static let SHARED_OWNER_NAME = "com.adobe.module.eventhub"
             static let EXTENSIONS = "extensions"
+            static let WRAPPER = "wrapper"
+            static let TYPE = "type"
+            static let VERSION = "version"
         }
     }
 
@@ -96,10 +99,17 @@ enum EdgeConstants {
         static let TIMESTAMP = "timestamp"
         static let EVENT_ID = "_id"
         static let META = "meta"
+        static let IMPLEMENTATION_DETAILS = "implementationdetails"
 
         enum CollectMetadata {
             static let COLLECT = "collect"
             static let DATASET_ID = "datasetId"
+        }
+
+        enum ImplementationDetails {
+            static let VERSION = "version"
+            static let NAME = "name"
+            static let ENVIRONMENT = "environment"
         }
 
         enum Response {
@@ -115,6 +125,12 @@ enum EdgeConstants {
     enum JsonValues {
         static let CONSENT_STANDARD = "Adobe"
         static let CONSENT_VERSION = "2.0"
+
+        enum ImplementationDetails {
+            static let ENVIRONMENT_APP = "app"
+            static let BASE_NAMESPACE = "https://ns.adobe.com/experience/mobilesdk/ios"
+            static let WRAPPER_REACT_NATIVE = "reactnative"
+        }
     }
 
     enum NetworkKeys {

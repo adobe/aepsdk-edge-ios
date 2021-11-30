@@ -19,6 +19,7 @@ public class Edge: NSObject, Extension {
     private let SELF_TAG = "Edge"
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler?
+    private var implementationDetails: [String: Any]?
     internal var state: EdgeState?
 
     // MARK: - Extension
@@ -52,6 +53,9 @@ public class Edge: NSObject, Extension {
         registerListener(type: EventType.genericIdentity,
                          source: EventSource.requestReset,
                          listener: handleIdentitiesReset)
+        registerListener(type: EventType.hub,
+                         source: EventSource.sharedState,
+                         listener: handleSharedStateUpdate)
     }
 
     public func onUnregistered() {
@@ -175,6 +179,21 @@ public class Edge: NSObject, Extension {
         state?.hitQueue.queue(entity: entity)
     }
 
+    /// Handles shared state update events.
+    /// Updates `ImplementationDetails` if shared state event is from `EventHub`.
+    /// - Parameter event: current shared state update event
+    func handleSharedStateUpdate(_ event: Event) {
+        guard let data = event.data, !data.isEmpty else {
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Shared State update event \(event.id.uuidString) cannot be processed as it contains no data.")
+            return
+        }
+
+        if data[EdgeConstants.SharedState.STATE_OWNER] as? String == EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME {
+            let hubState = getSharedState(extensionName: EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, event: event)
+            implementationDetails = ImplementationDetails.from(hubState?.value ?? nil)
+        }
+    }
+
     /// Determines if the event should be ignored by the Edge extension. This method should be called after
     /// `readyForEvent` passed.
     ///
@@ -215,7 +234,8 @@ public class Edge: NSObject, Extension {
                                             networkResponseHandler: networkResponseHandler,
                                             getSharedState: getSharedState(extensionName:event:),
                                             getXDMSharedState: getXDMSharedState(extensionName:event:barrier:),
-                                            readyForEvent: readyForEvent(_:))
+                                            readyForEvent: readyForEvent(_:),
+                                            getImplementationDetails: getImplementationDetails)
         return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }
 
@@ -229,6 +249,12 @@ public class Edge: NSObject, Extension {
         }
 
         return ConsentStatus.getCollectConsentOrDefault(eventData: consentXDMSharedState)
+    }
+
+    /// Returns current `ImplementationDetails` for this session.
+    /// - Returns: the `ImplementationDetails` for this session or nil if not yet set
+    private func getImplementationDetails() -> [String: Any]? {
+        return implementationDetails
     }
 
 }
