@@ -81,6 +81,7 @@
 		BF0C0935246120B200892B5D /* NetworkResponseHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* NetworkResponseHandlerFunctionalTests.swift */; };
 		BF0C09482465E42100892B5D /* TestableEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableEdge.swift */; };
 		BF0F924F27476E6C00378913 /* ImplementationDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0F924E27476E6C00378913 /* ImplementationDetails.swift */; };
+		BF0F92522756A57800378913 /* ImplementationDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0F92502756A3EF00378913 /* ImplementationDetailsTests.swift */; };
 		BF4A717926DDAE4C00612434 /* AssuranceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4A717826DDAE4B00612434 /* AssuranceView.swift */; };
 		BF5EECE724983B7000C72622 /* AEPDemoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECA3249839DC00C72622 /* AEPDemoConstants.swift */; };
 		BF5EECE824983B7000C72622 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5EECAF249839DC00C72622 /* AppDelegate.swift */; };
@@ -322,6 +323,7 @@
 		BF0C092324608EEC00892B5D /* NoConfigFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConfigFunctionalTests.swift; sourceTree = "<group>"; };
 		BF0C09472465E42100892B5D /* TestableEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestableEdge.swift; sourceTree = "<group>"; };
 		BF0F924E27476E6C00378913 /* ImplementationDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImplementationDetails.swift; sourceTree = "<group>"; };
+		BF0F92502756A3EF00378913 /* ImplementationDetailsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImplementationDetailsTests.swift; sourceTree = "<group>"; };
 		BF4A717826DDAE4B00612434 /* AssuranceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssuranceView.swift; sourceTree = "<group>"; };
 		BF5EEC9A249839DC00C72622 /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
 		BF5EEC9B249839DC00C72622 /* CommerceUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceUtil.swift; sourceTree = "<group>"; };
@@ -753,6 +755,7 @@
 				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */,
 				1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */,
+				BF0F92502756A3EF00378913 /* ImplementationDetailsTests.swift */,
 			);
 			name = UnitTests;
 			path = Tests/UnitTests;
@@ -1437,6 +1440,7 @@
 				BF947F9E244182B30057A6CC /* StoreResponsePayloadManagerTests.swift in Sources */,
 				D45F2E8E25EE2166000AC350 /* TestableExtensionRuntime.swift in Sources */,
 				D44BBB982492F5C900775DAC /* UnitTestAssertions.swift in Sources */,
+				BF0F92522756A57800378913 /* ImplementationDetailsTests.swift in Sources */,
 				D49A628F250AE4F500B7C4A3 /* EventHub+Test.swift in Sources */,
 				BF947F74243BA0E10057A6CC /* KonductorConfigTests.swift in Sources */,
 				D45F2E7E25EE190A000AC350 /* MockHitProcessor.swift in Sources */,

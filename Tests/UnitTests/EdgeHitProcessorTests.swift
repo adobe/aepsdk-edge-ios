@@ -45,7 +45,8 @@ class EdgeHitProcessorTests: XCTestCase {
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: resolveSharedState(extensionName:event:),
                                         getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
-                                        readyForEvent: readyForEvent(_:))
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: { return nil })
     }
 
     private func resolveSharedState(extensionName: String, event: Event?) -> SharedStateResult? {
@@ -110,7 +111,8 @@ class EdgeHitProcessorTests: XCTestCase {
                                         getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
                                         readyForEvent: { _ -> Bool in
                                             return false
-                                        })
+                                        },
+                                        getImplementationDetails: { return nil })
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: false)
@@ -131,7 +133,8 @@ class EdgeHitProcessorTests: XCTestCase {
                                             return self.resolveSharedState(extensionName: extensionName, event: event)
                                         },
                                         getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
-                                        readyForEvent: readyForEvent(_:))
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: { return nil })
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
@@ -152,7 +155,8 @@ class EdgeHitProcessorTests: XCTestCase {
                                             return self.resolveSharedState(extensionName: extensionName, event: event)
                                         },
                                         getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
-                                        readyForEvent: readyForEvent(_:))
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: { return nil })
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
@@ -251,7 +255,8 @@ class EdgeHitProcessorTests: XCTestCase {
                                             return nil
                                         },
                                         getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
-                                        readyForEvent: readyForEvent(_:))
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: { return nil })
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
         let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
@@ -275,7 +280,8 @@ class EdgeHitProcessorTests: XCTestCase {
                                             return nil
                                         },
                                         getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
-                                        readyForEvent: readyForEvent(_:))
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: { return nil })
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
         let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
@@ -299,7 +305,8 @@ class EdgeHitProcessorTests: XCTestCase {
                                             return nil
                                         },
                                         getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
-                                        readyForEvent: readyForEvent(_:))
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: { return nil })
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
         let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
@@ -323,7 +330,8 @@ class EdgeHitProcessorTests: XCTestCase {
                                             return nil
                                         },
                                         getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
-                                        readyForEvent: readyForEvent(_:))
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: { return nil })
         mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
 
         let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
