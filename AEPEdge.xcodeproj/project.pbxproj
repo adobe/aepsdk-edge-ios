@@ -725,9 +725,9 @@
 				D4EC0D9625E6CEA00026EBAA /* EdgeHitQueueing+Consent.swift */,
 				D4EC0DBA25E73FF10026EBAA /* EdgeState.swift */,
 				D4145FB425D5D0430019EA4C /* Event+Edge.swift */,
+				BF0F924E27476E6C00378913 /* ImplementationDetails.swift */,
 				D4967534251130D3001F5F95 /* Info.plist */,
 				D4D66AA2251910FB00B4866D /* AEPEdge.h */,
-				BF0F924E27476E6C00378913 /* ImplementationDetails.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -737,16 +737,17 @@
 			children = (
 				D4F74FEC2447A95400379258 /* utils */,
 				D4D5B5252432599B00CAB6E4 /* Info.plist */,
-				D4A81DEB25658F0D0042B00A /* CompletionHandlerTests.swift */,
 				2198DEE726050458008ADB6A /* AtomicTests.swift */,
-				BF947F9F244569190057A6CC /* EdgeRequestTests.swift */,
-				21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */,
+				D4A81DEB25658F0D0042B00A /* CompletionHandlerTests.swift */,
 				21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */,
+				21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */,
 				D45F2E6F25ED8EE3000AC350 /* EdgeExtensionTests.swift */,
-				D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */,
 				216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */,
+				D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */,
 				D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */,
+				BF947F9F244569190057A6CC /* EdgeRequestTests.swift */,
 				1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */,
+				BF0F92502756A3EF00378913 /* ImplementationDetailsTests.swift */,
 				BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */,
 				D46553F6246A384900A150E2 /* NetworkResponseHandlerTests.swift */,
 				BF947F7D243EA1300057A6CC /* RequestBuilderTests.swift */,
@@ -755,7 +756,6 @@
 				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */,
 				1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */,
-				BF0F92502756A3EF00378913 /* ImplementationDetailsTests.swift */,
 			);
 			name = UnitTests;
 			path = Tests/UnitTests;
