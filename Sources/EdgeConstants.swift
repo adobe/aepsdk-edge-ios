@@ -130,6 +130,7 @@ enum EdgeConstants {
             static let ENVIRONMENT_APP = "app"
             static let BASE_NAMESPACE = "https://ns.adobe.com/experience/mobilesdk/ios"
             static let WRAPPER_REACT_NATIVE = "reactnative"
+            static let UNKNOWN = "unknown"
         }
     }
 

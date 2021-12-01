@@ -29,7 +29,10 @@ class ImplementationDetailsTests: XCTestCase {
             "wrapper": ["type": "R"]
         ]
 
-        let details = ImplementationDetails.from(hubSharedState)
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
 
         let actualResult = flattenDictionary(dict: details)
 
@@ -47,7 +50,10 @@ class ImplementationDetailsTests: XCTestCase {
             "wrapper": ["type": "N"]
         ]
 
-        let details = ImplementationDetails.from(hubSharedState)
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
 
         let actualResult = flattenDictionary(dict: details)
 
@@ -65,7 +71,10 @@ class ImplementationDetailsTests: XCTestCase {
             "wrapper": ["type": "F"] // Flutter not supported yet, expect None type
         ]
 
-        let details = ImplementationDetails.from(hubSharedState)
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
 
         let actualResult = flattenDictionary(dict: details)
 
@@ -83,12 +92,15 @@ class ImplementationDetailsTests: XCTestCase {
             "wrapper": ["invalid": "R"]
         ]
 
-        let details = ImplementationDetails.from(hubSharedState)
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
 
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(BASE_NAMESPACE)",
+            "name": "\(BASE_NAMESPACE)/unknown",
             "environment": "app",
             "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -101,12 +113,15 @@ class ImplementationDetailsTests: XCTestCase {
             "wrapper": "not map type" // wrong type, expected [String: Any]
         ]
 
-        let details = ImplementationDetails.from(hubSharedState)
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
 
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(BASE_NAMESPACE)",
+            "name": "\(BASE_NAMESPACE)/unknown",
             "environment": "app",
             "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -118,7 +133,10 @@ class ImplementationDetailsTests: XCTestCase {
             "version": "3.3.1"
         ]
 
-        let details = ImplementationDetails.from(hubSharedState)
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
 
         let actualResult = flattenDictionary(dict: details)
 
@@ -135,14 +153,17 @@ class ImplementationDetailsTests: XCTestCase {
             "version": ["not string type": "3.3.1"] // wrong type, expected String
         ]
 
-        let details = ImplementationDetails.from(hubSharedState)
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
 
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
             "name": "\(BASE_NAMESPACE)",
             "environment": "app",
-            "version": "+\(EdgeConstants.EXTENSION_VERSION)"
+            "version": "unknown+\(EdgeConstants.EXTENSION_VERSION)"
         ]
         assertEqual(expectedResult, actualResult)
     }
@@ -152,14 +173,17 @@ class ImplementationDetailsTests: XCTestCase {
             "wrapper": ["type": "R"]
         ]
 
-        let details = ImplementationDetails.from(hubSharedState)
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
 
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
             "name": "\(BASE_NAMESPACE)/\(WRAPPER_REACT_NATIVE)",
             "environment": "app",
-            "version": "+\(EdgeConstants.EXTENSION_VERSION)"
+            "version": "unknown+\(EdgeConstants.EXTENSION_VERSION)"
         ]
         assertEqual(expectedResult, actualResult)
     }
@@ -167,28 +191,10 @@ class ImplementationDetailsTests: XCTestCase {
     func testFrom_withEmptyHubState() {
         let hubSharedState: [String: Any] = [:]
 
-        let details = ImplementationDetails.from(hubSharedState)
-
-        let actualResult = flattenDictionary(dict: details)
-
-        let expectedResult: [String: Any] = [
-            "name": "\(BASE_NAMESPACE)",
-            "environment": "app",
-            "version": "+\(EdgeConstants.EXTENSION_VERSION)"
-        ]
-        assertEqual(expectedResult, actualResult)
+        XCTAssertNil(ImplementationDetails.from(hubSharedState))
     }
 
     func testFrom_withNilHubState() {
-        let details = ImplementationDetails.from(nil)
-
-        let actualResult = flattenDictionary(dict: details)
-
-        let expectedResult: [String: Any] = [
-            "name": "\(BASE_NAMESPACE)",
-            "environment": "app",
-            "version": "+\(EdgeConstants.EXTENSION_VERSION)"
-        ]
-        assertEqual(expectedResult, actualResult)
+        XCTAssertNil(ImplementationDetails.from(nil))
     }
 }

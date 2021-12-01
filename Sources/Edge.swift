@@ -19,7 +19,7 @@ public class Edge: NSObject, Extension {
     private let SELF_TAG = "Edge"
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler?
-    private var implementationDetails: [String: Any]? = ImplementationDetails.from(nil)
+    private var implementationDetails: [String: Any]?
     internal var state: EdgeState?
 
     // MARK: - Extension
@@ -190,7 +190,7 @@ public class Edge: NSObject, Extension {
 
         if data[EdgeConstants.SharedState.STATE_OWNER] as? String == EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME {
             let hubState = getSharedState(extensionName: EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, event: event)
-            implementationDetails = ImplementationDetails.from(hubState?.value ?? nil)
+            implementationDetails = ImplementationDetails.from(hubState?.value)
         }
     }
 
