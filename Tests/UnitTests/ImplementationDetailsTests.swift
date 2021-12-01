@@ -14,6 +14,8 @@
 import XCTest
 
 class ImplementationDetailsTests: XCTestCase {
+    private let BASE_NAMESPACE = "https://ns.adobe.com/experience/mobilesdk/ios"
+    private let WRAPPER_REACT_NATIVE = "reactnative"
 
     override func setUp() {
         continueAfterFailure = false // fail so nil checks stop execution
@@ -32,7 +34,7 @@ class ImplementationDetailsTests: XCTestCase {
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)/\(EdgeConstants.JsonValues.ImplementationDetails.WRAPPER_REACT_NATIVE)",
+            "name": "\(BASE_NAMESPACE)/\(WRAPPER_REACT_NATIVE)",
             "environment": "app",
             "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -50,7 +52,7 @@ class ImplementationDetailsTests: XCTestCase {
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)",
+            "name": "\(BASE_NAMESPACE)",
             "environment": "app",
             "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -68,7 +70,7 @@ class ImplementationDetailsTests: XCTestCase {
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)",
+            "name": "\(BASE_NAMESPACE)",
             "environment": "app",
             "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -86,7 +88,7 @@ class ImplementationDetailsTests: XCTestCase {
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)",
+            "name": "\(BASE_NAMESPACE)",
             "environment": "app",
             "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -104,7 +106,7 @@ class ImplementationDetailsTests: XCTestCase {
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)",
+            "name": "\(BASE_NAMESPACE)",
             "environment": "app",
             "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -121,7 +123,7 @@ class ImplementationDetailsTests: XCTestCase {
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)",
+            "name": "\(BASE_NAMESPACE)",
             "environment": "app",
             "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -138,7 +140,7 @@ class ImplementationDetailsTests: XCTestCase {
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)",
+            "name": "\(BASE_NAMESPACE)",
             "environment": "app",
             "version": "+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -155,7 +157,7 @@ class ImplementationDetailsTests: XCTestCase {
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)/\(EdgeConstants.JsonValues.ImplementationDetails.WRAPPER_REACT_NATIVE)",
+            "name": "\(BASE_NAMESPACE)/\(WRAPPER_REACT_NATIVE)",
             "environment": "app",
             "version": "+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -170,7 +172,7 @@ class ImplementationDetailsTests: XCTestCase {
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)",
+            "name": "\(BASE_NAMESPACE)",
             "environment": "app",
             "version": "+\(EdgeConstants.EXTENSION_VERSION)"
         ]
@@ -183,7 +185,7 @@ class ImplementationDetailsTests: XCTestCase {
         let actualResult = flattenDictionary(dict: details)
 
         let expectedResult: [String: Any] = [
-            "name": "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)",
+            "name": "\(BASE_NAMESPACE)",
             "environment": "app",
             "version": "+\(EdgeConstants.EXTENSION_VERSION)"
         ]

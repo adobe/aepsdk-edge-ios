@@ -464,6 +464,108 @@ class EdgeHitProcessorTests: XCTestCase {
         XCTAssertTrue(storeResponsePayloadManager.getActiveStores().isEmpty)
     }
 
+    // MARK: Implementation Details
+
+    // tests Implementation Details added to Experience Events
+    func testProcessHit_experienceEvent_sendsNetworkRequest_withImplementationDetails() {
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        getSharedState: resolveSharedState(extensionName:event:),
+                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: {
+                                            return [
+                                                "name": "https://ns.adobe.com/experience/mobilesdk/ios",
+                                                "environment": "app",
+                                                "version": "3.3.1+1.0.0"
+                                            ]
+                                        })
+
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+
+        let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        // test
+        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
+
+        guard let requestPayload = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.connectPayload else {
+            XCTFail("unexpected nil request connect payload")
+            return
+        }
+
+        let payload = asFlattenDictionary(data: requestPayload)
+
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", payload["xdm.implementationdetails.name"] as? String)
+        XCTAssertEqual("3.3.1+1.0.0", payload["xdm.implementationdetails.version"] as? String)
+        XCTAssertEqual("app", payload["xdm.implementationdetails.environment"] as? String)
+    }
+
+    // tests Implementation Details is not added to event when nil
+    func testProcessHit_experienceEvent_sendsNetworkRequest_withOutImplementationDetails_whenNil() {
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        getSharedState: resolveSharedState(extensionName:event:),
+                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: { return nil })
+
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+
+        let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        // test
+        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
+
+        guard let requestPayload = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.connectPayload else {
+            XCTFail("unexpected nil request connect payload")
+            return
+        }
+
+        let payload = asFlattenDictionary(data: requestPayload)
+
+        XCTAssertNil(payload["xdm.implementationdetails.name"])
+        XCTAssertNil(payload["xdm.implementationdetails.version"])
+        XCTAssertNil(payload["xdm.implementationdetails.environment"])
+    }
+
+    // tests Implementation Details is not added to Consent events
+    func testProcessHit_consentEvent_sendsNetworkRequest_withoutImplementationDetails() {
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        getSharedState: resolveSharedState(extensionName:event:),
+                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: {
+                                            return [
+                                                "name": "https://ns.adobe.com/experience/mobilesdk/ios",
+                                                "environment": "app",
+                                                "version": "3.3.1+1.0.0"
+                                            ]
+                                        })
+
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+
+        let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, identityMap: [:])
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        // test
+        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
+
+        guard let requestPayload = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.connectPayload else {
+            XCTFail("unexpected nil request connect payload")
+            return
+        }
+
+        let payload = asFlattenDictionary(data: requestPayload)
+
+        // Implementation Details are not added to Consent events
+        XCTAssertNil(payload["xdm.implementationdetails.name"])
+        XCTAssertNil(payload["xdm.implementationdetails.version"])
+        XCTAssertNil(payload["xdm.implementationdetails.environment"])
+    }
+
     func assertProcessHit(entity: DataEntity, sendsNetworkRequest: Bool, returns: Bool, line: UInt = #line) {
         let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
 

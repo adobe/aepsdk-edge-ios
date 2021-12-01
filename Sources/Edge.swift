@@ -19,7 +19,7 @@ public class Edge: NSObject, Extension {
     private let SELF_TAG = "Edge"
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler?
-    private var implementationDetails: [String: Any]?
+    private var implementationDetails: [String: Any]? = ImplementationDetails.from(nil)
     internal var state: EdgeState?
 
     // MARK: - Extension
