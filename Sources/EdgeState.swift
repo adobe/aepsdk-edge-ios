@@ -20,6 +20,7 @@ class EdgeState {
     private(set) var hitQueue: HitQueuing
     private(set) var hasBooted = false
     private(set) var currentCollectConsent: ConsentStatus
+    private(set) var implementationDetails: [String: Any]?
 
     /// Creates a new `EdgeState` and initializes the required properties and sets the initial collect consent
     init(hitQueue: HitQueuing) {
@@ -37,9 +38,13 @@ class EdgeState {
     func bootupIfNeeded(event: Event, getSharedState: @escaping (_ name: String, _ event: Event?, _ barrier: Bool) -> SharedStateResult?) {
         guard !hasBooted else { return }
 
+        // Important: set implementationDetails before starting the hit queue so it is available to the EdgeHitProcessor
+        let hubSharedState = getSharedState(EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, event, false)
+        implementationDetails = ImplementationDetails.from(hubSharedState?.value)
+
         // check if consent extension is registered
         var consentRegistered = false
-        if let registeredExtensionsWithHub = getSharedState(EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, event, false)?.value,
+        if let registeredExtensionsWithHub = hubSharedState?.value,
            let extensions = registeredExtensionsWithHub[EdgeConstants.SharedState.Hub.EXTENSIONS] as? [String: Any],
            extensions[EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME] as? [String: Any] != nil {
             consentRegistered = true
