@@ -496,9 +496,9 @@ class EdgeHitProcessorTests: XCTestCase {
 
         let payload = asFlattenDictionary(data: requestPayload)
 
-        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", payload["xdm.implementationdetails.name"] as? String)
-        XCTAssertEqual("3.3.1+1.0.0", payload["xdm.implementationdetails.version"] as? String)
-        XCTAssertEqual("app", payload["xdm.implementationdetails.environment"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", payload["xdm.implementationDetails.name"] as? String)
+        XCTAssertEqual("3.3.1+1.0.0", payload["xdm.implementationDetails.version"] as? String)
+        XCTAssertEqual("app", payload["xdm.implementationDetails.environment"] as? String)
     }
 
     // tests Implementation Details is not added to event when nil
@@ -525,9 +525,9 @@ class EdgeHitProcessorTests: XCTestCase {
 
         let payload = asFlattenDictionary(data: requestPayload)
 
-        XCTAssertNil(payload["xdm.implementationdetails.name"])
-        XCTAssertNil(payload["xdm.implementationdetails.version"])
-        XCTAssertNil(payload["xdm.implementationdetails.environment"])
+        XCTAssertNil(payload["xdm.implementationDetails.name"])
+        XCTAssertNil(payload["xdm.implementationDetails.version"])
+        XCTAssertNil(payload["xdm.implementationDetails.environment"])
     }
 
     // tests Implementation Details is not added to Consent events
@@ -561,9 +561,9 @@ class EdgeHitProcessorTests: XCTestCase {
         let payload = asFlattenDictionary(data: requestPayload)
 
         // Implementation Details are not added to Consent events
-        XCTAssertNil(payload["xdm.implementationdetails.name"])
-        XCTAssertNil(payload["xdm.implementationdetails.version"])
-        XCTAssertNil(payload["xdm.implementationdetails.environment"])
+        XCTAssertNil(payload["xdm.implementationDetails.name"])
+        XCTAssertNil(payload["xdm.implementationDetails.version"])
+        XCTAssertNil(payload["xdm.implementationDetails.environment"])
     }
 
     func assertProcessHit(entity: DataEntity, sendsNetworkRequest: Bool, returns: Bool, line: UInt = #line) {

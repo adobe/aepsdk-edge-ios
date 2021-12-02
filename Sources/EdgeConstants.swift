@@ -99,7 +99,7 @@ enum EdgeConstants {
         static let TIMESTAMP = "timestamp"
         static let EVENT_ID = "_id"
         static let META = "meta"
-        static let IMPLEMENTATION_DETAILS = "implementationdetails"
+        static let IMPLEMENTATION_DETAILS = "implementationDetails"
 
         enum CollectMetadata {
             static let COLLECT = "collect"

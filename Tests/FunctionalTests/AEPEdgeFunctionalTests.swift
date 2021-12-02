@@ -269,9 +269,9 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(2, requestBody["events[0].xdm.testArray[1]"] as? Int)
         XCTAssertEqual(true, requestBody["events[0].xdm.testArray[2]"] as? Bool)
         XCTAssertEqual("val", requestBody["events[0].xdm.testDictionary.key"] as? String)
-        XCTAssertEqual("app", requestBody["xdm.implementationdetails.environment"] as? String)
-        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationdetails.version"] as? String)
-        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationdetails.name"] as? String)
+        XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
+        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationDetails.name"] as? String)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -319,9 +319,9 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(2, requestBody["events[0].data.testDataArray[1]"] as? Int)
         XCTAssertEqual(true, requestBody["events[0].data.testDataArray[2]"] as? Bool)
         XCTAssertEqual("val", requestBody["events[0].data.testDataDictionary.key"] as? String)
-        XCTAssertEqual("app", requestBody["xdm.implementationdetails.environment"] as? String)
-        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationdetails.version"] as? String)
-        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationdetails.name"] as? String)
+        XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
+        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationDetails.name"] as? String)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -370,9 +370,9 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(3.42, requestBody["events[0].xdm.doubleObject"] as? Double)
         XCTAssertEqual("testInnerObject", requestBody["events[0].xdm.xdmObject.innerKey"] as? String)
         XCTAssertEqual("abc123def", requestBody["events[0].meta.collect.datasetId"] as? String)
-        XCTAssertEqual("app", requestBody["xdm.implementationdetails.environment"] as? String)
-        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationdetails.version"] as? String)
-        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationdetails.name"] as? String)
+        XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
+        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationDetails.name"] as? String)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
