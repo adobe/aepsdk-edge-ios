@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
 import Foundation
 
 enum EdgeConstants {
