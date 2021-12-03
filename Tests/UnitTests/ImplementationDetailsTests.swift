@@ -16,33 +16,16 @@ import XCTest
 class ImplementationDetailsTests: XCTestCase {
     private let BASE_NAMESPACE = "https://ns.adobe.com/experience/mobilesdk/ios"
     private let WRAPPER_REACT_NATIVE = "reactnative"
+    private let WRAPPER_CORDOVA = "cordova"
+    private let WRAPPER_FLUTTER = "flutter"
+    private let WRAPPER_UNITY = "unity"
+    private let WRAPPER_XAMARIN = "xamarin"
 
     override func setUp() {
         continueAfterFailure = false // fail so nil checks stop execution
     }
 
     // MARK: from tests
-
-    func testFrom_withVersion_withWrapperReact() {
-        let hubSharedState: [String: Any] = [
-            "version": "3.3.1",
-            "wrapper": ["type": "R"]
-        ]
-
-        guard let details = ImplementationDetails.from(hubSharedState) else {
-            XCTFail("ImplementationDetails returned nil when not expected.")
-            return
-        }
-
-        let actualResult = flattenDictionary(dict: details)
-
-        let expectedResult: [String: Any] = [
-            "name": "\(BASE_NAMESPACE)/\(WRAPPER_REACT_NATIVE)",
-            "environment": "app",
-            "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
-        ]
-        assertEqual(expectedResult, actualResult)
-    }
 
     func testFrom_withVersion_withWrapperNone() {
         let hubSharedState: [String: Any] = [
@@ -65,10 +48,10 @@ class ImplementationDetailsTests: XCTestCase {
         assertEqual(expectedResult, actualResult)
     }
 
-    func testFrom_withVersion_withWrapperFlutter() {
+    func testFrom_withVersion_withWrapperReact() {
         let hubSharedState: [String: Any] = [
             "version": "3.3.1",
-            "wrapper": ["type": "F"] // Flutter not supported yet, expect None type
+            "wrapper": ["type": "R"]
         ]
 
         guard let details = ImplementationDetails.from(hubSharedState) else {
@@ -78,6 +61,112 @@ class ImplementationDetailsTests: XCTestCase {
 
         let actualResult = flattenDictionary(dict: details)
 
+        let expectedResult: [String: Any] = [
+            "name": "\(BASE_NAMESPACE)/\(WRAPPER_REACT_NATIVE)",
+            "environment": "app",
+            "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
+        ]
+        assertEqual(expectedResult, actualResult)
+    }
+
+    func testFrom_withVersion_withWrapperFlutter() {
+        let hubSharedState: [String: Any] = [
+            "version": "3.3.1",
+            "wrapper": ["type": "F"]
+        ]
+
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
+
+        let actualResult = flattenDictionary(dict: details)
+
+        let expectedResult: [String: Any] = [
+            "name": "\(BASE_NAMESPACE)/\(WRAPPER_FLUTTER)",
+            "environment": "app",
+            "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
+        ]
+        assertEqual(expectedResult, actualResult)
+    }
+
+    func testFrom_withVersion_withWrapperCordova() {
+        let hubSharedState: [String: Any] = [
+            "version": "3.3.1",
+            "wrapper": ["type": "C"]
+        ]
+
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
+
+        let actualResult = flattenDictionary(dict: details)
+
+        let expectedResult: [String: Any] = [
+            "name": "\(BASE_NAMESPACE)/\(WRAPPER_CORDOVA)",
+            "environment": "app",
+            "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
+        ]
+        assertEqual(expectedResult, actualResult)
+    }
+
+    func testFrom_withVersion_withWrapperUnity() {
+        let hubSharedState: [String: Any] = [
+            "version": "3.3.1",
+            "wrapper": ["type": "U"]
+        ]
+
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
+
+        let actualResult = flattenDictionary(dict: details)
+
+        let expectedResult: [String: Any] = [
+            "name": "\(BASE_NAMESPACE)/\(WRAPPER_UNITY)",
+            "environment": "app",
+            "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
+        ]
+        assertEqual(expectedResult, actualResult)
+    }
+
+    func testFrom_withVersion_withWrapperXamarin() {
+        let hubSharedState: [String: Any] = [
+            "version": "3.3.1",
+            "wrapper": ["type": "X"]
+        ]
+
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
+
+        let actualResult = flattenDictionary(dict: details)
+
+        let expectedResult: [String: Any] = [
+            "name": "\(BASE_NAMESPACE)/\(WRAPPER_XAMARIN)",
+            "environment": "app",
+            "version": "3.3.1+\(EdgeConstants.EXTENSION_VERSION)"
+        ]
+        assertEqual(expectedResult, actualResult)
+    }
+
+    func testFrom_withVersion_withWrapperUnknown() {
+        let hubSharedState: [String: Any] = [
+            "version": "3.3.1",
+            "wrapper": ["type": "A"] // unknown type
+        ]
+
+        guard let details = ImplementationDetails.from(hubSharedState) else {
+            XCTFail("ImplementationDetails returned nil when not expected.")
+            return
+        }
+
+        let actualResult = flattenDictionary(dict: details)
+
+        // WrapperType enum will default to .none for unknown values
         let expectedResult: [String: Any] = [
             "name": "\(BASE_NAMESPACE)",
             "environment": "app",
@@ -89,7 +178,7 @@ class ImplementationDetailsTests: XCTestCase {
     func testFrom_withVersion_withNoWrapperType() {
         let hubSharedState: [String: Any] = [
             "version": "3.3.1",
-            "wrapper": ["invalid": "R"]
+            "wrapper": ["invalid": "R"] // no "type" element
         ]
 
         guard let details = ImplementationDetails.from(hubSharedState) else {
@@ -140,6 +229,7 @@ class ImplementationDetailsTests: XCTestCase {
 
         let actualResult = flattenDictionary(dict: details)
 
+        // No "wrapper" object defaults to None
         let expectedResult: [String: Any] = [
             "name": "\(BASE_NAMESPACE)",
             "environment": "app",

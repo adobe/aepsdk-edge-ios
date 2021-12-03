@@ -129,6 +129,10 @@ enum EdgeConstants {
             static let ENVIRONMENT_APP = "app"
             static let BASE_NAMESPACE = "https://ns.adobe.com/experience/mobilesdk/ios"
             static let WRAPPER_REACT_NATIVE = "reactnative"
+            static let WRAPPER_CORDOVA = "cordova"
+            static let WRAPPER_FLUTTER = "flutter"
+            static let WRAPPER_UNITY = "unity"
+            static let WRAPPER_XAMARIN = "xamarin"
             static let UNKNOWN = "unknown"
         }
     }

@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPCore
 import Foundation
 
 enum ImplementationDetails {
@@ -44,19 +45,36 @@ enum ImplementationDetails {
     /// - Returns: wrapper type name used in the Implementation Details namespace, or an empty string if no wrapper is set
     private static func getWrapperName(from hubState: [String: Any]) -> String {
         if hubState[EdgeConstants.SharedState.Hub.WRAPPER] != nil {
-            if let wrapperType = (hubState[EdgeConstants.SharedState.Hub.WRAPPER] as? [String: Any])?[EdgeConstants.SharedState.Hub.TYPE] as? String {
-                switch wrapperType {
-                case "R": // React Native
-                    return "/\(EdgeConstants.JsonValues.ImplementationDetails.WRAPPER_REACT_NATIVE)" // note forward slash
-                default:
-                    return "" // unsupported wrapper type defaults to none
-                }
+            let typeString = (hubState[EdgeConstants.SharedState.Hub.WRAPPER] as? [String: Any])?[EdgeConstants.SharedState.Hub.TYPE] as? String
+            if let wrapperTypeString = typeString, let wrapperType = WrapperType.init(rawValue: wrapperTypeString) {
+                return wrapperType == .none ? "" : "/\(wrapperType.stringValue)"
             } else {
                 // "wrapper" entry exists but "type" not found. Unexpected, set to "unknown"
                 return "/\(EdgeConstants.JsonValues.ImplementationDetails.UNKNOWN)" // note forward slash
             }
         }
 
-        return ""
+        return "" // No "wrapper" object in shared state, default to none
+    }
+}
+
+extension WrapperType {
+    var stringValue: String {
+        switch self {
+        case .none:
+            return ""
+        case .reactNative:
+            return EdgeConstants.JsonValues.ImplementationDetails.WRAPPER_REACT_NATIVE
+        case .flutter:
+            return EdgeConstants.JsonValues.ImplementationDetails.WRAPPER_FLUTTER
+        case .cordova:
+            return EdgeConstants.JsonValues.ImplementationDetails.WRAPPER_CORDOVA
+        case .unity:
+            return EdgeConstants.JsonValues.ImplementationDetails.WRAPPER_UNITY
+        case .xamarin:
+            return EdgeConstants.JsonValues.ImplementationDetails.WRAPPER_XAMARIN
+        default:
+            return EdgeConstants.JsonValues.ImplementationDetails.UNKNOWN
+        }
     }
 }
