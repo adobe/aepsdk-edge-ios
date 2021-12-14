@@ -502,7 +502,7 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     // tests Implementation Details is not added to event when nil
-    func testProcessHit_experienceEvent_sendsNetworkRequest_withOutImplementationDetails_whenNil() {
+    func testProcessHit_experienceEvent_sendsNetworkRequest_withoutImplementationDetails_whenNil() {
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: resolveSharedState(extensionName:event:),
