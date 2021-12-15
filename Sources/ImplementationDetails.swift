@@ -30,7 +30,10 @@ enum ImplementationDetails {
         // if core version is not found set to "unknown"
         let coreVersion: String = hubState[EdgeConstants.SharedState.Hub.VERSION] as? String ?? EdgeConstants.JsonValues.ImplementationDetails.UNKNOWN
 
-        let wrapperName: String = getWrapperName(from: hubState)
+        var wrapperName: String = getWrapperName(from: hubState)
+        if !wrapperName.isEmpty {
+            wrapperName = "/\(wrapperName)"
+        }
 
         return [
             EdgeConstants.JsonKeys.ImplementationDetails.VERSION: "\(coreVersion)+\(EdgeConstants.EXTENSION_VERSION)",
@@ -47,10 +50,10 @@ enum ImplementationDetails {
         if hubState[EdgeConstants.SharedState.Hub.WRAPPER] != nil {
             let typeString = (hubState[EdgeConstants.SharedState.Hub.WRAPPER] as? [String: Any])?[EdgeConstants.SharedState.Hub.TYPE] as? String
             if let wrapperTypeString = typeString, let wrapperType = WrapperType.init(rawValue: wrapperTypeString) {
-                return wrapperType == .none ? "" : "/\(wrapperType.stringValue)"
+                return wrapperType == .none ? "" : wrapperType.stringValue
             } else {
                 // "wrapper" entry exists but "type" not found. Unexpected, set to "unknown"
-                return "/\(EdgeConstants.JsonValues.ImplementationDetails.UNKNOWN)" // note forward slash
+                return EdgeConstants.JsonValues.ImplementationDetails.UNKNOWN
             }
         }
 
