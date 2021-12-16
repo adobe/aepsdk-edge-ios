@@ -870,7 +870,7 @@
 				D444995B2519506B0093B364 /* Sources */,
 				D444995C2519506B0093B364 /* Frameworks */,
 				D444995D2519506B0093B364 /* Resources */,
-				D42F36B7251BEBF100490C0D /* ShellScript */,
+				D42F36B7251BEBF100490C0D /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -1231,7 +1231,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D42F36B7251BEBF100490C0D /* ShellScript */ = {
+		D42F36B7251BEBF100490C0D /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1240,13 +1240,14 @@
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ -z ${ADB_SKIP_LINT} || ${ADB_SKIP_LINT} -ne \"YES\" ]]; then\n    if which swiftlint >/dev/null; then\n        swiftlint lint --config ${SRCROOT}/.swiftlint.yml Sources\n    else\n        echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n    fi\nelse\n    echo \"Skipping linting build phase as ADB_SKIP_LINT flag is YES.\"\nfi\n";
+			shellScript = "if [[ -z ${ADB_SKIP_LINT} || ${ADB_SKIP_LINT} -ne \"YES\" ]]; then\n    if which swiftlint >/dev/null; then\n        ./Pods/SwiftLint/swiftlint lint --config ${SRCROOT}/.swiftlint.yml Sources\n    else\n        echo \"warning: SwiftLint is not installed, please run the pod install command from the project root directory.\"\n    fi\nelse\n    echo \"Skipping linting build phase as ADB_SKIP_LINT flag is YES.\"\nfi\n";
 		};
 		DCF202D068A8FE8F671EDC00 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
