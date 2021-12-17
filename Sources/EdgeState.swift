@@ -17,13 +17,19 @@ import Foundation
 /// Updates the state of the  `Edge` extension based on the Collect consent status
 class EdgeState {
     private let SELF_TAG = "EdgeState"
+    private let queue: DispatchQueue
+    private var _implementationDetails: [String: Any]?
     private(set) var hitQueue: HitQueuing
     private(set) var hasBooted = false
     private(set) var currentCollectConsent: ConsentStatus
-    private(set) var implementationDetails: [String: Any]?
+    private(set) var implementationDetails: [String: Any]? {
+        get { queue.sync { self._implementationDetails } }
+        set { queue.async { self._implementationDetails = newValue } }
+    }
 
     /// Creates a new `EdgeState` and initializes the required properties and sets the initial collect consent
     init(hitQueue: HitQueuing) {
+        self.queue = DispatchQueue(label: "com.adobe.edgestate.queue")
         self.hitQueue = hitQueue
         self.currentCollectConsent = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
         hitQueue.handleCollectConsentChange(status: currentCollectConsent)
