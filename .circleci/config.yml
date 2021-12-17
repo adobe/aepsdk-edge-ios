@@ -57,10 +57,6 @@ jobs:
             - ~/.cocoapods
 
       - run:
-          name: Install SwiftLint
-          command: make install-swiftlint
-
-      - run:
           name: Lint Source Code
           command: make lint
 
@@ -79,9 +75,9 @@ jobs:
           command: |
             curl -s https://codecov.io/bash > codecov;
             VERSION=$(grep 'VERSION=\".*\"' codecov | cut -d'"' -f2);
-            SHAVERSION=$(shasum -v); 
+            SHAVERSION=$(shasum -v);
             echo "Using CodeCov version '$VERSION'"
-            echo "Using shasum '$SHAVERSION'" 
+            echo "Using shasum '$SHAVERSION'"
             for i in 1 256 512
             do
               shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM") ||
@@ -97,4 +93,3 @@ jobs:
             if [[ "${CIRCLE_BRANCH}" == "main" || "${CIRCLE_BRANCH}" == "staging" ]]; then
               make ci-archive
             fi
-
