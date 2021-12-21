@@ -92,6 +92,26 @@ class EdgeExtensionTests: XCTestCase {
         XCTAssertEqual(ConsentStatus.yes, edge.state?.currentCollectConsent)
     }
 
+    func testBootup_hubSharedState_setsImplementationDetails() {
+        let hubSharedState: [String: Any] = [
+            "wrapper": ["type": "R"],
+            "version": "3.0.0"
+        ]
+        mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, data: (hubSharedState, .set))
+
+        // dummy event to invoke readyForEvent
+        _ = edge.readyForEvent(Event(name: "Dummy event", type: EventType.custom, source: EventSource.none, data: nil))
+
+        // verify
+        XCTAssertNotNil(edge.state?.implementationDetails)
+        let expectedDetails: [String: Any] = [
+            "version": "3.0.0+\(EdgeConstants.EXTENSION_VERSION)",
+            "environment": "app",
+            "name": "https://ns.adobe.com/experience/mobilesdk/ios/reactnative"
+        ]
+        XCTAssertTrue(expectedDetails == edge.state?.implementationDetails ?? [:])
+    }
+
     // MARK: Consent update request
     func testHandleConsentUpdate_nilEmptyData_doesNotQueue() {
         mockRuntime.simulateComingEvents(

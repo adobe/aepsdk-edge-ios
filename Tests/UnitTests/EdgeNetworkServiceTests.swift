@@ -224,8 +224,8 @@ class EdgeNetworkServiceTests: XCTestCase {
                                     XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
                                     XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
                                     let errorJson = self.mockResponseCallback.onErrorJsonError[0]
-                                    XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
-                                    XCTAssertTrue(errorJson.contains("\"message\":\"service unavailable\""))
+                                    XCTAssertTrue(errorJson.contains("\"title\":\"Unexpected Error\""))
+                                    XCTAssertTrue(errorJson.contains("\"detail\":\"service unavailable\""))
                                     expectation.fulfill()
                                  })
 
@@ -253,8 +253,8 @@ class EdgeNetworkServiceTests: XCTestCase {
                                     XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
                                     XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
                                     let errorJson = self.mockResponseCallback.onErrorJsonError[0]
-                                    XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
-                                    XCTAssertTrue(errorJson.contains("\"message\":\"Request to Experience Edge failed with an unknown exception\""))
+                                    XCTAssertTrue(errorJson.contains("\"title\":\"Unexpected Error\""))
+                                    XCTAssertTrue(errorJson.contains("\"detail\":\"Request to Experience Edge failed with an unknown exception\""))
                                     expectation.fulfill()
                                  })
 
@@ -284,8 +284,8 @@ class EdgeNetworkServiceTests: XCTestCase {
                                     XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
                                     XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
                                     let errorJson = self.mockResponseCallback.onErrorJsonError[0]
-                                    XCTAssertTrue(errorJson.contains("\"namespace\":\"global\""))
-                                    XCTAssertTrue(errorJson.contains("\"message\":\"Internal Server Error\""))
+                                    XCTAssertTrue(errorJson.contains("\"title\":\"Unexpected Error\""))
+                                    XCTAssertTrue(errorJson.contains("\"detail\":\"Internal Server Error\""))
                                     expectation.fulfill()
                                  })
 

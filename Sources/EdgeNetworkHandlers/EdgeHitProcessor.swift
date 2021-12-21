@@ -22,18 +22,21 @@ class EdgeHitProcessor: HitProcessing {
     private var getSharedState: (String, Event?) -> SharedStateResult?
     private var getXDMSharedState: (String, Event?, Bool) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
+    private var getImplementationDetails: () -> [String: Any]?
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
          getSharedState: @escaping (String, Event?) -> SharedStateResult?,
          getXDMSharedState: @escaping (String, Event?, Bool) -> SharedStateResult?,
-         readyForEvent: @escaping (Event) -> Bool) {
+         readyForEvent: @escaping (Event) -> Bool,
+         getImplementationDetails: @escaping () -> [String: Any]?) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
         self.getSharedState = getSharedState
         self.getXDMSharedState = getXDMSharedState
         self.readyForEvent = readyForEvent
+        self.getImplementationDetails = getImplementationDetails
     }
 
     // MARK: HitProcessing
@@ -78,6 +81,10 @@ class EdgeHitProcessor: HitProcessing {
                 Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to process Experience event, data was nil or empty")
                 completion(true)
                 return
+            }
+
+            if let implementationDetails = getImplementationDetails() {
+                requestBuilder.xdmPayloads[EdgeConstants.JsonKeys.IMPLEMENTATION_DETAILS] = AnyCodable(implementationDetails)
             }
 
             // Build and send the network request to Experience Edge

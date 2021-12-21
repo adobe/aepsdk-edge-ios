@@ -32,6 +32,24 @@ struct EdgeEventError: Codable, Equatable {
     /// A report for the error containing additional information
     let report: EdgeErrorReport?
 
+    init(title: String?, detail: String?, status: Int?, type: String?, eventIndex: Int?, report: EdgeErrorReport?) {
+        self.title = title
+        self.detail = detail
+        self.status = status
+        self.type = type
+        self.eventIndex = eventIndex
+        self.report = report
+    }
+
+    init(title: String?, detail: String?) {
+        self.title = title
+        self.detail = detail
+        self.status = nil
+        self.type = nil
+        self.eventIndex = nil
+        self.report = nil
+    }
+
     // MARK: - Codable
     enum CodingKeys: String, CodingKey {
         case title

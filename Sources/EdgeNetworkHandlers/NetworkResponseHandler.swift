@@ -124,9 +124,6 @@ class NetworkResponseHandler {
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId)
         } else if let edgeErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) {
             // generic server error, return the error as is
-            Log.warning(label: LOG_TAG,
-                        "processResponseOnError - The conversion to JSON failed for server " +
-                            "error response: \(jsonError), request id \(requestId), attempting to decode as a fatal error")
             dispatchEventErrors(errorsArray: [edgeErrorResponse], requestId: requestId)
         } else {
             Log.warning(label: LOG_TAG,

@@ -252,7 +252,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(16, requestBody.count)
+        XCTAssertEqual(19, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
@@ -269,6 +269,9 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(2, requestBody["events[0].xdm.testArray[1]"] as? Int)
         XCTAssertEqual(true, requestBody["events[0].xdm.testArray[2]"] as? Bool)
         XCTAssertEqual("val", requestBody["events[0].xdm.testDictionary.key"] as? String)
+        XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
+        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationDetails.name"] as? String)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -298,7 +301,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(17, requestBody.count)
+        XCTAssertEqual(20, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
@@ -316,6 +319,9 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(2, requestBody["events[0].data.testDataArray[1]"] as? Int)
         XCTAssertEqual(true, requestBody["events[0].data.testDataArray[2]"] as? Bool)
         XCTAssertEqual("val", requestBody["events[0].data.testDataDictionary.key"] as? String)
+        XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
+        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationDetails.name"] as? String)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -349,7 +355,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         assertNetworkRequestsCount()
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(14, requestBody.count)
+        XCTAssertEqual(17, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
@@ -364,6 +370,9 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(3.42, requestBody["events[0].xdm.doubleObject"] as? Double)
         XCTAssertEqual("testInnerObject", requestBody["events[0].xdm.xdmObject.innerKey"] as? String)
         XCTAssertEqual("abc123def", requestBody["events[0].meta.collect.datasetId"] as? String)
+        XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
+        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationDetails.name"] as? String)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -478,7 +487,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         var resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(9, requestBody.count)
+        XCTAssertEqual(12, requestBody.count)
         resetTestExpectations()
 
         sleep(1)
@@ -491,7 +500,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(15, requestBody.count)
+        XCTAssertEqual(18, requestBody.count)
 
         guard let firstStore = requestBody["meta.state.entries[0].key"] as? String,
               let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
@@ -536,7 +545,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         var resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(9, requestBody.count)
+        XCTAssertEqual(12, requestBody.count)
         resetTestExpectations()
 
         sleep(1)
@@ -549,7 +558,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(15, requestBody.count)
+        XCTAssertEqual(18, requestBody.count)
 
         guard let firstStore = requestBody["meta.state.entries[0].key"] as? String,
               let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
@@ -590,7 +599,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         var resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(9, requestBody.count)
+        XCTAssertEqual(12, requestBody.count)
         resetTestExpectations()
 
         sleep(1)
@@ -607,7 +616,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
-        XCTAssertEqual(9, requestBody.count)
+        XCTAssertEqual(12, requestBody.count)
 
         XCTAssertNil(requestBody["meta.state"]) // no state should be appended
     }

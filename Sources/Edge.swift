@@ -215,7 +215,8 @@ public class Edge: NSObject, Extension {
                                             networkResponseHandler: networkResponseHandler,
                                             getSharedState: getSharedState(extensionName:event:),
                                             getXDMSharedState: getXDMSharedState(extensionName:event:barrier:),
-                                            readyForEvent: readyForEvent(_:))
+                                            readyForEvent: readyForEvent(_:),
+                                            getImplementationDetails: getImplementationDetails)
         return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }
 
@@ -229,6 +230,12 @@ public class Edge: NSObject, Extension {
         }
 
         return ConsentStatus.getCollectConsentOrDefault(eventData: consentXDMSharedState)
+    }
+
+    /// Returns current `ImplementationDetails` for this session.
+    /// - Returns: the `ImplementationDetails` for this session or nil if not yet set
+    private func getImplementationDetails() -> [String: Any]? {
+        return state?.implementationDetails
     }
 
 }
