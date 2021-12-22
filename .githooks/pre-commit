@@ -1,5 +1,5 @@
 #!/bin/bash
-SWIFTLINT=swiftlint
+SWIFTLINT=./Pods/SwiftLint/swiftlint
 CONFIG=.swiftlint.yml
 
 if ! command -v "${SWIFTLINT}" &> /dev/null; then
@@ -29,4 +29,3 @@ fi
 for file_path in $(git diff --cached --name-only --diff-filter=d | grep ".swift$"); do
 	git add "$file_path"
 done
-

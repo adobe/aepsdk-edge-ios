@@ -17,12 +17,19 @@ import Foundation
 /// Updates the state of the  `Edge` extension based on the Collect consent status
 class EdgeState {
     private let SELF_TAG = "EdgeState"
+    private let queue: DispatchQueue
+    private var _implementationDetails: [String: Any]?
     private(set) var hitQueue: HitQueuing
     private(set) var hasBooted = false
     private(set) var currentCollectConsent: ConsentStatus
+    private(set) var implementationDetails: [String: Any]? {
+        get { queue.sync { self._implementationDetails } }
+        set { queue.async { self._implementationDetails = newValue } }
+    }
 
     /// Creates a new `EdgeState` and initializes the required properties and sets the initial collect consent
     init(hitQueue: HitQueuing) {
+        self.queue = DispatchQueue(label: "com.adobe.edgestate.queue")
         self.hitQueue = hitQueue
         self.currentCollectConsent = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
         hitQueue.handleCollectConsentChange(status: currentCollectConsent)
@@ -37,9 +44,13 @@ class EdgeState {
     func bootupIfNeeded(event: Event, getSharedState: @escaping (_ name: String, _ event: Event?, _ barrier: Bool) -> SharedStateResult?) {
         guard !hasBooted else { return }
 
+        // Important: set implementationDetails before starting the hit queue so it is available to the EdgeHitProcessor
+        let hubSharedState = getSharedState(EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, event, false)
+        implementationDetails = ImplementationDetails.from(hubSharedState?.value)
+
         // check if consent extension is registered
         var consentRegistered = false
-        if let registeredExtensionsWithHub = getSharedState(EdgeConstants.SharedState.Hub.SHARED_OWNER_NAME, event, false)?.value,
+        if let registeredExtensionsWithHub = hubSharedState?.value,
            let extensions = registeredExtensionsWithHub[EdgeConstants.SharedState.Hub.EXTENSIONS] as? [String: Any],
            extensions[EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME] as? [String: Any] != nil {
             consentRegistered = true

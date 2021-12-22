@@ -20,7 +20,7 @@ let package = Package(
         .library(name: "AEPEdge", targets: ["AEPEdge"])
     ],
     dependencies: [
-        .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .upToNextMajor(from: "3.1.1"))
+        .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .upToNextMajor(from: "3.3.2"))
     ],
     targets: [
         .target(name: "AEPEdge",

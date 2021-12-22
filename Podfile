@@ -7,6 +7,8 @@ use_frameworks!
 workspace 'AEPEdge'
 project 'AEPEdge.xcodeproj'
 
+pod 'SwiftLint', '0.44.0'
+
 target 'AEPEdge' do
   pod 'AEPCore'
 end
