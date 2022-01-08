@@ -20,12 +20,23 @@ class EdgeHitProcessorTests: XCTestCase {
     private let CONFIGURATION_SHARED_STATE = "com.adobe.module.configuration"
     private let IDENTITY_SHARED_STATE = "com.adobe.edge.identity"
     private let ASSURANCE_INTEGRATION_ID = "integrationid"
+    // Configuration keys
     private let EDGE_CONFIG_ID = "edge.configId"
     private let EDGE_ENV = "edge.environment"
+    private let EDGE_DOMAIN = "edge.domain"
+    // Edge Endpoints
     private let CONSENT_ENDPOINT = "https://edge.adobedc.net/ee/v1/privacy/set-consent"
+    private let CONSENT_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/v1/privacy/set-consent"
+    private let CONSENT_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/v1/privacy/set-consent"
     private let INTERACT_ENDPOINT_PROD = "https://edge.adobedc.net/ee/v1/interact"
-    private let INTERACT_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/v1"
-    private let INTERACT_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/v1/"
+    private let INTERACT_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/v1/interact"
+    private let INTERACT_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/v1/interact"
+    private let CUSTOM_DOMAIN = "my.awesome.site"
+    private let CUSTOM_CONSENT_ENDPOINT = "https://my.awesome.site/ee/v1/privacy/set-consent"
+    private let CUSTOM_CONSENT_ENDPOINT_PRE_PROD = "https://my.awesome.site/ee-pre-prd/v1/privacy/set-consent"
+    private let CUSTOM_INTERACT_ENDPOINT_PROD = "https://my.awesome.site/ee/v1/interact"
+    private let CUSTOM_INTERACT_ENDPOINT_PRE_PROD = "https://my.awesome.site/ee-pre-prd/v1/interact"
+
     var hitProcessor: EdgeHitProcessor!
     var networkService: EdgeNetworkService!
     var networkResponseHandler: NetworkResponseHandler!
@@ -267,79 +278,54 @@ class EdgeHitProcessorTests: XCTestCase {
         XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: INTERACT_ENDPOINT_PROD))
     }
 
-    /// Tests that when the configurable edge endpoint is production in configuration shared state that we use production endpoint
-    func testProcessHit_experienceEvent_whenConfigEndpointProd() {
-        // setup
-        hitProcessor = EdgeHitProcessor(networkService: networkService,
-                                        networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, _ -> SharedStateResult? in
-                                            if extensionName == self.CONFIGURATION_SHARED_STATE {
-                                                return SharedStateResult(status: .set, value: [self.EDGE_CONFIG_ID: "test-config-id", self.EDGE_ENV: "prod"])
-                                            }
-
-                                            return nil
-                                        },
-                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
-                                        readyForEvent: readyForEvent(_:),
-                                        getImplementationDetails: { return nil })
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-
-        let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-
-        // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-        XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: INTERACT_ENDPOINT_PROD))
+    func testProcessHit_consentUpdateEvent_whenConfigEndpointProduction() {
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "prod", domain: nil, expectedEndpoint: CONSENT_ENDPOINT)
     }
 
-    /// Tests that when the configurable edge endpoint is pre-production in configuration shared state that we use pre-production endpoint
-    func testProcessHit_experienceEvent_whenConfigEndpointPreProd() {
-        // setup
-        hitProcessor = EdgeHitProcessor(networkService: networkService,
-                                        networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, _ -> SharedStateResult? in
-                                            if extensionName == self.CONFIGURATION_SHARED_STATE {
-                                                return SharedStateResult(status: .set, value: [self.EDGE_CONFIG_ID: "test-config-id", self.EDGE_ENV: "pre-prod"])
-                                            }
-
-                                            return nil
-                                        },
-                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
-                                        readyForEvent: readyForEvent(_:),
-                                        getImplementationDetails: { return nil })
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-
-        let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-
-        // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-        XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: INTERACT_ENDPOINT_PRE_PROD))
+    func testProcessHit_consentUpdateEvent_whenConfigEndpointPreProduction() {
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "pre-prod", domain: nil, expectedEndpoint: CONSENT_ENDPOINT_PRE_PROD)
     }
 
-    /// Tests that when the configurable edge endpoint is integration in configuration shared state that we use integration endpoint
+    func testProcessHit_consentUpdateEvent_whenConfigEndpointIntegration() {
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "int", domain: nil, expectedEndpoint: CONSENT_ENDPOINT_INTEGRATION)
+    }
+
+    func testProcessHit_consentUpdateEvent_whenConfigEndpointProductionAndCustomDomain() {
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "prod", domain: CUSTOM_DOMAIN, expectedEndpoint: CUSTOM_CONSENT_ENDPOINT)
+    }
+
+    func testProcessHit_consentUpdateEvent_whenConfigEndpointPreProductionAndCustomDomain() {
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "pre-prod", domain: CUSTOM_DOMAIN, expectedEndpoint: CUSTOM_CONSENT_ENDPOINT_PRE_PROD)
+    }
+
+    func testProcessHit_consentUpdateEvent_whenConfigEndpointIntegrationAndCustomDomain() {
+        // Note, custom domains are not supported with the integration endpoint
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "int", domain: CUSTOM_DOMAIN, expectedEndpoint: CONSENT_ENDPOINT_INTEGRATION)
+    }
+
+    func testProcessHit_experienceEvent_whenConfigEndpointProduction() {
+        assertNetworkRequestUrl(event: experienceEvent, environment: "prod", domain: nil, expectedEndpoint: INTERACT_ENDPOINT_PROD)
+    }
+
+    func testProcessHit_experienceEvent_whenConfigEndpointPreProduction() {
+        assertNetworkRequestUrl(event: experienceEvent, environment: "pre-prod", domain: nil, expectedEndpoint: INTERACT_ENDPOINT_PRE_PROD)
+    }
+
     func testProcessHit_experienceEvent_whenConfigEndpointIntegration() {
-        // setup
-        hitProcessor = EdgeHitProcessor(networkService: networkService,
-                                        networkResponseHandler: networkResponseHandler,
-                                        getSharedState: { extensionName, _ -> SharedStateResult? in
-                                            if extensionName == self.CONFIGURATION_SHARED_STATE {
-                                                return SharedStateResult(status: .set, value: [self.EDGE_CONFIG_ID: "test-config-id", self.EDGE_ENV: "int"])
-                                            }
+        assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: nil, expectedEndpoint: INTERACT_ENDPOINT_INTEGRATION)
+    }
 
-                                            return nil
-                                        },
-                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
-                                        readyForEvent: readyForEvent(_:),
-                                        getImplementationDetails: { return nil })
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+    func testProcessHit_experienceEvent_whenConfigEndpointProductionAndCustomDomain() {
+        assertNetworkRequestUrl(event: experienceEvent, environment: "prod", domain: CUSTOM_DOMAIN, expectedEndpoint: CUSTOM_INTERACT_ENDPOINT_PROD)
+    }
 
-        let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+    func testProcessHit_experienceEvent_whenConfigEndpointPreProductionAndCustomDomain() {
+        assertNetworkRequestUrl(event: experienceEvent, environment: "pre-prod", domain: CUSTOM_DOMAIN, expectedEndpoint: CUSTOM_INTERACT_ENDPOINT_PRE_PROD)
+    }
 
-        // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-        XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: INTERACT_ENDPOINT_INTEGRATION))
+    func testProcessHit_experienceEvent_whenConfigEndpointIntegrationAndCustomDomain() {
+        // Note, custom domains are not supported with the integration endpoint
+        assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: CUSTOM_DOMAIN, expectedEndpoint: INTERACT_ENDPOINT_INTEGRATION)
     }
 
     func testProcessHit_experienceEvent_nilData_doesNotSendNetworkRequest_returnsTrue() {
@@ -580,6 +566,37 @@ class EdgeHitProcessorTests: XCTestCase {
         // verify
         wait(for: [expectation], timeout: 1)
         XCTAssertEqual(sendsNetworkRequest, mockNetworkService?.connectAsyncCalled, "Expected network request to be \(sendsNetworkRequest), but it was \(mockNetworkService?.connectAsyncCalled ?? false)", line: line)
+    }
+
+    private func assertNetworkRequestUrl(event: Event, environment: String?, domain: String?, expectedEndpoint: String) {
+        var config: [String: Any] = [self.EDGE_CONFIG_ID: "test-config-id"]
+        if let env = environment {
+            config[self.EDGE_ENV] = env
+        }
+        if let domain = domain {
+            config[self.EDGE_DOMAIN] = domain
+        }
+
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        getSharedState: { extensionName, _ -> SharedStateResult? in
+                                            if extensionName == self.CONFIGURATION_SHARED_STATE {
+                                                return SharedStateResult(status: .set, value: config)
+                                            }
+
+                                            return nil
+                                        },
+                                        getXDMSharedState: resolveXDMSharedState(extensionName:event:barrier:),
+                                        readyForEvent: readyForEvent(_:),
+                                        getImplementationDetails: { return nil })
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+
+        let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        // test
+        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
+        XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: expectedEndpoint))
     }
 }
 
