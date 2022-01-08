@@ -18,7 +18,7 @@ class EdgeHitTests: XCTestCase {
     private let CONFIG_ID = "testConfigId"
     private let EDGE_REQUEST = EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]])
     private let CONSENT_UPDATE_REQUEST = EdgeConsentUpdate(meta: nil, identityMap: nil, consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
-
+    private let ENDPOINT_PROD = EdgeEndpoint(type: .production)
     override func setUp() {
         continueAfterFailure = false
     }
@@ -26,19 +26,19 @@ class EdgeHitTests: XCTestCase {
     // MARK: ExperienceEventsEdgeHit tests
 
     func testExperienceEventsEdgeHit() {
-        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, request: EDGE_REQUEST)
-        XCTAssertEqual(EdgeEndpoint.production, .production)
+        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: ENDPOINT_PROD, configId: CONFIG_ID, request: EDGE_REQUEST)
+        XCTAssertEqual(ENDPOINT_PROD.endpointUrl, edgeHit.edgeEndpoint.endpointUrl)
         XCTAssertEqual(CONFIG_ID, edgeHit.configId)
         XCTAssertNotNil(edgeHit.requestId)
         XCTAssertEqual(EDGE_REQUEST.events, edgeHit.request.events)
     }
 
     func testExperienceEventsEdgeHit_streamingSettings() {
-        let edgeHit1 = ExperienceEventsEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]]))
+        let edgeHit1 = ExperienceEventsEdgeHit(edgeEndpoint: ENDPOINT_PROD, configId: CONFIG_ID, request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]]))
         XCTAssertNil(edgeHit1.getStreamingSettings())
 
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
-        let edgeHit2 = ExperienceEventsEdgeHit(edgeEndpoint: .production,
+        let edgeHit2 = ExperienceEventsEdgeHit(edgeEndpoint: ENDPOINT_PROD,
                                                configId: CONFIG_ID,
                                                request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil),
                                                                     xdm: nil, events: [["test": "data"]]))
@@ -53,7 +53,7 @@ class EdgeHitTests: XCTestCase {
                     """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
 
         let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
-        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]]))
+        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: ENDPOINT_PROD, configId: CONFIG_ID, request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]]))
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
@@ -70,7 +70,7 @@ class EdgeHitTests: XCTestCase {
                 """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
         let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
-        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: .production,
+        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: ENDPOINT_PROD,
                                               configId: CONFIG_ID,
                                               request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil), xdm: nil, events: [["test": "data"]]))
 
@@ -78,7 +78,7 @@ class EdgeHitTests: XCTestCase {
     }
 
     func testExperienceEventsEdgeHit_getType() {
-        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, request: EDGE_REQUEST)
+        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: ENDPOINT_PROD, configId: CONFIG_ID, request: EDGE_REQUEST)
         XCTAssertEqual(ExperienceEdgeRequestType.interact, edgeHit.getType())
     }
 
@@ -100,7 +100,7 @@ class EdgeHitTests: XCTestCase {
             }
             """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
         let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
-        let edgeHit = ConsentEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
+        let edgeHit = ConsentEdgeHit(edgeEndpoint: ENDPOINT_PROD, configId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
@@ -131,18 +131,18 @@ class EdgeHitTests: XCTestCase {
         let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil),
                                               identityMap: nil,
                                               consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
-        let edgeHit = ConsentEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, consents: consentUpdate)
+        let edgeHit = ConsentEdgeHit(edgeEndpoint: ENDPOINT_PROD, configId: CONFIG_ID, consents: consentUpdate)
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
 
     func testConsentEdgeHit_getType() {
-        let edgeHit = ConsentEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
+        let edgeHit = ConsentEdgeHit(edgeEndpoint: ENDPOINT_PROD, configId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
         XCTAssertEqual(ExperienceEdgeRequestType.consent, edgeHit.getType())
     }
 
     func testConsentEdgeHit_getStreamingSettings_streamingNotEnabled() {
-        let edgeHit = ConsentEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
+        let edgeHit = ConsentEdgeHit(edgeEndpoint: ENDPOINT_PROD, configId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
         XCTAssertNil(edgeHit.getStreamingSettings())
     }
 
@@ -151,7 +151,7 @@ class EdgeHitTests: XCTestCase {
         let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil),
                                               identityMap: nil,
                                               consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
-        let edgeHit = ConsentEdgeHit(edgeEndpoint: .production, configId: CONFIG_ID, consents: consentUpdate)
+        let edgeHit = ConsentEdgeHit(edgeEndpoint: ENDPOINT_PROD, configId: CONFIG_ID, consents: consentUpdate)
         XCTAssertNotNil(edgeHit.getStreamingSettings())
     }
 
