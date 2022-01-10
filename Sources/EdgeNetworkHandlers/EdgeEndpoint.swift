@@ -60,20 +60,19 @@ struct EdgeEndpoint {
         guard let domain = domain, !domain.isEmpty else {
             return EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN
         }
-        return domain.deletePrefix("https://").deletePrefix("http://")
+        return domain.lowercased().deletePrefix("https://").deletePrefix("http://")
     }
 }
 
 extension String {
 
-    /// Remove the given `prefix` from the current string. The returned string is lowercased.
+    /// Remove the given `prefix` from the current string.
     /// - Parameter prefix: the prefix to remove from the current string
-    /// - Returns: the current string lowercased and with the given `prefix` removed
+    /// - Returns: the current string with the given `prefix` removed
     func deletePrefix(_ prefix: String) -> String {
-        let lowercaseSelf = self.lowercased()
-        guard lowercaseSelf.hasPrefix(prefix.lowercased()) else {
-            return lowercaseSelf
+        guard self.hasPrefix(prefix.lowercased()) else {
+            return self
         }
-        return String(lowercaseSelf.dropFirst(prefix.count))
+        return String(self.dropFirst(prefix.count))
     }
 }
