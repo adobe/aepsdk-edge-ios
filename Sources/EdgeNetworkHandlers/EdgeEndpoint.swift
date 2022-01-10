@@ -35,8 +35,10 @@ enum EdgeEndpointType: String {
 struct EdgeEndpoint {
     let endpointUrl: String
 
-    /// Initializes the appropriate `EdgeEndpoint` enum for the given `optionalRawValue`
-    /// - Parameter optionalRawValue: a `RawValue` representation of a `EdgeEndpoint` enum, default is `production`
+    /// Initializes the appropriate `EdgeEndpoint` for the given `type` and `optionalDomain`
+    /// - Parameters:
+    ///   - type: the `EdgeEndpointType` for the `EdgeEndpoint`
+    ///   - optionalDomain: an optional custom domain for the `EdgeEndpoint`. If not set the default domain is used.
     init(type: EdgeEndpointType, optionalDomain: String? = nil) {
         let domain = EdgeEndpoint.cleanDomain(optionalDomain)
 
@@ -51,6 +53,9 @@ struct EdgeEndpoint {
         }
     }
 
+    /// Clean the given `domain` name by removing any HTTP scheme prefix and lowercasing the name.
+    /// - Parameter domain: a URI domain name
+    /// - Returns: the given `domain` lowercased and with any HTTP scheme removed
     private static func cleanDomain(_ domain: String?) -> String {
         guard let domain = domain, !domain.isEmpty else {
             return EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN
@@ -60,6 +65,10 @@ struct EdgeEndpoint {
 }
 
 extension String {
+
+    /// Remove the given `prefix` from the current string. The returned string is lowercased.
+    /// - Parameter prefix: the prefix to remove from the current string
+    /// - Returns: the current string lowercased and with the given `prefix` removed
     func deletePrefix(_ prefix: String) -> String {
         let lowercaseSelf = self.lowercased()
         guard lowercaseSelf.hasPrefix(prefix.lowercased()) else {
