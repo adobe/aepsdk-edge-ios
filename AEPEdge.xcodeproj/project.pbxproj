@@ -738,9 +738,9 @@
 			isa = PBXGroup;
 			children = (
 				D4F74FEC2447A95400379258 /* utils */,
-				D4D5B5252432599B00CAB6E4 /* Info.plist */,
 				2198DEE726050458008ADB6A /* AtomicTests.swift */,
 				D4A81DEB25658F0D0042B00A /* CompletionHandlerTests.swift */,
+				BF7E5B3A2789189D00D5E0FF /* EdgeEndpointTests.swift */,
 				21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */,
 				21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */,
 				D45F2E6F25ED8EE3000AC350 /* EdgeExtensionTests.swift */,
@@ -755,10 +755,10 @@
 				BF947F7D243EA1300057A6CC /* RequestBuilderTests.swift */,
 				BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */,
 				BF947F902440F6660057A6CC /* StateMetadataTests.swift */,
-				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */,
+				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */,
-				BF7E5B3A2789189D00D5E0FF /* EdgeEndpointTests.swift */,
+				D4D5B5252432599B00CAB6E4 /* Info.plist */,
 			);
 			name = UnitTests;
 			path = Tests/UnitTests;
