@@ -20,6 +20,42 @@ class EdgeEndpointTests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testEnvironmentTypeProduction() {
+        XCTAssertEqual(.production, EdgeEnvironmentType(optionalRawValue: "prod"))
+    }
+
+    func testEnvironmentTypeProductionIsLowercased() {
+        XCTAssertEqual(.production, EdgeEnvironmentType(optionalRawValue: "PROD"))
+    }
+
+    func testEnvironmentTypePreProduction() {
+        XCTAssertEqual(.preProduction, EdgeEnvironmentType(optionalRawValue: "pre-prod"))
+    }
+
+    func testEnvironmentTypePreProductionIsLowercased() {
+        XCTAssertEqual(.preProduction, EdgeEnvironmentType(optionalRawValue: "PRE-PROD"))
+    }
+
+    func testEnvironmentTypeIntegration() {
+        XCTAssertEqual(.integration, EdgeEnvironmentType(optionalRawValue: "int"))
+    }
+
+    func testEnvironmentTypeIntegrationIsLowercased() {
+        XCTAssertEqual(.integration, EdgeEnvironmentType(optionalRawValue: "INT"))
+    }
+
+    func testEnvironmentTypeDefaultsToProductionWhenNil() {
+        XCTAssertEqual(.production, EdgeEnvironmentType(optionalRawValue: nil))
+    }
+
+    func testEnvironmentTypeDefaultsToProductionWhenEmpty() {
+        XCTAssertEqual(.production, EdgeEnvironmentType(optionalRawValue: ""))
+    }
+
+    func testEnvironmentTypeDefaultsToProductionWhenInvalid() {
+        XCTAssertEqual(.production, EdgeEnvironmentType(optionalRawValue: "invalid"))
+    }
+
     func testDefaultProductionEndpoint() {
         let endpoint = EdgeEndpoint(type: .production)
         let expected = "https://\(EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN)\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH)"

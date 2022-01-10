@@ -24,7 +24,7 @@ enum EdgeEnvironmentType: String {
     case integration = "int"
 
     init(optionalRawValue: RawValue?) {
-        guard let rawValue = optionalRawValue, let validEndpoint = EdgeEnvironmentType(rawValue: rawValue) else {
+        guard let rawValue = optionalRawValue?.lowercased(), let validEndpoint = EdgeEnvironmentType(rawValue: rawValue) else {
             self = .production
             return
         }
