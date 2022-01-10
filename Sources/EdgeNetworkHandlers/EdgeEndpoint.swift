@@ -13,7 +13,7 @@
 import Foundation
 
 /// Represents all the known endpoints for the Edge Network
-enum EdgeEndpointType: String {
+enum EdgeEnvironmentType: String {
     /// The production Edge Network endpoint
     case production = "prod"
 
@@ -24,7 +24,7 @@ enum EdgeEndpointType: String {
     case integration = "int"
 
     init(optionalRawValue: RawValue?) {
-        guard let rawValue = optionalRawValue, let validEndpoint = EdgeEndpointType(rawValue: rawValue) else {
+        guard let rawValue = optionalRawValue, let validEndpoint = EdgeEnvironmentType(rawValue: rawValue) else {
             self = .production
             return
         }
@@ -37,9 +37,9 @@ struct EdgeEndpoint {
 
     /// Initializes the appropriate `EdgeEndpoint` for the given `type` and `optionalDomain`
     /// - Parameters:
-    ///   - type: the `EdgeEndpointType` for the `EdgeEndpoint`
+    ///   - type: the `EdgeEnvironmentType` for the `EdgeEndpoint`
     ///   - optionalDomain: an optional custom domain for the `EdgeEndpoint`. If not set the default domain is used.
-    init(type: EdgeEndpointType, optionalDomain: String? = nil) {
+    init(type: EdgeEnvironmentType, optionalDomain: String? = nil) {
         let domain = EdgeEndpoint.cleanDomain(optionalDomain)
 
         switch type {

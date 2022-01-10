@@ -181,9 +181,9 @@ class EdgeHitProcessor: HitProcessing {
             return nil
         }
 
-        let edgeEndpointStr = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] as? String
+        let edgeEnvironmentStr = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] as? String
         let edgeDomainStr = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN] as? String
-        let edgeEndpoint = EdgeEndpoint(type: EdgeEndpointType(optionalRawValue: edgeEndpointStr?.lowercased()), optionalDomain: edgeDomainStr)
+        let edgeEndpoint = EdgeEndpoint(type: EdgeEnvironmentType(optionalRawValue: edgeEnvironmentStr?.lowercased()), optionalDomain: edgeDomainStr)
 
         guard let configId =
                 configSharedState[EdgeConstants.SharedState.Configuration.CONFIG_ID] as? String,

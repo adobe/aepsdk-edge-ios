@@ -31,11 +31,11 @@ class EdgeHitProcessorTests: XCTestCase {
     private let INTERACT_ENDPOINT_PROD = "https://edge.adobedc.net/ee/v1/interact"
     private let INTERACT_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/v1/interact"
     private let INTERACT_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/v1/interact"
-    private let CUSTOM_DOMAIN = "my.awesome.site"
-    private let CUSTOM_CONSENT_ENDPOINT = "https://my.awesome.site/ee/v1/privacy/set-consent"
-    private let CUSTOM_CONSENT_ENDPOINT_PRE_PROD = "https://my.awesome.site/ee-pre-prd/v1/privacy/set-consent"
-    private let CUSTOM_INTERACT_ENDPOINT_PROD = "https://my.awesome.site/ee/v1/interact"
-    private let CUSTOM_INTERACT_ENDPOINT_PRE_PROD = "https://my.awesome.site/ee-pre-prd/v1/interact"
+    private static let CUSTOM_DOMAIN = "my.awesome.site"
+    private static let CUSTOM_CONSENT_ENDPOINT = "https://\(CUSTOM_DOMAIN)/ee/v1/privacy/set-consent"
+    private static let CUSTOM_CONSENT_ENDPOINT_PRE_PROD = "https://\(CUSTOM_DOMAIN)/ee-pre-prd/v1/privacy/set-consent"
+    private static let CUSTOM_INTERACT_ENDPOINT_PROD = "https://\(CUSTOM_DOMAIN)/ee/v1/interact"
+    private static let CUSTOM_INTERACT_ENDPOINT_PRE_PROD = "https://\(CUSTOM_DOMAIN)/ee-pre-prd/v1/interact"
 
     var hitProcessor: EdgeHitProcessor!
     var networkService: EdgeNetworkService!
@@ -291,16 +291,16 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     func testProcessHit_consentUpdateEvent_whenConfigEndpointProductionAndCustomDomain() {
-        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "prod", domain: CUSTOM_DOMAIN, expectedEndpoint: CUSTOM_CONSENT_ENDPOINT)
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "prod", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: EdgeHitProcessorTests.CUSTOM_CONSENT_ENDPOINT)
     }
 
     func testProcessHit_consentUpdateEvent_whenConfigEndpointPreProductionAndCustomDomain() {
-        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "pre-prod", domain: CUSTOM_DOMAIN, expectedEndpoint: CUSTOM_CONSENT_ENDPOINT_PRE_PROD)
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "pre-prod", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: EdgeHitProcessorTests.CUSTOM_CONSENT_ENDPOINT_PRE_PROD)
     }
 
     func testProcessHit_consentUpdateEvent_whenConfigEndpointIntegrationAndCustomDomain() {
         // Note, custom domains are not supported with the integration endpoint
-        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "int", domain: CUSTOM_DOMAIN, expectedEndpoint: CONSENT_ENDPOINT_INTEGRATION)
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "int", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: CONSENT_ENDPOINT_INTEGRATION)
     }
 
     func testProcessHit_experienceEvent_whenConfigEndpointProduction() {
@@ -316,16 +316,16 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     func testProcessHit_experienceEvent_whenConfigEndpointProductionAndCustomDomain() {
-        assertNetworkRequestUrl(event: experienceEvent, environment: "prod", domain: CUSTOM_DOMAIN, expectedEndpoint: CUSTOM_INTERACT_ENDPOINT_PROD)
+        assertNetworkRequestUrl(event: experienceEvent, environment: "prod", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: EdgeHitProcessorTests.CUSTOM_INTERACT_ENDPOINT_PROD)
     }
 
     func testProcessHit_experienceEvent_whenConfigEndpointPreProductionAndCustomDomain() {
-        assertNetworkRequestUrl(event: experienceEvent, environment: "pre-prod", domain: CUSTOM_DOMAIN, expectedEndpoint: CUSTOM_INTERACT_ENDPOINT_PRE_PROD)
+        assertNetworkRequestUrl(event: experienceEvent, environment: "pre-prod", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: EdgeHitProcessorTests.CUSTOM_INTERACT_ENDPOINT_PRE_PROD)
     }
 
     func testProcessHit_experienceEvent_whenConfigEndpointIntegrationAndCustomDomain() {
         // Note, custom domains are not supported with the integration endpoint
-        assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: CUSTOM_DOMAIN, expectedEndpoint: INTERACT_ENDPOINT_INTEGRATION)
+        assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: INTERACT_ENDPOINT_INTEGRATION)
     }
 
     func testProcessHit_experienceEvent_nilData_doesNotSendNetworkRequest_returnsTrue() {
