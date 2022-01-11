@@ -12,7 +12,7 @@
 
 import Foundation
 
-/// Represents all the known endpoints for the Edge Network
+/// Represents all the known Edge Network environment types
 enum EdgeEnvironmentType: String {
     /// The production Edge Network endpoint
     case production = "prod"
