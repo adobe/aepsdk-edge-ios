@@ -103,6 +103,7 @@
 		BF5EECFD24983B9400C72622 /* product_list_colors.json in Resources */ = {isa = PBXBuildFile; fileRef = BF5EECB5249839DC00C72622 /* product_list_colors.json */; };
 		BF5EED0024983BA500C72622 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF5EECA8249839DC00C72622 /* LaunchScreen.storyboard */; };
 		BF5EED0124983BA500C72622 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF5EECAA249839DC00C72622 /* Main.storyboard */; };
+		BF7E5B3B2789189D00D5E0FF /* EdgeEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7E5B3A2789189D00D5E0FF /* EdgeEndpointTests.swift */; };
 		BF947F74243BA0E10057A6CC /* KonductorConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */; };
 		BF947F7E243EA1300057A6CC /* RequestBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F7D243EA1300057A6CC /* RequestBuilderTests.swift */; };
 		BF947F88243F2EF70057A6CC /* StoreResponsePayloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */; };
@@ -348,6 +349,7 @@
 		BF5EECC1249839DC00C72622 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		BF5EECC2249839DC00C72622 /* AsssuranceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsssuranceViewController.swift; sourceTree = "<group>"; };
 		BF5EECE524983AE000C72622 /* AEPCommerceDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPCommerceDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF7E5B3A2789189D00D5E0FF /* EdgeEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEndpointTests.swift; sourceTree = "<group>"; };
 		BF947F62243565CC0057A6CC /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Edge.swift; sourceTree = "<group>"; };
 		BF947F63243565CC0057A6CC /* EdgeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeConstants.swift; sourceTree = "<group>"; };
 		BF947F71243BA0BA0057A6CC /* KonductorConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KonductorConfig.swift; sourceTree = "<group>"; };
@@ -736,9 +738,9 @@
 			isa = PBXGroup;
 			children = (
 				D4F74FEC2447A95400379258 /* utils */,
-				D4D5B5252432599B00CAB6E4 /* Info.plist */,
 				2198DEE726050458008ADB6A /* AtomicTests.swift */,
 				D4A81DEB25658F0D0042B00A /* CompletionHandlerTests.swift */,
+				BF7E5B3A2789189D00D5E0FF /* EdgeEndpointTests.swift */,
 				21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */,
 				21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */,
 				D45F2E6F25ED8EE3000AC350 /* EdgeExtensionTests.swift */,
@@ -753,9 +755,10 @@
 				BF947F7D243EA1300057A6CC /* RequestBuilderTests.swift */,
 				BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */,
 				BF947F902440F6660057A6CC /* StateMetadataTests.swift */,
-				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */,
+				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				1CCD27C72458CB8000E912B2 /* XDMFormattersTests.swift */,
+				D4D5B5252432599B00CAB6E4 /* Info.plist */,
 			);
 			name = UnitTests;
 			path = Tests/UnitTests;
@@ -1452,6 +1455,7 @@
 				D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */,
 				D46553F7246A384900A150E2 /* NetworkResponseHandlerTests.swift in Sources */,
 				21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */,
+				BF7E5B3B2789189D00D5E0FF /* EdgeEndpointTests.swift in Sources */,
 				2198DEE826050458008ADB6A /* AtomicTests.swift in Sources */,
 				D4A81DEC25658F0D0042B00A /* CompletionHandlerTests.swift in Sources */,
 				D4F74FE72447A8B800379258 /* MockNetworking.swift in Sources */,
