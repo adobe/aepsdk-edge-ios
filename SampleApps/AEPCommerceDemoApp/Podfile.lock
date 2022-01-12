@@ -5,7 +5,7 @@ PODS:
   - AEPCore (3.3.2):
     - AEPRulesEngine (= 1.0.1)
     - AEPServices (= 3.3.2)
-  - AEPEdge (1.2.0):
+  - AEPEdge (1.3.0):
     - AEPCore (>= 3.3.2)
     - AEPEdgeIdentity
   - AEPEdgeIdentity (1.0.0):
@@ -47,7 +47,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AEPAssurance: 18068627111e366a851dc2166239f22b665101bd
   AEPCore: 922aa0eac3fa4f0bc3fbdd3f1b9f7cb7b65e440d
-  AEPEdge: f962929299a98ca2b17958ca7c882df262d1d6ae
+  AEPEdge: 500628aee1319ef2690dfaf5bd950badce6ec3f0
   AEPEdgeIdentity: 40d312b4434b710a46c1738ab2a221dda4cfd67e
   AEPIdentity: 5f7af2b937713ff82aa0788a6ee0b7e0d8fcd86e
   AEPLifecycle: 8200df6d8f4579d4ee1eb924d6c46247b1fe102b
