@@ -60,7 +60,7 @@ struct EdgeEndpoint {
         guard let domain = domain, !domain.isEmpty else {
             return EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN
         }
-        return domain.lowercased().deletePrefix("https://").deletePrefix("http://")
+        return domain.lowercased().deletePrefix("https://").deletePrefix("http://").deleteSuffix("/")
     }
 }
 
@@ -70,9 +70,19 @@ extension String {
     /// - Parameter prefix: the prefix to remove from the current string
     /// - Returns: the current string with the given `prefix` removed
     func deletePrefix(_ prefix: String) -> String {
-        guard self.hasPrefix(prefix.lowercased()) else {
+        guard self.hasPrefix(prefix) else {
             return self
         }
         return String(self.dropFirst(prefix.count))
+    }
+
+    /// Remove the given `suffix` from the current string.
+    /// - Parameter suffix: the suffix to remove from the current string
+    /// - Returns: the current string with the given `suffix` removed if found
+    func deleteSuffix(_ suffix: String) -> String {
+        guard self.hasSuffix(suffix) else {
+            return self
+        }
+        return String(self.dropLast(suffix.count))
     }
 }

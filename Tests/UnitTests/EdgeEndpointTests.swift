@@ -109,6 +109,13 @@ class EdgeEndpointTests: XCTestCase {
         XCTAssertEqual(expected, endpoint.endpointUrl)
     }
 
+    func testCustomDomainRemovesSlashSuffix() {
+        let domain = "my.awesome.site/"
+        let endpoint = EdgeEndpoint(type: .production, optionalDomain: domain)
+        let expected = "https://my.awesome.site\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH)"
+        XCTAssertEqual(expected, endpoint.endpointUrl)
+    }
+
     func testCustomEmptyDomainUsesDefault() {
         let domain = ""
         let endpoint = EdgeEndpoint(type: .production, optionalDomain: domain)
@@ -118,6 +125,13 @@ class EdgeEndpointTests: XCTestCase {
 
     func testCustomDomainIsLowercase() {
         let domain = "MY.LOUD.SITE"
+        let endpoint = EdgeEndpoint(type: .production, optionalDomain: domain)
+        let expected = "https://my.loud.site\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH)"
+        XCTAssertEqual(expected, endpoint.endpointUrl)
+    }
+
+    func testCustomDomainIsLowercaseAndPrefixRemoved() {
+        let domain = "HTTP://MY.LOUD.SITE"
         let endpoint = EdgeEndpoint(type: .production, optionalDomain: domain)
         let expected = "https://my.loud.site\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH)"
         XCTAssertEqual(expected, endpoint.endpointUrl)
