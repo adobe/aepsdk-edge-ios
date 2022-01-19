@@ -40,7 +40,12 @@ struct EdgeEndpoint {
     ///   - type: the `EdgeEnvironmentType` for the `EdgeEndpoint`
     ///   - optionalDomain: an optional custom domain for the `EdgeEndpoint`. If not set the default domain is used.
     init(type: EdgeEnvironmentType, optionalDomain: String? = nil) {
-        let domain = EdgeEndpoint.cleanDomain(optionalDomain)
+        let domain: String
+        if let unwrappedDomain = optionalDomain, !unwrappedDomain.isEmpty {
+            domain = unwrappedDomain
+        } else {
+            domain = EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN
+        }
 
         switch type {
         case .production:
@@ -51,28 +56,5 @@ struct EdgeEndpoint {
             // Edge Integration endpoint does not support custom domains, so there is just the one URL
             endpointUrl = EdgeConstants.NetworkKeys.EDGE_ENDPOINT_INTEGRATION
         }
-    }
-
-    /// Clean the given `domain` name by removing any HTTP scheme prefix and lowercasing the name.
-    /// - Parameter domain: a URI domain name
-    /// - Returns: the given `domain` lowercased and with any HTTP scheme removed
-    private static func cleanDomain(_ domain: String?) -> String {
-        guard let domain = domain, !domain.isEmpty else {
-            return EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN
-        }
-        return domain.lowercased().deletePrefix("https://").deletePrefix("http://")
-    }
-}
-
-extension String {
-
-    /// Remove the given `prefix` from the current string.
-    /// - Parameter prefix: the prefix to remove from the current string
-    /// - Returns: the current string with the given `prefix` removed
-    func deletePrefix(_ prefix: String) -> String {
-        guard self.hasPrefix(prefix.lowercased()) else {
-            return self
-        }
-        return String(self.dropFirst(prefix.count))
     }
 }
