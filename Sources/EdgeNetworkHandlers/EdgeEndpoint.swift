@@ -12,8 +12,8 @@
 
 import Foundation
 
-/// Represents all the known endpoints for the Edge Network
-enum EdgeEndpoint: String {
+/// Represents all the known Edge Network environment types
+enum EdgeEnvironmentType: String {
     /// The production Edge Network endpoint
     case production = "prod"
 
@@ -23,27 +23,38 @@ enum EdgeEndpoint: String {
     /// The integration Edge Network endpoint
     case integration = "int"
 
-    /// Initializes the appropriate `EdgeEndpoint` enum for the given `optionalRawValue`
-    /// - Parameter optionalRawValue: a `RawValue` representation of a `EdgeEndpoint` enum, default is `production`
     init(optionalRawValue: RawValue?) {
-        guard let rawValue = optionalRawValue,
-              let validEndpoint = EdgeEndpoint(rawValue: rawValue) else {
-            self = EdgeConstants.Defaults.ENDPOINT
+        guard let rawValue = optionalRawValue?.lowercased(), let validEndpoint = EdgeEnvironmentType(rawValue: rawValue) else {
+            self = .production
             return
         }
-
         self = validEndpoint
     }
+}
 
-    /// Computes the endpoint URL based on this
-    var endpointUrl: String {
-        switch self {
+struct EdgeEndpoint {
+    let endpointUrl: String
+
+    /// Initializes the appropriate `EdgeEndpoint` for the given `type` and `optionalDomain`
+    /// - Parameters:
+    ///   - type: the `EdgeEnvironmentType` for the `EdgeEndpoint`
+    ///   - optionalDomain: an optional custom domain for the `EdgeEndpoint`. If not set the default domain is used.
+    init(type: EdgeEnvironmentType, optionalDomain: String? = nil) {
+        let domain: String
+        if let unwrappedDomain = optionalDomain, !unwrappedDomain.isEmpty {
+            domain = unwrappedDomain
+        } else {
+            domain = EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN
+        }
+
+        switch type {
         case .production:
-            return EdgeConstants.NetworkKeys.EDGE_ENDPOINT
+            endpointUrl = "https://\(domain)\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH)"
         case .preProduction:
-            return EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PRE_PRODUCTION
+            endpointUrl = "https://\(domain)\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PRE_PRODUCTION_PATH)"
         case .integration:
-            return EdgeConstants.NetworkKeys.EDGE_ENDPOINT_INTEGRATION
+            // Edge Integration endpoint does not support custom domains, so there is just the one URL
+            endpointUrl = EdgeConstants.NetworkKeys.EDGE_ENDPOINT_INTEGRATION
         }
     }
 }
