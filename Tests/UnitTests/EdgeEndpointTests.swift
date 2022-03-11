@@ -20,6 +20,7 @@ class EdgeEndpointTests: XCTestCase {
         continueAfterFailure = false
     }
 
+    // MARK: EdgeEnvironmentType tests
     func testEnvironmentTypeProduction() {
         XCTAssertEqual(.production, EdgeEnvironmentType(optionalRawValue: "prod"))
     }
@@ -56,49 +57,59 @@ class EdgeEndpointTests: XCTestCase {
         XCTAssertEqual(.production, EdgeEnvironmentType(optionalRawValue: "invalid"))
     }
 
-    func testDefaultProductionEndpoint() {
-        let endpoint = EdgeEndpoint(type: .production)
-        let expected = "https://\(EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN)\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH)"
-        XCTAssertEqual(expected, endpoint.endpointUrl)
+    // MARK: EdgeEndpoint tests
+    func testEdgeEndpoint_interact_defaultDomain() {
+        // cases defined as: ($0: input EnvironmentType, $1: expected output EdgeEndpoint URL, $2: Test case name)
+        let cases = [(EdgeEnvironmentType.production, "https://edge.adobedc.net/ee/v1/interact", "DefaultProductionEndpoint"),
+                     (.preProduction, "https://edge.adobedc.net/ee-pre-prd/v1/interact", "DefaultPreProductionEndpoint"),
+                     (.integration, "https://edge-int.adobedc.net/ee/v1/interact", "DefaultIntegrationEndpoint")]
+
+        cases.forEach {
+            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.interact, environmentType: $0)
+            XCTAssertEqual($1, endpoint.url?.absoluteString, "\($2) test case failed.")
+        }
     }
 
-    func testDefaultPreProductionEndpoint() {
-        let endpoint = EdgeEndpoint(type: .preProduction)
-        let expected = "https://\(EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN)\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PRE_PRODUCTION_PATH)"
-        XCTAssertEqual(expected, endpoint.endpointUrl)
+    func testEdgeEndpoint_interact_customDomain() {
+        let domain1 = "my.awesome.site"
+        let domain2 = ""
+        // cases defined as: ($0: input EnvironmentType, $1: input custom domain, $2: expected output EdgeEndpoint URL, $3: Test case name)
+        let cases = [(EdgeEnvironmentType.production, domain1, "https://\(domain1)/ee/v1/interact", "CustomProductionEndpoint"),
+                     (.preProduction, domain1, "https://\(domain1)/ee-pre-prd/v1/interact", "CustomPreProductionEndpoint"),
+                     (.integration, domain1, "https://edge-int.adobedc.net/ee/v1/interact", "CustomIntegrationEndpoint"),
+                     (.production, domain2, "https://edge.adobedc.net/ee/v1/interact", "CustomEmptyDomainUsesDefault")]
+
+        cases.forEach {
+            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.interact, environmentType: $0, optionalDomain: $1)
+            XCTAssertEqual($2, endpoint.url?.absoluteString, "\($3) test case failed.")
+        }
     }
 
-    func testDefaultIntegrationEndpoint() {
-        let endpoint = EdgeEndpoint(type: .integration)
-        let expected = EdgeConstants.NetworkKeys.EDGE_ENDPOINT_INTEGRATION
-        XCTAssertEqual(expected, endpoint.endpointUrl)
+    func testEdgeEndpoint_consent_defaultDomain() {
+        // cases defined as: ($0: input EnvironmentType, $1: expected output EdgeEndpoint URL, $2: Test case name)
+        let cases = [(EdgeEnvironmentType.production, "https://edge.adobedc.net/ee/v1/privacy/set-consent", "DefaultProductionEndpoint"),
+                     (.preProduction, "https://edge.adobedc.net/ee-pre-prd/v1/privacy/set-consent", "DefaultProductionEndpoint"),
+                     (.integration, "https://edge-int.adobedc.net/ee/v1/privacy/set-consent", "DefaultIntegrationEndpoint")]
+
+        cases.forEach {
+            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.consent, environmentType: $0)
+            XCTAssertEqual($1, endpoint.url?.absoluteString, "\($2) test case failed.")
+        }
     }
 
-    func testCustomProductionEndpoint() {
-        let domain = "my.awesome.site"
-        let endpoint = EdgeEndpoint(type: .production, optionalDomain: domain)
-        let expected = "https://\(domain)\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH)"
-        XCTAssertEqual(expected, endpoint.endpointUrl)
+    func testEdgeEndpoint_consent_customDomain() {
+        let domain1 = "my.awesome.site"
+        let domain2 = ""
+        // cases defined as: ($0: input EnvironmentType, $1: input custom domain, $2: expected output EdgeEndpoint URL, $3: Test case name)
+        let cases = [(EdgeEnvironmentType.production, domain1, "https://\(domain1)/ee/v1/privacy/set-consent", "CustomProductionEndpoint"),
+                     (.preProduction, domain1, "https://\(domain1)/ee-pre-prd/v1/privacy/set-consent", "CustomPreProductionEndpoint"),
+                     (.integration, domain1, "https://edge-int.adobedc.net/ee/v1/privacy/set-consent", "CustomIntegrationEndpoint"),
+                     (.production, domain2, "https://edge.adobedc.net/ee/v1/privacy/set-consent", "CustomEmptyDomainUsesDefault")]
+
+        cases.forEach {
+            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.consent, environmentType: $0, optionalDomain: $1)
+            XCTAssertEqual($2, endpoint.url?.absoluteString, "\($3) test case failed.")
+        }
     }
 
-    func testCustomPreProductionEndpoint() {
-        let domain = "my.awesome.site"
-        let endpoint = EdgeEndpoint(type: .preProduction, optionalDomain: domain)
-        let expected = "https://\(domain)\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PRE_PRODUCTION_PATH)"
-        XCTAssertEqual(expected, endpoint.endpointUrl)
-    }
-
-    func testCustomIntegrationEndpoint() {
-        let domain = "my.awesome.site"
-        let endpoint = EdgeEndpoint(type: .integration, optionalDomain: domain)
-        let expected = EdgeConstants.NetworkKeys.EDGE_ENDPOINT_INTEGRATION
-        XCTAssertEqual(expected, endpoint.endpointUrl)
-    }
-
-    func testCustomEmptyDomainUsesDefault() {
-        let domain = ""
-        let endpoint = EdgeEndpoint(type: .production, optionalDomain: domain)
-        let expected = "https://\(EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN)\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH)"
-        XCTAssertEqual(expected, endpoint.endpointUrl)
-    }
 }

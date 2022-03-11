@@ -21,8 +21,8 @@ struct ConsentEdgeHit: EdgeHit {
     /// The `EdgeConsentUpdate` for the corresponding hit
     let consents: EdgeConsentUpdate
 
-    func getType() -> ExperienceEdgeRequestType {
-        ExperienceEdgeRequestType.consent
+    func getType() -> EdgeRequestType {
+        EdgeRequestType.consent
     }
 
     func getPayload() -> String? {

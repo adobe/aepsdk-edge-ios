@@ -25,8 +25,8 @@ protocol EdgeHit {
     /// Unique identifier for this hit
     var requestId: String { get }
 
-    /// The `ExperienceEdgeRequestType` to be used for this `EdgeHit`
-    func getType() -> ExperienceEdgeRequestType
+    /// The `EdgeRequestType` to be used for this `EdgeHit`
+    func getType() -> EdgeRequestType
 
     /// The network request payload for this `EdgeHit`
     func getPayload() -> String?
