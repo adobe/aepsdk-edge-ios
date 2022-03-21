@@ -18,6 +18,11 @@ import Foundation
 /// Enable easy setup for the input and verification of the output of an extension
 /// See also AEPCore/Mocks
 public class TestableExtensionRuntime: ExtensionRuntime {
+
+    public func getHistoricalEvents(_ requests: [EventHistoryRequest], enforceOrder: Bool, handler: @escaping ([EventHistoryResult]) -> Void) {
+        handler([])
+    }
+
     public var listeners: [String: EventListener] = [:]
     public var dispatchedEvents: [Event] = []
     public var createdSharedStates: [[String: Any]?] = []

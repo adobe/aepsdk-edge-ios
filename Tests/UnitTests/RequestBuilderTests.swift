@@ -273,7 +273,7 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
         let flattenEvent = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
-        XCTAssertEqual(XDMFormatters.dateToISO8601String(from: event.timestamp), flattenEvent["timestamp"] as? String)
+        XCTAssertEqual(timestampToISO8601(event.timestamp), flattenEvent["timestamp"] as? String)
     }
 
     func testGetPayloadWithExperienceEventsSetsEventTimestampWhenProvidedTimestampIsMissing() {
@@ -293,7 +293,7 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
         let flattenEvent = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
-        XCTAssertEqual(XDMFormatters.dateToISO8601String(from: event.timestamp), flattenEvent["timestamp"] as? String)
+        XCTAssertEqual(timestampToISO8601(event.timestamp), flattenEvent["timestamp"] as? String)
     }
 
     private func buildIdentityMap() -> [String: Any]? {
