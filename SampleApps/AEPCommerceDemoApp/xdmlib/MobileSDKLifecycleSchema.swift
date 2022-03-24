@@ -60,6 +60,6 @@ extension MobileSDKLifecycleSchema {
 		if let unwrapped = eventType { try container.encode(unwrapped, forKey: .eventType) }
 		if let unwrapped = identityMap { try container.encode(unwrapped, forKey: .identityMap) }
 		if let unwrapped = placeContext { try container.encode(unwrapped, forKey: .placeContext) }
-		if let unwrapped = XDMFormatters.dateToISO8601String(from: timestamp) { try container.encode(unwrapped, forKey: .timestamp) }
+        if let unwrapped = timestamp?.getISO8601UTCDateWithMilliseconds() { try container.encode(unwrapped, forKey: .timestamp) }
 	}
 }

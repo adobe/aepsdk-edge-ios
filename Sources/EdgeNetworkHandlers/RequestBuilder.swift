@@ -113,7 +113,7 @@ class RequestBuilder {
                 if xdm[EdgeConstants.JsonKeys.TIMESTAMP] == nil ||
                     (xdm[EdgeConstants.JsonKeys.TIMESTAMP] as? String)?.isEmpty ?? true {
                     // if no timestamp is provided in the xdm event payload, set the event timestamp
-                    xdm[EdgeConstants.JsonKeys.TIMESTAMP] = ISO8601DateFormatter().string(from: event.timestamp)
+                    xdm[EdgeConstants.JsonKeys.TIMESTAMP] = event.timestamp.getISO8601UTCDateWithMilliseconds()
                 }
 
                 xdm[EdgeConstants.JsonKeys.EVENT_ID] = event.id.uuidString

@@ -59,7 +59,11 @@ func flattenDictionary(dict: [String: Any]) -> [String: Any] {
 /// Convert an timestamp as Date to an iso 8601 formatted date string.
 /// - Parameter timestamp
 func timestampToISO8601(_ timestamp: Date) -> String {
-    return ISO8601DateFormatter().string(from: timestamp)
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone(secondsFromGMT: 0)
+    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    return formatter.string(from: timestamp)
 }
 
 /// Attempts to convert provided data to [String: Any] using JSONSerialization.

@@ -38,7 +38,7 @@ extension PlaceContext:Encodable {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		if let unwrapped = geo { try container.encode(unwrapped, forKey: .geo) }
-		if let unwrapped = XDMFormatters.dateToISO8601String(from: localTime) { try container.encode(unwrapped, forKey: .localTime) }
+        if let unwrapped = localTime?.getISO8601Date() { try container.encode(unwrapped, forKey: .localTime) }
 		if let unwrapped = localTimezoneOffset { try container.encode(unwrapped, forKey: .localTimezoneOffset) }
 	}
 }
