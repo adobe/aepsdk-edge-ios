@@ -26,9 +26,6 @@ end
 target 'AEPDemoAppSwiftUI' do
   pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
   pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
-  pod 'AEPLifecycle', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
-  pod 'AEPIdentity', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
-  pod 'AEPSignal', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
   pod 'AEPEdgeIdentity'
   pod 'AEPEdgeConsent'
   pod 'AEPAssurance'
@@ -37,9 +34,6 @@ end
 target 'AEPCommerceDemoApp' do
   pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
   pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
-  pod 'AEPLifecycle', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
-  pod 'AEPIdentity', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
-  pod 'AEPSignal', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
   pod 'AEPEdgeIdentity'
   pod 'AEPAssurance'
 end

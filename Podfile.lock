@@ -9,14 +9,8 @@ PODS:
     - AEPCore (>= 3.1.0)
   - AEPEdgeIdentity (1.0.0):
     - AEPCore (>= 3.1.1)
-  - AEPIdentity (3.5.0):
-    - AEPCore (>= 3.5.0)
-  - AEPLifecycle (3.5.0):
-    - AEPCore (>= 3.5.0)
   - AEPRulesEngine (1.1.0)
   - AEPServices (3.5.0)
-  - AEPSignal (3.5.0):
-    - AEPCore (>= 3.5.0)
   - SwiftLint (0.44.0)
 
 DEPENDENCIES:
@@ -24,10 +18,7 @@ DEPENDENCIES:
   - AEPCore (from `https://github.com/adobe/aepsdk-core-ios`, branch `staging`)
   - AEPEdgeConsent
   - AEPEdgeIdentity
-  - AEPIdentity (from `https://github.com/adobe/aepsdk-core-ios`, branch `staging`)
-  - AEPLifecycle (from `https://github.com/adobe/aepsdk-core-ios`, branch `staging`)
   - AEPServices (from `https://github.com/adobe/aepsdk-core-ios`, branch `staging`)
-  - AEPSignal (from `https://github.com/adobe/aepsdk-core-ios`, branch `staging`)
   - SwiftLint (= 0.44.0)
 
 SPEC REPOS:
@@ -42,16 +33,7 @@ EXTERNAL SOURCES:
   AEPCore:
     :branch: staging
     :git: https://github.com/adobe/aepsdk-core-ios
-  AEPIdentity:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-core-ios
-  AEPLifecycle:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-core-ios
   AEPServices:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-core-ios
-  AEPSignal:
     :branch: staging
     :git: https://github.com/adobe/aepsdk-core-ios
 
@@ -59,16 +41,7 @@ CHECKOUT OPTIONS:
   AEPCore:
     :commit: bbbb9748e04d28b28411dc104adab6f785877959
     :git: https://github.com/adobe/aepsdk-core-ios
-  AEPIdentity:
-    :commit: bbbb9748e04d28b28411dc104adab6f785877959
-    :git: https://github.com/adobe/aepsdk-core-ios
-  AEPLifecycle:
-    :commit: bbbb9748e04d28b28411dc104adab6f785877959
-    :git: https://github.com/adobe/aepsdk-core-ios
   AEPServices:
-    :commit: bbbb9748e04d28b28411dc104adab6f785877959
-    :git: https://github.com/adobe/aepsdk-core-ios
-  AEPSignal:
     :commit: bbbb9748e04d28b28411dc104adab6f785877959
     :git: https://github.com/adobe/aepsdk-core-ios
 
@@ -77,13 +50,10 @@ SPEC CHECKSUMS:
   AEPCore: a3b4159038df33b63ebdab227342cd57d8ded1b0
   AEPEdgeConsent: dd46002b0c4bf55443f5441990e799248975713e
   AEPEdgeIdentity: 40d312b4434b710a46c1738ab2a221dda4cfd67e
-  AEPIdentity: d7745fc4df403b7281b18fa7df917e68f061c9b2
-  AEPLifecycle: d3ff90c661c4452fb1c619e7f02dad8ba49a8fd2
   AEPRulesEngine: bb2927ed5501ddf9754c66e97f8d2b1cf8e33b19
   AEPServices: 2e869a387b67c04ab5f3f647026412ff410efbb0
-  AEPSignal: 636e615dd02d670aa0fe6c2b9dcebee6c95e1f4f
   SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
 
-PODFILE CHECKSUM: 5cb7ac7723656b6d8dc005b187fca1e6ff5a5b4a
+PODFILE CHECKSUM: f4cf96f004aaad1e08d2edfef37b03a62ada966a
 
 COCOAPODS: 1.11.2
