@@ -8,11 +8,8 @@ target 'AEPCommerceDemoApp' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
   pod 'AEPEdge', :path => '../../'
-  pod 'AEPCore'
-  pod 'AEPServices'
-  pod 'AEPLifecycle'
-  pod 'AEPIdentity'
-  pod 'AEPSignal'
+  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
+  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios', :branch => 'staging'
   pod 'AEPEdgeIdentity'
   pod 'AEPAssurance'
 
