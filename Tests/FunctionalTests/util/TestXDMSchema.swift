@@ -51,6 +51,6 @@ extension TestXDMSchema: Encodable {
         if let unwrapped = intObject { try container.encode(unwrapped, forKey: .intObject) }
         if let unwrapped = boolObject { try container.encode(unwrapped, forKey: .boolObject) }
         if let unwrapped = doubleObject { try container.encode(unwrapped, forKey: .doubleObject) }
-        if let unwrapped = XDMFormatters.dateToISO8601String(from: timestamp) { try container.encode(unwrapped, forKey: .timestamp) }
+        if let unwrapped = timestamp?.getISO8601UTCDateWithMilliseconds() { try container.encode(unwrapped, forKey: .timestamp) }
     }
 }

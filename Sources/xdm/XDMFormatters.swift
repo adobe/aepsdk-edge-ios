@@ -22,6 +22,7 @@ public enum XDMFormatters {
     ///   - Date: A timestamp and it must not be null
     /// - Returns: The timestamp formatted to a string in the format of 'yyyy-MM-dd'T'HH:mm:ssXXX',
     ///            or an empty string if Date  is null
+    @available(*, deprecated, message: "Use function getISO8601UTCDateWithMilliseconds() in Date class extension from AEPServices module instead.")
     public static func dateToISO8601String(from: Date?) -> String? {
         if let unwrapped = from {
             return unwrapped.asISO8601String()
@@ -37,6 +38,7 @@ public enum XDMFormatters {
     ///   - Date:  A timestamp and it must not be null
     /// - Returns: The timestamp formatted to a string in the format of 'yyyy-MM-dd',
     ///            or an empty string if Date  is null
+    @available(*, deprecated, message: "Use function getISO8601FullDate() in Date class extension from AEPServices module instead.")
     public static func dateToFullDateString(from: Date?) -> String? {
         if let unwrapped = from {
             return unwrapped.asFullDate()

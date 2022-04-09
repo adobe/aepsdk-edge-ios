@@ -10,9 +10,6 @@ target 'AEPCommerceDemoApp' do
   pod 'AEPEdge', :path => '../../'
   pod 'AEPCore'
   pod 'AEPServices'
-  pod 'AEPLifecycle'
-  pod 'AEPIdentity'
-  pod 'AEPSignal'
   pod 'AEPEdgeIdentity'
   pod 'AEPAssurance'
 

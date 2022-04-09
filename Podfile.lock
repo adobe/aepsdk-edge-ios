@@ -1,22 +1,16 @@
 PODS:
-  - AEPAssurance (3.0.0):
+  - AEPAssurance (3.0.1):
     - AEPCore (>= 3.1.0)
     - AEPServices (>= 3.1.0)
-  - AEPCore (3.3.2):
-    - AEPRulesEngine (= 1.0.1)
-    - AEPServices (= 3.3.2)
+  - AEPCore (3.5.0):
+    - AEPRulesEngine (>= 1.1.0)
+    - AEPServices (>= 3.5.0)
   - AEPEdgeConsent (1.0.0):
     - AEPCore (>= 3.1.0)
-  - AEPEdgeIdentity (1.0.0):
+  - AEPEdgeIdentity (1.0.1):
     - AEPCore (>= 3.1.1)
-  - AEPIdentity (3.3.2):
-    - AEPCore (= 3.3.2)
-  - AEPLifecycle (3.3.2):
-    - AEPCore (= 3.3.2)
-  - AEPRulesEngine (1.0.1)
-  - AEPServices (3.3.2)
-  - AEPSignal (3.3.2):
-    - AEPCore (= 3.3.2)
+  - AEPRulesEngine (1.1.0)
+  - AEPServices (3.5.0)
   - SwiftLint (0.44.0)
 
 DEPENDENCIES:
@@ -24,10 +18,7 @@ DEPENDENCIES:
   - AEPCore
   - AEPEdgeConsent
   - AEPEdgeIdentity
-  - AEPIdentity
-  - AEPLifecycle
   - AEPServices
-  - AEPSignal
   - SwiftLint (= 0.44.0)
 
 SPEC REPOS:
@@ -36,25 +27,19 @@ SPEC REPOS:
     - AEPCore
     - AEPEdgeConsent
     - AEPEdgeIdentity
-    - AEPIdentity
-    - AEPLifecycle
     - AEPRulesEngine
     - AEPServices
-    - AEPSignal
     - SwiftLint
 
 SPEC CHECKSUMS:
-  AEPAssurance: 18068627111e366a851dc2166239f22b665101bd
-  AEPCore: 922aa0eac3fa4f0bc3fbdd3f1b9f7cb7b65e440d
+  AEPAssurance: b25880cd4b14f22c61a1dce19807bd0ca0fe9b17
+  AEPCore: a3b4159038df33b63ebdab227342cd57d8ded1b0
   AEPEdgeConsent: dd46002b0c4bf55443f5441990e799248975713e
-  AEPEdgeIdentity: 40d312b4434b710a46c1738ab2a221dda4cfd67e
-  AEPIdentity: 5f7af2b937713ff82aa0788a6ee0b7e0d8fcd86e
-  AEPLifecycle: 8200df6d8f4579d4ee1eb924d6c46247b1fe102b
-  AEPRulesEngine: 5075ed294026a12e37bd26fe260f74604d205354
-  AEPServices: 7ac2a251b71a422ddaee316eac39f7a66a0d3a90
-  AEPSignal: f80b7d568388ac9b6119e8396c5126ff7284dd1a
+  AEPEdgeIdentity: 5c42cef81835851232136a9e1fbbbe33b204ee11
+  AEPRulesEngine: bb2927ed5501ddf9754c66e97f8d2b1cf8e33b19
+  AEPServices: 2e869a387b67c04ab5f3f647026412ff410efbb0
   SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
 
-PODFILE CHECKSUM: c64278d65566dda2b081faf2a99804d3f89fbee6
+PODFILE CHECKSUM: 91a9522af334a861a8ea91bbc50a85663df42214
 
 COCOAPODS: 1.11.2
