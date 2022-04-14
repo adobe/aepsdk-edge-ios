@@ -100,6 +100,10 @@ enum EdgeConstants {
         static let META = "meta"
         static let IMPLEMENTATION_DETAILS = "implementationDetails"
 
+        enum Query {
+            static let OPERATION = "operation"
+        }
+
         enum CollectMetadata {
             static let COLLECT = "collect"
             static let DATASET_ID = "datasetId"
@@ -134,6 +138,10 @@ enum EdgeConstants {
             static let WRAPPER_UNITY = "unity"
             static let WRAPPER_XAMARIN = "xamarin"
             static let UNKNOWN = "unknown"
+        }
+
+        enum Query {
+            static let OPERATION_UPDATE = "update"
         }
     }
 
