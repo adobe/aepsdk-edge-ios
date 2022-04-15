@@ -1464,24 +1464,12 @@
 				DEVELOPMENT_ASSET_PATHS = "\"SampleApps/AEPDemoAppSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/ACPCore\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/ACPGriffon\"",
-				);
 				GCC_NO_COMMON_BLOCKS = NO;
 				INFOPLIST_FILE = SampleApps/AEPDemoAppSwiftUI/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/ACPCore\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/ACPGriffon\"",
-					"\"${PODS_ROOT}/ACPCore\"/**",
-					"\"${PODS_ROOT}/ACPGriffon\"",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.AEPDemoAppSwiftUI;
@@ -1503,11 +1491,6 @@
 				DEVELOPMENT_ASSET_PATHS = "\"SampleApps/AEPDemoAppSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/ACPCore\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/ACPGriffon\"",
-				);
 				GCC_NO_COMMON_BLOCKS = NO;
 				INFOPLIST_FILE = SampleApps/AEPDemoAppSwiftUI/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
