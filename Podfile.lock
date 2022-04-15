@@ -5,12 +5,8 @@ PODS:
   - AEPCore (3.5.0):
     - AEPRulesEngine (>= 1.1.0)
     - AEPServices (>= 3.5.0)
-  - AEPEdge (1.4.0):
-    - AEPCore (>= 3.5.0)
-    - AEPEdgeIdentity
-  - AEPEdgeConsent (1.0.1):
-    - AEPCore (>= 3.5.0)
-    - AEPEdge (>= 1.4.0)
+  - AEPEdgeConsent (1.0.0):
+    - AEPCore (>= 3.1.0)
   - AEPEdgeIdentity (1.0.1):
     - AEPCore (>= 3.1.1)
   - AEPRulesEngine (1.1.0)
@@ -29,7 +25,6 @@ SPEC REPOS:
   trunk:
     - AEPAssurance
     - AEPCore
-    - AEPEdge
     - AEPEdgeConsent
     - AEPEdgeIdentity
     - AEPRulesEngine
@@ -39,8 +34,7 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   AEPAssurance: b25880cd4b14f22c61a1dce19807bd0ca0fe9b17
   AEPCore: a3b4159038df33b63ebdab227342cd57d8ded1b0
-  AEPEdge: 0e7c11d13e71d23d995bff46f48691c1bb65f84f
-  AEPEdgeConsent: a23b35ab331d2aa2013fcef49c9d6b80085d5597
+  AEPEdgeConsent: dd46002b0c4bf55443f5441990e799248975713e
   AEPEdgeIdentity: 5c42cef81835851232136a9e1fbbbe33b204ee11
   AEPRulesEngine: bb2927ed5501ddf9754c66e97f8d2b1cf8e33b19
   AEPServices: 2e869a387b67c04ab5f3f647026412ff410efbb0
