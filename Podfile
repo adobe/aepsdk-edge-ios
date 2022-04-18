@@ -31,9 +31,3 @@ target 'AEPDemoAppSwiftUI' do
   pod 'AEPAssurance'
 end
 
-target 'AEPCommerceDemoApp' do
-  pod 'AEPCore'
-  pod 'AEPServices'
-  pod 'AEPEdgeIdentity'
-  pod 'AEPAssurance'
-end
