@@ -17,7 +17,6 @@ build/*.xcarchive
 build/*.xcframework
 build/*
 SampleApps/AEPDemoAppSwiftUI/build
-SampleApps/AEPCommerceDemoApp/build
 ci/*
 out/*
 
