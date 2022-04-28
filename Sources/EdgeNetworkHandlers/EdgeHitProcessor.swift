@@ -98,7 +98,7 @@ class EdgeHitProcessor: HitProcessing {
             }
 
             let endpoint = buildEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact)
-            let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: endpoint, configId: configId, request: requestPayload)
+            let edgeHit = ExperienceEventsEdgeHit(endpoint: endpoint, configId: configId, request: requestPayload)
             // NOTE: the order of these events needs to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
             networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
@@ -120,7 +120,7 @@ class EdgeHitProcessor: HitProcessing {
             }
 
             let endpoint = buildEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent)
-            let edgeHit = ConsentEdgeHit(edgeEndpoint: endpoint, configId: configId, consents: consentPayload)
+            let edgeHit = ConsentEdgeHit(endpoint: endpoint, configId: configId, consents: consentPayload)
             networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
         } else if event.isResetIdentitiesEvent {
@@ -160,7 +160,7 @@ class EdgeHitProcessor: HitProcessing {
     ///   - headers: headers for the request
     ///   - completion: completion handler for the hit processor
     private func sendHit(entityId: String, edgeHit: EdgeHit, headers: [String: String], completion: @escaping (Bool) -> Void) {
-        guard let url = networkService.buildUrl(endpoint: edgeHit.edgeEndpoint,
+        guard let url = networkService.buildUrl(endpoint: edgeHit.endpoint,
                                                 configId: edgeHit.configId,
                                                 requestId: edgeHit.requestId) else {
             Log.debug(label: EdgeConstants.LOG_TAG,

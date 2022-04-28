@@ -17,7 +17,7 @@ import Foundation
 protocol EdgeHit {
 
     /// The Edge endpoint
-    var edgeEndpoint: EdgeEndpoint { get }
+    var endpoint: EdgeEndpoint { get }
 
     /// The Edge configuration identifier
     var configId: String { get }

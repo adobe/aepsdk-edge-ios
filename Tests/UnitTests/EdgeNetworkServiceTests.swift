@@ -20,8 +20,8 @@ class EdgeNetworkServiceTests: XCTestCase {
     private var mockNetworking = MockNetworking()
     private var mockResponseCallback = MockResponseCallback()
     private var networkService = EdgeNetworkService()
-    private let edgeHitPayload = ExperienceEventsEdgeHit(edgeEndpoint: EdgeEndpoint(requestType: EdgeRequestType.interact,
-                                                                                    environmentType: .production),
+    private let edgeHitPayload = ExperienceEventsEdgeHit(endpoint: EdgeEndpoint(requestType: EdgeRequestType.interact,
+                                                                                environmentType: .production),
                                                          configId: "configIdExample",
                                                          request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]])).getPayload()
     private let url = URL(string: "https://test.com")! // swiftlint:disable:this force_unwrapping
