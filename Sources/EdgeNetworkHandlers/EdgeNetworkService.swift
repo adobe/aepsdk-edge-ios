@@ -50,7 +50,7 @@ class EdgeNetworkService {
 
     /// Builds the URL required for connections to Experience Edge
     /// - Parameters:
-    ///   - edgeEndpoint: the endpoint for this URL
+    ///   - endpoint: the endpoint for this URL
     ///   - configId: Edge configuration identifier
     ///   - requestId: batch request identifier
     /// - Returns: built URL or nil on error
