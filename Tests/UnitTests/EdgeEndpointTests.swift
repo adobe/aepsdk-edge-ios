@@ -17,7 +17,8 @@ import XCTest
 class EdgeEndpointTests: XCTestCase {
 
     override func setUp() {
-        continueAfterFailure = false
+        // continueAfterFailure set to true to continue running all test cases
+        continueAfterFailure = true
     }
 
     // MARK: EdgeEnvironmentType tests
