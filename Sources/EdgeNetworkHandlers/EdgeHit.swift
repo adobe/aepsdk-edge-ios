@@ -22,11 +22,8 @@ protocol EdgeHit {
     /// The Edge configuration identifier
     var configId: String { get }
 
-    /// Unique identifier for this hit
+    /// Unique identifier for the Edge request
     var requestId: String { get }
-
-    /// The `EdgeRequestType` to be used for this `EdgeHit`
-    func getType() -> EdgeRequestType
 
     /// The network request payload for this `EdgeHit`
     func getPayload() -> String?

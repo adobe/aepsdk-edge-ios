@@ -21,10 +21,6 @@ struct ConsentEdgeHit: EdgeHit {
     /// The `EdgeConsentUpdate` for the corresponding hit
     let consents: EdgeConsentUpdate
 
-    func getType() -> EdgeRequestType {
-        EdgeRequestType.consent
-    }
-
     func getPayload() -> String? {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]

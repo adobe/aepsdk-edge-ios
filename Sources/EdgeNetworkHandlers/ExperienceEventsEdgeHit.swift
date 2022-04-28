@@ -21,10 +21,6 @@ struct ExperienceEventsEdgeHit: EdgeHit {
     /// The `EdgeRequest` for the corresponding hit
     let request: EdgeRequest
 
-    func getType() -> EdgeRequestType {
-        EdgeRequestType.interact
-    }
-
     func getPayload() -> String? {
         guard let events = request.events, !events.isEmpty else {
             return nil

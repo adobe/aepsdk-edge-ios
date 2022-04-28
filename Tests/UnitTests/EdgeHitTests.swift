@@ -79,11 +79,6 @@ class EdgeHitTests: XCTestCase {
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
 
-    func testExperienceEventsEdgeHit_getType() {
-        let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: INTERACT_ENDPOINT_PROD, configId: CONFIG_ID, request: EDGE_REQUEST)
-        XCTAssertEqual(EdgeRequestType.interact, edgeHit.getType())
-    }
-
     // MARK: ConsentEgeHit tests
 
     func testConsentEdgeHit_getPayload() {
@@ -136,11 +131,6 @@ class EdgeHitTests: XCTestCase {
         let edgeHit = ConsentEdgeHit(edgeEndpoint: CONSENT_ENDPOINT_PROD, configId: CONFIG_ID, consents: consentUpdate)
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
-    }
-
-    func testConsentEdgeHit_getType() {
-        let edgeHit = ConsentEdgeHit(edgeEndpoint: CONSENT_ENDPOINT_PROD, configId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
-        XCTAssertEqual(EdgeRequestType.consent, edgeHit.getType())
     }
 
     func testConsentEdgeHit_getStreamingSettings_streamingNotEnabled() {
