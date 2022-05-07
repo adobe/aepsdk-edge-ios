@@ -33,13 +33,16 @@ enum EdgeEnvironmentType: String {
 }
 
 struct EdgeEndpoint {
-    let endpointUrl: String
+    let url: URL?
 
     /// Initializes the appropriate `EdgeEndpoint` for the given `type` and `optionalDomain`
     /// - Parameters:
-    ///   - type: the `EdgeEnvironmentType` for the `EdgeEndpoint`
+    ///   - requestType: the `EdgeRequestType` to be used
+    ///   - environmentType: the `EdgeEnvironmentType` for the `EdgeEndpoint`
     ///   - optionalDomain: an optional custom domain for the `EdgeEndpoint`. If not set the default domain is used.
-    init(type: EdgeEnvironmentType, optionalDomain: String? = nil) {
+    init(requestType: EdgeRequestType,
+         environmentType: EdgeEnvironmentType,
+         optionalDomain: String? = nil) {
         let domain: String
         if let unwrappedDomain = optionalDomain, !unwrappedDomain.isEmpty {
             domain = unwrappedDomain
@@ -47,14 +50,25 @@ struct EdgeEndpoint {
             domain = EdgeConstants.NetworkKeys.EDGE_DEFAULT_DOMAIN
         }
 
-        switch type {
+        var components = URLComponents()
+        components.scheme = EdgeConstants.NetworkKeys.HTTPS
+
+        switch environmentType {
         case .production:
-            endpointUrl = "https://\(domain)\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH)"
+            components.host = domain
+            components.path = EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH
         case .preProduction:
-            endpointUrl = "https://\(domain)\(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PRE_PRODUCTION_PATH)"
+            components.host = domain
+            components.path = EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PRE_PRODUCTION_PATH
         case .integration:
             // Edge Integration endpoint does not support custom domains, so there is just the one URL
-            endpointUrl = EdgeConstants.NetworkKeys.EDGE_ENDPOINT_INTEGRATION
+            components.host = EdgeConstants.NetworkKeys.EDGE_INTEGRATION_DOMAIN
+            components.path = EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH
         }
+
+        components.path.append(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_VERSION_PATH)
+        components.path.append("/\(requestType.rawValue)")
+
+        url = components.url
     }
 }
