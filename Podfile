@@ -23,7 +23,7 @@ target 'FunctionalTests' do
   pod 'AEPEdgeConsent'
 end
 
-target 'AEPDemoAppSwiftUI' do
+target 'TestApp_SwiftUI' do
   pod 'AEPCore'
   pod 'AEPServices'
   pod 'AEPEdgeIdentity'

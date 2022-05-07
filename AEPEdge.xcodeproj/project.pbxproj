@@ -221,7 +221,7 @@
 		BF0C09472465E42100892B5D /* TestableEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestableEdge.swift; sourceTree = "<group>"; };
 		BF0F924E27476E6C00378913 /* ImplementationDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImplementationDetails.swift; sourceTree = "<group>"; };
 		BF0F92502756A3EF00378913 /* ImplementationDetailsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImplementationDetailsTests.swift; sourceTree = "<group>"; };
-		BF4A717826DDAE4B00612434 /* AssuranceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AssuranceView.swift; path = ../../TestApps/AEPDemoAppSwiftUI/AssuranceView.swift; sourceTree = "<group>"; };
+		BF4A717826DDAE4B00612434 /* AssuranceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssuranceView.swift; sourceTree = "<group>"; };
 		BF7E5B3A2789189D00D5E0FF /* EdgeEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEndpointTests.swift; sourceTree = "<group>"; };
 		BF947F62243565CC0057A6CC /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Edge.swift; sourceTree = "<group>"; };
 		BF947F63243565CC0057A6CC /* EdgeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeConstants.swift; sourceTree = "<group>"; };
@@ -288,14 +288,14 @@
 		D4D5B53324325AB700CAB6E4 /* FunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D5B53524325AB700CAB6E4 /* NetworkResponseHandlerFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseHandlerFunctionalTests.swift; sourceTree = "<group>"; };
 		D4D5B53724325AB700CAB6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D4D5B57A2432977F00CAB6E4 /* AEPDemoAppSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEPDemoAppSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ../../TestApps/AEPDemoAppSwiftUI/AppDelegate.swift; sourceTree = "<group>"; };
-		D4D5B57E2432977F00CAB6E4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = ../../TestApps/AEPDemoAppSwiftUI/SceneDelegate.swift; sourceTree = "<group>"; };
-		D4D5B5802432977F00CAB6E4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = ../../TestApps/AEPDemoAppSwiftUI/ContentView.swift; sourceTree = "<group>"; };
-		D4D5B5822432977F00CAB6E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../../TestApps/AEPDemoAppSwiftUI/Assets.xcassets; sourceTree = "<group>"; };
+		D4D5B57A2432977F00CAB6E4 /* TestApp_SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp_SwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		D4D5B57E2432977F00CAB6E4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		D4D5B5802432977F00CAB6E4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D4D5B5822432977F00CAB6E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D4D5B5852432977F00CAB6E4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D4D5B5882432977F00CAB6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		D4D5B58A2432977F00CAB6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../TestApps/AEPDemoAppSwiftUI/Info.plist; sourceTree = "<group>"; };
+		D4D5B58A2432977F00CAB6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D4D669112514278200B4866D /* AEPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D669132514278200B4866D /* AEPRulesEngine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPRulesEngine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4D669152514278200B4866D /* AEPServices.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AEPServices.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -470,7 +470,7 @@
 				D4D5B4F1242EBD2200CAB6E4 /* UnitTests */,
 				D4D5B4F2242EBFAE00CAB6E4 /* FunctionalTests */,
 				D4655403246DF3B000A150E2 /* TestUtils */,
-				D4D5B57B2432977F00CAB6E4 /* AEPDemoAppSwiftUI */,
+				D4D5B57B2432977F00CAB6E4 /* TestApp_SwiftUI */,
 				D4D5B4E8242EBB1600CAB6E4 /* Products */,
 				E5239B915F53B993A1976FC4 /* Pods */,
 				3BB2159D8E84140309C411FF /* Frameworks */,
@@ -482,7 +482,7 @@
 			children = (
 				D4D5B5212432599B00CAB6E4 /* UnitTests.xctest */,
 				D4D5B53324325AB700CAB6E4 /* FunctionalTests.xctest */,
-				D4D5B57A2432977F00CAB6E4 /* AEPDemoAppSwiftUI.app */,
+				D4D5B57A2432977F00CAB6E4 /* TestApp_SwiftUI.app */,
 				D444995F2519506B0093B364 /* AEPEdge.framework */,
 			);
 			name = Products;
@@ -555,7 +555,7 @@
 			path = Tests/FunctionalTests;
 			sourceTree = "<group>";
 		};
-		D4D5B57B2432977F00CAB6E4 /* AEPDemoAppSwiftUI */ = {
+		D4D5B57B2432977F00CAB6E4 /* TestApp_SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
 				D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */,
@@ -567,8 +567,8 @@
 				D4D5B5842432977F00CAB6E4 /* Preview Content */,
 				BF4A717826DDAE4B00612434 /* AssuranceView.swift */,
 			);
-			name = AEPDemoAppSwiftUI;
-			path = TestApps/AEPDemoAppSwiftUI;
+			name = TestApp_SwiftUI;
+			path = TestApps/TestApp_SwiftUI;
 			sourceTree = "<group>";
 		};
 		D4D5B5842432977F00CAB6E4 /* Preview Content */ = {
@@ -576,8 +576,7 @@
 			children = (
 				D4D5B5852432977F00CAB6E4 /* Preview Assets.xcassets */,
 			);
-			name = "Preview Content";
-			path = "../../TestApps/AEPDemoAppSwiftUI/Preview Content";
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		D4F74FEC2447A95400379258 /* utils */ = {
@@ -687,9 +686,9 @@
 			productReference = D4D5B53324325AB700CAB6E4 /* FunctionalTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		D4D5B5792432977F00CAB6E4 /* AEPDemoAppSwiftUI */ = {
+		D4D5B5792432977F00CAB6E4 /* TestApp_SwiftUI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D4D5B58D2432977F00CAB6E4 /* Build configuration list for PBXNativeTarget "AEPDemoAppSwiftUI" */;
+			buildConfigurationList = D4D5B58D2432977F00CAB6E4 /* Build configuration list for PBXNativeTarget "TestApp_SwiftUI" */;
 			buildPhases = (
 				32008962B3644F9931BB49F8 /* [CP] Check Pods Manifest.lock */,
 				D4D5B5762432977F00CAB6E4 /* Sources */,
@@ -703,9 +702,9 @@
 			);
 			dependencies = (
 			);
-			name = AEPDemoAppSwiftUI;
+			name = TestApp_SwiftUI;
 			productName = AEPCommerceDemoApp;
-			productReference = D4D5B57A2432977F00CAB6E4 /* AEPDemoAppSwiftUI.app */;
+			productReference = D4D5B57A2432977F00CAB6E4 /* TestApp_SwiftUI.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -752,7 +751,7 @@
 				D444995E2519506B0093B364 /* AEPEdge */,
 				D4D5B5202432599B00CAB6E4 /* UnitTests */,
 				D4D5B53224325AB700CAB6E4 /* FunctionalTests */,
-				D4D5B5792432977F00CAB6E4 /* AEPDemoAppSwiftUI */,
+				D4D5B5792432977F00CAB6E4 /* TestApp_SwiftUI */,
 				D496756B25117262001F5F95 /* AEPEdgeXCF */,
 			);
 		};
@@ -886,7 +885,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ -z ${ADB_SKIP_LINT} || ${ADB_SKIP_LINT} -ne \"YES\" ]]; then\n    if which swiftlint >/dev/null; then\n        ./Pods/SwiftLint/swiftlint lint --config ${SRCROOT}/.swiftlint.yml TestApps/AEPDemoAppSwiftUI\n    else\n        echo \"warning: SwiftLint is not installed, please run the pod install command from the project root directory.\"\n    fi\nelse\n    echo \"Skipping linting build phase as ADB_SKIP_LINT flag is YES.\"\nfi\n";
+			shellScript = "if [[ -z ${ADB_SKIP_LINT} || ${ADB_SKIP_LINT} -ne \"YES\" ]]; then\n    if which swiftlint >/dev/null; then\n        ./Pods/SwiftLint/swiftlint lint --config ${SRCROOT}/.swiftlint.yml TestApps/TestApp_SwiftUI\n    else\n        echo \"warning: SwiftLint is not installed, please run the pod install command from the project root directory.\"\n    fi\nelse\n    echo \"Skipping linting build phase as ADB_SKIP_LINT flag is YES.\"\nfi\n";
 		};
 		BF024B7524C01AB2002131E9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1156,7 +1155,6 @@
 				D4D5B5882432977F00CAB6E4 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
-			path = ../../TestApps/AEPDemoAppSwiftUI;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -1467,18 +1465,18 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_LOADER = "";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"TestApps/AEPDemoAppSwiftUI/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"TestApps/TestApp_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				ENABLE_PREVIEWS = YES;
 				GCC_NO_COMMON_BLOCKS = NO;
-				INFOPLIST_FILE = TestApps/AEPDemoAppSwiftUI/Info.plist;
+				INFOPLIST_FILE = TestApps/TestApp_SwiftUI/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.AEPDemoAppSwiftUI;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge.TestApp_SwiftUI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1494,18 +1492,18 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_LOADER = "";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"TestApps/AEPDemoAppSwiftUI/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"TestApps/TestApp_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = FKGEE875K4;
 				ENABLE_PREVIEWS = YES;
 				GCC_NO_COMMON_BLOCKS = NO;
-				INFOPLIST_FILE = TestApps/AEPDemoAppSwiftUI/Info.plist;
+				INFOPLIST_FILE = TestApps/TestApp_SwiftUI/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.AEPDemoAppSwiftUI;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge.TestApp_SwiftUI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1561,7 +1559,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D4D5B58D2432977F00CAB6E4 /* Build configuration list for PBXNativeTarget "AEPDemoAppSwiftUI" */ = {
+		D4D5B58D2432977F00CAB6E4 /* Build configuration list for PBXNativeTarget "TestApp_SwiftUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D4D5B58B2432977F00CAB6E4 /* Debug */,
