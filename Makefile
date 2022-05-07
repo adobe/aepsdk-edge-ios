@@ -63,7 +63,7 @@ lint-autocorrect:
 	./Pods/SwiftLint/swiftlint autocorrect
 
 lint:
-	(./Pods/SwiftLint/swiftlint lint Sources SampleApps/$(APP_NAME))
+	(./Pods/SwiftLint/swiftlint lint Sources TestApps/$(APP_NAME))
 
 check-version:
 	(sh ./Script/version.sh $(VERSION))
