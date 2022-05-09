@@ -146,10 +146,12 @@ enum EdgeConstants {
     }
 
     enum NetworkKeys {
+        static let HTTPS = "https"
         static let EDGE_DEFAULT_DOMAIN = "edge.adobedc.net"
-        static let EDGE_ENDPOINT_PATH = "/ee/v1"
-        static let EDGE_ENDPOINT_PRE_PRODUCTION_PATH = "/ee-pre-prd/v1"
-        static let EDGE_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/v1/"
+        static let EDGE_ENDPOINT_PATH = "/ee"
+        static let EDGE_ENDPOINT_PRE_PRODUCTION_PATH = "/ee-pre-prd"
+        static let EDGE_ENDPOINT_VERSION_PATH = "/v1"
+        static let EDGE_INTEGRATION_DOMAIN = "edge-int.adobedc.net"
         static let REQUEST_PARAM_CONFIG_ID = "configId"
         static let REQUEST_PARAM_REQUEST_ID = "requestId"
         static let DEFAULT_CONNECT_TIMEOUT: TimeInterval = 5

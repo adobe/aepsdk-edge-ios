@@ -14,16 +14,12 @@ import Foundation
 
 /// Implementation of `EdgeHit` for Consent update requests
 struct ConsentEdgeHit: EdgeHit {
-    let edgeEndpoint: EdgeEndpoint
+    let endpoint: EdgeEndpoint
     let configId: String
     let requestId: String = UUID().uuidString
 
     /// The `EdgeConsentUpdate` for the corresponding hit
     let consents: EdgeConsentUpdate
-
-    func getType() -> ExperienceEdgeRequestType {
-        ExperienceEdgeRequestType.consent
-    }
 
     func getPayload() -> String? {
         let encoder = JSONEncoder()
