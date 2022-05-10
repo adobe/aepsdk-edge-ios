@@ -18,7 +18,7 @@ class EdgeHitTests: XCTestCase {
     private let CONFIG_ID = "testConfigId"
     private let EDGE_REQUEST = EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]])
     private let INTERACT_ENDPOINT_PROD = EdgeEndpoint(requestType: .interact, environmentType: .production)
-    private let CONSENT_UPDATE_REQUEST = EdgeConsentUpdate(meta: nil, identityMap: nil, consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
+    private let CONSENT_UPDATE_REQUEST = EdgeConsentUpdate(meta: nil, query: QueryOptions(consent: ["operation": "update"]), identityMap: nil, consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
     private let CONSENT_ENDPOINT_PROD = EdgeEndpoint(requestType: .consent, environmentType: .production)
 
     override func setUp() {
@@ -90,7 +90,13 @@ class EdgeHitTests: XCTestCase {
     func testConsentEdgeHit_getPayload() {
         let json =
             """
-            {"consent" :
+            {
+            "query": {
+                "consent": {
+                    "operation": "update"
+                }
+            },
+            "consent" :
                 [{
                     "standard" : "Adobe",
                     "version" : "2.0",
@@ -132,6 +138,7 @@ class EdgeHitTests: XCTestCase {
         let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil),
+                                              query: nil,
                                               identityMap: nil,
                                               consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
         let edgeHit = ConsentEdgeHit(endpoint: CONSENT_ENDPOINT_PROD, configId: CONFIG_ID, consents: consentUpdate)
@@ -147,6 +154,7 @@ class EdgeHitTests: XCTestCase {
     func testConsentEdgeHit_getStreamingSettings_streamingEnabled() {
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil),
+                                              query: nil,
                                               identityMap: nil,
                                               consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
         let edgeHit = ConsentEdgeHit(endpoint: CONSENT_ENDPOINT_PROD, configId: CONFIG_ID, consents: consentUpdate)

@@ -72,6 +72,12 @@ class RequestBuilder {
         guard event.data != nil,
               let consents = event.data?[EdgeConstants.EventDataKeys.CONSENTS] as? [String: Any] else { return nil }
 
+        // Add query with operation update to specify the consent update should be
+        // executed as an incremental update and not enforce collect consent settings to be provided all the time
+        var consentQueryOptions = [String: Any]()
+        consentQueryOptions[EdgeConstants.JsonKeys.Query.OPERATION] = EdgeConstants.JsonValues.Query.OPERATION_UPDATE
+        let query = QueryOptions(consent: AnyCodable.from(dictionary: consentQueryOptions))
+
         // set IdentityMap if available
         var identityMap = [String: AnyCodable]()
         if let identityMapDict = xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] {
@@ -84,6 +90,7 @@ class RequestBuilder {
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
 
         return EdgeConsentUpdate(meta: requestMetadata,
+                                 query: query,
                                  identityMap: identityMap,
                                  consent: [EdgeConsentPayload(standard: EdgeConstants.JsonValues.CONSENT_STANDARD,
                                                               version: EdgeConstants.JsonValues.CONSENT_VERSION,
