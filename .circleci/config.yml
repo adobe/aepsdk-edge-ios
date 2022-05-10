@@ -62,7 +62,7 @@ jobs:
       # pre-start the simulator to prevent timeouts
       - run:
           name: Pre-start Simulator
-          command: xcrun instruments -w "iPhone 8 (13.1) [" || true
+          command: xcrun instruments -w "iPhone 8 (13.5) [" || true
 
       - run:
           name: Run Tests
