@@ -1,6 +1,6 @@
 
 export EXTENSION_NAME = AEPEdge
-export APP_NAME = AEPDemoAppSwiftUI
+export APP_NAME = TestAppSwiftUI
 PROJECT_NAME = $(EXTENSION_NAME)
 TARGET_NAME_XCFRAMEWORK = $(EXTENSION_NAME).xcframework
 SCHEME_NAME_XCFRAMEWORK = AEPEdgeXCF
@@ -63,7 +63,7 @@ lint-autocorrect:
 	./Pods/SwiftLint/swiftlint autocorrect
 
 lint:
-	(./Pods/SwiftLint/swiftlint lint Sources SampleApps/$(APP_NAME))
+	(./Pods/SwiftLint/swiftlint lint Sources TestApps/$(APP_NAME))
 
 check-version:
 	(sh ./Script/version.sh $(VERSION))

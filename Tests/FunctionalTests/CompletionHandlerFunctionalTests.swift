@@ -71,7 +71,7 @@ class CompletionHandlerFunctionalTests: FunctionalTestBase {
                                                         })
 
         assertNetworkRequestsCount()
-        wait(for: [expectation], timeout: 0.2)
+        wait(for: [expectation], timeout: 1)
 
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
@@ -112,7 +112,7 @@ class CompletionHandlerFunctionalTests: FunctionalTestBase {
 
         // verify
         assertNetworkRequestsCount()
-        wait(for: [expectation1, expectation2], timeout: 0.2)
+        wait(for: [expectation1, expectation2], timeout: 1)
     }
 
     func testSendEventx2_withCompletionHandler_whenServerError_callsCompletion() {
@@ -140,7 +140,7 @@ class CompletionHandlerFunctionalTests: FunctionalTestBase {
                                                             expectation1.fulfill()
                                                         })
         assertNetworkRequestsCount()
-        wait(for: [expectation1], timeout: 0.2)
+        wait(for: [expectation1], timeout: 1)
 
         resetTestExpectations()
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
@@ -154,7 +154,7 @@ class CompletionHandlerFunctionalTests: FunctionalTestBase {
 
         // verify
         assertNetworkRequestsCount()
-        wait(for: [expectation2], timeout: 0.2)
+        wait(for: [expectation2], timeout: 1)
     }
 
     func testSendEvent_withCompletionHandler_whenServerErrorAndHandle_callsCompletion() {
@@ -180,6 +180,6 @@ class CompletionHandlerFunctionalTests: FunctionalTestBase {
 
         // verify
         assertNetworkRequestsCount()
-        wait(for: [expectation], timeout: 0.2)
+        wait(for: [expectation], timeout: 1)
     }
 }

@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D4D5B5792432977F00CAB6E4"
-               BuildableName = "AEPDemoAppSwiftUI.app"
-               BlueprintName = "AEPDemoAppSwiftUI"
+               BuildableName = "TestAppSwiftUI.app"
+               BlueprintName = "TestAppSwiftUI"
                ReferencedContainer = "container:AEPEdge.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -65,8 +65,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D4D5B5792432977F00CAB6E4"
-            BuildableName = "AEPDemoAppSwiftUI.app"
-            BlueprintName = "AEPDemoAppSwiftUI"
+            BuildableName = "TestAppSwiftUI.app"
+            BlueprintName = "TestAppSwiftUI"
             ReferencedContainer = "container:AEPEdge.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -82,8 +82,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D4D5B5792432977F00CAB6E4"
-            BuildableName = "AEPDemoAppSwiftUI.app"
-            BlueprintName = "AEPDemoAppSwiftUI"
+            BuildableName = "TestAppSwiftUI.app"
+            BlueprintName = "TestAppSwiftUI"
             ReferencedContainer = "container:AEPEdge.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

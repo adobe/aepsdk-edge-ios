@@ -14,7 +14,7 @@ jobs:
 
   build-and-test:
     macos:
-      xcode: 11.6.0 # Specify the Xcode version to use
+      xcode: 12.0.1 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -62,7 +62,7 @@ jobs:
       # pre-start the simulator to prevent timeouts
       - run:
           name: Pre-start Simulator
-          command: xcrun instruments -w "iPhone 8 (13.1) [" || true
+          command: xcrun instruments -w "iPhone 8 (13.5) [" || true
 
       - run:
           name: Run Tests

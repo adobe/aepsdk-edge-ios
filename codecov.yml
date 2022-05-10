@@ -15,7 +15,7 @@ coverage:
   ignore:
     - "./Tests/**/*"
     - "./Tests/.*"
-    - "./SampleApps"
+    - "./TestApps"
 
 parsers:
   gcov:
