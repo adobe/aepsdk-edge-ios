@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        MobileCore.setLogLevel(.debug)
+        MobileCore.setLogLevel(.trace)
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
         MobileCore.registerExtensions([Identity.self, Edge.self, Consent.self, Assurance.self])
         return true

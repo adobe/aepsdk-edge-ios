@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BF5EECD424983AE000C72622"
-               BuildableName = "AEPCommerceDemoApp.app"
-               BlueprintName = "AEPCommerceDemoApp"
+               BlueprintIdentifier = "D4D5B5792432977F00CAB6E4"
+               BuildableName = "TestAppSwiftUI.app"
+               BlueprintName = "TestAppSwiftUI"
                ReferencedContainer = "container:AEPEdge.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,6 +28,26 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D4D5B5202432599B00CAB6E4"
+               BuildableName = "UnitTests.xctest"
+               BlueprintName = "UnitTests"
+               ReferencedContainer = "container:AEPEdge.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D4D5B53224325AB700CAB6E4"
+               BuildableName = "FunctionalTests.xctest"
+               BlueprintName = "FunctionalTests"
+               ReferencedContainer = "container:AEPEdge.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -44,9 +64,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BF5EECD424983AE000C72622"
-            BuildableName = "AEPCommerceDemoApp.app"
-            BlueprintName = "AEPCommerceDemoApp"
+            BlueprintIdentifier = "D4D5B5792432977F00CAB6E4"
+            BuildableName = "TestAppSwiftUI.app"
+            BlueprintName = "TestAppSwiftUI"
             ReferencedContainer = "container:AEPEdge.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -61,9 +81,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BF5EECD424983AE000C72622"
-            BuildableName = "AEPCommerceDemoApp.app"
-            BlueprintName = "AEPCommerceDemoApp"
+            BlueprintIdentifier = "D4D5B5792432977F00CAB6E4"
+            BuildableName = "TestAppSwiftUI.app"
+            BlueprintName = "TestAppSwiftUI"
             ReferencedContainer = "container:AEPEdge.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

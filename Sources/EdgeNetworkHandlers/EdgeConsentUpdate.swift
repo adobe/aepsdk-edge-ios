@@ -19,6 +19,9 @@ struct EdgeConsentUpdate: Encodable {
     /// Metadata passed with the Consent request
     let meta: RequestMetadata?
 
+    /// Additional query options that specify the consent operation type
+    let query: QueryOptions?
+
     /// The IdentityMap at the moment of this request
     let identityMap: [String: AnyCodable]?
 

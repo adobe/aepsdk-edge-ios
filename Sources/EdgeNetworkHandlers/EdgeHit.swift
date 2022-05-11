@@ -17,16 +17,13 @@ import Foundation
 protocol EdgeHit {
 
     /// The Edge endpoint
-    var edgeEndpoint: EdgeEndpoint { get }
+    var endpoint: EdgeEndpoint { get }
 
     /// The Edge configuration identifier
     var configId: String { get }
 
-    /// Unique identifier for this hit
+    /// Unique identifier for the Edge request
     var requestId: String { get }
-
-    /// The `ExperienceEdgeRequestType` to be used for this `EdgeHit`
-    func getType() -> ExperienceEdgeRequestType
 
     /// The network request payload for this `EdgeHit`
     func getPayload() -> String?

@@ -15,7 +15,7 @@ import Foundation
 enum EdgeConstants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
-    static let EXTENSION_VERSION = "1.4.0"
+    static let EXTENSION_VERSION = "1.4.1"
     static let FRIENDLY_NAME = "AEPEdge"
     static let LOG_TAG = FRIENDLY_NAME
 
@@ -100,6 +100,10 @@ enum EdgeConstants {
         static let META = "meta"
         static let IMPLEMENTATION_DETAILS = "implementationDetails"
 
+        enum Query {
+            static let OPERATION = "operation"
+        }
+
         enum CollectMetadata {
             static let COLLECT = "collect"
             static let DATASET_ID = "datasetId"
@@ -135,13 +139,19 @@ enum EdgeConstants {
             static let WRAPPER_XAMARIN = "xamarin"
             static let UNKNOWN = "unknown"
         }
+
+        enum Query {
+            static let OPERATION_UPDATE = "update"
+        }
     }
 
     enum NetworkKeys {
+        static let HTTPS = "https"
         static let EDGE_DEFAULT_DOMAIN = "edge.adobedc.net"
-        static let EDGE_ENDPOINT_PATH = "/ee/v1"
-        static let EDGE_ENDPOINT_PRE_PRODUCTION_PATH = "/ee-pre-prd/v1"
-        static let EDGE_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/v1/"
+        static let EDGE_ENDPOINT_PATH = "/ee"
+        static let EDGE_ENDPOINT_PRE_PRODUCTION_PATH = "/ee-pre-prd"
+        static let EDGE_ENDPOINT_VERSION_PATH = "/v1"
+        static let EDGE_INTEGRATION_DOMAIN = "edge-int.adobedc.net"
         static let REQUEST_PARAM_CONFIG_ID = "configId"
         static let REQUEST_PARAM_REQUEST_ID = "requestId"
         static let DEFAULT_CONNECT_TIMEOUT: TimeInterval = 5
