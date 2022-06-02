@@ -14,16 +14,12 @@ import Foundation
 
 /// Implementation of `EdgeHit` for ExperienceEvents requests
 struct ExperienceEventsEdgeHit: EdgeHit {
-    let edgeEndpoint: EdgeEndpoint
+    let endpoint: EdgeEndpoint
     let configId: String
     let requestId: String = UUID().uuidString
 
     /// The `EdgeRequest` for the corresponding hit
     let request: EdgeRequest
-
-    func getType() -> ExperienceEdgeRequestType {
-        ExperienceEdgeRequestType.interact
-    }
 
     func getPayload() -> String? {
         guard let events = request.events, !events.isEmpty else {

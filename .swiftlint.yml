@@ -19,9 +19,8 @@ opt_in_rules: # some rules are opt-in only
 - vertical_parameter_alignment_on_call
 excluded: # paths to ignore during linting
 - Carthage
-- SampleApps/*/Pods
-- SampleApps/*/xdmlib
-- SampleApps/*/libs
+- TestApps/*/Pods
+- TestApps/*/libs
 - Pods
 
 empty_count: 
