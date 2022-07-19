@@ -37,8 +37,6 @@ struct ContentView: View {
                     .onAppear(perform: getExtensionVersion)
                     .frame(maxWidth: .infinity)
                     .padding()
-                Spacer()
-
 
                 #if os(iOS)
                 VStack {
@@ -149,6 +147,7 @@ struct ContentView: View {
                     })
                     .frame(maxWidth: .infinity)
                     .padding()
+                    Spacer()
                 }
                 #endif
             }
