@@ -10,11 +10,13 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPAssurance
 import AEPCore
 import AEPEdge
+#if os(ios)
 import AEPEdgeConsent
+import AEPAssurance
 import AEPEdgeIdentity
+#endif
 import AEPServices
 import SwiftUI
 
@@ -24,7 +26,10 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
+
+            #if os(iOS)
             VStack {
+
                 NavigationLink(destination: AssuranceView()) {
                     Text("Assurance")
                 }
@@ -109,9 +114,33 @@ struct ContentView: View {
             }.onAppear {
                 self.getECID()
             }
+            #endif
+
+            // TODO: Revisit this code, once all Edge extensions have tvOS support
+            #if os(tvOS)
+            VStack {
+                Text("Edge").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
+                Button("Send Event", action: {
+                    let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                                          data: ["data": ["test": "data"]])
+                    Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
+                        let encoder = JSONEncoder()
+                        encoder.outputFormatting = .prettyPrinted
+                        guard let data = try? encoder.encode(handles) else {
+                            self.dataContent = "failed to encode EdgeEventHandle"
+                            return
+                        }
+                        self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+                    })
+                })
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding()
+            }.background(Color("InputColor1"))
+            #endif
         }
     }
 
+    #if os(iOS)
     private func getECID() {
         Identity.getExperienceCloudId { value, error in
             if error != nil {
@@ -162,6 +191,7 @@ struct ContentView: View {
             self.dataContent = jsonStr
         }
     }
+    #endif
 
 }
 
