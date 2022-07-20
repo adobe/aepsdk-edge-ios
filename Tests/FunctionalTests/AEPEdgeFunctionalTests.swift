@@ -271,7 +271,14 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("val", requestBody["events[0].xdm.testDictionary.key"] as? String)
         XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
         XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
+
+        #if os(iOS)
         XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationDetails.name"] as? String)
+        #endif
+
+        #if os(tvOS)
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/tvos", requestBody["xdm.implementationDetails.name"] as? String)
+        #endif
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -321,7 +328,14 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("val", requestBody["events[0].data.testDataDictionary.key"] as? String)
         XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
         XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
+
+        #if os(iOS)
         XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationDetails.name"] as? String)
+        #endif
+
+        #if os(tvOS)
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/tvos", requestBody["xdm.implementationDetails.name"] as? String)
+        #endif
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -372,7 +386,14 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("abc123def", requestBody["events[0].meta.collect.datasetId"] as? String)
         XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
         XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
+
+        #if os(iOS)
         XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", requestBody["xdm.implementationDetails.name"] as? String)
+        #endif
+
+        #if os(tvOS)
+        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/tvos", requestBody["xdm.implementationDetails.name"] as? String)
+        #endif
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))

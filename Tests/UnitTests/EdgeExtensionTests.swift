@@ -104,11 +104,22 @@ class EdgeExtensionTests: XCTestCase {
 
         // verify
         XCTAssertNotNil(edge.state?.implementationDetails)
+        #if os(iOS)
         let expectedDetails: [String: Any] = [
             "version": "3.0.0+\(EdgeConstants.EXTENSION_VERSION)",
             "environment": "app",
             "name": "https://ns.adobe.com/experience/mobilesdk/ios/reactnative"
         ]
+        #endif
+
+        #if os(tvOS)
+        let expectedDetails: [String: Any] = [
+            "version": "3.0.0+\(EdgeConstants.EXTENSION_VERSION)",
+            "environment": "app",
+            "name": "https://ns.adobe.com/experience/mobilesdk/tvos/reactnative"
+        ]
+        #endif
+
         XCTAssertTrue(expectedDetails == edge.state?.implementationDetails ?? [:])
     }
 
