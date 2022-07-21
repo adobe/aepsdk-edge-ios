@@ -22,6 +22,12 @@ class EdgeExtensionTests: XCTestCase {
     var mockDataQueue: MockDataQueue!
     var mockHitProcessor: MockHitProcessor!
 
+    #if os(iOS)
+    private let EXPECTED_BASE_PATH = "https://ns.adobe.com/experience/mobilesdk/ios"
+    #elseif os(tvOS)
+    private let EXPECTED_BASE_PATH = "https://ns.adobe.com/experience/mobilesdk/tvos"
+    #endif
+
     override func setUp() {
         mockRuntime = TestableExtensionRuntime()
         mockDataQueue = MockDataQueue()
@@ -103,24 +109,16 @@ class EdgeExtensionTests: XCTestCase {
         _ = edge.readyForEvent(Event(name: "Dummy event", type: EventType.custom, source: EventSource.none, data: nil))
 
         // verify
-        XCTAssertNotNil(edge.state?.implementationDetails)
-        #if os(iOS)
+        let actualDetails = edge.state?.implementationDetails ?? [:]
+        XCTAssertTrue(!actualDetails.isEmpty)
+
         let expectedDetails: [String: Any] = [
             "version": "3.0.0+\(EdgeConstants.EXTENSION_VERSION)",
             "environment": "app",
-            "name": "https://ns.adobe.com/experience/mobilesdk/ios/reactnative"
+            "name": "\(EXPECTED_BASE_PATH)/reactnative"
         ]
-        #endif
 
-        #if os(tvOS)
-        let expectedDetails: [String: Any] = [
-            "version": "3.0.0+\(EdgeConstants.EXTENSION_VERSION)",
-            "environment": "app",
-            "name": "https://ns.adobe.com/experience/mobilesdk/tvos/reactnative"
-        ]
-        #endif
-
-        XCTAssertTrue(expectedDetails == edge.state?.implementationDetails ?? [:])
+        XCTAssertTrue(expectedDetails == actualDetails)
     }
 
     // MARK: Consent update request
