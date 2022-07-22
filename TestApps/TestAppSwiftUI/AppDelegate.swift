@@ -10,11 +10,14 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPAssurance
 import AEPCore
 import AEPEdge
+
+#if os(ios)
+import AEPAssurance
 import AEPEdgeConsent
 import AEPEdgeIdentity
+#endif
 import Compression
 import UIKit
 
@@ -27,7 +30,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         MobileCore.setLogLevel(.trace)
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
-        MobileCore.registerExtensions([Identity.self, Edge.self, Consent.self, Assurance.self])
+        var extensions = [Edge.self]
+
+        // MARK: TODO remove this once Assurance has tvOS support.
+        #if os(iOS)
+        extensions.append(Identity.self, Consent.self, Assurance.self)
+        #endif
+        MobileCore.registerExtensions(extensions)
         return true
     }
 
@@ -41,7 +50,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // To handle deeplink on iOS versions 12 and below
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        #if os(iOS)
         Assurance.startSession(url: url)
+        #endif
         return true
     }
 }

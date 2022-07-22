@@ -20,7 +20,7 @@ let package = Package(
     name: \"TestProject\",
     defaultLocalization: \"en-US\",
     platforms: [
-        .iOS(.v10)
+        .iOS(.v10), .tvOS(.v10)
     ],
     products: [
         .library(
@@ -58,12 +58,24 @@ echo '############# Build for generic iOS device ###############'
 xcodebuild build -scheme TestProject -destination 'generic/platform=iOS'
 
 # Build for i386 simulator
-echo '############# Build for i386 simulator ###############'
+echo '############# Build for i386 iOS simulator ###############'
 xcodebuild build -scheme TestProject -destination 'generic/platform=iOS Simulator' ARCHS=i386
 
 # Build for x86_64 simulator
-echo '############# Build for x86_64 simulator ###############'
+echo '############# Build for x86_64 iOS simulator ###############'
 xcodebuild build -scheme TestProject -destination 'generic/platform=iOS Simulator' ARCHS=x86_64
+
+# Archive for generic tvOS device
+echo '############# Archive for generic tvOS device ###############'
+xcodebuild archive -scheme TestProject -destination 'generic/platform=tvOS'
+
+# Build for generic tvOS device
+echo '############# Build for generic tvOS device ###############'
+xcodebuild build -scheme TestProject -destination 'generic/platform=tvOS'
+
+# Build for x86_64 simulator
+echo '############# Build for x86_64 tvOS simulator ###############'
+xcodebuild build -scheme TestProject -destination 'generic/platform=tvOS Simulator' ARCHS=x86_64
 
 # Clean up.
 cd ../

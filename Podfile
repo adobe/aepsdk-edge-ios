@@ -23,7 +23,7 @@ target 'FunctionalTests' do
   pod 'AEPEdgeConsent'
 end
 
-target 'TestAppSwiftUI' do
+target 'TestAppiOS' do
   pod 'AEPCore'
   pod 'AEPServices'
   pod 'AEPEdgeIdentity'
@@ -31,3 +31,19 @@ target 'TestAppSwiftUI' do
   pod 'AEPAssurance'
 end
 
+target 'TestApptvOS' do
+  pod 'AEPCore'
+  pod 'AEPServices'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPEdgeConsent'
+end
+
+post_install do |pi|
+  pi.pods_project.targets.each do |t|
+    t.build_configurations.each do |bc|
+        bc.build_settings['TVOS_DEPLOYMENT_TARGET'] = '10.0'
+        bc.build_settings['SUPPORTED_PLATFORMS'] = 'iphoneos iphonesimulator appletvos appletvsimulator'
+        bc.build_settings['TARGETED_DEVICE_FAMILY'] = "1,2,3"
+    end
+  end
+end
