@@ -31,11 +31,16 @@ class EdgeHitProcessorTests: XCTestCase {
     private let INTERACT_ENDPOINT_PROD = "https://edge.adobedc.net/ee/v1/interact"
     private let INTERACT_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/v1/interact"
     private let INTERACT_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/v1/interact"
+    private let MEDIA_ENDPOINT = "https://edge.adobedc.net/ee/va/v1/sessionstart"
+    private let MEDIA_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/va/v1/sessionstart"
+    private let MEDIA_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/va/v1/sessionstart"
     private static let CUSTOM_DOMAIN = "my.awesome.site"
     private static let CUSTOM_CONSENT_ENDPOINT = "https://\(CUSTOM_DOMAIN)/ee/v1/privacy/set-consent"
     private static let CUSTOM_CONSENT_ENDPOINT_PRE_PROD = "https://\(CUSTOM_DOMAIN)/ee-pre-prd/v1/privacy/set-consent"
     private static let CUSTOM_INTERACT_ENDPOINT_PROD = "https://\(CUSTOM_DOMAIN)/ee/v1/interact"
     private static let CUSTOM_INTERACT_ENDPOINT_PRE_PROD = "https://\(CUSTOM_DOMAIN)/ee-pre-prd/v1/interact"
+    private static let CUSTOM_MEDIA_ENDPOINT_PROD = "https://\(CUSTOM_DOMAIN)/ee/va/v1/sessionstart"
+    private static let CUSTOM_MEDIA_ENDPOINT_PRE_PROD = "https://\(CUSTOM_DOMAIN)/ee-pre-prd/va/v1/sessionstart"
 
     var hitProcessor: EdgeHitProcessor!
     var networkService: EdgeNetworkService!
@@ -45,6 +50,8 @@ class EdgeHitProcessorTests: XCTestCase {
     }
     let expectedHeaders = ["X-Adobe-AEP-Validation-Token": "test-int-id"]
     let experienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
+    let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data", "request": ["path": "va/v1/sessionstart"]]])
+
     let consentUpdateEvent = Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]]])
     let url = URL(string: "adobe.com")! // swiftlint:disable:this force_unwrapping
 
@@ -276,6 +283,30 @@ class EdgeHitProcessorTests: XCTestCase {
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
         XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: INTERACT_ENDPOINT_PROD))
+    }
+
+    func testProcessHit_mediaEdgeEvent_happy_withOverwritePath_whenConfigEndpointProduction_sendsNetworkRequestWithCustomPath() {
+        assertNetworkRequestUrl(event: experienceEventWithOverwritePath, environment: "prod", domain: nil, expectedEndpoint: MEDIA_ENDPOINT)
+    }
+
+    func testProcessHit_mediaEdgeEvent_happy_withOverwritePath_whenConfigEndpointPreProduction_sendsNetworkRequestWithCustomPath() {
+        assertNetworkRequestUrl(event: experienceEventWithOverwritePath, environment: "pre-prod", domain: nil, expectedEndpoint: MEDIA_ENDPOINT_PRE_PROD)
+    }
+
+    func testProcessHit_mediaEdgeEvent_happy_withOverwritePath_whenConfigEndpointIntegration_sendsNetworkRequestWithCustomPath() {
+        assertNetworkRequestUrl(event: experienceEventWithOverwritePath, environment: "int", domain: nil, expectedEndpoint: MEDIA_ENDPOINT_INTEGRATION)
+    }
+
+    func testProcessHit_mediaEdgeEvent_happy_withOverwritePath_whenConfigEndpointProductionAndCustomDomain_sendsNetworkRequestWithCustomPath() {
+        assertNetworkRequestUrl(event: experienceEventWithOverwritePath, environment: "prod", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: EdgeHitProcessorTests.CUSTOM_MEDIA_ENDPOINT_PROD)
+    }
+
+    func testProcessHit_mediaEdgeEvent_happy_withOverwritePath_whenConfigEndpointPreProductionAndCustomDomain_sendsNetworkRequestWithCustomPath() {
+        assertNetworkRequestUrl(event: experienceEventWithOverwritePath, environment: "pre-prod", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: EdgeHitProcessorTests.CUSTOM_MEDIA_ENDPOINT_PRE_PROD)
+    }
+
+    func testProcessHit_mediaEdgeEvent_happy_withOverwritePath_whenConfigEndpointIntegrationAndCustomDomain_sendsNetworkRequestWithCustomPath() {
+        assertNetworkRequestUrl(event: experienceEventWithOverwritePath, environment: "int", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: MEDIA_ENDPOINT_INTEGRATION)
     }
 
     func testProcessHit_consentUpdateEvent_whenConfigEndpointProduction() {
@@ -552,6 +583,10 @@ class EdgeHitProcessorTests: XCTestCase {
         XCTAssertNil(payload["xdm.implementationDetails.environment"])
     }
 
+    func assertHitPath() {
+        mockNetworkService
+    }
+
     func assertProcessHit(entity: DataEntity, sendsNetworkRequest: Bool, returns: Bool, line: UInt = #line) {
         let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
 
@@ -596,7 +631,8 @@ class EdgeHitProcessorTests: XCTestCase {
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-        XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: expectedEndpoint))
+        let actualUrl = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? ""
+        XCTAssertTrue( actualUrl.starts(with: expectedEndpoint))
     }
 }
 

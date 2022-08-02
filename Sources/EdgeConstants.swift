@@ -99,6 +99,8 @@ enum EdgeConstants {
         static let EVENT_ID = "_id"
         static let META = "meta"
         static let IMPLEMENTATION_DETAILS = "implementationDetails"
+        static let REQUEST = "request"
+        static let PATH = "path"
 
         enum Query {
             static let OPERATION = "operation"
