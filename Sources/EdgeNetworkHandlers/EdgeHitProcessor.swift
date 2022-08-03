@@ -97,8 +97,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let overwritePath = getCustomPathFromEvent(event)
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact, overwritePath: overwritePath)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact)
             let edgeHit = ExperienceEventsEdgeHit(endpoint: endpoint, configId: configId, request: requestPayload)
             // NOTE: the order of these events needs to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
@@ -120,7 +119,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent, overwritePath: nil)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent)
             let edgeHit = ConsentEdgeHit(endpoint: endpoint, configId: configId, consents: consentPayload)
             networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
@@ -136,12 +135,12 @@ class EdgeHitProcessor: HitProcessing {
     /// - Parameters:
     ///   - config: configuration data, used to extract the environment and the custom domain, if any
     ///   - requestType: the `EdgeRequestType`
-    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType, overwritePath: String?) -> EdgeEndpoint {
+    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType) -> EdgeEndpoint {
         return EdgeEndpoint(
             requestType: requestType,
             environmentType: EdgeEnvironmentType(optionalRawValue: config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT]),
             optionalDomain: config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN],
-            overwritePath: overwritePath)
+            optionalPath: config[EdgeConstants.EventDataKeys.Request.PATH])
     }
 
     private func decode(dataEntity: DataEntity) -> EdgeDataEntity? {
@@ -183,7 +182,7 @@ class EdgeHitProcessor: HitProcessing {
         }
     }
 
-    /// Extracts all the Edge configuration keys from the Configuration shared state
+    /// Extracts all the Edge configuration keys needed for this request. Configuration keys are extracted from the `Configuration shared state` and the given `event` instance
     /// - Parameter event: current event for which the configuration is required
     /// - Returns: the Edge configuration keys with values, nil if edge.configId was not found
     private func getEdgeConfig(event: Event) -> [String: String]? {
@@ -209,6 +208,10 @@ class EdgeHitProcessor: HitProcessing {
         config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] as? String
         config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN] = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN] as? String
 
+        if let customPath = getCustomRequestPath(from: event) {
+            config[EdgeConstants.EventDataKeys.Request.PATH] = customPath
+        }
+
         return config
     }
 
@@ -226,7 +229,7 @@ class EdgeHitProcessor: HitProcessing {
         return requestHeaders
     }
 
-    private func getCustomPathFromEvent(_ event: Event) -> String? {
+    private func getCustomRequestPath(from event: Event) -> String? {
         var customPath: String?
         if let eventData = event.data {
             let xdmData = eventData[EdgeConstants.JsonKeys.XDM] as? [String: Any]

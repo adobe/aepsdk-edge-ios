@@ -42,6 +42,10 @@ enum EdgeConstants {
         static let REQUEST_EVENT_ID = "requestEventId"
         static let DATASET_ID = "datasetId"
         static let CONSENTS = "consents"
+
+        enum Request {
+            static let PATH = "overwritePath"
+        }
     }
 
     enum DataStoreKeys {

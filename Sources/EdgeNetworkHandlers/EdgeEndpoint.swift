@@ -40,10 +40,11 @@ struct EdgeEndpoint {
     ///   - requestType: the `EdgeRequestType` to be used
     ///   - environmentType: the `EdgeEnvironmentType` for the `EdgeEndpoint`
     ///   - optionalDomain: an optional custom domain for the `EdgeEndpoint`. If not set the default domain is used.
+    ///   - optionalPath: an optional path to be used to overwrite the default interact path.
     init(requestType: EdgeRequestType,
          environmentType: EdgeEnvironmentType,
          optionalDomain: String? = nil,
-         overwritePath: String? = nil) {
+         optionalPath: String? = nil) {
         let domain: String
         if let unwrappedDomain = optionalDomain, !unwrappedDomain.isEmpty {
             domain = unwrappedDomain
@@ -68,7 +69,7 @@ struct EdgeEndpoint {
 
         }
 
-        if let customPath = overwritePath {
+        if let customPath = optionalPath {
             components.path.append("/\(customPath)")
         } else {
             components.path.append(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_VERSION_PATH)
