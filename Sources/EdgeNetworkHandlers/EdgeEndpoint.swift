@@ -40,7 +40,7 @@ struct EdgeEndpoint {
     ///   - requestType: the `EdgeRequestType` to be used
     ///   - environmentType: the `EdgeEnvironmentType` for the `EdgeEndpoint`
     ///   - optionalDomain: an optional custom domain for the `EdgeEndpoint`. If not set the default domain is used.
-    ///   - optionalPath: an optional path to be used to overwrite the default interact path.
+    ///   - optionalPath: an optional path to be used to overwrite the default path.
     init(requestType: EdgeRequestType,
          environmentType: EdgeEnvironmentType,
          optionalDomain: String? = nil,

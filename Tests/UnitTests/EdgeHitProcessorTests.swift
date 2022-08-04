@@ -583,10 +583,6 @@ class EdgeHitProcessorTests: XCTestCase {
         XCTAssertNil(payload["xdm.implementationDetails.environment"])
     }
 
-    func assertHitPath() {
-        mockNetworkService
-    }
-
     func assertProcessHit(entity: DataEntity, sendsNetworkRequest: Bool, returns: Bool, line: UInt = #line) {
         let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
 
