@@ -97,7 +97,8 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact)
+            let requestProperties = getRequestProperties(from: event)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact, requestProperties: requestProperties)
             let edgeHit = ExperienceEventsEdgeHit(endpoint: endpoint, configId: configId, request: requestPayload)
             // NOTE: the order of these events needs to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
@@ -119,7 +120,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent, requestProperties: nil)
             let edgeHit = ConsentEdgeHit(endpoint: endpoint, configId: configId, consents: consentPayload)
             networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
@@ -135,12 +136,12 @@ class EdgeHitProcessor: HitProcessing {
     /// - Parameters:
     ///   - config: configuration data, used to extract the environment and the custom domain, if any
     ///   - requestType: the `EdgeRequestType`
-    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType) -> EdgeEndpoint {
+    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType, requestProperties: [String: Any]?) -> EdgeEndpoint {
         return EdgeEndpoint(
             requestType: requestType,
             environmentType: EdgeEnvironmentType(optionalRawValue: config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT]),
             optionalDomain: config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN],
-            optionalPath: config[EdgeConstants.EventDataKeys.Request.PATH])
+            optionalPath: requestProperties?[EdgeConstants.EventDataKeys.Request.PATH] as? String)
     }
 
     private func decode(dataEntity: DataEntity) -> EdgeDataEntity? {
@@ -208,10 +209,6 @@ class EdgeHitProcessor: HitProcessing {
         config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] as? String
         config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN] = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN] as? String
 
-        if let customPath = getCustomRequestPath(from: event) {
-            config[EdgeConstants.EventDataKeys.Request.PATH] = customPath
-        }
-
         return config
     }
 
@@ -229,15 +226,46 @@ class EdgeHitProcessor: HitProcessing {
         return requestHeaders
     }
 
+    private func getRequestProperties(from event: Event) -> [String: Any]? {
+        var requestProperties = [String: Any]()
+        if let overwritePath = getCustomRequestPath(from: event), !overwritePath.isEmpty {
+            requestProperties[EdgeConstants.EventDataKeys.Request.PATH] = overwritePath
+        }
+        return requestProperties
+    }
+
     private func getCustomRequestPath(from event: Event) -> String? {
-        var customPath: String?
+        var path: String?
         if let eventData = event.data {
-            let xdmData = eventData[EdgeConstants.JsonKeys.XDM] as? [String: Any]
-            let requestData = xdmData?[EdgeConstants.JsonKeys.REQUEST] as? [String: Any]
-            customPath = requestData?[EdgeConstants.JsonKeys.PATH] as? String
+            let requestData = eventData[EdgeConstants.EventDataKeys.Request.KEY] as? [String: Any]
+            path = requestData?[EdgeConstants.EventDataKeys.Request.PATH] as? String
+        }
+
+        guard let customPath = path else {
+            return nil
+        }
+
+        if !isValidPath(customPath) || customPath.contains("//") {
+            Log.error(label: self.SELF_TAG, "Dropping the overwrite path value: (\(String(describing: customPath))), since it contains invalid characters.")
+            return nil
         }
 
         return customPath
     }
 
+    private func isValidPath(_ path: String?) -> Bool {
+        guard let path = path else {
+            return false
+        }
+
+        let pattern = "^\\/[/.a-zA-Z0-9-]+$"
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: [])
+            let matches = regex.firstMatch(in: path, range: NSRange(path.startIndex..., in: path)) != nil
+            return matches
+        } catch {
+            return false
+        }
+
+    }
 }

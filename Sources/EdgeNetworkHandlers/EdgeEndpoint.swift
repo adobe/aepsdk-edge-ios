@@ -70,7 +70,8 @@ struct EdgeEndpoint {
         }
 
         if let customPath = optionalPath {
-            components.path.append("/\(customPath)")
+            // path should contain the leading "\"
+            components.path.append(customPath)
         } else {
             components.path.append(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_VERSION_PATH)
             components.path.append("/\(requestType.rawValue)")

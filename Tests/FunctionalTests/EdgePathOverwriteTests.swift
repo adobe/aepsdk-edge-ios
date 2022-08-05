@@ -19,6 +19,7 @@ import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs
 class AEPEdgePathOverwriteTests: FunctionalTestBase {
+    private let exEdgeConsentProdUrl = URL(string: FunctionalTestConst.EX_EDGE_CONSENT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let exEdgeMediaProdUrl = URL(string: FunctionalTestConst.EX_EDGE_MEDIA_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let exEdgeMediaPreProdUrl = URL(string: FunctionalTestConst.EX_EDGE_MEDIA_PRE_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let exEdgeMediaIntegrationUrl = URL(string: FunctionalTestConst.EX_EDGE_MEDIA_INTEGRATION_URL_STR)! // swiftlint:disable:this force_unwrapping
@@ -65,8 +66,8 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
-        let experienceEvent = ExperienceEvent(xdm: ["request": ["path": "va/v1/sessionstart"]])
-        Edge.sendEvent(experienceEvent: experienceEvent)
+        let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "va/v1/sessionstart"]])
+        MobileCore.dispatch(event: experienceEventWithOverwritePath)
 
         // verify
         assertNetworkRequestsCount()
@@ -91,8 +92,8 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_MEDIA_PRE_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_MEDIA_PRE_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
-        let experienceEvent = ExperienceEvent(xdm: ["request": ["path": "va/v1/sessionstart"]])
-        Edge.sendEvent(experienceEvent: experienceEvent)
+        let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "va/v1/sessionstart"]])
+        MobileCore.dispatch(event: experienceEventWithOverwritePath)
 
         // verify
         assertNetworkRequestsCount()
@@ -117,8 +118,8 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_MEDIA_INTEGRATION_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_MEDIA_INTEGRATION_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
-        let experienceEvent = ExperienceEvent(xdm: ["request": ["path": "va/v1/sessionstart"]])
-        Edge.sendEvent(experienceEvent: experienceEvent)
+        let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "va/v1/sessionstart"]])
+        MobileCore.dispatch(event: experienceEventWithOverwritePath)
 
         // verify
         assertNetworkRequestsCount()
@@ -126,6 +127,29 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_MEDIA_INTEGRATION_URL_STR))
+        XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
+        XCTAssertNotNil(requestUrl.queryParam("requestId"))
+    }
+
+    func testUpdateConsentEvent_withPathOverwrite_doesNotOverwriteConsentPath() {
+        let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeConsentProdUrl,
+                                                                                          statusCode: 200,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]], "request": ["path": "va/v1/sessionstart"]])
+        MobileCore.dispatch(event: experienceEventWithOverwritePath)
+
+        // verify
+        assertNetworkRequestsCount()
+        let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post)
+
+        let requestUrl = resultNetworkRequests[0].url
+        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_CONSENT_PROD_URL_STR))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
