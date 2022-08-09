@@ -228,7 +228,7 @@ class EdgeHitProcessor: HitProcessing {
 
     private func getRequestProperties(from event: Event) -> [String: Any]? {
         var requestProperties = [String: Any]()
-        if let overwritePath = getCustomRequestPath(from: event), !overwritePath.isEmpty {
+        if let overwritePath = getCustomRequestPath(from: event) {
             requestProperties[EdgeConstants.EventDataKeys.Request.PATH] = overwritePath
         }
         return requestProperties
@@ -241,20 +241,20 @@ class EdgeHitProcessor: HitProcessing {
             path = requestData?[EdgeConstants.EventDataKeys.Request.PATH] as? String
         }
 
-        guard let customPath = path else {
+        if !isValidPath(path) {
+            Log.error(label: self.SELF_TAG, "Dropping the overwrite path value: (\(String(describing: path))), since it contains invalid characters or is empty.")
             return nil
         }
 
-        if !isValidPath(customPath) || customPath.contains("//") {
-            Log.error(label: self.SELF_TAG, "Dropping the overwrite path value: (\(String(describing: customPath))), since it contains invalid characters.")
-            return nil
-        }
-
-        return customPath
+        return path
     }
 
     private func isValidPath(_ path: String?) -> Bool {
         guard let path = path else {
+            return false
+        }
+
+        if path.isEmpty || path.contains("//") {
             return false
         }
 
