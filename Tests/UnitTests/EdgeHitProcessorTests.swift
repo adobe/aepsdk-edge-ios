@@ -56,13 +56,16 @@ class EdgeHitProcessorTests: XCTestCase {
         "/va/v1/sessionstart?query=value",
         "//va/v1/sessionstart",
         "/va/v1//sessionstart",
-        "/va/v1/sessionstart/@test"
+        "/va/v1/sessionstart/@test",
+        nil,
+        ""
     ]
 
     let validPaths = [
         "/va/v1/session-start",
         "/va/v1/session.start",
-        "/va/v1/sessionSTART123"
+        "/va/v1/sessionSTART123",
+        "/va/v1/session~start_123"
     ]
 
     let consentUpdateEvent = Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]]])
