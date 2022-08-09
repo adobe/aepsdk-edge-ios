@@ -259,13 +259,10 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         let pattern = "^\\/[/.a-zA-Z0-9-~_]+$"
-        do {
-            let regex = try NSRegularExpression(pattern: pattern, options: [])
-            let matches = regex.firstMatch(in: path, range: NSRange(path.startIndex..., in: path)) != nil
-            return matches
-        } catch {
-            return false
-        }
+
+        let regex = try? NSRegularExpression(pattern: pattern, options: [])
+        let matches = regex?.firstMatch(in: path, range: NSRange(path.startIndex..., in: path)) != nil
+        return matches
 
     }
 }
