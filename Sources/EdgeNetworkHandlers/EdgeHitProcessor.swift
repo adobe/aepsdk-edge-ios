@@ -250,11 +250,7 @@ class EdgeHitProcessor: HitProcessing {
     }
 
     private func isValidPath(_ path: String?) -> Bool {
-        guard let path = path else {
-            return false
-        }
-
-        if path.isEmpty || path.contains("//") {
+        guard let path = path, !path.isEmpty, !path.contains("//") else {
             return false
         }
 
