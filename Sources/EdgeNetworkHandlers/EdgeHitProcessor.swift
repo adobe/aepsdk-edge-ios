@@ -226,6 +226,9 @@ class EdgeHitProcessor: HitProcessing {
         return requestHeaders
     }
 
+    // Extracts all the custom request properties to overwrite the default values
+    /// - Parameter event: current event for which the request properties are to be extracted
+    /// - Returns: the dictionary of extracted request properties and their custom values
     private func getRequestProperties(from event: Event) -> [String: Any]? {
         var requestProperties = [String: Any]()
         if let overwritePath = getCustomRequestPath(from: event) {
@@ -234,6 +237,9 @@ class EdgeHitProcessor: HitProcessing {
         return requestProperties
     }
 
+    // Extracts network request path property to overwrite the default endpoint path value
+    /// - Parameter event: current event for which the request path property is to be extracted
+    /// - Returns: the custom path string
     private func getCustomRequestPath(from event: Event) -> String? {
         var path: String?
         if let eventData = event.data {
@@ -242,7 +248,7 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         if !isValidPath(path) {
-            Log.error(label: self.SELF_TAG, "Dropping the overwrite path value: (\(String(describing: path))), since it contains invalid characters or is empty.")
+            Log.error(label: self.SELF_TAG, "Dropping the overwrite path value: (\(path ?? "")), since it contains invalid characters or is empty.")
             return nil
         }
 

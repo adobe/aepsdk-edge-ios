@@ -70,7 +70,7 @@ struct EdgeEndpoint {
         }
 
         if let customPath = optionalPath {
-            // path should contain the leading "\"
+            // path should contain the leading "/"
             components.path.append(customPath)
         } else {
             components.path.append(EdgeConstants.NetworkKeys.EDGE_ENDPOINT_VERSION_PATH)

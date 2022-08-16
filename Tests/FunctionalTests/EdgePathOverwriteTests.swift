@@ -19,6 +19,11 @@ import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs
 class AEPEdgePathOverwriteTests: FunctionalTestBase {
+    static let EDGE_MEDIA_PROD_PATH_STR = "/ee/va/v1/sessionstart"
+    static let EDGE_MEDIA_PRE_PROD_PATH_STR = "/ee-pre-prd/va/v1/sessionstart"
+    static let EDGE_MEDIA_INTEGRATION_PATH_STR = "/ee/va/v1/sessionstart"
+    static let EDGE_CONSENT_PATH_STR = "/ee/v1/privacy/set-consent"
+    static let EDGE_INTEGRATION_DOMAIN_STR = "https://edge-int.adobedc.net"
     private let exEdgeConsentProdUrl = URL(string: FunctionalTestConst.EX_EDGE_CONSENT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let exEdgeMediaProdUrl = URL(string: FunctionalTestConst.EX_EDGE_MEDIA_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let exEdgeMediaPreProdUrl = URL(string: FunctionalTestConst.EX_EDGE_MEDIA_PRE_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
@@ -74,7 +79,7 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
-        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_MEDIA_PROD_URL_STR))
+        XCTAssertEqual(Self.EDGE_MEDIA_PROD_PATH_STR, requestUrl.path)
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
@@ -100,7 +105,7 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_MEDIA_PRE_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
-        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_MEDIA_PRE_PROD_URL_STR))
+        XCTAssertEqual(Self.EDGE_MEDIA_PRE_PROD_PATH_STR, requestUrl.path)
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
@@ -126,12 +131,13 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_MEDIA_INTEGRATION_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
-        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_MEDIA_INTEGRATION_URL_STR))
+        XCTAssertEqual(Self.EDGE_MEDIA_INTEGRATION_PATH_STR, requestUrl.path)
+        XCTAssertEqual(Self.EDGE_INTEGRATION_DOMAIN_STR, requestUrl.host)
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
 
-    func testUpdateConsentEvent_withPathOverwrite_doesNotOverwriteConsentPath() {
+    func testUpdateConsentEvent_withPathOverwrite_ignoresOverwrite() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                                 response: HTTPURLResponse(url: exEdgeConsentProdUrl,
                                                                                           statusCode: 200,
@@ -149,8 +155,5 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
         let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
-        XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_CONSENT_PROD_URL_STR))
-        XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
-        XCTAssertNotNil(requestUrl.queryParam("requestId"))
-    }
+        XCTAssertEqual(Self.EDGE_CONSENT_PATH_STR, requestUrl.path)
 }
