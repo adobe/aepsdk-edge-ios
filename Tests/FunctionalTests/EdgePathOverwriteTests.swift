@@ -23,7 +23,7 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
     static let EDGE_MEDIA_PRE_PROD_PATH_STR = "/ee-pre-prd/va/v1/sessionstart"
     static let EDGE_MEDIA_INTEGRATION_PATH_STR = "/ee/va/v1/sessionstart"
     static let EDGE_CONSENT_PATH_STR = "/ee/v1/privacy/set-consent"
-    static let EDGE_INTEGRATION_DOMAIN_STR = "https://edge-int.adobedc.net"
+    static let EDGE_INTEGRATION_DOMAIN_STR = "edge-int.adobedc.net"
     private let exEdgeConsentProdUrl = URL(string: FunctionalTestConst.EX_EDGE_CONSENT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let exEdgeMediaProdUrl = URL(string: FunctionalTestConst.EX_EDGE_MEDIA_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let exEdgeMediaPreProdUrl = URL(string: FunctionalTestConst.EX_EDGE_MEDIA_PRE_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
