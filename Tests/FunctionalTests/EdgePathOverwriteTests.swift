@@ -156,4 +156,5 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertEqual(Self.EDGE_CONSENT_PATH_STR, requestUrl.path)
+    }
 }
