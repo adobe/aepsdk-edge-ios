@@ -233,7 +233,7 @@ class EdgeHitProcessor: HitProcessing {
     private func getRequestProperties(from event: Event) -> [String: Any]? {
         var requestProperties = [String: Any]()
         if let overwritePath = getCustomRequestPath(from: event) {
-            Log.trace(label: self.SELF_TAG, "Got custom path:(\(overwritePath)) for event:(\(event.id)), which will overwrite the custom interaction path.")
+            Log.trace(label: self.SELF_TAG, "Got custom path:(\(overwritePath)) for event:(\(event.id)), which will overwrite the default interaction request path.")
             requestProperties[EdgeConstants.EventDataKeys.Request.PATH] = overwritePath
         }
         return requestProperties
