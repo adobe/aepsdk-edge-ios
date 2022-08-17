@@ -24,6 +24,7 @@ class EdgeHitProcessor: HitProcessing {
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
+    private let VALID_PATH_REGEX_PATTERN = "^\\/[/.a-zA-Z0-9-~_]+$"
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
@@ -232,6 +233,7 @@ class EdgeHitProcessor: HitProcessing {
     private func getRequestProperties(from event: Event) -> [String: Any]? {
         var requestProperties = [String: Any]()
         if let overwritePath = getCustomRequestPath(from: event) {
+            Log.trace(label: self.SELF_TAG, "Got custom path:(\(overwritePath)) for event:(\(event.id)), which will overwrite the custom interaction path.")
             requestProperties[EdgeConstants.EventDataKeys.Request.PATH] = overwritePath
         }
         return requestProperties
@@ -247,20 +249,24 @@ class EdgeHitProcessor: HitProcessing {
             path = requestData?[EdgeConstants.EventDataKeys.Request.PATH] as? String
         }
 
+        guard let path = path, !path.isEmpty else {
+            return nil
+        }
+
         if !isValidPath(path) {
-            Log.error(label: self.SELF_TAG, "Dropping the overwrite path value: (\(path ?? "")), since it contains invalid characters or is empty.")
+            Log.error(label: self.SELF_TAG, "Dropping the overwrite path value: (\(path)), since it contains invalid characters or is empty.")
             return nil
         }
 
         return path
     }
 
-    private func isValidPath(_ path: String?) -> Bool {
-        guard let path = path, !path.isEmpty, !path.contains("//") else {
+    private func isValidPath(_ path: String) -> Bool {
+       if path.contains("//") {
             return false
         }
 
-        let pattern = "^\\/[/.a-zA-Z0-9-~_]+$"
+        let pattern = VALID_PATH_REGEX_PATTERN
 
         let regex = try? NSRegularExpression(pattern: pattern, options: [])
         let matches = regex?.firstMatch(in: path, range: NSRange(path.startIndex..., in: path)) != nil
