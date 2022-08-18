@@ -157,4 +157,32 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertEqual(Self.EDGE_CONSENT_PATH_STR, requestUrl.path)
     }
+
+    func testSendEvent_withXDMData_withPathOverwrite_doesNotSendRequestObjectInEventPayload() {
+        let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeMediaProdUrl,
+                                                                                          statusCode: 200,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "/va/v1/sessionstart"]])
+        MobileCore.dispatch(event: experienceEventWithOverwritePath)
+
+        // verify
+        assertNetworkRequestsCount()
+        let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post)
+
+        let requestPayload = resultNetworkRequests[0].connectPayload
+
+        let payload = asFlattenDictionary(data: requestPayload)
+        for key in payload.keys {
+            if key.starts(with: "events") && key.contains("request.path") {
+                XCTFail("Request object should not be sent in the edge request payload")
+            }
+        }
+    }
+
 }
