@@ -153,6 +153,7 @@ class NetworkResponseHandler {
                 Log.debug(label: LOG_TAG, "Identities were reset recently, ignoring state:store payload for request with id: \(requestId)")
             } else {
                 handleStoreEventHandle(handle: eventHandle)
+                handleLocationHintHandle(handle: eventHandle)
             }
 
             guard let eventHandleAsDictionary = eventHandle.asDictionary() else { continue }
@@ -317,6 +318,22 @@ class NetworkResponseHandler {
         }
     }
 
+    /// If handle is of type "locationHint:result", persist it to the data store
+    /// - Parameter handle: current `EventHandle` to process
+    private func handleLocationHintHandle(handle: EdgeEventHandle) {
+        guard let type = handle.type, EdgeConstants.JsonKeys.Response.EVENT_HANDLE_TYPE_LOCATION_HINT == type else { return }
+        guard let payload: [[String: Any]] = handle.payload else { return }
+
+        for locationHint in payload {
+            if let scope = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.SCOPE] as? String, scope == "EdgeNetwork" {
+                guard let hint = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.HINT] as? String, !hint.isEmpty else { continue }
+                guard let ttlSeconds = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.TTL_SECONDS] as? Int else { continue }
+
+                persistLocationHint(hint: hint, ttlSeconds: TimeInterval(ttlSeconds))
+            }
+        }
+    }
+
     /// Logs the provided `error` message with the log level set based of `isError`, as follows:
     /// - If isError is true, the message is logged as error.
     /// - If isError is false, the message is logged as warning.
@@ -350,5 +367,15 @@ class NetworkResponseHandler {
     private func loadResetDateFromPersistence() -> Date? {
         guard let storedResetDate = dataStore.getDouble(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE) else { return nil }
         return Date(timeIntervalSince1970: storedResetDate)
+    }
+
+    /// Persist the location hint and ttl from the Edge Network location hint response handler.
+    /// - Parameters:
+    ///   - hint: the location hint region ID
+    ///   - ttlSeconds: the location hint time-to-live
+    private func persistLocationHint(hint: String, ttlSeconds: TimeInterval) {
+        let expiryDate = Date() + ttlSeconds
+        dataStore.set(key: EdgeConstants.DataStoreKeys.LOCATION_HINT, value: hint)
+        dataStore.setObject(key: EdgeConstants.DataStoreKeys.LOCATION_HINT_EXPIRY_DATE, value: expiryDate)
     }
 }

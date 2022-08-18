@@ -24,6 +24,8 @@ class EdgeHitProcessor: HitProcessing {
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
+    // Note, use same Data Store collection used to store Edge Network Region ID
+    private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
@@ -76,6 +78,9 @@ class EdgeHitProcessor: HitProcessing {
         requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                lineFeed: EdgeConstants.Defaults.LINE_FEED)
 
+        // Get region id (location hint) for request endpoint
+        let regionId = getRegionId()
+
         if event.isExperienceEvent {
             guard let eventData = event.data, !eventData.isEmpty else {
                 Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to process Experience event, data was nil or empty")
@@ -97,7 +102,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact, regionId: regionId)
             let edgeHit = ExperienceEventsEdgeHit(endpoint: endpoint, configId: configId, request: requestPayload)
             // NOTE: the order of these events needs to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
@@ -119,7 +124,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent, regionId: regionId)
             let edgeHit = ConsentEdgeHit(endpoint: endpoint, configId: configId, consents: consentPayload)
             networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
@@ -135,11 +140,13 @@ class EdgeHitProcessor: HitProcessing {
     /// - Parameters:
     ///   - config: configuration data, used to extract the environment and the custom domain, if any
     ///   - requestType: the `EdgeRequestType`
-    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType) -> EdgeEndpoint {
+    ///   - regionId: optional location hint
+    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType, regionId: String?) -> EdgeEndpoint {
         return EdgeEndpoint(
             requestType: requestType,
             environmentType: EdgeEnvironmentType(optionalRawValue: config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT]),
-            optionalDomain: config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN])
+            optionalDomain: config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN],
+            regionId: regionId)
     }
 
     private func decode(dataEntity: DataEntity) -> EdgeDataEntity? {
@@ -224,4 +231,22 @@ class EdgeHitProcessor: HitProcessing {
         return requestHeaders
     }
 
+    /// Get the stored region id (location hint) for requests to the Edge Network.
+    /// Retrieves and returns the stored region id from persistent store. If the expiry date is passed, then the region id is removed from persistent storage
+    /// and nil is returned.
+    /// - Returns: the persisted region id or nil if non exists or the id is expired
+    private func getRegionId() -> String? {
+        guard let expiryDate: Date = dataStore.getObject(key: EdgeConstants.DataStoreKeys.LOCATION_HINT_EXPIRY_DATE) else {
+            // Assume no region ID if no expiry date set
+            return nil
+        }
+
+        if expiryDate > Date() {
+            return dataStore.getString(key: EdgeConstants.DataStoreKeys.LOCATION_HINT)
+        } else {
+            dataStore.remove(key: EdgeConstants.DataStoreKeys.LOCATION_HINT_EXPIRY_DATE)
+            dataStore.remove(key: EdgeConstants.DataStoreKeys.LOCATION_HINT)
+            return nil
+        }
+    }
 }
