@@ -23,6 +23,7 @@ class EdgeHitProcessor: HitProcessing {
     private var getXDMSharedState: (String, Event?, Bool) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
+    private var getLocationHint: () -> String?
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
     // Note, use same Data Store collection used to store Edge Network Region ID
     private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
@@ -32,13 +33,15 @@ class EdgeHitProcessor: HitProcessing {
          getSharedState: @escaping (String, Event?) -> SharedStateResult?,
          getXDMSharedState: @escaping (String, Event?, Bool) -> SharedStateResult?,
          readyForEvent: @escaping (Event) -> Bool,
-         getImplementationDetails: @escaping () -> [String: Any]?) {
+         getImplementationDetails: @escaping () -> [String: Any]?,
+         getLocationHint: @escaping () -> String?) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
         self.getSharedState = getSharedState
         self.getXDMSharedState = getXDMSharedState
         self.readyForEvent = readyForEvent
         self.getImplementationDetails = getImplementationDetails
+        self.getLocationHint = getLocationHint
     }
 
     // MARK: HitProcessing
@@ -78,8 +81,8 @@ class EdgeHitProcessor: HitProcessing {
         requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                lineFeed: EdgeConstants.Defaults.LINE_FEED)
 
-        // Get region id (location hint) for request endpoint
-        let regionId = getRegionId()
+        // Get location hint for request endpoint
+        let locationHint = getLocationHint()
 
         if event.isExperienceEvent {
             guard let eventData = event.data, !eventData.isEmpty else {
@@ -102,7 +105,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact, regionId: regionId)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact, locationHint: locationHint)
             let edgeHit = ExperienceEventsEdgeHit(endpoint: endpoint, configId: configId, request: requestPayload)
             // NOTE: the order of these events needs to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
@@ -124,7 +127,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent, regionId: regionId)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent, locationHint: locationHint)
             let edgeHit = ConsentEdgeHit(endpoint: endpoint, configId: configId, consents: consentPayload)
             networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
@@ -140,13 +143,13 @@ class EdgeHitProcessor: HitProcessing {
     /// - Parameters:
     ///   - config: configuration data, used to extract the environment and the custom domain, if any
     ///   - requestType: the `EdgeRequestType`
-    ///   - regionId: optional location hint
-    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType, regionId: String?) -> EdgeEndpoint {
+    ///   - locationHint: optional location hint
+    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType, locationHint: String?) -> EdgeEndpoint {
         return EdgeEndpoint(
             requestType: requestType,
             environmentType: EdgeEnvironmentType(optionalRawValue: config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT]),
             optionalDomain: config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN],
-            regionId: regionId)
+            regionId: locationHint)
     }
 
     private func decode(dataEntity: DataEntity) -> EdgeDataEntity? {
@@ -229,24 +232,5 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         return requestHeaders
-    }
-
-    /// Get the stored region id (location hint) for requests to the Edge Network.
-    /// Retrieves and returns the stored region id from persistent store. If the expiry date is passed, then the region id is removed from persistent storage
-    /// and nil is returned.
-    /// - Returns: the persisted region id or nil if non exists or the id is expired
-    private func getRegionId() -> String? {
-        guard let expiryDate: Date = dataStore.getObject(key: EdgeConstants.DataStoreKeys.LOCATION_HINT_EXPIRY_DATE) else {
-            // Assume no region ID if no expiry date set
-            return nil
-        }
-
-        if expiryDate > Date() {
-            return dataStore.getString(key: EdgeConstants.DataStoreKeys.LOCATION_HINT)
-        } else {
-            dataStore.remove(key: EdgeConstants.DataStoreKeys.LOCATION_HINT_EXPIRY_DATE)
-            dataStore.remove(key: EdgeConstants.DataStoreKeys.LOCATION_HINT)
-            return nil
-        }
     }
 }

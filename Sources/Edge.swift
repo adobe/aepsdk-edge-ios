@@ -33,7 +33,7 @@ public class Edge: NSObject, Extension {
         super.init()
 
         // set default on init for register/unregister use-case
-        networkResponseHandler = NetworkResponseHandler()
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: setLocationHint)
         if let hitQueue = setupHitQueue() {
             state = EdgeState(hitQueue: hitQueue)
         }
@@ -216,7 +216,8 @@ public class Edge: NSObject, Extension {
                                             getSharedState: getSharedState(extensionName:event:),
                                             getXDMSharedState: getXDMSharedState(extensionName:event:barrier:),
                                             readyForEvent: readyForEvent(_:),
-                                            getImplementationDetails: getImplementationDetails)
+                                            getImplementationDetails: getImplementationDetails,
+                                            getLocationHint: getLocationHint)
         return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }
 
@@ -236,6 +237,17 @@ public class Edge: NSObject, Extension {
     /// - Returns: the `ImplementationDetails` for this session or nil if not yet set
     private func getImplementationDetails() -> [String: Any]? {
         return state?.implementationDetails
+    }
+
+    private func setLocationHint(hint: String?, ttlSeconds: TimeInterval?) {
+        guard let state = state else { return }
+        if let hint = hint, let ttlSeconds = ttlSeconds {
+            state.setLocationHint(hint: hint, ttlSeconds: ttlSeconds)
+        }
+    }
+
+    private func getLocationHint() -> String? {
+        return state?.getLocationHint()
     }
 
 }

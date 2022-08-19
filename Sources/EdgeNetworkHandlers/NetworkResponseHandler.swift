@@ -21,6 +21,7 @@ class NetworkResponseHandler {
     private let LOG_TAG = "NetworkResponseHandler"
     private let serialQueue = DispatchQueue(label: "com.adobe.edge.eventsDictionary") // serial queue for atomic operations
     private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
+    private var updateLocationHint: (String?, TimeInterval?) -> Void
 
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [(uuid: String, date: Date)]>()
@@ -28,7 +29,8 @@ class NetworkResponseHandler {
     /// Date of the last generic identity reset request event, for more info see `shouldIgnoreStorePayload`
     private var lastResetDate = Atomic<Date>(Date(timeIntervalSince1970: 0))
 
-    init() {
+    init(updateLocationHint: @escaping (String?, TimeInterval?) -> Void) {
+        self.updateLocationHint = updateLocationHint
         lastResetDate = Atomic<Date>(loadResetDateFromPersistence() ?? Date(timeIntervalSince1970: 0))
     }
 
@@ -152,8 +154,13 @@ class NetworkResponseHandler {
             if ignoreStorePayloads {
                 Log.debug(label: LOG_TAG, "Identities were reset recently, ignoring state:store payload for request with id: \(requestId)")
             } else {
-                handleStoreEventHandle(handle: eventHandle)
-                handleLocationHintHandle(handle: eventHandle)
+                if let type = eventHandle.type {
+                    if EdgeConstants.JsonKeys.Response.EVENT_HANDLE_TYPE_STORE == type.lowercased() {
+                        handleStoreEventHandle(handle: eventHandle)
+                    } else if EdgeConstants.JsonKeys.Response.EVENT_HANDLE_TYPE_LOCATION_HINT == type {
+                        handleLocationHintHandle(handle: eventHandle)
+                    }
+                }
             }
 
             guard let eventHandleAsDictionary = eventHandle.asDictionary() else { continue }
@@ -329,7 +336,7 @@ class NetworkResponseHandler {
                 guard let hint = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.HINT] as? String, !hint.isEmpty else { continue }
                 guard let ttlSeconds = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.TTL_SECONDS] as? Int else { continue }
 
-                persistLocationHint(hint: hint, ttlSeconds: TimeInterval(ttlSeconds))
+                updateLocationHint(hint, TimeInterval(ttlSeconds))
             }
         }
     }
@@ -367,15 +374,5 @@ class NetworkResponseHandler {
     private func loadResetDateFromPersistence() -> Date? {
         guard let storedResetDate = dataStore.getDouble(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE) else { return nil }
         return Date(timeIntervalSince1970: storedResetDate)
-    }
-
-    /// Persist the location hint and ttl from the Edge Network location hint response handler.
-    /// - Parameters:
-    ///   - hint: the location hint region ID
-    ///   - ttlSeconds: the location hint time-to-live
-    private func persistLocationHint(hint: String, ttlSeconds: TimeInterval) {
-        let expiryDate = Date() + ttlSeconds
-        dataStore.set(key: EdgeConstants.DataStoreKeys.LOCATION_HINT, value: hint)
-        dataStore.setObject(key: EdgeConstants.DataStoreKeys.LOCATION_HINT_EXPIRY_DATE, value: expiryDate)
     }
 }
