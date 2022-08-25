@@ -92,18 +92,32 @@ class EdgeState {
         }
     }
 
-    /// Update the Edge Network location hint and persist the new hint to the data store.
+    /// Update the Edge Network location hint and persist the new hint to the data store. If the new location hint is different from the previous, then a shared state
+    /// is also created with the new location hint value.
     /// - Parameters:
     ///   - hint: the Edge Network location hint to set
     ///   - ttlSeconds: the time-to-live in seconds for the given location hint
-    func setLocationHint(hint: String, ttlSeconds: TimeInterval) {
-        let newExpiryDate = Date() + ttlSeconds
+    func setLocationHint(hint: String, ttlSeconds: TimeInterval, createSharedState: @escaping (_ data: [String: Any], _ event: Event?) -> Void) {
         queue.async {
+            let needsStateUpdate = self.locationHint != hint
+            let newExpiryDate = Date() + ttlSeconds
+
             self.locationHint = hint
             self.locationHintExpiryDate = newExpiryDate
-        }
 
-        persistLocationHint(hint: hint, expiryDate: newExpiryDate)
+            self.persistLocationHint(hint: hint, expiryDate: newExpiryDate)
+
+            if needsStateUpdate {
+                // Create shared state if location hint changed
+                // Important - Using nil Event here which creates a shared state at the next available Event number.
+                //             An extension should NOT mix creating shared states using nil and using received events
+                //             as it can cause shared state generation to fail due to received events having potentially
+                //             lower event numbers than states using nil. If this extension later needs to create shared
+                //             states from received events, then this code must be refactored to also use received
+                //             events as the state version.
+                createSharedState([EdgeConstants.SharedState.Edge.LOCATION_HINT: hint], nil)
+            }
+        }
     }
 
     /// Store a location hint to local persistent storage.

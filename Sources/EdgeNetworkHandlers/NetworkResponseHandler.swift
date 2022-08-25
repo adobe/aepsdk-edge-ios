@@ -337,6 +337,7 @@ class NetworkResponseHandler {
                 guard let ttlSeconds = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.TTL_SECONDS] as? Int else { continue }
 
                 updateLocationHint(hint, TimeInterval(ttlSeconds))
+                break
             }
         }
     }

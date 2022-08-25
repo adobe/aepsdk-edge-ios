@@ -55,6 +55,10 @@ enum EdgeConstants {
     enum SharedState {
         static let STATE_OWNER = "stateowner"
 
+        enum Edge {
+            static let LOCATION_HINT = "locationHint"
+        }
+
         enum Configuration {
             static let STATE_OWNER_NAME = "com.adobe.module.configuration"
             static let CONFIG_ID = "edge.configId"
