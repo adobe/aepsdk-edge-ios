@@ -241,6 +241,7 @@ public class Edge: NSObject, Extension {
 
     /// Set the location hint for the Edge Network. The new location hint and expiry date (calculated from the ttlSeconds) are updated in memory and in
     /// persistent storage. If the new location hint is different from the previous, then a shared state is also created with the new hint.
+    /// A nil `hint` value will clear the location hint in memory, persistent storage, and create a new shared state if a previous location hint was set.
     /// - Parameters:
     ///   - hint: the new EdgeNetwork location hint to set
     ///   - ttlSeconds: the time-to-live for the location hint
@@ -248,6 +249,8 @@ public class Edge: NSObject, Extension {
         guard let state = state else { return }
         if let hint = hint, let ttlSeconds = ttlSeconds {
             state.setLocationHint(hint: hint, ttlSeconds: ttlSeconds, createSharedState: createSharedState(data:event:))
+        } else if hint == nil {
+            state.clearLocationHint(createSharedState: createSharedState(data:event:))
         }
     }
 

@@ -97,6 +97,7 @@ class EdgeState {
     /// - Parameters:
     ///   - hint: the Edge Network location hint to set
     ///   - ttlSeconds: the time-to-live in seconds for the given location hint
+    ///   - createSharedState: function which creates a shared state with the Event Hub
     func setLocationHint(hint: String, ttlSeconds: TimeInterval, createSharedState: @escaping (_ data: [String: Any], _ event: Event?) -> Void) {
         queue.async {
             let needsStateUpdate = self.locationHint != hint
@@ -120,14 +121,36 @@ class EdgeState {
         }
     }
 
-    /// Store a location hint to local persistent storage.
+    /// Clears the Edge Network location hint from memory and persistent storage. If the previous location hint was set, then shared state is also created
+    /// which clears the location hint value.
+    /// - Parameter createSharedState: function which creates a shared state with the Event Hub
+    func clearLocationHint(createSharedState: @escaping (_ data: [String: Any], _ event: Event?) -> Void) {
+        queue.async {
+            if self.locationHint != nil {
+                // Create empty shared state to "clear" location hint
+                createSharedState([:], nil)
+            }
+
+            self.locationHint = nil
+            self.locationHintExpiryDate = nil
+            self.persistLocationHint(hint: nil, expiryDate: nil)
+        }
+    }
+
+    /// Store a location hint to local persistent storage. Passing a nil `hint` will remove the location hint from persistent storage.
+    /// Passing a nil `expiryDate` while passing a non-nil `hint` will result in no changes to persistent storage (a no-op).
     /// Note, operation is not atomic and is not thread-safe. It is expected that no other thread is accessing the location hint and expiry date when this function is called.
     /// - Parameters:
-    ///   - hint: the Edge Network location hint to persist
-    ///   - expiryDate: the expiry `Date` for the location hint to persist
-    private func persistLocationHint(hint: String, expiryDate: Date) {
-        self.dataStore.setObject(key: EdgeConstants.DataStoreKeys.LOCATION_HINT_EXPIRY_DATE, value: expiryDate)
-        self.dataStore.set(key: EdgeConstants.DataStoreKeys.LOCATION_HINT, value: hint)
+    ///   - hint: the Edge Network location hint to persist. A value of nil will remove the location hint from persistence.
+    ///   - expiryDate: the expiry `Date` for the location hint to persist.
+    private func persistLocationHint(hint: String?, expiryDate: Date?) {
+        if let hint = hint, let expiryDate = expiryDate {
+            self.dataStore.setObject(key: EdgeConstants.DataStoreKeys.LOCATION_HINT_EXPIRY_DATE, value: expiryDate)
+            self.dataStore.set(key: EdgeConstants.DataStoreKeys.LOCATION_HINT, value: hint)
+        } else if hint == nil {
+            self.dataStore.remove(key: EdgeConstants.DataStoreKeys.LOCATION_HINT_EXPIRY_DATE)
+            self.dataStore.remove(key: EdgeConstants.DataStoreKeys.LOCATION_HINT)
+        }
     }
 
     /// Load the Edge Network location hint from persistence and assign to local instance variables.
