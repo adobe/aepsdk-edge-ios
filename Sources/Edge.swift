@@ -35,7 +35,7 @@ public class Edge: NSObject, Extension {
         // set default on init for register/unregister use-case
         networkResponseHandler = NetworkResponseHandler(updateLocationHint: setLocationHint)
         if let hitQueue = setupHitQueue() {
-            state = EdgeState(hitQueue: hitQueue)
+            state = EdgeState(hitQueue: hitQueue, edgeProperties: EdgeProperties())
         }
     }
 
@@ -195,7 +195,9 @@ public class Edge: NSObject, Extension {
     /// - Returns: true if events can be processed at the moment, false otherwise
     private func canProcessEvents(event: Event) -> Bool {
         guard let state = state else { return false }
-        state.bootupIfNeeded(event: event, getSharedState: getSharedState(extensionName:event:barrier:))
+        state.bootupIfNeeded(event: event,
+                             getSharedState: getSharedState(extensionName:event:barrier:),
+                             createSharedState: createSharedState(data:event:))
         return true
     }
 

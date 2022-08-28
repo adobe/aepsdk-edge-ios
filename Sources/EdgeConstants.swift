@@ -48,8 +48,7 @@ enum EdgeConstants {
         static let STORE_NAME = "AEPEdge"
         static let STORE_PAYLOADS = "storePayloads"
         static let RESET_IDENTITIES_DATE = "reset.identities.date"
-        static let LOCATION_HINT = "edgeNetworkLocationHint"
-        static let LOCATION_HINT_EXPIRY_DATE = "edgeNetworkLocationHintExpiryDate"
+        static let EDGE_PROPERTIES = "edge.properties"
     }
 
     enum SharedState {
