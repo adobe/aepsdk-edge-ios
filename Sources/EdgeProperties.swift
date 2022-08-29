@@ -36,7 +36,10 @@ struct EdgeProperties: Codable {
     ///   - ttlSeconds: the time-to-live in seconds for the given location hint
     ///   - Returns: true if the location hint value changed
     mutating func setLocationHint(hint: String, ttlSeconds: TimeInterval) -> Bool {
-        let hasHintChanged = locationHint != hint // Note using "locationHint" not "_locationHint" so expiry date is checked
+        // Determine if hint changed. Use "locationHint" here so expiry date is checked
+        // As this check can determine if a shared state is created, need to check expiry date to determine if hint
+        // changed in cases where state is not shared if hint expired, such as boot up case
+        let hasHintChanged = locationHint != hint
         let newExpiryDate = Date() + ttlSeconds
 
         _locationHint = hint
@@ -48,7 +51,10 @@ struct EdgeProperties: Codable {
     /// Clears the Edge Network location hint from memory and persistent storage. If the previous location hint was set, then returns true.
     /// - Returns: true if a non-nil location hint value was cleared
     mutating func clearLocationHint() -> Bool {
-        let hasHintChanged = locationHint != nil // Note using "locationHint" not "_locationHint" so expiry date is checked
+        // Determine if hint changed. Use "_locationHint" here so expiry date is not checked.
+        // As this check can determine if a shared state is created, need to check hint regardless of expiry date
+        // to create shared state with cleared hint as the shared state doesn't include the ttl or expiry date.
+        let hasHintChanged = _locationHint != nil
         _locationHint = nil
         locationHintExpiryDate = nil
 
