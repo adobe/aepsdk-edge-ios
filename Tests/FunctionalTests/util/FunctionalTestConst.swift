@@ -64,4 +64,6 @@ enum FunctionalTestConst {
     static let EX_EDGE_CONSENT_PROD_URL_STR = "https://edge.adobedc.net/ee/v1/privacy/set-consent"
     static let EX_EDGE_CONSENT_PRE_PROD_URL_STR = "https://edge.adobedc.net/ee-pre-prd/v1/privacy/set-consent"
     static let EX_EDGE_CONSENT_INTEGRATION_URL_STR = "https://edge-int.adobedc.net/ee/v1/privacy/set-consent"
+
+    static let EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOCATION = "https://edge.adobedc.net/ee/or2/v1/interact"
 }
