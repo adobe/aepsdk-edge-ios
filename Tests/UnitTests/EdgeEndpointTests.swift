@@ -81,7 +81,7 @@ class EdgeEndpointTests: XCTestCase {
                      (.integration, "", "https://edge-int.adobedc.net/ee/v1/interact", "DefaultIntegrationEndpointWithRegionIdWithEmptyRegionId")]
 
         cases.forEach {
-            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.interact, environmentType: $0, optionalDomain: nil, regionId: $1)
+            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.interact, environmentType: $0, optionalDomain: nil, locationHint: $1)
             XCTAssertEqual($2, endpoint.url?.absoluteString, "\($3) test case failed.")
         }
     }
@@ -112,7 +112,7 @@ class EdgeEndpointTests: XCTestCase {
                      (.integration, domain1, "", "https://edge-int.adobedc.net/ee/v1/interact", "CustomIntegrationEndpointWithEmptyRegionId")]
 
         cases.forEach {
-            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.interact, environmentType: $0, optionalDomain: $1, regionId: $2)
+            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.interact, environmentType: $0, optionalDomain: $1, locationHint: $2)
             XCTAssertEqual($3, endpoint.url?.absoluteString, "\($4) test case failed.")
         }
     }
@@ -139,7 +139,7 @@ class EdgeEndpointTests: XCTestCase {
                      (.integration, "", "https://edge-int.adobedc.net/ee/v1/privacy/set-consent", "DefaultIntegrationEndpointWithEmptyRegionId")]
 
         cases.forEach {
-            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.consent, environmentType: $0, optionalDomain: nil, regionId: $1)
+            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.consent, environmentType: $0, optionalDomain: nil, locationHint: $1)
             XCTAssertEqual($2, endpoint.url?.absoluteString, "\($3) test case failed.")
         }
     }
@@ -170,7 +170,7 @@ class EdgeEndpointTests: XCTestCase {
                      (.integration, domain1, "", "https://edge-int.adobedc.net/ee/v1/privacy/set-consent", "CustomIntegrationEndpointWithEmptyRegionId")]
 
         cases.forEach {
-            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.consent, environmentType: $0, optionalDomain: $1, regionId: $2)
+            let endpoint = EdgeEndpoint(requestType: EdgeRequestType.consent, environmentType: $0, optionalDomain: $1, locationHint: $2)
             XCTAssertEqual($3, endpoint.url?.absoluteString, "\($4) test case failed.")
         }
     }

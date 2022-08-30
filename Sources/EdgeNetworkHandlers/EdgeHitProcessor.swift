@@ -25,8 +25,6 @@ class EdgeHitProcessor: HitProcessing {
     private var getImplementationDetails: () -> [String: Any]?
     private var getLocationHint: () -> String?
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
-    // Note, use same Data Store collection used to store Edge Network Region ID
-    private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
@@ -149,7 +147,7 @@ class EdgeHitProcessor: HitProcessing {
             requestType: requestType,
             environmentType: EdgeEnvironmentType(optionalRawValue: config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT]),
             optionalDomain: config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN],
-            regionId: locationHint)
+            locationHint: locationHint)
     }
 
     private func decode(dataEntity: DataEntity) -> EdgeDataEntity? {
