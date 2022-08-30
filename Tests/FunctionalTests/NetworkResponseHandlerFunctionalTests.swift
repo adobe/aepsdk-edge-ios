@@ -15,6 +15,7 @@ import AEPCore
 @testable import AEPServices
 import XCTest
 
+// swiftlint:disable type_body_length
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)

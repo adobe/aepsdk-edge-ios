@@ -27,16 +27,16 @@ class EdgeHitProcessorTests: XCTestCase {
     // Edge Endpoints
     private let CONSENT_ENDPOINT = "https://edge.adobedc.net/ee/v1/privacy/set-consent"
     private let CONSENT_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/v1/privacy/set-consent"
-    private let CONSENT_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/v1/privacy/set-consent"
+    private let CONSENT_ENDPOINT_INT = "https://edge-int.adobedc.net/ee/v1/privacy/set-consent"
     private let INTERACT_ENDPOINT_PROD = "https://edge.adobedc.net/ee/v1/interact"
     private let INTERACT_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/v1/interact"
-    private let INTERACT_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/v1/interact"
+    private let INTERACT_ENDPOINT_INT = "https://edge-int.adobedc.net/ee/v1/interact"
     private let CONSENT_ENDPOINT_LOCATION_HINT = "https://edge.adobedc.net/ee/lh1/v1/privacy/set-consent"
     private let CONSENT_ENDPOINT_PRE_PROD_LOCATION_HINT = "https://edge.adobedc.net/ee-pre-prd/lh1/v1/privacy/set-consent"
-    private let CONSENT_ENDPOINT_INTEGRATION_LOCATION_HINT = "https://edge-int.adobedc.net/ee/lh1/v1/privacy/set-consent"
+    private let CONSENT_ENDPOINT_INT_LOCATION_HINT = "https://edge-int.adobedc.net/ee/lh1/v1/privacy/set-consent"
     private let INTERACT_ENDPOINT_PROD_LOCATION_HINT = "https://edge.adobedc.net/ee/lh1/v1/interact"
     private let INTERACT_ENDPOINT_PRE_PROD_LOCATION_HINT = "https://edge.adobedc.net/ee-pre-prd/lh1/v1/interact"
-    private let INTERACT_ENDPOINT_INTEGRATION_LOCATION_HINT = "https://edge-int.adobedc.net/ee/lh1/v1/interact"
+    private let INTERACT_ENDPOINT_INT_LOCATION_HINT = "https://edge-int.adobedc.net/ee/lh1/v1/interact"
     private static let CUSTOM_DOMAIN = "my.awesome.site"
     private static let CUSTOM_CONSENT_ENDPOINT = "https://\(CUSTOM_DOMAIN)/ee/v1/privacy/set-consent"
     private static let CUSTOM_CONSENT_ENDPOINT_PRE_PROD = "https://\(CUSTOM_DOMAIN)/ee-pre-prd/v1/privacy/set-consent"
@@ -301,7 +301,7 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     func testProcessHit_consentUpdateEvent_whenConfigEndpointIntegration_hasCorrectEndpoint() {
-        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "int", domain: nil, expectedEndpoint: CONSENT_ENDPOINT_INTEGRATION)
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "int", domain: nil, expectedEndpoint: CONSENT_ENDPOINT_INT)
     }
 
     func testProcessHit_consentUpdateEvent_whenConfigEndpointProductionWithLocationHint_hasCorrectEndpoint() {
@@ -313,7 +313,7 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     func testProcessHit_consentUpdateEvent_whenConfigEndpointIntegrationWithLocationHint_hasCorrectEndpoint() {
-        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "int", domain: nil, expectedEndpoint: CONSENT_ENDPOINT_INTEGRATION_LOCATION_HINT, getLocationHint: locationHintClosure)
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "int", domain: nil, expectedEndpoint: CONSENT_ENDPOINT_INT_LOCATION_HINT, getLocationHint: locationHintClosure)
     }
 
     func testProcessHit_consentUpdateEvent_whenConfigEndpointProductionAndCustomDomain_hasCorrectEndpoint() {
@@ -326,7 +326,7 @@ class EdgeHitProcessorTests: XCTestCase {
 
     func testProcessHit_consentUpdateEvent_whenConfigEndpointIntegrationAndCustomDomain_hasCorrectEndpoint() {
         // Note, custom domains are not supported with the integration endpoint
-        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "int", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: CONSENT_ENDPOINT_INTEGRATION)
+        assertNetworkRequestUrl(event: consentUpdateEvent, environment: "int", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: CONSENT_ENDPOINT_INT)
     }
 
     func testProcessHit_experienceEvent_whenConfigEndpointProduction_hasCorrectEndpoint() {
@@ -338,7 +338,7 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     func testProcessHit_experienceEvent_whenConfigEndpointIntegration_hasCorrectEndpoint() {
-        assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: nil, expectedEndpoint: INTERACT_ENDPOINT_INTEGRATION)
+        assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: nil, expectedEndpoint: INTERACT_ENDPOINT_INT)
     }
 
     func testProcessHit_experienceEvent_whenConfigEndpointProductionWithLocationHint_hasCorrectEndpoint() {
@@ -350,7 +350,7 @@ class EdgeHitProcessorTests: XCTestCase {
     }
 
     func testProcessHit_experienceEvent_whenConfigEndpointIntegrationWithLocationHint_hasCorrectEndpoint() {
-        assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: nil, expectedEndpoint: INTERACT_ENDPOINT_INTEGRATION_LOCATION_HINT, getLocationHint: locationHintClosure)
+        assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: nil, expectedEndpoint: INTERACT_ENDPOINT_INT_LOCATION_HINT, getLocationHint: locationHintClosure)
     }
 
     func testProcessHit_experienceEvent_whenConfigEndpointProductionAndCustomDomain_hasCorrectEndpoint() {
@@ -363,7 +363,7 @@ class EdgeHitProcessorTests: XCTestCase {
 
     func testProcessHit_experienceEvent_whenConfigEndpointIntegrationAndCustomDomain_hasCorrectEndpoint() {
         // Note, custom domains are not supported with the integration endpoint
-        assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: INTERACT_ENDPOINT_INTEGRATION)
+        assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: EdgeHitProcessorTests.CUSTOM_DOMAIN, expectedEndpoint: INTERACT_ENDPOINT_INT)
     }
 
     func testProcessHit_experienceEvent_nilData_doesNotSendNetworkRequest_returnsTrue() {

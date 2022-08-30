@@ -22,12 +22,10 @@ struct EdgeProperties: Codable {
 
     /// Retrieves the Edge Network location hint. Returns nil if location hit expired or is not set.
     var locationHint: String? {
-        get {
-            if let expiryDate = self.locationHintExpiryDate, expiryDate > Date() {
-                return self._locationHint
-            }
-            return nil
+        if let expiryDate = self.locationHintExpiryDate, expiryDate > Date() {
+            return self._locationHint
         }
+        return nil
     }
 
     /// Update the Edge Network location hint and persist the new hint to the data store. If the new location hint is different from the previous, then returns true.

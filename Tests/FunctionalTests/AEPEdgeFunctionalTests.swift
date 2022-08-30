@@ -17,6 +17,8 @@ import AEPServices
 import Foundation
 import XCTest
 
+// swiftlint:disable type_body_length
+
 /// End-to-end testing for the AEPEdge public APIs
 class AEPEdgeFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
@@ -1064,7 +1066,6 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_edgeNetworkResponseContainsLocationHint_nextSendEventIncludesLocationHint() {
-        // swiftlint:disable:next line_length
         let hintResponseBody = "\u{0000}{\"requestId\": \"0000-4a4e-1111-bf5c-abcd\",\"handle\": [{\"payload\": [{\"scope\": \"EdgeNetwork\",\"hint\": \"or2\",\"ttlSeconds\": 1800}],\"type\": \"locationHint:result\"}]}\n"
         let responseConnection: HttpConnection = HttpConnection(data: hintResponseBody.data(using: .utf8),
                                                                 response: HTTPURLResponse(url: exEdgeInteractProdUrl,
@@ -1074,7 +1075,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
                                                                 error: nil)
         setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
-        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOCATION, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
 
         // Send two requests
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"])
@@ -1087,13 +1088,12 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(1, resultNetworkRequests.count)
         XCTAssertTrue(resultNetworkRequests[0].url.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
 
-        resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOCATION, httpMethod: HttpMethod.post)
+        resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        XCTAssertTrue(resultNetworkRequests[0].url.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOCATION))
+        XCTAssertTrue(resultNetworkRequests[0].url.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC))
     }
 
     func testSendEvent_edgeNetworkResponseContainsLocationHint_sendEventDoesNotIncludeExpiredLocationHint() {
-        // swiftlint:disable:next line_length
         let hintResponseBody = "\u{0000}{\"requestId\": \"0000-4a4e-1111-bf5c-abcd\",\"handle\": [{\"payload\": [{\"scope\": \"EdgeNetwork\",\"hint\": \"or2\",\"ttlSeconds\": 1}],\"type\": \"locationHint:result\"}]}\n"
         let responseConnection: HttpConnection = HttpConnection(data: hintResponseBody.data(using: .utf8),
                                                                 response: HTTPURLResponse(url: exEdgeInteractProdUrl,
@@ -1112,7 +1112,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         // verify
         assertNetworkRequestsCount()
-        var resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(2, resultNetworkRequests.count)
         XCTAssertTrue(resultNetworkRequests[0].url.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
         XCTAssertTrue(resultNetworkRequests[1].url.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
