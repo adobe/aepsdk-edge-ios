@@ -75,7 +75,10 @@ class EdgeState {
         }
         // else keep consent pending until the consent preferences update event is received
 
-        // TODO - Always set state or only when properties are not empty ???
+        // Important - Using nil Event here which creates a shared state at the next available Event number.
+        //             An extension should NOT mix creating shared states using nil and using received events
+        //             as it can cause shared state generation to fail due to received events having potentially
+        //             lower event numbers than states using nil.
         createSharedState(edgeProperties.toEventData(), nil)
 
         hasBooted = true
