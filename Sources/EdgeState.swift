@@ -111,7 +111,6 @@ class EdgeState {
     func setLocationHint(hint: String, ttlSeconds: TimeInterval, createSharedState: @escaping (_ data: [String: Any], _ event: Event?) -> Void) {
         queue.async {
             let needsStateUpdate = self.edgeProperties.setLocationHint(hint: hint, ttlSeconds: ttlSeconds)
-            self.edgeProperties.saveToPersistence()
 
             if needsStateUpdate {
                 // Create shared state if location hint changed
@@ -132,7 +131,6 @@ class EdgeState {
     func clearLocationHint(createSharedState: @escaping (_ data: [String: Any], _ event: Event?) -> Void) {
         queue.async {
             let needsStateUpdate = self.edgeProperties.clearLocationHint()
-            self.edgeProperties.saveToPersistence()
 
             if needsStateUpdate {
                 // Create shared state if location hint changed

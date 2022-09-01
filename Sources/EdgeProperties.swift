@@ -43,6 +43,8 @@ struct EdgeProperties: Codable {
         _locationHint = hint
         locationHintExpiryDate = newExpiryDate
 
+        saveToPersistence()
+
         return hasHintChanged
     }
 
@@ -55,6 +57,8 @@ struct EdgeProperties: Codable {
         let hasHintChanged = _locationHint != nil
         _locationHint = nil
         locationHintExpiryDate = nil
+
+        saveToPersistence()
 
         return hasHintChanged
     }
