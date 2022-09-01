@@ -121,8 +121,10 @@ enum EdgeConstants {
         }
 
         enum Response {
-            static let EVENT_HANDLE_TYPE_STORE = "state:store"
-            static let EVENT_HANDLE_TYPE_LOCATION_HINT = "locationHint:result"
+            enum EventHandleType {
+                static let STORE = "state:store"
+                static let LOCATION_HINT = "locationHint:result"
+            }
 
             enum Error {
                 static let MESSAGE = "message"
