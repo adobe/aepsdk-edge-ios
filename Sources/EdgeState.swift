@@ -19,9 +19,13 @@ class EdgeState {
     private let SELF_TAG = "EdgeState"
     private let queue: DispatchQueue
     private var _implementationDetails: [String: Any]?
+    private var _consentStatus: ConsentStatus
     private(set) var hitQueue: HitQueuing
     private(set) var hasBooted = false
-    private(set) var currentCollectConsent: ConsentStatus
+
+    var currentCollectConsent: ConsentStatus {
+        return queue.sync { self._consentStatus }
+    }
     private(set) var implementationDetails: [String: Any]? {
         get { queue.sync { self._implementationDetails } }
         set { queue.async { self._implementationDetails = newValue } }
@@ -38,7 +42,7 @@ class EdgeState {
         self.edgeProperties = edgeProperties
         self.queue = DispatchQueue(label: "com.adobe.edgestate.queue")
         self.hitQueue = hitQueue
-        self.currentCollectConsent = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
+        self._consentStatus = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
         hitQueue.handleCollectConsentChange(status: currentCollectConsent)
     }
 
@@ -90,8 +94,8 @@ class EdgeState {
     /// - Parameters:
     ///   - status: The new collect consent status
     func updateCurrentConsent(status: ConsentStatus) {
-        currentCollectConsent = status
-        hitQueue.handleCollectConsentChange(status: status)
+        queue.async { self._consentStatus = status }
+        self.hitQueue.handleCollectConsentChange(status: status)
     }
 
     /// Get the current Edge Network location hint. May return `nil` if the hint has expired or is not set.
