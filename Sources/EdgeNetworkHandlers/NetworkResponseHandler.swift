@@ -333,10 +333,11 @@ class NetworkResponseHandler {
 
         for locationHint in payload {
             if let scope = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.SCOPE] as? String, scope == "EdgeNetwork" {
-                guard let hint = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.HINT] as? String, !hint.isEmpty else { continue }
-                guard let ttlSeconds = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.TTL_SECONDS] as? Int else { continue }
+                if let hint = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.HINT] as? String, !hint.isEmpty,
+                   let ttlSeconds = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.TTL_SECONDS] as? Int {
+                    updateLocationHint(hint, TimeInterval(ttlSeconds))
+                }
 
-                updateLocationHint(hint, TimeInterval(ttlSeconds))
                 break
             }
         }
