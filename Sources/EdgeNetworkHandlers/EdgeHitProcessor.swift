@@ -184,7 +184,7 @@ class EdgeHitProcessor: HitProcessing {
         }
     }
 
-    /// Extracts all the Edge configuration keys needed for this request. Configuration keys are extracted from the Configuration shared state and the given `event` instance.
+    /// Extracts all the Edge configuration keys from the Configuration shared state
     /// - Parameter event: current event for which the configuration is required
     /// - Returns: the Edge configuration keys with values, nil if edge.configId was not found
     private func getEdgeConfig(event: Event) -> [String: String]? {
