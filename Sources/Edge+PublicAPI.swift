@@ -38,4 +38,35 @@ public extension Edge {
         CompletionHandlersManager.shared.registerCompletionHandler(forRequestEventId: event.id.uuidString, completion: completion)
         MobileCore.dispatch(event: event)
     }
+
+    @objc(getLocationHint:)
+    static func getLocationHint(_ completion: @escaping (String?, Error?) -> Void) {
+        let event = Event(name: "Edge Request Location Hint",
+                          type: EventType.edge,
+                          source: "com.adobe.eventSource.requestProperty",
+                          data: nil)
+        MobileCore.dispatch(event: event) { responseEvent in
+            guard let responseEvent = responseEvent else {
+                completion(nil, AEPError.callbackTimeout)
+                return
+            }
+
+            guard let data = responseEvent.data, let hint = data[EdgeConstants.EventDataKeys.LOCATION_HINT] as? String else {
+                completion(nil, AEPError.unexpected)
+                return
+            }
+
+            completion(hint, nil)
+        }
+    }
+
+    @objc(setLocationHint:)
+    static func setLocationHint(_ hint: String?) {
+        let event = Event(name: "Edge Update Location Hint",
+                          type: EventType.edge,
+                          source: "com.adobe.eventSource.updateProperty",
+                          data: [EdgeConstants.EventDataKeys.LOCATION_HINT: hint as Any])
+
+        MobileCore.dispatch(event: event)
+    }
 }

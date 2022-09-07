@@ -43,6 +43,12 @@ public class Edge: NSObject, Extension {
         registerListener(type: EventType.edge,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
+        registerListener(type: EventType.edge,
+                         source: "com.adobe.eventSource.requestProperty",
+                         listener: handleRequestLocationHint)
+        registerListener(type: EventType.edge,
+                         source: "com.adobe.eventSource.updateProperty",
+                         listener: handleUpdateLocationHint)
         registerListener(type: EventType.edgeConsent,
                          source: EventSource.responseContent,
                          listener: handleConsentPreferencesUpdate)
@@ -173,6 +179,28 @@ public class Edge: NSObject, Extension {
 
         let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
         state?.hitQueue.queue(entity: entity)
+    }
+
+    func handleRequestLocationHint(_ event: Event) {
+        let responseEvent = event.createResponseEvent(name: "Edge Location Hint Response",
+                                                      type: EventType.edge,
+                                                      source: EventSource.responseContent,
+                                                      data: [EdgeConstants.EventDataKeys.LOCATION_HINT: getLocationHint() ?? ""]) // if no hint return empty string
+        dispatch(event: responseEvent)
+    }
+
+    func handleUpdateLocationHint(_ event: Event) {
+        guard let data = event.data, !data.isEmpty else {
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Location Hint update request event \(event.id.uuidString) contained no data, ignoring.")
+            return
+        }
+
+        guard let hint = data[EdgeConstants.EventDataKeys.LOCATION_HINT] as? String else {
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Location Hint update request event \(event.id.uuidString) does not contain 'locationHint' string, ignoring.")
+            return
+        }
+
+        setLocationHint(hint: hint, ttlSeconds: EdgeConstants.Defaults.LOCATION_HINT_TTL_SEC)
     }
 
     /// Determines if the event should be ignored by the Edge extension. This method should be called after
