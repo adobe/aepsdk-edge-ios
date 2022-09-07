@@ -30,21 +30,35 @@ struct ContentView: View {
                 }
                 VStack {
                     Text("Edge").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
-                    Button("Send Event", action: {
-                        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                                              data: ["data": ["test": "data"]])
-                        Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
-                            let encoder = JSONEncoder()
-                            encoder.outputFormatting = .prettyPrinted
-                            guard let data = try? encoder.encode(handles) else {
-                                self.dataContent = "failed to encode EdgeEventHandle"
-                                return
-                            }
-                            self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
-                        })
-                    })
-                    .frame(maxWidth: .infinity)
-                    .padding()
+                    VStack {
+                        Button("Send Event", action: {
+                            let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                                                  data: ["data": ["test": "data"]])
+                            Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
+                                let encoder = JSONEncoder()
+                                encoder.outputFormatting = .prettyPrinted
+                                guard let data = try? encoder.encode(handles) else {
+                                    self.dataContent = "failed to encode EdgeEventHandle"
+                                    return
+                                }
+                                self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+                            })
+                        }).padding()
+                        HStack {
+                            Button("Get Location Hint", action: {
+                                Edge.getLocationHint({ hint, error in
+                                    if error != nil {
+                                        dataContent = "Received error '\((error as? AEPError)?.localizedDescription ?? "nil")"
+                                    } else {
+                                        dataContent = "Location hint: '\(hint ?? "nil")'"
+                                    }
+                                })
+                            }).padding()
+                            Button("Set Location Hint", action: {
+                                Edge.setLocationHint("va6")
+                            }).padding()
+                        }
+                    }
                 }.background(Color("InputColor1"))
                 VStack {
                     Text("Collect Consent").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
