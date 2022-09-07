@@ -42,6 +42,9 @@ class EdgeHitProcessorTests: XCTestCase {
     private let MEDIA_ENDPOINT = "https://edge.adobedc.net/ee/va/v1/sessionstart"
     private let MEDIA_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/va/v1/sessionstart"
     private let MEDIA_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/va/v1/sessionstart"
+    private let MEDIA_ENDPOINT_LOC_HINT = "https://edge.adobedc.net/ee/lh1/va/v1/sessionstart"
+    private let MEDIA_ENDPOINT_PRE_PROD_LOC_HINT = "https://edge.adobedc.net/ee-pre-prd/lh1/va/v1/sessionstart"
+    private let MEDIA_ENDPOINT_INT_LOC_HINT = "https://edge-int.adobedc.net/ee/lh1/va/v1/sessionstart"
     
     private static let CUSTOM_DOMAIN = "my.awesome.site"
     private static let CUSTOM_CONSENT_ENDPOINT = "https://\(CUSTOM_DOMAIN)/ee/v1/privacy/set-consent"
@@ -423,6 +426,18 @@ class EdgeHitProcessorTests: XCTestCase {
 
     func testProcessHit_experienceEvent_whenConfigEndpointIntegrationWithLocationHint_hasCorrectEndpoint() {
         assertNetworkRequestUrl(event: experienceEvent, environment: "int", domain: nil, expectedEndpoint: INTERACT_ENDPOINT_INT_LOCATION_HINT, getLocationHint: locationHintClosure)
+    }
+    
+    func testProcessHit_experienceEvent_withOverwritePath_whenConfigEndpointProductionWithLocationHint_hasCorrectEndpoint() {
+        assertNetworkRequestUrl(event: experienceEventWithOverwritePath, environment: "prod", domain: nil, expectedEndpoint: MEDIA_ENDPOINT_LOC_HINT, getLocationHint: locationHintClosure)
+    }
+
+    func testProcessHit_experienceEvent_withOverwritePath_whenConfigEndpointPreProductionWithLocationHint_hasCorrectEndpoint() {
+        assertNetworkRequestUrl(event: experienceEventWithOverwritePath, environment: "pre-prod", domain: nil, expectedEndpoint: MEDIA_ENDPOINT_PRE_PROD_LOC_HINT, getLocationHint: locationHintClosure)
+    }
+
+    func testProcessHit_experienceEvent_withOverwritePath_whenConfigEndpointIntegrationWithLocationHint_hasCorrectEndpoint() {
+        assertNetworkRequestUrl(event: experienceEventWithOverwritePath, environment: "int", domain: nil, expectedEndpoint: MEDIA_ENDPOINT_INT_LOC_HINT, getLocationHint: locationHintClosure)
     }
 
     func testProcessHit_experienceEvent_whenConfigEndpointProductionAndCustomDomain_hasCorrectEndpoint() {
