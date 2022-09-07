@@ -47,12 +47,12 @@ $ pod install
 
 ### [Swift Package Manager](https://github.com/apple/swift-package-manager)
 
-To add the AEPEdge Package to your application, from the Xcode 13.x menu select:
+To add the AEPEdge Package to your application, from the Xcode menu select:
 
 `File > Add Packages...`
 
 > **Note :** 
->  the menu options may vary depending on the version of Xcode being used.
+>  The menu options may vary depending on the version of Xcode being used.
 
 Enter the URL for the AEPEdge package repository: `https://github.com/adobe/aepsdk-edge-ios.git`.
 
