@@ -46,8 +46,7 @@ struct EdgeEndpoint {
          environmentType: EdgeEnvironmentType,
          optionalDomain: String? = nil,
          optionalPath: String? = nil,
-         locationHint: String? = nil)
-    {
+         locationHint: String? = nil) {
         let domain: String
         if let unwrappedDomain = optionalDomain, !unwrappedDomain.isEmpty {
             domain = unwrappedDomain
