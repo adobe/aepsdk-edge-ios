@@ -138,6 +138,12 @@ class RequestBuilder {
                 eventData.removeValue(forKey: EdgeConstants.EventDataKeys.DATASET_ID)
             }
 
+            if eventData[EdgeConstants.EventDataKeys.Request.KEY] is [String: Any] {
+                // Remove this request object as it is internal to the SDK
+                // request object contains custom values to overwrite different request properties like path
+                eventData.removeValue(forKey: EdgeConstants.EventDataKeys.Request.KEY)
+            }
+
             guard let wrappedEventData = AnyCodable.from(dictionary: eventData) else {
                 Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to add ExperienceEvent data, unable to convert to [String:AnyCodable]")
                 continue

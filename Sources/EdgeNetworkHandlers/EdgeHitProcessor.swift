@@ -25,6 +25,7 @@ class EdgeHitProcessor: HitProcessing {
     private var getImplementationDetails: () -> [String: Any]?
     private var getLocationHint: () -> String?
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
+    private let VALID_PATH_REGEX_PATTERN = "^\\/[/.a-zA-Z0-9-~_]+$"
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
@@ -103,7 +104,11 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact, locationHint: locationHint)
+            let requestProperties = getRequestProperties(from: event)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig,
+                                             requestType: EdgeRequestType.interact,
+                                             requestProperties: requestProperties,
+                                             locationHint: locationHint)
             let edgeHit = ExperienceEventsEdgeHit(endpoint: endpoint, configId: configId, request: requestPayload)
             // NOTE: the order of these events needs to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
@@ -125,7 +130,10 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent, locationHint: locationHint)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig,
+                                             requestType: EdgeRequestType.consent,
+                                             requestProperties: nil,
+                                             locationHint: locationHint)
             let edgeHit = ConsentEdgeHit(endpoint: endpoint, configId: configId, consents: consentPayload)
             networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
@@ -141,12 +149,14 @@ class EdgeHitProcessor: HitProcessing {
     /// - Parameters:
     ///   - config: configuration data, used to extract the environment and the custom domain, if any
     ///   - requestType: the `EdgeRequestType`
+    ///   - requestProperties: properties from request event
     ///   - locationHint: optional location hint
-    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType, locationHint: String?) -> EdgeEndpoint {
+    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType, requestProperties: [String: Any]?, locationHint: String?) -> EdgeEndpoint {
         return EdgeEndpoint(
             requestType: requestType,
             environmentType: EdgeEnvironmentType(optionalRawValue: config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT]),
             optionalDomain: config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN],
+            optionalPath: requestProperties?[EdgeConstants.EventDataKeys.Request.PATH] as? String,
             locationHint: locationHint)
     }
 
@@ -230,5 +240,55 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         return requestHeaders
+    }
+
+    // Extracts all the custom request properties to overwrite the default values
+    /// - Parameter event: current event for which the request properties are to be extracted
+    /// - Returns: the dictionary of extracted request properties and their custom values
+    private func getRequestProperties(from event: Event) -> [String: Any]? {
+        var requestProperties = [String: Any]()
+        if let overwritePath = getCustomRequestPath(from: event) {
+            Log.trace(label: self.SELF_TAG, "Got custom path:(\(overwritePath)) for event:(\(event.id)), which will overwrite the default interaction request path.")
+            requestProperties[EdgeConstants.EventDataKeys.Request.PATH] = overwritePath
+        }
+        return requestProperties
+    }
+
+    // Extracts network request path property to overwrite the default endpoint path value
+    /// - Parameter event: current event for which the request path property is to be extracted
+    /// - Returns: the custom path string
+    private func getCustomRequestPath(from event: Event) -> String? {
+        var path: String?
+        if let eventData = event.data {
+            let requestData = eventData[EdgeConstants.EventDataKeys.Request.KEY] as? [String: Any]
+            path = requestData?[EdgeConstants.EventDataKeys.Request.PATH] as? String
+        }
+
+        guard let path = path, !path.isEmpty else {
+            return nil
+        }
+
+        if !isValidPath(path) {
+            Log.error(label: self.SELF_TAG, "Dropping the overwrite path value: (\(path)), since it contains invalid characters or is empty.")
+            return nil
+        }
+
+        return path
+    }
+
+    /// Validates a given path does not contain invalid characters.
+    /// A 'path'  may only contain alphanumeric characters, forward slash, period, hyphen, underscore, or tilde, but may not contain a double forward slash.
+    /// - Parameter path: the path to validate
+    /// - Returns: true if 'path' passes validation, false if 'path' contains invalid characters.
+    private func isValidPath(_ path: String) -> Bool {
+       if path.contains("//") {
+            return false
+        }
+
+        let pattern = VALID_PATH_REGEX_PATTERN
+
+        let regex = try? NSRegularExpression(pattern: pattern, options: [])
+        let matches = regex?.firstMatch(in: path, range: NSRange(path.startIndex..., in: path)) != nil
+        return matches
     }
 }
