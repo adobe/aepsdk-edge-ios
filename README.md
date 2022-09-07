@@ -33,6 +33,7 @@ end
 
 # for extension development, include AEPCore, AEPEdge and their dependencies
 target 'YOUR_TARGET_NAME' do
+
   	pod 'AEPEdge'
   	pod 'AEPCore'
 end
@@ -50,8 +51,8 @@ To add the AEPEdge Package to your application, from the Xcode 13.x menu select:
 
 `File > Add Packages...`
 
-> **Note** 
-> the menu options may vary depending on the version of Xcode being used.
+> **Note :** 
+>  the menu options may vary depending on the version of Xcode being used.
 
 Enter the URL for the AEPEdge package repository: `https://github.com/adobe/aepsdk-edge-ios.git`.
 
