@@ -41,10 +41,12 @@ struct EdgeEndpoint {
     ///   - environmentType: the `EdgeEnvironmentType` for the `EdgeEndpoint`
     ///   - optionalDomain: an optional custom domain for the `EdgeEndpoint`. If not set the default domain is used.
     ///   - optionalPath: an optional path to be used to overwrite the default path.
+    ///   - locationHint: an optional location hint for the `EdgeEndpoint` which hints at the Edge Network cluster to send requests.
     init(requestType: EdgeRequestType,
          environmentType: EdgeEnvironmentType,
          optionalDomain: String? = nil,
-         optionalPath: String? = nil) {
+         optionalPath: String? = nil,
+         locationHint: String? = nil) {
         let domain: String
         if let unwrappedDomain = optionalDomain, !unwrappedDomain.isEmpty {
             domain = unwrappedDomain
@@ -67,6 +69,10 @@ struct EdgeEndpoint {
             components.host = EdgeConstants.NetworkKeys.EDGE_INTEGRATION_DOMAIN
             components.path = EdgeConstants.NetworkKeys.EDGE_ENDPOINT_PATH
 
+        }
+
+        if let locationHint = locationHint, !locationHint.isEmpty {
+            components.path.append("/\(locationHint)")
         }
 
         if let customPath = optionalPath {

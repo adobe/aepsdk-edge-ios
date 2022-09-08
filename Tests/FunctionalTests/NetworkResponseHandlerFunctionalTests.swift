@@ -15,10 +15,11 @@ import AEPCore
 @testable import AEPServices
 import XCTest
 
+// swiftlint:disable type_body_length
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private var networkResponseHandler = NetworkResponseHandler()
+    private var networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_ :String?, _ :TimeInterval?) -> Void in  })
     private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
 
     override func setUp() {
@@ -322,7 +323,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     /// Tests that when an event is processed after a persisted reset event that the store payloads are saved
     func testProcessResponseOnSuccess_afterPersistedResetEvent_savesStorePayloads() {
         dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: Date().timeIntervalSince1970 - 10) // date is before `event.timestamp`
-        networkResponseHandler = NetworkResponseHandler() // loads reset time on init
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_ :String?, _ :TimeInterval?) -> Void in  }) // loads reset time on init
 
         let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
 
@@ -357,7 +358,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
 
         dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: Date().timeIntervalSince1970 + 10) // date is after `event.timestamp`
-        networkResponseHandler = NetworkResponseHandler() // loads reset time on init
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_ :String?, _ :TimeInterval?) -> Void in  }) // loads reset time on init
         networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
                                                 batchedEvents: [event])
 
@@ -793,5 +794,428 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("Some Informative stuff here", flattenReceivedData2["report.cause.message"] as? String)
         XCTAssertEqual(202, flattenReceivedData2["report.cause.code"] as? Int)
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
+    }
+
+    // MARK: locationHint:result
+
+    func testProcessResponseOnSuccess_WhenLocationHintResultEventHandle_dispatchesEvent() {
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"EdgeNetwork\",\n" +
+            "                    \"hint\": \"or2\",\n" +
+            "                    \"ttlSeconds\": 1800\n" +
+            "                },\n" +
+            "                {\n" +
+            "                    \"scope\": \"Target\",\n" +
+            "                    \"hint\": \"edge34\",\n" +
+            "                    \"ttlSeconds\": 600\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }]\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
+
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result")
+        XCTAssertEqual(1, dispatchEvents.count)
+        guard let receivedData = dispatchEvents[0].data else {
+            XCTFail("Invalid event data")
+            return
+        }
+
+        let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
+        XCTAssertEqual(8, flattenReceivedData.count)
+        XCTAssertEqual("locationHint:result", flattenReceivedData["type"] as? String)
+        XCTAssertEqual("123", flattenReceivedData["requestId"] as? String)
+        XCTAssertEqual("EdgeNetwork", flattenReceivedData["payload[0].scope"] as? String)
+        XCTAssertEqual("or2", flattenReceivedData["payload[0].hint"] as? String)
+        XCTAssertEqual(1800, flattenReceivedData["payload[0].ttlSeconds"] as? Int)
+        XCTAssertEqual("Target", flattenReceivedData["payload[1].scope"] as? String)
+        XCTAssertEqual("edge34", flattenReceivedData["payload[1].hint"] as? String)
+        XCTAssertEqual(600, flattenReceivedData["payload[1].ttlSeconds"] as? Int)
+    }
+
+    /// Tests that when an event is processed after a reset event that the location hint is updated
+    func testProcessResponseOnSuccess_afterResetEvent_updatesLocationHint() {
+        var locationHintResultHint: String?
+        var locationHintResultTtlSeconds: TimeInterval?
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (hint: String?, ttlSeconds: TimeInterval?) -> Void in
+            locationHintResultHint = hint
+            locationHintResultTtlSeconds = ttlSeconds
+        })
+
+        networkResponseHandler.setLastReset(date: Date(timeIntervalSince1970: Date().timeIntervalSince1970 - 10)) // date is before `event.timestamp`
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"EdgeNetwork\",\n" +
+            "                    \"hint\": \"or2\",\n" +
+            "                    \"ttlSeconds\": 1800\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify saved location hint
+        XCTAssertEqual("or2", locationHintResultHint)
+        XCTAssertEqual(1800, locationHintResultTtlSeconds)
+    }
+
+    func testProcessResponseOnSuccess_beforeResetEvent_doesNotUpdateLocationHint() {
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        var locationHintResultHint: String?
+        var locationHintResultTtlSeconds: TimeInterval?
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (hint: String?, ttlSeconds: TimeInterval?) -> Void in
+            locationHintResultHint = hint
+            locationHintResultTtlSeconds = ttlSeconds
+        })
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        networkResponseHandler.setLastReset(date: Date(timeIntervalSince1970: Date().timeIntervalSince1970 + 10)) // date is after `event.timestamp` // date is after `event.timestamp`
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"EdgeNetwork\",\n" +
+            "                    \"hint\": \"or2\",\n" +
+            "                    \"ttlSeconds\": 1800\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify location hint not saved
+        XCTAssertNil(locationHintResultHint)
+        XCTAssertNil(locationHintResultTtlSeconds)
+    }
+
+    /// Tests that when an event is processed after a persisted reset event that the location hint is updated
+    func testProcessResponseOnSuccess_afterPersistedResetEvent_updatesLocationHint() {
+        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: Date().timeIntervalSince1970 - 10) // date is before `event.timestamp`
+
+        var locationHintResultHint: String?
+        var locationHintResultTtlSeconds: TimeInterval?
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (hint: String?, ttlSeconds: TimeInterval?) -> Void in
+            locationHintResultHint = hint
+            locationHintResultTtlSeconds = ttlSeconds
+        }) // loads reset time on init
+
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"EdgeNetwork\",\n" +
+            "                    \"hint\": \"or2\",\n" +
+            "                    \"ttlSeconds\": 1800\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify saved location hint
+        XCTAssertEqual("or2", locationHintResultHint)
+        XCTAssertEqual(1800, locationHintResultTtlSeconds)
+    }
+
+    /// Tests that when an event is processed before a persisted reset event that the location hint is not updated
+    func testProcessResponseOnSuccess_beforePersistedResetEvent_doesNotUpdateLocationHint() {
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: Date().timeIntervalSince1970 + 10) // date is after `event.timestamp`
+
+        var locationHintResultHint: String?
+        var locationHintResultTtlSeconds: TimeInterval?
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (hint: String?, ttlSeconds: TimeInterval?) -> Void in
+            locationHintResultHint = hint
+            locationHintResultTtlSeconds = ttlSeconds
+        }) // loads reset time on init
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"EdgeNetwork\",\n" +
+            "                    \"hint\": \"or2\",\n" +
+            "                    \"ttlSeconds\": 1800\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify location hint not saved
+        XCTAssertNil(locationHintResultHint)
+        XCTAssertNil(locationHintResultTtlSeconds)
+    }
+
+    func testProcessResponseOnSuccess_whenEdgeNetworkNotInScope_doesNotUpdateLocationHint() {
+        var locationHintResultHint: String?
+        var locationHintResultTtlSeconds: TimeInterval?
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (hint: String?, ttlSeconds: TimeInterval?) -> Void in
+            locationHintResultHint = hint
+            locationHintResultTtlSeconds = ttlSeconds
+        }) // loads reset time on init
+
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"Target\",\n" +
+            "                    \"hint\": \"edge34\",\n" +
+            "                    \"ttlSeconds\": 1800\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify location hint not saved
+        XCTAssertNil(locationHintResultHint)
+        XCTAssertNil(locationHintResultTtlSeconds)
+    }
+
+    func testProcessResponseOnSuccess_whenEventHandleHasBothStateStoreAndLocationHintResult_stateStoreSaved_locationHintUpdated() {
+        var locationHintResultHint: String?
+        var locationHintResultTtlSeconds: TimeInterval?
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (hint: String?, ttlSeconds: TimeInterval?) -> Void in
+            locationHintResultHint = hint
+            locationHintResultTtlSeconds = ttlSeconds
+        }) // loads reset time on init
+
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"EdgeNetwork\",\n" +
+            "                    \"hint\": \"or2\",\n" +
+            "                    \"ttlSeconds\": 1800\n" +
+            "                }\n" +
+            "            ]},\n" +
+            "           {\n" +
+            "            \"type\": \"state:store\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"key\": \"s_ecid\",\n" +
+            "                    \"value\": \"MCMID|29068398647607325310376254630528178721\",\n" +
+            "                    \"maxAge\": 15552000\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify saved location hint
+        XCTAssertEqual("or2", locationHintResultHint)
+        XCTAssertEqual(1800, locationHintResultTtlSeconds)
+
+        // verify saved to store manager
+        let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        XCTAssertFalse(storeResponsePayloadManager.getActivePayloadList().isEmpty)
+    }
+
+    func testProcessResponseOnSuccess_whenLocationHintHandleDoesNotHaveHint_thenLocationHintNotUpdated() {
+        var locationHintResultHint: String?
+        var locationHintResultTtlSeconds: TimeInterval?
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (hint: String?, ttlSeconds: TimeInterval?) -> Void in
+            locationHintResultHint = hint
+            locationHintResultTtlSeconds = ttlSeconds
+        })
+
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"EdgeNetwork\",\n" +
+            "                    \"ttlSeconds\": 1800\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify saved location hint
+        XCTAssertNil(locationHintResultHint)
+        XCTAssertNil(locationHintResultTtlSeconds)
+    }
+
+    func testProcessResponseOnSuccess_whenLocationHintHandleHasEmptyHint_thenLocationHintNotUpdated() {
+        var locationHintResultHint: String?
+        var locationHintResultTtlSeconds: TimeInterval?
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (hint: String?, ttlSeconds: TimeInterval?) -> Void in
+            locationHintResultHint = hint
+            locationHintResultTtlSeconds = ttlSeconds
+        })
+
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"EdgeNetwork\",\n" +
+            "                    \"hint\": \"\",\n" +
+            "                    \"ttlSeconds\": 1800\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify saved location hint
+        XCTAssertNil(locationHintResultHint)
+        XCTAssertNil(locationHintResultTtlSeconds)
+    }
+
+    func testProcessResponseOnSuccess_whenLocationHintHandleDoesNotHaveTtl_thenLocationHintNotUpdated() {
+        var locationHintResultHint: String?
+        var locationHintResultTtlSeconds: TimeInterval?
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (hint: String?, ttlSeconds: TimeInterval?) -> Void in
+            locationHintResultHint = hint
+            locationHintResultTtlSeconds = ttlSeconds
+        })
+
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"EdgeNetwork\",\n" +
+            "                    \"hint\": \"or2\"\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify saved location hint
+        XCTAssertNil(locationHintResultHint)
+        XCTAssertNil(locationHintResultTtlSeconds)
+    }
+
+    func testProcessResponseOnSuccess_whenLocationHintHandleHasIncorrectTtlType_thenLocationHintNotUpdated() {
+        var locationHintResultHint: String?
+        var locationHintResultTtlSeconds: TimeInterval?
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (hint: String?, ttlSeconds: TimeInterval?) -> Void in
+            locationHintResultHint = hint
+            locationHintResultTtlSeconds = ttlSeconds
+        })
+
+        let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
+
+        networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
+                                                batchedEvents: [event])
+
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"locationHint:result\",\n" +
+            "            \"payload\": [\n" +
+            "                {\n" +
+            "                    \"scope\": \"EdgeNetwork\",\n" +
+            "                    \"ttlSeconds\": \"1800\"\n" + // String but should be Int
+            "                }\n" +
+            "            ]\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
+
+        // verify saved location hint
+        XCTAssertNil(locationHintResultHint)
+        XCTAssertNil(locationHintResultTtlSeconds)
     }
 }

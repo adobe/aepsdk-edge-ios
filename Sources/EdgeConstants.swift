@@ -53,10 +53,15 @@ enum EdgeConstants {
         static let STORE_NAME = "AEPEdge"
         static let STORE_PAYLOADS = "storePayloads"
         static let RESET_IDENTITIES_DATE = "reset.identities.date"
+        static let EDGE_PROPERTIES = "edge.properties"
     }
 
     enum SharedState {
         static let STATE_OWNER = "stateowner"
+
+        enum Edge {
+            static let LOCATION_HINT = "locationHint"
+        }
 
         enum Configuration {
             static let STATE_OWNER_NAME = "com.adobe.module.configuration"
@@ -121,11 +126,20 @@ enum EdgeConstants {
         }
 
         enum Response {
-            static let EVENT_HANDLE_TYPE_STORE = "state:store"
+            enum EventHandleType {
+                static let STORE = "state:store"
+                static let LOCATION_HINT = "locationHint:result"
+            }
 
             enum Error {
                 static let MESSAGE = "message"
                 static let NAMESPACE = "namespace"
+            }
+
+            enum LocationHint {
+                static let SCOPE = "scope"
+                static let HINT = "hint"
+                static let TTL_SECONDS = "ttlSeconds"
             }
         }
     }
