@@ -13,8 +13,11 @@
     - [1. Get a copy of the files (tutorial app code) and initial setup](#1-get-a-copy-of-the-files-tutorial-app-code-and-initial-setup)
     - [1. Install the Edge extensions using dependency manager (CocoaPods)](#1-install-the-edge-extensions-using-dependency-manager-cocoapods)
     - [2. Update tutorial app code to enable Edge features](#2-update-tutorial-app-code-to-enable-edge-features)
+    - [Consent for Edge extension](#consent-for-edge-extension)
+    - [Identity for Edge extension](#identity-for-edge-extension)
+    - [Lifecycle for Edge extension](#lifecycle-for-edge-extension)
     - [3. Run app](#3-run-app)
-    - [4. TrackAction/TrackState implementation examples](#4-trackactiontrackstate-implementation-examples)
+    - [4. `sendEvent` implementation examples](#4-sendevent-implementation-examples)
   - [Initial validation with Assurance](#initial-validation-with-assurance)
     - [1. Set up the Assurance session](#1-set-up-the-assurance-session)
     - [2. Connect to the app](#2-connect-to-the-app)
@@ -224,23 +227,13 @@ You should see the following after all the extensions are installed:
 Now that the server side configuration is complete, we can install the extensions in the app and enable extension functionality by making some code updates.
 
 ### 1. Get a copy of the files (tutorial app code) and initial setup
-1. Open the code repository: https://github.com/adobe/aepsdk-edgebridge-ios
+1. Open the code repository: https://github.com/adobe/aepsdk-edge-ios/tree/dev
 2. Click **Code** in the top right 
 3. In the window that opens, click **Download ZIP**; by default it should land in your **Downloads** folder.
    - Optionally, move the ZIP to your **Documents** folder
 4. Unzip the archived file by double clicking it, and keep this Finder window open, as we will need it later.
 
-Now we can use the tutorial app to go through the changes required to install the Edge Bridge extension.
-
-<!-- 1. Open the `Finder` application.
-2. Click `Documents` in the left-side navigation panel.
-3. Open the `GitHub` directory.
-4. You should see the `aepsdk-edgebridge-ios` directory, open it.
-
-5. Open Xcode.
-6. Click `Open a project or file`
-7. Navigate to the repository: `Documents` -> `GitHub` -> `aepsdk-edgebridge-ios`
-8. After selecting `aepsdk-edgebridge-ios` (the folder, not any of the inner files), click `Open` -->
+Now we can use the tutorial app to go through the changes required to install the Edge extension.
 
 5. Open the Terminal app
    - **Applications** -> **Utilities** -> **Terminal**
@@ -250,7 +243,7 @@ You should see the following in your terminal: "cd " (the space after `cd` is im
 ```bash
 cd 
 ```
-7. Return to your Finder window that has the unzipped repository folder. Click and drag the folder into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edgebridge-ios`  
+7. Return to your Finder window that has the unzipped repository folder. Click and drag the folder into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios/Tutorials/EdgeTutorialAppStart`  
 8. Then press `return` to execute the command.
 
 <details>
@@ -258,7 +251,7 @@ cd
 
 `cd` is the terminal command for change directory; the command above changes your terminal's active directory to the repository we just copied.
 
-The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edgebridge-ios`, taking our terminal window to the newly created repository!
+The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edge-ios/Tutorials/EdgeTutorialAppStart`, taken together, this command changes our terminal window context to the tutorial app code folder!
 
 </p></details>
 
@@ -290,14 +283,14 @@ Downloading dependencies
 Installing AEPAssurance (3.0.1)
 Installing AEPCore (3.7.1)
 Installing AEPEdge (1.4.1)
+Installing AEPEdgeConsent (1.0.1)
 Installing AEPEdgeIdentity (1.1.0)
 Installing AEPLifecycle (3.7.1)
 Installing AEPRulesEngine (1.2.0)
 Installing AEPServices (3.7.1)
-Installing SwiftLint (0.44.0)
 Generating Pods project
 Integrating client project
-Pod installation complete! There are 6 dependencies from the Podfile and 8 total pods installed.
+Pod installation complete! There are 7 dependencies from the Podfile and 8 total pods installed.
 tim@Tims-MacBook-Pro aepsdk-edgebridge-ios % 
 ```
 
@@ -308,7 +301,7 @@ With the project set up, our next task is to install the Edge extensions for our
 
 1. Open the project using the command:
 ```bash
-open AEPEdgeBridge.xcworkspace
+open EdgeTutorialAppStart.xcworkspace
 ```
 
 This should automatically open the Xcode IDE. In Xcode:
@@ -362,8 +355,8 @@ Cocoapods will use the newly updated configuration file to install the new packa
 ### 2. Update tutorial app code to enable Edge features
 There are three files we need to update to enable the features we want from the Edge extension. Thankfully, all of the code changes are contained in block comments like the Podfile so you only have to make a few updates!
 
-1. Click the dropdown chevron next to `AEPEdgeBridge` in the left-side navigation panel.
-2. Click the dropdown chevron next to `EdgeTutorialAppStart`.
+1. Click the dropdown chevron next to `EdgeTutorialAppStart` in the left-side navigation panel to open the project.
+2. Click the dropdown chevron next to `EdgeTutorialAppStart` to open the directory holding the code files.
 3. Click the `AppDelegate.swift` file.
 
 Inside, you will see code blocks for this tutorial that are greyed out, because they are block commented out. They are marked by the header and footer:  
@@ -424,6 +417,21 @@ Notice that both of these APIs rely on the developer to place them in the proper
 
 </p></details>
 
+### Consent for Edge extension
+The [Consent for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network) mobile extension enables you to collect user data tracking consent preferences from your mobile app when using AEP and the Edge extension. The default consent settings should be set in alignment with your organization's user data privacy requirements. See the guide on [ingesting data using the Consents and Preferences data type](https://experienceleague.adobe.com/docs/experience-platform/xdm/data-types/consents.html#ingest).
+
+[API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network/api-reference)
+
+### Identity for Edge extension
+The [Identity for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network) mobile extension enables identity management when using AEP and the Edge extension. You can control IDs associated with the user like custom IDs, advertising IDs, etc.
+
+[API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network/api-reference)
+
+### Lifecycle for Edge extension
+The [Lifecycle for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension enables you to collect app lifecycle data from your mobile app when using AEP and the Edge extension. This includes data like app start, stop, and crashes, device type, device OS, etc.
+
+[API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle/lifecycle-api-reference)
+
 ### 3. Run app   
 In Xcode, select the app target you want to run, and the destination device to run it on (either simulator or physical device). Then press the play button.
 
@@ -433,7 +441,7 @@ You should see your application running on the device you selected, with logs be
 > If the debug console area is not shown by default, activate it by selecting:  
 > View -> Debug Area -> Show Debug Area
 
-### 4. TrackAction/TrackState implementation examples   
+### 4. `sendEvent` implementation examples   
 With Edge extension successfully installed and registered, you can make `sendEvent` calls, which will be processed by the Edge extension and sent to the Edge network.
 
 Check `ContentView.swift` for implementation examples of product add and view events. You can see the data payloads that are to be sent with the calls. Notice that they conform to the XDM schema structure we set up in the first section.
@@ -450,7 +458,7 @@ Assurance is the AEP tool for inspecting all events that Adobe extensions send o
 <img src="./Assets/edge-send-event-tutorial/assurance-create-session-1.png" alt="Creating a new session in Assurance step 1" width="400"/>
 
     - Enter a name to identify the session (can be any desired name) 
-    - Use Base URL value: `aepedgetutorialstart://`  
+    - Use Base URL value: `aepedgetutorialappstart://`  
 <img src="./Assets/edge-send-event-tutorial/assurance-create-session-2.png" alt="Creating a new session in Assurance step 2" width="400"/>
 
 <details>
@@ -497,7 +505,7 @@ Note that it is possible to edit both the `Session Name` and `Base URL`; changes
 
 </p></details>
 
-To connect to Assurance, we will use the session link:
+To connect to Assurance, we will use the session link method:
 1. Copy the session link; you can click the icon of a double overlapping box to the right of the link to copy it.
     - If using a physical device, it may be helpful to have a way to send this link to the device (ex: Airdrop, email, text, etc.)
 2. Open Safari (or other web browser).

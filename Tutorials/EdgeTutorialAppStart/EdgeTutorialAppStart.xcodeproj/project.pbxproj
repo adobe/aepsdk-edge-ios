@@ -71,13 +71,13 @@
 		4C5CA71228CFE46700BD8DF9 /* EdgeTutorialAppStart */ = {
 			isa = PBXGroup;
 			children = (
-				4C5CA72B28CFE50000BD8DF9 /* LaunchScreen.storyboard */,
 				4C5CA72328CFE4F600BD8DF9 /* AppDelegate.swift */,
+				4C5CA71528CFE46700BD8DF9 /* ContentView.swift */,
+				4C5CA72128CFE4F600BD8DF9 /* SceneDelegate.swift */,
+				4C5CA72B28CFE50000BD8DF9 /* LaunchScreen.storyboard */,
 				4C5CA72428CFE4F600BD8DF9 /* Assets.xcassets */,
 				4C5CA72228CFE4F600BD8DF9 /* Info.plist */,
 				4C5CA72528CFE4F600BD8DF9 /* Preview Content */,
-				4C5CA72128CFE4F600BD8DF9 /* SceneDelegate.swift */,
-				4C5CA71528CFE46700BD8DF9 /* ContentView.swift */,
 			);
 			path = EdgeTutorialAppStart;
 			sourceTree = "<group>";
@@ -88,7 +88,6 @@
 				6FEE38FA942E0937F1C7979D /* Pods-EdgeTutorialAppStart.debug.xcconfig */,
 				B6A7E404911A2A89D87A8DED /* Pods-EdgeTutorialAppStart.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
