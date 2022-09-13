@@ -436,6 +436,8 @@ In Xcode, select the app target you want to run, and the destination device to r
 
 You should see your application running on the device you selected, with logs being displayed in the console in Xcode. 
 
+<img src="../Assets/edge-send-event-tutorial/app-first-launch.png" alt="Creating a new session in Assurance step 1" width="400"/>
+
 > **Note**
 > If the debug console area is not shown by default, activate it by selecting:  
 > View -> Debug Area -> Show Debug Area
@@ -456,8 +458,9 @@ Assurance is the AEP tool for inspecting all events that Adobe extensions send o
     - In the **Create New Session** dialog, proceed by selecting **Start** (**1**)
 <img src="../Assets/edge-send-event-tutorial/assurance-create-session-1.png" alt="Creating a new session in Assurance step 1" width="400"/>
 
-    - Enter a name to identify the session (can be any desired name) 
-    - Use Base URL value: `aepedgetutorialappstart://`  
+    - Enter a name (**1**) to identify the session (can be any desired name) 
+    - Use Base URL value (**2**): `aepedgetutorialappstart://`   
+    - Click **Next** (**3**)  
 <img src="../Assets/edge-send-event-tutorial/assurance-create-session-2.png" alt="Creating a new session in Assurance step 2" width="400"/>
 
 <details>

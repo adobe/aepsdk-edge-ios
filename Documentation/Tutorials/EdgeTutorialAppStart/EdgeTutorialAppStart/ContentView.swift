@@ -28,32 +28,46 @@ struct TrackView: View {
 
     var body: some View {
         VStack {
+            /// Creates and sends an add to cart commerce event to the Adobe Experience Edge, using an XDM object.
             Button("Product add event", action: {
                 // Dispatch an Experience Event which is handled by the
                 // Edge extension which sends it to the Edge Network.
                 
-                var xdmData: [String: Any] = [
-                  "eventType": "commerce.productViews",
-                  "commerce": [
-                    "productListAdds": [
-                      "value": 1
-                    ]
-                  ],
-                  "productListItems": [
-                    [
-                      "name":  "wide_brim_sunhat",
-                      "SKU": "12345",
-                      "quantity": 1
-                    ]
-                  ]
-                ]
+                print("Sending XDM commerce cart add event")
+                
+                // Create list with the purchased items
+                var product = ProductListItemsItem()
+                product.name = "wide_brim_sunhat"
+                product.priceTotal = 50
+                product.sku = "12345"
+                product.quantity = 1
+                product.currencyCode = "USD"
+                
+                let productListItems: [ProductListItemsItem] = [product]
+                
+                var productAdd = ProductListAdds()
+                productAdd.value = 1
+
+                // Create Commerce object and add ProductListAdds details
+                var commerce = Commerce()
+                commerce.productListAdds = productAdd
+                
+                // Compose the XDM Schema object and set the event name
+                var xdmData = MobileSDKCommerceSchema()
+                xdmData.eventType = "commerce.productListAdds"
+                xdmData.commerce = commerce
+                xdmData.productListItems = productListItems
+
                 
 //* Edge Tutorial - code section (2/4)
-                let experienceEvent = ExperienceEvent(xdm: xdmData)
-                Edge.sendEvent(experienceEvent: experienceEvent)
+                // Create an Experience Event with the built schema and send it using the AEP Edge extension
+                let event = ExperienceEvent(xdm: xdmData)
+                Edge.sendEvent(experienceEvent: event)
 // Edge Tutorial - code section (2/4) */
+                
+                
             }).padding()
-
+            /// Creates and sends an add to cart commerce event to the Adobe Experience Edge, using a custom dictionary.
             Button("Product view event", action: {
                 // Dispatch an Experience Event which is handled by the
                 // Edge extension which sends it to the Edge Network.
