@@ -148,6 +148,8 @@ Give the datastream an identifying name and description (**1**), then pick the s
 
 <img src="../Assets/edge-send-event-tutorial/datastreams-new-datastream.png" alt="Set datastream values" width="1100"/>  
 
+No
+
 ### 3. Create a property
 
 Next, we need to create a property for mobile. A property is basically a bundled configuration for AEP extensions. It controls the configuration settings available for each extension, allowing you to modify their functionality. 
@@ -345,9 +347,11 @@ open EdgeTutorialAppStart.xcworkspace
 ```
 
 This should automatically open the Xcode IDE. In Xcode:
-1. Click the dropdown chevron next to `Pods` in the left-side navigation panel.
-2. Click the `Podfile` file.   
+1. Click the dropdown chevron (**1**) next to `Pods` in the left-side navigation panel.
+2. Click the `Podfile` file (**2**).   
    
+<img src="../Assets/edge-send-event-tutorial/xcode-pod-navigation.png" alt="All installed extensions" width="1100"/>  
+
 You should see a section like the following: 
 
 ```ruby
