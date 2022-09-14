@@ -18,20 +18,19 @@
     - [Lifecycle for Edge extension](#lifecycle-for-edge-extension)
     - [3. Run app](#3-run-app)
     - [4. `sendEvent` implementation examples](#4-sendevent-implementation-examples)
-  - [Initial validation with Assurance](#initial-validation-with-assurance)
+  - [Validation with Assurance](#validation-with-assurance)
     - [1. Set up the Assurance session](#1-set-up-the-assurance-session)
     - [2. Connect to the app](#2-connect-to-the-app)
-    - [3. Event transactions view - check for Edge events](#3-event-transactions-view---check-for-edge-events)
+    - [3. Assurance Event transactions view - check for Edge events](#3-assurance-event-transactions-view---check-for-edge-events)
 
 ## Overview
 This hands-on tutorial provides end-to-end instructions on how to implement the Edge extension to send event data to the Edge Network from a fresh implementation state.
 
 ```mermaid
 graph LR;
-    step1(Fresh app) --> 
-    step2(Add Edge extension<br/>Enable sending event data to the Edge Network) --> 
-    step3(Add Assurance<br/>Verify event data formats) --> 
-    step5(Final app);
+    step1(Set up configuration for<br/>Adobe Experience Platform) --> 
+    step2(Enable Edge features in app<br/>Send event data to the Edge Network) --> 
+    step3(Add Assurance<br/>Verify event data formats)
 ```
 
 ### Environment
@@ -432,9 +431,14 @@ The [Lifecycle for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/
 [API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle/lifecycle-api-reference)
 
 ### 3. Run app   
-In Xcode, select the app target you want to run, and the destination device to run it on (either simulator or physical device). Then press the play button.
+In Xcode: 
+1. Set the app target (**1**) to **EdgeTutorialAppStart** (if not already).
+2. Choose which destination device (**2**) to run it on (either simulator or physical device. In this case it is set to the iPhone 13 Pro simulator). 
+3. Click the play button (**3**).
 
-You should see your application running on the device you selected, with logs being displayed in the console in Xcode. 
+<img src="../Assets/edge-send-event-tutorial/xcode-install-app.png" alt="Creating a new session in Assurance step 1" width="1100"/>
+
+You should see your application running on the device you selected, with logs being displayed in the debug console in Xcode. 
 
 <img src="../Assets/edge-send-event-tutorial/app-first-launch.png" alt="Creating a new session in Assurance step 1" width="400"/>
 
@@ -445,34 +449,45 @@ You should see your application running on the device you selected, with logs be
 ### 4. `sendEvent` implementation examples   
 With Edge extension successfully installed and registered, you can make `sendEvent` calls, which will be processed by the Edge extension and sent to the Edge network.
 
-Check `ContentView.swift` for implementation examples of product add and view events. You can see the data payloads that are to be sent with the calls. Notice that they conform to the XDM schema structure we set up in the first section.
+Check `ContentView.swift` for implementation examples of product add and view events. You can see the data payloads that are to be sent with the calls. Notice that they conform to the Commerce XDM schema structure we set up in the first section.
 
-## Initial validation with Assurance
-Assurance is the AEP tool for inspecting all events that Adobe extensions send out, in real time. It will allow us to see the flow of events, including the Experience Event sent out by the Edge extension.
+The first button shows an example of using an XDM object that adheres to the `XDMSchema` protocol provided by the Edge extension; basically, this is a way to construct the event data using a structured blueprint with value checks and other handy developer features. It gives developers a more robust framework to interact with the data values.
+
+The second button shows an example of using a data dictionary to construct the event data. This method provides more flexibility, but can potentially be more error prone. 
+
+## Validation with Assurance
+With the server side configuration and app setup complete, we can take a look at the live event flow using Assurance, the AEP tool for inspecting all events that Adobe extensions send out in real time. Using Assurance, we can see the Experience Events sent out by the Edge extension are formatted how we want.
 
 ### 1. Set up the Assurance session  
 1. In the browser, navigate to [Assurance](https://experience.adobe.com/griffon) and login using your Adobe ID credentials.
-2. Create a new session (or use an existing one if available) 
-    - Click **Create Session** in the top right.
-![Create session in Assurance](../Assets/edge-send-event-tutorial/assurance-create-session.jpg)
-    - In the **Create New Session** dialog, proceed by selecting **Start** (**1**)
+2. Click **Create Session** in the top right.
+![Create session in Assurance](../Assets/edge-send-event-tutorial/assurance-create-session.jpg)  
+3. In the **Create New Session** dialog, click **Start** (**1**)  
 <img src="../Assets/edge-send-event-tutorial/assurance-create-session-1.png" alt="Creating a new session in Assurance step 1" width="400"/>
 
-    - Enter a name (**1**) to identify the session (can be any desired name) 
-    - Use Base URL value (**2**): `aepedgetutorialappstart://`   
-    - Click **Next** (**3**)  
+4. Enter a name (**1**) to identify the session (can be any desired name) 
+5. Use Base URL value (**2**) (including the colon and double forward slashes!): `aepedgetutorialappstart://`   
+6. Click **Next** (**3**)  
 <img src="../Assets/edge-send-event-tutorial/assurance-create-session-2.png" alt="Creating a new session in Assurance step 2" width="400"/>
 
 <details>
   <summary> What is a base URL? </summary><p>
 
+The Base URL is the ID used launch your app via deep linking. An Assurance session URL is generated by combining this app ID with the Assurance session's own unique ID. For example in the session URL:  
+`myapp://?adb_validation_sessionid=a3a1b9d5-0b1e-40bf-a732-954ed1d6491f`  
+In its component parts:  
+1. `myapp://` is the ID required by the device's operating system to open the correct app  
+2. `?adb_validation_sessionid=a3a1b9d5-0b1e-40bf-a732-954ed1d6491f` is the unique session ID Assurance uses to initiate the connection to your session.
+
+In total, to connect an app to Assurance you need:  
+On the app side:
+1. The app URL to be set to a unique value
+2. Code to accept opening the app via deep linking, and what to do with the incoming Assurance session ID (in our case, using it to initiate a connection with our Assurance session; examples of this can be found in the tutorial app)
+
+On the Assurance session side:
+1. The base URL to be set to the same value as the app URL (Assurance handles the rest of the connection link setup)
+
 > **Note**  
-> The Base URL is the root definition used to launch your app from a URL (deep linking). A session URL is generated by which you may initiate the Assurance session. An example value might look like: `myapp://default`  
->
-> Note that proper base URL configuration is required for Assurance QR code app launching to function. However, even without setting up deep linking on the application-side, it is still possible to connect to Assurance using the session link.
->
-> If you do not know the URL or don't want to use it at this time, enter a placeholder URL like `test://`. 
->  
 > In Xcode the app URL can be configured using these steps:
 > 1. Select the project in the navigator.
 > 2. Select the app target in the `Targets` section, in the project configuration window.
@@ -481,11 +496,10 @@ Assurance is the AEP tool for inspecting all events that Adobe extensions send o
 > ![Xcode deeplink app url config](../Assets/edge-send-event-tutorial/xcode-deeplink-app-url-config.jpg)
 > Please note that there is still code on the application side that is required for the app to respond to deep links; see the [guide on adding Assurance to your app](https://aep-sdks.gitbook.io/docs/foundation-extensions/adobe-experience-platform-assurance#add-the-aep-assurance-extension-to-your-app). For general implementation recommendations and best practices, see Apple's guide on [Defining a custom URL scheme for your app](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)
 
-
 </p></details>
 
 
-When presented with this window, the new Assurance session is created, and it is now possible to connect the app to your Assurance session.  
+When presented with this window, your new Assurance session is ready to go, and it is now possible to connect the app to the session.  
 <img src="../Assets/edge-send-event-tutorial/assurance-create-session-qr.png" alt="Creating a new session in Assurance step 3 - QR code" width="400"/>
 <img src="../Assets/edge-send-event-tutorial/assurance-create-session-link.png" alt="Creating a new session in Assurance step 3 - Session link" width="400"/>
 
@@ -495,59 +509,87 @@ When presented with this window, the new Assurance session is created, and it is
   <summary> Details on connecting to Assurance </summary><p>
 
 There are two primary ways to connect an app instance to an Assurance session:
-1. QR Code: available with `Scan QR Code` option selected. Only works with physical devices, as it requires a physical device's camera to scan the code. Note that this method requires setup on the application code side to allow for deep linking (see [Set up the Assurance session](#1-set-up-the-assurance-session)).
+1. QR Code: available with **Scan QR Code** option selected. Only works with physical devices, as it requires a physical device's camera to scan the code.
+2. Session Link: available with **Copy Link** option selected. Works with both physical and simulated devices.
 
-2. Session Link: available with `Copy Link` option selected. Works with both physical and simulated devices.
+Note that both methods require setup on the app code side to allow for deep linking (see the section **What is a base URL?** under [Set up the Assurance session](#1-set-up-the-assurance-session)).
 
-To access these connection methods, click `Session Details`:  
+To access these connection methods, click **Session Details** in the top right of the Assurance session page:  
 <img src="../Assets/edge-send-event-tutorial/assurance-session-details-qr.png" alt="Assurance Session Details - QR code" width="400"/>
 <img src="../Assets/edge-send-event-tutorial/assurance-session-details-link.png" alt="Assurance Session Details - Session link" width="400"/>
 
-Note that it is possible to edit both the `Session Name` and `Base URL`; changes to the `Base URL` value will automatically be reflected in both QR code and session link.
+You can edit both the **Session Name** and **Base URL**; changes to the **Base URL** value will automatically be reflected in both the QR code and session link.
 
 </p></details>
 
 To connect to Assurance, we will use the session link method:
 1. Copy the session link; you can click the icon of a double overlapping box to the right of the link to copy it.
-    - If using a physical device, it may be helpful to have a way to send this link to the device (ex: Airdrop, email, text, etc.)
+    - If using a physical device, it may be helpful to have a way to send this link to the device (ex: Airdrop, email, text, etc.). Alternatively, you can use the camera on your physical device to scan the QR code.
 2. Open Safari (or other web browser).
-3. Paste the Assurance session link copied from step 1 into the URL/search text field and enter.
+3. Paste the Assurance session link copied from step 1 into the URL/search text field and enter, or use **Paste and Go**.
     - If using the simulator, it is possible to enable the paste menu by clicking in the text field twice, with a slight pause between clicks.
-4. A new dialog box should open requesting to open the tutorial app, tap **OK**.
-4. App should open and show the Assurance PIN screen to authenticate the session connection; enter the PIN from the session details and tap **Connect**.
+4. A new dialog box should open requesting to open the tutorial app, tap **OK** (**1**).
+
+<img src="../Assets/edge-send-event-tutorial/assurance-ios-link-connection.png" alt="Assurance Session Details - Session link" width="400"/>
+<img src="../Assets/edge-send-event-tutorial/assurance-ios-link-connection-dialog.png" alt="Assurance Session Details - Session link" width="400"/>  
+
+5. App should open and show the Assurance PIN screen to authenticate the session connection; enter the PIN from the session details and tap **Connect** (**1**).
+
+<img src="../Assets/edge-send-event-tutorial/assurance-ios-pin.png" alt="Assurance Session Start - iOS simulator" width="400"/>
+
+<details>
+  <summary> Help! I got an error, what do I do? </summary><p>
+
+When using the link, if you see the error: "Safari cannot open the page because the address is invalid"
+
+<img src="../Assets/edge-send-event-tutorial/assurance-ios-link-connection-error.png" alt="Assurance Session Details - Session link" width="400"/>  
+
+1. Make sure that the base URL for the Assurance session is set to the correct value (`aepedgetutorialappstart://`), and try recopying the link and submitting again.
+   - For instructions on how to change the base URL value, see the section **Details on connecting to Assurance** under [Connect to the app](#2-connect-to-the-app)
+2. Make sure that the tutorial app is installed on the device. If it was already installed, try uninstalling it and reinstalling it.
+
+If in the app, after entering the PIN code and tapping **Connect**, you see the error: "Invalid Mobile SDK Configuration The Experience Cloud organization identifier is unavailable. Ensure SDK configuration is setup correctly. See documentation for more detail."
+
+1. Make sure that the mobile property used has Assurance installed, and that the property has been properly published.
+2. Make sure that the mobile property ID is set in the `ENVIRONMENT_FILE_ID` variable in `AppDelegate.swift`, then rebuild the app.
+
+</p></details>
+
 
 <details>
   <summary> Connecting using QR code </summary><p>
 
 To connect using QR code:
 Prerequisites (see [Set up the Assurance session](#1-set-up-the-assurance-session) for details on QR code requirements):
-- Running app using physical device with camera that can scan QR codes
+- Running app on a **physical device** with camera that can scan QR codes
 - App URL for deep linking is configured
 - App code for receiving link and connecting to Assurance is implemented
 
 1. Use physical device's camera to scan the QR code, which when tapped, should trigger a confirmation dialog to open the app.
-2. App should open and show the Assurance PIN screen to authenticate the session connection; enter the PIN from the session details and tap `Connect`
+2. App should open and show the Assurance PIN screen to authenticate the session connection; enter the PIN from the session details and tap **Connect**
 
 </p></details>
 
-Once connected to Assurance, in the tutorial app, an Adobe Experience Platform icon will appear in the top right corner of the screen with a green dot indicating a connected session. In the web-based Assurance session, there is also an indicator in the top right that shows the number of connected sessions (which in this case should now show a green dot with "1 Client Connected" (**1**)).
+Once connected to Assurance, in the tutorial app, an Adobe Experience Platform icon (**1**) will appear in the top right corner of the screen with a green dot indicating a connected session.  
+<img src="../Assets/edge-send-event-tutorial/ios-assurance-connection.png" alt="Assurance Session Start - Web UI after connection" width="400"/>  
 
-<img src="../Assets/edge-send-event-tutorial/simulator-assurance-connection.jpg" alt="Assurance Session Start - iOS simulator" width="400"/>
+In the web-based Assurance session, there is also an indicator in the top right that shows the number of connected sessions (which in this case should now show a green dot with "1 Client Connected" (**1**)).  
 <img src="../Assets/edge-send-event-tutorial/assurance-session-start.jpg" alt="Assurance Session Start - Web UI after connection" width="800"/>  
 
-Observe how in the Assurance session Events view (**2**), there are already events populating as a consequence of the connection of the mobile app to the Assurance session (**3**); the Assurance extension itself emits events about the session connection and subsequently captures these events to display in the web-based session viewer. You can expect Assurance to capture all events processed by the AEP SDK from all other extensions as well.  
+Notice how in the Assurance session Events view (**2**), there are already events populating as a consequence of the connection of the mobile app to the Assurance session (**3**); the Assurance extension itself emits events about the session connection and subsequently captures these events to display in the web-based session viewer. You can expect Assurance to capture all events processed by the AEP SDK from all other extensions as well.  
 
-### 3. Event transactions view - check for Edge events  
+### 3. Assurance Event transactions view - check for Edge events  
 In order to see Edge events, in the connected app instance:
-1. Trigger a `sendEvent` within the app which the Edge extension will send to the Edge Network. This event will be captured by the Assurance extension and shown in the web session viewer.
+1. Tap either **Product add event** or **Product view event** to send an Experience Event to the Edge Network! 
+   - Behind the scenes the buttons use the `sendEvent` API from the Edge extension. This event will be captured by the Assurance extension and shown in the web session viewer.
 
-<img src="../Assets/edge-send-event-tutorial/simulator-track-buttons.jpg" alt="Simulator tracking buttons" width="400"/>
+<img src="../Assets/edge-send-event-tutorial/ios-trigger-event.png" alt="Simulator tracking buttons" width="400"/>
 
-2. Click the `AEP Request Event` event (**1**) in the events table to see the event details in the right side window
-3. Click the `RAW EVENT` dropdown (**2**) in the event details window to see the event data payload. 
-4. Verify that the `ACPExtensionEventData` matches what was sent by the Edge `sendEvent` API.
+1. Click the `AEP Request Event` event (**1**) in the events table to see the event details in the right side window.
+2. Click the **RAW EVENT** dropdown (**2**) in the event details window to see the event data payload. 
+3. Verify that the `ACPExtensionEventData` matches what was sent by the Edge `sendEvent` API.
 
-<img src="../Assets/edge-send-event-tutorial/assurance-analytics-track-event.jpg" alt="Simulator tracking buttons" width="800"/>
+<img src="../Assets/edge-send-event-tutorial/assurance-validate-send-event.png" alt="Simulator tracking buttons" width="800"/>
 
 > **Note**
 > The two top level properties `xdm` and `data` are standard Edge event properties that are part of the Edge platform's XDM schema-based system for event data organization that enables powerful, customizable data processing. 
