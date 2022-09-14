@@ -283,7 +283,7 @@ You should see the following in your terminal: "cd " (the space after `cd` is im
 ```bash
 cd 
 ```
-7. Return to your Finder window that has the unzipped repository folder. Click and drag the folder into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Tutorials/EdgeTutorialAppStart`  
+7. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials**. Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Click and drag the folder into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`  
 8. Then press `return` to execute the command.
 
 <details>
@@ -291,7 +291,7 @@ cd
 
 `cd` is the terminal command for change directory; the command above changes your terminal's active directory to the repository we just copied.
 
-The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Tutorials/EdgeTutorialAppStart`, taken together, this command changes our terminal window context to the tutorial app code folder!
+The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`, taken together, this command changes our terminal window context to the tutorial app code folder!
 
 </p></details>
 
