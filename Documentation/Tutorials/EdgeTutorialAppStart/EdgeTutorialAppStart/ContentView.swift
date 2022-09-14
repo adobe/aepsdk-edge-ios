@@ -10,10 +10,9 @@
 // governing permissions and limitations under the License.
 //
 
-/* Edge Tutorial - code section (1/4)
-import AEPCore
+/* Edge Tutorial - code section (1/3)
 import AEPEdge
-// Edge Tutorial - code section (1/4) */
+// Edge Tutorial - code section (1/3) */
 
 import SwiftUI
 
@@ -59,11 +58,11 @@ struct TrackView: View {
                 xdmData.productListItems = productListItems
 
                 
-/* Edge Tutorial - code section (2/4)
+/* Edge Tutorial - code section (2/3)
                 // Create an Experience Event with the built schema and send it using the AEP Edge extension
                 let event = ExperienceEvent(xdm: xdmData)
                 Edge.sendEvent(experienceEvent: event)
-// Edge Tutorial - code section (2/4) */
+// Edge Tutorial - code section (2/3) */
                 
                 
             }).padding()
@@ -72,7 +71,7 @@ struct TrackView: View {
                 // Dispatch an Experience Event which is handled by the
                 // Edge extension which sends it to the Edge Network.
                 
-                var xdmData: [String: Any] = [
+                let xdmData: [String: Any] = [
                   "eventType": "commerce.productViews",
                   "commerce": [
                     "productListViews": [
@@ -87,20 +86,10 @@ struct TrackView: View {
                   ]
                 ]
                 
-/* Edge Tutorial - code section (3/4)
+/* Edge Tutorial - code section (3/3)
                 let experienceEvent = ExperienceEvent(xdm: xdmData)
                 Edge.sendEvent(experienceEvent: experienceEvent)
-// Edge Tutorial - code section (3/4) */
-            }).padding()
-
-            Button("Trigger Consequence", action: {
-                // Configure the Data Collection Mobile Property with a Rule to dispatch
-                // an Analytics event when a PII event is dispatched in the SDK.
-                // Without the rule, this button will not forward a track call to the Edge Network.
-                
-/* Edge Tutorial - code section (4/4)
-                 MobileCore.collectPii(["key": "trigger"])
-// Edge Tutorial - code section (4/4) */
+// Edge Tutorial - code section (3/3) */
             }).padding()
         }
     }

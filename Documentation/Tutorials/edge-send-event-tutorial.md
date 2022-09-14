@@ -11,6 +11,7 @@
     - [3. Create a property](#3-create-a-property)
     - [4. Configure a Rule to Forward Lifecycle metrics to Platform](#4-configure-a-rule-to-forward-lifecycle-metrics-to-platform)
     - [5. Publish changes](#5-publish-changes)
+      - [Getting the mobile property ID](#getting-the-mobile-property-id)
   - [Client-side implementation](#client-side-implementation)
     - [1. Get a copy of the files (tutorial app code) and initial setup](#1-get-a-copy-of-the-files-tutorial-app-code-and-initial-setup)
     - [2. Install the Edge extensions using dependency manager (CocoaPods)](#2-install-the-edge-extensions-using-dependency-manager-cocoapods)
@@ -230,17 +231,21 @@ You should see the following after all the extensions are installed:
 
 ### 4. Configure a Rule to Forward Lifecycle metrics to Platform
 
-The Lifecycle for Edge Network extension dispatches application foreground and background events to the Mobile SDK. Create a rule to forward these events to the Adobe Experience Platform Edge Network.
+The Lifecycle for Edge extension sends app foreground and background events to the Mobile SDK. We need to create a rule to forward these events to the Edge Network. Note that we don't need to install Lifecycle since it is already included with Mobile Core.
 
 #### Create a rule <!-- omit in toc -->
-1. On the Rules tab, select Create New Rule.
-2. Give your rule an easily recognizable name in your list of rules. In this example, the rule is named "Forward Lifecycle XDM events to Edge Network".
+1. On the Rules tab, select **Create New Rule**.
+   - If your property already has rules, the button will be in the top right of the screen.
 
-> **Info**  
-> If you do not have existing rules for this property, the Create New Rule button will be in the middle of the screen. If your property has rules, the button will be in the top right of the screen.
+<img src="../Assets/edge-send-event-tutorial/mobile-property-create-rule.png" alt="All installed extensions" width="1100"/>  
+
+2. Give your rule an easily recognizable name (**1**) in your list of rules. In this example, the rule is named "Forward Lifecycle XDM events to Edge Network".
+3. Under the **EVENTS** section, select **Add** (**2**).
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-1.png" alt="All installed extensions" width="1100"/>  
 
 #### Select an event <!-- omit in toc -->
-1. Under the Events section, select Add.
+
 2. From the Extension dropdown list, select Mobile Core.
 3. From the Event Type dropdown list, select Foreground.
 4. Select Keep Changes.
@@ -274,6 +279,7 @@ The Lifecycle for Edge Network extension dispatches application foreground and b
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-publish.png" alt="All installed extensions" width="1100"/>  
 
+#### Getting the mobile property ID
 Once the mobile property is published to the Development environment, copy the unique ID assigned to the published property, as we will need it when setting up the app:
 1. Click the box icon next to the environment dropdown (**5**, from above)
 2. Click the double overlapping box (**1**) to the right of the property ID to copy it. Save this ID in a text file somewhere, to use later.
@@ -320,7 +326,7 @@ The long string after is the full path (kind of like an address) to the code rep
   <summary> Using Swift package manager instead? </summary><p>
 
 **Swift Package Manager**
-This tutorial assumes a project using Cocoapods for package dependency management, but if following along with a project that uses Swift package manager, refer to the [README for instructions on how to add the EdgeBridge package](../../README.md#swift-package-managerhttpsgithubcomappleswift-package-manager).
+This tutorial assumes a project using Cocoapods for package dependency management, but if following along with a project that uses Swift package manager, refer to the [README for instructions on how to add the package](../../README.md#swift-package-managerhttpsgithubcomappleswift-package-manager).
 
 </p></details>
 
@@ -415,6 +421,7 @@ There are three files we need to update to enable the features we want from the 
 2. Click the dropdown chevron next to `EdgeTutorialAppStart` to open the directory holding the code files.
 3. Click the `AppDelegate.swift` file.
 4. First update the `ENVIRONMENT_FILE_ID` value to the mobile property ID published in the first section.
+   - See how to get your mobile property ID in the instructions for [getting the mobile property ID](#getting-the-mobile-property-id).
 
 Inside this file, you will see code blocks for this tutorial that are greyed out, because they are block commented out. They are marked by the header and footer:  
 `Edge Tutorial - code section (n/m)`  
@@ -445,7 +452,7 @@ Code blocks in `SceneDelegate.swift`:
 
 **Section 1**: Imports the Assurance (covered later) and Core extensions for use in the code below.
 
-The next two code sections are functionality that is enabled by the [AEP Lifecycle](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension; the extension's main purpose is to track the app's state, basically when the app starts, or is closed, or crashes, etc.
+The next two code sections are functionality that is enabled by the [AEP Lifecycle](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension; the extension's main purpose is to track the app's state, basically when the app starts or is closed.
 
 **Section 2**: Enables the [`lifecycleStart` API](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle/lifecycle-api-reference#lifecycle-start) that tracks when the app is opened.
 
@@ -474,7 +481,7 @@ The [Identity for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/i
 [API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network/api-reference)
 
 ### Lifecycle for Edge extension <!-- omit in toc -->
-The [Lifecycle for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension enables you to collect app lifecycle data from your mobile app when using AEP and the Edge extension. This includes data like app start, stop, and crashes, device type, device OS, etc.
+The [Lifecycle for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension enables you to collect app lifecycle data from your mobile app when using AEP and the Edge extension. This includes data like app start, stop, device type, device OS, etc.
 
 [API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle/lifecycle-api-reference)
 
