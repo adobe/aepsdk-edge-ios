@@ -23,20 +23,24 @@ class EdgeHitProcessor: HitProcessing {
     private var getXDMSharedState: (String, Event?, Bool) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
+    private var getLocationHint: () -> String?
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
+    private let VALID_PATH_REGEX_PATTERN = "^\\/[/.a-zA-Z0-9-~_]+$"
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
          getSharedState: @escaping (String, Event?) -> SharedStateResult?,
          getXDMSharedState: @escaping (String, Event?, Bool) -> SharedStateResult?,
          readyForEvent: @escaping (Event) -> Bool,
-         getImplementationDetails: @escaping () -> [String: Any]?) {
+         getImplementationDetails: @escaping () -> [String: Any]?,
+         getLocationHint: @escaping () -> String?) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
         self.getSharedState = getSharedState
         self.getXDMSharedState = getXDMSharedState
         self.readyForEvent = readyForEvent
         self.getImplementationDetails = getImplementationDetails
+        self.getLocationHint = getLocationHint
     }
 
     // MARK: HitProcessing
@@ -59,8 +63,8 @@ class EdgeHitProcessor: HitProcessing {
             return
         }
 
-        // fetch config shared state, this should be resolved based on readyForEvent check
-        guard let (configId, edgeEndpoint) = getEdgeConfig(event: event) else {
+        // fetch config keys for Edge extension
+        guard let edgeConfig = getEdgeConfig(event: event), let configId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID] else {
             completion(true)
             return // drop current event
         }
@@ -75,6 +79,9 @@ class EdgeHitProcessor: HitProcessing {
         // Enable response streaming for all events
         requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                lineFeed: EdgeConstants.Defaults.LINE_FEED)
+
+        // Get location hint for request endpoint
+        let locationHint = getLocationHint()
 
         if event.isExperienceEvent {
             guard let eventData = event.data, !eventData.isEmpty else {
@@ -97,7 +104,12 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let edgeHit = ExperienceEventsEdgeHit(edgeEndpoint: edgeEndpoint, configId: configId, request: requestPayload)
+            let requestProperties = getRequestProperties(from: event)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig,
+                                             requestType: EdgeRequestType.interact,
+                                             requestProperties: requestProperties,
+                                             locationHint: locationHint)
+            let edgeHit = ExperienceEventsEdgeHit(endpoint: endpoint, configId: configId, request: requestPayload)
             // NOTE: the order of these events needs to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
             networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
@@ -118,7 +130,11 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let edgeHit = ConsentEdgeHit(edgeEndpoint: edgeEndpoint, configId: configId, consents: consentPayload)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig,
+                                             requestType: EdgeRequestType.consent,
+                                             requestProperties: nil,
+                                             locationHint: locationHint)
+            let edgeHit = ConsentEdgeHit(endpoint: endpoint, configId: configId, consents: consentPayload)
             networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
         } else if event.isResetIdentitiesEvent {
@@ -127,6 +143,21 @@ class EdgeHitProcessor: HitProcessing {
             storeResponsePayloadManager.deleteAllStorePayloads()
             completion(true)
         }
+    }
+
+    /// Builds the endpoint based on the provided config info and `EdgeRequestType`
+    /// - Parameters:
+    ///   - config: configuration data, used to extract the environment and the custom domain, if any
+    ///   - requestType: the `EdgeRequestType`
+    ///   - requestProperties: properties from request event
+    ///   - locationHint: optional location hint
+    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType, requestProperties: [String: Any]?, locationHint: String?) -> EdgeEndpoint {
+        return EdgeEndpoint(
+            requestType: requestType,
+            environmentType: EdgeEnvironmentType(optionalRawValue: config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT]),
+            optionalDomain: config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN],
+            optionalPath: requestProperties?[EdgeConstants.EventDataKeys.Request.PATH] as? String,
+            locationHint: locationHint)
     }
 
     private func decode(dataEntity: DataEntity) -> EdgeDataEntity? {
@@ -147,10 +178,9 @@ class EdgeHitProcessor: HitProcessing {
     ///   - headers: headers for the request
     ///   - completion: completion handler for the hit processor
     private func sendHit(entityId: String, edgeHit: EdgeHit, headers: [String: String], completion: @escaping (Bool) -> Void) {
-        guard let url = networkService.buildUrl(requestType: edgeHit.getType(),
+        guard let url = networkService.buildUrl(endpoint: edgeHit.endpoint,
                                                 configId: edgeHit.configId,
-                                                requestId: edgeHit.requestId,
-                                                edgeEndpoint: edgeHit.edgeEndpoint) else {
+                                                requestId: edgeHit.requestId) else {
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Failed to build the URL, dropping request with id '\(edgeHit.requestId)'.")
             completion(true)
@@ -169,10 +199,10 @@ class EdgeHitProcessor: HitProcessing {
         }
     }
 
-    /// Extracts the Edge Configuration identifier and Edge Configuration endpoint from the Configuration Shared State
+    /// Extracts all the Edge configuration keys from the Configuration shared state
     /// - Parameter event: current event for which the configuration is required
-    /// - Returns: the Edge Configuration Id if found and Edge Configuration endpoint, nil if Edge Configuration Id was not found
-    private func getEdgeConfig(event: Event) -> (String, EdgeEndpoint)? {
+    /// - Returns: the Edge configuration keys with values, nil if edge.configId was not found
+    private func getEdgeConfig(event: Event) -> [String: String]? {
         guard let configSharedState =
                 getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                event)?.value else {
@@ -180,9 +210,6 @@ class EdgeHitProcessor: HitProcessing {
                         "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', Configuration is nil.")
             return nil
         }
-
-        let edgeEndpointStr = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] as? String
-        let edgeEndpoint = EdgeEndpoint(optionalRawValue: edgeEndpointStr?.lowercased())
 
         guard let configId =
                 configSharedState[EdgeConstants.SharedState.Configuration.CONFIG_ID] as? String,
@@ -193,7 +220,12 @@ class EdgeHitProcessor: HitProcessing {
             return nil
         }
 
-        return (configId, edgeEndpoint)
+        var config: [String: String] = [:]
+        config[EdgeConstants.SharedState.Configuration.CONFIG_ID] = configId
+        config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] as? String
+        config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN] = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN] as? String
+
+        return config
     }
 
     /// Computes the request headers for provided `event`, including the `Assurance` integration identifier when `Assurance` is enabled
@@ -210,4 +242,53 @@ class EdgeHitProcessor: HitProcessing {
         return requestHeaders
     }
 
+    // Extracts all the custom request properties to overwrite the default values
+    /// - Parameter event: current event for which the request properties are to be extracted
+    /// - Returns: the dictionary of extracted request properties and their custom values
+    private func getRequestProperties(from event: Event) -> [String: Any]? {
+        var requestProperties = [String: Any]()
+        if let overwritePath = getCustomRequestPath(from: event) {
+            Log.trace(label: self.SELF_TAG, "Got custom path:(\(overwritePath)) for event:(\(event.id)), which will overwrite the default interaction request path.")
+            requestProperties[EdgeConstants.EventDataKeys.Request.PATH] = overwritePath
+        }
+        return requestProperties
+    }
+
+    // Extracts network request path property to overwrite the default endpoint path value
+    /// - Parameter event: current event for which the request path property is to be extracted
+    /// - Returns: the custom path string
+    private func getCustomRequestPath(from event: Event) -> String? {
+        var path: String?
+        if let eventData = event.data {
+            let requestData = eventData[EdgeConstants.EventDataKeys.Request.KEY] as? [String: Any]
+            path = requestData?[EdgeConstants.EventDataKeys.Request.PATH] as? String
+        }
+
+        guard let path = path, !path.isEmpty else {
+            return nil
+        }
+
+        if !isValidPath(path) {
+            Log.error(label: self.SELF_TAG, "Dropping the overwrite path value: (\(path)), since it contains invalid characters or is empty.")
+            return nil
+        }
+
+        return path
+    }
+
+    /// Validates a given path does not contain invalid characters.
+    /// A 'path'  may only contain alphanumeric characters, forward slash, period, hyphen, underscore, or tilde, but may not contain a double forward slash.
+    /// - Parameter path: the path to validate
+    /// - Returns: true if 'path' passes validation, false if 'path' contains invalid characters.
+    private func isValidPath(_ path: String) -> Bool {
+       if path.contains("//") {
+            return false
+        }
+
+        let pattern = VALID_PATH_REGEX_PATTERN
+
+        let regex = try? NSRegularExpression(pattern: pattern, options: [])
+        let matches = regex?.firstMatch(in: path, range: NSRange(path.startIndex..., in: path)) != nil
+        return matches
+    }
 }

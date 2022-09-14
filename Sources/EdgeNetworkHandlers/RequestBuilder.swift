@@ -72,6 +72,12 @@ class RequestBuilder {
         guard event.data != nil,
               let consents = event.data?[EdgeConstants.EventDataKeys.CONSENTS] as? [String: Any] else { return nil }
 
+        // Add query with operation update to specify the consent update should be
+        // executed as an incremental update and not enforce collect consent settings to be provided all the time
+        var consentQueryOptions = [String: Any]()
+        consentQueryOptions[EdgeConstants.JsonKeys.Query.OPERATION] = EdgeConstants.JsonValues.Query.OPERATION_UPDATE
+        let query = QueryOptions(consent: AnyCodable.from(dictionary: consentQueryOptions))
+
         // set IdentityMap if available
         var identityMap = [String: AnyCodable]()
         if let identityMapDict = xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] {
@@ -84,6 +90,7 @@ class RequestBuilder {
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
 
         return EdgeConsentUpdate(meta: requestMetadata,
+                                 query: query,
                                  identityMap: identityMap,
                                  consent: [EdgeConsentPayload(standard: EdgeConstants.JsonValues.CONSENT_STANDARD,
                                                               version: EdgeConstants.JsonValues.CONSENT_VERSION,
@@ -113,7 +120,7 @@ class RequestBuilder {
                 if xdm[EdgeConstants.JsonKeys.TIMESTAMP] == nil ||
                     (xdm[EdgeConstants.JsonKeys.TIMESTAMP] as? String)?.isEmpty ?? true {
                     // if no timestamp is provided in the xdm event payload, set the event timestamp
-                    xdm[EdgeConstants.JsonKeys.TIMESTAMP] = ISO8601DateFormatter().string(from: event.timestamp)
+                    xdm[EdgeConstants.JsonKeys.TIMESTAMP] = event.timestamp.getISO8601UTCDateWithMilliseconds()
                 }
 
                 xdm[EdgeConstants.JsonKeys.EVENT_ID] = event.id.uuidString
@@ -129,6 +136,12 @@ class RequestBuilder {
                             [EdgeConstants.JsonKeys.CollectMetadata.DATASET_ID: trimmedDatasetId]]
                 }
                 eventData.removeValue(forKey: EdgeConstants.EventDataKeys.DATASET_ID)
+            }
+
+            if eventData[EdgeConstants.EventDataKeys.Request.KEY] is [String: Any] {
+                // Remove this request object as it is internal to the SDK
+                // request object contains custom values to overwrite different request properties like path
+                eventData.removeValue(forKey: EdgeConstants.EventDataKeys.Request.KEY)
             }
 
             guard let wrappedEventData = AnyCodable.from(dictionary: eventData) else {

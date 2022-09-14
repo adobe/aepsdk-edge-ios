@@ -1,6 +1,6 @@
 
 export EXTENSION_NAME = AEPEdge
-export APP_NAME = AEPCommerceDemoApp
+export APP_NAME = TestAppSwiftUI
 PROJECT_NAME = $(EXTENSION_NAME)
 TARGET_NAME_XCFRAMEWORK = $(EXTENSION_NAME).xcframework
 SCHEME_NAME_XCFRAMEWORK = AEPEdgeXCF
@@ -13,46 +13,33 @@ IOS_ARCHIVE_DSYM_PATH = $(CURR_DIR)/build/ios.xcarchive/dSYMs/
 
 setup:
 	(pod install)
-	(cd SampleApps/$(APP_NAME) && pod install)
 
 setup-tools: install-githook
 
 pod-repo-update:
 	(pod repo update)
-	(cd SampleApps/$(APP_NAME) && pod repo update)
 
 ci-pod-repo-update:
 	(bundle exec pod repo update)
-	(cd SampleApps/$(APP_NAME) && bundle exec pod repo update)
 
 # pod repo update may fail if there is no repo (issue fixed in v1.8.4). Use pod install --repo-update instead
 pod-install:
 	(pod install --repo-update)
-	(cd SampleApps/$(APP_NAME) && pod install --repo-update)
 
 ci-pod-install:
 	(bundle exec pod install --repo-update)
-	(cd SampleApps/$(APP_NAME) && bundle exec pod install --repo-update)
 
 pod-update: pod-repo-update
 	(pod update)
-	(cd SampleApps/$(APP_NAME) && pod update)
 
 ci-pod-update: ci-pod-repo-update
 	(bundle exec pod update)
-	(cd SampleApps/$(APP_NAME) && bundle exec pod update)
 
 open:
 	open $(PROJECT_NAME).xcworkspace
 
-open-app:
-	open ./SampleApps/$(APP_NAME)/*.xcworkspace
-
 clean:
 	(rm -rf build)
-
-build-app:
-	make -C SampleApps/$(APP_NAME) build-shallow
 
 archive: pod-update _archive
 
@@ -76,7 +63,7 @@ lint-autocorrect:
 	./Pods/SwiftLint/swiftlint autocorrect
 
 lint:
-	(./Pods/SwiftLint/swiftlint lint Sources SampleApps/AEPCommerceDemoApp)
+	(./Pods/SwiftLint/swiftlint lint Sources TestApps/$(APP_NAME))
 
 check-version:
 	(sh ./Script/version.sh $(VERSION))

@@ -57,8 +57,8 @@ class EdgeConsentTests: FunctionalTestBase {
         continueAfterFailure = false
         FileManager.default.clearCache()
 
-        // hub shared state update for 4 extensions (InstrumentedExtension (registered in FunctionalTestBase), Configuration, Edge, Consent, Edge Identity)
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
+        // hub shared state update for 5 extensions (InstrumentedExtension (registered in FunctionalTestBase), Configuration, Edge, Consent, Edge Identity)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 5)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONSENT, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
         // expectations for update config request&response events
@@ -204,7 +204,8 @@ class EdgeConsentTests: FunctionalTestBase {
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
         let requestBody = getFlattenNetworkRequestBody(consentRequests[0])
         print(requestBody)
-        XCTAssertEqual(10, requestBody.count)
+        XCTAssertEqual(11, requestBody.count)
+        XCTAssertEqual("update", requestBody["query.consent.operation"] as? String)
         XCTAssertNotNil(requestBody["identityMap.ECID[0].id"] as? String)
         XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertEqual(false, requestBody["identityMap.ECID[0].primary"] as? Bool)
@@ -231,7 +232,8 @@ class EdgeConsentTests: FunctionalTestBase {
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
         let requestBody = getFlattenNetworkRequestBody(consentRequests[0])
         print(requestBody)
-        XCTAssertEqual(10, requestBody.count)
+        XCTAssertEqual(11, requestBody.count)
+        XCTAssertEqual("update", requestBody["query.consent.operation"] as? String)
         XCTAssertNotNil(requestBody["identityMap.ECID[0].id"] as? String)
         XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertEqual(false, requestBody["identityMap.ECID[0].primary"] as? Bool)
