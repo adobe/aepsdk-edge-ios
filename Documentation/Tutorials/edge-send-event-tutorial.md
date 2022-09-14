@@ -264,6 +264,9 @@ The Lifecycle for Edge Network extension dispatches application foreground and b
 4. Click **Add All Changed Resources** 
 5. Click **Save & Build to Development**
 
+Once the mobile property is published to the Development environment, copy the unique ID assigned to the published property, as we will need it when setting up the app:
+1. Click the 
+
 ## Client-side implementation
 
 Now that the server side configuration is complete, we can install the extensions in the app and enable extension functionality by making some code updates.
@@ -285,7 +288,7 @@ You should see the following in your terminal: "cd " (the space after `cd` is im
 ```bash
 cd 
 ```
-7. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials**. Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Click and drag the folder into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`  
+7. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials**. Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Click and drag the **EdgeTutorialAppStart** folder into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`  
 8. Then press `return` to execute the command.
 
 <details>
@@ -297,44 +300,11 @@ The long string after is the full path (kind of like an address) to the code rep
 
 </p></details>
 
-Now that we're in the project directory, there's some setup we have to do; the app depends on packages which are not installed with the repository. To install them, run the command:
-
-```bash
-pod update
-```
-
 <details>
   <summary> Using Swift package manager instead? </summary><p>
 
 **Swift Package Manager**
 This tutorial assumes a project using Cocoapods for package dependency management, but if following along with a project that uses Swift package manager, refer to the [README for instructions on how to add the EdgeBridge package](../../README.md#swift-package-managerhttpsgithubcomappleswift-package-manager).
-
-</p></details>
-
-You should see the dependency manager CocoaPods installing the various packages required by the project. 
-
-<details>
-  <summary> Expected output </summary><p>
-
-```
-tim@Tims-MacBook-Pro aepsdk-edgebridge-ios % pod update
-Update all pods
-Updating local specs repositories
-Analyzing dependencies
-Downloading dependencies
-Installing AEPAssurance (3.0.1)
-Installing AEPCore (3.7.1)
-Installing AEPEdge (1.4.1)
-Installing AEPEdgeConsent (1.0.1)
-Installing AEPEdgeIdentity (1.1.0)
-Installing AEPLifecycle (3.7.1)
-Installing AEPRulesEngine (1.2.0)
-Installing AEPServices (3.7.1)
-Generating Pods project
-Integrating client project
-Pod installation complete! There are 7 dependencies from the Podfile and 8 total pods installed.
-tim@Tims-MacBook-Pro aepsdk-edgebridge-ios % 
-```
 
 </p></details>
 
@@ -394,7 +364,33 @@ The `#` symbol is how to comment out lines of code in the programming language R
 ```bash
 pod update
 ```
+
 Cocoapods will use the newly updated configuration file to install the new packages (all of the new Edge extensions we want!), which will allow us to use the Edge extensions' features in the app's code. 
+
+<details>
+  <summary> Expected output </summary><p>
+
+```
+tim@Tims-MacBook-Pro aepsdk-edgebridge-ios % pod update
+Update all pods
+Updating local specs repositories
+Analyzing dependencies
+Downloading dependencies
+Installing AEPAssurance (3.0.1)
+Installing AEPCore (3.7.1)
+Installing AEPEdge (1.4.1)
+Installing AEPEdgeConsent (1.0.1)
+Installing AEPEdgeIdentity (1.1.0)
+Installing AEPLifecycle (3.7.1)
+Installing AEPRulesEngine (1.2.0)
+Installing AEPServices (3.7.1)
+Generating Pods project
+Integrating client project
+Pod installation complete! There are 7 dependencies from the Podfile and 8 total pods installed.
+tim@Tims-MacBook-Pro aepsdk-edgebridge-ios % 
+```
+
+</p></details>
 
 ### 3. Update tutorial app code to enable Edge features
 There are three files we need to update to enable the features we want from the Edge extension. Thankfully, all of the code changes are contained in block comments like the Podfile so you only have to make a few updates!
