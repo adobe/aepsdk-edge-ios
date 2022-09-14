@@ -9,6 +9,12 @@
     - [1. Create a schema](#1-create-a-schema)
     - [2. Create a datastream](#2-create-a-datastream)
     - [3. Create a property](#3-create-a-property)
+    - [4. Configure a Rule to Forward Lifecycle metrics to Platform](#4-configure-a-rule-to-forward-lifecycle-metrics-to-platform)
+      - [Create a rule](#create-a-rule)
+      - [Select an event](#select-an-event)
+      - [Define the action](#define-the-action)
+      - [Save the rule and rebuild your property](#save-the-rule-and-rebuild-your-property)
+    - [5. Publish changes](#5-publish-changes)
   - [Client-side implementation](#client-side-implementation)
     - [1. Get a copy of the files (tutorial app code) and initial setup](#1-get-a-copy-of-the-files-tutorial-app-code-and-initial-setup)
     - [1. Install the Edge extensions using dependency manager (CocoaPods)](#1-install-the-edge-extensions-using-dependency-manager-cocoapods)
@@ -218,7 +224,50 @@ You should see the following after all the extensions are installed:
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-edge-extensions.png" alt="All installed extensions" width="1100"/>  
 
-// TODO: Publishing changes
+### 4. Configure a Rule to Forward Lifecycle metrics to Platform
+
+The Lifecycle for Edge Network extension dispatches application foreground and background events to the Mobile SDK. Create a rule to forward these events to the Adobe Experience Platform Edge Network.
+
+#### Create a rule
+1. On the Rules tab, select Create New Rule.
+2. Give your rule an easily recognizable name in your list of rules. In this example, the rule is named "Forward Lifecycle XDM events to Edge Network".
+
+> **Info**  
+> If you do not have existing rules for this property, the Create New Rule button will be in the middle of the screen. If your property has rules, the button will be in the top right of the screen.
+
+#### Select an event
+1. Under the Events section, select Add.
+2. From the Extension dropdown list, select Mobile Core.
+3. From the Event Type dropdown list, select Foreground.
+4. Select Keep Changes.
+5. Under the Events section again, select the plus icon to add another Event.
+6. From the Extension dropdown list, select Mobile Core.
+7. From the Event Type dropdown list, select Background.
+8. Select Keep Changes.
+
+<img src="../Assets/edge-send-event-tutorial/lifecycle-rule-1.png" alt="All installed extensions" width="1100"/>  
+
+#### Define the action
+1. Under the Actions section, select Add.
+2. From the Extension dropdown list, select Adobe Experience Platform Edge Network.
+3. From the Action Type dropdown list, select Forward event to Edge Network.
+4. Select Keep Changes.
+
+<img src="../Assets/edge-send-event-tutorial/lifecycle-rule-2.png" alt="All installed extensions" width="1100"/>  
+
+#### Save the rule and rebuild your property
+1. After you complete your configuration, verify that your rule looks like the following:
+2. Select Save.
+3. Rebuild your mobile property and deploy it to the correct environment.
+
+<img src="../Assets/edge-send-event-tutorial/lifecycle-rule-3.png" alt="All installed extensions" width="1100"/>  
+
+### 5. Publish changes
+1. Click **Publishing Flow** under **PUBLISHING** in the left-side navigation window.
+2. Click **Add Library** in the top left.
+3. Set a name for the property, and set the environment to Development
+4. Click **Add All Changed Resources** 
+5. Click **Save & Build to Development**
 
 ## Client-side implementation
 
@@ -356,8 +405,9 @@ There are three files we need to update to enable the features we want from the 
 1. Click the dropdown chevron next to `EdgeTutorialAppStart` in the left-side navigation panel to open the project.
 2. Click the dropdown chevron next to `EdgeTutorialAppStart` to open the directory holding the code files.
 3. Click the `AppDelegate.swift` file.
+4. First update the `ENVIRONMENT_FILE_ID` value to the mobile property ID published in the first section.
 
-Inside, you will see code blocks for this tutorial that are greyed out, because they are block commented out. They are marked by the header and footer:  
+Inside this file, you will see code blocks for this tutorial that are greyed out, because they are block commented out. They are marked by the header and footer:  
 `Edge Tutorial - code section (n/m)`  
 Where `n` is the current section and `m` is the total number of sections in the file.
 
