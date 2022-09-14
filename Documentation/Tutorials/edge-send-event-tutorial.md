@@ -11,7 +11,6 @@
     - [3. Create a property](#3-create-a-property)
     - [4. Configure a Rule to Forward Lifecycle metrics to Platform](#4-configure-a-rule-to-forward-lifecycle-metrics-to-platform)
     - [5. Publish changes](#5-publish-changes)
-      - [Getting the mobile property ID](#getting-the-mobile-property-id)
   - [Client-side implementation](#client-side-implementation)
     - [1. Get a copy of the files (tutorial app code) and initial setup](#1-get-a-copy-of-the-files-tutorial-app-code-and-initial-setup)
     - [2. Install the Edge extensions using dependency manager (CocoaPods)](#2-install-the-edge-extensions-using-dependency-manager-cocoapods)
@@ -246,40 +245,49 @@ The Lifecycle for Edge extension sends app foreground and background events to t
 
 #### Select an event <!-- omit in toc -->
 
-2. From the Extension dropdown list, select Mobile Core.
-3. From the Event Type dropdown list, select Foreground.
-4. Select Keep Changes.
-5. Under the Events section again, select the plus icon to add another Event.
-6. From the Extension dropdown list, select Mobile Core.
-7. From the Event Type dropdown list, select Background.
-8. Select Keep Changes.
+2. From the **Extension** dropdown list (**1**), select **Mobile Core**.
+3. From the **Event Type** dropdown list (**2**), select **Foreground**.
+4. Select **Keep Changes** (**3**).
 
-<img src="../Assets/edge-send-event-tutorial/lifecycle-rule-1.png" alt="All installed extensions" width="1100"/>  
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-2.png" alt="All installed extensions" width="1100"/>  
+
+5. Under the **EVENTS** section again, select the plus icon (**1**) to add another Event.
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-3.png" alt="All installed extensions" width="1100"/>  
+
+6. From the **Extension** dropdown list (**1**), select **Mobile Core**.
+7. From the **Event Type** dropdown list (**2**), select **Background**.
+8. Select **Keep Changes** (**3**).
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-4.png" alt="All installed extensions" width="1100"/>  
 
 #### Define the action <!-- omit in toc -->
-1. Under the Actions section, select Add.
-2. From the Extension dropdown list, select Adobe Experience Platform Edge Network.
-3. From the Action Type dropdown list, select Forward event to Edge Network.
-4. Select Keep Changes.
+1. Under the Actions section, select **+ Add** (**1**).
 
-<img src="../Assets/edge-send-event-tutorial/lifecycle-rule-2.png" alt="All installed extensions" width="1100"/>  
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-5.png" alt="All installed extensions" width="1100"/>  
+
+2. From the **Extension** dropdown list (**1**), select **Adobe Experience Platform Edge Network**.
+3. From the **Action Type** dropdown list (**2**), select **Forward event to Edge Network**.
+4. Select **Keep Changes** (**3**).
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-6.png" alt="All installed extensions" width="1100"/>  
 
 #### Save the rule and rebuild your property <!-- omit in toc -->
 1. After you complete your configuration, verify that your rule looks like the following:
-2. Select Save.
+2. Select **Save** (**1**).
 
-<img src="../Assets/edge-send-event-tutorial/lifecycle-rule-3.png" alt="All installed extensions" width="1100"/>  
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-7.png" alt="All installed extensions" width="1100"/>  
 
 ### 5. Publish changes
 1. Click **Publishing Flow** under **PUBLISHING** in the left-side navigation window.
 2. Click **Add Library** in the top right.
-3. Set a name (**1**) for the property, and set the environment to Development (**2**)
+3. Set a **Name** (**1**) for the property, and set the environment to **Development** (**2**)
 4. Click **Add All Changed Resources** (**3**)
 5. Click **Save & Build to Development** (**4**)
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-publish.png" alt="All installed extensions" width="1100"/>  
 
-#### Getting the mobile property ID
+#### Getting the mobile property ID <!-- omit in toc -->
 Once the mobile property is published to the Development environment, copy the unique ID assigned to the published property, as we will need it when setting up the app:
 1. Click the box icon next to the environment dropdown (**5**, from above)
 2. Click the double overlapping box (**1**) to the right of the property ID to copy it. Save this ID in a text file somewhere, to use later.
@@ -393,7 +401,7 @@ Cocoapods will use the newly updated configuration file to install the new packa
   <summary> Expected output </summary><p>
 
 ```
-tim@Tims-MacBook-Pro aepsdk-edgebridge-ios % pod update
+tim@Tims-MacBook-Pro aepsdk-edge-ios-tutorial-send-event % pod update
 Update all pods
 Updating local specs repositories
 Analyzing dependencies
@@ -409,7 +417,7 @@ Installing AEPServices (3.7.1)
 Generating Pods project
 Integrating client project
 Pod installation complete! There are 7 dependencies from the Podfile and 8 total pods installed.
-tim@Tims-MacBook-Pro aepsdk-edgebridge-ios % 
+tim@Tims-MacBook-Pro aepsdk-edge-ios-tutorial-send-event % 
 ```
 
 </p></details>
