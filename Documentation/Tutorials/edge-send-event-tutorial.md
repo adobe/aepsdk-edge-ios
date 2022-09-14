@@ -10,20 +10,13 @@
     - [2. Create a datastream](#2-create-a-datastream)
     - [3. Create a property](#3-create-a-property)
     - [4. Configure a Rule to Forward Lifecycle metrics to Platform](#4-configure-a-rule-to-forward-lifecycle-metrics-to-platform)
-      - [Create a rule](#create-a-rule)
-      - [Select an event](#select-an-event)
-      - [Define the action](#define-the-action)
-      - [Save the rule and rebuild your property](#save-the-rule-and-rebuild-your-property)
     - [5. Publish changes](#5-publish-changes)
   - [Client-side implementation](#client-side-implementation)
     - [1. Get a copy of the files (tutorial app code) and initial setup](#1-get-a-copy-of-the-files-tutorial-app-code-and-initial-setup)
-    - [1. Install the Edge extensions using dependency manager (CocoaPods)](#1-install-the-edge-extensions-using-dependency-manager-cocoapods)
-    - [2. Update tutorial app code to enable Edge features](#2-update-tutorial-app-code-to-enable-edge-features)
-    - [Consent for Edge extension](#consent-for-edge-extension)
-    - [Identity for Edge extension](#identity-for-edge-extension)
-    - [Lifecycle for Edge extension](#lifecycle-for-edge-extension)
-    - [3. Run app](#3-run-app)
-    - [4. `sendEvent` implementation examples](#4-sendevent-implementation-examples)
+    - [2. Install the Edge extensions using dependency manager (CocoaPods)](#2-install-the-edge-extensions-using-dependency-manager-cocoapods)
+    - [3. Update tutorial app code to enable Edge features](#3-update-tutorial-app-code-to-enable-edge-features)
+    - [4. Run app](#4-run-app)
+    - [5. `sendEvent` implementation examples](#5-sendevent-implementation-examples)
   - [Validation with Assurance](#validation-with-assurance)
     - [1. Set up the Assurance session](#1-set-up-the-assurance-session)
     - [2. Connect to the app](#2-connect-to-the-app)
@@ -228,14 +221,14 @@ You should see the following after all the extensions are installed:
 
 The Lifecycle for Edge Network extension dispatches application foreground and background events to the Mobile SDK. Create a rule to forward these events to the Adobe Experience Platform Edge Network.
 
-#### Create a rule
+#### Create a rule <!-- omit in toc -->
 1. On the Rules tab, select Create New Rule.
 2. Give your rule an easily recognizable name in your list of rules. In this example, the rule is named "Forward Lifecycle XDM events to Edge Network".
 
 > **Info**  
 > If you do not have existing rules for this property, the Create New Rule button will be in the middle of the screen. If your property has rules, the button will be in the top right of the screen.
 
-#### Select an event
+#### Select an event <!-- omit in toc -->
 1. Under the Events section, select Add.
 2. From the Extension dropdown list, select Mobile Core.
 3. From the Event Type dropdown list, select Foreground.
@@ -247,7 +240,7 @@ The Lifecycle for Edge Network extension dispatches application foreground and b
 
 <img src="../Assets/edge-send-event-tutorial/lifecycle-rule-1.png" alt="All installed extensions" width="1100"/>  
 
-#### Define the action
+#### Define the action <!-- omit in toc -->
 1. Under the Actions section, select Add.
 2. From the Extension dropdown list, select Adobe Experience Platform Edge Network.
 3. From the Action Type dropdown list, select Forward event to Edge Network.
@@ -255,7 +248,7 @@ The Lifecycle for Edge Network extension dispatches application foreground and b
 
 <img src="../Assets/edge-send-event-tutorial/lifecycle-rule-2.png" alt="All installed extensions" width="1100"/>  
 
-#### Save the rule and rebuild your property
+#### Save the rule and rebuild your property <!-- omit in toc -->
 1. After you complete your configuration, verify that your rule looks like the following:
 2. Select Save.
 3. Rebuild your mobile property and deploy it to the correct environment.
@@ -274,7 +267,7 @@ The Lifecycle for Edge Network extension dispatches application foreground and b
 Now that the server side configuration is complete, we can install the extensions in the app and enable extension functionality by making some code updates.
 
 ### 1. Get a copy of the files (tutorial app code) and initial setup
-1. Open the code repository: https://github.com/adobe/aepsdk-edge-ios/tree/dev
+1. Open the code repository: https://github.com/adobe/aepsdk-edge-ios/tree/tutorial-send-event
 2. Click **Code** in the top right 
 3. In the window that opens, click **Download ZIP**; by default it should land in your **Downloads** folder.
    - Optionally, move the ZIP to your **Documents** folder
@@ -290,7 +283,7 @@ You should see the following in your terminal: "cd " (the space after `cd` is im
 ```bash
 cd 
 ```
-7. Return to your Finder window that has the unzipped repository folder. Click and drag the folder into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios/Tutorials/EdgeTutorialAppStart`  
+7. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials**. Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Click and drag the folder into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`  
 8. Then press `return` to execute the command.
 
 <details>
@@ -298,7 +291,7 @@ cd
 
 `cd` is the terminal command for change directory; the command above changes your terminal's active directory to the repository we just copied.
 
-The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edge-ios/Tutorials/EdgeTutorialAppStart`, taken together, this command changes our terminal window context to the tutorial app code folder!
+The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`, taken together, this command changes our terminal window context to the tutorial app code folder!
 
 </p></details>
 
@@ -343,7 +336,7 @@ tim@Tims-MacBook-Pro aepsdk-edgebridge-ios %
 
 </p></details>
 
-### 1. Install the Edge extensions using dependency manager (CocoaPods)
+### 2. Install the Edge extensions using dependency manager (CocoaPods)
 With the project set up, our next task is to install the Edge extensions for our tutorial app. We can easily do this by updating the file that controls the package dependencies for the repository. 
 
 1. Open the project using the command:
@@ -399,7 +392,7 @@ pod update
 ```
 Cocoapods will use the newly updated configuration file to install the new packages (all of the new Edge extensions we want!), which will allow us to use the Edge extensions' features in the app's code. 
 
-### 2. Update tutorial app code to enable Edge features
+### 3. Update tutorial app code to enable Edge features
 There are three files we need to update to enable the features we want from the Edge extension. Thankfully, all of the code changes are contained in block comments like the Podfile so you only have to make a few updates!
 
 1. Click the dropdown chevron next to `EdgeTutorialAppStart` in the left-side navigation panel to open the project.
@@ -465,22 +458,22 @@ Notice that both of these APIs rely on the developer to place them in the proper
 
 </p></details>
 
-### Consent for Edge extension
+### Consent for Edge extension <!-- omit in toc -->
 The [Consent for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network) mobile extension enables you to collect user data tracking consent preferences from your mobile app when using AEP and the Edge extension. The default consent settings should be set in alignment with your organization's user data privacy requirements. See the guide on [ingesting data using the Consents and Preferences data type](https://experienceleague.adobe.com/docs/experience-platform/xdm/data-types/consents.html#ingest).
 
 [API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network/api-reference)
 
-### Identity for Edge extension
+### Identity for Edge extension <!-- omit in toc -->
 The [Identity for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network) mobile extension enables identity management when using AEP and the Edge extension. You can control IDs associated with the user like custom IDs, advertising IDs, etc.
 
 [API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network/api-reference)
 
-### Lifecycle for Edge extension
+### Lifecycle for Edge extension <!-- omit in toc -->
 The [Lifecycle for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension enables you to collect app lifecycle data from your mobile app when using AEP and the Edge extension. This includes data like app start, stop, and crashes, device type, device OS, etc.
 
 [API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle/lifecycle-api-reference)
 
-### 3. Run app   
+### 4. Run app   
 In Xcode: 
 1. Set the app target (**1**) to **EdgeTutorialAppStart** (if not already).
 2. Choose which destination device (**2**) to run it on (either simulator or physical device. In this case it is set to the iPhone 13 Pro simulator). 
@@ -496,7 +489,7 @@ You should see your application running on the device you selected, with logs be
 > If the debug console area is not shown by default, activate it by selecting:  
 > View -> Debug Area -> Show Debug Area
 
-### 4. `sendEvent` implementation examples   
+### 5. `sendEvent` implementation examples   
 With Edge extension successfully installed and registered, you can make `sendEvent` calls, which will be processed by the Edge extension and sent to the Edge network.
 
 Check `ContentView.swift` for implementation examples of product add and view events. You can see the data payloads that are to be sent with the calls. Notice that they conform to the Commerce XDM schema structure we set up in the first section.
