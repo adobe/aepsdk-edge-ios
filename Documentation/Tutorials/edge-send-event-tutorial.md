@@ -130,7 +130,7 @@ To see only the properties from a given field group, click the selection box nex
 <details>
   <summary> What is a datastream? </summary><p>
 
-A datastream is a server-side configuration on Platform Edge Network that controls where data goes. Datastreams ensure that incoming data is routed to Adobe Experience Cloud applications and services (like Analytics) appropriately. For more information, see the [datastreams documentation](https://experienceleague.adobe.com/docs/experience-platform/edge/datastreams/overview.html?lang=en) or this [video](https://experienceleague.adobe.com/docs/platform-learn/data-collection/edge-network/configure-datastreams.html?lang=en).
+A datastream is a server-side configuration on Platform Edge Network that controls where data goes. Datastreams ensure that incoming data is routed to the Adobe Experience Platform application and services (like Analytics) appropriately. For more information, see the [datastreams documentation](https://experienceleague.adobe.com/docs/experience-platform/edge/datastreams/overview.html?lang=en) or this [video](https://experienceleague.adobe.com/docs/platform-learn/data-collection/edge-network/configure-datastreams.html?lang=en).
 
 In order to send data to the Edge Network, the datastream must be configured with the Adobe Experience Platform service.
 
@@ -147,6 +147,8 @@ Click **New Datastream** in the top right.
 Give the datastream an identifying name and description (**1**), then pick the schema created in the previous section using the dropdown menu (**2**). Then click **Save** (**3**). We will be returning to this datastream later on.
 
 <img src="../Assets/edge-send-event-tutorial/datastreams-new-datastream.png" alt="Set datastream values" width="1100"/>  
+
+No
 
 ### 3. Create a property
 
@@ -177,6 +179,15 @@ Click **Catalog** (**1**) and (optionally) use the search box (**2**) to find th
 <img src="../Assets/edge-send-event-tutorial/mobile-property-catalog.png" alt="Catalog search example" width="1100"/>  
 
 We will be installing the following AEP extension configurations:
+
+<details>
+  <summary> AEP Assurance </summary><p>
+
+Open the **Catalog** and install the `AEP Assurance` extension configuration.
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-catalog-assurance.png" alt="Catalog search for Adobe Experience Platform Edge Network" width="1100"/>  
+
+</p></details>
 
 <details>
   <summary> Adobe Experience Platform Edge Network </summary><p>
@@ -219,48 +230,69 @@ You should see the following after all the extensions are installed:
 
 ### 4. Configure a Rule to Forward Lifecycle metrics to Platform
 
-The Lifecycle for Edge Network extension dispatches application foreground and background events to the Mobile SDK. Create a rule to forward these events to the Adobe Experience Platform Edge Network.
+The Lifecycle for Edge extension sends app foreground and background events to the Mobile SDK. We need to create a rule to forward these events to the Edge Network. Note that we don't need to install Lifecycle since it is already included with Mobile Core.
 
 #### Create a rule <!-- omit in toc -->
-1. On the Rules tab, select Create New Rule.
-2. Give your rule an easily recognizable name in your list of rules. In this example, the rule is named "Forward Lifecycle XDM events to Edge Network".
+1. On the Rules tab, select **Create New Rule**.
+   - If your property already has rules, the button will be in the top right of the screen.
 
-> **Info**  
-> If you do not have existing rules for this property, the Create New Rule button will be in the middle of the screen. If your property has rules, the button will be in the top right of the screen.
+<img src="../Assets/edge-send-event-tutorial/mobile-property-create-rule.png" alt="All installed extensions" width="1100"/>  
+
+2. Give your rule an easily recognizable name (**1**) in your list of rules. In this example, the rule is named "Forward Lifecycle XDM events to Edge Network".
+3. Under the **EVENTS** section, select **Add** (**2**).
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-1.png" alt="All installed extensions" width="1100"/>  
 
 #### Select an event <!-- omit in toc -->
-1. Under the Events section, select Add.
-2. From the Extension dropdown list, select Mobile Core.
-3. From the Event Type dropdown list, select Foreground.
-4. Select Keep Changes.
-5. Under the Events section again, select the plus icon to add another Event.
-6. From the Extension dropdown list, select Mobile Core.
-7. From the Event Type dropdown list, select Background.
-8. Select Keep Changes.
 
-<img src="../Assets/edge-send-event-tutorial/lifecycle-rule-1.png" alt="All installed extensions" width="1100"/>  
+2. From the **Extension** dropdown list (**1**), select **Mobile Core**.
+3. From the **Event Type** dropdown list (**2**), select **Foreground**.
+4. Select **Keep Changes** (**3**).
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-2.png" alt="All installed extensions" width="1100"/>  
+
+5. Under the **EVENTS** section again, select the plus icon (**1**) to add another Event.
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-3.png" alt="All installed extensions" width="1100"/>  
+
+6. From the **Extension** dropdown list (**1**), select **Mobile Core**.
+7. From the **Event Type** dropdown list (**2**), select **Background**.
+8. Select **Keep Changes** (**3**).
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-4.png" alt="All installed extensions" width="1100"/>  
 
 #### Define the action <!-- omit in toc -->
-1. Under the Actions section, select Add.
-2. From the Extension dropdown list, select Adobe Experience Platform Edge Network.
-3. From the Action Type dropdown list, select Forward event to Edge Network.
-4. Select Keep Changes.
+1. Under the Actions section, select **+ Add** (**1**).
 
-<img src="../Assets/edge-send-event-tutorial/lifecycle-rule-2.png" alt="All installed extensions" width="1100"/>  
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-5.png" alt="All installed extensions" width="1100"/>  
+
+2. From the **Extension** dropdown list (**1**), select **Adobe Experience Platform Edge Network**.
+3. From the **Action Type** dropdown list (**2**), select **Forward event to Edge Network**.
+4. Select **Keep Changes** (**3**).
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-6.png" alt="All installed extensions" width="1100"/>  
 
 #### Save the rule and rebuild your property <!-- omit in toc -->
 1. After you complete your configuration, verify that your rule looks like the following:
-2. Select Save.
-3. Rebuild your mobile property and deploy it to the correct environment.
+2. Select **Save** (**1**).
 
-<img src="../Assets/edge-send-event-tutorial/lifecycle-rule-3.png" alt="All installed extensions" width="1100"/>  
+<img src="../Assets/edge-send-event-tutorial/mobile-property-rule-7.png" alt="All installed extensions" width="1100"/>  
 
 ### 5. Publish changes
 1. Click **Publishing Flow** under **PUBLISHING** in the left-side navigation window.
-2. Click **Add Library** in the top left.
-3. Set a name for the property, and set the environment to Development
-4. Click **Add All Changed Resources** 
-5. Click **Save & Build to Development**
+2. Click **Add Library** in the top right.
+3. Set a **Name** (**1**) for the property, and set the environment to **Development** (**2**)
+4. Click **Add All Changed Resources** (**3**)
+5. Click **Save & Build to Development** (**4**)
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-publish.png" alt="All installed extensions" width="1100"/>  
+
+#### Getting the mobile property ID <!-- omit in toc -->
+Once the mobile property is published to the Development environment, copy the unique ID assigned to the published property, as we will need it when setting up the app:
+1. Click the box icon next to the environment dropdown (**5**, from above)
+2. Click the double overlapping box (**1**) to the right of the property ID to copy it. Save this ID in a text file somewhere, to use later.
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-id.png" alt="All installed extensions" width="500"/>  
 
 ## Client-side implementation
 
@@ -283,7 +315,10 @@ You should see the following in your terminal: "cd " (the space after `cd` is im
 ```bash
 cd 
 ```
-7. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials**. Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Click and drag the folder into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`  
+7. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials** (**1**). Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Click and drag the **EdgeTutorialAppStart** folder (**2**) into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`  
+
+<img src="../Assets/edge-send-event-tutorial/terminal-setup.png" alt="All installed extensions" width="1100"/>  
+
 8. Then press `return` to execute the command.
 
 <details>
@@ -295,44 +330,11 @@ The long string after is the full path (kind of like an address) to the code rep
 
 </p></details>
 
-Now that we're in the project directory, there's some setup we have to do; the app depends on packages which are not installed with the repository. To install them, run the command:
-
-```bash
-pod update
-```
-
 <details>
   <summary> Using Swift package manager instead? </summary><p>
 
 **Swift Package Manager**
-This tutorial assumes a project using Cocoapods for package dependency management, but if following along with a project that uses Swift package manager, refer to the [README for instructions on how to add the EdgeBridge package](../../README.md#swift-package-managerhttpsgithubcomappleswift-package-manager).
-
-</p></details>
-
-You should see the dependency manager CocoaPods installing the various packages required by the project. 
-
-<details>
-  <summary> Expected output </summary><p>
-
-```
-tim@Tims-MacBook-Pro aepsdk-edgebridge-ios % pod update
-Update all pods
-Updating local specs repositories
-Analyzing dependencies
-Downloading dependencies
-Installing AEPAssurance (3.0.1)
-Installing AEPCore (3.7.1)
-Installing AEPEdge (1.4.1)
-Installing AEPEdgeConsent (1.0.1)
-Installing AEPEdgeIdentity (1.1.0)
-Installing AEPLifecycle (3.7.1)
-Installing AEPRulesEngine (1.2.0)
-Installing AEPServices (3.7.1)
-Generating Pods project
-Integrating client project
-Pod installation complete! There are 7 dependencies from the Podfile and 8 total pods installed.
-tim@Tims-MacBook-Pro aepsdk-edgebridge-ios % 
-```
+This tutorial assumes a project using Cocoapods for package dependency management, but if following along with a project that uses Swift package manager, refer to the [README for instructions on how to add the package](../../README.md#swift-package-managerhttpsgithubcomappleswift-package-manager).
 
 </p></details>
 
@@ -345,9 +347,11 @@ open EdgeTutorialAppStart.xcworkspace
 ```
 
 This should automatically open the Xcode IDE. In Xcode:
-1. Click the dropdown chevron next to `Pods` in the left-side navigation panel.
-2. Click the `Podfile` file.   
+1. Click the dropdown chevron (**1**) next to `Pods` in the left-side navigation panel.
+2. Click the `Podfile` file (**2**).   
    
+<img src="../Assets/edge-send-event-tutorial/xcode-pod-navigation.png" alt="All installed extensions" width="1100"/>  
+
 You should see a section like the following: 
 
 ```ruby
@@ -390,7 +394,33 @@ The `#` symbol is how to comment out lines of code in the programming language R
 ```bash
 pod update
 ```
+
 Cocoapods will use the newly updated configuration file to install the new packages (all of the new Edge extensions we want!), which will allow us to use the Edge extensions' features in the app's code. 
+
+<details>
+  <summary> Expected output </summary><p>
+
+```
+tim@Tims-MacBook-Pro aepsdk-edge-ios-tutorial-send-event % pod update
+Update all pods
+Updating local specs repositories
+Analyzing dependencies
+Downloading dependencies
+Installing AEPAssurance (3.0.1)
+Installing AEPCore (3.7.1)
+Installing AEPEdge (1.4.1)
+Installing AEPEdgeConsent (1.0.1)
+Installing AEPEdgeIdentity (1.1.0)
+Installing AEPLifecycle (3.7.1)
+Installing AEPRulesEngine (1.2.0)
+Installing AEPServices (3.7.1)
+Generating Pods project
+Integrating client project
+Pod installation complete! There are 7 dependencies from the Podfile and 8 total pods installed.
+tim@Tims-MacBook-Pro aepsdk-edge-ios-tutorial-send-event % 
+```
+
+</p></details>
 
 ### 3. Update tutorial app code to enable Edge features
 There are three files we need to update to enable the features we want from the Edge extension. Thankfully, all of the code changes are contained in block comments like the Podfile so you only have to make a few updates!
@@ -399,6 +429,7 @@ There are three files we need to update to enable the features we want from the 
 2. Click the dropdown chevron next to `EdgeTutorialAppStart` to open the directory holding the code files.
 3. Click the `AppDelegate.swift` file.
 4. First update the `ENVIRONMENT_FILE_ID` value to the mobile property ID published in the first section.
+   - See how to get your mobile property ID in the instructions for [getting the mobile property ID](#getting-the-mobile-property-id).
 
 Inside this file, you will see code blocks for this tutorial that are greyed out, because they are block commented out. They are marked by the header and footer:  
 `Edge Tutorial - code section (n/m)`  
@@ -414,8 +445,7 @@ To:
 ```
 Make sure to uncomment all sections within the file (the total will tell you how many sections there are).
 
-<details>
-  <summary> What am I uncommenting in <code>AppDelegate.swift</code>? </summary><p>
+Code blocks in `AppDelegate.swift`:  
 
 **Section 1**: imports the various Edge extensions and other AEP extensions that enable sending event data to Edge, and power other features. The `import` statement makes it available to use in the code below.
 
@@ -426,16 +456,11 @@ Make sure to uncomment all sections within the file (the total will tell you how
 
 **Section 3**: Enables deep linking to connect to Assurance (which we will cover in depth in a later section); this is the method used for iOS versions 12 and below.
 
-</p></details>
-
-Repeat this process for the `SceneDelegate.swift` and `ContentView.swift` files.
-
-<details>
-  <summary> What am I uncommenting in <code>SceneDelegate.swift</code>? </summary><p>
+Code blocks in `SceneDelegate.swift`:
 
 **Section 1**: Imports the Assurance (covered later) and Core extensions for use in the code below.
 
-The next two code sections are functionality that is enabled by the [AEP Lifecycle](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension; the extension's main purpose is to track the app's state, basically when the app starts, or is closed, or crashes, etc.
+The next two code sections are functionality that is enabled by the [AEP Lifecycle](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension; the extension's main purpose is to track the app's state, basically when the app starts or is closed.
 
 **Section 2**: Enables the [`lifecycleStart` API](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle/lifecycle-api-reference#lifecycle-start) that tracks when the app is opened.
 
@@ -445,18 +470,13 @@ Notice that both of these APIs rely on the developer to place them in the proper
 
 **Section 4**: Enables deep linking to connect to Assurance; this is the method used for iOS versions 13 and above.
 
-</p></details>
-
-<details>
-  <summary> What am I uncommenting in <code>ContentView.swift</code>? </summary><p>
+Code blocks in `ContentView.swift`:  
 
 **Section 1**: Imports the Core extension for use in the code below.
 
 **Section 2**: Creates an Experience Event with an event payload that conforms to the XDM schema we set up earlier. This event is an example of a product add.
 
 **Section 3**: Creates an Experience Event with an event payload that conforms to the XDM schema we set up earlier. This event is an example of a product view.
-
-</p></details>
 
 ### Consent for Edge extension <!-- omit in toc -->
 The [Consent for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network) mobile extension enables you to collect user data tracking consent preferences from your mobile app when using AEP and the Edge extension. The default consent settings should be set in alignment with your organization's user data privacy requirements. See the guide on [ingesting data using the Consents and Preferences data type](https://experienceleague.adobe.com/docs/experience-platform/xdm/data-types/consents.html#ingest).
@@ -469,7 +489,7 @@ The [Identity for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/i
 [API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network/api-reference)
 
 ### Lifecycle for Edge extension <!-- omit in toc -->
-The [Lifecycle for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension enables you to collect app lifecycle data from your mobile app when using AEP and the Edge extension. This includes data like app start, stop, and crashes, device type, device OS, etc.
+The [Lifecycle for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension enables you to collect app lifecycle data from your mobile app when using AEP and the Edge extension. This includes data like app start, stop, device type, device OS, etc.
 
 [API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle/lifecycle-api-reference)
 
