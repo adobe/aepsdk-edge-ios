@@ -130,7 +130,7 @@ To see only the properties from a given field group, click the selection box nex
 <details>
   <summary> What is a datastream? </summary><p>
 
-A datastream is a server-side configuration on Platform Edge Network that controls where data goes. Datastreams ensure that incoming data is routed to Adobe Experience Cloud applications and services (like Analytics) appropriately. For more information, see the [datastreams documentation](https://experienceleague.adobe.com/docs/experience-platform/edge/datastreams/overview.html?lang=en) or this [video](https://experienceleague.adobe.com/docs/platform-learn/data-collection/edge-network/configure-datastreams.html?lang=en).
+A datastream is a server-side configuration on Platform Edge Network that controls where data goes. Datastreams ensure that incoming data is routed to the Adobe Experience Platform application and services (like Analytics) appropriately. For more information, see the [datastreams documentation](https://experienceleague.adobe.com/docs/experience-platform/edge/datastreams/overview.html?lang=en) or this [video](https://experienceleague.adobe.com/docs/platform-learn/data-collection/edge-network/configure-datastreams.html?lang=en).
 
 In order to send data to the Edge Network, the datastream must be configured with the Adobe Experience Platform service.
 
@@ -289,7 +289,10 @@ You should see the following in your terminal: "cd " (the space after `cd` is im
 cd 
 ```
 7. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials**. Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Click and drag the **EdgeTutorialAppStart** folder into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`  
-8. Then press `return` to execute the command.
+
+<img src="../Assets/edge-send-event-tutorial/terminal-setup.png" alt="All installed extensions" width="1100"/>  
+
+1. Then press `return` to execute the command.
 
 <details>
   <summary> What is <code>cd</code>? What did I just do? </summary><p>
