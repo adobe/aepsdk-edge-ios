@@ -5,7 +5,7 @@
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
     - [Environment](#environment)
-    - [Adobe Experience Platform setup](#adobe-experience-platform-setup)
+  - [Adobe Experience Platform setup](#adobe-experience-platform-setup)
     - [1. Create a schema](#1-create-a-schema)
     - [2. Create a datastream](#2-create-a-datastream)
     - [3. Create a property](#3-create-a-property)
@@ -43,7 +43,7 @@ graph LR;
 - macOS machine with a recent version of Xcode installed
 - Cocoapods installed
 
-### Adobe Experience Platform setup
+## Adobe Experience Platform setup
 Before any app changes we need to set up some configuration items on the Adobe Experience Platform (AEP) side. The end goal of this section is to create a mobile property that controls the configuration settings for the various AEP extensions used in this tutorial.
 
 First we need to create an XDM schema (the format for data that the Edge Network uses) and configure a datastream (controls where the data will go). 
