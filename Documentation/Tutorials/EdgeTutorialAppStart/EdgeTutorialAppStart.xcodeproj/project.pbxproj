@@ -29,7 +29,13 @@
 		4C5CA74A28D0563000BD8DF9 /* PaymentsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5CA74928D0563000BD8DF9 /* PaymentsItem.swift */; };
 		4C5CA74C28D0570800BD8DF9 /* MobileSDKCommerceSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5CA74B28D0570800BD8DF9 /* MobileSDKCommerceSchema.swift */; };
 		4C5CA74E28D0572000BD8DF9 /* ProductListItemsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5CA74D28D0572000BD8DF9 /* ProductListItemsItem.swift */; };
-		6C8FC09D654CFF549EFB94FF /* Pods_EdgeTutorialAppStart.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4FB31E5DAE7AA34897B9925 /* Pods_EdgeTutorialAppStart.framework */; };
+		4C6AFDA828D26BDA003A0FAD /* AEPAssurance in Frameworks */ = {isa = PBXBuildFile; productRef = 4C6AFDA728D26BDA003A0FAD /* AEPAssurance */; };
+		4C6AFDAB28D26CA4003A0FAD /* AEPEdge in Frameworks */ = {isa = PBXBuildFile; productRef = 4C6AFDAA28D26CA4003A0FAD /* AEPEdge */; };
+		4C6AFDAE28D26CCE003A0FAD /* AEPEdgeConsent in Frameworks */ = {isa = PBXBuildFile; productRef = 4C6AFDAD28D26CCE003A0FAD /* AEPEdgeConsent */; };
+		4C6AFDB128D26CEF003A0FAD /* AEPEdgeIdentity in Frameworks */ = {isa = PBXBuildFile; productRef = 4C6AFDB028D26CEF003A0FAD /* AEPEdgeIdentity */; };
+		4C6AFDB428D26DF6003A0FAD /* AEPCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4C6AFDB328D26DF6003A0FAD /* AEPCore */; };
+		4C6AFDB628D26DF6003A0FAD /* AEPLifecycle in Frameworks */ = {isa = PBXBuildFile; productRef = 4C6AFDB528D26DF6003A0FAD /* AEPLifecycle */; };
+		4C6AFDB828D26DF6003A0FAD /* AEPServices in Frameworks */ = {isa = PBXBuildFile; productRef = 4C6AFDB728D26DF6003A0FAD /* AEPServices */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,9 +63,6 @@
 		4C5CA74928D0563000BD8DF9 /* PaymentsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsItem.swift; sourceTree = "<group>"; };
 		4C5CA74B28D0570800BD8DF9 /* MobileSDKCommerceSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileSDKCommerceSchema.swift; sourceTree = "<group>"; };
 		4C5CA74D28D0572000BD8DF9 /* ProductListItemsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductListItemsItem.swift; sourceTree = "<group>"; };
-		6FEE38FA942E0937F1C7979D /* Pods-EdgeTutorialAppStart.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EdgeTutorialAppStart.debug.xcconfig"; path = "Target Support Files/Pods-EdgeTutorialAppStart/Pods-EdgeTutorialAppStart.debug.xcconfig"; sourceTree = "<group>"; };
-		B6A7E404911A2A89D87A8DED /* Pods-EdgeTutorialAppStart.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EdgeTutorialAppStart.release.xcconfig"; path = "Target Support Files/Pods-EdgeTutorialAppStart/Pods-EdgeTutorialAppStart.release.xcconfig"; sourceTree = "<group>"; };
-		C4FB31E5DAE7AA34897B9925 /* Pods_EdgeTutorialAppStart.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EdgeTutorialAppStart.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,28 +70,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6C8FC09D654CFF549EFB94FF /* Pods_EdgeTutorialAppStart.framework in Frameworks */,
+				4C6AFDB428D26DF6003A0FAD /* AEPCore in Frameworks */,
+				4C6AFDAB28D26CA4003A0FAD /* AEPEdge in Frameworks */,
+				4C6AFDB128D26CEF003A0FAD /* AEPEdgeIdentity in Frameworks */,
+				4C6AFDA828D26BDA003A0FAD /* AEPAssurance in Frameworks */,
+				4C6AFDB828D26DF6003A0FAD /* AEPServices in Frameworks */,
+				4C6AFDB628D26DF6003A0FAD /* AEPLifecycle in Frameworks */,
+				4C6AFDAE28D26CCE003A0FAD /* AEPEdgeConsent in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		410A96DE0966BA0E555B0788 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				C4FB31E5DAE7AA34897B9925 /* Pods_EdgeTutorialAppStart.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		4C5CA70728CFE46700BD8DF9 = {
 			isa = PBXGroup;
 			children = (
 				4C5CA71228CFE46700BD8DF9 /* EdgeTutorialAppStart */,
 				4C5CA71128CFE46700BD8DF9 /* Products */,
-				DC416DD731848910B3647383 /* Pods */,
-				410A96DE0966BA0E555B0788 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -138,15 +137,6 @@
 			path = xdm;
 			sourceTree = "<group>";
 		};
-		DC416DD731848910B3647383 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				6FEE38FA942E0937F1C7979D /* Pods-EdgeTutorialAppStart.debug.xcconfig */,
-				B6A7E404911A2A89D87A8DED /* Pods-EdgeTutorialAppStart.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -154,17 +144,24 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4C5CA71E28CFE46700BD8DF9 /* Build configuration list for PBXNativeTarget "EdgeTutorialAppStart" */;
 			buildPhases = (
-				54761130470530172328EAE5 /* [CP] Check Pods Manifest.lock */,
 				4C5CA70C28CFE46700BD8DF9 /* Sources */,
 				4C5CA70D28CFE46700BD8DF9 /* Frameworks */,
 				4C5CA70E28CFE46700BD8DF9 /* Resources */,
-				86811CD9212AD38F8E7B07E7 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = EdgeTutorialAppStart;
+			packageProductDependencies = (
+				4C6AFDA728D26BDA003A0FAD /* AEPAssurance */,
+				4C6AFDAA28D26CA4003A0FAD /* AEPEdge */,
+				4C6AFDAD28D26CCE003A0FAD /* AEPEdgeConsent */,
+				4C6AFDB028D26CEF003A0FAD /* AEPEdgeIdentity */,
+				4C6AFDB328D26DF6003A0FAD /* AEPCore */,
+				4C6AFDB528D26DF6003A0FAD /* AEPLifecycle */,
+				4C6AFDB728D26DF6003A0FAD /* AEPServices */,
+			);
 			productName = EdgeTutorialAppStart;
 			productReference = 4C5CA71028CFE46700BD8DF9 /* EdgeTutorialAppStart.app */;
 			productType = "com.apple.product-type.application";
@@ -193,6 +190,13 @@
 				Base,
 			);
 			mainGroup = 4C5CA70728CFE46700BD8DF9;
+			packageReferences = (
+				4C6AFDA628D26BDA003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-assurance-ios" */,
+				4C6AFDA928D26CA4003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-edge-ios" */,
+				4C6AFDAC28D26CCE003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-edgeconsent-ios" */,
+				4C6AFDAF28D26CEF003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-edgeidentity-ios" */,
+				4C6AFDB228D26DF6003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */,
+			);
 			productRefGroup = 4C5CA71128CFE46700BD8DF9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -214,48 +218,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		54761130470530172328EAE5 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-EdgeTutorialAppStart-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		86811CD9212AD38F8E7B07E7 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EdgeTutorialAppStart/Pods-EdgeTutorialAppStart-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EdgeTutorialAppStart/Pods-EdgeTutorialAppStart-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EdgeTutorialAppStart/Pods-EdgeTutorialAppStart-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4C5CA70C28CFE46700BD8DF9 /* Sources */ = {
@@ -414,7 +376,6 @@
 		};
 		4C5CA71F28CFE46700BD8DF9 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6FEE38FA942E0937F1C7979D /* Pods-EdgeTutorialAppStart.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -445,7 +406,6 @@
 		};
 		4C5CA72028CFE46700BD8DF9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B6A7E404911A2A89D87A8DED /* Pods-EdgeTutorialAppStart.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -496,6 +456,87 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4C6AFDA628D26BDA003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-assurance-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adobe/aepsdk-assurance-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+		4C6AFDA928D26CA4003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-edge-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adobe/aepsdk-edge-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		4C6AFDAC28D26CCE003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-edgeconsent-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adobe/aepsdk-edgeconsent-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		4C6AFDAF28D26CEF003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-edgeidentity-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adobe/aepsdk-edgeidentity-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		4C6AFDB228D26DF6003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adobe/aepsdk-core-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4C6AFDA728D26BDA003A0FAD /* AEPAssurance */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C6AFDA628D26BDA003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-assurance-ios" */;
+			productName = AEPAssurance;
+		};
+		4C6AFDAA28D26CA4003A0FAD /* AEPEdge */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C6AFDA928D26CA4003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-edge-ios" */;
+			productName = AEPEdge;
+		};
+		4C6AFDAD28D26CCE003A0FAD /* AEPEdgeConsent */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C6AFDAC28D26CCE003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-edgeconsent-ios" */;
+			productName = AEPEdgeConsent;
+		};
+		4C6AFDB028D26CEF003A0FAD /* AEPEdgeIdentity */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C6AFDAF28D26CEF003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-edgeidentity-ios" */;
+			productName = AEPEdgeIdentity;
+		};
+		4C6AFDB328D26DF6003A0FAD /* AEPCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C6AFDB228D26DF6003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPCore;
+		};
+		4C6AFDB528D26DF6003A0FAD /* AEPLifecycle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C6AFDB228D26DF6003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPLifecycle;
+		};
+		4C6AFDB728D26DF6003A0FAD /* AEPServices */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C6AFDB228D26DF6003A0FAD /* XCRemoteSwiftPackageReference "aepsdk-core-ios" */;
+			productName = AEPServices;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4C5CA70828CFE46700BD8DF9 /* Project object */;
 }
