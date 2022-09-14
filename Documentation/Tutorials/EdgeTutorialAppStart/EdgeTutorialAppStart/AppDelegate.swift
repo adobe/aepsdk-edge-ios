@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-//* Edge Tutorial - code section (1/3)
+/* Edge Tutorial - code section (1/3)
 import AEPAssurance
 import AEPCore
 import AEPEdge
@@ -25,13 +25,12 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     // TODO: Set up the preferred Environment File ID from your mobile property configured in Data Collection UI
-    private let ENVIRONMENT_FILE_ID = "94f571f308d5/fceb66775675/launch-8cf33ffebd83-development"
-//    private let ENVIRONMENT_FILE_ID = ""
+    private let ENVIRONMENT_FILE_ID = ""
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         let appState = application.applicationState
-//* Edge Tutorial - code section (2/3)
+/* Edge Tutorial - code section (2/3)
         MobileCore.setLogLevel(.trace)
         MobileCore.configureWith(appId: ENVIRONMENT_FILE_ID)
         MobileCore.registerExtensions([
@@ -60,7 +59,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // To handle deeplink on iOS versions 12 and below
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-//* Edge Tutorial - code section (3/3)
+/* Edge Tutorial - code section (3/3)
         Assurance.startSession(url: url)
 // Edge Tutorial - code section (3/3) */
         return true
