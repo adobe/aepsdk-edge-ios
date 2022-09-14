@@ -181,6 +181,15 @@ Click **Catalog** (**1**) and (optionally) use the search box (**2**) to find th
 We will be installing the following AEP extension configurations:
 
 <details>
+  <summary> AEP Assurance </summary><p>
+
+Open the **Catalog** and install the `AEP Assurance` extension configuration.
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-catalog-assurance.png" alt="Catalog search for Adobe Experience Platform Edge Network" width="1100"/>  
+
+</p></details>
+
+<details>
   <summary> Adobe Experience Platform Edge Network </summary><p>
 
 Open the **Catalog** and install the `Adobe Experience Platform Edge Network` extension configuration.
@@ -253,19 +262,23 @@ The Lifecycle for Edge Network extension dispatches application foreground and b
 #### Save the rule and rebuild your property <!-- omit in toc -->
 1. After you complete your configuration, verify that your rule looks like the following:
 2. Select Save.
-3. Rebuild your mobile property and deploy it to the correct environment.
 
 <img src="../Assets/edge-send-event-tutorial/lifecycle-rule-3.png" alt="All installed extensions" width="1100"/>  
 
 ### 5. Publish changes
 1. Click **Publishing Flow** under **PUBLISHING** in the left-side navigation window.
-2. Click **Add Library** in the top left.
-3. Set a name for the property, and set the environment to Development
-4. Click **Add All Changed Resources** 
-5. Click **Save & Build to Development**
+2. Click **Add Library** in the top right.
+3. Set a name (**1**) for the property, and set the environment to Development (**2**)
+4. Click **Add All Changed Resources** (**3**)
+5. Click **Save & Build to Development** (**4**)
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-publish.png" alt="All installed extensions" width="1100"/>  
 
 Once the mobile property is published to the Development environment, copy the unique ID assigned to the published property, as we will need it when setting up the app:
-1. Click the 
+1. Click the box icon next to the environment dropdown (**5**, from above)
+2. Click the double overlapping box (**1**) to the right of the property ID to copy it. Save this ID in a text file somewhere, to use later.
+
+<img src="../Assets/edge-send-event-tutorial/mobile-property-id.png" alt="All installed extensions" width="500"/>  
 
 ## Client-side implementation
 
@@ -292,7 +305,7 @@ cd
 
 <img src="../Assets/edge-send-event-tutorial/terminal-setup.png" alt="All installed extensions" width="1100"/>  
 
-1. Then press `return` to execute the command.
+8. Then press `return` to execute the command.
 
 <details>
   <summary> What is <code>cd</code>? What did I just do? </summary><p>
@@ -417,8 +430,7 @@ To:
 ```
 Make sure to uncomment all sections within the file (the total will tell you how many sections there are).
 
-<details>
-  <summary> What am I uncommenting in <code>AppDelegate.swift</code>? </summary><p>
+Code blocks in `AppDelegate.swift`:  
 
 **Section 1**: imports the various Edge extensions and other AEP extensions that enable sending event data to Edge, and power other features. The `import` statement makes it available to use in the code below.
 
@@ -429,12 +441,7 @@ Make sure to uncomment all sections within the file (the total will tell you how
 
 **Section 3**: Enables deep linking to connect to Assurance (which we will cover in depth in a later section); this is the method used for iOS versions 12 and below.
 
-</p></details>
-
-Repeat this process for the `SceneDelegate.swift` and `ContentView.swift` files.
-
-<details>
-  <summary> What am I uncommenting in <code>SceneDelegate.swift</code>? </summary><p>
+Code blocks in `SceneDelegate.swift`:
 
 **Section 1**: Imports the Assurance (covered later) and Core extensions for use in the code below.
 
@@ -448,18 +455,13 @@ Notice that both of these APIs rely on the developer to place them in the proper
 
 **Section 4**: Enables deep linking to connect to Assurance; this is the method used for iOS versions 13 and above.
 
-</p></details>
-
-<details>
-  <summary> What am I uncommenting in <code>ContentView.swift</code>? </summary><p>
+Code blocks in `ContentView.swift`:  
 
 **Section 1**: Imports the Core extension for use in the code below.
 
 **Section 2**: Creates an Experience Event with an event payload that conforms to the XDM schema we set up earlier. This event is an example of a product add.
 
 **Section 3**: Creates an Experience Event with an event payload that conforms to the XDM schema we set up earlier. This event is an example of a product view.
-
-</p></details>
 
 ### Consent for Edge extension <!-- omit in toc -->
 The [Consent for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network) mobile extension enables you to collect user data tracking consent preferences from your mobile app when using AEP and the Edge extension. The default consent settings should be set in alignment with your organization's user data privacy requirements. See the guide on [ingesting data using the Consents and Preferences data type](https://experienceleague.adobe.com/docs/experience-platform/xdm/data-types/consents.html#ingest).
