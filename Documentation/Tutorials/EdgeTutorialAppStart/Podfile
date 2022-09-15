@@ -5,7 +5,7 @@
 use_frameworks!
 
 target 'EdgeTutorialAppStart' do
-=begin
+#=begin
   pod 'AEPAssurance'
   pod 'AEPCore'
   pod 'AEPEdge'
@@ -13,5 +13,5 @@ target 'EdgeTutorialAppStart' do
   pod 'AEPEdgeIdentity'
   pod 'AEPLifecycle'
   pod 'AEPServices'
-=end
+#=end
 end

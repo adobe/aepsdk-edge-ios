@@ -646,7 +646,7 @@ Once connected to Assurance, in the tutorial app, an Adobe Experience Platform i
 <img src="../Assets/edge-send-event-tutorial/ios-assurance-connection.png" alt="Assurance Session Start - Web UI after connection" width="400"/>  
 
 In the web-based Assurance session, there is also an indicator in the top right that shows the number of connected sessions (which in this case should now show a green dot with "1 Client Connected" (**1**)).  
-<img src="../Assets/edge-send-event-tutorial/assurance-session-start.jpg" alt="Assurance Session Start - Web UI after connection" width="800"/>  
+<img src="../Assets/edge-send-event-tutorial/assurance-session-start.jpg" alt="Assurance Session Start - Web UI after connection" width="1100"/>  
 
 Notice how in the Assurance session Events view (**2**), there are already events populating as a consequence of the connection of the mobile app to the Assurance session (**3**); the Assurance extension itself emits events about the session connection and subsequently captures these events to display in the web-based session viewer. You can expect Assurance to capture all events processed by the AEP SDK from all other extensions as well.  
 
@@ -661,7 +661,24 @@ In order to see Edge events, in the connected app instance:
 2. Click the **RAW EVENT** dropdown (**2**) in the event details window to see the event data payload. 
 3. Verify that the `ACPExtensionEventData` matches what was sent by the Edge `sendEvent` API.
 
-<img src="../Assets/edge-send-event-tutorial/assurance-validate-send-event.png" alt="Simulator tracking buttons" width="800"/>
+<img src="../Assets/edge-send-event-tutorial/assurance-validate-send-event.png" alt="Simulator tracking buttons" width="1100"/>
 
 > **Note**
 > The two top level properties `xdm` and `data` are standard Edge event properties that are part of the Edge platform's XDM schema-based system for event data organization that enables powerful, customizable data processing. 
+
+Our previous efforts to configure the Adobe Experience Platform settings to route Edge events to Analytics pays off in the next event to check, the `analytics.mapping` event:
+
+<img src="../Assets/edge-send-event-tutorial/assurance-analytics-mapping-validation.png" alt="Simulator tracking buttons" width="1100"/>
+
+Assurance also provides another view that shows a visual flow of events, which may be helpful in understanding the relationship between events.
+1. Click **Event Transactions** (**1**) under the section label **Adobe Experience Platform Edge** in the left-side navigation panel.
+
+In this view, each of the cards represents a step in the workflow of events. You can click on the underlined items in each card to see more details about each event in the right-side details panel.
+
+For example, using our recent Experience Event sent from the tutorial app, we can see:
+1. The client side (that is, the app) event that was sent to the Edge Network.
+2. The Edge Network receiveing the event, and using the datastream settings (XDM schema paired with Analytics service) to know where how to interpret the event data, and where to send it.
+3. Analytics is able to convert our XDM formatted data into the corresponding Analytics format automatically!
+   - This is one of the key benefits of using Adobe created XDM schemas (and the XDM schema system in general); the various Adobe services that act on data formatted using these schemas are able to easily understand and make use of it.
+
+<img src="../Assets/edge-send-event-tutorial/assurance-event-transactions-validation.png" alt="Simulator tracking buttons" width="1100"/>

@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-/* Edge Tutorial - code section (1/3)
+//* Edge Tutorial - code section (1/3)
 import AEPEdge
 // Edge Tutorial - code section (1/3) */
 
@@ -58,7 +58,7 @@ struct TrackView: View {
                 xdmData.productListItems = productListItems
 
                 
-/* Edge Tutorial - code section (2/3)
+//* Edge Tutorial - code section (2/3)
                 // Create an Experience Event with the built schema and send it using the AEP Edge extension
                 let event = ExperienceEvent(xdm: xdmData)
                 Edge.sendEvent(experienceEvent: event)
@@ -86,7 +86,7 @@ struct TrackView: View {
                   ]
                 ]
                 
-/* Edge Tutorial - code section (3/3)
+//* Edge Tutorial - code section (3/3)
                 let experienceEvent = ExperienceEvent(xdm: xdmData)
                 Edge.sendEvent(experienceEvent: experienceEvent)
 // Edge Tutorial - code section (3/3) */

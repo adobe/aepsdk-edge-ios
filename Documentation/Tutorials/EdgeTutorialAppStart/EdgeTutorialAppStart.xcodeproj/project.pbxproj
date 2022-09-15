@@ -158,6 +158,7 @@
 				4C5CA70C28CFE46700BD8DF9 /* Sources */,
 				4C5CA70D28CFE46700BD8DF9 /* Frameworks */,
 				4C5CA70E28CFE46700BD8DF9 /* Resources */,
+				429C91BB8D85C8BE18772164 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -215,6 +216,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		429C91BB8D85C8BE18772164 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EdgeTutorialAppStart/Pods-EdgeTutorialAppStart-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EdgeTutorialAppStart/Pods-EdgeTutorialAppStart-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EdgeTutorialAppStart/Pods-EdgeTutorialAppStart-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		54761130470530172328EAE5 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
