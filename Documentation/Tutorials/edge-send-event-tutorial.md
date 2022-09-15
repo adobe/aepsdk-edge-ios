@@ -348,6 +348,71 @@ This tutorial assumes a project using Cocoapods for package dependency managemen
 </p></details>
 
 ### 2. Install the Edge extensions using dependency manager (CocoaPods)
+To verify that Cocoapods is installed on your machine; use the following command:
+
+```bash
+pod --version
+```
+
+If you get numbers like `1.11.3`, you're good to go! However, if you get an error like: "zsh: command not found: pod", then you need to [install Cocoapods](https://guides.cocoapods.org/using/getting-started.html). Note that in order to install Cocoapods you need to be an admin user on your machine. Use the command:
+
+```bash
+sudo gem install cocoapods
+```
+
+The `sudo` command is basically using admin permissions to run a given command, and requires that you enter your user password.
+
+<details>
+  <summary> What if I don't have admin access? </summary><p>
+
+Not to worry! You can follow along the rest of the tutorial using the Swift Package Manager dependency manager version of the tutorial here: https://github.com/timkimadobe/aepsdk-edge-ios/tree/tutorial-send-event
+
+You will need to follow the same instructions from [1. Get a copy of the files](#1-get-a-copy-of-the-files-tutorial-app-code-and-initial-setup) up to and including step 4, but then instead of using the terminal, follow these steps:
+
+1. Open the folders: **Documentation** -> **Tutorials** -> **EdgeTutorialAppStart**.
+2. Inside **EdgeTutorialAppStart**, open the file `EdgeTutorialAppStart.xcodeproj` (this should open Xcode).
+   - Since the packages are already set up, Xcode will automatically download the required extensions
+3. Start following the tutorial again at [3. Update tutorial app code to enable Edge features](#3-update-tutorial-app-code-to-enable-edge-features).
+   - If you encounter the error: "invalid custom path 'AEPLifecycle/Sources' for target 'AEPLifecycle'" (or similar) when building the app, try fully quitting Xcode (`CMD` + `Q`, or right click Xcode in the dock and select **Quit**) and opening the project again (steps 1 & 2).
+
+</p></details>
+
+<details>
+  <summary> How do I uninstall Cocoapods after this tutorial? </summary><p>
+
+Run the following commands in terminal:
+```bash
+gem list --local --no-versions | grep cocoapods | xargs sudo gem uninstall
+```
+```bash
+sudo rm -rf ~/.cocoapods
+```
+
+From a [StackExchange Superuser source](https://superuser.com/a/1008175).
+
+</p></details>
+
+With Cocoapods installed, run the command: 
+
+```bash
+pod update
+```
+
+You should see output like:
+```
+timothyk@Tims-MBP-2 EdgeTutorialAppStart % pod update
+Update all pods
+Updating local specs repositories
+Analyzing dependencies
+Downloading dependencies
+Generating Pods project
+Integrating client project
+Pod installation complete! There are 0 dependencies from the Podfile and 0 total pods installed.
+
+[!] The Podfile does not contain any dependencies.
+timothyk@Tims-MBP-2 EdgeTutorialAppStart % 
+```
+
 With the project set up, our next task is to install the Edge extensions for our tutorial app. We can easily do this by updating the file that controls the package dependencies for the repository. 
 
 1. Open the project using the command:
