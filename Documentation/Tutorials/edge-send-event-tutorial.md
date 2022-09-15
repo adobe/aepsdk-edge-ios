@@ -49,10 +49,10 @@ At a high level, a schema is a definition for the structure of your data; what p
 2. Navigate to the Data Collection UI by clicking the nine-dot menu in the top right (**1**), and selecting `Data Collection` (**2**)  
 <img src="../Assets/edge-send-event-tutorial/aep-data-collection.png" alt="Going from Assurance to Data Collection" width="1100"/>
 
-1. Click `Schemas` in the left navigation window  
+3. Click **Schemas** in the left navigation window  
 <img src="../Assets/edge-send-event-tutorial/data-collection-tags.png" alt="Going from Assurance to Data Collection" width="1100"/>
 
-4. In the schemas view, click the `+ Create schema` button in the top right (**1**), then select `XDM ExperienceEvent` (**2**)
+4. In the schemas view, click the **+ Create schema** button (**1**) in the top right, then select `XDM ExperienceEvent` (**2**)
 <img src="../Assets/edge-send-event-tutorial/data-collection-schemas.png" alt="Creating new XDM ExperienceEvent schema" width="1100"/>
 
 Once in the new schema creation view, notice the schema class is `XDM ExperienceEvent` (**1**); schemas adhere to specific class types which just means that they have some predefined properties and behaviors within the Edge platform. In this case, `XDM ExperienceEvent` creates the base properties you see in the `Structure` section that help define some baseline data for each Experience Event. 
@@ -144,11 +144,20 @@ Click **New Datastream** in the top right.
 
 <img src="../Assets/edge-send-event-tutorial/datastreams-main-view.png" alt="Create new datastream" width="1100"/>  
 
-Give the datastream an identifying name and description (**1**), then pick the schema created in the previous section using the dropdown menu (**2**). Then click **Save** (**3**). We will be returning to this datastream later on.
+Give the datastream an identifying name and description (**1**), then pick the schema created in the previous section using the dropdown menu (**2**). Then click **Save** (**3**).
 
 <img src="../Assets/edge-send-event-tutorial/datastreams-new-datastream.png" alt="Set datastream values" width="1100"/>  
 
-No
+With the datastream set up, we can now direct the data to its destination by adding services. In our case, Analytics:
+1. Click **Add Service** (**1**)
+
+<img src="../Assets/edge-send-event-tutorial/datastreams-add-service.png" alt="Set datastream values" width="1100"/>  
+
+2. From the **Service (required)** dropdown (**1**), select **Adobe Analytics**.
+3. Click **Add Report Suite** (**2**), and enter the report suite ID you want the data from this tutorial to land.
+4. Click **Save**.
+
+<img src="../Assets/edge-send-event-tutorial/datastreams-add-analytics.png" alt="Set datastream values" width="1100"/>  
 
 ### 3. Create a property
 
