@@ -27,9 +27,9 @@ This hands-on tutorial provides end-to-end instructions on how to implement the 
 
 ```mermaid
 graph LR;
-    step1(Set up configuration for<br/>Adobe Experience Platform) --> 
-    step2(Enable Edge features in app<br/>Send event data to the Edge Network) --> 
-    step3(Add Assurance<br/>Verify event data formats)
+    step1(1<br/>Adobe Experience Platform<br/>Set up server-side configuration) --> 
+    step2(2<br/>Update app to enable Edge features<br/>Send event data to the Edge Network & Analytics) --> 
+    step3(3<br/>Validate flow with Assurance<br/>Verify event data formats)
 ```
 
 ### Environment
