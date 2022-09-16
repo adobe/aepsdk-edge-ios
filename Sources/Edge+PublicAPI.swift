@@ -39,11 +39,15 @@ public extension Edge {
         MobileCore.dispatch(event: event)
     }
 
+    /// Get the Edge Network location hint.
+    /// The Edge Network location hint may be used when building the URL for Edge Network requests to hint at the server cluster to use.
+    /// Returns the Edge Network location hint, or nil if the location hint expired or is not set.
+    /// - Parameter completion: A completion handler invoked with the location hint, or an 'AEPError' if the request times out or an unexpected error occurs.
     @objc(getLocationHint:)
     static func getLocationHint(_ completion: @escaping (String?, Error?) -> Void) {
         let event = Event(name: "Edge Request Location Hint",
                           type: EventType.edge,
-                          source: "com.adobe.eventSource.requestProperty",
+                          source: EventSource.requestProperty,
                           data: nil)
         MobileCore.dispatch(event: event) { responseEvent in
             guard let responseEvent = responseEvent else {
@@ -60,11 +64,16 @@ public extension Edge {
         }
     }
 
+    /// Set the Edge Network location hint used in requests to the Adobe Experience Platform Edge Network.
+    /// Sets the Edge Network location hint used in requests to the AEP Edge Network causing requests to "stick" to a specific server cluster. Edge Network responses
+    /// may overwrite the location hint to a new value when necessary to manage network traffic.
+    /// Use caution when setting the location hint. Only use location hints for the 'EdgeNetwork' scope. An incorrect location hint value will cause all Edge Network requests to fail.
+    /// - Parameter hint: the Edge Network location hint to use when connecting to the Adobe Experience Platform Edge Network
     @objc(setLocationHint:)
     static func setLocationHint(_ hint: String?) {
         let event = Event(name: "Edge Update Location Hint",
                           type: EventType.edge,
-                          source: "com.adobe.eventSource.updateProperty",
+                          source: EventSource.updateProperty,
                           data: [EdgeConstants.EventDataKeys.LOCATION_HINT: hint as Any])
 
         MobileCore.dispatch(event: event)

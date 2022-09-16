@@ -44,10 +44,10 @@ public class Edge: NSObject, Extension {
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
         registerListener(type: EventType.edge,
-                         source: "com.adobe.eventSource.requestProperty",
+                         source: EventSource.requestProperty,
                          listener: handleRequestLocationHint)
         registerListener(type: EventType.edge,
-                         source: "com.adobe.eventSource.updateProperty",
+                         source: EventSource.updateProperty,
                          listener: handleUpdateLocationHint)
         registerListener(type: EventType.edgeConsent,
                          source: EventSource.responseContent,
@@ -184,7 +184,7 @@ public class Edge: NSObject, Extension {
     func handleRequestLocationHint(_ event: Event) {
         let responseEvent = event.createResponseEvent(name: "Edge Location Hint Response",
                                                       type: EventType.edge,
-                                                      source: EventSource.responseContent,
+                                                      source: EventSource.responseProperty,
                                                       data: [EdgeConstants.EventDataKeys.LOCATION_HINT: getLocationHint() ?? ""]) // if no hint return empty string
         dispatch(event: responseEvent)
     }
