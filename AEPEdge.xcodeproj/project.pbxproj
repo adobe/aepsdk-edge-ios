@@ -57,6 +57,7 @@
 		BF947F9E244182B30057A6CC /* StoreResponsePayloadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */; };
 		BF947FA0244569190057A6CC /* EdgeRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F9F244569190057A6CC /* EdgeRequestTests.swift */; };
 		BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */; };
+		BFEEB5AB28D4E35D00B668B8 /* EdgePublicAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2E8125EE1987000AC350 /* EdgePublicAPITests.swift */; };
 		D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */; };
 		D4145F4025D1D3200019EA4C /* EdgeHitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */; };
 		D4145FB525D5D0430019EA4C /* Event+Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145FB425D5D0430019EA4C /* Event+Edge.swift */; };
@@ -75,7 +76,6 @@
 		D45F2E7825EDE0D6000AC350 /* MockHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2E7725EDE0D6000AC350 /* MockHitProcessor.swift */; };
 		D45F2E7D25EE190A000AC350 /* MockDataQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2E7325EDD2EF000AC350 /* MockDataQueue.swift */; };
 		D45F2E7E25EE190A000AC350 /* MockHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2E7725EDE0D6000AC350 /* MockHitProcessor.swift */; };
-		D45F2E8225EE1987000AC350 /* EdgePublicAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2E8125EE1987000AC350 /* EdgePublicAPITests.swift */; };
 		D45F2E8925EE214A000AC350 /* EdgeExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2E6F25ED8EE3000AC350 /* EdgeExtensionTests.swift */; };
 		D45F2E8E25EE2166000AC350 /* TestableExtensionRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2E6B25ED8EB1000AC350 /* TestableExtensionRuntime.swift */; };
 		D46553F7246A384900A150E2 /* NetworkResponseHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F6246A384900A150E2 /* NetworkResponseHandlerTests.swift */; };
@@ -523,6 +523,7 @@
 				216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */,
 				D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */,
 				D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */,
+				D45F2E8125EE1987000AC350 /* EdgePublicAPITests.swift */,
 				BF947F9F244569190057A6CC /* EdgeRequestTests.swift */,
 				BF74551028BC649A00FF3AEC /* EdgeStateTests.swift */,
 				1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */,
@@ -549,7 +550,6 @@
 				D4DE9B6B2592B8F900EDCD50 /* CompletionHandlerFunctionalTests.swift */,
 				D45F2E5425E9E06C000AC350 /* Edge+ConsentTests.swift */,
 				2EDFBCEF2899B7CD00D22B25 /* EdgePathOverwriteTests.swift */,
-				D45F2E8125EE1987000AC350 /* EdgePublicAPITests.swift */,
 				BF024B7E24C62BED002131E9 /* IdentityStateFunctionalTests.swift */,
 				D4D5B53524325AB700CAB6E4 /* NetworkResponseHandlerFunctionalTests.swift */,
 				BF0C092324608EEC00892B5D /* NoConfigFunctionalTests.swift */,
@@ -1083,6 +1083,7 @@
 				21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */,
 				BF7E5B3B2789189D00D5E0FF /* EdgeEndpointTests.swift in Sources */,
 				2198DEE826050458008ADB6A /* AtomicTests.swift in Sources */,
+				BFEEB5AB28D4E35D00B668B8 /* EdgePublicAPITests.swift in Sources */,
 				D4A81DEC25658F0D0042B00A /* CompletionHandlerTests.swift in Sources */,
 				D4F74FE72447A8B800379258 /* MockNetworking.swift in Sources */,
 				1CCD27DC245A240F00E912B2 /* ExperienceEventTests.swift in Sources */,
@@ -1104,7 +1105,6 @@
 				D49A62DC250C311100B7C4A3 /* SampleFunctionalTests.swift in Sources */,
 				BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */,
 				D45F2E7425EDD2EF000AC350 /* MockDataQueue.swift in Sources */,
-				D45F2E8225EE1987000AC350 /* EdgePublicAPITests.swift in Sources */,
 				D4655402246CD0B000A150E2 /* InstrumentedExtension.swift in Sources */,
 				D48CBD2224A17EEA00A24BD8 /* TestXDMSchema.swift in Sources */,
 				D4EED36C2489ACE200D4815C /* FunctionalTestNetworkService.swift in Sources */,
