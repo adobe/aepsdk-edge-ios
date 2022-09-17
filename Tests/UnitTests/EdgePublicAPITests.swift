@@ -81,4 +81,132 @@ class EdgePublicAPITests: XCTestCase {
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: [:], data: ["rawdata": "example"]))
         sleep(1)
     }
+
+    func testSetLocationHint_valueHint_dispatchesEdgeUpdateProperty() {
+        let expectation = XCTestExpectation(description: "Edge Update Property Event Dispatched")
+        expectation.assertForOverFulfill = true
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateProperty) { event in
+            let data = event.data ?? [:]
+            XCTAssertEqual(1, data.count)
+            XCTAssertEqual("or2", data["locationHint"] as? String)
+            expectation.fulfill()
+        }
+        Edge.setLocationHint("or2")
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+    }
+
+    func testSetLocationHint_nilHint_dispatchesEdgeUpdateProperty() {
+        let expectation = XCTestExpectation(description: "Edge Update Property Event Dispatched")
+        expectation.assertForOverFulfill = true
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateProperty) { event in
+            let data = event.data ?? [:]
+            XCTAssertEqual(1, data.count)
+            XCTAssertEqual("", data["locationHint"] as? String) // expect to convert nil to empty string
+            expectation.fulfill()
+        }
+        Edge.setLocationHint(nil)
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+    }
+
+    func testSetLocationHint_emptyHint_dispatchesEdgeUpdateProperty() {
+        let expectation = XCTestExpectation(description: "Edge Update Property Event Dispatched")
+        expectation.assertForOverFulfill = true
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateProperty) { event in
+            let data = event.data ?? [:]
+            XCTAssertEqual(1, data.count)
+            XCTAssertEqual("", data["locationHint"] as? String)
+            expectation.fulfill()
+        }
+        Edge.setLocationHint("")
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+    }
+
+    // Test getLocationHint when valid Hint of OR2 is returned
+    func testGetLocationHint_dispatchesEdgeRequestProperty_receivesResponseProperty_withValidHint() {
+        let expectation = XCTestExpectation(description: "Edge Get Location Hint")
+        expectation.assertForOverFulfill = true
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestProperty) { event in
+            XCTAssertTrue(event.data?[EdgeConstants.EventDataKeys.LOCATION_HINT] as? Bool ?? false)
+            let responseEvent = event.createResponseEvent(name: "Test Response Location Hint",
+                                                          type: EventType.edge,
+                                                          source: EventSource.responseProperty,
+                                                          data: ["locationHint": "or2"])
+            MobileCore.dispatch(event: responseEvent)
+        }
+        Edge.getLocationHint({ hint, error in
+            XCTAssertEqual("or2", hint)
+            XCTAssertNil(error)
+            expectation.fulfill()
+        })
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+    }
+
+    // Test getLocationHint when no data is returned which signifies no or expired Hint value
+    func testGetLocationHint_dispatchesEdgeRequestProperty_receivesResponseProperty_withEmptyHint() {
+        let expectation = XCTestExpectation(description: "Edge Get Location Hint")
+        expectation.assertForOverFulfill = true
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestProperty) { event in
+            XCTAssertTrue(event.data?[EdgeConstants.EventDataKeys.LOCATION_HINT] as? Bool ?? false)
+            let responseEvent = event.createResponseEvent(name: "Test Response Location Hint",
+                                                          type: EventType.edge,
+                                                          source: EventSource.responseProperty,
+                                                          data: [:])
+            MobileCore.dispatch(event: responseEvent)
+        }
+        Edge.getLocationHint({ hint, error in
+            XCTAssertNil(hint)
+            XCTAssertNil(error)
+            expectation.fulfill()
+        })
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+    }
+
+    // Test getLocationHint with invalid Hint and unexpected error returned
+    func testGetLocationHint_dispatchesEdgeRequestProperty_receivesResponseProperty_withInvalidHint() {
+        let expectation = XCTestExpectation(description: "Edge Get Location Hint")
+        expectation.assertForOverFulfill = true
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestProperty) { event in
+            XCTAssertTrue(event.data?[EdgeConstants.EventDataKeys.LOCATION_HINT] as? Bool ?? false)
+            let responseEvent = event.createResponseEvent(name: "Test Response Location Hint",
+                                                          type: EventType.edge,
+                                                          source: EventSource.responseProperty,
+                                                          data: ["locationHint": 5]) // correct key but wrong type
+            MobileCore.dispatch(event: responseEvent)
+        }
+        Edge.getLocationHint({ hint, error in
+            XCTAssertNil(hint)
+            XCTAssertEqual(AEPError.unexpected.rawValue, (error as? AEPError)?.rawValue)
+            expectation.fulfill()
+        })
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+    }
+
+    // Test getLocationHint with no response and callback timeout error returned
+    func testGetLocationHint_dispatchesEdgeRequestProperty_receivesResponseProperty_withNoData() {
+        let expectation = XCTestExpectation(description: "Edge Get Location Hint")
+        expectation.assertForOverFulfill = true
+
+        // No listener registered, no response event returned
+        Edge.getLocationHint({ hint, error in
+            XCTAssertNil(hint)
+            XCTAssertEqual(AEPError.callbackTimeout.rawValue, (error as? AEPError)?.rawValue)
+            expectation.fulfill()
+        })
+
+        // verify
+        wait(for: [expectation], timeout: 2)
+    }
+
 }

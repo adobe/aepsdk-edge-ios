@@ -182,10 +182,15 @@ public class Edge: NSObject, Extension {
     }
 
     func handleRequestLocationHint(_ event: Event) {
+        var data: [String: Any] = [:]
+        if let hint = getLocationHint() {
+            data[EdgeConstants.EventDataKeys.LOCATION_HINT] = hint
+        }
+
         let responseEvent = event.createResponseEvent(name: "Edge Location Hint Response",
                                                       type: EventType.edge,
                                                       source: EventSource.responseProperty,
-                                                      data: [EdgeConstants.EventDataKeys.LOCATION_HINT: getLocationHint() ?? ""]) // if no hint return empty string
+                                                      data: data)
         dispatch(event: responseEvent)
     }
 
@@ -271,15 +276,15 @@ public class Edge: NSObject, Extension {
 
     /// Set the location hint for the Edge Network. The new location hint and expiry date (calculated from the ttlSeconds) are updated in memory and in
     /// persistent storage. If the new location hint is different from the previous, then a shared state is also created with the new hint.
-    /// A nil `hint` value will clear the location hint in memory, persistent storage, and create a new shared state if a previous location hint was set.
+    /// An empty `hint` value will clear the location hint in memory, persistent storage, and create a new shared state if a previous location hint was set.
     /// - Parameters:
     ///   - hint: the new EdgeNetwork location hint to set
     ///   - ttlSeconds: the time-to-live for the location hint
-    private func setLocationHint(hint: String?, ttlSeconds: TimeInterval?) {
+    private func setLocationHint(hint: String, ttlSeconds: TimeInterval) {
         guard let state = state else { return }
-        if let hint = hint, let ttlSeconds = ttlSeconds {
+        if !hint.isEmpty {
             state.setLocationHint(hint: hint, ttlSeconds: ttlSeconds, createSharedState: createSharedState(data:event:))
-        } else if hint == nil {
+        } else {
             state.clearLocationHint(createSharedState: createSharedState(data:event:))
         }
     }

@@ -39,8 +39,8 @@ public extension Edge {
         MobileCore.dispatch(event: event)
     }
 
-    /// Get the Edge Network location hint.
-    /// The Edge Network location hint may be used when building the URL for Edge Network requests to hint at the server cluster to use.
+    /// Get the Edge Network location hint used in requests to the Adobe Experience Platform Edge Network.
+    /// The Edge Network location hint may be used when building the URL for Adobe Experience Platform Edge Network requests to hint at the server cluster to use.
     /// Returns the Edge Network location hint, or nil if the location hint expired or is not set.
     /// - Parameter completion: A completion handler invoked with the location hint, or an 'AEPError' if the request times out or an unexpected error occurs.
     @objc(getLocationHint:)
@@ -48,33 +48,38 @@ public extension Edge {
         let event = Event(name: "Edge Request Location Hint",
                           type: EventType.edge,
                           source: EventSource.requestProperty,
-                          data: nil)
+                          data: [EdgeConstants.EventDataKeys.LOCATION_HINT: true])
         MobileCore.dispatch(event: event) { responseEvent in
             guard let responseEvent = responseEvent else {
                 completion(nil, AEPError.callbackTimeout)
                 return
             }
 
-            guard let data = responseEvent.data, let hint = data[EdgeConstants.EventDataKeys.LOCATION_HINT] as? String else {
-                completion(nil, AEPError.unexpected)
+            if let data = responseEvent.data, data.keys.contains(EdgeConstants.EventDataKeys.LOCATION_HINT) {
+                guard let hint = data[EdgeConstants.EventDataKeys.LOCATION_HINT] as? String else {
+                    completion(nil, AEPError.unexpected)
+                    return
+                }
+                completion(hint, nil)
                 return
             }
 
-            completion(hint, nil)
+            completion(nil, nil) // hint value is nil (no or expired hint)
         }
     }
 
     /// Set the Edge Network location hint used in requests to the Adobe Experience Platform Edge Network.
-    /// Sets the Edge Network location hint used in requests to the AEP Edge Network causing requests to "stick" to a specific server cluster. Edge Network responses
-    /// may overwrite the location hint to a new value when necessary to manage network traffic.
+    /// Sets the Edge Network location hint used in requests to the AEP Edge Network causing requests to "stick" to a specific server cluster. Passing nil or
+    /// an empty string will clear the existing location hint. Edge Network responses may overwrite the location hint to a new value when necessary to manage network traffic.
     /// Use caution when setting the location hint. Only use location hints for the 'EdgeNetwork' scope. An incorrect location hint value will cause all Edge Network requests to fail.
     /// - Parameter hint: the Edge Network location hint to use when connecting to the Adobe Experience Platform Edge Network
     @objc(setLocationHint:)
     static func setLocationHint(_ hint: String?) {
+        let hintValue = hint == nil ? "" : hint
         let event = Event(name: "Edge Update Location Hint",
                           type: EventType.edge,
                           source: EventSource.updateProperty,
-                          data: [EdgeConstants.EventDataKeys.LOCATION_HINT: hint as Any])
+                          data: [EdgeConstants.EventDataKeys.LOCATION_HINT: hintValue as Any])
 
         MobileCore.dispatch(event: event)
     }
