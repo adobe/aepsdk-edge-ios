@@ -21,7 +21,7 @@ class NetworkResponseHandler {
     private let LOG_TAG = "NetworkResponseHandler"
     private let serialQueue = DispatchQueue(label: "com.adobe.edge.eventsDictionary") // serial queue for atomic operations
     private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
-    private var updateLocationHint: (String, TimeInterval) -> Void
+    private var updateLocationHint: (String, _ ttlSeconds: TimeInterval) -> Void
 
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [(uuid: String, date: Date)]>()
@@ -29,7 +29,7 @@ class NetworkResponseHandler {
     /// Date of the last generic identity reset request event, for more info see `shouldIgnoreStorePayload`
     private var lastResetDate = Atomic<Date>(Date(timeIntervalSince1970: 0))
 
-    init(updateLocationHint: @escaping (String, TimeInterval) -> Void) {
+    init(updateLocationHint: @escaping (_ hint: String, _ ttlSeconds: TimeInterval) -> Void) {
         self.updateLocationHint = updateLocationHint
         lastResetDate = Atomic<Date>(loadResetDateFromPersistence() ?? Date(timeIntervalSince1970: 0))
     }

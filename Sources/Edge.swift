@@ -205,7 +205,7 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        setLocationHint(hint: hint, ttlSeconds: EdgeConstants.Defaults.LOCATION_HINT_TTL_SEC)
+        setLocationHint(hint, ttlSeconds: EdgeConstants.Defaults.LOCATION_HINT_TTL_SEC)
     }
 
     /// Determines if the event should be ignored by the Edge extension. This method should be called after
@@ -280,7 +280,7 @@ public class Edge: NSObject, Extension {
     /// - Parameters:
     ///   - hint: the new EdgeNetwork location hint to set
     ///   - ttlSeconds: the time-to-live for the location hint
-    private func setLocationHint(hint: String, ttlSeconds: TimeInterval) {
+    private func setLocationHint(_ hint: String, ttlSeconds: TimeInterval) {
         guard let state = state else { return }
         if !hint.isEmpty {
             state.setLocationHint(hint: hint, ttlSeconds: ttlSeconds, createSharedState: createSharedState(data:event:))
