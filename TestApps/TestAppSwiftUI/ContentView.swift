@@ -21,6 +21,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var ecid: String = ""
     @State private var dataContent: String = "data is displayed here"
+    @State private var selectedRegion: RegionId = .nil_value
 
     var body: some View {
         NavigationView {
@@ -51,12 +52,16 @@ struct ContentView: View {
                                         dataContent = "Received error '\((error as? AEPError)?.localizedDescription ?? "nil")"
                                     } else {
                                         dataContent = "Location hint: '\(hint ?? "nil")'"
+                                        selectedRegion = RegionId(rawValue: hint ?? "nil") ?? .nil_value
                                     }
                                 })
                             }).padding()
-                            Button("Set Location Hint", action: {
-                                Edge.setLocationHint("va6")
-                            }).padding()
+                            Text("Set Location Hint: ")
+                            Picker("Set Location Hint", selection: $selectedRegion.onChange(changeLocationHint)) {
+                                ForEach(RegionId.allCases) { regionId in
+                                    Text(regionId.rawValue.capitalized)
+                                }
+                            }
                         }
                     }
                 }.background(Color("InputColor1"))
@@ -126,6 +131,22 @@ struct ContentView: View {
         }
     }
 
+    /// Set the Edge Network location hint based on the 'selectedRegion' state variable.
+    /// - Parameter tag: the region id
+    private func changeLocationHint(_ tag: RegionId) {
+        var hint: String?
+        switch selectedRegion {
+        case .nil_value:
+            hint = nil
+        case .empty_value:
+            hint = ""
+        default:
+            hint = selectedRegion.rawValue
+        }
+
+        Edge.setLocationHint(hint)
+    }
+
     private func getECID() {
         Identity.getExperienceCloudId { value, error in
             if error != nil {
@@ -182,5 +203,23 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+/// Location hint region ids
+enum RegionId: String, CaseIterable, Identifiable {
+    case or2, va6, irl1, ind1, jpn3, sgp3, aus3, nil_value = "nil", empty_value = "empty"
+    var id: Self { self }
+}
+
+extension Binding {
+    func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {
+        Binding(
+            get: { self.wrappedValue },
+            set: { newValue in
+                self.wrappedValue = newValue
+                handler(newValue)
+            }
+        )
     }
 }
