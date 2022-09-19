@@ -75,7 +75,7 @@ public extension Edge {
     /// - Parameter hint: the Edge Network location hint to use when connecting to the Adobe Experience Platform Edge Network
     @objc(setLocationHint:)
     static func setLocationHint(_ hint: String?) {
-        let hintValue = hint == nil ? "" : hint
+        let hintValue = hint ?? ""
         let event = Event(name: "Edge Update Location Hint",
                           type: EventType.edge,
                           source: EventSource.updateProperty,
