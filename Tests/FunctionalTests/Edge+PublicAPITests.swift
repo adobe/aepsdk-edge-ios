@@ -53,7 +53,7 @@ class EdgePublicAPITests: FunctionalTestBase {
     func testSetLocationHint_sendEvent_sendsNetworkRequestWithLocationHint() {
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
 
-        Edge.setLocationHint("or2")
+        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
         Edge.sendEvent(experienceEvent: experienceEvent)
@@ -67,7 +67,7 @@ class EdgePublicAPITests: FunctionalTestBase {
                                               data: ["data": ["test": "data"]])
 
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
-        Edge.setLocationHint("or2")
+        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
         Edge.sendEvent(experienceEvent: experienceEvent)
         assertNetworkRequestsCount()
 
@@ -84,7 +84,7 @@ class EdgePublicAPITests: FunctionalTestBase {
                                               data: ["data": ["test": "data"]])
 
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
-        Edge.setLocationHint("or2")
+        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
         Edge.sendEvent(experienceEvent: experienceEvent)
         assertNetworkRequestsCount()
 
@@ -110,11 +110,11 @@ class EdgePublicAPITests: FunctionalTestBase {
     }
 
     func testGetLocationHint_withSet_returnsHint() {
-        Edge.setLocationHint("or2")
+        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
         let expectation = XCTestExpectation(description: "Request Location Hint")
         expectation.assertForOverFulfill = true
         Edge.getLocationHint({ hint, error in
-            XCTAssertEqual("or2", hint)
+            XCTAssertEqual(FunctionalTestConst.OR2_LOC, hint)
             XCTAssertNil(error)
             expectation.fulfill()
         })
@@ -124,7 +124,7 @@ class EdgePublicAPITests: FunctionalTestBase {
     }
 
     func testGetLocationHint_clearHint_returnsNilHint() {
-        Edge.setLocationHint("or2")
+        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
         Edge.setLocationHint(nil)
         let expectation = XCTestExpectation(description: "Request Location Hint")
         expectation.assertForOverFulfill = true
