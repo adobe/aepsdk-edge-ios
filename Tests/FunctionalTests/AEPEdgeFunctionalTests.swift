@@ -61,6 +61,15 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         resetTestExpectations()
     }
 
+    func testUnregistered() {
+        let waitForUnregistration = CountDownLatch(1)
+        MobileCore.unregisterExtension(Edge.self, {
+            print("Extension unregistration is complete")
+            waitForUnregistration.countDown()
+        })
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForUnregistration.await(timeout: 2))
+    }
+
     // MARK: test request event format
 
     func testSendEvent_withXDMData_sendsCorrectRequestEvent() {
