@@ -12,9 +12,9 @@
 
 import AEPCore
 import AEPEdge
-#if os(ios)
-import AEPEdgeConsent
+#if os(iOS)
 import AEPAssurance
+import AEPEdgeConsent
 import AEPEdgeIdentity
 #endif
 import AEPServices
@@ -25,15 +25,20 @@ struct ContentView: View {
     @State private var dataContent: String = "data is displayed here"
     @State private var version: String = ""
 
+    #if os(iOS)
+    private let os = "iOS"
+    #elseif os(tvOS)
+    private let os = "tvOS"
+    #endif
+
     var body: some View {
         NavigationView {
             VStack {
-                Text("AEPEdge TestApp - tvOS")
-                    .padding()
-                    .background(.blue)
-                    .cornerRadius(15)
+                Text("AEPEdge TestApp - \(os)")
+                    .statusBar(hidden: true)
+                    .padding(.top, 100)
                 Divider()
-                Text("Edge Extension Version: \(Text(version))")
+                Text("Edge Extension Version: \(version)")
                     .onAppear(perform: getExtensionVersion)
                     .frame(maxWidth: .infinity)
                     .padding()
