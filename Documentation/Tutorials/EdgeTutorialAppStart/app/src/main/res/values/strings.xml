@@ -9,4 +9,8 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+    <!-- First fragment view strings -->
+    <string name="product_add_event_button">Product add event</string>
+    <string name="product_view_event_button">Product view event</string>
 </resources>
