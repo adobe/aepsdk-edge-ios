@@ -19,7 +19,7 @@ public class MainApp extends Application {
     private static final String LOG_TAG = "Test Application";
 
     // TODO: fill in your Launch environment ID here
-    private final String LAUNCH_ENVIRONMENT_ID = "";
+    private final String LAUNCH_ENVIRONMENT_ID = "94f571f308d5/289dd3df9e05/launch-93c518afa62d-development";
 
     @Override
     public void onCreate() {

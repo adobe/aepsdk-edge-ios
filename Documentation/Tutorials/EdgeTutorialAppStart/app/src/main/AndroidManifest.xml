@@ -24,18 +24,35 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+            <intent-filter android:label="DeepLink">
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
-                <!-- Accepts URIs that begin with "testapp://main”-->
-                <data
-                    android:scheme="edgetutorialappstart"
-                    android:host="main" />
-
+                <data android:scheme="aepedgetutorialappstart"
+                    android:host="open.my.app"
+                    />
+<!--                <data-->
+<!--                    android:host="www.aepedgetutorialappstart.com"-->
+<!--                    android:scheme="https" />-->
             </intent-filter>
+
+<!--            <intent-filter android:autoVerify="true">-->
+<!--                <action android:name="android.intent.action.VIEW"/>-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+
+<!--                &lt;!&ndash; Accepts URIs that begin with "testapp://main”&ndash;&gt;-->
+
+<!--                &lt;!&ndash; Accepts URIs that begin with "example://gizmos” &ndash;&gt;-->
+<!--&lt;!&ndash;                <data android:scheme="example"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:host="gizmos" />&ndash;&gt;-->
+
+<!--                <data-->
+<!--                    android:scheme="aepedgetutorialappstart"-->
+<!--                    android:host="main" />-->
+
+<!--            </intent-filter>-->
         </activity>
     </application>
 

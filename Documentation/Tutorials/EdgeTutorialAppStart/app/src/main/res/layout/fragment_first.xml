@@ -8,24 +8,48 @@
     tools:context=".tutorial.FirstFragment">
 
     <Button
+        android:id="@+id/product_add_event_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:text="@string/product_add_event_button"
+        app:layout_constraintBottom_toTopOf="@id/product_view_event_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintTop_toTopOf="parent" />
+
+    <Button
         android:id="@+id/product_view_event_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
         android:text="@string/product_view_event_button"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/connect_to_assurance_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/product_add_event_button" />
 
     <Button
-        android:id="@+id/product_add_event_button"
+        android:id="@+id/connect_to_assurance_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="220dp"
-        android:text="@string/product_add_event_button"
+        android:text="@string/connect_to_assurance_button"
+        app:layout_constraintBottom_toTopOf="@id/assurance_session_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/product_view_event_button"
+        tools:layout_constraintBottom_toBottomOf="parent" />
+
+    <EditText
+        android:id="@+id/assurance_session_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Session Link"
+        android:inputType="text|textImeMultiLine"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/connect_to_assurance_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

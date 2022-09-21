@@ -13,4 +13,5 @@
     <!-- First fragment view strings -->
     <string name="product_add_event_button">Product add event</string>
     <string name="product_view_event_button">Product view event</string>
+    <string name="connect_to_assurance_button">Connect to Assurance</string>
 </resources>

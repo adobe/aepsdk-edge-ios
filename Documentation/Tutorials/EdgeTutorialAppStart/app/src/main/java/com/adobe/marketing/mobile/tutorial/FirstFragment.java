@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.Edge;
 import com.adobe.marketing.mobile.EdgeCallback;
 import com.adobe.marketing.mobile.EdgeEventHandle;
@@ -53,32 +54,6 @@ public class FirstFragment extends Fragment {
         binding.productAddEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<String> valuesList = new ArrayList<>();
-                valuesList.add("val1");
-                valuesList.add("val2");
-                Map<String, Object> eventData = new HashMap<>();
-                eventData.put("test", "request");
-                eventData.put("customText", "mytext");
-                eventData.put("listExample", valuesList);
-
-                // Create XDM data with Commerce data for purchases action
-//                MobileSDKCommerceSchema xdmData = new MobileSDKCommerceSchema();
-//                Order order = new Order();
-//                order.setCurrencyCode("RON");
-//                order.setPriceTotal(20);
-//                Purchases purchases = new Purchases();
-//                purchases.setValue(1);
-//                ProductListAdds products = new ProductListAdds();
-//                products.setValue(21);
-//                Commerce commerce = new Commerce();
-//                commerce.setOrder(order);
-//                commerce.setProductListAdds(products);
-//                commerce.setPurchases(purchases);
-//                xdmData.setEventType("commerce.purchases");
-//                xdmData.setCommerce(commerce);
-
-
-
                 ProductListItemsItem product = new ProductListItemsItem();
                 product.setName("wide_brim_sunhat");
                 product.setPriceTotal(50);
@@ -184,6 +159,18 @@ public class FirstFragment extends Fragment {
                         });
                     }
                 });
+
+            }
+        });
+
+        // Product view event - button action
+        binding.connectToAssuranceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(LOG_TAG, "Starting connection with Assurance");
+                // Connect to assurance session
+                // aepedgetutorialappstart://?adb_validation_sessionid=af671f57-e075-4de1-8462-bc98f7aaec90
+                Assurance.startSession(binding.assuranceSessionText.getText().toString());
 
             }
         });
