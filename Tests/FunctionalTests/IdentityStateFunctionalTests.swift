@@ -25,8 +25,8 @@ class IdentityStateFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false // fail so nil checks stop execution
         FunctionalTestBase.debugEnabled = false
 
-        // config state and 1 event hub states (TestableEdgeInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 2)
+        // config state and 2 event hub states (Edge, TestableEdgeInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 3)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)

@@ -29,12 +29,14 @@ class EdgeExtensionTests: XCTestCase {
     #endif
 
     override func setUp() {
+        ServiceProvider.shared.namedKeyValueService = MockDataStore()
         mockRuntime = TestableExtensionRuntime()
         mockDataQueue = MockDataQueue()
         mockHitProcessor = MockHitProcessor()
 
         edge = Edge(runtime: mockRuntime)
-        edge.state = EdgeState(hitQueue: PersistentHitQueue(dataQueue: mockDataQueue, processor: mockHitProcessor))
+        edge.state = EdgeState(hitQueue: PersistentHitQueue(dataQueue: mockDataQueue, processor: mockHitProcessor),
+                               edgeProperties: EdgeProperties())
         edge.onRegistered()
     }
 

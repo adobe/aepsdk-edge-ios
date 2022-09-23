@@ -23,6 +23,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var ecid: String = ""
     @State private var dataContent: String = "data is displayed here"
+    @State private var selectedRegion: RegionId = .nil_value
     @State private var version: String = ""
 
     #if os(iOS)
@@ -35,7 +36,9 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 Text("AEPEdge TestApp - \(os)")
+                    #if os(iOS)
                     .statusBar(hidden: true)
+                    #endif
                     .padding(.top, 100)
                 Divider()
                 Text("Edge Extension Version: \(version)")
@@ -51,21 +54,39 @@ struct ContentView: View {
                     }
                     VStack {
                         Text("Edge").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
-                        Button("Send Event", action: {
-                            let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                                                  data: ["data": ["test": "data"]])
-                            Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
-                                let encoder = JSONEncoder()
-                                encoder.outputFormatting = .prettyPrinted
-                                guard let data = try? encoder.encode(handles) else {
-                                    self.dataContent = "failed to encode EdgeEventHandle"
-                                    return
+                        VStack {
+                            Button("Send Event", action: {
+                                let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                                                      data: ["data": ["test": "data"]])
+                                Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
+                                    let encoder = JSONEncoder()
+                                    encoder.outputFormatting = .prettyPrinted
+                                    guard let data = try? encoder.encode(handles) else {
+                                        self.dataContent = "failed to encode EdgeEventHandle"
+                                        return
+                                    }
+                                    self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+                                })
+                            }).padding()
+                            HStack {
+                                Button("Get Location Hint", action: {
+                                    Edge.getLocationHint({ hint, error in
+                                        if error != nil {
+                                            dataContent = "Received error '\((error as? AEPError)?.localizedDescription ?? "nil")"
+                                        } else {
+                                            dataContent = "Location hint: '\(hint ?? "nil")'"
+                                            selectedRegion = RegionId(rawValue: hint ?? "nil") ?? .nil_value
+                                        }
+                                    })
+                                }).padding()
+                                Text("Set Location Hint: ")
+                                Picker("Set Location Hint", selection: $selectedRegion.onChange(changeLocationHint)) {
+                                    ForEach(RegionId.allCases) { regionId in
+                                        Text(regionId.rawValue.capitalized)
+                                    }
                                 }
-                                self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
-                            })
-                        })
-                        .frame(maxWidth: .infinity)
-                        .padding()
+                            }
+                        }
                     }.background(Color("InputColor1"))
                     VStack {
                         Text("Collect Consent").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
@@ -137,23 +158,40 @@ struct ContentView: View {
                 VStack {
                     Text("Edge").frame(maxWidth: .infinity).padding(10).font(.system(size: 24))
                     Divider()
-                    Button("Send Event", action: {
-                        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                                              data: ["data": ["test": "data"]])
-                        Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
-                            let encoder = JSONEncoder()
-                            encoder.outputFormatting = .prettyPrinted
-                            guard let data = try? encoder.encode(handles) else {
-                                self.dataContent = "failed to encode EdgeEventHandle"
-                                return
+                    VStack {
+                        Button("Send Event", action: {
+                            let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                                                  data: ["data": ["test": "data"]])
+                            Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
+                                let encoder = JSONEncoder()
+                                encoder.outputFormatting = .prettyPrinted
+                                guard let data = try? encoder.encode(handles) else {
+                                    self.dataContent = "failed to encode EdgeEventHandle"
+                                    return
+                                }
+                                self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+                            })
+                        }).padding()
+                        HStack {
+                            Button("Get Location Hint", action: {
+                                Edge.getLocationHint({ hint, error in
+                                    if error != nil {
+                                        dataContent = "Received error '\((error as? AEPError)?.localizedDescription ?? "nil")"
+                                    } else {
+                                        dataContent = "Location hint: '\(hint ?? "nil")'"
+                                        selectedRegion = RegionId(rawValue: hint ?? "nil") ?? .nil_value
+                                    }
+                                })
+                            }).padding()
+                            Text("Set Location Hint: ")
+                            Picker("Set Location Hint", selection: $selectedRegion.onChange(changeLocationHint)) {
+                                ForEach(RegionId.allCases) { regionId in
+                                    Text(regionId.rawValue.capitalized)
+                                }
                             }
-                            self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
-                        })
-                    })
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    Spacer()
-                }
+                        }
+                    }
+                }.background(Color("black"))
                 #endif
             }
         }
@@ -161,6 +199,22 @@ struct ContentView: View {
 
     private func getExtensionVersion() {
         version = Edge.extensionVersion
+    }
+
+    /// Set the Edge Network location hint based on the 'selectedRegion' state variable.
+    /// - Parameter tag: the region id
+    private func changeLocationHint(_ tag: RegionId) {
+        var hint: String?
+        switch selectedRegion {
+        case .nil_value:
+            hint = nil
+        case .empty_value:
+            hint = ""
+        default:
+            hint = selectedRegion.rawValue
+        }
+
+        Edge.setLocationHint(hint)
     }
 
     #if os(iOS)
@@ -221,5 +275,23 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+/// Location hint region ids
+enum RegionId: String, CaseIterable, Identifiable {
+    case or2, va6, irl1, ind1, jpn3, sgp3, aus3, nil_value = "nil", empty_value = "empty"
+    var id: Self { self }
+}
+
+extension Binding {
+    func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {
+        Binding(
+            get: { self.wrappedValue },
+            set: { newValue in
+                self.wrappedValue = newValue
+                handler(newValue)
+            }
+        )
     }
 }

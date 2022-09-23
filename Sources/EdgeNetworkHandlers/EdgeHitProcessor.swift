@@ -23,6 +23,7 @@ class EdgeHitProcessor: HitProcessing {
     private var getXDMSharedState: (String, Event?, Bool) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
+    private var getLocationHint: () -> String?
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
     private let VALID_PATH_REGEX_PATTERN = "^\\/[/.a-zA-Z0-9-~_]+$"
 
@@ -31,13 +32,15 @@ class EdgeHitProcessor: HitProcessing {
          getSharedState: @escaping (String, Event?) -> SharedStateResult?,
          getXDMSharedState: @escaping (String, Event?, Bool) -> SharedStateResult?,
          readyForEvent: @escaping (Event) -> Bool,
-         getImplementationDetails: @escaping () -> [String: Any]?) {
+         getImplementationDetails: @escaping () -> [String: Any]?,
+         getLocationHint: @escaping () -> String?) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
         self.getSharedState = getSharedState
         self.getXDMSharedState = getXDMSharedState
         self.readyForEvent = readyForEvent
         self.getImplementationDetails = getImplementationDetails
+        self.getLocationHint = getLocationHint
     }
 
     // MARK: HitProcessing
@@ -77,6 +80,9 @@ class EdgeHitProcessor: HitProcessing {
         requestBuilder.enableResponseStreaming(recordSeparator: EdgeConstants.Defaults.RECORD_SEPARATOR,
                                                lineFeed: EdgeConstants.Defaults.LINE_FEED)
 
+        // Get location hint for request endpoint
+        let locationHint = getLocationHint()
+
         if event.isExperienceEvent {
             guard let eventData = event.data, !eventData.isEmpty else {
                 Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to process Experience event, data was nil or empty")
@@ -99,7 +105,10 @@ class EdgeHitProcessor: HitProcessing {
             }
 
             let requestProperties = getRequestProperties(from: event)
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.interact, requestProperties: requestProperties)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig,
+                                             requestType: EdgeRequestType.interact,
+                                             requestProperties: requestProperties,
+                                             locationHint: locationHint)
             let edgeHit = ExperienceEventsEdgeHit(endpoint: endpoint, configId: configId, request: requestPayload)
             // NOTE: the order of these events needs to be maintained as they were sent in the network request
             // otherwise the response callback cannot be matched
@@ -121,7 +130,10 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            let endpoint = buildEdgeEndpoint(config: edgeConfig, requestType: EdgeRequestType.consent, requestProperties: nil)
+            let endpoint = buildEdgeEndpoint(config: edgeConfig,
+                                             requestType: EdgeRequestType.consent,
+                                             requestProperties: nil,
+                                             locationHint: locationHint)
             let edgeHit = ConsentEdgeHit(endpoint: endpoint, configId: configId, consents: consentPayload)
             networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
             sendHit(entityId: entity.uniqueIdentifier, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
@@ -137,12 +149,15 @@ class EdgeHitProcessor: HitProcessing {
     /// - Parameters:
     ///   - config: configuration data, used to extract the environment and the custom domain, if any
     ///   - requestType: the `EdgeRequestType`
-    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType, requestProperties: [String: Any]?) -> EdgeEndpoint {
+    ///   - requestProperties: properties from request event
+    ///   - locationHint: optional location hint
+    private func buildEdgeEndpoint(config: [String: String], requestType: EdgeRequestType, requestProperties: [String: Any]?, locationHint: String?) -> EdgeEndpoint {
         return EdgeEndpoint(
             requestType: requestType,
             environmentType: EdgeEnvironmentType(optionalRawValue: config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT]),
             optionalDomain: config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN],
-            optionalPath: requestProperties?[EdgeConstants.EventDataKeys.Request.PATH] as? String)
+            optionalPath: requestProperties?[EdgeConstants.EventDataKeys.Request.PATH] as? String,
+            locationHint: locationHint)
     }
 
     private func decode(dataEntity: DataEntity) -> EdgeDataEntity? {
@@ -261,6 +276,10 @@ class EdgeHitProcessor: HitProcessing {
         return path
     }
 
+    /// Validates a given path does not contain invalid characters.
+    /// A 'path'  may only contain alphanumeric characters, forward slash, period, hyphen, underscore, or tilde, but may not contain a double forward slash.
+    /// - Parameter path: the path to validate
+    /// - Returns: true if 'path' passes validation, false if 'path' contains invalid characters.
     private func isValidPath(_ path: String) -> Bool {
        if path.contains("//") {
             return false
@@ -271,6 +290,5 @@ class EdgeHitProcessor: HitProcessing {
         let regex = try? NSRegularExpression(pattern: pattern, options: [])
         let matches = regex?.firstMatch(in: path, range: NSRange(path.startIndex..., in: path)) != nil
         return matches
-
     }
 }
