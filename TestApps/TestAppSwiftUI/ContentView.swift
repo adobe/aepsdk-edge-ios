@@ -12,13 +12,14 @@
 
 import AEPCore
 import AEPEdge
-#if os(iOS)
-import AEPAssurance
 import AEPEdgeConsent
 import AEPEdgeIdentity
-#endif
 import AEPServices
 import SwiftUI
+
+#if os(iOS)
+import AEPAssurance
+#endif
 
 struct ContentView: View {
     @State private var ecid: String = ""
@@ -27,173 +28,164 @@ struct ContentView: View {
     @State private var version: String = ""
 
     #if os(iOS)
-    private let os = "iOS"
+    let dividerColor = Color(.black)
+    let secondaryBackgroundColor = Color("InputColor2")
     #elseif os(tvOS)
-    private let os = "tvOS"
+    let dividerColor = Color(.white)
+    let secondaryBackgroundColor = Color(.clear)
     #endif
 
     var body: some View {
         NavigationView {
-            VStack {
-                Text("AEPEdge TestApp - \(os)")
+            ScrollView {
+                edgeDetailsView
+                Divider().background(Color.white)
+                VStack {
                     #if os(iOS)
-                    .statusBar(hidden: true)
-                    #endif
-                    .padding(.top, 100)
-                Divider()
-                Text("Edge Extension Version: \(version)")
-                    .onAppear(perform: getExtensionVersion)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-
-                #if os(iOS)
-                VStack {
-
                     NavigationLink(destination: AssuranceView()) {
-                        Text("Assurance")
+                        Text("Connect Assurance")
                     }
-                    VStack {
-                        Text("Edge").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
-                        VStack {
-                            Button("Send Event", action: {
-                                let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                                                      data: ["data": ["test": "data"]])
-                                Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
-                                    let encoder = JSONEncoder()
-                                    encoder.outputFormatting = .prettyPrinted
-                                    guard let data = try? encoder.encode(handles) else {
-                                        self.dataContent = "failed to encode EdgeEventHandle"
-                                        return
-                                    }
-                                    self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
-                                })
-                            }).padding()
-                            HStack {
-                                Button("Get Location Hint", action: {
-                                    Edge.getLocationHint({ hint, error in
-                                        if error != nil {
-                                            dataContent = "Received error '\((error as? AEPError)?.localizedDescription ?? "nil")"
-                                        } else {
-                                            dataContent = "Location hint: '\(hint ?? "nil")'"
-                                            selectedRegion = RegionId(rawValue: hint ?? "nil") ?? .nil_value
-                                        }
-                                    })
-                                }).padding()
-                                Text("Set Location Hint: ")
-                                Picker("Set Location Hint", selection: $selectedRegion.onChange(changeLocationHint)) {
-                                    ForEach(RegionId.allCases) { regionId in
-                                        Text(regionId.rawValue.capitalized)
-                                    }
-                                }
-                            }
-                        }
-                    }.background(Color("InputColor1"))
-                    VStack {
-                        Text("Collect Consent").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
-                        HStack {
-                            Spacer()
-                            Button("Yes", action: {
-                                Consent.update(with: ["consents": ["collect": ["val": "y"]]])
-                                self.getConsents()
-                            })
-                            Spacer()
-                            Button("No", action: {
-                                Consent.update(with: ["consents": ["collect": ["val": "n"]]])
-                                self.getConsents()
-                            })
-                            Spacer()
-                            Button("Pending", action: {
-                                Consent.update(with: ["consents": ["collect": ["val": "p"]]])
-                                self.getConsents()
-                            })
-                            Spacer()
-                            Button("Get Consents", action: {
-                                self.getConsents()
-                            })
-                            Spacer()
-                        }.padding()
-                    }.background(Color("InputColor2"))
-                    VStack {
-                        Text("Edge Identity").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
-                        HStack(alignment: .top) {
-                            Spacer()
-                            Button("Update", action: {
-                                self.updateIdentities()
-                            })
-                            Spacer()
-                            Button("Remove", action: {
-                                self.removeIdentities()
-                            })
-                            Spacer()
-                            Button("Get Identities", action: {
-                                self.getIdentities()
-                            })
-                            Spacer()
-                        }.padding()
-                    }.background(Color("InputColor1"))
-                    VStack {
-                        Text("Mobile Core").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 24))
-                        HStack {
-                            Button("Reset IDs", action: {
-                                MobileCore.resetIdentities()
-                            }).padding()
-                        }
-                    }.background(Color("InputColor2"))
-                    Divider()
-                    VStack {
-                        Text("ECID:").bold().frame(maxWidth: .infinity, alignment: .leading).padding(10)
-                        Text(ecid)
-                    }
-                    Divider()
-                    ScrollView {
-                        Text(dataContent).frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }.background(Color(red: 0.97, green: 0.97, blue: 0.97, opacity: 1))
-                }.onAppear {
-                    self.getECID()
+                    #endif
+                    edgeView.background(secondaryBackgroundColor)
+                    Divider().background(dividerColor)
+                    consentSection
+                    Divider().background(dividerColor)
+                    edgeIdentitySection.background(secondaryBackgroundColor)
+                    Divider().background(dividerColor)
+                    coreView
+                    Divider().background(dividerColor)
+                    identityDirectView.background(secondaryBackgroundColor)
                 }
-                #endif
+            }
+        }
+    }
 
-                // TODO: Revisit this code, once all Edge extensions have tvOS support
-                #if os(tvOS)
-                VStack {
-                    Text("Edge").frame(maxWidth: .infinity).padding(10).font(.system(size: 24))
-                    Divider()
-                    VStack {
-                        Button("Send Event", action: {
-                            let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                                                  data: ["data": ["test": "data"]])
-                            Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
-                                let encoder = JSONEncoder()
-                                encoder.outputFormatting = .prettyPrinted
-                                guard let data = try? encoder.encode(handles) else {
-                                    self.dataContent = "failed to encode EdgeEventHandle"
-                                    return
-                                }
-                                self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
-                            })
-                        }).padding()
-                        HStack {
-                            Button("Get Location Hint", action: {
-                                Edge.getLocationHint({ hint, error in
-                                    if error != nil {
-                                        dataContent = "Received error '\((error as? AEPError)?.localizedDescription ?? "nil")"
-                                    } else {
-                                        dataContent = "Location hint: '\(hint ?? "nil")'"
-                                        selectedRegion = RegionId(rawValue: hint ?? "nil") ?? .nil_value
-                                    }
-                                })
-                            }).padding()
-                            Text("Set Location Hint: ")
-                            Picker("Set Location Hint", selection: $selectedRegion.onChange(changeLocationHint)) {
-                                ForEach(RegionId.allCases) { regionId in
-                                    Text(regionId.rawValue.capitalized)
-                                }
+    var edgeDetailsView: some View {
+        Text("Edge Extension Version: \(version)")
+            .onAppear(perform: getExtensionVersion)
+            .frame(maxWidth: .infinity)
+            .padding()
+    }
+
+    var edgeView: some View {
+        VStack {
+            Text("Edge").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 20))
+            VStack {
+                Button("Send Event", action: {
+                    let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                                          data: ["data": ["test": "data"]])
+                    Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
+                        let encoder = JSONEncoder()
+                        encoder.outputFormatting = .prettyPrinted
+                        guard let data = try? encoder.encode(handles) else {
+                            self.dataContent = "failed to encode EdgeEventHandle"
+                            return
+                        }
+                        self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+                    })
+                }).padding()
+
+                HStack {
+                    Button("Get Location Hint", action: {
+                        Edge.getLocationHint({ hint, error in
+                            if error != nil {
+                                dataContent = "Received error '\((error as? AEPError)?.localizedDescription ?? "nil")"
+                            } else {
+                                dataContent = "Location hint: '\(hint ?? "nil")'"
+                                selectedRegion = RegionId(rawValue: hint ?? "nil") ?? .nil_value
                             }
+                        })
+                    }).padding()
+
+                    Text("Set Location Hint:")
+                    Picker("Set Location Hint", selection: $selectedRegion.onChange(changeLocationHint)) {
+                        ForEach(RegionId.allCases) { regionId in
+                            Text(regionId.rawValue.capitalized)
                         }
                     }
-                }.background(Color("black"))
-                #endif
+                }
             }
+        }
+    }
+
+    var consentSection: some View {
+        VStack {
+            Text("Collect Consent").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 20))
+            HStack {
+                Spacer()
+                Button("Yes", action: {
+                    Consent.update(with: ["consents": ["collect": ["val": "y"]]])
+                    self.getConsents()
+                })
+
+                Spacer()
+                Button("No", action: {
+                    Consent.update(with: ["consents": ["collect": ["val": "n"]]])
+                    self.getConsents()
+                })
+
+                Spacer()
+                Button("Pending", action: {
+                    Consent.update(with: ["consents": ["collect": ["val": "p"]]])
+                    self.getConsents()
+                })
+
+                Spacer()
+                Button("Get Consents", action: {
+                    self.getConsents()
+                })
+
+                Spacer()
+            }.padding()
+        }
+    }
+
+    var edgeIdentitySection: some View {
+        VStack {
+            Text("Edge Identity").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 20))
+            HStack(alignment: .top) {
+                Spacer()
+                Button("Update", action: {
+                    self.updateIdentities()
+                })
+
+                Spacer()
+                Button("Remove", action: {
+                    self.removeIdentities()
+                })
+
+                Spacer()
+                Button("Get Identities", action: {
+                    self.getIdentities()
+                })
+
+                Spacer()
+            }.padding()
+        }
+    }
+
+    var coreView: some View {
+        VStack {
+            Text("Mobile Core").frame(maxWidth: .infinity, alignment: .leading).padding(10).font(.system(size: 20))
+            HStack {
+                Button("Reset IDs", action: {
+                    MobileCore.resetIdentities()
+                }).padding()
+
+            }
+        }
+    }
+
+    var identityDirectView: some View {
+        VStack {
+            Text("ECID:").bold().frame(maxWidth: .infinity, alignment: .leading).padding(10)
+            Text(ecid)
+            ScrollView {
+                Text(dataContent).frame(maxWidth: .infinity, maxHeight: .infinity)
+            }.background(Color.secondary)
+        }
+        .onAppear {
+            self.getECID()
         }
     }
 
@@ -217,7 +209,6 @@ struct ContentView: View {
         Edge.setLocationHint(hint)
     }
 
-    #if os(iOS)
     private func getECID() {
         Identity.getExperienceCloudId { value, error in
             if error != nil {
@@ -268,13 +259,12 @@ struct ContentView: View {
             self.dataContent = jsonStr
         }
     }
-    #endif
 
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView().preferredColorScheme(ColorScheme.dark)
     }
 }
 

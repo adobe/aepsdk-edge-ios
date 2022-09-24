@@ -19,23 +19,23 @@ end
 
 target 'FunctionalTests' do
   pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.7.1'
-  pod 'AEPEdgeIdentity'
-  pod 'AEPEdgeConsent'
+  pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'feature/tvos'
+  pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'feature/tvos'
 end
 
 target 'TestAppiOS' do
   pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.7.1'
   pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.7.1'
-  pod 'AEPEdgeIdentity'
-  pod 'AEPEdgeConsent'
+  pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'feature/tvos'
+  pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'feature/tvos'
   pod 'AEPAssurance'
 end
 
 target 'TestApptvOS' do
   pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.7.1'
   pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.7.1'
-  pod 'AEPEdgeIdentity'
-  pod 'AEPEdgeConsent'
+  pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'feature/tvos'
+  pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'feature/tvos'
 end
 
 post_install do |pi|
