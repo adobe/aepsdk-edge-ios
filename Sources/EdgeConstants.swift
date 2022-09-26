@@ -35,6 +35,7 @@ enum EdgeConstants {
         static let LINE_FEED: String = "\n"
         static let COLLECT_CONSENT_YES = ConsentStatus.yes // used if Consent extension is not registered
         static let COLLECT_CONSENT_PENDING = ConsentStatus.pending // used when Consent encoding failed or the value different than y/n
+        static let LOCATION_HINT_TTL_SEC: TimeInterval = 1800 // 30 mins in seconds
     }
 
     enum EventDataKeys {
@@ -42,6 +43,7 @@ enum EdgeConstants {
         static let REQUEST_EVENT_ID = "requestEventId"
         static let DATASET_ID = "datasetId"
         static let CONSENTS = "consents"
+        static let LOCATION_HINT = "locationHint"
 
         enum Request {
             static let KEY = "request"
