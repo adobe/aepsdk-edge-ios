@@ -12,14 +12,14 @@
 
 import AEPCore
 import AEPEdge
-
-#if os(ios)
-import AEPAssurance
 import AEPEdgeConsent
 import AEPEdgeIdentity
-#endif
 import Compression
 import UIKit
+
+#if os(iOS)
+import AEPAssurance
+#endif
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,11 +30,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         MobileCore.setLogLevel(.trace)
         MobileCore.configureWith(appId: LAUNCH_ENVIRONMENT_FILE_ID)
-        var extensions = [Edge.self]
+        var extensions: [NSObject.Type] = [Edge.self, Identity.self, Consent.self]
 
         // MARK: TODO remove this once Assurance has tvOS support.
         #if os(iOS)
-        extensions.append(Identity.self, Consent.self, Assurance.self)
+        extensions.append(contentsOf: [Assurance.self])
         #endif
         MobileCore.registerExtensions(extensions)
         return true
