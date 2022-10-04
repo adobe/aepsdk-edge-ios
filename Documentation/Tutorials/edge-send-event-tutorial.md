@@ -18,7 +18,7 @@
 - [Validation with Assurance](#validation-with-assurance)
   - [1. Set up the Assurance session](#1-set-up-the-assurance-session)
   - [2. Connect to the app](#2-connect-to-the-app)
-  - [3. Assurance Event transactions view - check for Edge events](#3-assurance-event-transactions-view---check-for-edge-events)
+  - [3. Inspect events with Assurance](#3-inspect-events-with-assurance)
 
 ## Overview
 This hands-on tutorial provides end-to-end instructions on how to implement the Edge extension to send event data to the Edge Network from a fresh implementation state.
@@ -619,7 +619,7 @@ In the web-based Assurance session, there is also an indicator in the top right 
 
 Notice how in the Assurance session Events view (**2**), there are already events populating as a consequence of the connection of the mobile app to the Assurance session (**3**); the Assurance extension itself emits events about the session connection and subsequently captures these events to display in the web-based session viewer. You can expect Assurance to capture all events processed by the AEP SDK from all other extensions as well.  
 
-### 3. Assurance Event transactions view - check for Edge events  
+### 3. Inspect events with Assurance
 #### Send product related Experience events <!-- omit in toc -->
 In order to see Edge events, in the connected app instance:
 1. Select either **Product add event** or **Product view event** to send an Experience Event to the Edge Network! 
