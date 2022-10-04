@@ -185,7 +185,7 @@ Select **Catalog** (**1**) and (optionally) use the search box (**2**) to find t
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-catalog.png" alt="Catalog search example" width="1100"/>  
 
-We will be installing the following AEP extension configurations:
+Install the AEP extensions with the following configurations:
 
 <details>
   <summary> AEP Assurance </summary><p>
@@ -480,20 +480,8 @@ Make sure to uncomment all sections within each file (the total will tell you ho
 2. `SceneDelegate.swift`
 3. `ContentView.swift`
 
-### Consent for Edge extension <!-- omit in toc -->
-The [Consent for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network) mobile extension enables you to collect user data tracking consent preferences from your mobile app when using AEP and the Edge extension. The default consent settings should be set in alignment with your organization's user data privacy requirements. See the guide on [ingesting data using the Consents and Preferences data type](https://experienceleague.adobe.com/docs/experience-platform/xdm/data-types/consents.html#ingest).
-
-[API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network/api-reference)
-
-### Identity for Edge extension <!-- omit in toc -->
-The [Identity for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network) mobile extension enables identity management when using AEP and the Edge extension. You can control IDs associated with the user like custom IDs, advertising IDs, etc.
-
-[API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network/api-reference)
-
-### Lifecycle for Edge extension <!-- omit in toc -->
-The [Lifecycle for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/lifecycle-for-edge-network) extension enables you to collect app lifecycle data from your mobile app when using AEP and the Edge extension. This includes data like app start, stop, device type, device OS, etc.
-
-[API documentation](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle/lifecycle-api-reference)
+### Edge extension details <!-- omit in toc -->
+For details on the various Edge extensions used, see the [table of related projects](../../README.md#related-projects).
 
 Notice that the Lifecycle APIs rely on the developer to place them in the proper iOS app lifecycle functions (as seen in `SceneDelegate.swift`); that is, iOS has built-in functions that are called by the operating system that give the app notices that it is about to enter an active state, or go into a background state, etc. A proper Lifecycle extension implementation requires that the developer places the API calls in the required iOS lifecycle functions. See the full guide on [implementing Lifecycle](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle).
 
