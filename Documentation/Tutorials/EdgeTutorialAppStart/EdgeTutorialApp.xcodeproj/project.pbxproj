@@ -107,8 +107,8 @@
 			children = (
 				4C5CA73028D054F500BD8DF9 /* xdm */,
 				4C5CA72328CFE4F600BD8DF9 /* AppDelegate.swift */,
-				4C5CA71528CFE46700BD8DF9 /* ContentView.swift */,
 				4C5CA72128CFE4F600BD8DF9 /* SceneDelegate.swift */,
+				4C5CA71528CFE46700BD8DF9 /* ContentView.swift */,
 				4C5CA72B28CFE50000BD8DF9 /* LaunchScreen.storyboard */,
 				4C5CA72428CFE4F600BD8DF9 /* Assets.xcassets */,
 				4C5CA72228CFE4F600BD8DF9 /* Info.plist */,

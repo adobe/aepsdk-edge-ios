@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+/// Imports the Assurance and Core extensions for use in the code below.
 //* Edge Tutorial - code section (1/4)
 import AEPAssurance
 import AEPCore
@@ -59,8 +60,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
+        
+/// The next two code sections are functionality that is enabled by the Lifecycle for Edge extension
+/// the extension's main purpose is to track the app's state, basically when the app starts or is closed.
 //* Edge Tutorial - code section (2/4)
-         MobileCore.lifecycleStart(additionalContextData: ["start": "lifecycle"])
+        /// Enables the `lifecycleStart` API that tracks when the app is opened.
+        MobileCore.lifecycleStart(additionalContextData: ["start": "lifecycle"])
 // Edge Tutorial - code section (2/4) */
     }
 
@@ -70,7 +75,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
         
 //* Edge Tutorial - code section (3/4)
-         MobileCore.lifecyclePause()
+        /// Enables the `lifecyclePause` API that tracks when the app is closed.
+        MobileCore.lifecyclePause()
 // Edge Tutorial - code section (3/4) */
     }
 
@@ -79,6 +85,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to note : this method is not called when an app not in memory (forceclosed) is opened with deeplink
         if let url = URLContexts.first?.url {
 //* Edge Tutorial - code section (4/4)
+            /// Enables deep linking to connect to Assurance; this is the method used for iOS versions 13 and above.
             Assurance.startSession(url: url)
 // Edge Tutorial - code section (4/4) */
         }

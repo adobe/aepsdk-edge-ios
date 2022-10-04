@@ -10,6 +10,9 @@
 // governing permissions and limitations under the License.
 //
 
+/// Imports the various Edge extensions and other AEP extensions that enable sending event
+/// data to the Edge Network, and power other features. The `import` statement makes it available
+/// to use in the code below.
 /* Edge Tutorial - code section (1/3)
 import AEPAssurance
 import AEPCore
@@ -31,8 +34,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         let appState = application.applicationState
 /* Edge Tutorial - code section (2/3)
+        /// Sets the log level of Core (which handles the core functionality used by extensions like networking,
+        /// data conversions, etc.) to `trace`, which provides more granular details on app logic; this can be
+        /// helpful in debugging or troubleshooting issues.
         MobileCore.setLogLevel(.trace)
+        /// This sets the environment file ID which is the mobile property configuration set up in the first section;
+        /// this will apply the extension settings in our app.
         MobileCore.configureWith(appId: ENVIRONMENT_FILE_ID)
+        /// Registers the extensions with Core, getting them ready to run in the app.
         MobileCore.registerExtensions([
             Assurance.self,
             Consent.self,
@@ -60,6 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // To handle deeplink on iOS versions 12 and below
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
 /* Edge Tutorial - code section (3/3)
+        /// Enables deep linking to connect to Assurance. This is the method used for iOS versions 12 and below.
         Assurance.startSession(url: url)
 // Edge Tutorial - code section (3/3) */
         return true

@@ -22,10 +22,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>aepedgetutorial</string>
+			<string>edgetutorialapp</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>aepedgetutorial</string>
+				<string>edgetutorialapp</string>
 			</array>
 		</dict>
 	</array>

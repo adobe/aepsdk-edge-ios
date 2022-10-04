@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+/// Imports the Core extension for use in the code below.
 /* Edge Tutorial - code section (1/3)
 import AEPEdge
 // Edge Tutorial - code section (1/3) */
@@ -57,9 +58,8 @@ struct TrackView: View {
                 xdmData.commerce = commerce
                 xdmData.productListItems = productListItems
 
-                
+/// Creates an Experience Event with an event payload that conforms to the XDM schema set up in the Adobe Experience Platform. This event is an example of a product add.
 /* Edge Tutorial - code section (2/3)
-                // Create an Experience Event with the built schema and send it using the AEP Edge extension
                 let event = ExperienceEvent(xdm: xdmData)
                 Edge.sendEvent(experienceEvent: event)
 // Edge Tutorial - code section (2/3) */
@@ -85,7 +85,7 @@ struct TrackView: View {
                     ]
                   ]
                 ]
-                
+/// Creates an Experience Event with an event payload that conforms to the XDM schema set up in the Adobe Experience Platform. This event is an example of a product view.
 /* Edge Tutorial - code section (3/3)
                 let experienceEvent = ExperienceEvent(xdm: xdmData)
                 Edge.sendEvent(experienceEvent: experienceEvent)
