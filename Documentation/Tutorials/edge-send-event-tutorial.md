@@ -1,26 +1,24 @@
-# Implementing the Edge extension to send event data to the Edge Network
+# Implementing the Edge extension to send event data to the Edge Network <!-- omit in toc -->
 
-## Table of Contents
-- [Implementing the Edge extension to send event data to the Edge Network](#implementing-the-edge-extension-to-send-event-data-to-the-edge-network)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-    - [Environment](#environment)
-  - [Adobe Experience Platform setup](#adobe-experience-platform-setup)
-    - [1. Create a schema](#1-create-a-schema)
-    - [2. Create a datastream](#2-create-a-datastream)
-    - [3. Create a property](#3-create-a-property)
-    - [4. Configure a Rule to Forward Lifecycle metrics to Platform](#4-configure-a-rule-to-forward-lifecycle-metrics-to-platform)
-    - [5. Publish changes](#5-publish-changes)
-  - [Client-side implementation](#client-side-implementation)
-    - [1. Get a copy of the files (tutorial app code) and initial setup](#1-get-a-copy-of-the-files-tutorial-app-code-and-initial-setup)
-    - [2. Install the Edge extensions using dependency manager (CocoaPods)](#2-install-the-edge-extensions-using-dependency-manager-cocoapods)
-    - [3. Update tutorial app code to enable Edge features](#3-update-tutorial-app-code-to-enable-edge-features)
-    - [4. Run app](#4-run-app)
-    - [5. `sendEvent` implementation examples](#5-sendevent-implementation-examples)
-  - [Validation with Assurance](#validation-with-assurance)
-    - [1. Set up the Assurance session](#1-set-up-the-assurance-session)
-    - [2. Connect to the app](#2-connect-to-the-app)
-    - [3. Assurance Event transactions view - check for Edge events](#3-assurance-event-transactions-view---check-for-edge-events)
+## Table of Contents <!-- omit in toc -->
+- [Overview](#overview)
+  - [Environment](#environment)
+- [Adobe Experience Platform setup](#adobe-experience-platform-setup)
+  - [1. Create a schema](#1-create-a-schema)
+  - [2. Create a datastream](#2-create-a-datastream)
+  - [3. Create a property](#3-create-a-property)
+  - [4. Configure a Rule to forward Lifecycle metrics to Edge Network](#4-configure-a-rule-to-forward-lifecycle-metrics-to-edge-network)
+  - [5. Publish changes](#5-publish-changes)
+- [Client-side implementation](#client-side-implementation)
+  - [1. Get a copy of the files (tutorial app code) and initial setup](#1-get-a-copy-of-the-files-tutorial-app-code-and-initial-setup)
+  - [2. Install the Edge extensions using dependency manager (CocoaPods)](#2-install-the-edge-extensions-using-dependency-manager-cocoapods)
+  - [3. Update tutorial app code to enable Edge features](#3-update-tutorial-app-code-to-enable-edge-features)
+  - [4. Run app](#4-run-app)
+  - [5. `sendEvent` implementation examples](#5-sendevent-implementation-examples)
+- [Validation with Assurance](#validation-with-assurance)
+  - [1. Set up the Assurance session](#1-set-up-the-assurance-session)
+  - [2. Connect to the app](#2-connect-to-the-app)
+  - [3. Assurance Event transactions view - check for Edge events](#3-assurance-event-transactions-view---check-for-edge-events)
 
 ## Overview
 This hands-on tutorial provides end-to-end instructions on how to implement the Edge extension to send event data to the Edge Network from a fresh implementation state.
@@ -37,28 +35,28 @@ graph LR;
 - Cocoapods installed
 
 ## Adobe Experience Platform setup
-Before any app changes we need to set up some configuration items on the Adobe Experience Platform (AEP) side. The end goal of this section is to create a mobile property that controls the configuration settings for the various AEP extensions used in this tutorial.
+Before any app changes, some configuration items on the Adobe Experience Platform (AEP) side need to be set up. The end goal of this section is to create a mobile property that controls the configuration settings for the various AEP extensions used in this tutorial.
 
-First we need to create an XDM schema (the format for data that the Edge Network uses) and configure a datastream (controls where the data will go). 
+First, create an XDM schema (the format for data that the Edge Network uses) and configure a datastream (controls where the data will go). 
 
 ### 1. Create a schema  
 At a high level, a schema is a definition for the structure of your data; what properties you are expecting, what format they should be in, and checks for the actual values coming in.  
 
 1. Go to the [Adobe Experience Platform](https://experience.adobe.com/#/platform), using your Adobe ID credentials to log in if prompted.
 
-2. Navigate to the Data Collection UI by clicking the nine-dot menu in the top right (**1**), and selecting `Data Collection` (**2**)  
+2. Navigate to the Data Collection UI by selecting the nine-dot menu in the top right (**1**), and selecting `Data Collection` (**2**)  
 <img src="../Assets/edge-send-event-tutorial/aep-data-collection.png" alt="Going from Assurance to Data Collection" width="1100"/>
 
-3. Click **Schemas** in the left navigation window  
+3. Select **Schemas** in the left navigation window  
 <img src="../Assets/edge-send-event-tutorial/data-collection-tags.png" alt="Going from Assurance to Data Collection" width="1100"/>
 
-4. In the schemas view, click the **+ Create schema** button (**1**) in the top right, then select `XDM ExperienceEvent` (**2**)
+4. In the schemas view, select the **+ Create schema** button (**1**) in the top right, then select `XDM ExperienceEvent` (**2**)
 <img src="../Assets/edge-send-event-tutorial/data-collection-schemas.png" alt="Creating new XDM ExperienceEvent schema" width="1100"/>
 
 Once in the new schema creation view, notice the schema class is `XDM ExperienceEvent` (**1**); schemas adhere to specific class types which just means that they have some predefined properties and behaviors within the Edge platform. In this case, `XDM ExperienceEvent` creates the base properties you see in the `Structure` section that help define some baseline data for each Experience Event. 
 
 5. Give the new schema a name and description (**2**) to help identify it.
-6. Click the `+ Add` button (**3**) next to the `Field groups` section under `Composition`.
+6. Select the `+ Add` button (**3**) next to the `Field groups` section under `Composition`.
 
 <details>
   <summary> What is a field group?</summary><p>
@@ -106,20 +104,20 @@ You can use the search box (**1**) to look up the names (**2**) of the three fie
 
 </p></details>
 
-Verify that all the required field groups are present in the right side info panel (**1**), then click **Add field groups** (**2**). 
+Verify that all the required field groups are present in the right side info panel (**1**), then select **Add field groups** (**2**). 
 <img src="../Assets/edge-send-event-tutorial/schema-field-group-selected.png" alt="Add required field groups" width="1100"/>  
 
-Verify that the required field groups are present under the **Field groups** section (**1**) and the properties associated with those field groups are present under the **Structure** section (**2**), then click **Save** (**3**).
+Verify that the required field groups are present under the **Field groups** section (**1**) and the properties associated with those field groups are present under the **Structure** section (**2**), then select **Save** (**3**).
 <img src="../Assets/edge-send-event-tutorial/schema-with-field-groups.png" alt="Schema with required field groups" width="1100"/>  
 
 <details>
   <summary> Hints for using the schema creator tool </summary><p>
 
-To quickly see what properties are from a given field group, click the field group under the **Field groups** section (**1**). The properties are highlighted in the **Structure** section (**2**).
+To quickly see what properties are from a given field group, select the field group under the **Field groups** section (**1**). The properties are highlighted in the **Structure** section (**2**).
 
 <img src="../Assets/edge-send-event-tutorial/schema-tool-selection.png" alt="Schema tool selecting a field group example" width="1100"/>  
 
-To see only the properties from a given field group, click the selection box next to the field group (**1**). The properties are filtered to only the selected field group in the **Structure** section (**2**).
+To see only the properties from a given field group, select the selection box next to the field group (**1**). The properties are filtered to only the selected field group in the **Structure** section (**2**).
 
 <img src="../Assets/edge-send-event-tutorial/schema-tool-filtering.png" alt="Schema tool filtering on a field group example" width="1100"/>  
 
@@ -132,58 +130,58 @@ To see only the properties from a given field group, click the selection box nex
 
 A datastream is a server-side configuration on Platform Edge Network that controls where data goes. Datastreams ensure that incoming data is routed to the Adobe Experience Platform application and services (like Analytics) appropriately. For more information, see the [datastreams documentation](https://experienceleague.adobe.com/docs/experience-platform/edge/datastreams/overview.html?lang=en) or this [video](https://experienceleague.adobe.com/docs/platform-learn/data-collection/edge-network/configure-datastreams.html?lang=en).
 
-In order to send data to the Edge Network, the datastream must be configured with the Adobe Experience Platform service.
+In order to send data to the Edge Network, the datastream must be configured with the Event schema.
 
 </p></details>
 
-Click **Datastreams** under **DATA COLLECTION** in the left side navigation panel.
+Select **Datastreams** under **DATA COLLECTION** in the left side navigation panel.
 
 <img src="../Assets/edge-send-event-tutorial/datastreams-navigation.png" alt="Datastream in Data Collection Navigation" width="1100"/>  
 
-Click **New Datastream** in the top right.
+Select **New Datastream** in the top right.
 
 <img src="../Assets/edge-send-event-tutorial/datastreams-main-view.png" alt="Create new datastream" width="1100"/>  
 
-Give the datastream an identifying name and description (**1**), then pick the schema created in the previous section using the dropdown menu (**2**). Then click **Save** (**3**).
+Give the datastream an identifying name and description (**1**), then pick the schema created in the previous section using the dropdown menu (**2**). Then select **Save** (**3**).
 
 <img src="../Assets/edge-send-event-tutorial/datastreams-new-datastream.png" alt="Set datastream values" width="1100"/>  
 
-With the datastream set up, we can now direct the data to its destination by adding services. In our case, Analytics:
-1. Click **Add Service** (**1**)
+With the datastream set up, data can be directed to its destination by adding services. In this case, Adobe Analytics:
+1. Select **Add Service** (**1**)
 
 <img src="../Assets/edge-send-event-tutorial/datastreams-add-service.png" alt="Set datastream values" width="1100"/>  
 
 2. From the **Service (required)** dropdown (**1**), select **Adobe Analytics**.
-3. Click **Add Report Suite** (**2**), and enter the report suite ID you want the data from this tutorial to land.
-4. Click **Save**.
+3. Select **Add Report Suite** (**2**), and enter the report suite ID you want the data from this tutorial to land.
+4. Select **Save**.
 
 <img src="../Assets/edge-send-event-tutorial/datastreams-add-analytics.png" alt="Set datastream values" width="1100"/>  
 
 ### 3. Create a property
 
-Next, we need to create a property for mobile. A property is basically a bundled configuration for AEP extensions. It controls the configuration settings available for each extension, allowing you to modify their functionality. 
+Next, create a property for mobile. A property is basically the configuration settings for AEP extensions, allowing you to control their functionality. 
 
-Click **Tags** (**1**) under **DATA COLLECTION** in the left-side navigation panel.
+Select **Tags** (**1**) under **DATA COLLECTION** in the left-side navigation panel.
 
 <img src="../Assets/edge-send-event-tutorial/data-collection-tags-navigation.png" alt="Navigating to tags" width="1100"/>  
 
-Click **New Property** (**1**) to create a new property.
+Select **New Property** (**1**) to create a new property.
 
 <img src="../Assets/edge-send-event-tutorial/tags-main-view.png" alt="Navigating to tags" width="1100"/>  
 
-Enter an identifying name for the new property in the **Name** textfield (**1**), select **Mobile** (**2**) under **Platform**, then click **Save** (**3**).
+Enter an identifying name for the new property in the **Name** textfield (**1**), select **Mobile** (**2**) under **Platform**, then select **Save** (**3**).
 
 <img src="../Assets/edge-send-event-tutorial/tags-create-property.png" alt="Navigating to tags" width="1100"/>  
 
-Find and click the mobile property for this tutorial (**2**), optionally using the search box to help quickly narrow down the search (**1**).
+Find and select the mobile property for this tutorial (**2**), optionally using the search box to help quickly narrow down the search (**1**).
 
 <img src="../Assets/edge-send-event-tutorial/property-search.png" alt="Finding desired mobile property" width="1100"/>  
 
-Click **Extensions** (**2**) in the left-side navigation panel, under **AUTHORING**. Notice there are some extensions are that installed by default (**1**).
+Select **Extensions** (**2**) in the left-side navigation panel, under **AUTHORING**. Notice there are some extensions are that installed by default (**1**).
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-extensions.png" alt="Finding desired mobile property" width="1100"/>  
 
-Click **Catalog** (**1**) and (optionally) use the search box (**2**) to find the required extensions; click the **Install** button in an extension card to install the extension. 
+Select **Catalog** (**1**) and (optionally) use the search box (**2**) to find the required extensions; select the **Install** button in an extension card to install the extension. 
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-catalog.png" alt="Catalog search example" width="1100"/>  
 
@@ -205,7 +203,7 @@ Open the **Catalog** and install the `Adobe Experience Platform Edge Network` ex
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-catalog-edge.png" alt="Catalog search for Adobe Experience Platform Edge Network" width="1100"/>  
 
-In the extension configuration settings window, set the datastream for each environment (**1**) to the one created for this tutorial. Then click `Save` (**2**)
+In the extension configuration settings window, set the datastream for each environment (**1**) to the one created for this tutorial. Then select `Save` (**2**)
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-edge-settings.png" alt="Edge extension settings" width="1100"/>  
 
@@ -237,9 +235,9 @@ You should see the following after all the extensions are installed:
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-edge-extensions.png" alt="All installed extensions" width="1100"/>  
 
-### 4. Configure a Rule to Forward Lifecycle metrics to Platform
+### 4. Configure a Rule to forward Lifecycle metrics to Edge Network 
 
-The Lifecycle for Edge extension sends app foreground and background events to the Mobile SDK. We need to create a rule to forward these events to the Edge Network. Note that we don't need to install Lifecycle since it is already included with Mobile Core.
+The Lifecycle for Edge extension sends app foreground and background events, and a rule needs to be configured in order to forward these events to the Edge Network. Note that there is no need to install Lifecycle since it is already included with Mobile Core.
 
 #### Create a rule <!-- omit in toc -->
 1. On the Rules tab, select **Create New Rule**.
@@ -288,43 +286,43 @@ The Lifecycle for Edge extension sends app foreground and background events to t
 <img src="../Assets/edge-send-event-tutorial/mobile-property-rule-7.png" alt="All installed extensions" width="1100"/>  
 
 ### 5. Publish changes
-1. Click **Publishing Flow** under **PUBLISHING** in the left-side navigation window.
-2. Click **Add Library** in the top right.
+1. Select **Publishing Flow** under **PUBLISHING** in the left-side navigation window.
+2. Select **Add Library** in the top right.
 3. Set a **Name** (**1**) for the property, and set the environment to **Development** (**2**)
-4. Click **Add All Changed Resources** (**3**)
-5. Click **Save & Build to Development** (**4**)
+4. Select **Add All Changed Resources** (**3**)
+5. Select **Save & Build to Development** (**4**)
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-publish.png" alt="All installed extensions" width="1100"/>  
 
 #### Getting the mobile property ID <!-- omit in toc -->
-Once the mobile property is published to the Development environment, copy the unique ID assigned to the published property, as we will need it when setting up the app:
-1. Click the box icon next to the environment dropdown (**5**, from above)
-2. Click the double overlapping box (**1**) to the right of the property ID to copy it. Save this ID in a text file somewhere, to use later.
+Once the mobile property is published to the **Development** environment:  
+1. Select the box icon next to the environment dropdown (**5**, from above)
+2. Select the double overlapping box (**1**) to the right of the property ID to copy it. Save this unique ID (in a text file, or other easily accessible place), as it is required when setting up the app in the next section.
 
 <img src="../Assets/edge-send-event-tutorial/mobile-property-id.png" alt="All installed extensions" width="500"/>  
 
 ## Client-side implementation
 
-Now that the server side configuration is complete, we can install the extensions in the app and enable extension functionality by making some code updates.
+Now that the server side configuration is complete, install the extensions in the app and enable extension functionality by making some code updates.
 
 ### 1. Get a copy of the files (tutorial app code) and initial setup
 1. Open the code repository: https://github.com/adobe/aepsdk-edge-ios/tree/tutorial-send-event
-2. Click **Code** in the top right 
-3. In the window that opens, click **Download ZIP**; by default it should land in your **Downloads** folder.
+2. Select **Code** in the top right 
+3. In the window that opens, select **Download ZIP**; by default it should land in your **Downloads** folder.
    - Optionally, move the ZIP to your **Documents** folder
-4. Unzip the archived file by double clicking it, and keep this Finder window open, as we will need it later.
+4. Unzip the archived file by double selecting it, and keep this Finder window open, as it will be used later.
 
-Now we can use the tutorial app to go through the changes required to install the Edge extension.
+Now open the tutorial app to go through the changes required to install the Edge extension:
 
-5. Open the Terminal app
+1. Open the Terminal app
    - **Applications** -> **Utilities** -> **Terminal**
    - Open Spotlight search (CMD + Space) and search for "terminal", the select the **Terminal** app to open it.
-6. Type the following characters, but do not press return yet: `c` + `d` + `SPACE`  
+2. Type the following characters, but do not press return yet: `c` + `d` + `SPACE`  
 You should see the following in your terminal: "cd " (the space after `cd` is important!).
 ```bash
 cd 
 ```
-7. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials** (**1**). Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Click and drag the **EdgeTutorialAppStart** folder (**2**) into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`  
+7. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials** (**1**). Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Select and drag the **EdgeTutorialAppStart** folder (**2**) into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`  
 
 <img src="../Assets/edge-send-event-tutorial/terminal-setup.png" alt="All installed extensions" width="1100"/>  
 
@@ -333,7 +331,7 @@ cd
 <details>
   <summary> What is <code>cd</code>? What did I just do? </summary><p>
 
-`cd` is the terminal command for change directory; the command above changes your terminal's active directory to the repository we just copied.
+`cd` is the terminal command for change directory; the command above changes the terminal's active directory to the tutorial folder that holds the tutorial app's code.
 
 The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edge-ios-tutorial-send-event/Documentation/Tutorials/EdgeTutorialAppStart`, taken together, this command changes our terminal window context to the tutorial app code folder!
 
@@ -373,7 +371,7 @@ You will need to follow the same instructions from [1. Get a copy of the files](
 2. Inside **EdgeTutorialAppStart**, open the file `EdgeTutorialAppStart.xcodeproj` (this should open Xcode).
    - Since the packages are already set up, Xcode will automatically download the required extensions
 3. Start following the tutorial again at [3. Update tutorial app code to enable Edge features](#3-update-tutorial-app-code-to-enable-edge-features).
-   - If you encounter the error: "invalid custom path 'AEPLifecycle/Sources' for target 'AEPLifecycle'" (or similar) when building the app, try fully quitting Xcode (`CMD` + `Q`, or right click Xcode in the dock and select **Quit**) and opening the project again (steps 1 & 2).
+   - If you encounter the error: "invalid custom path 'AEPLifecycle/Sources' for target 'AEPLifecycle'" (or similar) when building the app, try fully quitting Xcode (`CMD` + `Q`, or right select Xcode in the dock and select **Quit**) and opening the project again (steps 1 & 2).
 
 </p></details>
 
@@ -421,8 +419,8 @@ open EdgeTutorialAppStart.xcworkspace
 ```
 
 This should automatically open the Xcode IDE. In Xcode:
-1. Click the dropdown chevron (**1**) next to `Pods` in the left-side navigation panel.
-2. Click the `Podfile` file (**2**).   
+1. Select the dropdown chevron (**1**) next to `Pods` in the left-side navigation panel.
+2. Select the `Podfile` file (**2**).   
    
 <img src="../Assets/edge-send-event-tutorial/xcode-pod-navigation.png" alt="All installed extensions" width="1100"/>  
 
@@ -469,7 +467,7 @@ The `#` symbol is how to comment out lines of code in the programming language R
 pod update
 ```
 
-Cocoapods will use the newly updated configuration file to install the new packages (all of the new Edge extensions we want!), which will allow us to use the Edge extensions' features in the app's code. 
+Cocoapods will use the newly updated configuration file to install the new packages (all of the new Edge extensions), which will allow us to use the Edge extensions' features in the app's code. 
 
 <details>
   <summary> Expected output </summary><p>
@@ -497,11 +495,11 @@ tim@Tims-MacBook-Pro aepsdk-edge-ios-tutorial-send-event %
 </p></details>
 
 ### 3. Update tutorial app code to enable Edge features
-There are three files we need to update to enable the features we want from the Edge extension. Thankfully, all of the code changes are contained in block comments like the Podfile so you only have to make a few updates!
+There are three files to update to enable the Edge extensions' features. Thankfully, all of the code changes are contained in block comments like the Podfile so only a few changes have to be made!
 
-1. Click the dropdown chevron next to `EdgeTutorialAppStart` in the left-side navigation panel to open the project.
-2. Click the dropdown chevron next to `EdgeTutorialAppStart` to open the directory holding the code files.
-3. Click the `AppDelegate.swift` file.
+1. Select the dropdown chevron next to `EdgeTutorialAppStart` in the left-side navigation panel to open the project.
+2. Select the dropdown chevron next to `EdgeTutorialAppStart` to open the directory holding the code files.
+3. Select the `AppDelegate.swift` file.
 4. First update the `ENVIRONMENT_FILE_ID` value to the mobile property ID published in the first section.
    - See how to get your mobile property ID in the instructions for [getting the mobile property ID](#getting-the-mobile-property-id).
 
@@ -525,10 +523,10 @@ Code blocks in `AppDelegate.swift`:
 
 **Section 2**: In order:
 1. Sets the log level of Core (which handles the core functionality used by extensions, like networking, data conversions, etc.) to `trace`, which provides more granular details on app logic; this can be helpful in debugging or troubleshooting issues.
-2. This sets the environment file ID which is the mobile property configuration we set up in the first section; this will apply the extension settings in our app.
+2. This sets the environment file ID which is the mobile property configuration set up in the first section; this will apply the extension settings in our app.
 3. Registers the extensions with Core, getting them ready to run in the app.
 
-**Section 3**: Enables deep linking to connect to Assurance (which we will cover in depth in a later section); this is the method used for iOS versions 12 and below.
+**Section 3**: Enables deep linking to connect to Assurance (which will be covered in depth in a later section); this is the method used for iOS versions 12 and below.
 
 Code blocks in `SceneDelegate.swift`:
 
@@ -548,9 +546,9 @@ Code blocks in `ContentView.swift`:
 
 **Section 1**: Imports the Core extension for use in the code below.
 
-**Section 2**: Creates an Experience Event with an event payload that conforms to the XDM schema we set up earlier. This event is an example of a product add.
+**Section 2**: Creates an Experience Event with an event payload that conforms to the XDM schema set up in the earlier section. This event is an example of a product add.
 
-**Section 3**: Creates an Experience Event with an event payload that conforms to the XDM schema we set up earlier. This event is an example of a product view.
+**Section 3**: Creates an Experience Event with an event payload that conforms to the XDM schema set up in the earlier section. This event is an example of a product view.
 
 ### Consent for Edge extension <!-- omit in toc -->
 The [Consent for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network) mobile extension enables you to collect user data tracking consent preferences from your mobile app when using AEP and the Edge extension. The default consent settings should be set in alignment with your organization's user data privacy requirements. See the guide on [ingesting data using the Consents and Preferences data type](https://experienceleague.adobe.com/docs/experience-platform/xdm/data-types/consents.html#ingest).
@@ -571,11 +569,11 @@ The [Lifecycle for Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/
 In Xcode: 
 1. Set the app target (**1**) to **EdgeTutorialAppStart** (if not already).
 2. Choose which destination device (**2**) to run it on (either simulator or physical device. In this case it is set to the iPhone 13 Pro simulator). 
-3. Click the play button (**3**).
+3. Select the play button (**3**).
 
 <img src="../Assets/edge-send-event-tutorial/xcode-install-app.png" alt="Creating a new session in Assurance step 1" width="1100"/>
 
-You should see your application running on the device you selected, with logs being displayed in the debug console in Xcode. 
+You should see the application running on the device you selected, with logs being displayed in the debug console in Xcode. 
 
 <img src="../Assets/edge-send-event-tutorial/app-first-launch.png" alt="Creating a new session in Assurance step 1" width="400"/>
 
@@ -586,25 +584,25 @@ You should see your application running on the device you selected, with logs be
 ### 5. `sendEvent` implementation examples   
 With Edge extension successfully installed and registered, you can make `sendEvent` calls, which will be processed by the Edge extension and sent to the Edge network.
 
-Check `ContentView.swift` for implementation examples of product add and view events. You can see the data payloads that are to be sent with the calls. Notice that they conform to the Commerce XDM schema structure we set up in the first section.
+Check `ContentView.swift` for implementation examples of product add and view events. You can see the data payloads that are to be sent with the calls. Notice that they conform to the Commerce XDM schema structure set up in the first section.
 
 The first button shows an example of using an XDM object that adheres to the `XDMSchema` protocol provided by the Edge extension; basically, this is a way to construct the event data using a structured blueprint with value checks and other handy developer features. It gives developers a more robust framework to interact with the data values.
 
 The second button shows an example of using a data dictionary to construct the event data. This method provides more flexibility, but can potentially be more error prone. 
 
 ## Validation with Assurance
-With the server side configuration and app setup complete, we can take a look at the live event flow using Assurance, the AEP tool for inspecting all events that Adobe extensions send out in real time. Using Assurance, we can see the Experience Events sent out by the Edge extension are formatted how we want.
+With the server side configuration and app setup complete, Assurance makes it possible to take a look at the event flow in real time and inspect the details of individual events; using Assurance, the Experience Events sent out by the Edge extension can be validated to have the required format.
 
 ### 1. Set up the Assurance session  
 1. In the browser, navigate to [Assurance](https://experience.adobe.com/griffon) and login using your Adobe ID credentials.
-2. Click **Create Session** in the top right.
+2. Select **Create Session** in the top right.
 ![Create session in Assurance](../Assets/edge-send-event-tutorial/assurance-create-session.jpg)  
-3. In the **Create New Session** dialog, click **Start** (**1**)  
+3. In the **Create New Session** dialog, select **Start** (**1**)  
 <img src="../Assets/edge-send-event-tutorial/assurance-create-session-1.png" alt="Creating a new session in Assurance step 1" width="400"/>
 
 4. Enter a name (**1**) to identify the session (can be any desired name) 
 5. Use Base URL value (**2**) (including the colon and double forward slashes!): `aepedgetutorialappstart://`   
-6. Click **Next** (**3**)  
+6. Select **Next** (**3**)  
 <img src="../Assets/edge-send-event-tutorial/assurance-create-session-2.png" alt="Creating a new session in Assurance step 2" width="400"/>
 
 <details>
@@ -651,7 +649,7 @@ There are two primary ways to connect an app instance to an Assurance session:
 
 Note that both methods require setup on the app code side to allow for deep linking (see the section **What is a base URL?** under [Set up the Assurance session](#1-set-up-the-assurance-session)).
 
-To access these connection methods, click **Session Details** in the top right of the Assurance session page:  
+To access these connection methods, select **Session Details** in the top right of the Assurance session page:  
 <img src="../Assets/edge-send-event-tutorial/assurance-session-details-qr.png" alt="Assurance Session Details - QR code" width="400"/>
 <img src="../Assets/edge-send-event-tutorial/assurance-session-details-link.png" alt="Assurance Session Details - Session link" width="400"/>
 
@@ -659,8 +657,8 @@ You can edit both the **Session Name** and **Base URL**; changes to the **Base U
 
 </p></details>
 
-To connect to Assurance, we will use the session link method:
-1. Copy the session link; you can click the icon of a double overlapping box to the right of the link to copy it.
+To connect to Assurance, use the session link method:
+1. Copy the session link; you can select the icon of a double overlapping box to the right of the link to copy it.
     - If using a physical device, it may be helpful to have a way to send this link to the device (ex: Airdrop, email, text, etc.). Alternatively, you can use the camera on your physical device to scan the QR code.
 2. Open Safari (or other web browser).
 3. Paste the Assurance session link copied from step 1 into the URL/search text field and enter, or use **Paste and Go**.
@@ -722,8 +720,8 @@ In order to see Edge events, in the connected app instance:
 
 <img src="../Assets/edge-send-event-tutorial/ios-trigger-event.png" alt="Simulator tracking buttons" width="400"/>
 
-1. Click the `AEP Request Event` event (**1**) in the events table to see the event details in the right side window.
-2. Click the **RAW EVENT** dropdown (**2**) in the event details window to see the event data payload. 
+1. Select the `AEP Request Event` event (**1**) in the events table to see the event details in the right side window.
+2. Select the **RAW EVENT** dropdown (**2**) in the event details window to see the event data payload. 
 3. Verify that the `ACPExtensionEventData` matches what was sent by the Edge `sendEvent` API.
 
 <img src="../Assets/edge-send-event-tutorial/assurance-validate-send-event.png" alt="Simulator tracking buttons" width="1100"/>
@@ -736,11 +734,11 @@ Our previous efforts to configure the Adobe Experience Platform settings to rout
 <img src="../Assets/edge-send-event-tutorial/assurance-analytics-mapping-validation.png" alt="Simulator tracking buttons" width="1100"/>
 
 Assurance also provides another view that shows a visual flow of events, which may be helpful in understanding the relationship between events.
-1. Click **Event Transactions** (**1**) under the section label **Adobe Experience Platform Edge** in the left-side navigation panel.
+1. Select **Event Transactions** (**1**) under the section label **Adobe Experience Platform Edge** in the left-side navigation panel.
 
-In this view, each of the cards represents a step in the workflow of events. You can click on the underlined items in each card to see more details about each event in the right-side details panel.
+In this view, each of the cards represents a step in the workflow of events. You can select on the underlined items in each card to see more details about each event in the right-side details panel.
 
-For example, using our recent Experience Event sent from the tutorial app, we can see:
+For example, using our recent Experience Event sent from the tutorial app, the flow of events is visible:
 1. The client side (that is, the app) event that was sent to the Edge Network.
 2. The Edge Network receiveing the event, and using the datastream settings (XDM schema paired with Analytics service) to know where how to interpret the event data, and where to send it.
 3. Analytics is able to convert our XDM formatted data into the corresponding Analytics format automatically!
