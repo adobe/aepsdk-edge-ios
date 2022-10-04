@@ -371,28 +371,7 @@ From a [StackExchange Superuser source](https://superuser.com/a/1008175).
 
 </p></details>
 
-With Cocoapods installed, run the command: 
-
-```bash
-pod update
-```
-
-You should see output like:
-```
-timothyk@Tims-MBP-2 EdgeTutorialAppStart % pod update
-Update all pods
-Updating local specs repositories
-Analyzing dependencies
-Downloading dependencies
-Generating Pods project
-Integrating client project
-Pod installation complete! There are 0 dependencies from the Podfile and 0 total pods installed.
-
-[!] The Podfile does not contain any dependencies.
-timothyk@Tims-MBP-2 EdgeTutorialAppStart % 
-```
-
-With the project set up, our next task is to install the Edge extensions for our tutorial app. We can easily do this by updating the file that controls the package dependencies for the repository. 
+Next, install the Edge extensions for the tutorial app. This can easily be done by updating the file that controls the package dependencies for the repository. 
 
 1. Open the project using the command:
 ```bash
