@@ -306,7 +306,7 @@ Once the mobile property is published to the **Development** environment:
 Now that the server side configuration is complete, install the extensions in the app and enable extension functionality by making some code updates.
 
 ### 1. Get a copy of the files (tutorial app code) and initial setup
-1. Open the code repository: https://github.com/adobe/aepsdk-edge-ios/tree/tutorial-send-event
+1. Open the code repository: https://github.com/adobe/aepsdk-edge-ios
 2. Select **Code** in the top right 
 3. In the window that opens, select **Download ZIP**; by default it should land in your **Downloads** folder.
    - Optionally, move the ZIP to your **Documents** folder
