@@ -10,22 +10,22 @@ project 'AEPEdge.xcodeproj'
 pod 'SwiftLint', '0.44.0'
 
 target 'AEPEdge' do
-  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.7.1'
+  pod 'AEPCore'
 end
 
 target 'UnitTests' do
-  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.7.1'
+  pod 'AEPCore'
 end
 
 target 'FunctionalTests' do
-  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.7.1'
+  pod 'AEPCore'
   pod 'AEPEdgeIdentity'
   pod 'AEPEdgeConsent'
 end
 
 target 'TestAppSwiftUI' do
-  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.7.1'
-  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v3.7.1'
+  pod 'AEPCore'
+  pod 'AEPServices'
   pod 'AEPEdgeIdentity'
   pod 'AEPEdgeConsent'
   pod 'AEPAssurance'

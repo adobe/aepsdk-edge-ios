@@ -82,10 +82,10 @@ class EdgePublicAPITests: XCTestCase {
         sleep(1)
     }
 
-    func testSetLocationHint_valueHint_dispatchesEdgeUpdateProperty() {
-        let expectation = XCTestExpectation(description: "Edge Update Property Event Dispatched")
+    func testSetLocationHint_valueHint_dispatchesEdgeUpdateIdentity() {
+        let expectation = XCTestExpectation(description: "Edge Update Identity Event Dispatched")
         expectation.assertForOverFulfill = true
-        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateProperty) { event in
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateIdentity) { event in
             let data = event.data ?? [:]
             XCTAssertEqual(1, data.count)
             XCTAssertEqual("or2", data["locationHint"] as? String)
@@ -97,10 +97,10 @@ class EdgePublicAPITests: XCTestCase {
         wait(for: [expectation], timeout: 1)
     }
 
-    func testSetLocationHint_nilHint_dispatchesEdgeUpdateProperty() {
-        let expectation = XCTestExpectation(description: "Edge Update Property Event Dispatched")
+    func testSetLocationHint_nilHint_dispatchesEdgeUpdateIdentity() {
+        let expectation = XCTestExpectation(description: "Edge Update Identity Event Dispatched")
         expectation.assertForOverFulfill = true
-        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateProperty) { event in
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateIdentity) { event in
             let data = event.data ?? [:]
             XCTAssertEqual(1, data.count)
             XCTAssertEqual("", data["locationHint"] as? String) // expect to convert nil to empty string
@@ -112,10 +112,10 @@ class EdgePublicAPITests: XCTestCase {
         wait(for: [expectation], timeout: 1)
     }
 
-    func testSetLocationHint_emptyHint_dispatchesEdgeUpdateProperty() {
-        let expectation = XCTestExpectation(description: "Edge Update Property Event Dispatched")
+    func testSetLocationHint_emptyHint_dispatchesEdgeUpdateIdentity() {
+        let expectation = XCTestExpectation(description: "Edge Update Identity Event Dispatched")
         expectation.assertForOverFulfill = true
-        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateProperty) { event in
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateIdentity) { event in
             let data = event.data ?? [:]
             XCTAssertEqual(1, data.count)
             XCTAssertEqual("", data["locationHint"] as? String)
@@ -128,14 +128,14 @@ class EdgePublicAPITests: XCTestCase {
     }
 
     // Test getLocationHint when valid Hint of OR2 is returned
-    func testGetLocationHint_dispatchesEdgeRequestProperty_receivesResponseProperty_withValidHint() {
+    func testGetLocationHint_dispatchesEdgeRequestIdentity_receivesResponseIdentity_withValidHint() {
         let expectation = XCTestExpectation(description: "Edge Get Location Hint")
         expectation.assertForOverFulfill = true
-        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestProperty) { event in
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestIdentity) { event in
             XCTAssertTrue(event.data?[EdgeConstants.EventDataKeys.LOCATION_HINT] as? Bool ?? false)
             let responseEvent = event.createResponseEvent(name: "Test Response Location Hint",
                                                           type: EventType.edge,
-                                                          source: EventSource.responseProperty,
+                                                          source: EventSource.responseIdentity,
                                                           data: ["locationHint": "or2"])
             MobileCore.dispatch(event: responseEvent)
         }
@@ -150,14 +150,14 @@ class EdgePublicAPITests: XCTestCase {
     }
 
     // Test getLocationHint when no data is returned which signifies no or expired Hint value
-    func testGetLocationHint_dispatchesEdgeRequestProperty_receivesResponseProperty_withEmptyHint() {
+    func testGetLocationHint_dispatchesEdgeRequestIdentity_receivesResponseIdentity_withEmptyHint() {
         let expectation = XCTestExpectation(description: "Edge Get Location Hint")
         expectation.assertForOverFulfill = true
-        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestProperty) { event in
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestIdentity) { event in
             XCTAssertTrue(event.data?[EdgeConstants.EventDataKeys.LOCATION_HINT] as? Bool ?? false)
             let responseEvent = event.createResponseEvent(name: "Test Response Location Hint",
                                                           type: EventType.edge,
-                                                          source: EventSource.responseProperty,
+                                                          source: EventSource.responseIdentity,
                                                           data: [:])
             MobileCore.dispatch(event: responseEvent)
         }
@@ -172,14 +172,14 @@ class EdgePublicAPITests: XCTestCase {
     }
 
     // Test getLocationHint with invalid Hint and unexpected error returned
-    func testGetLocationHint_dispatchesEdgeRequestProperty_receivesResponseProperty_withInvalidHint() {
+    func testGetLocationHint_dispatchesEdgeRequestIdentity_receivesResponseIdentity_withInvalidHint() {
         let expectation = XCTestExpectation(description: "Edge Get Location Hint")
         expectation.assertForOverFulfill = true
-        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestProperty) { event in
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestIdentity) { event in
             XCTAssertTrue(event.data?[EdgeConstants.EventDataKeys.LOCATION_HINT] as? Bool ?? false)
             let responseEvent = event.createResponseEvent(name: "Test Response Location Hint",
                                                           type: EventType.edge,
-                                                          source: EventSource.responseProperty,
+                                                          source: EventSource.responseIdentity,
                                                           data: ["locationHint": 5]) // correct key but wrong type
             MobileCore.dispatch(event: responseEvent)
         }
@@ -194,7 +194,7 @@ class EdgePublicAPITests: XCTestCase {
     }
 
     // Test getLocationHint with no response and callback timeout error returned
-    func testGetLocationHint_dispatchesEdgeRequestProperty_receivesResponseProperty_withNoData() {
+    func testGetLocationHint_dispatchesEdgeRequestIdentity_receivesResponseIdentity_withNoData() {
         let expectation = XCTestExpectation(description: "Edge Get Location Hint")
         expectation.assertForOverFulfill = true
 
