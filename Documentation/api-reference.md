@@ -108,11 +108,14 @@ import AEPEdge
 
 ...
 MobileCore.registerExtensions([Edge.self])
+```
+#### Objective-C
 
 ##### Syntax
 ```objectivec
 + (void) registerExtensions: (NSArray<Class*>* _Nonnull) extensions
                  completion: (void (^ _Nullable)(void)) completion;
+```
 
 ##### Example
 ```objectivec
@@ -253,7 +256,7 @@ public protocol XDMSchema: Encodable {
 ### EdgeEventHandle
 
 The `EdgeEventHandle` is a response fragment from Adobe Experience Platform Edge Network for a sent XDM Experience Event. One event can receive none, one or multiple `EdgeEventHandle`(s) as response.
-Use this class when calling the[sendEvent](#sendevent) API with `EdgeCallback`.
+Use this class when calling the [sendEvent](#sendevent) API with `EdgeCallback`.
 
 
 ```swift

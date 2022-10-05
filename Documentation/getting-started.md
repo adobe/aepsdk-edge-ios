@@ -7,7 +7,7 @@ The Adobe Experience Platform Edge Network extension has the following peer depe
 - [AEPEdgeIdentity](https://github.com/adobe/aepsdk-edgeidentity-ios#readme)
 
 ## Configure the Edge Network extension in Data Collection UI
-1. Log into [Adobe Experience Cloud](https://experience.adobe.com) and select **Data Collection** under **Quick Access**.
+1. Log into [Adobe Experience Platform Data Collection](https://experience.adobe.com/data-collection).
 2. From **Tags**, locate or search for your Tag mobile property.
 3. In your mobile property, select **Extensions** tab.
 4. On the **Catalog** tab, locate or search for the **Adobe Experience Platform Edge Network** extension, and select **Install**.
@@ -26,7 +26,7 @@ The datastream used by the client-side implementation is one of the following:
 
 - the _Production_ environment configuration when the Data Collection Tags library is published to production (in the Published column in the publishing flow).
 - the _Staging_ environment configuration when the Data Collection Tags library is published to staging (in the Submitted column in the publishing flow).
-- the _Development_ environment configuration when the Data Collection Tags library is in development.
+- the _Development_ environment configuration when the Data Collection Tags library is in development (in the Development column in the publishing flow).
 
 ### Domain configuration
 
@@ -37,7 +37,7 @@ If you have a first-party domain mapped to the Adobe-provisioned Edge Network do
 > **Note**
 > The domain name is expected to be just the domain without any protocol or trailing slashes. If no domain is provided, by default the `edge.adobedc.net` domain is used.
 
-## Add the AEP Edge extension to your app
+## Add the Edge Network extension to your app
 
 ### Download and import the Edge extension
 
