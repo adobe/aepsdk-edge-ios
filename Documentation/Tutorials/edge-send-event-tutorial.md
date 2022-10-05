@@ -387,7 +387,7 @@ This should automatically open the Xcode IDE. In Xcode:
 You should see a section like the following: 
 
 ```ruby
-target 'EdgeTutorialAppStart' do
+target 'EdgeTutorialApp' do
 =begin
   pod 'AEPAssurance'
   pod 'AEPCore'
@@ -402,7 +402,7 @@ end
 Add a pound symbol `#` in front of the `=begin` and `=end` like so:
 
 ```ruby
-target 'EdgeTutorialAppStart' do
+target 'EdgeTutorialApp' do
 #=begin
   pod 'AEPAssurance'
   pod 'AEPCore'
@@ -457,8 +457,8 @@ tim@Tims-MacBook-Pro aepsdk-edge-ios-tutorial-send-event %
 ### 3. Update tutorial app code to enable Edge features
 There are three files to update to enable the Edge extensions' features. Thankfully, all of the code changes are contained in block comments like the Podfile so only a few changes have to be made!
 
-1. Select the dropdown chevron next to `EdgeTutorialAppStart` in the left-side navigation panel to open the project.
-2. Select the dropdown chevron next to `EdgeTutorialAppStart` to open the directory holding the code files.
+1. Select the dropdown chevron next to `EdgeTutorialApp` in the left-side navigation panel to open the project.
+2. Select the dropdown chevron next to `EdgeTutorialApp` to open the directory holding the code files.
 3. Select the `AppDelegate.swift` file.
 4. First update the `ENVIRONMENT_FILE_ID` value to the mobile property ID published in the first section.
    - See how to get your mobile property ID in the instructions for [getting the mobile property ID](#getting-the-mobile-property-id).
@@ -487,7 +487,7 @@ Notice that the Lifecycle APIs rely on the developer to place them in the proper
 
 ### 4. Run app   
 In Xcode: 
-1. Set the app target (**1**) to **EdgeTutorialAppStart** (if not already).
+1. Set the app target (**1**) to **EdgeTutorialApp** (if not already).
 2. Choose which destination device (**2**) to run it on (either simulator or physical device, in this case it is set to the iPhone 13 Pro simulator). 
 3. Select the play button (**3**).
 
