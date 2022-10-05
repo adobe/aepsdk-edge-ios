@@ -13,17 +13,19 @@ PODS:
     - AEPEdge (>= 1.4.0)
   - AEPEdgeIdentity (1.1.0):
     - AEPCore (>= 3.6.0)
+  - AEPLifecycle (3.7.1):
+    - AEPCore (>= 3.7.1)
   - AEPRulesEngine (1.2.0)
   - AEPServices (3.7.1)
-  - SwiftLint (0.44.0)
 
 DEPENDENCIES:
   - AEPAssurance
   - AEPCore
+  - AEPEdge
   - AEPEdgeConsent
   - AEPEdgeIdentity
+  - AEPLifecycle
   - AEPServices
-  - SwiftLint (= 0.44.0)
 
 SPEC REPOS:
   trunk:
@@ -32,9 +34,9 @@ SPEC REPOS:
     - AEPEdge
     - AEPEdgeConsent
     - AEPEdgeIdentity
+    - AEPLifecycle
     - AEPRulesEngine
     - AEPServices
-    - SwiftLint
 
 SPEC CHECKSUMS:
   AEPAssurance: b25880cd4b14f22c61a1dce19807bd0ca0fe9b17
@@ -42,10 +44,10 @@ SPEC CHECKSUMS:
   AEPEdge: 6faf60328f9e5ae7a107fd61f9a968f46ebf2928
   AEPEdgeConsent: a23b35ab331d2aa2013fcef49c9d6b80085d5597
   AEPEdgeIdentity: 47f0c6ecbec5857b2a8cb9b7bf717c2424c6bae0
+  AEPLifecycle: 94c36a54f7e5466c5274bc822c53eaa410b74888
   AEPRulesEngine: 71228dfdac24c9ded09be13e3257a7eb22468ccc
   AEPServices: 7284c30359c789cd16bf366b4ea81094a66d21ab
-  SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
 
-PODFILE CHECKSUM: 17831f176b9e10833aa35d43d5b8b873117ce5a1
+PODFILE CHECKSUM: a182755ecae9bbc798888d0c3e13e347c8cc2a38
 
 COCOAPODS: 1.11.3

@@ -1,0 +1,17 @@
+# Uncomment the next line to define a global platform for your project
+ platform :ios, '10.0'
+
+# Comment the next line if you don't want to use dynamic frameworks
+use_frameworks!
+
+target 'EdgeTutorialApp' do
+#=begin
+  pod 'AEPAssurance'
+  pod 'AEPCore'
+  pod 'AEPEdge'
+  pod 'AEPEdgeConsent'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPLifecycle'
+  pod 'AEPServices'
+#=end
+end
