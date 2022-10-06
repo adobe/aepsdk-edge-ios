@@ -39,9 +39,35 @@ If you have a first-party domain mapped to the Adobe-provisioned Edge Network do
 
 ## Add the Edge Network extension to your app
 
-### Download and import the Edge extension
+### Download the Edge extension
 
+#### Using Swift Package Manager
 
+To add the AEPEdge Package to your application, from the Xcode menu select:
+
+`File > Add Packages...`
+
+> **Note** 
+>  The menu options may vary depending on the version of Xcode being used.
+
+Enter the URL for the AEPEdge package repository: `https://github.com/adobe/aepsdk-edge-ios.git`.
+
+When prompted, input a specific version or a range of versions for Version rule.
+
+Alternatively, if your project has a `Package.swift` file, you can add AEPEdge directly to your dependencies:
+
+```swift
+dependencies: [
+  .package(url: "https://github.com/adobe/aepsdk-edge-ios.git", .upToNextMajor(from: "1.1.0"))
+],
+targets: [
+    .target(name: "YourTarget",
+        dependencies: ["AEPEdge"],
+            path: "your/path")
+]
+```
+
+#### Using CocoaPods
 
 1. Add the Mobile Core and Identity for Edge Network extensions to your project using CocoaPods. Add the following pods in your `Podfile`:
 
@@ -60,7 +86,9 @@ If you have a first-party domain mapped to the Adobe-provisioned Edge Network do
   $ pod install
   ```
 
-3. Import the Mobile Core, Edge Network, and Identity for Edge Network libraries and register the Edge Network and Identity for Edge Network extensions with MobileCore:
+### Import and register Edge extension
+
+Import the Mobile Core, Edge Network, and Identity for Edge Network libraries and register the Edge Network and Identity for Edge Network extensions with MobileCore:
 
 #### Swift
   ```swift
