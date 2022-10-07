@@ -155,7 +155,7 @@ class NetworkResponseHandler {
                 Log.debug(label: LOG_TAG, "Identities were reset recently, ignoring state:store payload for request with id: \(requestId)")
             } else {
                 if let type = eventHandle.type {
-                    if EdgeConstants.JsonKeys.Response.EventHandleType.STORE == type.lowercased() {
+                    if EdgeConstants.JsonKeys.Response.EventHandleType.STORE == type {
                         handleStoreEventHandle(handle: eventHandle)
                     } else if EdgeConstants.JsonKeys.Response.EventHandleType.LOCATION_HINT == type {
                         handleLocationHintHandle(handle: eventHandle)
@@ -304,7 +304,7 @@ class NetworkResponseHandler {
     private func handleStoreEventHandle(handle: EdgeEventHandle) {
         let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
 
-        guard let type = handle.type, EdgeConstants.JsonKeys.Response.EventHandleType.STORE == type.lowercased() else { return }
+        guard let type = handle.type, EdgeConstants.JsonKeys.Response.EventHandleType.STORE == type else { return }
         guard let payload: [[String: Any]] = handle.payload else { return }
 
         var storeResponsePayloads: [StoreResponsePayload] = []
