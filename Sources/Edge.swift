@@ -33,9 +33,9 @@ public class Edge: NSObject, Extension {
         super.init()
 
         // set default on init for register/unregister use-case
-        networkResponseHandler = NetworkResponseHandler()
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: setLocationHint)
         if let hitQueue = setupHitQueue() {
-            state = EdgeState(hitQueue: hitQueue)
+            state = EdgeState(hitQueue: hitQueue, edgeProperties: EdgeProperties())
         }
     }
 
@@ -43,6 +43,12 @@ public class Edge: NSObject, Extension {
         registerListener(type: EventType.edge,
                          source: EventSource.requestContent,
                          listener: handleExperienceEventRequest)
+        registerListener(type: EventType.edge,
+                         source: EventSource.requestIdentity,
+                         listener: handleRequestLocationHint)
+        registerListener(type: EventType.edge,
+                         source: EventSource.updateIdentity,
+                         listener: handleUpdateLocationHint)
         registerListener(type: EventType.edgeConsent,
                          source: EventSource.responseContent,
                          listener: handleConsentPreferencesUpdate)
@@ -175,6 +181,33 @@ public class Edge: NSObject, Extension {
         state?.hitQueue.queue(entity: entity)
     }
 
+    func handleRequestLocationHint(_ event: Event) {
+        var data: [String: Any] = [:]
+        if let hint = getLocationHint() {
+            data[EdgeConstants.EventDataKeys.LOCATION_HINT] = hint
+        }
+
+        let responseEvent = event.createResponseEvent(name: "Edge Location Hint Response",
+                                                      type: EventType.edge,
+                                                      source: EventSource.responseIdentity,
+                                                      data: data)
+        dispatch(event: responseEvent)
+    }
+
+    func handleUpdateLocationHint(_ event: Event) {
+        guard let data = event.data, !data.isEmpty else {
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Location Hint update request event \(event.id.uuidString) contained no data, ignoring.")
+            return
+        }
+
+        guard let hint = data[EdgeConstants.EventDataKeys.LOCATION_HINT] as? String else {
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Location Hint update request event \(event.id.uuidString) does not contain 'locationHint' string, ignoring.")
+            return
+        }
+
+        setLocationHint(hint, ttlSeconds: EdgeConstants.Defaults.LOCATION_HINT_TTL_SEC)
+    }
+
     /// Determines if the event should be ignored by the Edge extension. This method should be called after
     /// `readyForEvent` passed.
     ///
@@ -195,7 +228,9 @@ public class Edge: NSObject, Extension {
     /// - Returns: true if events can be processed at the moment, false otherwise
     private func canProcessEvents(event: Event) -> Bool {
         guard let state = state else { return false }
-        state.bootupIfNeeded(event: event, getSharedState: getSharedState(extensionName:event:barrier:))
+        state.bootupIfNeeded(event: event,
+                             getSharedState: getSharedState(extensionName:event:barrier:),
+                             createSharedState: createSharedState(data:event:))
         return true
     }
 
@@ -216,7 +251,8 @@ public class Edge: NSObject, Extension {
                                             getSharedState: getSharedState(extensionName:event:),
                                             getXDMSharedState: getXDMSharedState(extensionName:event:barrier:),
                                             readyForEvent: readyForEvent(_:),
-                                            getImplementationDetails: getImplementationDetails)
+                                            getImplementationDetails: getImplementationDetails,
+                                            getLocationHint: getLocationHint)
         return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }
 
@@ -236,6 +272,27 @@ public class Edge: NSObject, Extension {
     /// - Returns: the `ImplementationDetails` for this session or nil if not yet set
     private func getImplementationDetails() -> [String: Any]? {
         return state?.implementationDetails
+    }
+
+    /// Set the location hint for the Edge Network. The new location hint and expiry date (calculated from the ttlSeconds) are updated in memory and in
+    /// persistent storage. If the new location hint is different from the previous, then a shared state is also created with the new hint.
+    /// An empty `hint` value will clear the location hint in memory, persistent storage, and create a new shared state if a previous location hint was set.
+    /// - Parameters:
+    ///   - hint: the new EdgeNetwork location hint to set
+    ///   - ttlSeconds: the time-to-live for the location hint
+    private func setLocationHint(_ hint: String, ttlSeconds: TimeInterval) {
+        guard let state = state else { return }
+        if !hint.isEmpty {
+            state.setLocationHint(hint: hint, ttlSeconds: ttlSeconds, createSharedState: createSharedState(data:event:))
+        } else {
+            state.clearLocationHint(createSharedState: createSharedState(data:event:))
+        }
+    }
+
+    /// Get the Edge Network location hint.
+    /// - Returns: the Edge Network location hint or nil if no location hint is set or the location hint expired.
+    private func getLocationHint() -> String? {
+        return state?.getLocationHint()
     }
 
 }

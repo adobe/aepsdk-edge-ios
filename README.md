@@ -118,11 +118,13 @@ make setup-tools
 
 ## Related Projects
 
-| Project                                                      | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [AEPCore Extensions](https://github.com/adobe/aepsdk-core-ios) | The AEPCore and AEPServices represent the foundation of the Adobe Experience Platform SDK. |
-| [AEPEdgeIdentity Extension](https://github.com/adobe/aepsdk-edgeidentity-ios) | The AEPEdgeIdentity extension enables handling of user identity data from a mobile app when using AEP SDK and the AEP Edge Network extension. |
-| [AEP SDK Sample App for iOS](https://github.com/adobe/aepsdk-sample-app-ios) | Contains iOS sample apps for the AEP SDK. Apps are provided for both Objective-C and Swift implementations. |
+| Project                                                                              | Description                                                  |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| [AEPCore Extensions](https://github.com/adobe/aepsdk-core-ios)                       | The AEPCore and AEPServices represent the foundation of the Adobe Experience Platform SDK. |
+| [AEPConsent Extension](https://github.com/adobe/aepsdk-edgeconsent-ios)              | The AEPConsent extension enables consent preferences collection from your mobile app when using the AEP Mobile SDK and the Edge Network extension. |
+| [AEPLifecycle Extension](https://github.com/adobe/aepsdk-core-ios)                   | The AEPLifecycle extension helps collect application Lifecycle metrics and any additional context data provided by the application developer when using AEP SDK and the AEP Edge Network extension. |
+| [AEPEdgeIdentity Extension](https://github.com/adobe/aepsdk-edgeidentity-ios)        | The AEPEdgeIdentity extension enables handling of user identity data from a mobile app when using AEP SDK and the AEP Edge Network extension. |
+| [AEP SDK Sample App for iOS](https://github.com/adobe/aepsdk-sample-app-ios)         | Contains iOS sample apps for the AEP SDK. Apps are provided for both Objective-C and Swift implementations. |
 | [AEP SDK Sample App for Android](https://github.com/adobe/aepsdk-sample-app-android) | Contains Android sample app for the AEP SDK.                 |
 ## Contributing
 

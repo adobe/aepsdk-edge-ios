@@ -17,6 +17,8 @@ import AEPServices
 import Foundation
 import XCTest
 
+// swiftlint:disable type_body_length
+
 /// End-to-end testing for the AEPEdge public APIs
 class AEPEdgeFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
@@ -36,8 +38,8 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false
         FileManager.default.clearCache()
 
-        // hub shared state update for 1 extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge) IdentityEdge XDM and Config shared state updates
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 3)
+        // hub shared state update for 1 extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
+        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
@@ -54,6 +56,15 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+    }
+
+    func testUnregistered() {
+        let waitForUnregistration = CountDownLatch(1)
+        MobileCore.unregisterExtension(Edge.self, {
+            print("Extension unregistration is complete")
+            waitForUnregistration.countDown()
+        })
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForUnregistration.await(timeout: 2))
     }
 
     // MARK: test request event format
@@ -1061,6 +1072,59 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_INTEGRATION_URL_STR))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
+    }
+
+    func testSendEvent_edgeNetworkResponseContainsLocationHint_nextSendEventIncludesLocationHint() {
+        let hintResponseBody = "\u{0000}{\"requestId\": \"0000-4a4e-1111-bf5c-abcd\",\"handle\": [{\"payload\": [{\"scope\": \"EdgeNetwork\",\"hint\": \"or2\",\"ttlSeconds\": 1800}],\"type\": \"locationHint:result\"}]}\n"
+        let responseConnection: HttpConnection = HttpConnection(data: hintResponseBody.data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeInteractProdUrl,
+                                                                                          statusCode: 200,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        // Send two requests
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // verify
+        assertNetworkRequestsCount()
+        var resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        XCTAssertEqual(1, resultNetworkRequests.count)
+        XCTAssertTrue(resultNetworkRequests[0].url.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
+
+        resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post)
+        XCTAssertEqual(1, resultNetworkRequests.count)
+        XCTAssertTrue(resultNetworkRequests[0].url.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC))
+    }
+
+    func testSendEvent_edgeNetworkResponseContainsLocationHint_sendEventDoesNotIncludeExpiredLocationHint() {
+        let hintResponseBody = "\u{0000}{\"requestId\": \"0000-4a4e-1111-bf5c-abcd\",\"handle\": [{\"payload\": [{\"scope\": \"EdgeNetwork\",\"hint\": \"or2\",\"ttlSeconds\": 1}],\"type\": \"locationHint:result\"}]}\n"
+        let responseConnection: HttpConnection = HttpConnection(data: hintResponseBody.data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeInteractProdUrl,
+                                                                                          statusCode: 200,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 2)
+
+        // Send two requests
+        let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        sleep(2)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // verify
+        assertNetworkRequestsCount()
+        let resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        XCTAssertEqual(2, resultNetworkRequests.count)
+        XCTAssertTrue(resultNetworkRequests[0].url.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
+        XCTAssertTrue(resultNetworkRequests[1].url.absoluteURL.absoluteString.hasPrefix(FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR))
     }
 
     func getEdgeEventError(message: String, code: String) -> EdgeEventError {
