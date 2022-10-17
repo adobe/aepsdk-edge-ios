@@ -509,7 +509,7 @@ With the server side configuration and app setup complete, Assurance makes it po
 ### 1. Set up the Assurance session  
 1. In the browser, navigate to [Assurance](https://experience.adobe.com/assurance) and login using your Adobe ID credentials.
 2. Select **Create Session** in the top right.
-![Create session in Assurance](../Assets/edge-send-event-tutorial/assurance-create-session.jpg)  
+<img src="../Assets/edge-send-event-tutorial/assurance-validation/assurance-create-session.jpg" alt="Creating a new session in Assurance step 1" width="1100"/>
 3. In the **Create New Session** dialog, select **Start** (**1**)  
 <img src="../Assets/edge-send-event-tutorial/assurance-validation/assurance-create-session-1.png" alt="Creating a new session in Assurance step 1" width="400"/>
 
@@ -544,7 +544,7 @@ On the Assurance session side:
 > 2. Select the app target in the `Targets` section, in the project configuration window.
 > 3. Select the `Info` tab.
 > 4. Set the desired deep linking URL.
-> ![Xcode deeplink app url config](../Assets/edge-send-event-tutorial/assurance-validation/xcode-deeplink-app-url-config.jpg)
+> <img src="../Assets/edge-send-event-tutorial/assurance-validation/xcode-deeplink-app-url-config.jpg" alt="Creating a new session in Assurance step 3 - QR code" width="1100"/>
 > Please note that there is still code on the application side that is required for the app to respond to deep links; see the [guide on adding Assurance to your app](https://aep-sdks.gitbook.io/docs/foundation-extensions/adobe-experience-platform-assurance#add-the-aep-assurance-extension-to-your-app). For general implementation recommendations and best practices, see Apple's guide on [Defining a custom URL scheme for your app](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)
 
 </p></details>
