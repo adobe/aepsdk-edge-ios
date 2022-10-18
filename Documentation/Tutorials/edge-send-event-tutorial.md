@@ -509,8 +509,11 @@ With the server side configuration and app setup complete, Assurance makes it po
 ### 1. Set up the Assurance session  
 1. In the browser, navigate to [Assurance](https://experience.adobe.com/assurance) and login using your Adobe ID credentials.
 2. Select **Create Session** in the top right.
+
 <img src="../Assets/edge-send-event-tutorial/assurance-validation/assurance-create-session.jpg" alt="Creating a new session in Assurance step 1" width="1100"/>
-3. In the **Create New Session** dialog, select **Start** (**1**)  
+
+3. In the **Create New Session** dialog, select **Start** (**1**)
+ 
 <img src="../Assets/edge-send-event-tutorial/assurance-validation/assurance-create-session-1.png" alt="Creating a new session in Assurance step 1" width="400"/>
 
 4. Enter a name (**1**) to identify the session (can be any desired name) 
