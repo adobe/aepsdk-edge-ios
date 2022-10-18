@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-/// Imports the Core extension for use in the code below.
+/// Imports the Edge extension for use in the code below.
 /* Edge Tutorial - code section (1/3)
 import AEPEdge
 // Edge Tutorial - code section (1/3) */
