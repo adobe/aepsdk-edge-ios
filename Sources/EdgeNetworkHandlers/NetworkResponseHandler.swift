@@ -21,6 +21,7 @@ class NetworkResponseHandler {
     private let LOG_TAG = "NetworkResponseHandler"
     private let serialQueue = DispatchQueue(label: "com.adobe.edge.eventsDictionary") // serial queue for atomic operations
     private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
+    private var updateLocationHint: (String, _ ttlSeconds: TimeInterval) -> Void
 
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [(uuid: String, date: Date)]>()
@@ -28,7 +29,8 @@ class NetworkResponseHandler {
     /// Date of the last generic identity reset request event, for more info see `shouldIgnoreStorePayload`
     private var lastResetDate = Atomic<Date>(Date(timeIntervalSince1970: 0))
 
-    init() {
+    init(updateLocationHint: @escaping (_ hint: String, _ ttlSeconds: TimeInterval) -> Void) {
+        self.updateLocationHint = updateLocationHint
         lastResetDate = Atomic<Date>(loadResetDateFromPersistence() ?? Date(timeIntervalSince1970: 0))
     }
 
@@ -152,7 +154,13 @@ class NetworkResponseHandler {
             if ignoreStorePayloads {
                 Log.debug(label: LOG_TAG, "Identities were reset recently, ignoring state:store payload for request with id: \(requestId)")
             } else {
-                handleStoreEventHandle(handle: eventHandle)
+                if let type = eventHandle.type {
+                    if EdgeConstants.JsonKeys.Response.EventHandleType.STORE == type {
+                        handleStoreEventHandle(handle: eventHandle)
+                    } else if EdgeConstants.JsonKeys.Response.EventHandleType.LOCATION_HINT == type {
+                        handleLocationHintHandle(handle: eventHandle)
+                    }
+                }
             }
 
             guard let eventHandleAsDictionary = eventHandle.asDictionary() else { continue }
@@ -296,7 +304,7 @@ class NetworkResponseHandler {
     private func handleStoreEventHandle(handle: EdgeEventHandle) {
         let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
 
-        guard let type = handle.type, EdgeConstants.JsonKeys.Response.EVENT_HANDLE_TYPE_STORE == type.lowercased() else { return }
+        guard let type = handle.type, EdgeConstants.JsonKeys.Response.EventHandleType.STORE == type else { return }
         guard let payload: [[String: Any]] = handle.payload else { return }
 
         var storeResponsePayloads: [StoreResponsePayload] = []
@@ -314,6 +322,24 @@ class NetworkResponseHandler {
         storeResponsePayloadManager.saveStorePayloads(storeResponsePayloads)
         if !storeResponsePayloads.isEmpty {
             Log.debug(label: LOG_TAG, "Processed \(storeResponsePayloads.count) store response payload(s)")
+        }
+    }
+
+    /// If handle is of type "locationHint:result", persist it to the data store
+    /// - Parameter handle: current `EventHandle` to process
+    private func handleLocationHintHandle(handle: EdgeEventHandle) {
+        guard let type = handle.type, EdgeConstants.JsonKeys.Response.EventHandleType.LOCATION_HINT == type else { return }
+        guard let payload: [[String: Any]] = handle.payload else { return }
+
+        for locationHint in payload {
+            if let scope = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.SCOPE] as? String, scope == "EdgeNetwork" {
+                if let hint = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.HINT] as? String, !hint.isEmpty,
+                   let ttlSeconds = locationHint[EdgeConstants.JsonKeys.Response.LocationHint.TTL_SECONDS] as? Int {
+                    updateLocationHint(hint, TimeInterval(ttlSeconds))
+                }
+
+                break
+            }
         }
     }
 

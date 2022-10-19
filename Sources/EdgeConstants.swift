@@ -15,7 +15,7 @@ import Foundation
 enum EdgeConstants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
-    static let EXTENSION_VERSION = "1.4.1"
+    static let EXTENSION_VERSION = "1.5.0"
     static let FRIENDLY_NAME = "AEPEdge"
     static let LOG_TAG = FRIENDLY_NAME
 
@@ -35,6 +35,7 @@ enum EdgeConstants {
         static let LINE_FEED: String = "\n"
         static let COLLECT_CONSENT_YES = ConsentStatus.yes // used if Consent extension is not registered
         static let COLLECT_CONSENT_PENDING = ConsentStatus.pending // used when Consent encoding failed or the value different than y/n
+        static let LOCATION_HINT_TTL_SEC: TimeInterval = 1800 // 30 mins in seconds
     }
 
     enum EventDataKeys {
@@ -42,16 +43,27 @@ enum EdgeConstants {
         static let REQUEST_EVENT_ID = "requestEventId"
         static let DATASET_ID = "datasetId"
         static let CONSENTS = "consents"
+        static let LOCATION_HINT = "locationHint"
+
+        enum Request {
+            static let KEY = "request"
+            static let PATH = "path"
+        }
     }
 
     enum DataStoreKeys {
         static let STORE_NAME = "AEPEdge"
         static let STORE_PAYLOADS = "storePayloads"
         static let RESET_IDENTITIES_DATE = "reset.identities.date"
+        static let EDGE_PROPERTIES = "edge.properties"
     }
 
     enum SharedState {
         static let STATE_OWNER = "stateowner"
+
+        enum Edge {
+            static let LOCATION_HINT = "locationHint"
+        }
 
         enum Configuration {
             static let STATE_OWNER_NAME = "com.adobe.module.configuration"
@@ -116,11 +128,20 @@ enum EdgeConstants {
         }
 
         enum Response {
-            static let EVENT_HANDLE_TYPE_STORE = "state:store"
+            enum EventHandleType {
+                static let STORE = "state:store"
+                static let LOCATION_HINT = "locationHint:result"
+            }
 
             enum Error {
                 static let MESSAGE = "message"
                 static let NAMESPACE = "namespace"
+            }
+
+            enum LocationHint {
+                static let SCOPE = "scope"
+                static let HINT = "hint"
+                static let TTL_SECONDS = "ttlSeconds"
             }
         }
     }

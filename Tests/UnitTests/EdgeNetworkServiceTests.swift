@@ -15,6 +15,7 @@ import XCTest
 
 @testable import AEPEdge
 
+// swiftlint:disable type_body_length
 class EdgeNetworkServiceTests: XCTestCase {
 
     private var mockNetworking = MockNetworking()
