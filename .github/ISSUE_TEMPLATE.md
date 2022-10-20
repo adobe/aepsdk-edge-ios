@@ -1,4 +1,7 @@
-
+---
+name: Blank issue
+labels: task
+---
 ## Prerequisites
 <!--- Go through the items below before logging an issue -->
 - [ ] I have searched in this repository's issues to see if it has already been reported.
