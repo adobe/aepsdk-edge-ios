@@ -16,6 +16,10 @@ on:
         description: 'Branch to be used when updating versions'
         required: true
 
+      core-dependency:
+        description: 'If a version is provided, update AEPCore dependency in podspec and Package.swift'
+        required: false
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   update-versions:
@@ -29,7 +33,12 @@ jobs:
       with:
         ref: ${{ github.event.inputs.branch }}
     
-    - name: Update AEPEdge
+    - if: ${{ github.event.inputs.core-dependency != '' }}
+      name: Update AEPEdge (with core dependency update)
+      run: (sh ./Script/update-versions.sh -n Edge -v ${{ github.event.inputs.version }} -d "AEPCore ${{ github.event.inputs.core-dependency }}")
+      
+    - if: ${{ github.event.inputs.core-dependency == '' }}
+      name: Update AEPEdge (no core dependency update)
       run: (sh ./Script/update-versions.sh -n Edge -v ${{ github.event.inputs.version }})
       
     - name: Create Pull Request
