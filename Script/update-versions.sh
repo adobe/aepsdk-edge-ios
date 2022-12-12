@@ -9,6 +9,18 @@ LINE="==========================================================================
 VERSION_REGEX="[0-9]+\.[0-9]+\.[0-9]+"
 DEPENDENCIES=none
 
+# make a "dictionary" to help us find the correct spm repo per dependency (if necessary)
+# IMPORTANT - this will be used in a regex search so escape special chars
+# usage :
+# getRepo AEPCore
+
+declare "repos_AEPCore=https:\/\/github\.com\/adobe\/aepsdk-core-ios\.git"
+getRepo() {
+    local extensionName=$1
+    local url="repos_$extensionName"
+    echo "${!url}"
+}
+
 help()
 {
    echo ""
@@ -16,7 +28,7 @@ help()
    echo ""
    echo -e "    -n\t- Name of the extension getting a version update. \n\t  Example: Edge, Analytics\n"
    echo -e "    -v\t- New version to use for the extension. \n\t  Example: 3.0.2\n"
-   echo -e "    -d\t- Dependency(ies) that require updating in the extension's podspec file. \n\t  Example: AEPCore 3.7.3 (means add a dependency on AEPCore for version 3.7.3 or newer)\n"
+   echo -e "    -d (optional)\t- Dependency(ies) that require updating in the extension's podspec and Package.swift file. \n\t  Example: -d \"AEPCore 3.7.3\" (update the dependency on AEPCore to version 3.7.3 or newer)\n"
    exit 1 # Exit script after printing help
 }
 
@@ -39,8 +51,9 @@ then
 fi
 
 PODSPEC_FILE=$ROOT_DIR"/AEP"$NAME.podspec
+SPM_FILE=$ROOT_DIR/Package.swift
 
-# Begin script in case all parameters are correct
+# Begin script when all parameters are correct
 echo ""
 echo "$LINE"
 echo "Changing version of AEP$NAME to $NEW_VERSION with the following minimum version dependencies: $DEPENDENCIES"
@@ -50,19 +63,25 @@ echo "$LINE"
 echo "Changing value of 's.version' to '$NEW_VERSION' in '$PODSPEC_FILE'"
 sed -i '' -E "/^ *s.version/{s/$VERSION_REGEX/$NEW_VERSION/;}" $PODSPEC_FILE
 
-# Replace dependencies in podspec
+# Replace dependencies in podspec and Package.swift
 if [ "$DEPENDENCIES" != "none" ]; then
     IFS="," 
     dependenciesArray=($(echo "$DEPENDENCIES"))
 
     IFS=" "
-    for dependency in "${dependenciesArray[@]}"; do    
-        dependencyArray=(${dependency// / })    
-        dependencyName=${dependencyArray[0]}    
-        dependencyVersion=${dependencyArray[1]}    
+    for dependency in "${dependenciesArray[@]}"; do
+        dependencyArray=(${dependency// / })
+        dependencyName=${dependencyArray[0]}
+        dependencyVersion=${dependencyArray[1]}
         
-        echo "Changing value of 's.dependency' for '$dependencyName' to '>= $dependencyVersion' in '$PODSPEC_FILE'"    
+        echo "Changing value of 's.dependency' for '$dependencyName' to '>= $dependencyVersion' in '$PODSPEC_FILE'"
         sed -i '' -E "/^ *s.dependency +'$dependencyName'/{s/$VERSION_REGEX/$dependencyVersion/;}" $PODSPEC_FILE
+
+        spmRepoUrl=$(getRepo $dependencyName)
+        if [ "$spmRepoUrl" != "" ]; then
+            echo "Changing value of '.upToNextMajor(from:)' for '$spmRepoUrl' to '$dependencyVersion' in '$SPM_FILE'"
+            sed -i '' -E "/$spmRepoUrl\", \.upToNextMajor/{s/$VERSION_REGEX/$dependencyVersion/;}" $SPM_FILE
+        fi
     done
 fi
 
