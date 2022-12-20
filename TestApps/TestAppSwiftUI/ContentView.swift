@@ -270,7 +270,7 @@ struct ContentView_Previews: PreviewProvider {
 
 /// Location hint region ids
 enum RegionId: String, CaseIterable, Identifiable {
-    case or2, va6, irl1, ind1, jpn3, sgp3, aus3, nil_value = "nil", empty_value = "empty"
+    case or2, va6, irl1, ind1, jpn3, sgp3, aus3, nil_value = "nil", empty_value = "empty", invalid
     var id: Self { self }
 }
 
