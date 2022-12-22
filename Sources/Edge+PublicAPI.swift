@@ -47,7 +47,7 @@ public extension Edge {
     static func getLocationHint(_ completion: @escaping (String?, Error?) -> Void) {
         let event = Event(name: "Edge Request Location Hint",
                           type: EventType.edge,
-                          source: EventSource.requestProperty,
+                          source: EventSource.requestIdentity,
                           data: [EdgeConstants.EventDataKeys.LOCATION_HINT: true])
         MobileCore.dispatch(event: event) { responseEvent in
             guard let responseEvent = responseEvent else {
@@ -78,7 +78,7 @@ public extension Edge {
         let hintValue = hint ?? ""
         let event = Event(name: "Edge Update Location Hint",
                           type: EventType.edge,
-                          source: EventSource.updateProperty,
+                          source: EventSource.updateIdentity,
                           data: [EdgeConstants.EventDataKeys.LOCATION_HINT: hintValue as Any])
 
         MobileCore.dispatch(event: event)
