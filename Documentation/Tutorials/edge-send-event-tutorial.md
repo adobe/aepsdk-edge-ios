@@ -152,7 +152,7 @@ With the datastream set up, data can be directed to its destination by adding se
 <img src="../Assets/edge-send-event-tutorial/aep-setup/datastreams-add-service.png" alt="Set datastream values" width="1100"/>  
 
 2. From the **Service (required)** dropdown (**1**), select **Adobe Analytics**.
-3. Select **Add Report Suite** (**2**), and enter the report suite ID you want the data from this tutorial to land.
+3. Select **Add Report Suite** (**2**), and enter the report suite ID you want the data from this tutorial to save to. An [Analytics report suite](https://experienceleague.adobe.com/docs/analytics/admin/admin-tools/manage-report-suites/report-suites-admin.html) serves as a kind of datastore.
 4. Select **Save**.
 
 <img src="../Assets/edge-send-event-tutorial/aep-setup/datastreams-add-analytics.png" alt="Set datastream values" width="1100"/>  
@@ -305,35 +305,36 @@ Once the mobile property is published to the **Development** environment:
 
 Now that the server side configuration is complete, install the extensions in the app and enable extension functionality by making some code updates.
 
-### 1. Get a copy of the files (tutorial app code) and initial setup
+### 1. Get a copy of the files (tutorial app code)
 1. Open the code repository: https://github.com/adobe/aepsdk-edge-ios
 2. Select **Code** in the top right 
 3. In the window that opens, select **Download ZIP**; by default it should land in your **Downloads** folder.
    - Optionally, move the ZIP to your **Documents** folder
 4. Unzip the archived file by double selecting it, and keep this Finder window open, as it will be used later.
 
-Now open the tutorial app to go through the changes required to install the Edge extension:
+### Initial project environment setup
+Next, we need to set up the project environment using the following steps:
 
-1. Open the Terminal app
-   - **Applications** -> **Utilities** -> **Terminal**
-   - Open Spotlight search (CMD + Space) and search for "terminal", the select the **Terminal** app to open it.
+1. Open the Terminal app.
+   - Using Finder, open **Applications** -> **Utilities** -> **Terminal**
+   - Alternatively, open Spotlight search (keyboard shortcut: CMD + Space) and search for "terminal", then select the **Terminal** app to open it.
 2. Type the following characters, but do not press return yet: `c` + `d` + `SPACE`  
 You should see the following in your terminal: "cd " (the space after `cd` is important!).
 ```bash
 cd 
 ```
-1. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials** (**1**). Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Select and drag the **EdgeTutorialAppStart** folder (**2**) into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios/Documentation/Tutorials/EdgeTutorialAppStart`  
+3. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials** (**1**). Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Select and drag the **EdgeTutorialAppStart** folder (**2**) into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios/Documentation/Tutorials/EdgeTutorialAppStart`  
 
 <img src="../Assets/edge-send-event-tutorial/client-side/terminal-setup.png" alt="All installed extensions" width="1100"/>  
 
-8. Then press `return` to execute the command.
+4. Then press `return` to execute the command.
 
 <details>
-  <summary> What is <code>cd</code>? What did I just do? </summary><p>
+  <summary> What is <code>cd</code> and what does it do? </summary><p>
 
-`cd` is the terminal command for change directory; the command above changes the terminal's active directory to the tutorial folder that holds the tutorial app's code.
+`cd` is the terminal command for change directory; the command above changes the terminal's active directory context to the tutorial folder that holds the tutorial app's code.
 
-The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edge-ios/Documentation/Tutorials/EdgeTutorialAppStart`, taken together, this command changes our terminal window context to the tutorial app code folder!
+The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edge-ios/Documentation/Tutorials/EdgeTutorialAppStart`, taken together, this command changes our terminal window context to the tutorial app code folder.
 
 </p></details>
 
@@ -345,19 +346,41 @@ This tutorial assumes a project using Cocoapods for package dependency managemen
 
 </p></details>
 
-### 2. Install the Edge extensions using dependency manager (CocoaPods)
-To verify that Cocoapods is installed on your machine; use the following command:
+### 2. Install the Edge extensions using CocoaPods (dependency manager)
+Using the same terminal context, enter the following command:
 
 ```bash
-pod --version
+pod install
 ```
 
-If you get numbers like `1.11.3`, you're good to go! However, if you get an error like: "zsh: command not found: pod", then you need to [install Cocoapods](https://guides.cocoapods.org/using/getting-started.html). 
+<details>
+  <summary> Expected output </summary><p>
+
+```
+tim@Tims-MacBook-Pro aepsdk-edge-ios % pod install
+Analyzing dependencies
+Downloading dependencies
+Generating Pods project
+Integrating client project
+Pod installation complete! There are 0 dependencies from the Podfile and 0 total pods installed.
+
+[!] The Podfile does not contain any dependencies.
+
+...
+
+tim@Tims-MacBook-Pro aepsdk-edge-ios % 
+```
+
+</p></details>
+
+The terminal should output something similar to the expected output above; if so, you're good to go! However, if you get an error like: "zsh: command not found: pod", then you need to [install Cocoapods](https://guides.cocoapods.org/using/getting-started.html), then open a new terminal window and follow the instructions from [initial project environment setup](#initial-project-environment-setup). 
 
 </p></details>
 
 <details>
   <summary> How do I uninstall Cocoapods after this tutorial? </summary><p>
+
+Please note that these uninstall instructions include destructive actions to the filesystem which can severly impact the machine; make sure to verify the commands are correct as they may be outdated.
 
 Run the following commands in terminal:
 ```bash
@@ -426,7 +449,7 @@ Cocoapods will use the newly updated configuration file to install the new packa
   <summary> Expected output </summary><p>
 
 ```
-tim@Tims-MacBook-Pro aepsdk-edge-ios-tutorial-send-event % pod update
+tim@Tims-MacBook-Pro aepsdk-edge-ios % pod update
 Update all pods
 Updating local specs repositories
 Analyzing dependencies
@@ -442,7 +465,7 @@ Installing AEPServices (3.7.1)
 Generating Pods project
 Integrating client project
 Pod installation complete! There are 7 dependencies from the Podfile and 8 total pods installed.
-tim@Tims-MacBook-Pro aepsdk-edge-ios-tutorial-send-event % 
+tim@Tims-MacBook-Pro aepsdk-edge-ios % 
 ```
 
 </p></details>
