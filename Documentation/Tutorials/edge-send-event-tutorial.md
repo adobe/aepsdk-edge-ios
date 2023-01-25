@@ -294,7 +294,7 @@ The Lifecycle for Edge extension sends app foreground and background events, and
 
 <img src="../Assets/edge-send-event-tutorial/aep-setup/mobile-property-publish.png" alt="All installed extensions" width="1100"/>  
 
-#### Getting the mobile property ID <!-- omit in toc -->
+#### Getting the mobile property ID<!-- omit in toc -->
 Once the mobile property is published to the **Development** environment:  
 1. Select the box icon next to the environment dropdown (**5**, from above)
 2. Select the double overlapping box (**1**) to the right of the property ID to copy it. Save this unique ID (in a text file, or other easily accessible place), as it is required when setting up the app in the next section.
@@ -305,7 +305,7 @@ Once the mobile property is published to the **Development** environment:
 
 Now that the server side configuration is complete, install the extensions in the app and enable extension functionality by making some code updates.
 
-### 1. Get a copy of the files (tutorial app code)
+### 1. Get a copy of the tutorial app code files
 1. Open the code repository: https://github.com/adobe/aepsdk-edge-ios
 2. Select **Code** in the top right 
 3. In the window that opens, select **Download ZIP**; by default it should land in your **Downloads** folder.
@@ -398,7 +398,7 @@ Next, install the Edge extensions for the tutorial app. This can easily be done 
 
 1. Open the project using the command:
 ```bash
-open EdgeTutorialAppStart.xcworkspace
+open EdgeTutorialApp.xcworkspace
 ```
 
 This should automatically open the Xcode IDE. In Xcode:
@@ -499,12 +499,12 @@ Make sure to uncomment all sections within each file (the total will tell you ho
 ### Edge extension details <!-- omit in toc -->
 For details on the various Edge extensions used, see the [table of related projects](../../README.md#related-projects).
 
-Notice that the Lifecycle APIs rely on the developer to place them in the proper iOS app lifecycle functions (as seen in `SceneDelegate.swift`); that is, iOS has built-in functions that are called by the operating system that give the app notices that it is about to enter an active state, or go into a background state, etc. A proper Lifecycle extension implementation requires that the developer places the API calls in the required iOS lifecycle functions. See the full guide on [implementing Lifecycle](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle).
+Notice that the Lifecycle APIs rely on the developer to place them in the proper iOS app lifecycle functions (as seen in `SceneDelegate.swift`); that is, iOS has built-in functions that are called by the operating system that give the app notices that it is about to enter an active state, or go into a background state, etc. A proper Lifecycle extension implementation requires that the developer places the API calls in the required iOS lifecycle functions. See the full guide on [implementing Lifecycle](https://developer.adobe.com/client-sdks/documentation/mobile-core/lifecycle/).
 
 ### 4. Run app   
 In Xcode: 
 1. Set the app target (**1**) to **EdgeTutorialApp** (if not already).
-2. Choose which destination device (**2**) to run it on (either simulator or physical device, in this case it is set to the iPhone 13 Pro simulator). 
+2. Choose which destination device (**2**) to run it on (either iPhone simulator or physical device). 
 3. Select the play button (**3**).
 
 <img src="../Assets/edge-send-event-tutorial/client-side/xcode-install-app.png" alt="Creating a new session in Assurance step 1" width="1100"/>
@@ -571,7 +571,7 @@ On the Assurance session side:
 > 3. Select the `Info` tab.
 > 4. Set the desired deep linking URL.
 > ![Xcode deeplink app URL config](../Assets/edge-send-event-tutorial/assurance-validation/xcode-deeplink-app-url-config.jpg)  
-> Please note that there is still code on the application side that is required for the app to respond to deep links; see the [guide on adding Assurance to your app](https://aep-sdks.gitbook.io/docs/foundation-extensions/adobe-experience-platform-assurance#add-the-aep-assurance-extension-to-your-app). For general implementation recommendations and best practices, see Apple's guide on [Defining a custom URL scheme for your app](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)
+> Please note that there is still code on the application side that is required for the app to respond to deep links; see the [guide on adding Assurance to your app](https://developer.adobe.com/client-sdks/documentation/platform-assurance-sdk/#add-the-aep-assurance-extension-to-your-app). For general implementation recommendations and best practices, see Apple's guide on [Defining a custom URL scheme for your app](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)
 
 </p></details>
 
@@ -584,7 +584,7 @@ When presented with this window, your new Assurance session is ready to go, and 
 To connect to Assurance, use the session link:
 1. Copy the session link; you can select the icon of a double overlapping box to the right of the link to copy it.
     - If using a physical device, it may be helpful to have a way to send this link to the device (ex: Airdrop, email, text, etc.). Alternatively, you can use the camera on your physical device to scan the QR code.
-2. Open Safari (or other web browser).
+2. Open Safari (or other web browser) on the iOS Simulator (or actual device, depending on which target device was selected to run the tutorial app).
 3. Paste the Assurance session link copied from step 1 into the URL/search text field and enter, or use **Paste and Go**.
     - If using the simulator, it is possible to enable the paste menu by clicking in the text field twice, with a slight pause between clicks.
 4. A new dialog box should open requesting to open the tutorial app, select **OK**.
