@@ -375,25 +375,6 @@ tim@Tims-MacBook-Pro aepsdk-edge-ios %
 
 The terminal should output something similar to the expected output above; if so, you're good to go! However, if you get an error like: "zsh: command not found: pod", then you need to [install Cocoapods](https://guides.cocoapods.org/using/getting-started.html), then open a new terminal window and follow the instructions from [initial project environment setup](#initial-project-environment-setup). 
 
-</p></details>
-
-<details>
-  <summary> How do I uninstall Cocoapods after this tutorial? </summary><p>
-
-Please note that these uninstall instructions include destructive actions to the filesystem which can severly impact the machine; make sure to verify the commands are correct as they may be outdated.
-
-Run the following commands in terminal:
-```bash
-gem list --local --no-versions | grep cocoapods | xargs sudo gem uninstall
-```
-```bash
-sudo rm -rf ~/.cocoapods
-```
-
-From a [StackExchange Superuser source](https://superuser.com/a/1008175).
-
-</p></details>
-
 Next, install the Edge extensions for the tutorial app. This can easily be done by updating the file that controls the package dependencies for the repository. 
 
 1. Open the project using the command:
