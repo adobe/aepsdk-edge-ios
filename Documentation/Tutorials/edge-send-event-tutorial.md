@@ -152,7 +152,7 @@ With the datastream set up, data can be directed to its destination by adding se
 <img src="../Assets/edge-send-event-tutorial/aep-setup/datastreams-add-service.png" alt="Set datastream values" width="1100"/>  
 
 2. From the **Service (required)** dropdown (**1**), select **Adobe Analytics**.
-3. Select **Add Report Suite** (**2**), and enter the report suite ID you want the data from this tutorial to save to. An [Analytics report suite](https://experienceleague.adobe.com/docs/analytics/admin/admin-tools/manage-report-suites/report-suites-admin.html) serves as a kind of datastore.
+3. Select **Add Report Suite** (**2**), and enter the report suite ID you want the data from this tutorial to land.
 4. Select **Save**.
 
 <img src="../Assets/edge-send-event-tutorial/aep-setup/datastreams-add-analytics.png" alt="Set datastream values" width="1100"/>  
