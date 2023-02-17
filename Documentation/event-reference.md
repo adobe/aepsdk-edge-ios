@@ -96,7 +96,7 @@ This event is a request to set the Edge Network location hint used by the Edge N
 
 | Key       | Value type    | Required | Description           |
 | --------- | ------------- | -------- | --------------------- |
-| locationHint      | `String`      | Yes      | Location hint value. Passing `null` or an empty string (`""`) clears the existing location hint. See  the [list of valid location hints for the `EdgeNetwork` scope](https://experienceleague.adobe.com/docs/experience-platform/edge-network-server-api/location-hints.html). |
+| locationHint      | `String`      | Yes      | Location hint value. Passing `nil` or an empty string (`""`) clears the existing location hint. See  the [list of valid location hints for the `EdgeNetwork` scope](https://experienceleague.adobe.com/docs/experience-platform/edge-network-server-api/location-hints.html). |
 
 -----
 
@@ -198,7 +198,7 @@ This event is a response to an event.
 
 | Event type                        | Event source                          |
 | --------------------------------- | ------------------------------------- |
-| com.adobe.eventType.edge          | This value is copied from the event being responded to; if not set or `null`, has a default value of com.adobe.eventSource.responseContent |
+| com.adobe.eventType.edge          | com.adobe.eventSource.responseContent |
 
 #### Data payload definition<!-- omit in toc -->
 
