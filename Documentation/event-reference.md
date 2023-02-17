@@ -33,7 +33,7 @@ If the required `xdm` key is not present in the event data payload, the event is
 
 #### Data payload definition<!-- omit in toc -->
 
-| Key       | Value type    | Key Required | Description           |
+| Key       | Value type    | Required | Description           |
 | --------- | ------------- | -------- | --------------------- |
 | xdm       | `[String: Any]` | Yes      | XDM formatted data; use an `XDMSchema` implementation for a better XDM data ingestion and format control. |
 | data      | `[String: Any]` | No       | Optional free-form data associated with this event. |
@@ -55,7 +55,7 @@ This event is a request to get the current location hint being used by the Edge 
 
 #### Data payload definition<!-- omit in toc -->
 
-| Key          | Value type    | Key Required | Description                |
+| Key          | Value type    | Required | Description                |
 | ------------ | ------------- | -------- | -------------------------- |
 | locationHint | `Bool`     | Yes      | The Edge Network location hint to use when connecting to Edge Network. Property is set to `true` automatically; it is not user modifiable. |
 
@@ -73,7 +73,7 @@ This event is a request to process and deliver a Consent update event to Edge Ne
 
 #### Data payload definition<!-- omit in toc -->
 
-| Key       | Value type            | Key Required | Description           |
+| Key       | Value type            | Required | Description           |
 | --------- | --------------------- | -------- | --------------------- |
 | consents  | `[String: Any]` | Yes      | XDM formatted consent preferences. |
 
@@ -94,7 +94,7 @@ This event is a request to set the Edge Network location hint used by the Edge N
 
 #### Data payload definition<!-- omit in toc -->
 
-| Key       | Value type    | Key Required | Description           |
+| Key       | Value type    | Required | Description           |
 | --------- | ------------- | -------- | --------------------- |
 | locationHint      | `String`      | Yes      | Location hint value. Passing `null` or an empty string (`""`) clears the existing location hint. See  the [list of valid location hints for the `EdgeNetwork` scope](https://experienceleague.adobe.com/docs/experience-platform/edge-network-server-api/location-hints.html). |
 
@@ -118,7 +118,7 @@ This event contains the latest consent preferences synced with the SDK, and is u
 
 #### Data payload definition<!-- omit in toc -->
 
-| Key       | Value type    | Key Required | Description           |
+| Key       | Value type    | Required | Description           |
 | --------- | ------------- | -------- | --------------------- |
 | consents  | `[String: Any]` | No       | XDM formatted consent preferences containing current collect consent settings. If not specified, defaults to pending (`p`) until the value is updated. |
 
@@ -164,7 +164,7 @@ This event is a response to the [Edge request identity event](#edge-request-iden
 
 #### Data payload definition<!-- omit in toc -->
 
-| Key       | Value type    | Key Required | Description           |
+| Key       | Value type    | Required | Description           |
 | --------- | ------------- | -------- | --------------------- |
 | locationHint  | `String` | Yes       | The Edge Network location hint currently set for use when connecting to Edge Network. |
 
@@ -182,7 +182,7 @@ This event is an error response to an originating event. If there are multiple e
 
 #### Data payload definition<!-- omit in toc -->
 
-| Key       | Value type    | Key Required | Description           |
+| Key       | Value type    | Required | Description           |
 | --------- | ------------- | -------- | --------------------- |
 | requestId  | `String` | Yes       | The ID (`UUID`) of the batched Edge Network request tied to the event that triggered the error response. |
 | requestEventId  | `String` | Yes       | The ID (`UUID`) of the event that triggered the error response. |
@@ -234,7 +234,7 @@ This event tells the Edge Network extension to persist the location hint to the 
 
 #### Data payload definition<!-- omit in toc -->
 
-| Key | Value type | Mandatory Key | Description |
+| Key | Value type | Required | Description |
 | --- | ---------- | ------------- | ----------- |
 | scope  | `String` | No       | The scope that the location hint is relevant for, for example `EdgeNetwork`. |
 | hint  | `String` | No       | The location hint string. |
