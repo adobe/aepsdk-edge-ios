@@ -1,6 +1,6 @@
-# Implementing the Edge extension to send event data to the Edge Network <!-- omit in toc -->
+# Implementing the Edge extension to send event data to the Edge Network<!-- omit in toc -->
 
-## Table of Contents <!-- omit in toc -->
+## Table of Contents<!-- omit in toc -->
 - [Overview](#overview)
   - [Environment](#environment)
 - [Adobe Experience Platform setup](#adobe-experience-platform-setup)
@@ -10,8 +10,8 @@
   - [4. Configure a Rule to forward Lifecycle metrics to Edge Network](#4-configure-a-rule-to-forward-lifecycle-metrics-to-edge-network)
   - [5. Publish changes](#5-publish-changes)
 - [Client-side implementation](#client-side-implementation)
-  - [1. Get a copy of the files (tutorial app code) and initial setup](#1-get-a-copy-of-the-files-tutorial-app-code-and-initial-setup)
-  - [2. Install the Edge extensions using dependency manager (CocoaPods)](#2-install-the-edge-extensions-using-dependency-manager-cocoapods)
+  - [1. Get a copy of the tutorial app code files](#1-get-a-copy-of-the-tutorial-app-code-files)
+  - [2. Install the Edge extensions using CocoaPods (dependency manager)](#2-install-the-edge-extensions-using-cocoapods-dependency-manager)
   - [3. Update tutorial app code to enable Edge features](#3-update-tutorial-app-code-to-enable-edge-features)
   - [4. Run app](#4-run-app)
   - [5. `sendEvent` implementation examples](#5-sendevent-implementation-examples)
@@ -239,7 +239,7 @@ You should see the following after all the extensions are installed:
 
 The Lifecycle for Edge extension sends app foreground and background events, and a rule needs to be configured in order to forward these events to the Edge Network. Note that there is no need to install Lifecycle since it is already included with Mobile Core.
 
-#### Create a rule <!-- omit in toc -->
+#### Create a rule<!-- omit in toc -->
 1. On the Rules tab, select **Create New Rule**.
    - If your property already has rules, the button will be in the top right of the screen.
 
@@ -250,7 +250,7 @@ The Lifecycle for Edge extension sends app foreground and background events, and
 
 <img src="../Assets/edge-send-event-tutorial/aep-setup/mobile-property-rule-1.png" alt="All installed extensions" width="1100"/>  
 
-#### Select an event <!-- omit in toc -->
+#### Select an event<!-- omit in toc -->
 
 2. From the **Extension** dropdown list (**1**), select **Mobile Core**.
 3. From the **Event Type** dropdown list (**2**), select **Foreground**.
@@ -268,7 +268,7 @@ The Lifecycle for Edge extension sends app foreground and background events, and
 
 <img src="../Assets/edge-send-event-tutorial/aep-setup/mobile-property-rule-4.png" alt="All installed extensions" width="1100"/>  
 
-#### Define the action <!-- omit in toc -->
+#### Define the action<!-- omit in toc -->
 1. Under the Actions section, select **+ Add** (**1**).
 
 <img src="../Assets/edge-send-event-tutorial/aep-setup/mobile-property-rule-5.png" alt="All installed extensions" width="1100"/>  
@@ -279,7 +279,7 @@ The Lifecycle for Edge extension sends app foreground and background events, and
 
 <img src="../Assets/edge-send-event-tutorial/aep-setup/mobile-property-rule-6.png" alt="All installed extensions" width="1100"/>  
 
-#### Save the rule and rebuild your property <!-- omit in toc -->
+#### Save the rule and rebuild your property<!-- omit in toc -->
 1. After you complete your configuration, verify that your rule looks like the following:
 2. Select **Save** (**1**).
 
@@ -294,7 +294,7 @@ The Lifecycle for Edge extension sends app foreground and background events, and
 
 <img src="../Assets/edge-send-event-tutorial/aep-setup/mobile-property-publish.png" alt="All installed extensions" width="1100"/>  
 
-#### Getting the mobile property ID <!-- omit in toc -->
+#### Getting the mobile property ID<!-- omit in toc -->
 Once the mobile property is published to the **Development** environment:  
 1. Select the box icon next to the environment dropdown (**5**, from above)
 2. Select the double overlapping box (**1**) to the right of the property ID to copy it. Save this unique ID (in a text file, or other easily accessible place), as it is required when setting up the app in the next section.
@@ -305,35 +305,36 @@ Once the mobile property is published to the **Development** environment:
 
 Now that the server side configuration is complete, install the extensions in the app and enable extension functionality by making some code updates.
 
-### 1. Get a copy of the files (tutorial app code) and initial setup
+### 1. Get a copy of the tutorial app code files
 1. Open the code repository: https://github.com/adobe/aepsdk-edge-ios
 2. Select **Code** in the top right 
 3. In the window that opens, select **Download ZIP**; by default it should land in your **Downloads** folder.
    - Optionally, move the ZIP to your **Documents** folder
 4. Unzip the archived file by double selecting it, and keep this Finder window open, as it will be used later.
 
-Now open the tutorial app to go through the changes required to install the Edge extension:
+### Initial project environment setup<!-- omit in toc -->
+Next, we need to set up the project environment using the following steps:
 
-1. Open the Terminal app
-   - **Applications** -> **Utilities** -> **Terminal**
-   - Open Spotlight search (CMD + Space) and search for "terminal", the select the **Terminal** app to open it.
+1. Open the Terminal app.
+   - Using Finder, open **Applications** -> **Utilities** -> **Terminal**
+   - Alternatively, open Spotlight search (keyboard shortcut: CMD + Space) and search for "terminal", then select the **Terminal** app to open it.
 2. Type the following characters, but do not press return yet: `c` + `d` + `SPACE`  
 You should see the following in your terminal: "cd " (the space after `cd` is important!).
 ```bash
 cd 
 ```
-1. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials** (**1**). Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Select and drag the **EdgeTutorialAppStart** folder (**2**) into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios/Documentation/Tutorials/EdgeTutorialAppStart`  
+3. Return to your Finder window that has the unzipped repository folder. Open the folders: **Documentation** -> **Tutorials** (**1**). Inside **Tutorials** there should be an **EdgeTutorialAppStart** folder. Select and drag the **EdgeTutorialAppStart** folder (**2**) into your Terminal window that has the `cd ` command typed. You should see something like: `cd /Users/tim/Documents/aepsdk-edge-ios/Documentation/Tutorials/EdgeTutorialAppStart`  
 
 <img src="../Assets/edge-send-event-tutorial/client-side/terminal-setup.png" alt="All installed extensions" width="1100"/>  
 
-8. Then press `return` to execute the command.
+4. Then press `return` to execute the command.
 
 <details>
-  <summary> What is <code>cd</code>? What did I just do? </summary><p>
+  <summary> What is <code>cd</code> and what does it do? </summary><p>
 
-`cd` is the terminal command for change directory; the command above changes the terminal's active directory to the tutorial folder that holds the tutorial app's code.
+`cd` is the terminal command for change directory; the command above changes the terminal's active directory context to the tutorial folder that holds the tutorial app's code.
 
-The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edge-ios/Documentation/Tutorials/EdgeTutorialAppStart`, taken together, this command changes our terminal window context to the tutorial app code folder!
+The long string after is the full path (kind of like an address) to the code repository folder: `/Users/tim/Documents/aepsdk-edge-ios/Documentation/Tutorials/EdgeTutorialAppStart`, taken together, this command changes our terminal window context to the tutorial app code folder.
 
 </p></details>
 
@@ -345,37 +346,40 @@ This tutorial assumes a project using Cocoapods for package dependency managemen
 
 </p></details>
 
-### 2. Install the Edge extensions using dependency manager (CocoaPods)
-To verify that Cocoapods is installed on your machine; use the following command:
+### 2. Install the Edge extensions using CocoaPods (dependency manager)
+Using the same terminal context, enter the following command:
 
 ```bash
-pod --version
+pod install
 ```
-
-If you get numbers like `1.11.3`, you're good to go! However, if you get an error like: "zsh: command not found: pod", then you need to [install Cocoapods](https://guides.cocoapods.org/using/getting-started.html). 
-
-</p></details>
 
 <details>
-  <summary> How do I uninstall Cocoapods after this tutorial? </summary><p>
+  <summary> Expected output </summary><p>
 
-Run the following commands in terminal:
-```bash
-gem list --local --no-versions | grep cocoapods | xargs sudo gem uninstall
 ```
-```bash
-sudo rm -rf ~/.cocoapods
-```
+tim@Tims-MacBook-Pro aepsdk-edge-ios % pod install
+Analyzing dependencies
+Downloading dependencies
+Generating Pods project
+Integrating client project
+Pod installation complete! There are 0 dependencies from the Podfile and 0 total pods installed.
 
-From a [StackExchange Superuser source](https://superuser.com/a/1008175).
+[!] The Podfile does not contain any dependencies.
+
+...
+
+tim@Tims-MacBook-Pro aepsdk-edge-ios % 
+```
 
 </p></details>
+
+The terminal should output something similar to the expected output above; if so, you're good to go! However, if you get an error like: "zsh: command not found: pod", then you need to [install Cocoapods](https://guides.cocoapods.org/using/getting-started.html), then open a new terminal window and follow the instructions from [initial project environment setup](#initial-project-environment-setup). 
 
 Next, install the Edge extensions for the tutorial app. This can easily be done by updating the file that controls the package dependencies for the repository. 
 
 1. Open the project using the command:
 ```bash
-open EdgeTutorialAppStart.xcworkspace
+open EdgeTutorialApp.xcworkspace
 ```
 
 This should automatically open the Xcode IDE. In Xcode:
@@ -426,7 +430,7 @@ Cocoapods will use the newly updated configuration file to install the new packa
   <summary> Expected output </summary><p>
 
 ```
-tim@Tims-MacBook-Pro aepsdk-edge-ios-tutorial-send-event % pod update
+tim@Tims-MacBook-Pro aepsdk-edge-ios % pod update
 Update all pods
 Updating local specs repositories
 Analyzing dependencies
@@ -442,7 +446,7 @@ Installing AEPServices (3.7.1)
 Generating Pods project
 Integrating client project
 Pod installation complete! There are 7 dependencies from the Podfile and 8 total pods installed.
-tim@Tims-MacBook-Pro aepsdk-edge-ios-tutorial-send-event % 
+tim@Tims-MacBook-Pro aepsdk-edge-ios % 
 ```
 
 </p></details>
@@ -473,15 +477,15 @@ Make sure to uncomment all sections within each file (the total will tell you ho
 2. `SceneDelegate.swift`
 3. `ContentView.swift`
 
-### Edge extension details <!-- omit in toc -->
+### Edge extension details<!-- omit in toc -->
 For details on the various Edge extensions used, see the [table of related projects](../../README.md#related-projects).
 
-Notice that the Lifecycle APIs rely on the developer to place them in the proper iOS app lifecycle functions (as seen in `SceneDelegate.swift`); that is, iOS has built-in functions that are called by the operating system that give the app notices that it is about to enter an active state, or go into a background state, etc. A proper Lifecycle extension implementation requires that the developer places the API calls in the required iOS lifecycle functions. See the full guide on [implementing Lifecycle](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/lifecycle).
+Notice that the Lifecycle APIs rely on the developer to place them in the proper iOS app lifecycle functions (as seen in `SceneDelegate.swift`); that is, iOS has built-in functions that are called by the operating system that give the app notices that it is about to enter an active state, or go into a background state, etc. A proper Lifecycle extension implementation requires that the developer places the API calls in the required iOS lifecycle functions. See the full guide on [implementing Lifecycle](https://developer.adobe.com/client-sdks/documentation/mobile-core/lifecycle/).
 
-### 4. Run app   
+### 4. Run app
 In Xcode: 
 1. Set the app target (**1**) to **EdgeTutorialApp** (if not already).
-2. Choose which destination device (**2**) to run it on (either simulator or physical device, in this case it is set to the iPhone 13 Pro simulator). 
+2. Choose which destination device (**2**) to run it on (either iPhone simulator or physical device). 
 3. Select the play button (**3**).
 
 <img src="../Assets/edge-send-event-tutorial/client-side/xcode-install-app.png" alt="Creating a new session in Assurance step 1" width="1100"/>
@@ -494,7 +498,7 @@ You should see the application running on the device you selected, with logs bei
 > If the debug console area is not shown by default, activate it by selecting:  
 > View -> Debug Area -> Show Debug Area
 
-### 5. `sendEvent` implementation examples   
+### 5. `sendEvent` implementation examples
 With Edge extension successfully installed and registered, you can make `sendEvent` calls, which will be processed by the Edge extension and sent to the Edge network.
 
 Check `ContentView.swift` for implementation examples of product add and view events. You can see the data payloads that are to be sent with the calls. Notice that they conform to the Commerce XDM schema structure set up in the first section.
@@ -506,7 +510,7 @@ The second button shows an example of using a data dictionary to construct the e
 ## Validation with Assurance
 With the server side configuration and app setup complete, Assurance makes it possible to take a look at the event flow in real time and inspect the details of individual events; using Assurance, the Experience Events sent out by the Edge extension can be validated to have the required format.
 
-### 1. Set up the Assurance session  
+### 1. Set up the Assurance session
 1. In the browser, navigate to [Assurance](https://experience.adobe.com/assurance) and login using your Adobe ID credentials.
 2. Select **Create Session** in the top right.
 
@@ -548,7 +552,7 @@ On the Assurance session side:
 > 3. Select the `Info` tab.
 > 4. Set the desired deep linking URL.
 > ![Xcode deeplink app URL config](../Assets/edge-send-event-tutorial/assurance-validation/xcode-deeplink-app-url-config.jpg)  
-> Please note that there is still code on the application side that is required for the app to respond to deep links; see the [guide on adding Assurance to your app](https://aep-sdks.gitbook.io/docs/foundation-extensions/adobe-experience-platform-assurance#add-the-aep-assurance-extension-to-your-app). For general implementation recommendations and best practices, see Apple's guide on [Defining a custom URL scheme for your app](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)
+> Please note that there is still code on the application side that is required for the app to respond to deep links; see the [guide on adding Assurance to your app](https://developer.adobe.com/client-sdks/documentation/platform-assurance-sdk/#add-the-aep-assurance-extension-to-your-app). For general implementation recommendations and best practices, see Apple's guide on [Defining a custom URL scheme for your app](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)
 
 </p></details>
 
@@ -557,11 +561,11 @@ When presented with this window, your new Assurance session is ready to go, and 
 <img src="../Assets/edge-send-event-tutorial/assurance-validation/assurance-create-session-qr.png" alt="Creating a new session in Assurance step 3 - QR code" width="400"/>
 <img src="../Assets/edge-send-event-tutorial/assurance-validation/assurance-create-session-link.png" alt="Creating a new session in Assurance step 3 - Session link" width="400"/>
 
-### 2. Connect to the app   
+### 2. Connect to the app
 To connect to Assurance, use the session link:
 1. Copy the session link; you can select the icon of a double overlapping box to the right of the link to copy it.
     - If using a physical device, it may be helpful to have a way to send this link to the device (ex: Airdrop, email, text, etc.). Alternatively, you can use the camera on your physical device to scan the QR code.
-2. Open Safari (or other web browser).
+2. Open Safari (or other web browser) on the iOS Simulator (or actual device, depending on which target device was selected to run the tutorial app).
 3. Paste the Assurance session link copied from step 1 into the URL/search text field and enter, or use **Paste and Go**.
     - If using the simulator, it is possible to enable the paste menu by clicking in the text field twice, with a slight pause between clicks.
 4. A new dialog box should open requesting to open the tutorial app, select **OK**.
@@ -600,14 +604,14 @@ In the web-based Assurance session, there is also an indicator in the top right 
 Notice how in the Assurance session Events view (**2**), there are already events populating as a consequence of the connection of the mobile app to the Assurance session (**3**); the Assurance extension itself emits events about the session connection and subsequently captures these events to display in the web-based session viewer. You can expect Assurance to capture all events processed by the AEP SDK from all other extensions as well.  
 
 ### 3. Inspect events with Assurance
-#### Send product related Experience events <!-- omit in toc -->
+#### Send product related Experience events<!-- omit in toc -->
 In order to see Edge events, in the connected app instance:
 1. Select either **Product add event** or **Product view event** to send an Experience Event to the Edge Network! 
    - Behind the scenes the buttons use the `sendEvent` API from the Edge extension. This event will be captured by the Assurance extension and shown in the web session viewer.
 
 <img src="../Assets/edge-send-event-tutorial/assurance-validation/ios-trigger-event.png" alt="Simulator tracking buttons" width="400"/>
 
-#### Inspect events using Events view <!-- omit in toc -->
+#### Inspect events using Events view<!-- omit in toc -->
 1. Select the `AEP Request Event` event (**1**) in the events table to see the event details in the right side window.
 2. Select the **RAW EVENT** dropdown (**2**) in the event details window to see the event data payload. 
 3. Verify that the `ACPExtensionEventData` matches what was sent by the Edge `sendEvent` API.
@@ -621,7 +625,7 @@ Our previous efforts to configure the Adobe Experience Platform settings to rout
 
 <img src="../Assets/edge-send-event-tutorial/assurance-validation/assurance-analytics-mapping-validation.png" alt="Simulator tracking buttons" width="1100"/>
 
-#### Inspect events using Event Transactions view <!-- omit in toc -->
+#### Inspect events using Event Transactions view<!-- omit in toc -->
 Assurance also provides another view that shows a visual flow of events, which may be helpful in understanding the relationship between events.
 1. Select **Event Transactions** (**1**) under the section label **Adobe Experience Platform Edge** in the left-side navigation panel.
 
