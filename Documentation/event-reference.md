@@ -221,7 +221,7 @@ This event has no standard keys.
 
 ### Edge state store
 
-This event tells the Edge Network extension to persist the event payload in the data store. This event is constructed using the response fragment from the Edge Network service for a sent XDM Experience Event; Edge Network extension does not modify any values received and constructs a response event with the event source and data payload as-is.
+This event tells the Edge Network extension to persist the event payload to the data store. This event is constructed using the response fragment from the Edge Network service for a sent XDM Experience Event; Edge Network extension does not modify any values received and constructs a response event with the event source and data payload as-is.
 
 #### Event Details<!-- omit in toc -->
 
