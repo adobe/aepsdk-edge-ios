@@ -34,12 +34,12 @@ If the required `xdm` key is not present in the event data payload, the event is
 Event dispatched by:
 * [`Edge.sendEvent(experienceEvent:_:)`](api-reference.md#sendevent)
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
-| xdm | `[String: Any]` | Yes | XDM formatted data; use an `XDMSchema` implementation for better XDM data ingestion and data format control. |
-| data | `[String: Any]` | No | Optional free-form data associated with this event. |
+| xdm | <code>[String:&nbsp;Any]</code> | Yes | XDM formatted data; use an `XDMSchema` implementation for better XDM data ingestion and data format control. |
+| data | <code>[String:&nbsp;Any]</code> | No | Optional free-form data associated with this event. |
 | datasetId | `String` | No | Optional custom dataset ID. If not set, the event uses the default Experience dataset ID set in the datastream configuration. |
 
 > **Note**  
@@ -60,7 +60,7 @@ This event is a request to get the current location hint being used by the Edge 
 Event dispatched by:
 * [`Edge.getLocationHint(completion:)`](api-reference.md#getlocationhint)
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
@@ -81,11 +81,11 @@ This event is a request to process and deliver a Consent update event to Edge Ne
 Event dispatched by:
 * [`Consent.update(with:)`](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/api-reference/#updateconsents)
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
-| consents | `[String: Any]` | Yes | XDM formatted consent preferences. See the [`Consent.update(consents)`](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/api-reference/#updateconsents) API reference for how to properly format this property. |
+| consents | <code>[String:&nbsp;Any]</code> | Yes | XDM formatted consent preferences. See the [`Consent.update(consents)`](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/api-reference/#updateconsents) API reference for how to properly format this property. |
 
 -----
 
@@ -105,7 +105,7 @@ This event is a request to set the Edge Network location hint used by the Edge N
 Event dispatched by:
 * [`Edge.setLocationHint(_:)`](api-reference.md#setlocationhint)
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
@@ -132,11 +132,11 @@ This event contains the latest consent preferences synced with the SDK. The Edge
 Event dispatched by:
 * [`Consent.update(with:)`](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/api-reference/#updateconsents) 
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
-| consents | `[String: Any]` | No | XDM formatted consent preferences containing current collect consent settings. If not specified, defaults to `p` (pending) until the value is updated. |
+| consents | <code>[String:&nbsp;Any]</code> | No | XDM formatted consent preferences containing current collect consent settings. If not specified, defaults to `p` (pending) until the value is updated. |
 
 ----- 
 
@@ -155,7 +155,7 @@ When this event is received, the Edge extension queues it up and removes the cac
 Event dispatched by:
 * [`MobileCore.resetIdentities()`](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference/#resetidentities)
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 This event has no data payload.
 
@@ -175,7 +175,7 @@ This event is a response to the [Edge request identity event](#edge-request-iden
 | ---------- | ------------ |
 | com.adobe.eventType.edge | com.adobe.eventSource.responseIdentity |
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
@@ -193,7 +193,7 @@ This event is an error response to an originating event. If there are multiple e
 | ---------- | ------------ |
 | com.adobe.eventType.edge | com.adobe.eventSource.errorResponseContent |
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
@@ -213,7 +213,7 @@ This event is a response to an event.
 | ---------- | ------------ |
 | com.adobe.eventType.edge | com.adobe.eventSource.responseContent |
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 This event has no standard keys.
 
@@ -229,7 +229,7 @@ This event tells the Edge Network extension to persist the event payload to the 
 | ---------- | ------------ |
 | com.adobe.eventType.edge | state:store |
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 This event does not have standard keys.
 
@@ -245,7 +245,7 @@ This event tells the Edge Network extension to persist the location hint to the 
 | ---------- | ------------ |
 | com.adobe.eventType.edge | locationHint:result |
 
-#### Data payload definition<!-- omit in toc -->
+#### Event data payload definition<!-- omit in toc -->
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
