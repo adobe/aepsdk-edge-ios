@@ -204,7 +204,7 @@ This event is an error response to an originating event. If there are multiple e
 
 ### Edge response content
 
-This event is a response to an event.
+This event is a response to an [Edge request content](#edge-request-content) event.
 
 #### Event details<!-- omit in toc -->
 
