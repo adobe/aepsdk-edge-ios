@@ -10,8 +10,8 @@
   - [Edge identity reset complete](#edge-identity-reset-complete)
 - [Events dispatched by Edge](#events-dispatched-by-edge)
   - [Edge identity response](#edge-identity-response)
-  - [Edge error response](#edge-error-response)
-  - [Edge event response](#edge-event-response)
+  - [Edge error response content](#edge-error-response-content)
+  - [Edge response content](#edge-response-content)
   - [Edge state store](#edge-state-store)
   - [Edge location hint result](#edge-location-hint-result)
 
@@ -183,7 +183,7 @@ This event is a response to the [Edge request identity event](#edge-request-iden
 
 ----- 
 
-### Edge error response
+### Edge error response content
 
 This event is an error response to an originating event. If there are multiple error responses for a given triggering event, separate error event instances will be dispatched for each error.
 
@@ -202,7 +202,7 @@ This event is an error response to an originating event. If there are multiple e
 
 ----- 
 
-### Edge event response
+### Edge response content
 
 This event is a response to an event.
 
