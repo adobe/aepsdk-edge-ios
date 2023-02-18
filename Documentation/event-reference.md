@@ -25,14 +25,14 @@ This event is a request to process and deliver an Experience event to Edge Netwo
 
 If the required `xdm` key is not present in the event data payload, the event is not sent to Edge Network. To learn more about Experience Data Model (XDM), please read the [XDM system overview](https://experienceleague.adobe.com/docs/experience-platform/xdm/home.html)​.
 
+#### Event dispatched by<!-- omit in toc -->
+* [`Edge.sendEvent(experienceEvent:_:)`](api-reference.md#sendevent)
+
 #### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
 | com.adobe.eventType.edge | com.adobe.eventSource.requestContent |
-
-Event dispatched by:
-* [`Edge.sendEvent(experienceEvent:_:)`](api-reference.md#sendevent)
 
 #### Event data payload definition<!-- omit in toc -->
 
@@ -51,14 +51,14 @@ Event dispatched by:
 
 This event is a request to get the current location hint being used by the Edge Network extension in requests to the Edge Network. The Edge Network location hint may be used when building the URL for Edge Network requests to hint at the server cluster to use.
 
+#### Event dispatched by<!-- omit in toc -->
+* [`Edge.getLocationHint(completion:)`](api-reference.md#getlocationhint)
+
 #### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
 | com.adobe.eventType.edge | com.adobe.eventSource.requestIdentity |
-
-Event dispatched by:
-* [`Edge.getLocationHint(completion:)`](api-reference.md#getlocationhint)
 
 #### Event data payload definition<!-- omit in toc -->
 
@@ -72,14 +72,14 @@ Event dispatched by:
 
 This event is a request to process and deliver a Consent update event to Edge Network.
 
+#### Event dispatched by<!-- omit in toc -->
+* [`Consent.update(with:)`](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/api-reference/#updateconsents)
+
 #### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
 | com.adobe.eventType.edge | com.adobe.eventSource.updateConsent |
-
-Event dispatched by:
-* [`Consent.update(with:)`](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/api-reference/#updateconsents)
 
 #### Event data payload definition<!-- omit in toc -->
 
@@ -96,14 +96,14 @@ This event is a request to set the Edge Network location hint used by the Edge N
 > **Warning**  
 > Use caution when setting the location hint. Only use valid [location hints defined within the `EdgeNetwork` scope](https://experienceleague.adobe.com/docs/experience-platform/edge-network-server-api/location-hints.html). An invalid location hint value will cause all Edge Network requests to fail with a `404` response code.
 
+#### Event dispatched by<!-- omit in toc -->
+* [`Edge.setLocationHint(_:)`](api-reference.md#setlocationhint)
+
 #### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
 | com.adobe.eventType.edge | com.adobe.eventSource.updateIdentity |
-
-Event dispatched by:
-* [`Edge.setLocationHint(_:)`](api-reference.md#setlocationhint)
 
 #### Event data payload definition<!-- omit in toc -->
 
@@ -123,14 +123,14 @@ This event contains the latest consent preferences synced with the SDK. The Edge
 | `n` | No | Hits are dropped and not sent |
 | `p` | Pending | Hits are queued until `y`/`n` is set; when set, queued events follow the value's behavior |
 
+#### Event dispatched by<!-- omit in toc -->
+* [`Consent.update(with:)`](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/api-reference/#updateconsents)
+
 #### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
 | com.adobe.eventType.edgeConsent | com.adobe.eventSource.responseContent |
-
-Event dispatched by:
-* [`Consent.update(with:)`](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/api-reference/#updateconsents) 
 
 #### Event data payload definition<!-- omit in toc -->
 
@@ -146,14 +146,14 @@ This event signals that [Identity for Edge Network](https://github.com/adobe/aep
 
 When this event is received, the Edge extension queues it up and removes the cached internal `state:store` settings. If other events are queued before this event, those events will be processed first in the order they were received.
 
+#### Event dispatched by<!-- omit in toc -->
+* [`MobileCore.resetIdentities()`](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference/#resetidentities)
+
 #### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
 | com.adobe.eventType.edgeIdentity | com.adobe.eventSource.resetComplete |
-
-Event dispatched by:
-* [`MobileCore.resetIdentities()`](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference/#resetidentities)
 
 #### Event data payload definition<!-- omit in toc -->
 
@@ -205,7 +205,6 @@ This event is an error response to an originating event. If there are multiple e
 ### Edge response content
 
 This event is a response to an event.
-
 
 #### Event details<!-- omit in toc -->
 
