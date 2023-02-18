@@ -25,7 +25,7 @@ This event is a request to process and deliver an Experience event to Edge Netwo
 
 If the required `xdm` key is not present in the event data payload, the event is not sent to Edge Network. To learn more about Experience Data Model (XDM), please read the [XDM system overview](https://experienceleague.adobe.com/docs/experience-platform/xdm/home.html)​.
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
@@ -51,7 +51,7 @@ Event dispatched by:
 
 This event is a request to get the current location hint being used by the Edge Network extension in requests to the Edge Network. The Edge Network location hint may be used when building the URL for Edge Network requests to hint at the server cluster to use.
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
@@ -72,7 +72,7 @@ Event dispatched by:
 
 This event is a request to process and deliver a Consent update event to Edge Network.
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
@@ -96,7 +96,7 @@ This event is a request to set the Edge Network location hint used by the Edge N
 > **Warning**  
 > Use caution when setting the location hint. Only use valid [location hints defined within the `EdgeNetwork` scope](https://experienceleague.adobe.com/docs/experience-platform/edge-network-server-api/location-hints.html). An invalid location hint value will cause all Edge Network requests to fail with a `404` response code.
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
@@ -123,7 +123,7 @@ This event contains the latest consent preferences synced with the SDK. The Edge
 | `n` | No | Hits are dropped and not sent |
 | `p` | Pending | Hits are queued until `y`/`n` is set; when set, queued events follow the value's behavior |
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
@@ -146,7 +146,7 @@ This event signals that [Identity for Edge Network](https://github.com/adobe/aep
 
 When this event is received, the Edge extension queues it up and removes the cached internal `state:store` settings. If other events are queued before this event, those events will be processed first in the order they were received.
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
@@ -169,7 +169,7 @@ The following events are dispatched by the Edge extension client-side.
 
 This event is a response to the [Edge request identity event](#edge-request-identity) with data payload containing `locationHint = true` and provides the location hint being used by the Edge Network extension in requests to the Edge Network. The Edge Network location hint may be used when building the URL for Edge Network requests to hint at the server cluster to use.
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
@@ -187,7 +187,7 @@ This event is a response to the [Edge request identity event](#edge-request-iden
 
 This event is an error response to an originating event. If there are multiple error responses for a given triggering event, separate error event instances will be dispatched for each error.
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
@@ -207,7 +207,7 @@ This event is an error response to an originating event. If there are multiple e
 This event is a response to an event.
 
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
@@ -223,7 +223,7 @@ This event has no standard keys.
 
 This event tells the Edge Network extension to persist the event payload to the data store. This event is constructed using the response fragment from the Edge Network service for a sent XDM Experience Event; Edge Network extension does not modify any values received and constructs a response event with the event source and data payload as-is.
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
@@ -239,7 +239,7 @@ This event does not have standard keys.
 
 This event tells the Edge Network extension to persist the location hint to the data store. This event is constructed using the response fragment from the Edge Network service for a sent XDM Experience Event; Edge Network extension does not modify any values received and constructs a response event with the event source and data payload as-is.
 
-#### Event Details<!-- omit in toc -->
+#### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
