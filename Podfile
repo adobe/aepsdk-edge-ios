@@ -19,15 +19,31 @@ end
 
 target 'FunctionalTests' do
   pod 'AEPCore'
-  pod 'AEPEdgeIdentity'
-  pod 'AEPEdgeConsent'
+  pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'feature/tvos'
+  pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'feature/tvos'
 end
 
-target 'TestAppSwiftUI' do
+target 'TestAppiOS' do
   pod 'AEPCore'
   pod 'AEPServices'
-  pod 'AEPEdgeIdentity'
-  pod 'AEPEdgeConsent'
+  pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'feature/tvos'
+  pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'feature/tvos'
   pod 'AEPAssurance'
 end
 
+target 'TestApptvOS' do
+  pod 'AEPCore'
+  pod 'AEPServices'
+  pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'feature/tvos'
+  pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'feature/tvos'
+end
+
+post_install do |pi|
+  pi.pods_project.targets.each do |t|
+    t.build_configurations.each do |bc|
+        bc.build_settings['TVOS_DEPLOYMENT_TARGET'] = '10.0'
+        bc.build_settings['SUPPORTED_PLATFORMS'] = 'iphoneos iphonesimulator appletvos appletvsimulator'
+        bc.build_settings['TARGETED_DEVICE_FAMILY'] = "1,2,3"
+    end
+  end
+end

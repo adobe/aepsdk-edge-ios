@@ -35,11 +35,17 @@ enum ImplementationDetails {
             wrapperName = "/\(wrapperName)"
         }
 
-        return [
-            EdgeConstants.JsonKeys.ImplementationDetails.VERSION: "\(coreVersion)+\(EdgeConstants.EXTENSION_VERSION)",
-            EdgeConstants.JsonKeys.ImplementationDetails.NAME: "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE)\(wrapperName)",
-            EdgeConstants.JsonKeys.ImplementationDetails.ENVIRONMENT: EdgeConstants.JsonValues.ImplementationDetails.ENVIRONMENT_APP
-        ]
+        var implementationDetails = [String: String]()
+        implementationDetails[EdgeConstants.JsonKeys.ImplementationDetails.VERSION] = "\(coreVersion)+\(EdgeConstants.EXTENSION_VERSION)"
+        implementationDetails[EdgeConstants.JsonKeys.ImplementationDetails.ENVIRONMENT] = EdgeConstants.JsonValues.ImplementationDetails.ENVIRONMENT_APP
+
+        #if os(iOS)
+        implementationDetails[EdgeConstants.JsonKeys.ImplementationDetails.NAME] = "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE_IOS)\(wrapperName)"
+        #elseif os(tvOS)
+        implementationDetails[EdgeConstants.JsonKeys.ImplementationDetails.NAME] = "\(EdgeConstants.JsonValues.ImplementationDetails.BASE_NAMESPACE_TVOS)\(wrapperName)"
+        #endif
+
+        return implementationDetails
     }
 
     /// Get the wrapper named used for the Implementation Details namespace from the Event Hub shared state.
