@@ -21,7 +21,7 @@ The following events are handled by the Edge extension client-side.
 
 ### Edge request content
 
-This event is a request to process and deliver an Experience event to Edge Network. This event is captured by the Edge Network extension's event listener in the Event Hub for processing and sent to the Edge Network.
+This event is a request to process and deliver an Experience event to Edge Network. This event is captured by the Edge Network extension's event listener in the Event Hub for processing and sent to Edge Network.
 
 If the required `xdm` key is not present in the event data payload, the event is not sent to Edge Network. To learn more about Experience Data Model (XDM), please read the [XDM system overview](https://experienceleague.adobe.com/docs/experience-platform/xdm/home.html)​.
 
@@ -214,7 +214,7 @@ This event is a response to an [Edge request content](#edge-request-content) eve
 
 #### Event data payload definition<!-- omit in toc -->
 
-This event has no standard keys.
+This event does not have standard keys.
 
 -----
 
