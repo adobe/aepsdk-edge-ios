@@ -107,12 +107,12 @@ Sends an Experience event to Edge Network.
 static func sendEvent(experienceEvent: ExperienceEvent, _ completion: (([EdgeEventHandle]) -> Void)? = nil)
 ```
 
-* `experienceEvent` is the XDM [Experience Event](#experienceevent) sent to Edge Network
+* `experienceEvent` is the XDM [Experience Event](#experienceevent) sent to Edge Network.
 * `completion` is an optional callback invoked when the request is complete and returns the associated [EdgeEventHandle](#edgeeventhandle)(s) received from  Edge Network. It may be invoked on a different thread.
 
 ##### Example
 ```swift
-// Create Experience event from dictionary:
+// Create Experience event from dictionary
 var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
                               "sample": "data"]
 let experienceEvent = ExperienceEvent(xdm: xdmData)
@@ -233,7 +233,7 @@ public class EdgeEventHandle: NSObject, Codable {
 
 ### ExperienceEvent
 
-Experience Event is the event to be sent to Edge Network. The XDM data is required for any Experience Event being sent using the Edge extension.
+Experience Event is the event to be sent to Edge Network. The XDM data is required for any Experience Event being sent using the Edge Network extension.
 
 
 ```swift
