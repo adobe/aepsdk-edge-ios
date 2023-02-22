@@ -3,24 +3,32 @@
 
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov@3.2.4
+  macos: circleci/macos@2
+  
 # Workflows orchestrate a set of jobs to be run;
 workflows:
   version: 2
-  build-test-deploy:
+  build-test:
     jobs:
-      - build-and-test
+      - validate-code
+      - test-ios:
+          requires:
+            - validate-code
+      - test-tvos:
+          requires:
+            - validate-code
+      - build_xcframework_and_app:
+          requires:
+            - validate-code
 
-jobs:
-
-  build-and-test:
-    macos:
-      xcode: 13.4.0 # Specify the Xcode version to use
-
+commands: 
+  install_dependencies:
     steps:
-      - checkout
-
       # restore pods related caches
       - restore_cache:
+          name: Restoring Gemfile Cache
           keys:
             - 1-gems-{{ checksum "Gemfile.lock" }}
 
@@ -31,16 +39,18 @@ jobs:
 
       # save cocoapods version gem data
       - save_cache:
+          name: Saving Gemfile Cache
           key: 1-gems-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
 
       # restore pods related caches
       - restore_cache:
+          name: Restoring CocoaPods Cache
           keys:
-            - cocoapods-cache-v5-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
-            - cocoapods-cache-v5-{{ arch }}-{{ .Branch }}
-            - cocoapods-cache-v5
+            - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
+            - cocoapods-cache-v1-{{ arch }}-{{ .Branch }}
+            - cocoapods-cache-v1
 
       # install CocoaPods - using default CocoaPods version, not the bundle
       - run:
@@ -50,57 +60,100 @@ jobs:
       # save pods related files
       - save_cache:
           name: Saving CocoaPods Cache
-          key: cocoapods-cache-v5-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
+          key: cocoapods-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
           paths:
             - ./Pods
+            - ./SampleApps/TestApp/Pods
             - ~/.cocoapods
+
+  prestart_ios_simulator:
+    steps:
+      - macos/preboot-simulator:
+          platform: "iOS"
+          device: "iPhone 8"
+
+  prestart_tvos_simulator:
+    steps:
+      - macos/preboot-simulator:
+          platform: "tvOS"
+          device: "Apple TV"
+
+jobs:
+  validate-code:
+    macos:
+      xcode: 13.4.0 # Specify the Xcode version to use
+
+    steps:
+      - checkout
+
+      - install_dependencies
 
       - run:
           name: Lint Source Code
           command: make lint
 
-      # pre-start the simulator to prevent timeouts
-      - run:
-          name: Pre-start iOS Simulator
-          command: xcrun instruments -w "iPhone 8 (13.5) [" || true
+  test-ios:
+    macos:
+      xcode: 13.4.0 # Specify the Xcode version to use
+
+    steps:
+      - checkout
+
+      - install_dependencies
+
+      - prestart_ios_simulator
 
       - run:
           name: Run iOS Tests
           command: make test-ios
 
-      # code coverage
-      - run:
-          name: Download Codecov Uploader
-          command: |
-            curl -s https://codecov.io/bash > codecov;
-            VERSION=$(grep 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-            for i in 1 256 512
-            do
-              shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM") ||
-              shasum -a $i -c <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM" | grep -w "codecov")
-            done
+      # Code coverage upload using Codecov
+      # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
+      - codecov/upload:
+          flags: ios-tests
+          upload_name: Coverage Report for iOS Tests
+          xtra_args: -c -v --xc --xp iosresults.xcresult
+  
+  test-tvos:
+    macos:
+      xcode: 13.4.0 # Specify the Xcode version to use
 
-      - run:
-          name: Upload Code Coverage Report for iOS
-          command: bash ./codecov -v -X s3 -c -D "./build/out" -J "AEPEdge"
+    steps:
+      - checkout
 
-      - run:
-          name: Pre-start tvOS Simulator
-          command: xcrun instruments -w "Apple TV (15.0) [" || true
+      - install_dependencies
 
+      - prestart_tvos_simulator
+      
       - run:
           name: Run tvOS Tests
           command: make test-tvos
 
-      - run:
-          name: Upload Code Coverage Reports for tvOS
-          command: bash ./codecov -v -X s3 -c -D "./build/out" -J "AEPEdge tvOS"
+      # Code coverage upload using Codecov
+      # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
+      - codecov/upload:
+          flags: tvos-tests
+          upload_name: Coverage Report for tvOS Tests
+          xtra_args: -c -v --xc --xp tvosresults.xcresult
 
+  build_xcframework_and_app:  
+    macos:
+      xcode: 13.4.0 # Specify the Xcode version to use
+    
+    steps:
+      - checkout
       # verify XCFramework archive builds
-      # ci-archive updates Pods so run this step last
       - run:
           name: Build XCFramework
           command: |
-            if [[ "${CIRCLE_BRANCH}" == "main" || "${CIRCLE_BRANCH}" == "staging" ]]; then
-              make ci-archive
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              make archive
             fi
+      # verify test app builds
+      - run:
+          name: Build Test App
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              make build-app
+            fi
+        

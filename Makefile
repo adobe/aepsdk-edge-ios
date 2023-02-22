@@ -1,9 +1,10 @@
 
 export EXTENSION_NAME = AEPEdge
-export APP_NAME = TestAppSwiftUI
 PROJECT_NAME = $(EXTENSION_NAME)
 TARGET_NAME_XCFRAMEWORK = $(EXTENSION_NAME).xcframework
 SCHEME_NAME_XCFRAMEWORK = AEPEdgeXCF
+TEST_APP_IOS_SCHEME = TestAppiOS
+TEST_APP_TVOS_SCHEME = TestApptvOS
 
 CURR_DIR := ${CURDIR}
 IOS_SIMULATOR_ARCHIVE_PATH = $(CURR_DIR)/build/ios_simulator.xcarchive/Products/Library/Frameworks/
@@ -45,6 +46,17 @@ open:
 clean:
 	(rm -rf build)
 
+build-app: setup
+	@echo "######################################################################"
+	@echo "### Building $(TEST_APP_IOS_SCHEME)"
+	@echo "######################################################################"
+	xcodebuild clean build -workspace $(PROJECT_NAME).xcworkspace -scheme $(TEST_APP_IOS_SCHEME) -destination 'generic/platform=iOS Simulator'
+	
+	@echo "######################################################################"
+	@echo "### Building $(TEST_APP_TVOS_SCHEME)"
+	@echo "######################################################################"
+	xcodebuild clean build -workspace $(PROJECT_NAME).xcworkspace -scheme $(TEST_APP_TVOS_SCHEME) -destination 'generic/platform=tvOS Simulator'
+
 archive: pod-update _archive
 
 ci-archive: ci-pod-update _archive
@@ -75,7 +87,7 @@ test-ios:
 	   final_scheme="$(EXTENSION_NAME)" ; \
 	   echo $$final_scheme ; \
 	fi; \
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=iOS Simulator,name=iPhone 8' -derivedDataPath build/out -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=iOS Simulator,name=iPhone 8' -derivedDataPath build/out -resultBundlePath iosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 test-tvos:
 	@echo "######################################################################"
@@ -92,7 +104,7 @@ test-tvos:
 		 final_scheme="$(EXTENSION_NAME)" ; \
 		 echo $$final_scheme ; \
 	fi; \
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 install-githook:
 	git config core.hooksPath .githooks
