@@ -1,8 +1,8 @@
-# Adobe Experience Platform Edge Network Extension - iOS
+# Adobe Experience Platform Edge Network Extension iOS API Reference
 
 ## Prerequisites
 
-Refer to the [Getting Started Guide](getting-started.md)
+Refer to the [Getting started guide](getting-started.md).
 
 ## API reference
 
@@ -51,7 +51,7 @@ NSString *extensionVersion = [AEPMobileEdge extensionVersion];
 
 ### getLocationHint
 
-Gets the Edge Network location hint used in requests to the Adobe Experience Platform Edge Network. The Edge Network location hint may be used when building the URL for Adobe Experience Platform Edge Network requests to hint at the server cluster to use.
+Gets the Edge Network location hint used in requests to Edge Network. The Edge Network location hint may be used when building the URL for Edge Network requests to hint at the server cluster to use.
 
 #### Swift
 
@@ -59,15 +59,15 @@ Gets the Edge Network location hint used in requests to the Adobe Experience Pla
 ```swift
 static func getLocationHint(completion: @escaping (String?, Error?) -> Void)
 ```
-* _completion_ is invoked with the location hint, or an `AEPError` if the request times out or an unexpected error occurs. The location hint value may be nil if the location hint expired or was not set. The default timeout is 1000ms. The completion handler may be invoked on a different thread.
+* `completion` is invoked with the location hint, or an `AEPError` if the request times out or an unexpected error occurs. The location hint value may be nil if the location hint expired or was not set. The default timeout is 1000ms. The completion handler may be invoked on a different thread.
 
 ##### Example
 ```swift
 Edge.getLocationHint { (hint, error) in
   if let error = error {
-    // handle error here
+    // Handle the error here
   } else {
-    // handle location hint here
+    // Handle the hint here
   }
 }
 ```
@@ -82,62 +82,23 @@ Edge.getLocationHint { (hint, error) in
 ##### Example
 ```objectivec
 [AEPMobileEdge getLocationHint:^(NSString *hint, NSError *error) {   
-    // handle the error and the hint here
+    // Handle the error and the hint here
 }];
-```
-
-------
-
-### registerExtension
-
-Registers the Edge Network extension with the Mobile Core extension.
-
-The extension registration occurs by passing the Edge Network extension to the [MobileCore.registerExtensions API](https://github.com/adobe/aepsdk-core-ios/blob/main/Documentation/Usage/MobileCore.md#registering-multiple-extensions-and-starting-the-sdk).
-
-#### Swift
-
-##### Syntax
-```swift
-static func registerExtensions(_ extensions: [NSObject.Type],
-                               _ completion: (() -> Void)? = nil)
-```
-
-##### Example
-```swift
-import AEPEdge
-
-...
-MobileCore.registerExtensions([Edge.self])
-```
-#### Objective-C
-
-##### Syntax
-```objectivec
-+ (void) registerExtensions: (NSArray<Class*>* _Nonnull) extensions
-                 completion: (void (^ _Nullable)(void)) completion;
-```
-
-##### Example
-```objectivec
-@import AEPEdge;
-
-...
-[AEPMobileCore registerExtensions:@[AEPMobileEdge.class] completion:nil];
 ```
 
 ------
 
 ### resetIdentities
 
-Resets current state of the AEP Edge extension and clears previously cached content related to current identity, if any.
+Resets current state of the Edge Network extension and clears previously cached content related to current identity, if any.
 
-See [MobileCore.resetIdentities](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/mobile-core-api-reference#resetidentities) for more details.
+See [MobileCore.resetIdentities](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference/#resetidentities) for more details.
 
 ------
 
 ### sendEvent
 
-Sends an Experience event to the Adobe Experience Platform Edge Network
+Sends an Experience event to Edge Network.
 
 #### Swift
 
@@ -146,25 +107,25 @@ Sends an Experience event to the Adobe Experience Platform Edge Network
 static func sendEvent(experienceEvent: ExperienceEvent, _ completion: (([EdgeEventHandle]) -> Void)? = nil)
 ```
 
-* _experienceEvent_ is the XDM [Experience Event](#experienceevent) sent to the Adobe Experience Platform Edge Network
-* _completion_ is an optional callback invoked when the request is complete and returns the associated [EdgeEventHandle](#edgeeventhandle)(s) received from the Adobe Experience Platform Edge Network. It may be invoked on a different thread.
+* `experienceEvent` is the XDM [Experience Event](#experienceevent) sent to Edge Network
+* `completion` is an optional callback invoked when the request is complete and returns the associated [EdgeEventHandle](#edgeeventhandle)(s) received from  Edge Network. It may be invoked on a different thread.
 
 ##### Example
 ```swift
-//create experience event from dictionary:
+// Create Experience event from dictionary:
 var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
                               "sample": "data"]
 let experienceEvent = ExperienceEvent(xdm: xdmData)
 ```
 ```swift
-// example 1 - send the experience event without handling the Edge Network response
+// Example 1 - send the Experience event without handling the Edge Network response
 Edge.sendEvent(experienceEvent: experienceEvent)
 ```
 ```swift
-// example 2 - send the experience event and handle the Edge Network response onComplete
+// Example 2 - send the Experience event and handle the Edge Network response onComplete
 Edge.sendEvent(experienceEvent: experienceEvent) { (handles: [EdgeEventHandle]) in
-            // handle the Edge Network response
-        }
+  // Handle the Edge Network response
+}
 ```
 
 #### Objective-C
@@ -176,28 +137,28 @@ Edge.sendEvent(experienceEvent: experienceEvent) { (handles: [EdgeEventHandle]) 
 
 ##### Example
 ```objectivec
-//create experience event from dictionary:
+// Create Experience event from dictionary:
 NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
 NSDictionary *data = @{ @"sample" : @"data"};
 ```
 ```objectivec
-// example 1 - send the experience event without handling the Edge Network response
+// Example 1 - send the Experience event without handling the Edge Network response
 [AEPMobileEdge sendExperienceEvent:event completion:nil];
 ```
 ```objectivec
-// example 2 - send the experience event and handle the Edge Network response onComplete
+// Example 2 - send the Experience event and handle the Edge Network response onComplete
 [AEPMobileEdge sendExperienceEvent:event completion:^(NSArray<AEPEdgeEventHandle *> * _Nonnull handles) {
-  // handle the Edge Network response
+  // Handle the Edge Network response
 }];
 ```
 ------
 
 ### setLocationHint
 
-Sets the Edge Network location hint used in requests to the Adobe Experience Platform Edge Network. Passing nil or an empty string clears the existing location hint. Edge Network responses may overwrite the location hint to a new value when necessary to manage network traffic.
+Sets the Edge Network location hint used in requests to Edge Network. Passing `nil` or an empty string (`""`) clears the existing location hint. Edge Network responses may overwrite the location hint to a new value when necessary to manage network traffic.
 
-> **Warning**
-> Use caution when setting the location hint. Only use location hints for the **EdgeNetwork** scope. An incorrect location hint value will cause all Edge Network requests to fail with 404 response code.
+> **Warning**  
+> Use caution when setting the location hint. Only use valid [location hints for the `EdgeNetwork` scope](https://experienceleague.adobe.com/docs/experience-platform/edge-network-server-api/location-hints.html). An invalid location hint value will cause all Edge Network requests to fail with a `404` response code.
 
 #### Swift
 
@@ -206,7 +167,7 @@ Sets the Edge Network location hint used in requests to the Adobe Experience Pla
 @objc(setLocationHint:)
 public static func setLocationHint(_ hint: String?)
 ```
-- _hint_ the Edge Network location hint to use when connecting to the Adobe Experience Platform Edge Network.
+- `hint` the Edge Network location hint to use when connecting to Edge Network.
 
 ##### Example
 ```swift
@@ -231,7 +192,7 @@ Edge.setLocationHint(hint)
 
 ### XDM Schema
 
-The AEP Edge extension provides the XDMSchema protocol that can be used to define the classes associated with your XDM schema in Adobe Experience Platform.
+The Edge Network extension provides the `XDMSchema` protocol that can be used to define the classes associated with your XDM schema in Experience Platform.
 
 ```swift
 /// An interface representing a Platform XDM Event Data schema.
@@ -255,7 +216,7 @@ public protocol XDMSchema: Encodable {
 
 ### EdgeEventHandle
 
-The `EdgeEventHandle` is a response fragment from Adobe Experience Platform Edge Network for a sent XDM Experience Event. One event can receive none, one or multiple `EdgeEventHandle`(s) as response.
+The `EdgeEventHandle` is a response fragment from Edge Network for a sent XDM Experience Event. One event can receive none, one, or multiple `EdgeEventHandle`(s) as response.
 Use this class when calling the [sendEvent](#sendevent) API with `EdgeCallback`.
 
 
@@ -272,7 +233,7 @@ public class EdgeEventHandle: NSObject, Codable {
 
 ### ExperienceEvent
 
-Experience Event is the event to be sent to Adobe Experience Platform Edge Network. The XDM data is required for any Experience Event being sent using the Edge extension.
+Experience Event is the event to be sent to Edge Network. The XDM data is required for any Experience Event being sent using the Edge extension.
 
 
 ```swift
@@ -306,17 +267,17 @@ public class ExperienceEvent: NSObject {
 #### Swift
 
 ##### Examples
+Example 1: Set both the XDM and freeform data of an `ExperienceEvent`.
 ```swift
-//Example 1
-// set freeform data to the Experience event
+// Set freeform data of the Experience Event
 var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
                               "sample": "data"]
 
 let experienceEvent = ExperienceEvent(xdm: xdmData, data: ["free": "form", "data": "example"])
 ```
+Example 2: Create an `ExperienceEvent` event instance using a class that implements the `XDMSchema` protocol.
 ```swift
-//Example 2
-// Create Experience Event from XDM Schema implementations
+// Create an Experience Event from XDM Schema class implementations
 import AEPEdge
 
 public struct XDMSchemaExample : XDMSchema {
@@ -351,9 +312,9 @@ xdmData.eventType = "SampleXDMEvent"
 xdm.otherField = "OtherFieldValue"
 let event = ExperienceEvent(xdm: xdmData)
 ```
+Example 3: Set a custom destination Dataset ID when creating an `ExperienceEvent` instance.
 ```swift
-//Example 3
-// Set the destination Dataset identifier to the current Experience event:
+// Set the destination Dataset identifier of the Experience Event
 var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
                               "sample": "data"]
 
@@ -363,17 +324,17 @@ let experienceEvent = ExperienceEvent(xdm: xdmData, datasetIdentifier: "datasetI
 #### Objective-C
 
 ##### Examples
+Example 1: Set both the XDM and freeform data of an `ExperienceEvent`.
 ```objectivec
-//Example 1
-// set freeform data to the Experience event
+// Set the freeform data of the Experience event
 NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
 NSDictionary *data = @{ @"sample" : @"data"};
     
 AEPExperienceEvent *event = [[AEPExperienceEvent alloc] initWithXdm:xdmData data:data datasetIdentifier:nil];
 ```
+Example 3: Set a custom destination Dataset ID when creating an `ExperienceEvent` instance.
 ```objectivec
-//Example 2
-// Set the destination Dataset identifier to the current Experience event:
+// Set the destination Dataset identifier of the Experience Event
 NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
    
 AEPExperienceEvent *event = [[AEPExperienceEvent alloc] initWithXdm:xdmData data:nil datasetIdentifier:@"datasetIdExample"];
