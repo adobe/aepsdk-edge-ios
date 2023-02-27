@@ -22,6 +22,7 @@ excluded: # paths to ignore during linting
 - TestApps/*/Pods
 - TestApps/*/libs
 - Pods
+- Documentation
 
 empty_count: 
     severity: warning
