@@ -15,7 +15,7 @@ import Foundation
 enum EdgeConstants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
-    static let EXTENSION_VERSION = "1.5.0"
+    static let EXTENSION_VERSION = "1.6.0"
     static let FRIENDLY_NAME = "AEPEdge"
     static let LOG_TAG = FRIENDLY_NAME
 
@@ -152,7 +152,8 @@ enum EdgeConstants {
 
         enum ImplementationDetails {
             static let ENVIRONMENT_APP = "app"
-            static let BASE_NAMESPACE = "https://ns.adobe.com/experience/mobilesdk/ios"
+            static let BASE_NAMESPACE_IOS = "https://ns.adobe.com/experience/mobilesdk/ios"
+            static let BASE_NAMESPACE_TVOS = "https://ns.adobe.com/experience/mobilesdk/tvos"
             static let WRAPPER_REACT_NATIVE = "reactnative"
             static let WRAPPER_CORDOVA = "cordova"
             static let WRAPPER_FLUTTER = "flutter"
