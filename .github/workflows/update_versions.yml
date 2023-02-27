@@ -2,14 +2,14 @@
 
 name: Update Versions
 
-# Controls when the action will run. Workflow runs when manually triggered using the UIk
+# Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
 on:
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
       version:
-        description: 'New version to use for the extension.  Example: 3.0.2'
+        description: 'New version to use for the extension.  Example: 1.5.2'
         required: true
         
       branch:
@@ -33,33 +33,15 @@ jobs:
       with:
         ref: ${{ github.event.inputs.branch }}
     
-    - if: ${{ github.event.inputs.core-dependency != '' }}
-      name: Update AEPEdge (with core dependency update)
+    - name: Update AEPEdge (with core dependency update)
       run: (sh ./Script/update-versions.sh -n Edge -v ${{ github.event.inputs.version }} -d "AEPCore ${{ github.event.inputs.core-dependency }}")
       
-    - if: ${{ github.event.inputs.core-dependency == '' }}
-      name: Update AEPEdge (no core dependency update)
-      run: (sh ./Script/update-versions.sh -n Edge -v ${{ github.event.inputs.version }})
-      
     - name: Create Pull Request
-      # You may pin to the exact commit or the version.
-      # uses: peter-evans/create-pull-request@2b011faafdcbc9ceb11414d64d0573f37c774b04
       uses: peter-evans/create-pull-request@v4.2.3
       with:
-        # GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT)
         token: ${{ github.token }}
-               
-        # The message to use when committing changes.
-        commit-message: Updating versions to ${{ github.event.inputs.version }}.
-        
-        # The pull request branch name.
+        commit-message: Updating version to ${{ github.event.inputs.version }}.
         branch: version-${{ github.event.inputs.version }}-update
-        
-        # Delete the `branch` when closing pull requests, and when undeleted after merging. Recommend `true`.
         delete-branch: true
-                        
-        # The title of the pull request.
-        title: Updating versions to ${{ github.event.inputs.version }}
-        
-        # The body of the pull request.
-        body: Updating versions to ${{ github.event.inputs.version }}
+        title: Updating version to ${{ github.event.inputs.version }}
+        body: Updating version to ${{ github.event.inputs.version }}

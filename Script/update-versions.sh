@@ -74,13 +74,15 @@ if [ "$DEPENDENCIES" != "none" ]; then
         dependencyName=${dependencyArray[0]}
         dependencyVersion=${dependencyArray[1]}
         
-        echo "Changing value of 's.dependency' for '$dependencyName' to '>= $dependencyVersion' in '$PODSPEC_FILE'"
-        sed -i '' -E "/^ *s.dependency +'$dependencyName'/{s/$VERSION_REGEX/$dependencyVersion/;}" $PODSPEC_FILE
+        if [ "$dependencyVersion" != "" ]; then
+            echo "Changing value of 's.dependency' for '$dependencyName' to '>= $dependencyVersion' in '$PODSPEC_FILE'"
+            sed -i '' -E "/^ *s.dependency +'$dependencyName'/{s/$VERSION_REGEX/$dependencyVersion/;}" $PODSPEC_FILE
 
-        spmRepoUrl=$(getRepo $dependencyName)
-        if [ "$spmRepoUrl" != "" ]; then
-            echo "Changing value of '.upToNextMajor(from:)' for '$spmRepoUrl' to '$dependencyVersion' in '$SPM_FILE'"
-            sed -i '' -E "/$spmRepoUrl\", \.upToNextMajor/{s/$VERSION_REGEX/$dependencyVersion/;}" $SPM_FILE
+            spmRepoUrl=$(getRepo $dependencyName)
+            if [ "$spmRepoUrl" != "" ]; then
+                echo "Changing value of '.upToNextMajor(from:)' for '$spmRepoUrl' to '$dependencyVersion' in '$SPM_FILE'"
+                sed -i '' -E "/$spmRepoUrl\", \.upToNextMajor/{s/$VERSION_REGEX/$dependencyVersion/;}" $SPM_FILE
+            fi
         fi
     done
 fi
