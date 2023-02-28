@@ -16,7 +16,7 @@ TVOS_SIMULATOR_ARCHIVE_DSYM_PATH = $(CURR_DIR)/build/tvos_simulator.xcarchive/dS
 TVOS_ARCHIVE_PATH = ./build/tvos.xcarchive/Products/Library/Frameworks/
 TVOS_ARCHIVE_DSYM_PATH = $(CURR_DIR)/build/tvos.xcarchive/dSYMs/
 
-E2E_PROJECT_PLIST_FILE = $(CURR_DIR)/Tests/E2EFunctionalTests/E2EFunctionalTestApp/Info.plist
+E2E_PROJECT_PLIST_FILE = $(CURR_DIR)/Tests/E2EFunctionalTests/Info.plist
 
 setup:
 	(pod install)
