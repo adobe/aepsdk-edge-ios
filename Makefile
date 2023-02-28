@@ -123,3 +123,9 @@ test-SPM-integration:
 
 test-podspec:
 	(sh ./Script/test-podspec.sh)
+
+# usage - 
+# make set-e2e-environment ENV=[environment]
+set-e2e-environment:
+	@echo "Setting E2E functional testing to run in environment '$(ENV)'"
+	plutil -replace ADOBE_ENVIRONMENT -string $(ENV) $(E2E_PROJECT_PLIST_FILE)

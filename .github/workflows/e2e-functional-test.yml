@@ -1,0 +1,46 @@
+# Remote action to execute E2E functional tests
+
+name: E2E Functional Tests
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to use when running functional tests'
+        required: false
+        default: 'main'
+      id:
+        description: 'Identifier for the run'
+        required: false
+      environment:
+        description: 'Environment and region to test (prodVA7, prodAUD5, prodNLD2, stageVA7)'
+        required: true
+        default: 'prodVA7'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  functional-test:
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+
+    - name: ${{ github.event.inputs.id }}
+      run: echo Run Identifier is ${{ inputs.id }}
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.inputs.branch }}
+
+    # Update the plist file which controls the environment used by the e2e tests
+    - name: Update environment
+      run: make set-environment ENV=${{ github.event.inputs.environment }}
+
+    # Runs a single command using the runners shell
+    - name: Execute functional tests
+      run: make functional-test
