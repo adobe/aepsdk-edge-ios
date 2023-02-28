@@ -17,6 +17,12 @@ target 'UnitTests' do
   pod 'AEPCore'
 end
 
+target 'E2EFunctionalTests' do
+  pod 'AEPCore'
+  pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'feature/tvos'
+  pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'feature/tvos'
+end
+
 target 'FunctionalTests' do
   pod 'AEPCore'
   pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'feature/tvos'
