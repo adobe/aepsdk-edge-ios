@@ -10,7 +10,9 @@
 // governing permissions and limitations under the License.
 //
 
+#if os(iOS)
 import AEPAssurance
+#endif
 import SwiftUI
 import UIKit
 
@@ -66,9 +68,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     @available(iOS 13.0, *)
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         // to note : this method is not called when an app not in memory (forceclosed) is opened with deeplink
+        #if os(iOS)
         if let url = URLContexts.first?.url {
             Assurance.startSession(url: url)
         }
+        #endif
     }
 
 }

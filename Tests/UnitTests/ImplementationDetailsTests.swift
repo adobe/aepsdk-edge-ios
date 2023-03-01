@@ -14,12 +14,17 @@
 import XCTest
 
 class ImplementationDetailsTests: XCTestCase {
-    private let BASE_NAMESPACE = "https://ns.adobe.com/experience/mobilesdk/ios"
     private let WRAPPER_REACT_NATIVE = "reactnative"
     private let WRAPPER_CORDOVA = "cordova"
     private let WRAPPER_FLUTTER = "flutter"
     private let WRAPPER_UNITY = "unity"
     private let WRAPPER_XAMARIN = "xamarin"
+
+    #if os(iOS)
+    private let BASE_NAMESPACE = "https://ns.adobe.com/experience/mobilesdk/ios"
+    #elseif os(tvOS)
+    private let BASE_NAMESPACE = "https://ns.adobe.com/experience/mobilesdk/tvos"
+    #endif
 
     override func setUp() {
         continueAfterFailure = false // fail so nil checks stop execution
