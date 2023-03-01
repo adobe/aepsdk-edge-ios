@@ -5,12 +5,12 @@ PODS:
   - AEPCore (3.7.4):
     - AEPRulesEngine (>= 1.1.0)
     - AEPServices (>= 3.7.4)
-  - AEPEdge (1.5.0):
-    - AEPCore (>= 3.5.0)
-    - AEPEdgeIdentity
+  - AEPEdge (1.6.0):
+    - AEPCore (>= 3.7.0)
+    - AEPEdgeIdentity (>= 1.2.0)
   - AEPEdgeConsent (1.1.0):
     - AEPCore (>= 3.7.0)
-    - AEPEdge (>= 1.4.0)
+    - AEPEdge (>= 1.6.0)
   - AEPEdgeIdentity (1.2.0):
     - AEPCore (>= 3.7.0)
   - AEPRulesEngine (1.2.0)
@@ -20,7 +20,7 @@ PODS:
 DEPENDENCIES:
   - AEPAssurance
   - AEPCore
-  - AEPEdgeConsent (from `https://github.com/adobe/aepsdk-edgeconsent-ios.git`, branch `staging`)
+  - AEPEdgeConsent
   - AEPEdgeIdentity
   - AEPServices
   - SwiftLint (= 0.44.0)
@@ -30,31 +30,22 @@ SPEC REPOS:
     - AEPAssurance
     - AEPCore
     - AEPEdge
+    - AEPEdgeConsent
     - AEPEdgeIdentity
     - AEPRulesEngine
     - AEPServices
     - SwiftLint
 
-EXTERNAL SOURCES:
-  AEPEdgeConsent:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-edgeconsent-ios.git
-
-CHECKOUT OPTIONS:
-  AEPEdgeConsent:
-    :commit: 3405f2e15e08aeebb65d8883477c6ea80ee9c227
-    :git: https://github.com/adobe/aepsdk-edgeconsent-ios.git
-
 SPEC CHECKSUMS:
   AEPAssurance: b25880cd4b14f22c61a1dce19807bd0ca0fe9b17
   AEPCore: 4f2d6af62f492e87a6cc9cbf4c89ae6f0ea89d81
-  AEPEdge: 924cd8ace3db40b9c42bc2bc5e8fb1fcad3a9b77
-  AEPEdgeConsent: 8d38073526db80259b933535900e8dcd03289512
+  AEPEdge: e4364a56d358c517f7d4cef87570ac4e7652d3a2
+  AEPEdgeConsent: d10d4232615b880d484050edf47b2e3fbfb787bb
   AEPEdgeIdentity: 6bb2c1e62d48cdc988b4d492e8e6d563f0ced73d
   AEPRulesEngine: 71228dfdac24c9ded09be13e3257a7eb22468ccc
   AEPServices: 1c66ce125f9b3bbd46e42687b6929cd584bffdf4
   SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
 
-PODFILE CHECKSUM: cab83bfc01d5677ba6768e24c9a66006a5679373
+PODFILE CHECKSUM: 1b423292ff677adb2d51171ccfbc61ade1b6b7c0
 
 COCOAPODS: 1.11.3
