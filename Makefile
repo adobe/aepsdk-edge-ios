@@ -126,12 +126,13 @@ test-SPM-integration:
 test-podspec:
 	(sh ./Script/test-podspec.sh)
 
-# usage - 
+# Usage: 
 # make set-e2e-environment ENV=[environment]
 set-e2e-environment:
 	@echo "Setting E2E functional testing to run in environment '$(ENV)'"
 	plutil -replace ADOBE_ENVIRONMENT -string $(ENV) $(E2E_PROJECT_PLIST_FILE)
 
+# Runs the E2E functional tests after installing pod dependencies
 e2e-functional-test: pod-install
 	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme E2EFunctionalTests -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath build/out
 

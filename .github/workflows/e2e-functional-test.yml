@@ -37,6 +37,14 @@ jobs:
       with:
         ref: ${{ github.event.inputs.branch }}
 
+    - name: Cache Cocoapods
+      uses: actions/cache@v3
+      with:
+        path: Pods
+        key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
+
     # Update the plist file which controls the environment used by the e2e tests
     - name: Update environment
       run: make set-e2e-environment ENV=${{ github.event.inputs.environment }}
