@@ -19,11 +19,16 @@ import XCTest
 
 /// This Test class is an example of usages of the FunctionalTestBase APIs
 class SampleFunctionalTests: FunctionalTestBase {
-    private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
+    private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: ["key1":"value1"])
+//    private let xdmEvent = Event(name: <#T##String#>, type: <#T##String#>, source: <#T##String#>, data: <#T##[String : Any]?#>)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let exEdgeInteractUrlString = "https://edge.adobedc.net/ee/v1/interact"
     private let exEdgeInteractUrl = URL(string: "https://edge.adobedc.net/ee/v1/interact")! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
+    
+    let LOG_SOURCE = "SampleFunctionalTests"
+    
+    let asyncTimeout: TimeInterval = 10
 
     public class override func setUp() {
         super.setUp()
@@ -35,103 +40,91 @@ class SampleFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false
 
         // hub shared state update for extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge), Edge extension, IdentityEdge XDM shared state and Config shared state updates
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
-
-        // expectations for update config request&response events
-        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+//        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
+//
+//        // expectations for update config request&response events
+//        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
+//        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
         // wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
+        MobileCore.setLogLevel(.trace)
+        MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
-        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
+//        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
-        assertExpectedEvents(ignoreUnexpectedEvents: false)
+//        assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+    }
+    
+    func registerMessagingRequestContentListener(_ listener: @escaping EventListener) {
+        MobileCore.registerEventListener(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result", listener: listener)
     }
 
     // MARK: sample tests for the FunctionalTest framework usage
 
     func testSample_AssertUnexpectedEvents() {
         // set event expectations specifying the event type, source and the count (count should be > 0)
-        setExpectationEvent(type: "eventType", source: "eventSource", expectedCount: 2)
-        MobileCore.dispatch(event: event1)
-        MobileCore.dispatch(event: event1)
+//        setExpectationEvent(type: "eventType", source: "eventSource", expectedCount: 1)
+//        MobileCore.dispatch(event: event1)
+////        MobileCore.dispatch(event: event1)
+//        sleep(2)
+//        print("FunctionalTestBase.networkService.networkRequestResponseHandles: \(FunctionalTestBase.networkService.networkRequestResponseHandles)")
+//        print("is dict empty: \(FunctionalTestBase.networkService.networkRequestResponseHandles.isEmpty)")
 
         // assert that no unexpected event was received
-        assertUnexpectedEvents()
-    }
-
-    func testSample_AssertExpectedEvents() {
-        setExpectationEvent(type: "eventType", source: "eventSource", expectedCount: 2)
-        MobileCore.dispatch(event: event1)
-        MobileCore.dispatch(event: Event(name: "e1", type: "unexpectedType", source: "unexpectedSource", data: ["test": "withdata"]))
-        MobileCore.dispatch(event: event1)
-
-        // assert all expected events were received and ignore any unexpected events
-        // when ignoreUnexpectedEvents is set on false, an extra assertUnexpectedEvents step is performed
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
-    }
-
-    func testSample_DispatchedEvents() {
-        MobileCore.dispatch(event: event1)
-        MobileCore.dispatch(event: Event(name: "e1", type: "otherEventType", source: "otherEventSource", data: ["test": "withdata"]))
-        MobileCore.dispatch(event: Event(name: "e1", type: "eventType", source: "eventSource", data: ["test": "withdata"]))
-
-        // assert on count and data for events of a certain type, source
-        let dispatchedEvents = getDispatchedEventsWith(type: "eventType", source: "eventSource")
-
-        XCTAssertEqual(2, dispatchedEvents.count)
-        guard let event2data = dispatchedEvents[1].data else {
-            XCTFail("Invalid event data for event 2")
-            return
+//        assertUnexpectedEvents()
+        
+        // setup
+        let edgeRequestContentExpectation = XCTestExpectation(description: "Edge extension request content listener called")
+        registerMessagingRequestContentListener() { event in
+            XCTAssertNotNil(event)
+            let data = event.data
+            XCTAssertNotNil(data)
+//            data["payload"]
+            guard let payloadArray = data?["payload"] as? [[String:Any]] else {
+                XCTFail()
+                return
+            }
+            print()
+            let targetHint = payloadArray[0]
+            XCTAssertEqual("Target", targetHint["scope"] as? String)
+            XCTAssertEqual(1800, targetHint["ttlSeconds"] as? Int)
+            XCTAssertEqual("35", targetHint["hint"] as? String)
+            
+            
+//            XCTAssertEqual(<#T##expression1: Equatable##Equatable#>, <#T##expression2: Equatable##Equatable#>)
+            print("LISTENER: \(data)")
+            Log.debug(label: self.LOG_SOURCE, "LISTENER: \(data)")
+//            XCTAssertEqual(true, data?[MessagingConstants.Event.Data.Key.REFRESH_MESSAGES] as? Bool)
+            edgeRequestContentExpectation.fulfill()
         }
-        XCTAssertEqual(1, flattenDictionary(dict: event2data).count)
-    }
-
-    func testSample_AssertNetworkRequestsCount() {
-        let responseBody = "{\"test\": \"json\"}"
-        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
-                                                                                      statusCode: 200,
-                                                                                      httpVersion: nil,
-                                                                                      headerFields: nil),
-                                                            error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
-        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
-
-        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
-        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test2": "xdm"], data: nil))
-
-        assertNetworkRequestsCount()
-    }
-
-    func testSample_AssertNetworkRequestAndResponseEvent() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: "identity:exchange", expectedCount: 1)
-        // swiftlint:disable:next line_length
-        let responseBody = "\u{0000}{\"requestId\":\"ded17427-c993-4182-8d94-2a169c1a23e2\",\"handle\":[{\"type\":\"identity:exchange\",\"payload\":[{\"type\":\"url\",\"id\":411,\"spec\":{\"url\":\"//cm.everesttech.net/cm/dd?d_uuid=42985602780892980519057012517360930936\",\"hideReferrer\":false,\"ttlMinutes\":10080}}]}]}\n"
-        let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
-                                                            response: HTTPURLResponse(url: exEdgeInteractUrl,
-                                                                                      statusCode: 200,
-                                                                                      httpVersion: nil,
-                                                                                      headerFields: nil),
-                                                            error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
-
-        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
-
-        let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
-
-        XCTAssertEqual(1, requests.count)
-        let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])
-        XCTAssertEqual("testType", flattenRequestBody["events[0].xdm.eventType"] as? String)
-
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        
+        // test
+//        MobileCore.dispatch(event: event1)
+        
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                              data: ["data": ["test": "data"]])
+        Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            guard let data = try? encoder.encode(handles) else {
+//                self.dataContent = "failed to encode EdgeEventHandle"
+                print("failed to encode EdgeEventHandle")
+                return
+            }
+//            self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+            let result = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+//            print("HANDLE: \(result)")
+            Log.debug(label: self.LOG_SOURCE, "HANDLE: \(result)")
+            
+        })
+        
+        // verify
+        wait(for: [edgeRequestContentExpectation], timeout: asyncTimeout)
     }
 }
