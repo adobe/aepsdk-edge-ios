@@ -36,7 +36,7 @@ class FunctionalTestNetworkService: NetworkService {
             sleep(delayedResponse)
         }
 
-        if let response = getMarchedResponseForUrlAndHttpMethod(networkRequest: networkRequest) {
+        if let response = getMatchedResponseForUrlAndHttpMethod(networkRequest: networkRequest) {
             unwrappedCompletionHandler(response)
         } else {
             // default response
@@ -110,7 +110,7 @@ class FunctionalTestNetworkService: NetworkService {
         }
     }
 
-    private func getMarchedResponseForUrlAndHttpMethod(networkRequest: NetworkRequest) -> HttpConnection? {
+    private func getMatchedResponseForUrlAndHttpMethod(networkRequest: NetworkRequest) -> HttpConnection? {
         for responseMatcher in responseMatchers {
             if areNetworkRequestsEqual(lhs: responseMatcher.key, rhs: networkRequest) {
                 return responseMatcher.value
