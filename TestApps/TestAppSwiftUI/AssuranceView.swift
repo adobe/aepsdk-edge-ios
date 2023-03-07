@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+#if os(iOS)
 import AEPAssurance
 import SwiftUI
 
@@ -39,3 +40,4 @@ struct AssuranceView: View {
         }.padding()
     }
 }
+#endif
