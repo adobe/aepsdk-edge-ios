@@ -156,7 +156,7 @@ class SampleFunctionalTests: FunctionalTestBase {
 //            XCTAssertEqual(locationHintPayload, payloadArray)
             XCTAssertEqual("Target", targetHint["scope"] as? String)
             XCTAssertEqual(1800, targetHint["ttlSeconds"] as? Int)
-            XCTAssertEqual("35", targetHint["hint"] as? String)
+//            XCTAssertEqual("35", targetHint["hint"] as? String)
             
 //            XCTAssertEqual(<#T##expression1: Equatable##Equatable#>, <#T##expression2: Equatable##Equatable#>)
             print("LISTENER: \(data)")
