@@ -14,15 +14,15 @@
 @testable import AEPServices
 import Foundation
 
-//protocol NetworkRequestDelegate {
-//    func on
-//}
+protocol NetworkRequestDelegate: AnyObject {
+    func handleNetworkResponse(httpConnection: HttpConnection)
+}
 /// Overriding NetworkService used for functional tests when extending the FunctionalTestBase
 class FunctionalTestNetworkService: NetworkService {
     private let LOG_SOURCE = "NetworkService"
     private var sessions = ThreadSafeDictionary<String, URLSession>(identifier: "com.adobe.networkservice.sessions")
     var networkRequestResponseHandles: [NetworkRequest: HttpConnection] = [:]
-    
+    weak var testingDelegate: NetworkRequestDelegate?
     private var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [NetworkRequest: [NetworkRequest]]()
     private var responseMatchers: [NetworkRequest: HttpConnection] = [NetworkRequest: HttpConnection]()
     private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [NetworkRequest: CountDownLatch]()
@@ -82,7 +82,10 @@ class FunctionalTestNetworkService: NetworkService {
         let task = urlSession.dataTask(with: urlRequest, completionHandler: { data, response, error in
             if let closure = completionHandler {
                 let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse, error: error)
-                self.networkRequestResponseHandles[networkRequest] = httpConnection
+                if let testingDelegate = self.testingDelegate {
+                    testingDelegate.handleNetworkResponse(httpConnection: httpConnection)
+                }
+                
                 closure(httpConnection)
             }
         })

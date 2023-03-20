@@ -17,6 +17,19 @@ import AEPServices
 import Foundation
 import XCTest
 
+class NetworkTestingDelegate: NetworkRequestDelegate {
+    var testCaseCompletion: (HttpConnection) -> ()
+    func handleNetworkResponse(httpConnection: AEPServices.HttpConnection) {
+        print("Delegate received httpConnection: \(httpConnection)")
+        testCaseCompletion(httpConnection)
+    }
+    init() {
+        testCaseCompletion = { httpConnection in
+            
+        }
+    }
+}
+
 /// This Test class is an example of usages of the FunctionalTestBase APIs
 class SampleFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: ["key1":"value1"])
@@ -26,6 +39,9 @@ class SampleFunctionalTests: FunctionalTestBase {
     private let exEdgeInteractUrl = URL(string: "https://edge.adobedc.net/ee/v1/interact")! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
     
+    
+    private let testingDelegate = NetworkTestingDelegate()
+    
     let LOG_SOURCE = "SampleFunctionalTests"
     
     let asyncTimeout: TimeInterval = 10
@@ -33,6 +49,7 @@ class SampleFunctionalTests: FunctionalTestBase {
     public class override func setUp() {
         super.setUp()
         FunctionalTestBase.debugEnabled = true
+        
     }
 
     override func setUp() {
@@ -59,29 +76,68 @@ class SampleFunctionalTests: FunctionalTestBase {
 
 //        assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+        registerNetworkServiceTestingDelegate(delegate: testingDelegate)
     }
     
-    func registerMessagingRequestContentListener(_ listener: @escaping EventListener) {
+    // TODO: create specific listeners for type: Edge + source: * (wildcard) and capture all the response handles for the test event
+    // TODO: create specific listeners for error responses
+    func registerEdgeLocationHintListener(_ listener: @escaping EventListener) {
         MobileCore.registerEventListener(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result", listener: listener)
+    }
+    
+    func readJSONData(fileName: String) -> [String:Any]? {
+        guard let pathString = Bundle(for: type(of: self)).path(forResource: fileName, ofType: "json") else {
+//            fatalError("\(fileName).json not found")
+            return nil
+        }
+
+        guard let jsonString = try? String(contentsOfFile: pathString, encoding: .utf8) else {
+//            fatalError("Unable to convert \(fileName).json to String")
+            return nil
+        }
+
+        print("The JSON string is: \(jsonString)")
+
+        guard let jsonData = jsonString.data(using: .utf8) else {
+//            fatalError("Unable to convert \(fileName).json to Data")
+            return nil
+        }
+
+        guard let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:Any] else {
+//            fatalError("Unable to convert \(fileName).json to JSON dictionary")
+            return nil
+        }
+        return jsonDictionary
     }
 
     // MARK: sample tests for the FunctionalTest framework usage
-
     func testSample_AssertUnexpectedEvents() {
-        // set event expectations specifying the event type, source and the count (count should be > 0)
-//        setExpectationEvent(type: "eventType", source: "eventSource", expectedCount: 1)
-//        MobileCore.dispatch(event: event1)
-////        MobileCore.dispatch(event: event1)
-//        sleep(2)
-//        print("FunctionalTestBase.networkService.networkRequestResponseHandles: \(FunctionalTestBase.networkService.networkRequestResponseHandles)")
-//        print("is dict empty: \(FunctionalTestBase.networkService.networkRequestResponseHandles.isEmpty)")
-
-        // assert that no unexpected event was received
-//        assertUnexpectedEvents()
+        // Register a callback with the functional test network service to receive the HTTPConnection object when it's available
         
-        // setup
+        // Setup
         let edgeRequestContentExpectation = XCTestExpectation(description: "Edge extension request content listener called")
-        registerMessagingRequestContentListener() { event in
+        // Async testing methodology
+        // test cases should fail quickly, if conditions are not met
+        // all of a test case's conditions should be tried before the lock condition on a case is released
+        // there are 2 main areas to test:
+            // 1. the HTTP code, metadata values, and data types/related validation
+            // 2. the logical content (is the event response what we expect for this type of event sent?
+        
+        /// HttpConnection has object `response.URL` which has value: https://obumobile5.data.adobedc.net/ee/v1/interact?configId=d936b4a4-8f13-4d8d-aabc-fcd1874b1ee5&requestId=159AEE9A-45B6-469E-B6FA-FBE506DA2E34
+        /// This is the same as the one set in the edge configuration??
+        /// only need to validate against this one
+        testingDelegate.testCaseCompletion = { httpConnection in
+            print("SOURCE: testCaseCompletion: \(httpConnection)")
+            print("data as string: \(httpConnection.responseString)")
+            
+            httpConnection.response?.url
+            print("baseURL: \(httpConnection.response?.url?.host)")
+            if httpConnection.response?.url?.host == "obumobile5.data.adobedc.net" {
+                XCTAssertEqual(200, httpConnection.responseCode)
+            }
+        }
+        
+        registerEdgeLocationHintListener() { event in
             XCTAssertNotNil(event)
             let data = event.data
             XCTAssertNotNil(data)
@@ -92,10 +148,15 @@ class SampleFunctionalTests: FunctionalTestBase {
             }
             print()
             let targetHint = payloadArray[0]
+            guard let locationHintCorrectValue = self.readJSONData(fileName: "locationHint"), let locationHintPayload = locationHintCorrectValue["payload"] as? [[String:Any]] else {
+                XCTFail()
+                return
+            }
+            
+//            XCTAssertEqual(locationHintPayload, payloadArray)
             XCTAssertEqual("Target", targetHint["scope"] as? String)
             XCTAssertEqual(1800, targetHint["ttlSeconds"] as? Int)
             XCTAssertEqual("35", targetHint["hint"] as? String)
-            
             
 //            XCTAssertEqual(<#T##expression1: Equatable##Equatable#>, <#T##expression2: Equatable##Equatable#>)
             print("LISTENER: \(data)")

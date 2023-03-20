@@ -69,7 +69,11 @@ class FunctionalTestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
     }
-
+    
+    func registerNetworkServiceTestingDelegate(delegate: NetworkRequestDelegate) {
+        FunctionalTestBase.networkService.testingDelegate = delegate
+    }
+    
     /// Reset event and network request expectations and drop the items received until this point
     func resetTestExpectations() {
         log("Resetting functional test expectations for events and network requests")

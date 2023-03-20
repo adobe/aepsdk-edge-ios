@@ -64,6 +64,7 @@
 		4C2CD66229AEC86600A73BB4 /* EventHub+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49A628E250AE4F500B7C4A3 /* EventHub+Test.swift */; };
 		4C2CD66329AEC86600A73BB4 /* UserDefaults+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49A6293250AEEF000B7C4A3 /* UserDefaults+Test.swift */; };
 		4C2CD66B29B6EE5D00A73BB4 /* FunctionalTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2CD66A29B6EE5D00A73BB4 /* FunctionalTestNetworkService.swift */; };
+		4C2CD66E29B7BCE200A73BB4 /* locationHint.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C2CD66D29B7BCE200A73BB4 /* locationHint.json */; };
 		539CB6A537FE4E3966043257 /* Pods_AEPEdge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72ECA73E903564F0C329D34C /* Pods_AEPEdge.framework */; };
 		98DB7A10F1131C46DB13267B /* Pods_TestApptvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB63C260A5C46A63FB19F95D /* Pods_TestApptvOS.framework */; };
 		B07CA150E14A7D4568796887 /* Pods_FunctionalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A08A969C313B65C23230D928 /* Pods_FunctionalTests.framework */; };
@@ -276,6 +277,7 @@
 		4C2CD64B29AEC6AA00A73BB4 /* SampleFunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SampleFunctionalTests.swift; path = Tests/E2EFunctionalTests/SampleFunctionalTests.swift; sourceTree = SOURCE_ROOT; };
 		4C2CD65C29AEC83200A73BB4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = Tests/E2EFunctionalTests/Info.plist; sourceTree = SOURCE_ROOT; };
 		4C2CD66A29B6EE5D00A73BB4 /* FunctionalTestNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FunctionalTestNetworkService.swift; sourceTree = "<group>"; };
+		4C2CD66D29B7BCE200A73BB4 /* locationHint.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = locationHint.json; sourceTree = "<group>"; };
 		5B5729C8A3F96E59534A1E94 /* Pods-TestAppiOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppiOS.release.xcconfig"; path = "Target Support Files/Pods-TestAppiOS/Pods-TestAppiOS.release.xcconfig"; sourceTree = "<group>"; };
 		701D4AF6A9BF16982CCC5DF2 /* Pods-UnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests/Pods-UnitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		72ECA73E903564F0C329D34C /* Pods_AEPEdge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPEdge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -486,6 +488,7 @@
 		4C2CD64629AEC2E700A73BB4 /* E2EFunctionalTests */ = {
 			isa = PBXGroup;
 			children = (
+				4C2CD66C29B7BBA300A73BB4 /* resources */,
 				4C2CD64B29AEC6AA00A73BB4 /* SampleFunctionalTests.swift */,
 				4C2CD66A29B6EE5D00A73BB4 /* FunctionalTestNetworkService.swift */,
 				4C2CD64729AEC45700A73BB4 /* Environment.swift */,
@@ -493,6 +496,14 @@
 			);
 			name = E2EFunctionalTests;
 			path = Tests/E2EFunctionalTests;
+			sourceTree = "<group>";
+		};
+		4C2CD66C29B7BBA300A73BB4 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				4C2CD66D29B7BCE200A73BB4 /* locationHint.json */,
+			);
+			path = resources;
 			sourceTree = "<group>";
 		};
 		BF0C093B2462159400892B5D /* util */ = {
@@ -928,6 +939,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C2CD66E29B7BCE200A73BB4 /* locationHint.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
