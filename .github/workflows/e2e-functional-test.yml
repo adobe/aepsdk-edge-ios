@@ -45,10 +45,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pods-
     
-    - name: Cache iOS build
-      uses: mikehardy/buildcache-action@v2
+    - name: Install Ccache
+      uses: hendrikmuhs/ccache-action@v1.2
       with:
-        upload_buildcache_log: 'true'
+        max-size: 5G
+
 
     # Update the plist file which controls the environment used by the e2e tests
     - name: Update environment

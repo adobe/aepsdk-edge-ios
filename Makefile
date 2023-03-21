@@ -134,6 +134,12 @@ set-e2e-environment:
 
 # Runs the E2E functional tests after installing pod dependencies
 e2e-functional-test: pod-install
+	export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+	export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+	export CCACHE_FILECLONE=true
+	export CCACHE_DEPEND=true
+	export CCACHE_INODECACHE=true
+	ccache -s
 	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme E2EFunctionalTests -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath build/out
 
 
