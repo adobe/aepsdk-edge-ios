@@ -1,6 +1,6 @@
 # Remote action to execute E2E functional tests
 
-name: E2E Functional Tests
+name: E2E Integration Tests
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -8,16 +8,16 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to use when running functional tests'
+        description: 'Branch to use when running integration tests'
         required: false
         default: 'main'
       id:
         description: 'Identifier for the run'
         required: false
       environment:
-        description: 'Environment and region to test (prodVA7, prodAUD5, prodNLD2, stageVA7)'
+        description: 'Konductor environment to test (prod, pre-prod, int)'
         required: true
-        default: 'prodVA7'
+        default: 'prod'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -44,6 +44,9 @@ jobs:
         key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
         restore-keys: |
           ${{ runner.os }}-pods-
+    
+    - name: Cache iOS build
+      uses: mikehardy/buildcache-action@v2
 
     # Update the plist file which controls the environment used by the e2e tests
     - name: Update environment
