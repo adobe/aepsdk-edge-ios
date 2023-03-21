@@ -48,7 +48,8 @@ jobs:
     - name: Install Ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
-        max-size: 5G
+        key: ${{ runner.os }}-v2
+        max-size: 750M
 
 
     # Update the plist file which controls the environment used by the e2e tests
