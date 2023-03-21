@@ -140,6 +140,6 @@ e2e-functional-test: pod-install
 	export CCACHE_DEPEND=true
 	export CCACHE_INODECACHE=true
 	ccache -s
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme E2EFunctionalTests -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath build/out
+	CLANG=clang CLANGPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme E2EFunctionalTests -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath build/out
 
 
