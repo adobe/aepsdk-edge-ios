@@ -48,7 +48,7 @@ jobs:
     - name: Cache iOS build
       uses: mikehardy/buildcache-action@v2
       with:
-        upload_buildcache-log: 'true'
+        upload_buildcache_log: 'true'
 
     # Update the plist file which controls the environment used by the e2e tests
     - name: Update environment
