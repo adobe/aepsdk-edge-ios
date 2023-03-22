@@ -50,11 +50,6 @@ post_install do |pi|
         bc.build_settings['TVOS_DEPLOYMENT_TARGET'] = '10.0'
         bc.build_settings['SUPPORTED_PLATFORMS'] = 'iphoneos iphonesimulator appletvos appletvsimulator'
         bc.build_settings['TARGETED_DEVICE_FAMILY'] = "1,2,3"
-
-        bc.build_settings["CC"] = "clang"
-        bc.build_settings["LD"] = "clang"
-        bc.build_settings["CXX"] = "clang++"
-        bc.build_settings["LDPLUSPLUS"] = "clang++"
     end
   end
 end

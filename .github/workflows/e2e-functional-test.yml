@@ -44,13 +44,6 @@ jobs:
         key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
         restore-keys: |
           ${{ runner.os }}-pods-
-    
-    - name: Install Ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ${{ runner.os }}-v2
-        max-size: 750M
-
 
     # Update the plist file which controls the environment used by the e2e tests
     - name: Update environment
