@@ -134,7 +134,7 @@ set-e2e-environment:
 
 # Runs the E2E functional tests after installing pod dependencies
 e2e-functional-test: pod-install
-	export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+	export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$$PATH"
 	export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
 	export CCACHE_FILECLONE=true
 	export CCACHE_DEPEND=true
