@@ -22,8 +22,8 @@
       </MacroExpansion>
       <EnvironmentVariables>
          <EnvironmentVariable
-            key = "EXAMPLE_VARIABLE"
-            value = "$(EXAMPLE_VARIABLE)"
+            key = "KONDUCTOR_ENV"
+            value = "$(KONDUCTOR_ENV)"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

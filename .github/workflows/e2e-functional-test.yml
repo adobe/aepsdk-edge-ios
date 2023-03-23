@@ -12,12 +12,17 @@ on:
         required: false
         default: 'main'
       id:
-        description: 'Identifier for the run'
+        description: 'Identifier for the run (optional)'
         required: false
       environment:
-        description: 'Konductor environment to test (prod, pre-prod, int)'
+        type: choice
+        description: 'Konductor environment to test (prod, pre-prod, or int)'
         required: true
         default: 'prod'
+        options:
+          - prod
+          - pre-prod
+          - int
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -45,10 +50,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pods-
 
-    # Update the plist file which controls the environment used by the e2e tests
-    - name: Update environment
-      run: make set-e2e-environment ENV=${{ github.event.inputs.environment }}
-
     # Runs a single command using the runners shell
     - name: Execute functional tests
-      run: make e2e-functional-test
+      run: make e2e-functional-test KONDUCTOR_ENV=${{ github.event.inputs.environment }}
