@@ -1,6 +1,6 @@
 # Remote action to execute E2E functional tests
 
-name: E2E Integration Tests
+name: E2E Konductor Integration Tests
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -10,7 +10,7 @@ on:
       branch:
         description: 'Branch to use when running integration tests'
         required: false
-        default: 'main'
+        default: 'e2e-functional-test'
       id:
         description: 'Identifier for the run (optional)'
         required: false
@@ -27,7 +27,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
-  functional-test:
+  integration-test:
     # The type of runner that the job will run on
     runs-on: macos-latest
 
