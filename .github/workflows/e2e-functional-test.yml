@@ -51,5 +51,5 @@ jobs:
           ${{ runner.os }}-pods-
 
     # Runs a single command using the runners shell
-    - name: Execute functional tests
-      run: make e2e-functional-test KONDUCTOR_ENV=${{ github.event.inputs.environment }}
+    - name: Execute E2E Konductor integration tests
+      run: make e2e-integration-test KONDUCTOR_ENV=${{ github.event.inputs.environment }}
