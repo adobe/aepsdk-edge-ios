@@ -133,7 +133,13 @@ set-e2e-environment:
 	plutil -replace ADOBE_ENVIRONMENT -string $(ENV) $(E2E_PROJECT_PLIST_FILE)
 
 # Runs the E2E functional tests after installing pod dependencies
-e2e-functional-test: pod-install
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme E2EFunctionalTests -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath build/out
+e2e-functional-test: pod-install; \
+	xcodebuild test \
+	-workspace $(PROJECT_NAME).xcworkspace \
+	-scheme E2EFunctionalTests \
+	-destination 'platform=iOS Simulator,name=iPhone 14' \
+	-derivedDataPath build/out \
+	EXAMPLE_VARIABLE=EXAMPLEVALUE
+
 
 
