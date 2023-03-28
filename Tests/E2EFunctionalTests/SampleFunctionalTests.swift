@@ -111,7 +111,7 @@ class SampleFunctionalTests: FunctionalTestBase {
         if let environment = extractEnvironmentVariable(keyName: "KONDUCTOR_ENVIRONMENT", enum: KonductorEnvironment.self) {
             self.konductorEnvironment = environment
         }
-        print("Using Konductor environment: \(konductorEnvironment)")
+        print("Using Konductor environment: \(konductorEnvironment.rawValue)")
         // Extract Edge location hint from shell environment
         if let locationHint = extractEnvironmentVariable(keyName: "EDGE_LOCATION_HINT", enum: EdgeLocationHint.self) {
             self.edgeLocationHint = locationHint
@@ -132,7 +132,7 @@ class SampleFunctionalTests: FunctionalTestBase {
         
         // Set Edge location hint value if one is set for the test
         if edgeLocationHint != nil {
-            print("Setting Edge location hint to: \(String(describing: edgeLocationHint))")
+            print("Setting Edge location hint to: \(String(describing: edgeLocationHint?.rawValue))")
             Edge.setLocationHint(edgeLocationHint?.rawValue)
         }
         else {
