@@ -128,14 +128,14 @@ test-podspec:
 
 # Runs the Konductor integration tests after installing pod dependencies
 # Usage: 
-# make konductor-integration-test KONDUCTOR_ENV=<environment>
-# If KONDUCTOR_ENV is not specified, test target will use its default value.
+# make konductor-integration-test KONDUCTOR_ENVIRONMENT=<environment>
+# If KONDUCTOR_ENVIRONMENT is not specified, test target will use its default value.
 .SILENT: konductor-integration-test # Silences Makefile's automatic echo of commands
 konductor-integration-test: pod-install; \
-	if [ -z "$$KONDUCTOR_ENV" ]; then \
+	if [ -z "$$KONDUCTOR_ENVIRONMENT" ]; then \
 		echo ''; \
 		echo '----------------------- WARNING -------------------------------'; \
-		echo 'KONDUCTOR_ENV was NOT set; the test will use its default value.'; \
+		echo 'KONDUCTOR_ENVIRONMENT was NOT set; the test will use its default value.'; \
 		echo '---------------------------------------------------------------'; \
 		echo ''; \
 	fi; \
@@ -144,7 +144,8 @@ konductor-integration-test: pod-install; \
 	-scheme E2EFunctionalTests \
 	-destination 'platform=iOS Simulator,name=iPhone 14' \
 	-derivedDataPath build/out \
-	KONDUCTOR_ENV=$(KONDUCTOR_ENV)
+	KONDUCTOR_ENVIRONMENT=$(KONDUCTOR_ENVIRONMENT) \
+	EDGE_LOCATION_HINT=$(EDGE_LOCATION_HINT)
 
 
 
