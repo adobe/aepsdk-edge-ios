@@ -52,4 +52,4 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Execute Konductor integration tests
-      run: make konductor-integration-test KONDUCTOR_ENV=${{ github.event.inputs.environment }}
+      run: make konductor-integration-test KONDUCTOR_ENVIRONMENT=${{ github.event.inputs.environment }}

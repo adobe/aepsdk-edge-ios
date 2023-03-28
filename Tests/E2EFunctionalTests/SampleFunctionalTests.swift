@@ -40,11 +40,34 @@ class SampleFunctionalTests: FunctionalTestBase {
     private let responseBody = "{\"test\": \"json\"}"
     
     private var konductorEnvironment: KonductorEnvironment = .prod
+    private var edgeLocationHint: EdgeLocationHint? = nil
     
+    /// Konductor environment levels that correspond to their deployment environment levels
     enum KonductorEnvironment: String {
+        /// Production
         case prod
+        /// Pre-production - aka: staging
         case preProd = "pre-prod"
+        /// Integration - aka: development
         case int
+    }
+    
+    /// All location hint values available for the Edge network extension
+    enum EdgeLocationHint: String {
+        /// Oregon, USA
+        case or2
+        /// Virginia, USA
+        case va6
+        /// Ireland
+        case irl1
+        /// India
+        case ind1
+        /// Japan
+        case jpn3
+        /// Singapore
+        case sgp3
+        /// Australia
+        case aus3
     }
     
     private let testingDelegate = NetworkTestingDelegate()
@@ -62,22 +85,39 @@ class SampleFunctionalTests: FunctionalTestBase {
     override func setUp() {
         super.setUp()
         continueAfterFailure = false
-
+        
+        func extractEnvironmentVariable<T: RawRepresentable>(keyName: String, enum: T.Type) -> T? where T.RawValue == String {
+            guard let environmentString = ProcessInfo.processInfo.environment[keyName] else {
+                print("Unable to find valid \(keyName) value (raw value: \(String(describing: ProcessInfo.processInfo.environment[keyName]))).")
+                return nil
+            }
+            
+            guard let enumCase = T(rawValue: environmentString) else {
+                print("Unable to create valid enum case of type \(T.Type.self) from environment variable value: \(environmentString)")
+                return nil
+            }
+            
+            return enumCase
+        }
+        
         // hub shared state update for extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge), Edge extension, IdentityEdge XDM shared state and Config shared state updates
-//        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
-//
-//        // expectations for update config request&response events
-//        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
-//        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        //        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
+        //
+        //        // expectations for update config request&response events
+        //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
+        //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         
         // Extract Konductor environment level from command line environment
-        if let konductorEnvironmentString = ProcessInfo.processInfo.environment["KONDUCTOR_ENV"], let environment = KonductorEnvironment(rawValue: konductorEnvironmentString) {
-            print("KONDUCTOR ENV (type: \(type(of: konductorEnvironmentString))): \(konductorEnvironmentString)")
-            konductorEnvironment = environment
+        if let environment = extractEnvironmentVariable(keyName: "KONDUCTOR_ENVIRONMENT", enum: KonductorEnvironment.self) {
+            self.konductorEnvironment = environment
         }
-        else {
-            print("Unable to find valid KONDUCTOR_ENV value (\(String(describing: ProcessInfo.processInfo.environment["KONDUCTOR_ENV"]))). Using default environment: \(konductorEnvironment)")
+        print("Using Konductor environment: \(konductorEnvironment)")
+        
+        if let locationHint = extractEnvironmentVariable(keyName: "EDGE_LOCATION_HINT", enum: EdgeLocationHint.self) {
+            self.edgeLocationHint = locationHint
         }
+        
+    
 //        print("all env vars: \(ProcessInfo.processInfo.environment)")
         
         // Wait for async registration because the EventHub is already started in FunctionalTestBase
@@ -89,6 +129,16 @@ class SampleFunctionalTests: FunctionalTestBase {
             waitForRegistration.countDown()
         })
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
+        
+        // Set Edge location hint value if one is set for the test
+        if edgeLocationHint != nil {
+            print("Setting Edge location hint to: \(String(describing: edgeLocationHint))")
+            Edge.setLocationHint(edgeLocationHint?.rawValue)
+        }
+        else {
+            print("No preset Edge location hint is being used for this test.")
+        }
+        
 //        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
 //        assertExpectedEvents(ignoreUnexpectedEvents: false)

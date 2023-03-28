@@ -22,8 +22,13 @@
       </MacroExpansion>
       <EnvironmentVariables>
          <EnvironmentVariable
-            key = "KONDUCTOR_ENV"
-            value = "$(KONDUCTOR_ENV)"
+            key = "KONDUCTOR_ENVIRONMENT"
+            value = "$(KONDUCTOR_ENVIRONMENT)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "EDGE_LOCATION_HINT"
+            value = "$(EDGE_LOCATION_HINT)"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
