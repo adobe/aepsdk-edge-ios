@@ -17,6 +17,12 @@ target 'UnitTests' do
   pod 'AEPCore'
 end
 
+target 'KonductorIntegrationTests' do
+  pod 'AEPCore'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPEdgeConsent'
+end
+
 target 'FunctionalTests' do
   pod 'AEPCore'
   pod 'AEPEdgeIdentity'

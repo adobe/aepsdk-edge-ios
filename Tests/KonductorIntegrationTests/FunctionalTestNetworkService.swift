@@ -14,15 +14,31 @@
 @testable import AEPServices
 import Foundation
 
+protocol NetworkRequestDelegate: AnyObject {
+    func handleNetworkResponse(httpConnection: HttpConnection)
+}
 /// Overriding NetworkService used for functional tests when extending the FunctionalTestBase
 class FunctionalTestNetworkService: NetworkService {
+    private let LOG_SOURCE = "NetworkService"
+    private var sessions = ThreadSafeDictionary<String, URLSession>(identifier: "com.adobe.networkservice.sessions")
+    var networkRequestResponseHandles: [NetworkRequest: HttpConnection] = [:]
+    weak var testingDelegate: NetworkRequestDelegate?
     private var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [NetworkRequest: [NetworkRequest]]()
     private var responseMatchers: [NetworkRequest: HttpConnection] = [NetworkRequest: HttpConnection]()
     private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [NetworkRequest: CountDownLatch]()
     private var delayedResponse: UInt32 = 0
 
+    // The completionHandler is prepopulated with implementations from the callsite (in this case, Edge extension)
+    // we want to copy this data for our own testing validation against the raw data
+    // since HttpConnection is a struct, we can insert it into our local data store without worry of the instance changing over time (outside of our own manipulations)
+    
+    // actually, i think we dont want to handle the raw httpconnection since there can be streaming etc;
+    // since all responses to an event should be dispatched through mobile core anyways, a listener with the right configuration should be
+    // able to capture all response events, not just a direct response?
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
-        FunctionalTestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
+//        FunctionalTestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
+        // MARK: Functional test logic
+        print("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
         if var requests = receivedNetworkRequests[networkRequest] {
             requests.append(networkRequest)
         } else {
@@ -30,25 +46,72 @@ class FunctionalTestNetworkService: NetworkService {
         }
 
         countDownExpected(networkRequest: networkRequest)
-        guard let unwrappedCompletionHandler = completionHandler else { return }
-
-        if delayedResponse > 0 {
-            sleep(delayedResponse)
+        // NOTE: remove mocked response section
+//        guard let unwrappedCompletionHandler = completionHandler else { return }
+//
+//        if delayedResponse > 0 {
+//            sleep(delayedResponse)
+//        }
+//
+//        if let response = getMatchedResponseForUrlAndHttpMethod(networkRequest: networkRequest) {
+//            unwrappedCompletionHandler(response)
+//        } else {
+//            // default response
+//            unwrappedCompletionHandler(HttpConnection(data: "".data(using: .utf8),
+//                                                      response: HTTPURLResponse(url: networkRequest.url,
+//                                                                                statusCode: 200,
+//                                                                                httpVersion: nil,
+//                                                                                headerFields: nil),
+//                                                      error: nil))
+//        }
+        
+        // MARK: Real network request logic
+        if !networkRequest.url.absoluteString.starts(with: "https") {
+            Log.warning(label: LOG_SOURCE, "Network request for (\(networkRequest.url.absoluteString)) could not be created, only https requests are accepted.")
+            if let closure = completionHandler {
+                closure(HttpConnection(data: nil, response: nil, error: NetworkServiceError.invalidUrl))
+            }
+            return
         }
 
-        if let response = getMatchedResponseForUrlAndHttpMethod(networkRequest: networkRequest) {
-            unwrappedCompletionHandler(response)
-        } else {
-            // default response
-            unwrappedCompletionHandler(HttpConnection(data: "".data(using: .utf8),
-                                                      response: HTTPURLResponse(url: networkRequest.url,
-                                                                                statusCode: 200,
-                                                                                httpVersion: nil,
-                                                                                headerFields: nil),
-                                                      error: nil))
-        }
+        let urlRequest = createURLRequest(networkRequest: networkRequest)
+        let urlSession = createURLSession(networkRequest: networkRequest)
+
+        // initiate the network request
+        Log.debug(label: LOG_SOURCE, "Initiated (\(networkRequest.httpMethod.toString())) network request to (\(networkRequest.url.absoluteString)).")
+        let task = urlSession.dataTask(with: urlRequest, completionHandler: { data, response, error in
+            if let closure = completionHandler {
+                let httpConnection = HttpConnection(data: data, response: response as? HTTPURLResponse, error: error)
+                if let testingDelegate = self.testingDelegate {
+                    testingDelegate.handleNetworkResponse(httpConnection: httpConnection)
+                }
+                
+                closure(httpConnection)
+            }
+        })
+        task.resume()
     }
 
+    /// Creates an `URLRequest` with the provided parameters and adds the SDK default headers. The cache policy used is reloadIgnoringLocalCacheData.
+    /// - Parameter networkRequest: `NetworkRequest`
+    private func createURLRequest(networkRequest: NetworkRequest) -> URLRequest {
+        var request = URLRequest(url: networkRequest.url)
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.httpMethod = networkRequest.httpMethod.toString()
+
+        if !networkRequest.connectPayload.isEmpty, networkRequest.httpMethod == .post {
+            request.httpBody = networkRequest.connectPayload
+        }
+
+        for (key, val) in networkRequest.httpHeaders {
+            request.setValue(val, forHTTPHeaderField: key)
+        }
+
+        return request
+    }
+    
+
+    // MARK: - Functional testing helper methods
     func enableDelayedResponse(delaySec: UInt32) {
         delayedResponse = delaySec
     }

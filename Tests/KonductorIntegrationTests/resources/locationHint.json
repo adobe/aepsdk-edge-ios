@@ -1,0 +1,19 @@
+{
+  "payload": [
+    {
+      "ttlSeconds" : 1800,
+      "scope" : "Target",
+      "hint" : "35"
+    },
+    {
+      "ttlSeconds" : 1800,
+      "scope" : "AAM",
+      "hint" : "9"
+    },
+    {
+      "ttlSeconds" : 1800,
+      "scope" : "EdgeNetwork",
+      "hint" : "or2"
+    }
+  ]
+}
