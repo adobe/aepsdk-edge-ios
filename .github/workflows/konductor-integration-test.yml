@@ -67,4 +67,4 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Execute Konductor integration tests
-      run: make konductor-integration-test KONDUCTOR_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edgeLocationHint }}
+      run: make konductor-integration-test KONDUCTOR_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
