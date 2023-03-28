@@ -128,7 +128,7 @@ test-podspec:
 
 # Runs the Konductor integration tests after installing pod dependencies
 # Usage: 
-# make konductor-integration-test KONDUCTOR_ENVIRONMENT=<environment>
+# make konductor-integration-test KONDUCTOR_ENVIRONMENT=<environment> EDGE_LOCATION_HINT=<location_hint>
 # If KONDUCTOR_ENVIRONMENT is not specified, test target will use its default value.
 .SILENT: konductor-integration-test # Silences Makefile's automatic echo of commands
 konductor-integration-test: pod-install; \

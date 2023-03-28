@@ -49,8 +49,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
-    - name: ${{ github.event.inputs.id }}
-      run: echo Run Identifier is ${{ inputs.id }}
+    - name: Job run identifier - ${{ github.event.inputs.id }}
+      run: echo 'Job run identifier is:' ${{ inputs.id }}
 
     - name: Checkout
       uses: actions/checkout@v3

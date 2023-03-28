@@ -107,12 +107,12 @@ class SampleFunctionalTests: FunctionalTestBase {
         //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         
-        // Extract Konductor environment level from command line environment
+        // Extract Konductor environment level from shell environment
         if let environment = extractEnvironmentVariable(keyName: "KONDUCTOR_ENVIRONMENT", enum: KonductorEnvironment.self) {
             self.konductorEnvironment = environment
         }
         print("Using Konductor environment: \(konductorEnvironment)")
-        
+        // Extract Edge location hint from shell environment
         if let locationHint = extractEnvironmentVariable(keyName: "EDGE_LOCATION_HINT", enum: EdgeLocationHint.self) {
             self.edgeLocationHint = locationHint
         }
