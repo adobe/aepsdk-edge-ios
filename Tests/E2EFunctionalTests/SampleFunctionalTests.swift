@@ -39,6 +39,13 @@ class SampleFunctionalTests: FunctionalTestBase {
     private let exEdgeInteractUrl = URL(string: "https://edge.adobedc.net/ee/v1/interact")! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
     
+    private var konductorEnvironment: KonductorEnvironment = .prod
+    
+    enum KonductorEnvironment: String {
+        case prod
+        case preProd = "pre-prod"
+        case int
+    }
     
     private let testingDelegate = NetworkTestingDelegate()
     
@@ -62,8 +69,18 @@ class SampleFunctionalTests: FunctionalTestBase {
 //        // expectations for update config request&response events
 //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
 //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
-
-        // wait for async registration because the EventHub is already started in FunctionalTestBase
+        
+        // Extract Konductor environment level from command line environment
+        if let konductorEnvironmentString = ProcessInfo.processInfo.environment["KONDUCTOR_ENV"], let environment = KonductorEnvironment(rawValue: konductorEnvironmentString) {
+            print("KONDUCTOR ENV (type: \(type(of: konductorEnvironmentString))): \(konductorEnvironmentString)")
+            konductorEnvironment = environment
+        }
+        else {
+            print("Unable to find valid KONDUCTOR_ENV value (\(String(describing: ProcessInfo.processInfo.environment["KONDUCTOR_ENV"]))). Using default environment: \(konductorEnvironment)")
+        }
+//        print("all env vars: \(ProcessInfo.processInfo.environment)")
+        
+        // Wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
         MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
@@ -124,8 +141,9 @@ class SampleFunctionalTests: FunctionalTestBase {
             // 2. the logical content (is the event response what we expect for this type of event sent?
         
         /// HttpConnection has object `response.URL` which has value: https://obumobile5.data.adobedc.net/ee/v1/interact?configId=d936b4a4-8f13-4d8d-aabc-fcd1874b1ee5&requestId=159AEE9A-45B6-469E-B6FA-FBE506DA2E34
-        /// This is the same as the one set in the edge configuration??
+        /// This is the same as the one set in the edge configuration?
         /// only need to validate against this one
+        // MARK: Network response assertions
         testingDelegate.testCaseCompletion = { httpConnection in
             print("SOURCE: testCaseCompletion: \(httpConnection)")
             print("data as string: \(httpConnection.responseString)")
@@ -137,6 +155,7 @@ class SampleFunctionalTests: FunctionalTestBase {
             }
         }
         
+        // MARK: Response Event assertions
         registerEdgeLocationHintListener() { event in
             XCTAssertNotNil(event)
             let data = event.data
@@ -158,7 +177,6 @@ class SampleFunctionalTests: FunctionalTestBase {
             XCTAssertEqual(1800, targetHint["ttlSeconds"] as? Int)
 //            XCTAssertEqual("35", targetHint["hint"] as? String)
             
-//            XCTAssertEqual(<#T##expression1: Equatable##Equatable#>, <#T##expression2: Equatable##Equatable#>)
             print("LISTENER: \(data)")
             Log.debug(label: self.LOG_SOURCE, "LISTENER: \(data)")
 //            XCTAssertEqual(true, data?[MessagingConstants.Event.Data.Key.REFRESH_MESSAGES] as? Bool)
@@ -166,8 +184,6 @@ class SampleFunctionalTests: FunctionalTestBase {
         }
         
         // test
-//        MobileCore.dispatch(event: event1)
-        
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
         Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
