@@ -126,12 +126,12 @@ test-SPM-integration:
 test-podspec:
 	(sh ./Script/test-podspec.sh)
 
-# Runs the E2E Konductor integration tests after installing pod dependencies
+# Runs the Konductor integration tests after installing pod dependencies
 # Usage: 
-# make e2e-integration-test KONDUCTOR_ENV=<environment>
+# make konductor-integration-test KONDUCTOR_ENV=<environment>
 # If KONDUCTOR_ENV is not specified, test target will use its default value.
-.SILENT: e2e-integration-test # Silences Makefile's automatic echo of commands
-e2e-integration-test: pod-install; \
+.SILENT: konductor-integration-test # Silences Makefile's automatic echo of commands
+konductor-integration-test: pod-install; \
 	if [ -z "$$KONDUCTOR_ENV" ]; then \
 		echo ''; \
 		echo '----------------------- WARNING -------------------------------'; \
