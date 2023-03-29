@@ -15,7 +15,7 @@ on:
         required: false
       environment:
         type: choice
-        description: 'Edge Network (Konductor) environment to test (prod, pre-prod, or int)'
+        description: 'Edge Network (Konductor) environment to test'
         required: true
         default: 'prod'
         options:
