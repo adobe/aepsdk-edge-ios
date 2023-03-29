@@ -127,25 +127,25 @@ test-podspec:
 test-version-update:
 	(sh ./Script/update-versions.sh -n Edge -v 9.9.9)
 
-# Runs the Konductor integration tests after installing pod dependencies
+# Runs the Edge Network (Konductor) integration tests after installing pod dependencies
 # Usage: 
-# make konductor-integration-test KONDUCTOR_ENVIRONMENT=<environment> EDGE_LOCATION_HINT=<location_hint>
-# If KONDUCTOR_ENVIRONMENT is not specified, test target will use its default value.
-.SILENT: konductor-integration-test # Silences Makefile's automatic echo of commands
-konductor-integration-test: pod-install; \
-	if [ -z "$$KONDUCTOR_ENVIRONMENT" ]; then \
+# make edge-network-integration-test EDGE_NETWORK_ENVIRONMENT=<environment> EDGE_LOCATION_HINT=<location_hint>
+# If EDGE_NETWORK_ENVIRONMENT is not specified, test target will use its default value.
+.SILENT: edge-network-integration-test # Silences Makefile's automatic echo of commands
+edge-network-integration-test: pod-install; \
+	if [ -z "$$EDGE_NETWORK_ENVIRONMENT" ]; then \
 		echo ''; \
 		echo '----------------------- WARNING -------------------------------'; \
-		echo 'KONDUCTOR_ENVIRONMENT was NOT set; the test will use its default value.'; \
+		echo 'EDGE_NETWORK_ENVIRONMENT was NOT set; the test will use its default value.'; \
 		echo '---------------------------------------------------------------'; \
 		echo ''; \
 	fi; \
 	xcodebuild test \
 	-workspace $(PROJECT_NAME).xcworkspace \
-	-scheme KonductorIntegrationTests \
+	-scheme EdgeNetworkIntegrationTests \
 	-destination 'platform=iOS Simulator,name=iPhone 14' \
 	-derivedDataPath build/out \
-	KONDUCTOR_ENVIRONMENT=$(KONDUCTOR_ENVIRONMENT) \
+	EDGE_NETWORK_ENVIRONMENT=$(EDGE_NETWORK_ENVIRONMENT) \
 	EDGE_LOCATION_HINT=$(EDGE_LOCATION_HINT)
 
 

@@ -1,6 +1,5 @@
-# Remote action to execute E2E functional tests
-
-name: Konductor Integration Tests
+# Action to execute Edge Network (Konductor) integration tests
+name: Edge Network (Konductor) Integration Tests
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -10,13 +9,13 @@ on:
       branch:
         description: 'Branch to use when running integration tests'
         required: false
-        default: 'e2e-functional-test'
+        default: 'main'
       id:
         description: 'Identifier for the run (optional)'
         required: false
       environment:
         type: choice
-        description: 'Konductor environment to test (prod, pre-prod, or int)'
+        description: 'Edge Network (Konductor) environment to test (prod, pre-prod, or int)'
         required: true
         default: 'prod'
         options:
@@ -38,11 +37,9 @@ on:
           - 'sgp3'
           - 'aus3'
 
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-
-  konductor-integration-test:
+  edge-network-integration-test:
     # The type of runner that the job will run on
     runs-on: macos-latest
 
@@ -71,5 +68,5 @@ jobs:
           ${{ runner.os }}-pods-
 
     # Runs a single command using the runners shell
-    - name: Execute Konductor integration tests
-      run: make konductor-integration-test KONDUCTOR_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+    - name: Execute Edge Network integration tests
+      run: make edge-network-integration-test EDGE_NETWORK_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}

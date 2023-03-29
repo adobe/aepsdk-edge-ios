@@ -39,11 +39,11 @@ class KonductorIntegrationTests: FunctionalTestBase {
     private let exEdgeInteractUrl = URL(string: "https://edge.adobedc.net/ee/v1/interact")! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
     
-    private var konductorEnvironment: KonductorEnvironment = .prod
+    private var edgeNetworkEnvironment: EdgeNetworkEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint? = nil
     
-    /// Konductor environment levels that correspond to their deployment environment levels
-    enum KonductorEnvironment: String {
+    /// Edge Network (Konductor) environment levels that correspond to their deployment environment levels
+    enum EdgeNetworkEnvironment: String {
         /// Production
         case prod
         /// Pre-production - aka: staging
@@ -108,10 +108,10 @@ class KonductorIntegrationTests: FunctionalTestBase {
         //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         
         // Extract Konductor environment level from shell environment
-        if let environment = extractEnvironmentVariable(keyName: "KONDUCTOR_ENVIRONMENT", enum: KonductorEnvironment.self) {
+        if let environment = extractEnvironmentVariable(keyName: "EDGE_NETWORK_ENVIRONMENT", enum: EdgeNetworkEnvironment.self) {
             self.konductorEnvironment = environment
         }
-        print("Using Konductor environment: \(konductorEnvironment.rawValue)")
+        print("Using Edge Network environment: \(konductorEnvironment.rawValue)")
         // Extract Edge location hint from shell environment
         if let locationHint = extractEnvironmentVariable(keyName: "EDGE_LOCATION_HINT", enum: EdgeLocationHint.self) {
             self.edgeLocationHint = locationHint

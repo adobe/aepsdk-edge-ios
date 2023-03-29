@@ -46,7 +46,7 @@
 		2EDFBCF02899B7CD00D22B25 /* EdgePathOverwriteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDFBCEF2899B7CD00D22B25 /* EdgePathOverwriteTests.swift */; };
 		423B5033D43ADB49049383FB /* Pods_FunctionalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B13510405D14B13EFD1B58A /* Pods_FunctionalTests.framework */; };
 		4C675E9529D3A85900E1996E /* AEPEdge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D444995F2519506B0093B364 /* AEPEdge.framework */; };
-		4C675EA129D3A8EF00E1996E /* KonductorIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C675E9D29D3A8EF00E1996E /* KonductorIntegrationTests.swift */; };
+		4C675EA129D3A8EF00E1996E /* EdgeNetworkIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C675E9D29D3A8EF00E1996E /* EdgeNetworkIntegrationTests.swift */; };
 		4C675EA429D3A8EF00E1996E /* FunctionalTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C675EA029D3A8EF00E1996E /* FunctionalTestNetworkService.swift */; };
 		4C675EA529D3A90600E1996E /* CountDownLatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BBB74248DC54F00775DAC /* CountDownLatch.swift */; };
 		4C675EA629D3A90600E1996E /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
@@ -261,8 +261,8 @@
 		2EDD05D2286EAA7000229CB2 /* TestApptvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApptvOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EDFBCEF2899B7CD00D22B25 /* EdgePathOverwriteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgePathOverwriteTests.swift; sourceTree = "<group>"; };
 		316EF062B0B622235F6BB384 /* Pods_TestAppiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestAppiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4C675E9129D3A85900E1996E /* KonductorIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KonductorIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		4C675E9D29D3A8EF00E1996E /* KonductorIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = KonductorIntegrationTests.swift; path = Tests/KonductorIntegrationTests/KonductorIntegrationTests.swift; sourceTree = "<group>"; };
+		4C675E9129D3A85900E1996E /* EdgeNetworkIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EdgeNetworkIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C675E9D29D3A8EF00E1996E /* EdgeNetworkIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EdgeNetworkIntegrationTests.swift; path = Tests/KonductorIntegrationTests/EdgeNetworkIntegrationTests.swift; sourceTree = "<group>"; };
 		4C675EA029D3A8EF00E1996E /* FunctionalTestNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FunctionalTestNetworkService.swift; path = Tests/KonductorIntegrationTests/FunctionalTestNetworkService.swift; sourceTree = "<group>"; };
 		4C88DC5A29D3AC7800D2506A /* locationHint.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = locationHint.json; path = Tests/KonductorIntegrationTests/resources/locationHint.json; sourceTree = "<group>"; };
 		5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -475,14 +475,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4C675E9C29D3A8A900E1996E /* KonductorIntegrationTests */ = {
+		4C675E9C29D3A8A900E1996E /* EdgeNetworkIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
 				4C88DC5929D3ABD200D2506A /* resources */,
 				4C675EA029D3A8EF00E1996E /* FunctionalTestNetworkService.swift */,
-				4C675E9D29D3A8EF00E1996E /* KonductorIntegrationTests.swift */,
+				4C675E9D29D3A8EF00E1996E /* EdgeNetworkIntegrationTests.swift */,
 			);
-			name = KonductorIntegrationTests;
+			name = EdgeNetworkIntegrationTests;
 			sourceTree = "<group>";
 		};
 		4C88DC5929D3ABD200D2506A /* resources */ = {
@@ -569,7 +569,7 @@
 		D4D5B4DE242EBB1600CAB6E4 = {
 			isa = PBXGroup;
 			children = (
-				4C675E9C29D3A8A900E1996E /* KonductorIntegrationTests */,
+				4C675E9C29D3A8A900E1996E /* EdgeNetworkIntegrationTests */,
 				D4D5B4E9242EBB1600CAB6E4 /* Sources */,
 				D4D5B4F1242EBD2200CAB6E4 /* UnitTests */,
 				D4D5B4F2242EBFAE00CAB6E4 /* FunctionalTests */,
@@ -589,7 +589,7 @@
 				D4D5B57A2432977F00CAB6E4 /* TestAppiOS.app */,
 				D444995F2519506B0093B364 /* AEPEdge.framework */,
 				2EDD05D2286EAA7000229CB2 /* TestApptvOS.app */,
-				4C675E9129D3A85900E1996E /* KonductorIntegrationTests.xctest */,
+				4C675E9129D3A85900E1996E /* EdgeNetworkIntegrationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -757,9 +757,9 @@
 			productReference = 2EDD05D2286EAA7000229CB2 /* TestApptvOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		4C675E9029D3A85900E1996E /* KonductorIntegrationTests */ = {
+		4C675E9029D3A85900E1996E /* EdgeNetworkIntegrationTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4C675E9829D3A85900E1996E /* Build configuration list for PBXNativeTarget "KonductorIntegrationTests" */;
+			buildConfigurationList = 4C675E9829D3A85900E1996E /* Build configuration list for PBXNativeTarget "EdgeNetworkIntegrationTests" */;
 			buildPhases = (
 				495A2CC4071C68225779AB0E /* [CP] Check Pods Manifest.lock */,
 				4C675E8D29D3A85900E1996E /* Sources */,
@@ -772,9 +772,9 @@
 			dependencies = (
 				4C675E9729D3A85900E1996E /* PBXTargetDependency */,
 			);
-			name = KonductorIntegrationTests;
+			name = EdgeNetworkIntegrationTests;
 			productName = KonductorIntegrationTests;
-			productReference = 4C675E9129D3A85900E1996E /* KonductorIntegrationTests.xctest */;
+			productReference = 4C675E9129D3A85900E1996E /* EdgeNetworkIntegrationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		D444995E2519506B0093B364 /* AEPEdge */ = {
@@ -908,7 +908,7 @@
 				D444995E2519506B0093B364 /* AEPEdge */,
 				D4D5B5202432599B00CAB6E4 /* UnitTests */,
 				D4D5B53224325AB700CAB6E4 /* FunctionalTests */,
-				4C675E9029D3A85900E1996E /* KonductorIntegrationTests */,
+				4C675E9029D3A85900E1996E /* EdgeNetworkIntegrationTests */,
 				D4D5B5792432977F00CAB6E4 /* TestAppiOS */,
 				D496756B25117262001F5F95 /* AEPEdgeXCF */,
 				2EDD05BE286EAA7000229CB2 /* TestApptvOS */,
@@ -1306,7 +1306,7 @@
 				4C675EAC29D3A90600E1996E /* TestableEdge.swift in Sources */,
 				4C675EAD29D3A90600E1996E /* TestXDMSchema.swift in Sources */,
 				4C675EA429D3A8EF00E1996E /* FunctionalTestNetworkService.swift in Sources */,
-				4C675EA129D3A8EF00E1996E /* KonductorIntegrationTests.swift in Sources */,
+				4C675EA129D3A8EF00E1996E /* EdgeNetworkIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1958,7 +1958,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4C675E9829D3A85900E1996E /* Build configuration list for PBXNativeTarget "KonductorIntegrationTests" */ = {
+		4C675E9829D3A85900E1996E /* Build configuration list for PBXNativeTarget "EdgeNetworkIntegrationTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4C675E9929D3A85900E1996E /* Debug */,

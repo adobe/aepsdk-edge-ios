@@ -15,8 +15,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4C675E9029D3A85900E1996E"
-            BuildableName = "KonductorIntegrationTests.xctest"
-            BlueprintName = "KonductorIntegrationTests"
+            BuildableName = "EdgeNetworkIntegrationTests.xctest"
+            BlueprintName = "EdgeNetworkIntegrationTests"
             ReferencedContainer = "container:AEPEdge.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -27,8 +27,8 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "KONDUCTOR_ENVIRONMENT"
-            value = "$(KONDUCTOR_ENVIRONMENT)"
+            key = "EDGE_NETWORK_ENVIRONMENT"
+            value = "$(EDGE_NETWORK_ENVIRONMENT)"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
@@ -39,8 +39,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4C675E9029D3A85900E1996E"
-               BuildableName = "KonductorIntegrationTests.xctest"
-               BlueprintName = "KonductorIntegrationTests"
+               BuildableName = "EdgeNetworkIntegrationTests.xctest"
+               BlueprintName = "EdgeNetworkIntegrationTests"
                ReferencedContainer = "container:AEPEdge.xcodeproj">
             </BuildableReference>
          </TestableReference>

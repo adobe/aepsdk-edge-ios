@@ -17,7 +17,7 @@ target 'UnitTests' do
   pod 'AEPCore'
 end
 
-target 'KonductorIntegrationTests' do
+target 'EdgeNetworkIntegrationTests' do
   pod 'AEPCore'
   pod 'AEPEdgeIdentity'
   pod 'AEPEdgeConsent'
