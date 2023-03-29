@@ -52,7 +52,7 @@ class KonductorIntegrationTests: FunctionalTestBase {
         case int
     }
     
-    /// All location hint values available for the Edge network extension
+    /// All location hint values available for the Edge Network extension
     enum EdgeLocationHint: String {
         /// Oregon, USA
         case or2
@@ -107,7 +107,7 @@ class KonductorIntegrationTests: FunctionalTestBase {
         //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         
-        // Extract Konductor environment level from shell environment
+        // Extract Edge Network environment level from shell environment
         if let environment = extractEnvironmentVariable(keyName: "EDGE_ENVIRONMENT", enum: EdgeEnvironment.self) {
             self.edgeEnvironment = environment
         }
