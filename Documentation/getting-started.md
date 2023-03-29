@@ -14,11 +14,11 @@ The Adobe Experience Platform Edge Network extension has the following peer depe
 5. Select the **Datastream** you would like to use per environment. Read more about [datastreams](#datastreams) below.
 6. Set up the **Domain configuration** by either using the automatically populated domin, or a first party domain mapped to an Adobe-provisioned Edge Network domain. For more information, see [domain configuration](#domain-configuration) below.
 7. Select **Save**.
-8. Follow the [publishing process](https://aep-sdks.gitbook.io/docs/getting-started/create-a-mobile-property#publish-the-configuration) to update SDK configuration.
+8. Follow the [publishing process](https://developer.adobe.com/client-sdks/documentation/getting-started/create-a-mobile-property/#publish-the-configuration) to update SDK configuration.
 
 ### Datastreams
 
-If no datastream was previously created, see [Configure datastreams](https://aep-sdks.gitbook.io/docs/getting-started/configure-datastreams) before moving to the next step.
+If no datastream was previously created, see [Configure datastreams](https://developer.adobe.com/client-sdks/documentation/getting-started/configure-datastreams/) before moving to the next step.
 
 Select the desired datastream per each environment from the corresponding drop-down lists. If your organization uses multiple sandboxes, select the **Sandbox** first, then select the **Datastream** for each environment.
 
