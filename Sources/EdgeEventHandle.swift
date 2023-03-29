@@ -49,7 +49,7 @@ public class EdgeEventHandle: NSObject, Codable {
             }
         }
 
-        payload = tempPayload.isEmpty ? nil : tempPayload
+        payload = tempPayload.isEmpty ? [] : tempPayload
     }
 
     public func encode(to encoder: Encoder) throws {
