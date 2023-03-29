@@ -27,8 +27,8 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "EDGE_NETWORK_ENVIRONMENT"
-            value = "$(EDGE_NETWORK_ENVIRONMENT)"
+            key = "EDGE_ENVIRONMENT"
+            value = "$(EDGE_ENVIRONMENT)"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

@@ -69,4 +69,4 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Execute Edge Network integration tests
-      run: make edge-network-integration-test EDGE_NETWORK_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+      run: make edge-network-integration-test EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}

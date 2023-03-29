@@ -129,14 +129,14 @@ test-version-update:
 
 # Runs the Edge Network (Konductor) integration tests after installing pod dependencies
 # Usage: 
-# make edge-network-integration-test EDGE_NETWORK_ENVIRONMENT=<environment> EDGE_LOCATION_HINT=<location_hint>
-# If EDGE_NETWORK_ENVIRONMENT is not specified, test target will use its default value.
+# make edge-network-integration-test EDGE_ENVIRONMENT=<environment> EDGE_LOCATION_HINT=<location_hint>
+# If EDGE_ENVIRONMENT is not specified, test target will use its default value.
 .SILENT: edge-network-integration-test # Silences Makefile's automatic echo of commands
 edge-network-integration-test: pod-install; \
-	if [ -z "$$EDGE_NETWORK_ENVIRONMENT" ]; then \
+	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
 		echo ''; \
 		echo '----------------------- WARNING -------------------------------'; \
-		echo 'EDGE_NETWORK_ENVIRONMENT was NOT set; the test will use its default value.'; \
+		echo 'EDGE_ENVIRONMENT was NOT set; the test will use its default value.'; \
 		echo '---------------------------------------------------------------'; \
 		echo ''; \
 	fi; \
@@ -145,7 +145,7 @@ edge-network-integration-test: pod-install; \
 	-scheme EdgeNetworkIntegrationTests \
 	-destination 'platform=iOS Simulator,name=iPhone 14' \
 	-derivedDataPath build/out \
-	EDGE_NETWORK_ENVIRONMENT=$(EDGE_NETWORK_ENVIRONMENT) \
+	EDGE_ENVIRONMENT=$(EDGE_ENVIRONMENT) \
 	EDGE_LOCATION_HINT=$(EDGE_LOCATION_HINT)
 
 
