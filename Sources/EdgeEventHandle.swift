@@ -40,16 +40,17 @@ public class EdgeEventHandle: NSObject, Codable {
         eventIndex = try values.decodeIfPresent(Int.self, forKey: .eventIndex)
         type = try values.decodeIfPresent(String.self, forKey: .type)
 
-        var tempPayload: [[String: Any]] = []
+        var tempPayload: [[String: Any]]?
         if let anyCodablePayload = try? values.decodeIfPresent([[String: AnyCodable]].self, forKey: .payload) {
+            tempPayload = []
             for item in anyCodablePayload {
                 if let itemAnyDictionary = AnyCodable.toAnyDictionary(dictionary: item) {
-                    tempPayload.append(itemAnyDictionary)
+                    tempPayload?.append(itemAnyDictionary)
                 }
             }
         }
 
-        payload = tempPayload.isEmpty ? nil : tempPayload
+        payload = tempPayload
     }
 
     public func encode(to encoder: Encoder) throws {
