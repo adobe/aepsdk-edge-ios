@@ -122,7 +122,7 @@ test-integration-upstream: pod-install; \
 	xcodebuild test \
 	-quiet \
 	-workspace $(PROJECT_NAME).xcworkspace \
-	-scheme EdgeNetworkIntegrationTests \
+	-scheme UpstreamIntegrationTests \
 	-destination 'platform=iOS Simulator,name=iPhone 14' \
 	-derivedDataPath build/out \
 	EDGE_ENVIRONMENT=$(EDGE_ENVIRONMENT) \
