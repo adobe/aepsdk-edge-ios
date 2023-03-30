@@ -124,6 +124,7 @@ class UpstreamIntegrationTests: XCTestCase {
         
         // Setup
         let edgeRequestContentExpectation = XCTestExpectation(description: "Edge extension request content listener called")
+        let networkResponseExpectation = XCTestExpectation(description: "Network request callback called")
         // Async testing methodology
         // test cases should fail quickly, if conditions are not met
         // all of a test case's conditions should be tried before the lock condition on a case is released
@@ -143,7 +144,9 @@ class UpstreamIntegrationTests: XCTestCase {
             print("baseURL: \(httpConnection.response?.url?.host)")
             if httpConnection.response?.url?.host == "obumobile5.data.adobedc.net" {
                 XCTAssertEqual(200, httpConnection.responseCode)
+                networkResponseExpectation.fulfill()
             }
+            
         }
         
         // MARK: Response Event assertions
@@ -168,8 +171,7 @@ class UpstreamIntegrationTests: XCTestCase {
             XCTAssertEqual(1800, targetHint["ttlSeconds"] as? Int)
 //            XCTAssertEqual("35", targetHint["hint"] as? String)
             
-            print("LISTENER: \(data)")
-            Log.debug(label: self.LOG_SOURCE, "LISTENER: \(data)")
+            Log.debug(label: self.LOG_SOURCE, "LISTENER: \(String(describing: data))")
 //            XCTAssertEqual(true, data?[MessagingConstants.Event.Data.Key.REFRESH_MESSAGES] as? Bool)
             edgeRequestContentExpectation.fulfill()
         }
@@ -193,7 +195,7 @@ class UpstreamIntegrationTests: XCTestCase {
         })
         
         // verify
-        wait(for: [edgeRequestContentExpectation], timeout: asyncTimeout)
+        wait(for: [edgeRequestContentExpectation, networkResponseExpectation], timeout: asyncTimeout)
     }
 }
 
