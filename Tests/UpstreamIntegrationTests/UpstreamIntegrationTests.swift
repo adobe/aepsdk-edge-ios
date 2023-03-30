@@ -42,34 +42,6 @@ class UpstreamIntegrationTests: FunctionalTestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint? = nil
     
-    /// Edge Network (Konductor) environment levels that correspond to their deployment environment levels
-    enum EdgeEnvironment: String {
-        /// Production
-        case prod
-        /// Pre-production - aka: staging
-        case preProd = "pre-prod"
-        /// Integration - aka: development
-        case int
-    }
-    
-    /// All location hint values available for the Edge Network extension
-    enum EdgeLocationHint: String {
-        /// Oregon, USA
-        case or2
-        /// Virginia, USA
-        case va6
-        /// Ireland
-        case irl1
-        /// India
-        case ind1
-        /// Japan
-        case jpn3
-        /// Singapore
-        case sgp3
-        /// Australia
-        case aus3
-    }
-    
     private let testingDelegate = NetworkTestingDelegate()
     
     let LOG_SOURCE = "SampleFunctionalTests"
@@ -86,19 +58,7 @@ class UpstreamIntegrationTests: FunctionalTestBase {
         super.setUp()
         continueAfterFailure = false
         
-        func extractEnvironmentVariable<T: RawRepresentable>(keyName: String, enum: T.Type) -> T? where T.RawValue == String {
-            guard let environmentString = ProcessInfo.processInfo.environment[keyName] else {
-                print("Unable to find valid \(keyName) value (raw value: \(String(describing: ProcessInfo.processInfo.environment[keyName]))).")
-                return nil
-            }
-            
-            guard let enumCase = T(rawValue: environmentString) else {
-                print("Unable to create valid enum case of type \(T.Type.self) from environment variable value: \(environmentString)")
-                return nil
-            }
-            
-            return enumCase
-        }
+        
         
         // hub shared state update for extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge), Edge extension, IdentityEdge XDM shared state and Config shared state updates
         //        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
@@ -108,12 +68,12 @@ class UpstreamIntegrationTests: FunctionalTestBase {
         //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         
         // Extract Edge Network environment level from shell environment
-        if let environment = extractEnvironmentVariable(keyName: "EDGE_ENVIRONMENT", enum: EdgeEnvironment.self) {
+        if let environment = EdgeEnvironment() {
             self.edgeEnvironment = environment
         }
-        print("Using Edge Network environment: \(konductorEnvironment.rawValue)")
+        print("Using Edge Network environment: \(edgeEnvironment.rawValue)")
         // Extract Edge location hint from shell environment
-        if let locationHint = extractEnvironmentVariable(keyName: "EDGE_LOCATION_HINT", enum: EdgeLocationHint.self) {
+        if let locationHint = EdgeLocationHint() {
             self.edgeLocationHint = locationHint
         }
         
