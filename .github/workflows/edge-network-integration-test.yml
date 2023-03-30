@@ -1,5 +1,5 @@
-# Action to execute Edge Network (Konductor) integration tests
-name: Edge Network (Konductor) Integration Tests
+# Action to execute upstream integration tests - Edge Network (Konductor)
+name: Integration Tests
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -26,9 +26,9 @@ on:
         type: choice
         description: 'Edge location hint to set before each test (optional)'
         required: false
-        default: '-'
+        default: ''
         options: 
-          - '-' # Interpreted in the test code as no preset location hint; any non-valid location hint string is interpreted this way
+          - '' # Interpreted in the test code as no preset location hint; any non-valid location hint string is interpreted this way
           - 'or2'
           - 'va6'
           - 'irl1'

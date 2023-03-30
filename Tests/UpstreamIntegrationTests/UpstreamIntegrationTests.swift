@@ -31,7 +31,7 @@ class NetworkTestingDelegate: NetworkRequestDelegate {
 }
 
 /// This Test class is an example of usages of the FunctionalTestBase APIs
-class KonductorIntegrationTests: FunctionalTestBase {
+class UpstreamIntegrationTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: ["key1":"value1"])
 //    private let xdmEvent = Event(name: <#T##String#>, type: <#T##String#>, source: <#T##String#>, data: <#T##[String : Any]?#>)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)

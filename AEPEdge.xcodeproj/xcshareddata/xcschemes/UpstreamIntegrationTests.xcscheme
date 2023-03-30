@@ -14,9 +14,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4C675E9029D3A85900E1996E"
-            BuildableName = "EdgeNetworkIntegrationTests.xctest"
-            BlueprintName = "EdgeNetworkIntegrationTests"
+            BlueprintIdentifier = "4CBEE5C129D637170084BC50"
+            BuildableName = "UpstreamIntegrationTests.xctest"
+            BlueprintName = "UpstreamIntegrationTests"
             ReferencedContainer = "container:AEPEdge.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -34,13 +34,12 @@
       </EnvironmentVariables>
       <Testables>
          <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
+            skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4C675E9029D3A85900E1996E"
-               BuildableName = "EdgeNetworkIntegrationTests.xctest"
-               BlueprintName = "EdgeNetworkIntegrationTests"
+               BlueprintIdentifier = "4CBEE5C129D637170084BC50"
+               BuildableName = "UpstreamIntegrationTests.xctest"
+               BlueprintName = "UpstreamIntegrationTests"
                ReferencedContainer = "container:AEPEdge.xcodeproj">
             </BuildableReference>
          </TestableReference>
