@@ -92,27 +92,17 @@ class UpstreamIntegrationTests: XCTestCase {
         MobileCore.registerEventListener(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result", listener: listener)
     }
     
-    /// Loads JSON from static file in the same resource bundle as the test class and casts it into the provided type.
+    /// Converts a JSON string into the provided type.
     ///
     /// NOTE: caller is reponsible for providing the correct casting type for ``JSONSerialization/jsonObject(with:options:)``, otherwise decoding will fail
-    func loadJSONData<T>(fileName: String) -> T? {
-        guard let pathString = Bundle(for: type(of: self)).path(forResource: fileName, ofType: "json") else {
-            XCTFail("\(fileName).json not found")
-            return nil
-        }
-
-        guard let jsonString = try? String(contentsOfFile: pathString, encoding: .utf8) else {
-            XCTFail("Unable to convert \(fileName).json to String")
-            return nil
-        }
-
+    func convertToJSON<T>(_ jsonString: String) -> T? {
         guard let jsonData = jsonString.data(using: .utf8) else {
-            XCTFail("Unable to convert \(fileName).json to Data")
+            XCTFail("Unable to convert provided JSON string to Data: \(jsonString)")
             return nil
         }
-
+        
         guard let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? T else {
-            XCTFail("Unable to convert \(fileName).json to JSON dictionary")
+            XCTFail("Unable to convert provided JSON string to JSON type \(T.self)")
             return nil
         }
         return jsonDictionary
@@ -149,6 +139,28 @@ class UpstreamIntegrationTests: XCTestCase {
             
         }
         
+        let validationJSON = #"""
+        {
+          "payload": [
+            {
+              "ttlSeconds" : 1800,
+              "scope" : "Target",
+              "hint" : "35"
+            },
+            {
+              "ttlSeconds" : 1800,
+              "scope" : "AAM",
+              "hint" : "9"
+            },
+            {
+              "ttlSeconds" : 1800,
+              "scope" : "EdgeNetwork",
+              "hint" : "or2"
+            }
+          ]
+        }
+        """#
+        
         // MARK: Response Event assertions
         registerEdgeLocationHintListener() { event in
             XCTAssertNotNil(event)
@@ -160,7 +172,7 @@ class UpstreamIntegrationTests: XCTestCase {
             }
             print()
             let targetHint = payloadArray[0]
-            guard let locationHintCorrectValue: [String:Any] = self.loadJSONData(fileName: "locationHint"), let locationHintPayload = locationHintCorrectValue["payload"] as? [[String:Any]] else {
+            guard let locationHintCorrectValue: [String:Any] = self.convertToJSON(validationJSON), let locationHintPayload = locationHintCorrectValue["payload"] as? [[String:Any]] else {
                 XCTFail()
                 return
             }

@@ -52,7 +52,6 @@
 		4CBEE5D829D637170084BC50 /* AEPEdge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D444995F2519506B0093B364 /* AEPEdge.framework */; };
 		4CBEE5E629D637E90084BC50 /* UpstreamIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5E229D637E90084BC50 /* UpstreamIntegrationTests.swift */; };
 		4CBEE5E729D637E90084BC50 /* IntegrationTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5E329D637E90084BC50 /* IntegrationTestNetworkService.swift */; };
-		4CBEE5E829D637E90084BC50 /* locationHint.json in Resources */ = {isa = PBXBuildFile; fileRef = 4CBEE5E529D637E90084BC50 /* locationHint.json */; };
 		4CBEE5EB29D63B180084BC50 /* UpstreamIntegrationTestEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5EA29D63B180084BC50 /* UpstreamIntegrationTestEnums.swift */; };
 		4CBEE5EC29D648F90084BC50 /* FileManager+Testable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21888AF22555F9FC005677ED /* FileManager+Testable.swift */; };
 		4CBEE5ED29D649040084BC50 /* FunctionalTestConst.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A473C52485938D00D31710 /* FunctionalTestConst.swift */; };
@@ -255,7 +254,6 @@
 		4CBEE5E029D637170084BC50 /* UpstreamIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UpstreamIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CBEE5E229D637E90084BC50 /* UpstreamIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpstreamIntegrationTests.swift; sourceTree = "<group>"; };
 		4CBEE5E329D637E90084BC50 /* IntegrationTestNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegrationTestNetworkService.swift; sourceTree = "<group>"; };
-		4CBEE5E529D637E90084BC50 /* locationHint.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = locationHint.json; sourceTree = "<group>"; };
 		4CBEE5EA29D63B180084BC50 /* UpstreamIntegrationTestEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpstreamIntegrationTestEnums.swift; sourceTree = "<group>"; };
 		5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E8ABC044CA69B7B3B6DA2B8 /* Pods-UpstreamIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UpstreamIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-UpstreamIntegrationTests/Pods-UpstreamIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -475,18 +473,9 @@
 				4CBEE5E929D63AFA0084BC50 /* util */,
 				4CBEE5E229D637E90084BC50 /* UpstreamIntegrationTests.swift */,
 				4CBEE5E329D637E90084BC50 /* IntegrationTestNetworkService.swift */,
-				4CBEE5E429D637E90084BC50 /* resources */,
 			);
 			name = UpstreamIntegrationTests;
 			path = Tests/UpstreamIntegrationTests;
-			sourceTree = "<group>";
-		};
-		4CBEE5E429D637E90084BC50 /* resources */ = {
-			isa = PBXGroup;
-			children = (
-				4CBEE5E529D637E90084BC50 /* locationHint.json */,
-			);
-			path = resources;
 			sourceTree = "<group>";
 		};
 		4CBEE5E929D63AFA0084BC50 /* util */ = {
@@ -932,7 +921,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4CBEE5E829D637E90084BC50 /* locationHint.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
