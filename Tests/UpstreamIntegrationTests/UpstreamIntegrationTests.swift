@@ -10,7 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
+@testable import AEPCore
 import AEPEdge
 import AEPEdgeIdentity
 import AEPServices
@@ -30,15 +30,8 @@ class NetworkTestingDelegate: NetworkRequestDelegate {
     }
 }
 
-/// This Test class is an example of usages of the FunctionalTestBase APIs
-class UpstreamIntegrationTests: FunctionalTestBase {
-    private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: ["key1":"value1"])
-//    private let xdmEvent = Event(name: <#T##String#>, type: <#T##String#>, source: <#T##String#>, data: <#T##[String : Any]?#>)
-    private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private let exEdgeInteractUrlString = "https://edge.adobedc.net/ee/v1/interact"
-    private let exEdgeInteractUrl = URL(string: "https://edge.adobedc.net/ee/v1/interact")! // swiftlint:disable:this force_unwrapping
-    private let responseBody = "{\"test\": \"json\"}"
-    
+/// This test class validates proper intergration with upstream services, specifically Edge Network
+class UpstreamIntegrationTests: XCTestCase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint? = nil
     
@@ -48,24 +41,10 @@ class UpstreamIntegrationTests: FunctionalTestBase {
     
     let asyncTimeout: TimeInterval = 10
 
-    public class override func setUp() {
-        super.setUp()
-        FunctionalTestBase.debugEnabled = true
-        
-    }
-
     override func setUp() {
-        super.setUp()
-        continueAfterFailure = false
-        
-        
-        
-        // hub shared state update for extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge), Edge extension, IdentityEdge XDM shared state and Config shared state updates
-        //        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
-        //
-        //        // expectations for update config request&response events
-        //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
-        //        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let networkService = FunctionalTestNetworkService()
+        networkService.testingDelegate = testingDelegate
+        ServiceProvider.shared.networkService = networkService
         
         // Extract Edge Network environment level from shell environment
         if let environment = EdgeEnvironment() {
@@ -77,10 +56,6 @@ class UpstreamIntegrationTests: FunctionalTestBase {
             self.edgeLocationHint = locationHint
         }
         
-    
-//        print("all env vars: \(ProcessInfo.processInfo.environment)")
-        
-        // Wait for async registration because the EventHub is already started in FunctionalTestBase
         let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
         MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
@@ -98,12 +73,17 @@ class UpstreamIntegrationTests: FunctionalTestBase {
         else {
             print("No preset Edge location hint is being used for this test.")
         }
-        
-//        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
+    }
+    
+    public override func tearDown() {
+        super.tearDown()
 
-//        assertExpectedEvents(ignoreUnexpectedEvents: false)
-        resetTestExpectations()
-        registerNetworkServiceTestingDelegate(delegate: testingDelegate)
+        // to revisit when AMSDK-10169 is available
+        // wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
+        usleep(200000)
+        EventHub.reset()
+        UserDefaults.clearAll()
+        FileManager.default.clearCache()
     }
     
     // TODO: create specific listeners for type: Edge + source: * (wildcard) and capture all the response handles for the test event
@@ -112,26 +92,27 @@ class UpstreamIntegrationTests: FunctionalTestBase {
         MobileCore.registerEventListener(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result", listener: listener)
     }
     
-    func readJSONData(fileName: String) -> [String:Any]? {
+    /// Loads JSON from static file in the same resource bundle as the test class and casts it into the provided type.
+    ///
+    /// NOTE: caller is reponsible for providing the correct casting type for ``JSONSerialization/jsonObject(with:options:)``, otherwise decoding will fail
+    func loadJSONData<T>(fileName: String) -> T? {
         guard let pathString = Bundle(for: type(of: self)).path(forResource: fileName, ofType: "json") else {
-//            fatalError("\(fileName).json not found")
+            XCTFail("\(fileName).json not found")
             return nil
         }
 
         guard let jsonString = try? String(contentsOfFile: pathString, encoding: .utf8) else {
-//            fatalError("Unable to convert \(fileName).json to String")
+            XCTFail("Unable to convert \(fileName).json to String")
             return nil
         }
-
-        print("The JSON string is: \(jsonString)")
 
         guard let jsonData = jsonString.data(using: .utf8) else {
-//            fatalError("Unable to convert \(fileName).json to Data")
+            XCTFail("Unable to convert \(fileName).json to Data")
             return nil
         }
 
-        guard let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:Any] else {
-//            fatalError("Unable to convert \(fileName).json to JSON dictionary")
+        guard let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? T else {
+            XCTFail("Unable to convert \(fileName).json to JSON dictionary")
             return nil
         }
         return jsonDictionary
@@ -170,18 +151,18 @@ class UpstreamIntegrationTests: FunctionalTestBase {
             XCTAssertNotNil(event)
             let data = event.data
             XCTAssertNotNil(data)
-//            data["payload"]
             guard let payloadArray = data?["payload"] as? [[String:Any]] else {
                 XCTFail()
                 return
             }
             print()
             let targetHint = payloadArray[0]
-            guard let locationHintCorrectValue = self.readJSONData(fileName: "locationHint"), let locationHintPayload = locationHintCorrectValue["payload"] as? [[String:Any]] else {
+            guard let locationHintCorrectValue: [String:Any] = self.loadJSONData(fileName: "locationHint"), let locationHintPayload = locationHintCorrectValue["payload"] as? [[String:Any]] else {
                 XCTFail()
                 return
             }
             
+            // TODO: JSON dictionary compare
 //            XCTAssertEqual(locationHintPayload, payloadArray)
             XCTAssertEqual("Target", targetHint["scope"] as? String)
             XCTAssertEqual(1800, targetHint["ttlSeconds"] as? Int)
