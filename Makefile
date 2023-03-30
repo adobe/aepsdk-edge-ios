@@ -135,12 +135,13 @@ test-version-update:
 edge-network-integration-test: pod-install; \
 	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
 		echo ''; \
-		echo '----------------------- WARNING -------------------------------'; \
+		echo '-------------------------- WARNING -------------------------------'; \
 		echo 'EDGE_ENVIRONMENT was NOT set; the test will use its default value.'; \
-		echo '---------------------------------------------------------------'; \
+		echo '------------------------------------------------------------------'; \
 		echo ''; \
 	fi; \
 	xcodebuild test \
+	-quiet \
 	-workspace $(PROJECT_NAME).xcworkspace \
 	-scheme EdgeNetworkIntegrationTests \
 	-destination 'platform=iOS Simulator,name=iPhone 14' \
