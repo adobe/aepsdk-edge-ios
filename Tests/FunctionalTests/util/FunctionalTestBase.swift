@@ -38,7 +38,7 @@ extension EventSpec: Hashable & Equatable {
 class FunctionalTestBase: XCTestCase {
     /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
     private(set) static var isFirstRun: Bool = true
-    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService()
+    private static var networkService: IntegrationTestNetworkService = IntegrationTestNetworkService()
     /// Use this setting to enable debug mode logging in the `FunctionalTestBase`
     static var debugEnabled = false
 
@@ -47,7 +47,7 @@ class FunctionalTestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
         MobileCore.setLogLevel(LogLevel.trace)
-        networkService = FunctionalTestNetworkService()
+        networkService = IntegrationTestNetworkService()
         ServiceProvider.shared.networkService = networkService
     }
 

@@ -42,7 +42,7 @@ class UpstreamIntegrationTests: XCTestCase {
     let asyncTimeout: TimeInterval = 10
 
     override func setUp() {
-        let networkService = FunctionalTestNetworkService()
+        let networkService = IntegrationTestNetworkService()
         networkService.testingDelegate = testingDelegate
         ServiceProvider.shared.networkService = networkService
         
