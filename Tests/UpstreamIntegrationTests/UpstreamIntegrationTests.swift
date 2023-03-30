@@ -94,7 +94,7 @@ class UpstreamIntegrationTests: XCTestCase {
     
     /// Converts a JSON string into the provided type.
     ///
-    /// NOTE: caller is reponsible for providing the correct casting type for ``JSONSerialization/jsonObject(with:options:)``, otherwise decoding will fail
+    /// NOTE: caller is reponsible for providing the correct casting type resulting JSON, otherwise decoding will fail
     func convertToJSON<T>(_ jsonString: String) -> T? {
         guard let jsonData = jsonString.data(using: .utf8) else {
             XCTFail("Unable to convert provided JSON string to Data: \(jsonString)")
