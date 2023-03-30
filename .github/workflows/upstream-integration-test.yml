@@ -15,7 +15,7 @@ on:
         required: false
       environment:
         type: choice
-        description: 'Edge Network (Konductor) environment to test'
+        description: 'Edge Network environment to test'
         required: true
         default: 'prod'
         options:
@@ -69,4 +69,4 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Execute Edge Network integration tests
-      run: make edge-network-integration-test EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+      run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
