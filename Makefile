@@ -107,7 +107,7 @@ test-tvos:
 	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 
-.SILENT: test-integration-upstream # Silences Makefile's automatic echo of commands
+# .SILENT: test-integration-upstream # Silences Makefile's automatic echo of commands
 
 # Runs the Edge Network (Konductor) integration tests after installing pod dependencies
 # Usage: 
