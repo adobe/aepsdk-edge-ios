@@ -106,9 +106,27 @@ test-tvos:
 	fi; \
 	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
-
-# .SILENT: test-integration-upstream # Silences Makefile's automatic echo of commands
-
+# Runs the Edge Network (Konductor) integration tests after installing pod dependencies
+# Usage: 
+# make test-integration-upstream EDGE_ENVIRONMENT=<environment> EDGE_LOCATION_HINT=<location_hint>
+# If EDGE_ENVIRONMENT is not specified, test target will use its default value.
+.SILENT: test-integration-upstream # Silences Makefile's automatic echo of commands
+test-integration-upstream: pod-install; \
+	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
+		echo ''; \
+		echo '-------------------------- WARNING -------------------------------'; \
+		echo 'EDGE_ENVIRONMENT was NOT set; the test will use its default value.'; \
+		echo '------------------------------------------------------------------'; \
+		echo ''; \
+	fi; \
+	xcodebuild test \
+	-quiet \
+	-workspace $(PROJECT_NAME).xcworkspace \
+	-scheme UpstreamIntegrationTests \
+	-destination 'platform=iOS Simulator,name=iPhone 14' \
+	-derivedDataPath build/out \
+	EDGE_ENVIRONMENT=$(EDGE_ENVIRONMENT) \
+	EDGE_LOCATION_HINT=$(EDGE_LOCATION_HINT)
 
 install-githook:
 	git config core.hooksPath .githooks
@@ -130,24 +148,3 @@ test-podspec:
 
 test-version-update:
 	(sh ./Script/update-versions.sh -n Edge -v 9.9.9)
-
-# Runs the Edge Network (Konductor) integration tests after installing pod dependencies
-# Usage: 
-# make test-integration-upstream EDGE_ENVIRONMENT=<environment> EDGE_LOCATION_HINT=<location_hint>
-# If EDGE_ENVIRONMENT is not specified, test target will use its default value.
-konductor-integration: pod-install; \
-	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
-		echo ''; \
-		echo '-------------------------- WARNING -------------------------------'; \
-		echo 'EDGE_ENVIRONMENT was NOT set; the test will use its default value.'; \
-		echo '------------------------------------------------------------------'; \
-		echo ''; \
-	fi; \
-	xcodebuild test \
-	-quiet \
-	-workspace $(PROJECT_NAME).xcworkspace \
-	-scheme UpstreamIntegrationTests \
-	-destination 'platform=iOS Simulator,name=iPhone 14' \
-	-derivedDataPath build/out \
-	EDGE_ENVIRONMENT=$(EDGE_ENVIRONMENT) \
-	EDGE_LOCATION_HINT=$(EDGE_LOCATION_HINT)

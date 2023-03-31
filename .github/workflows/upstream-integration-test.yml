@@ -39,7 +39,6 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-
   test-integration-upstream:
     # The type of runner that the job will run on
     runs-on: macos-latest
@@ -70,4 +69,4 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Execute Edge Network integration tests
-      run: make konductor-integration EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+      run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
