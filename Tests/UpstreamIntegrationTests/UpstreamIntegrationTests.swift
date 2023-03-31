@@ -402,6 +402,29 @@ class UpstreamIntegrationTests: XCTestCase {
           }
         """#
         
+        let multiline5 = #"""
+          {
+              "payload": [
+              {
+                "ttlSeconds" : 1800,
+                "scope" : "Target",
+                "hint" : "35"
+              },
+              {
+                "ttlSeconds" : 1800,
+                "scope" : "AAM",
+                "hint" : "9"
+              },
+              {
+                "ttlSeconds" : 1800,
+                "scope" : "EdgeNetwork",
+                "hint" : "or2"
+              }
+            ]
+          }
+        """#
+        
+        
         let result = try? JSONDecoder().decode(JSON.self, from: multiline3.data(using: .utf8)!)
         let result2 = try? JSONDecoder().decode(JSON.self, from: multiline4.data(using: .utf8)!)
 
