@@ -135,7 +135,7 @@ test-version-update:
 # Usage: 
 # make test-integration-upstream EDGE_ENVIRONMENT=<environment> EDGE_LOCATION_HINT=<location_hint>
 # If EDGE_ENVIRONMENT is not specified, test target will use its default value.
-test-integration-upstream: pod-install; \
+test-integration: pod-install; \
 	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
 		echo ''; \
 		echo '-------------------------- WARNING -------------------------------'; \
