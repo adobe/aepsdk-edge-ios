@@ -70,3 +70,8 @@ jobs:
     # Runs a single command using the runners shell
     - name: Execute Edge Network integration tests
       run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+    
+    - name: On failure
+      if: ${{ failure() }}
+      run: |
+        echo 'Job used branch: ' ${{ github.event.inputs.branch }}. Please make sure this is the branch to run off of.
