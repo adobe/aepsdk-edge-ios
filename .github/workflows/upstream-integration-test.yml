@@ -71,6 +71,7 @@ jobs:
     - name: Execute Edge Network integration tests
       run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
     
+    # Potential workflow solutions on job failure
     - name: On failure
       if: ${{ failure() }}
       run: |
