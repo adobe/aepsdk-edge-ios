@@ -76,3 +76,10 @@ jobs:
       if: ${{ failure() }}
       run: |
         echo 'Job used branch: ' ${{ github.event.inputs.branch }}. Please make sure this is the branch to run off of.
+        
+    - uses: kishikawakatsumi/xcresulttool@v1
+      with:
+        path: iosresults.xcresult
+      if: success() || failure()
+      # ^ This is important because the action will be run
+      # even if the test fails in the previous step.
