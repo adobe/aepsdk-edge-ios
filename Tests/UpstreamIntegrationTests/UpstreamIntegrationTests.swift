@@ -86,45 +86,16 @@ class UpstreamIntegrationTests: XCTestCase {
         FileManager.default.clearCache()
     }
     
-    // TODO: create specific listeners for type: Edge + source: * (wildcard) and capture all the response handles for the test event
-    // TODO: create specific listeners for error responses
-    func registerEdgeLocationHintListener(_ listener: @escaping EventListener) {
-        MobileCore.registerEventListener(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result", listener: listener)
-    }
+    // MARK: - Upstream integration test cases
     
-    /// Converts a JSON string into the provided type.
-    ///
-    /// NOTE: caller is reponsible for providing the correct casting type resulting JSON, otherwise decoding will fail
-    func convertToJSON<T>(_ jsonString: String) -> T? {
-        guard let jsonData = jsonString.data(using: .utf8) else {
-            XCTFail("Unable to convert provided JSON string to Data: \(jsonString)")
-            return nil
-        }
-        
-        guard let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? T else {
-            XCTFail("Unable to convert provided JSON string to JSON type \(T.self)")
-            return nil
-        }
-        return jsonDictionary
-    }
-
-    // MARK: sample tests for the FunctionalTest framework usage
-    func testSample_AssertUnexpectedEvents() {
-        // Register a callback with the functional test network service to receive the HTTPConnection object when it's available
-        
+    func testSendEvent_withStandardExperienceEvent_receivesExpectedEventHandles() {
         // Setup
+        // Test expectations that make sure the callbacks fire for:
+        // 1. The network response from Edge Network
+        // 2. The event response handles converted into events, captured by test case event listeners
         let edgeRequestContentExpectation = XCTestExpectation(description: "Edge extension request content listener called")
         let networkResponseExpectation = XCTestExpectation(description: "Network request callback called")
-        // Async testing methodology
-        // test cases should fail quickly, if conditions are not met
-        // all of a test case's conditions should be tried before the lock condition on a case is released
-        // there are 2 main areas to test:
-            // 1. the HTTP code, metadata values, and data types/related validation
-            // 2. the logical content (is the event response what we expect for this type of event sent?
         
-        /// HttpConnection has object `response.URL` which has value: https://obumobile5.data.adobedc.net/ee/v1/interact?configId=d936b4a4-8f13-4d8d-aabc-fcd1874b1ee5&requestId=159AEE9A-45B6-469E-B6FA-FBE506DA2E34
-        /// This is the same as the one set in the edge configuration?
-        /// only need to validate against this one
         // MARK: Network response assertions
         testingDelegate.testCaseCompletion = { httpConnection in
             print("SOURCE: testCaseCompletion: \(httpConnection)")
@@ -178,36 +149,44 @@ class UpstreamIntegrationTests: XCTestCase {
             }
             
             // TODO: JSON dictionary compare
-//            XCTAssertEqual(locationHintPayload, payloadArray)
             XCTAssertEqual("Target", targetHint["scope"] as? String)
             XCTAssertEqual(1800, targetHint["ttlSeconds"] as? Int)
-//            XCTAssertEqual("35", targetHint["hint"] as? String)
             
             Log.debug(label: self.LOG_SOURCE, "LISTENER: \(String(describing: data))")
-//            XCTAssertEqual(true, data?[MessagingConstants.Event.Data.Key.REFRESH_MESSAGES] as? Bool)
             edgeRequestContentExpectation.fulfill()
         }
         
-        // test
+        // Test
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
-        Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
-            guard let data = try? encoder.encode(handles) else {
-//                self.dataContent = "failed to encode EdgeEventHandle"
-                print("failed to encode EdgeEventHandle")
-                return
-            }
-//            self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
-            let result = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
-//            print("HANDLE: \(result)")
-            Log.debug(label: self.LOG_SOURCE, "HANDLE: \(result)")
-            
-        })
+        Edge.sendEvent(experienceEvent: experienceEvent)
         
-        // verify
+        // Verify
         wait(for: [edgeRequestContentExpectation, networkResponseExpectation], timeout: asyncTimeout)
+    }
+    
+    // MARK: - Test helper methods
+    
+    /// Converts a JSON string into the provided type.
+    ///
+    /// NOTE: caller is reponsible for providing the correct casting type resulting JSON, otherwise decoding will fail
+    func convertToJSON<T>(_ jsonString: String) -> T? {
+        guard let jsonData = jsonString.data(using: .utf8) else {
+            XCTFail("Unable to convert provided JSON string to Data: \(jsonString)")
+            return nil
+        }
+        
+        guard let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? T else {
+            XCTFail("Unable to convert provided JSON string to JSON type \(T.self)")
+            return nil
+        }
+        return jsonDictionary
+    }
+    
+    // TODO: create specific listeners for type: Edge + source: * (wildcard) and capture all the response handles for the test event
+    // TODO: create specific listeners for error responses
+    func registerEdgeLocationHintListener(_ listener: @escaping EventListener) {
+        MobileCore.registerEventListener(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result", listener: listener)
     }
 }
 
