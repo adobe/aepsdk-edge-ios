@@ -159,8 +159,17 @@ class UpstreamIntegrationTests: XCTestCase {
                                               data: ["data": ["test": "data"]])
         Edge.sendEvent(experienceEvent: experienceEvent)
         
+        
         // Verify
         wait(for: [edgeRequestContentExpectation, networkResponseExpectation], timeout: asyncTimeout)
+    }
+    
+    func test_testFailureExample() {
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                              data: ["data": ["test": "data"]])
+        
+        XCTAssertEqual("success", "not success")
+        XCTFail("This is an example failure message: \(experienceEvent)")
     }
     
     // MARK: - Test helper methods
