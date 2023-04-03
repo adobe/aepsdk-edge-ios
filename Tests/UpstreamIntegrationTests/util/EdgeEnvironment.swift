@@ -23,9 +23,10 @@ enum EdgeEnvironment: String {
     case int
     
     /// Initializer that gets the value from the environment variable `EDGE_ENVIRONMENT` and creates an `EdgeEnvironment` instance.
-    init?() {
+    init() {
         guard let edgeEnvironment = extractEnvironmentVariable(keyName: "EDGE_ENVIRONMENT", enum: EdgeEnvironment.self) else {
-            return nil
+            self = .prod
+            return
         }
         self = edgeEnvironment
     }

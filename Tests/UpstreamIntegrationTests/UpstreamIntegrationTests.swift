@@ -47,9 +47,7 @@ class UpstreamIntegrationTests: XCTestCase {
         ServiceProvider.shared.networkService = networkService
         
         // Extract Edge Network environment level from shell environment
-        if let environment = EdgeEnvironment() {
-            self.edgeEnvironment = environment
-        }
+        self.edgeEnvironment = EdgeEnvironment()
         print("Using Edge Network environment: \(edgeEnvironment.rawValue)")
         // Extract Edge location hint from shell environment
         if let locationHint = EdgeLocationHint() {
