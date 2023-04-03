@@ -38,7 +38,7 @@ extension EventSpec: Hashable & Equatable {
 class FunctionalTestBase: XCTestCase {
     /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
     private(set) static var isFirstRun: Bool = true
-    private static var networkService: IntegrationTestNetworkService = IntegrationTestNetworkService()
+    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService()
     /// Use this setting to enable debug mode logging in the `FunctionalTestBase`
     static var debugEnabled = false
 
@@ -47,7 +47,7 @@ class FunctionalTestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
         MobileCore.setLogLevel(LogLevel.trace)
-        networkService = IntegrationTestNetworkService()
+        networkService = FunctionalTestNetworkService()
         ServiceProvider.shared.networkService = networkService
     }
 
@@ -68,10 +68,6 @@ class FunctionalTestBase: XCTestCase {
         EventHub.reset()
         UserDefaults.clearAll()
         FileManager.default.clearCache()
-    }
-    
-    func registerNetworkServiceTestingDelegate(delegate: NetworkRequestDelegate) {
-        FunctionalTestBase.networkService.testingDelegate = delegate
     }
     
     /// Reset event and network request expectations and drop the items received until this point
