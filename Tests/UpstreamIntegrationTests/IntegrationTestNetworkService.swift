@@ -14,12 +14,29 @@
 @testable import AEPServices
 import Foundation
 
+/// Implementation of the delegate protocol ``NetworkRequestDelegate``
+class NetworkTestingDelegate: NetworkRequestDelegate {
+    var testCaseCompletion: (HttpConnection) -> ()
+    func handleNetworkResponse(httpConnection: AEPServices.HttpConnection) {
+        print("Delegate received httpConnection: \(httpConnection)")
+        testCaseCompletion(httpConnection)
+    }
+    init() {
+        testCaseCompletion = { httpConnection in
+            
+        }
+    }
+}
+
+/// The delegate protocol used to receive network request responses from the test's ``NetworkService``
 protocol NetworkRequestDelegate: AnyObject {
     func handleNetworkResponse(httpConnection: HttpConnection)
 }
+
 /// Overriding NetworkService used for integration tests, allowing for capture of network responses for testing
 class IntegrationTestNetworkService: NetworkService {
     private let LOG_SOURCE = "IntegrationTestNetworkService"
+    /// The testing delegate which receives the network responses to perform any testing logic
     weak var testingDelegate: NetworkRequestDelegate?
     
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {

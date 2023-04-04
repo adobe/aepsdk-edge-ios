@@ -17,19 +17,6 @@ import AEPServices
 import Foundation
 import XCTest
 
-class NetworkTestingDelegate: NetworkRequestDelegate {
-    var testCaseCompletion: (HttpConnection) -> ()
-    func handleNetworkResponse(httpConnection: AEPServices.HttpConnection) {
-        print("Delegate received httpConnection: \(httpConnection)")
-        testCaseCompletion(httpConnection)
-    }
-    init() {
-        testCaseCompletion = { httpConnection in
-            
-        }
-    }
-}
-
 /// This test class validates proper intergration with upstream services, specifically Edge Network
 class UpstreamIntegrationTests: XCTestCase {
     private var edgeEnvironment: EdgeEnvironment = .prod
@@ -49,6 +36,7 @@ class UpstreamIntegrationTests: XCTestCase {
         // Extract Edge Network environment level from shell environment
         self.edgeEnvironment = EdgeEnvironment()
         print("Using Edge Network environment: \(edgeEnvironment.rawValue)")
+        
         // Extract Edge location hint from shell environment
         if let locationHint = EdgeLocationHint() {
             self.edgeLocationHint = locationHint
@@ -56,14 +44,15 @@ class UpstreamIntegrationTests: XCTestCase {
         
         let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
-        MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
+        // Set environment file ID for specific Edge Network environment
+        setMobileCoreEnvironmentFileID(for: edgeEnvironment)
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
         
-        // Set Edge location hint value if one is set for the test
+        // Set Edge location hint value if one is set for the test target
         if edgeLocationHint != nil {
             print("Setting Edge location hint to: \(String(describing: edgeLocationHint?.rawValue))")
             Edge.setLocationHint(edgeLocationHint?.rawValue)
@@ -188,6 +177,18 @@ class UpstreamIntegrationTests: XCTestCase {
             return nil
         }
         return jsonDictionary
+    }
+    
+    func setMobileCoreEnvironmentFileID(for edgeEnvironment: EdgeEnvironment) {
+        switch edgeEnvironment {
+        case .prod:
+            MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
+        case .preProd:
+            MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
+        case .int:
+            // TODO: create integration environment environment file ID
+            MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
+        }
     }
     
     // TODO: create specific listeners for type: Edge + source: * (wildcard) and capture all the response handles for the test event
