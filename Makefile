@@ -125,7 +125,7 @@ test-integration-upstream: pod-install; \
 	-scheme UpstreamIntegrationTests \
 	-destination 'platform=iOS Simulator,name=iPhone 14' \
 	-derivedDataPath build/out \
-	-resultBundlePath iosresults.xcresult \
+	-resultBundlePath coverage/upstreamIntegrationTest/iosresults.xcresult \
 	-enableCodeCoverage YES \
 	ADB_SKIP_LINT=YES \
 	EDGE_ENVIRONMENT=$(EDGE_ENVIRONMENT) \
