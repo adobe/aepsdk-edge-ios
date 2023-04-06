@@ -27,7 +27,7 @@ class UpstreamIntegrationTests: XCTestCase {
     let LOG_SOURCE = "SampleFunctionalTests"
     
     let asyncTimeout: TimeInterval = 10
-
+    
     override func setUp() {
         let networkService = IntegrationTestNetworkService()
         networkService.testingDelegate = testingDelegate
@@ -62,7 +62,7 @@ class UpstreamIntegrationTests: XCTestCase {
     
     public override func tearDown() {
         super.tearDown()
-
+        
         // to revisit when AMSDK-10169 is available
         // wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
         usleep(200000)
@@ -151,12 +151,39 @@ class UpstreamIntegrationTests: XCTestCase {
         wait(for: [edgeRequestContentExpectation, networkResponseExpectation], timeout: asyncTimeout)
     }
     
-    func test_testFailureExample() {
-        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                              data: ["data": ["test": "data"]])
+    func testJSONComparisonSystem() {
+        let multilineValidation = #"""
+          {
+            "integerCompare": 456,
+            "decimalCompare": 123.123,
+            "stringCompare": "abc",
+            "boolCompare": true,
+            "nullCompare": null,
+            "arrayCompare": [1,2,3],
+            "dictionaryCompare": {
+              "nested1": "value1"
+            }
+          }
+        """#
         
-        XCTAssertEqual("success", "not success")
-        XCTFail("This is an example failure message: \(experienceEvent)")
+        let multilineInput = #"""
+          {
+            "integerCompare": 0,
+            "decimalCompare": 4.123,
+            "stringCompare": "def",
+            "boolCompare": false,
+            "nullCompare": "not null",
+            "arrayCompare": [1,2],
+            "dictionaryCompare": {
+              "nested1different": "value1"
+            }
+          }
+        """#
+
+        let jsonValidation = try? JSONDecoder().decode(JSON.self, from: multilineValidation.data(using: .utf8)!)
+        let jsonInput = try? JSONDecoder().decode(JSON.self, from: multilineInput.data(using: .utf8)!)
+        
+        XCTAssertEqual(jsonValidation, jsonInput)
     }
     
     // MARK: - Test helper methods
