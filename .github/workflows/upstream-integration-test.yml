@@ -1,0 +1,78 @@
+# Action to execute upstream integration tests - Edge Network (Konductor)
+name: Integration Tests
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to use when running integration tests'
+        required: false
+        default: 'main'
+      id:
+        description: 'Identifier for the run (optional)'
+        required: false
+      environment:
+        type: choice
+        description: 'Edge Network environment to test'
+        required: true
+        default: 'prod'
+        options:
+          - prod
+          - pre-prod
+          - int
+      edge-location-hint:
+        type: choice
+        description: 'Edge location hint to set before each test (optional)'
+        required: false
+        default: ''
+        options: 
+          - '' # Interpreted in the test code as no preset location hint; any non-valid location hint string is interpreted this way
+          - 'or2'
+          - 'va6'
+          - 'irl1'
+          - 'ind1'
+          - 'jpn3'
+          - 'sgp3'
+          - 'aus3'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  test-integration-upstream:
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+
+    - name: Job run identifier ${{ github.event.inputs.id }}
+      run: |
+        if [ -z "${{ github.event.inputs.id }}" ]; then \
+          echo No job run identifier was set.
+        else
+          echo 'Job run identifier is:' ${{ inputs.id }}
+        fi;
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.inputs.branch }}
+
+    - name: Cache Cocoapods
+      uses: actions/cache@v3
+      with:
+        path: Pods
+        key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
+
+    # Runs a single command using the runners shell
+    - name: Execute Edge Network integration tests
+      run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+    
+    # Potential workflow solutions on job failure
+    - name: On failure
+      if: ${{ failure() }}
+      run: |
+        echo 'Job used branch: ' ${{ github.event.inputs.branch }}. Please make sure this is the branch to run off of.
