@@ -33,14 +33,12 @@ class UpstreamIntegrationTests: XCTestCase {
         networkService.testingDelegate = testingDelegate
         ServiceProvider.shared.networkService = networkService
         
-        // Extract Edge Network environment level from shell environment
+        // Extract Edge Network environment level from shell environment; see init for default value
         self.edgeEnvironment = EdgeEnvironment()
         print("Using Edge Network environment: \(edgeEnvironment.rawValue)")
         
-        // Extract Edge location hint from shell environment
-        if let locationHint = EdgeLocationHint() {
-            self.edgeLocationHint = locationHint
-        }
+        // Extract Edge location hint from shell environment; see init for default value
+        self.edgeLocationHint = EdgeLocationHint()
         
         let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
