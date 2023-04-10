@@ -17,6 +17,7 @@ import AEPServices
 import Foundation
 import XCTest
 
+
 /// This test class validates proper intergration with upstream services, specifically Edge Network
 class UpstreamIntegrationTests: XCTestCase {
     private var edgeEnvironment: EdgeEnvironment = .prod
@@ -159,10 +160,53 @@ class UpstreamIntegrationTests: XCTestCase {
             "stringCompare": "abc",
             "boolCompare": true,
             "nullCompare": null,
-            "arrayCompare": [1,2,3],
+            "arraySizeCompare": [1,2,3],
+            "arrayValueCompare": [1],
+            "arrayOfObjectsPass": [
+              {
+                "object1": "value1"
+              },
+              {
+                "object2": "value2"
+              }
+            ],
+            "arrayOfObjectsFail": [
+              {
+                "object1": "value1"
+              },
+              {
+                "object2": "value2"
+              }
+            ],
             "dictionaryCompare": {
               "nested1": "value1"
-            }
+            },
+            "dictionaryNestedCompare": {
+              "nested1": {
+                "nested2": {
+                  "nested3": {
+                    "nested4": {
+                      "nested1": "value1"
+                    }
+                  }
+                }
+              }
+            },
+            "trulyNested": [
+              {
+                "nest1": [
+                  {
+                    "nest2": {
+                      "nest3": [
+                        {
+                          "nest4": "value1"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
           }
         """#
         
@@ -173,17 +217,60 @@ class UpstreamIntegrationTests: XCTestCase {
             "stringCompare": "def",
             "boolCompare": false,
             "nullCompare": "not null",
-            "arrayCompare": [1,2],
+            "arraySizeCompare": [1,2],
+            "arrayValueCompare": [0],
+            "arrayOfObjectsPass": [
+              {
+                "object1": "value1"
+              },
+              {
+                "object2": "value2"
+              }
+            ],
+            "arrayOfObjectsFail": [
+              {
+                "object1": "value1"
+              },
+              {
+                "object2": "value3"
+              }
+            ],
             "dictionaryCompare": {
               "nested1different": "value1"
-            }
+            },
+            "dictionaryNestedCompare": {
+              "nested1": {
+                "nested2": {
+                  "nested3": {
+                    "nested4": {
+                      "nested1": "value2"
+                    }
+                  }
+                }
+              }
+            },
+            "trulyNested": [
+              {
+                "nest1": [
+                  {
+                    "nest2": {
+                      "nest3": [
+                        [
+                          "nest4"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
           }
         """#
-
-        let jsonValidation = try? JSONDecoder().decode(JSON.self, from: multilineValidation.data(using: .utf8)!)
-        let jsonInput = try? JSONDecoder().decode(JSON.self, from: multilineInput.data(using: .utf8)!)
         
-        XCTAssertEqual(jsonValidation, jsonInput)
+        // MARK: AnyCodable testing
+        let jsonValidation = try? JSONDecoder().decode(AnyCodable.self, from: multilineValidation.data(using: .utf8)!)
+        let jsonInput = try? JSONDecoder().decode(AnyCodable.self, from: multilineInput.data(using: .utf8)!)
+        assertEqual(lhs: jsonValidation, rhs: jsonInput)
     }
     
     // MARK: - Test helper methods
@@ -220,6 +307,134 @@ class UpstreamIntegrationTests: XCTestCase {
     // TODO: create specific listeners for error responses
     func registerEdgeLocationHintListener(_ listener: @escaping EventListener) {
         MobileCore.registerEventListener(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result", listener: listener)
+    }
+    
+    // MARK: AnyCodable helpers
+    /// Performs testing assertions between two `[AnyCodable]` instances.
+    func assertEqual(lhs: [String: AnyCodable]?, rhs: [String: AnyCodable]?, keyPath: [String]) {
+        if lhs == nil, rhs == nil {
+            return
+        }
+        guard let lhs = lhs, let rhs = rhs else {
+            XCTFail(#"""
+                \#(lhs == nil ? "lhs is nil" : "rhs is nil") and \#(lhs == nil ? "rhs" : "lhs") is non-nil
+
+                lhs: \#(String(describing: lhs))
+                
+                rhs: \#(String(describing: rhs))
+                
+                key path: \#(keyPath)
+            """#)
+            return
+        }
+        if lhs.count != rhs.count {
+            XCTFail(#"""
+                lhs and rhs counts do not match.
+                lhs count: \#(lhs.count)
+                rhs count: \#(rhs.count)
+                
+                lhs: \#(lhs)
+                
+                rhs: \#(rhs)
+                
+                key path: \#(keyPath)
+            """#)
+            return
+        }
+        for (key, value) in lhs {
+            var keyPath = keyPath
+            keyPath.append(key)
+            assertEqual(lhs: value, rhs: rhs[key], keyPath: keyPath)
+        }
+    }
+    
+    /// Performs testing assertions between two `[AnyCodable]` instances.
+    func assertEqual(lhs: [AnyCodable]?, rhs: [AnyCodable]?, keyPath: [String]) {
+        if lhs == nil, rhs == nil {
+            return
+        }
+        guard let lhs = lhs, let rhs = rhs else {
+            XCTFail(#"""
+                \#(lhs == nil ? "lhs is nil" : "rhs is nil") and \#(lhs == nil ? "rhs" : "lhs") is non-nil
+
+                lhs: \#(String(describing: lhs))
+                
+                rhs: \#(String(describing: rhs))
+                
+                key path: \#(keyPath)
+            """#)
+            return
+        }
+        if lhs.count != rhs.count {
+            XCTFail(#"""
+                lhs and rhs counts do not match.
+                lhs count: \#(lhs.count)
+                rhs count: \#(rhs.count)
+                
+                lhs: \#(lhs)
+                
+                rhs: \#(rhs)
+                
+                key path: \#(keyPath)
+            """#)
+            return
+        }
+        for (index, valueTuple) in zip(lhs, rhs).enumerated() {
+            var keyPath = keyPath
+            keyPath.append("[\(index)]")
+            assertEqual(lhs: valueTuple.0, rhs: valueTuple.1, keyPath: keyPath)
+        }
+    }
+    /// Performs testing assertions between two `AnyCodable` instances, using a similar logic path as the `AnyCodable ==` implementation.
+    /// Traces the key path (both dictionary keys and array indices) and provides the trace on assertion failure, for easier debugging.
+    /// Automatically performs any required conversions of underlying `Any?` types into `AnyCodable` format.
+    ///
+    /// Main entrypoint for `AnyCodable` testing assertions.
+    func assertEqual(lhs: AnyCodable?, rhs: AnyCodable?, keyPath: [String] = []) {
+        if lhs?.value == nil, rhs?.value == nil {
+            return
+        }
+        guard let lhs = lhs, let rhs = rhs else {
+            XCTFail(#"""
+                \#(lhs == nil ? "lhs is nil" : "rhs is nil") and \#(lhs == nil ? "rhs" : "lhs") is non-nil
+
+                lhs: \#(String(describing: lhs))
+                
+                rhs: \#(String(describing: rhs))
+                
+                key path: \#(keyPath)
+            """#)
+            return
+        }
+
+        switch (lhs.value, rhs.value) {
+        case let (lhs as String, rhs as String):
+            XCTAssertEqual(lhs, rhs, "key path: \(keyPath)")
+        case let (lhs as Bool, rhs as Bool):
+            XCTAssertEqual(lhs, rhs, "key path: \(keyPath)")
+        case let (lhs as Int, rhs as Int):
+            XCTAssertEqual(lhs, rhs, "key path: \(keyPath)")
+        case let (lhs as Double, rhs as Double):
+            XCTAssertEqual(lhs, rhs, "key path: \(keyPath)")
+        case let (lhs as [String: AnyCodable], rhs as [String: AnyCodable]):
+            return assertEqual(lhs: lhs, rhs: rhs, keyPath: keyPath)
+        case let (lhs as [AnyCodable], rhs as [AnyCodable]):
+            return assertEqual(lhs: lhs, rhs: rhs, keyPath: keyPath)
+        case let (lhs as [Any?], rhs as [Any?]):
+            return assertEqual(lhs: AnyCodable.from(array: lhs), rhs: AnyCodable.from(array: rhs), keyPath: keyPath)
+        case let (lhs as [String: Any?], rhs as [String: Any?]):
+            return assertEqual(lhs: AnyCodable.from(dictionary: lhs), rhs: AnyCodable.from(dictionary: rhs), keyPath: keyPath)
+        default:
+            XCTFail(#"""
+                lhs and rhs types do not match
+
+                lhs: \#(lhs)
+                
+                rhs: \#(rhs)
+                
+                key path: \#(keyPath)
+            """#)
+        }
     }
 }
 
