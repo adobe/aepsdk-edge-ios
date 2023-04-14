@@ -74,6 +74,7 @@ class UpstreamIntegrationTests: XCTestCase {
     
     // MARK: - Upstream integration test cases
     
+    // MARK: 1st launch scenarios
     func testSendEvent_withStandardExperienceEvent_receivesExpectedEventHandles() {
         // Setup
         // Test expectations that make sure the callbacks fire for:
@@ -101,21 +102,10 @@ class UpstreamIntegrationTests: XCTestCase {
           "payload": [
             {
               "ttlSeconds" : 1800,
-              "scope" : "Target",
-              "hint" : "35"
-            },
-            {
-              "ttlSeconds" : 1800,
-              "scope" : "AAM",
-              "hint" : "9"
-            },
-            {
-              "ttlSeconds" : 1800,
               "scope" : "EdgeNetwork",
               "hint" : "or2"
             }
-          ]
-        }
+          ]        }
         """#
         
         // MARK: Response Event assertions
@@ -150,6 +140,75 @@ class UpstreamIntegrationTests: XCTestCase {
         
         // Verify
         wait(for: [edgeRequestContentExpectation, networkResponseExpectation], timeout: asyncTimeout)
+    }
+    
+    func testFlexibleValidation() {
+        let validationJSON = #"""
+        {
+          "payload": [
+            {
+              "ttlSeconds" : 1800,
+              "scope" : "EdgeNetwork",
+              "hint" : "or2"
+            }
+          ]        }
+        """#
+        
+        let inputJSON = #"""
+       {
+         "payload": [
+           {
+             "ttlSeconds" : 1800,
+             "scope" : "Target",
+             "hint" : "35"
+           },
+           {
+             "ttlSeconds" : 1800,
+             "scope" : "AAM",
+             "hint" : "9"
+           },
+           {
+             "ttlSeconds" : 1800,
+             "scope" : "EdgeNetwork",
+             "hint" : "or2"
+           }
+         ]
+       }
+       """#
+        
+        let jsonValidation = try? JSONDecoder().decode(AnyCodable.self, from: validationJSON.data(using: .utf8)!)
+        let jsonInput = try? JSONDecoder().decode(AnyCodable.self, from: inputJSON.data(using: .utf8)!)
+        AnyCodableUtils.assertContains(
+            validation: jsonValidation,
+            input: jsonInput,
+            exactMatchPaths: ["payload[*]"]
+        )
+    }
+    
+    func testFlexibleNestedArray() {
+        let validationJSON = #"""
+        {
+          "payload": [
+            [1]
+          ]
+        }
+        """#
+        
+        let inputJSON = #"""
+       {
+         "payload": [
+           [1,2,3]
+         ]
+       }
+       """#
+        
+        let jsonValidation = try? JSONDecoder().decode(AnyCodable.self, from: validationJSON.data(using: .utf8)!)
+        let jsonInput = try? JSONDecoder().decode(AnyCodable.self, from: inputJSON.data(using: .utf8)!)
+        AnyCodableUtils.assertContains(
+            validation: jsonValidation,
+            input: jsonInput,
+            exactMatchPaths: []
+        )
     }
     
     func testJSONComparisonSystem() {
@@ -340,5 +399,5 @@ class UpstreamIntegrationTests: XCTestCase {
         MobileCore.registerEventListener(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result", listener: listener)
     }
     
-    }
+}
 
