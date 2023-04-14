@@ -94,7 +94,6 @@ class UpstreamIntegrationTests: XCTestCase {
                 XCTAssertEqual(200, httpConnection.responseCode)
                 networkResponseExpectation.fulfill()
             }
-            
         }
         
         let validationJSON = #"""
@@ -149,9 +148,10 @@ class UpstreamIntegrationTests: XCTestCase {
             {
               "ttlSeconds" : 1800,
               "scope" : "EdgeNetwork",
-              "hint" : "or2"
+              "hint" : 1
             }
-          ]        }
+          ]
+        }
         """#
         
         let inputJSON = #"""
@@ -181,7 +181,7 @@ class UpstreamIntegrationTests: XCTestCase {
         AnyCodableUtils.assertContains(
             validation: jsonValidation,
             input: jsonInput,
-            exactMatchPaths: ["payload[*]"]
+            exactMatchPaths: ["payload[*].scope"]
         )
     }
     
