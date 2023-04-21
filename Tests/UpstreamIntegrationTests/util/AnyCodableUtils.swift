@@ -15,7 +15,7 @@ import Foundation
 import AEPServices
 import XCTest
 
-extension AnyCodable {
+extension AnyCodable: CustomStringConvertible {
     /// Converts `AnyCodable`'s default decode strategy of array `[Any?]`  into `[AnyCodable]` value type
     public static func from(array: [Any?]?) -> [AnyCodable]? {
         guard let unwrappedArray = array else { return nil }
@@ -32,24 +32,35 @@ extension AnyCodable {
         return newArray
     }
     
+    public var description: String {
+        
+        if let anyCodableData = try? JSONEncoder().encode(self),
+           let jsonObject = try? JSONSerialization.jsonObject(with: anyCodableData),
+           let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted) {
+            return String(decoding: jsonData, as: UTF8.self)
+        } else {
+            return "ERROR: JSON data invalid"
+        }
+    }
+    
 }
 
 class AnyCodableUtils {
     // MARK: AnyCodable helpers
     /// Performs testing assertions between two `[AnyCodable]` instances.
     @discardableResult
-    static func assertEqual(lhs: [String: AnyCodable]?, rhs: [String: AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
-        if lhs == nil, rhs == nil {
+    static func assertEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+        if expected == nil, actual == nil {
             return true
         }
-        guard let lhs = lhs, let rhs = rhs else {
+        guard let lhs = expected, let rhs = actual else {
             if shouldAssert {
                 XCTFail(#"""
-                    \#(lhs == nil ? "lhs is nil" : "rhs is nil") and \#(lhs == nil ? "rhs" : "lhs") is non-nil
+                    \#(expected == nil ? "lhs is nil" : "rhs is nil") and \#(expected == nil ? "rhs" : "lhs") is non-nil
                 
-                    lhs: \#(String(describing: lhs))
+                    lhs: \#(String(describing: expected))
                     
-                    rhs: \#(String(describing: rhs))
+                    rhs: \#(String(describing: actual))
                     
                     key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
@@ -76,25 +87,25 @@ class AnyCodableUtils {
         for (key, value) in lhs {
             var keyPath = keyPath
             keyPath.append(key)
-            finalResult = finalResult && assertEqual(lhs: value, rhs: rhs[key], keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+            finalResult = finalResult && assertEqual(expected: value, actual: rhs[key], keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
         }
         return finalResult
     }
     
     /// Performs flexible testing assertions between two `[AnyCodable]` instances.
     /// exactMatchTree = nil means no exact matching behavior
-    static func assertFlexibleEqual(validation: [String: AnyCodable]?, input: [String: AnyCodable]?, keyPath: [Any], exactMatchTree: [String: Any]?, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
-        if validation == nil {
+    private static func assertFlexibleEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], exactMatchTree: [String: Any]?, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+        if expected == nil {
             return true
         }
-        guard let lhs = validation, let rhs = input else {
+        guard let lhs = expected, let rhs = actual else {
             if shouldAssert {
                 XCTFail(#"""
                     Validation JSON is non-nil but input JSON is nil.
                 
-                    validation: \#(String(describing: validation))
+                    validation: \#(String(describing: expected))
                     
-                    input: \#(String(describing: input))
+                    input: \#(String(describing: actual))
                     
                     key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
@@ -123,10 +134,10 @@ class AnyCodableUtils {
             keyPath.append(key)
             let matchTreeValue = exactMatchTree?[key]
             if matchTreeValue is String {
-                finalResult = finalResult && assertEqual(lhs: value, rhs: rhs[key], keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+                finalResult = finalResult && assertEqual(expected: value, actual: rhs[key], keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
             }
             else {
-                finalResult = finalResult && assertFlexibleEqual(validation: value, input: rhs[key], keyPath: keyPath, exactMatchTree: matchTreeValue as? [String: Any], file: file, line: line, shouldAssert: shouldAssert)
+                finalResult = finalResult && assertFlexibleEqual(expected: value, actual: rhs[key], keyPath: keyPath, exactMatchTree: matchTreeValue as? [String: Any], file: file, line: line, shouldAssert: shouldAssert)
             }
         }
         return finalResult
@@ -134,18 +145,18 @@ class AnyCodableUtils {
     
     /// Performs testing assertions between two `[AnyCodable]` instances.
     @discardableResult
-    static func assertEqual(lhs: [AnyCodable]?, rhs: [AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
-        if lhs == nil, rhs == nil {
+    static func assertEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+        if expected == nil, actual == nil {
             return true
         }
-        guard let lhs = lhs, let rhs = rhs else {
+        guard let lhs = expected, let rhs = actual else {
             if shouldAssert {
                 XCTFail(#"""
-                    \#(lhs == nil ? "lhs is nil" : "rhs is nil") and \#(lhs == nil ? "rhs" : "lhs") is non-nil
+                    \#(expected == nil ? "lhs is nil" : "rhs is nil") and \#(expected == nil ? "rhs" : "lhs") is non-nil
                 
-                    lhs: \#(String(describing: lhs))
+                    lhs: \#(String(describing: expected))
                     
-                    rhs: \#(String(describing: rhs))
+                    rhs: \#(String(describing: actual))
                     
                     key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
@@ -172,24 +183,24 @@ class AnyCodableUtils {
         for (index, valueTuple) in zip(lhs, rhs).enumerated() {
             var keyPath = keyPath
             keyPath.append(index)
-            finalResult = finalResult && assertEqual(lhs: valueTuple.0, rhs: valueTuple.1, keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+            finalResult = finalResult && assertEqual(expected: valueTuple.0, actual: valueTuple.1, keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
         }
         return finalResult
     }
     
     /// Performs testing assertions between two `[AnyCodable]` instances.
-    static func assertFlexibleEqual(validation: [AnyCodable]?, input: [AnyCodable]?, keyPath: [Any], exactMatchTree: [String: Any]?, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
-        if validation == nil {
+    private static func assertFlexibleEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], exactMatchTree: [String: Any]?, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+        if expected == nil {
             return true
         }
-        guard let lhs = validation, let rhs = input else {
+        guard let lhs = expected, let rhs = actual else {
             if shouldAssert {
                 XCTFail(#"""
                     Validation JSON is non-nil but input JSON is nil.
                 
-                    validation: \#(String(describing: validation))
+                    validation: \#(String(describing: expected))
                     
-                    input: \#(String(describing: input))
+                    input: \#(String(describing: actual))
                     
                     key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
@@ -212,11 +223,11 @@ class AnyCodableUtils {
             }
             return false
         }
-        // this is where the craziness begins
+        
         // 1 check if exact match tree has [*] or [*0,1,2,3,4,...]
-            // [*] means only the first element from validation is taken into account, and strongly matched
-            // [*0] means the index from the validation is taken and strongly matched to any other element
-            // [*].key1 means the fist element from validation is taken and matched to any other
+            // [*] means all elements in collection from expected side are strongly matched in a wildcard fashion
+            // [*0] means the element at the given index from the expected collection side is taken and strongly matched to the first satisfying element on actual collection side
+            // [*].key1 means all elements in the expected collection side perform wildcard exact match on this path
         if let exactMatchTree = exactMatchTree {
             let arrayIndexValueRegex = #"\[(.*?)\]"#
             let indexValues = exactMatchTree.keys
@@ -262,89 +273,139 @@ class AnyCodableUtils {
                     }
                 }
             }
-            
+            var unmatchedLHSIndices: Set<Int> = Set(lhs.indices).subtracting(finalExactIndices)
+            var matchedRHSIndices: Set<Int> = Set(rhs.indices).subtracting(finalExactIndices)
             var finalResult = true
+            // Exact match paths with format: [0]
             for index in finalExactIndices {
                 var keyPath = keyPath
                 keyPath.append(index)
                 let matchTreeValue = exactMatchTree["[\(index)]"]
                 if matchTreeValue is String {
-                    finalResult = finalResult && assertEqual(lhs: lhs[index], rhs: rhs[index], keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+                    finalResult = finalResult && assertEqual(expected: lhs[index], actual: rhs[index], keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
                 }
                 else {
-                    finalResult = finalResult && assertFlexibleEqual(validation: lhs[index], input: rhs[index], keyPath: keyPath, exactMatchTree: matchTreeValue as? [String: Any], file: file, line: line, shouldAssert: shouldAssert)
+                    finalResult = finalResult && assertFlexibleEqual(expected: lhs[index], actual: rhs[index], keyPath: keyPath, exactMatchTree: matchTreeValue as? [String: Any], file: file, line: line, shouldAssert: shouldAssert)
                 }
             }
+            // Exact match paths with format: [*0]
+            var unmatchedRHSElements = matchedRHSIndices
+                                        .sorted(by: { $0 < $1 })
+                                        .map { (originalIndex: $0, element: rhs[$0]) }
             for index in finalWildcardIndices {
                 var keyPath = keyPath
                 keyPath.append(index)
                 let matchTreeValue = exactMatchTree["[*\(index)]"]
                 if matchTreeValue is String {
-                    let result = rhs.first(where: {
-                        assertEqual(lhs: lhs[index], rhs: $0, keyPath: keyPath, shouldAssert: false)
-                    })
-                    if result == nil {
-                        XCTFail("wildcard exact match found no matches in input")
-                        finalResult = false
+                    if let result = unmatchedRHSElements.firstIndex(where: {
+                        assertEqual(expected: lhs[index], actual: $0.element, keyPath: keyPath, shouldAssert: false)
+                    }) {
+                        unmatchedLHSIndices.remove(index)
+                        matchedRHSIndices.insert(unmatchedRHSElements[result].originalIndex)
+                        unmatchedRHSElements.remove(at: result)
+                        
+                        finalResult = finalResult && true
                     }
                     else {
-                        finalResult = finalResult && true
+                        XCTFail(#"""
+                        Wildcard exact match found no matches satisfying requirement on actual side
+                        
+                        Requirement: \#(String(describing: matchTreeValue))
+                        
+                        Expected: \#(lhs[index])
+                        
+                        Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
+                        
+                        """#, file: file, line: line)
+                        finalResult = false
                     }
                 }
                 else {
-                    let result = rhs.first(where: {
-                        assertFlexibleEqual(validation: lhs[index], input: $0, keyPath: keyPath, exactMatchTree: matchTreeValue as? [String: Any], file: file, line: line, shouldAssert: false)
-                    })
-                    if result == nil {
-                        XCTFail("wildcard match found no matches in input")
-                        finalResult = false
+                    if let result = unmatchedRHSElements.firstIndex(where: {
+                        assertFlexibleEqual(expected: lhs[index], actual: $0.element, keyPath: keyPath, exactMatchTree: matchTreeValue as? [String: Any], file: file, line: line, shouldAssert: false)
+                    }) {
+                        unmatchedLHSIndices.remove(index)
+                        matchedRHSIndices.insert(unmatchedRHSElements[result].originalIndex)
+                        unmatchedRHSElements.remove(at: result)
+                        
+                        finalResult = finalResult && true
                     }
                     else {
-                        finalResult = finalResult && true
+                        XCTFail(#"""
+                        Wildcard exact match found no matches satisfying requirement on actual side
+                        
+                        Requirement: \#(String(describing: matchTreeValue))
+                        
+                        Expected: \#(lhs[index])
+                        
+                        Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
+                        
+                        """#, file: file, line: line)
+                        finalResult = false
                     }
                 }
             }
+            // Exact match paths with format: [*]
             if hasWildcardAny {
-                for index in lhs.indices {
-                    if !seenIndices.contains(index) {
-                        seenIndices.insert(index)
-                        var keyPath = keyPath
-                        keyPath.append(index)
-                        let matchTreeValue = exactMatchTree["[*]"]
-                        if matchTreeValue is String {
-                            let result = rhs.first(where: {
-                                assertEqual(lhs: lhs[index], rhs: $0, keyPath: keyPath, shouldAssert: false)
-                            })
-                            if result == nil {
-                                XCTFail("wildcard exact match found no matches in input")
-                                finalResult = false
-                            }
-                            else {
-                                finalResult = finalResult && true
-                            }
+                for index in unmatchedLHSIndices.sorted(by: { $0 < $1 }) {
+                    var keyPath = keyPath
+                    keyPath.append(index)
+                    let matchTreeValue = exactMatchTree["[*]"]
+                    if matchTreeValue is String {
+                        if let result = unmatchedRHSElements.firstIndex(where: {
+                            assertEqual(expected: lhs[index], actual: $0.element, keyPath: keyPath, shouldAssert: false)
+                        }) {
+                            unmatchedLHSIndices.remove(index)
+                            matchedRHSIndices.insert(unmatchedRHSElements[result].originalIndex)
+                            unmatchedRHSElements.remove(at: result)
+                            
+                            finalResult = finalResult && true
                         }
                         else {
-                            let result = rhs.first(where: {
-                                assertFlexibleEqual(validation: lhs[index], input: $0, keyPath: keyPath, exactMatchTree: matchTreeValue as? [String: Any], file: file, line: line, shouldAssert: false)
-                            })
-                            if result == nil {
-                                XCTFail("wildcard match found no matches in input")
-                                finalResult = false
-                            }
-                            else {
-                                finalResult = finalResult && true
-                            }
+                            XCTFail(#"""
+                            Wildcard exact match found no matches satisfying requirement on actual side
+                            
+                            Requirement: \#(String(describing: matchTreeValue))
+                            
+                            Expected: \#(lhs[index])
+                            
+                            Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
+                            
+                            """#, file: file, line: line)
+                            finalResult = false
                         }
-                        break
+                    }
+                    else {
+                        if let result = unmatchedRHSElements.firstIndex(where: {
+                            assertFlexibleEqual(expected: lhs[index], actual: $0.element, keyPath: keyPath, exactMatchTree: matchTreeValue as? [String: Any], file: file, line: line, shouldAssert: false)
+                        }) {
+                            unmatchedLHSIndices.remove(index)
+                            matchedRHSIndices.insert(unmatchedRHSElements[result].originalIndex)
+                            unmatchedRHSElements.remove(at: result)
+                            
+                            finalResult = finalResult && true
+                        }
+                        else {
+                            XCTFail(#"""
+                            Wildcard exact match found no matches satisfying requirement on actual side
+                            
+                            Requirement: \#(String(describing: matchTreeValue))
+                            
+                            Expected: \#(lhs[index])
+                            
+                            Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
+                            
+                            """#, file: file, line: line)
+                            finalResult = false
+                        }
                     }
                 }
             }
             
-            let finalUnusedIndices = Set(lhs.indices).subtracting(seenIndices)
-            for index in finalUnusedIndices {
+            for index in unmatchedLHSIndices.sorted(by: { $0 < $1 }) {
                 var keyPath = keyPath
                 keyPath.append(index)
-                finalResult = finalResult && assertFlexibleEqual(validation: lhs[index], input: rhs[index], keyPath: keyPath, exactMatchTree: nil, file: file, line: line)
+                finalResult = finalResult && assertFlexibleEqual(expected: lhs[index], actual: rhs[index], keyPath: keyPath, exactMatchTree: nil, file: file, line: line)
             }
             return finalResult
         }
@@ -354,7 +415,7 @@ class AnyCodableUtils {
             for (index, valueTuple) in zip(lhs, rhs).enumerated() {
                 var keyPath = keyPath
                 keyPath.append(index)
-                finalResult = finalResult && assertFlexibleEqual(validation: valueTuple.0, input: valueTuple.1, keyPath: keyPath, exactMatchTree: nil, file: file, line: line)
+                finalResult = finalResult && assertFlexibleEqual(expected: valueTuple.0, actual: valueTuple.1, keyPath: keyPath, exactMatchTree: nil, file: file, line: line)
             }
             return finalResult
         }
@@ -366,18 +427,18 @@ class AnyCodableUtils {
     ///
     /// Main entrypoint for `AnyCodable` testing assertions.
     @discardableResult
-    static func assertEqual(lhs: AnyCodable?, rhs: AnyCodable?, keyPath: [Any] = [], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
-        if lhs?.value == nil, rhs?.value == nil {
+    static func assertEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any] = [], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+        if expected?.value == nil, actual?.value == nil {
             return true
         }
-        guard let lhs = lhs, let rhs = rhs else {
+        guard let lhs = expected, let rhs = actual else {
             if shouldAssert {
                 XCTFail(#"""
-                    \#(lhs == nil ? "lhs is nil" : "rhs is nil") and \#(lhs == nil ? "rhs" : "lhs") is non-nil
+                    \#(expected == nil ? "lhs is nil" : "rhs is nil") and \#(expected == nil ? "rhs" : "lhs") is non-nil
                 
-                    lhs: \#(String(describing: lhs))
+                    lhs: \#(String(describing: expected))
                     
-                    rhs: \#(String(describing: rhs))
+                    rhs: \#(String(describing: actual))
                     
                     key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
@@ -407,13 +468,13 @@ class AnyCodableUtils {
             }
             return lhs == rhs
         case let (lhs as [String: AnyCodable], rhs as [String: AnyCodable]):
-            return assertEqual(lhs: lhs, rhs: rhs, keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+            return assertEqual(expected: lhs, actual: rhs, keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
         case let (lhs as [AnyCodable], rhs as [AnyCodable]):
-            return assertEqual(lhs: lhs, rhs: rhs, keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+            return assertEqual(expected: lhs, actual: rhs, keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
         case let (lhs as [Any?], rhs as [Any?]):
-            return assertEqual(lhs: AnyCodable.from(array: lhs), rhs: AnyCodable.from(array: rhs), keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+            return assertEqual(expected: AnyCodable.from(array: lhs), actual: AnyCodable.from(array: rhs), keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
         case let (lhs as [String: Any?], rhs as [String: Any?]):
-            return assertEqual(lhs: AnyCodable.from(dictionary: lhs), rhs: AnyCodable.from(dictionary: rhs), keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+            return assertEqual(expected: AnyCodable.from(dictionary: lhs), actual: AnyCodable.from(dictionary: rhs), keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
         default:
             if shouldAssert {
                 XCTFail(#"""
@@ -436,18 +497,18 @@ class AnyCodableUtils {
     ///
     /// Main entrypoint for `AnyCodable` testing assertions.
     @discardableResult
-    static func assertFlexibleEqual(validation: AnyCodable?, input: AnyCodable?, keyPath: [Any] = [], exactMatchTree: [String: Any]?, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
-        if validation?.value == nil {
+    private static func assertFlexibleEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any] = [], exactMatchTree: [String: Any]?, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+        if expected?.value == nil {
             return true
         }
-        guard let lhs = validation, let rhs = input else {
+        guard let lhs = expected, let rhs = actual else {
             if shouldAssert {
                 XCTFail(#"""
                     Validation JSON is non-nil but input JSON is nil.
                 
-                    validation: \#(String(describing: validation))
+                    validation: \#(String(describing: expected))
                     
-                    input: \#(String(describing: input))
+                    input: \#(String(describing: actual))
                     
                     key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
@@ -481,13 +542,13 @@ class AnyCodableUtils {
             }
             return lhs == rhs
         case let (lhs as [String: AnyCodable], rhs as [String: AnyCodable]):
-            return assertFlexibleEqual(validation: lhs, input: rhs, keyPath: keyPath, exactMatchTree: exactMatchTree, file: file, line: line, shouldAssert: shouldAssert)
+            return assertFlexibleEqual(expected: lhs, actual: rhs, keyPath: keyPath, exactMatchTree: exactMatchTree, file: file, line: line, shouldAssert: shouldAssert)
         case let (lhs as [AnyCodable], rhs as [AnyCodable]):
-            return assertFlexibleEqual(validation: lhs, input: rhs, keyPath: keyPath, exactMatchTree: exactMatchTree, file: file, line: line, shouldAssert: shouldAssert)
+            return assertFlexibleEqual(expected: lhs, actual: rhs, keyPath: keyPath, exactMatchTree: exactMatchTree, file: file, line: line, shouldAssert: shouldAssert)
         case let (lhs as [Any?], rhs as [Any?]):
-            return assertFlexibleEqual(validation: AnyCodable.from(array: lhs), input: AnyCodable.from(array: rhs), keyPath: keyPath, exactMatchTree: exactMatchTree, file: file, line: line, shouldAssert: shouldAssert)
+            return assertFlexibleEqual(expected: AnyCodable.from(array: lhs), actual: AnyCodable.from(array: rhs), keyPath: keyPath, exactMatchTree: exactMatchTree, file: file, line: line, shouldAssert: shouldAssert)
         case let (lhs as [String: Any?], rhs as [String: Any?]):
-            return assertFlexibleEqual(validation: AnyCodable.from(dictionary: lhs), input: AnyCodable.from(dictionary: rhs), keyPath: keyPath, exactMatchTree: exactMatchTree, file: file, line: line, shouldAssert: shouldAssert)
+            return assertFlexibleEqual(expected: AnyCodable.from(dictionary: lhs), actual: AnyCodable.from(dictionary: rhs), keyPath: keyPath, exactMatchTree: exactMatchTree, file: file, line: line, shouldAssert: shouldAssert)
         default:
             if shouldAssert {
                 XCTFail(#"""
@@ -562,13 +623,13 @@ class AnyCodableUtils {
         }
     }
     
-    static func generateExactMatchTree(exactMatchPaths: [String]) -> [String: Any] {
+    static func generatePathTree(paths: [String]) -> [String: Any] {
         let arrayIndexRegex = #"(\[.*?\])"#
         let arrayIndexValueRegex = #"\[(.*?)\]"#
         let jsonNestingRegex = #"(.+?)(?<!\\)(?:\.|$)"#
         var tree: [String: Any] = [:]
         
-        for exactValuePath in exactMatchPaths {
+        for exactValuePath in paths {
             var allPathComponents: [String] = []
             var pathExtractionSuccessful: Bool = true
             
@@ -633,9 +694,9 @@ class AnyCodableUtils {
     
     // "payload\[\*\]\.scope", matches: "EdgeNetwork")
     // whereExactValues -> flat keys to use exact value
-    static func assertContains(validation: AnyCodable?, input: AnyCodable?, exactMatchPaths: [String], file: StaticString = #file, line: UInt = #line) {
-        let exactMatchTree = generateExactMatchTree(exactMatchPaths: exactMatchPaths)
-        assertFlexibleEqual(validation: validation, input: input, exactMatchTree: exactMatchTree, file: file, line: line)
+    static func assertContains(expected: AnyCodable?, actual: AnyCodable?, exactMatchPaths: [String], file: StaticString = #file, line: UInt = #line) {
+        let pathTree = generatePathTree(paths: exactMatchPaths)
+        assertFlexibleEqual(expected: expected, actual: actual, exactMatchTree: pathTree, file: file, line: line)
     }
     
     static func keyPathAsString(keyPath: [Any]) -> String {
