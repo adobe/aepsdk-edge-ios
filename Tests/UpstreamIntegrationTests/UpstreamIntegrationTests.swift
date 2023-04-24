@@ -220,7 +220,7 @@ class UpstreamIntegrationTests: XCTestCase {
                },
                {
                  "ttlSeconds" : 1800,
-                 "scope" : "EdgeNetwork",
+                 "scope" : "EdgeNetwork21",
                  "hint" : "or2"
                }
              ]
@@ -232,7 +232,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContains(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
+        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
     }
     
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths
@@ -281,7 +281,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContains(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
+        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
     }
     
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths; shows example failure message
@@ -328,7 +328,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContains(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
+        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
     }
     
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths
@@ -398,7 +398,7 @@ class UpstreamIntegrationTests: XCTestCase {
           "identityMap" : {
             "ECID" : [
               {
-                "id" : "01568806327147089148132339481432735151",
+                "id" : "01568806327147093148132339481092735151",
                 "authenticatedState" : "ambiguous",
                 "primary" : false
               }
@@ -413,7 +413,7 @@ class UpstreamIntegrationTests: XCTestCase {
                   "val" : "n"
                 },
                 "metadata" : {
-                  "time" : "2023-04-21T21:56:52.455Z"
+                  "time" : "3333-04-21T21:56:52.455Z"
                 }
               }
             }
@@ -426,8 +426,37 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContains(expected: expected, actual: actual, exactMatchPaths: [
-            "payload[*].scope"
+        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: [
+            "meta",
+            "query",
+            "identityMap.ECID[0].authenticatedState",
+            "identityMap.ECID[0].primary",
+            "consent[0].standard",
+            "consent[0].version",
+            "consent[0].value.collect",
+        ])
+        
+        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: [
+            "meta",
+            "query",
+            "identityMap.ECID[*].authenticatedState",
+            "identityMap.ECID[*].primary",
+            "consent[*].standard",
+            "consent[*].version",
+            "consent[*].value.collect",
+        ])
+        
+        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
+        // One really cool thing is that the key path printed in test error output
+        // can literally be copy pasted as type/exact match paths - down to the array index!!
+        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: [
+            "identityMap.ECID[0].id",
+            "consent[0].value.metadata.time"
+        ])
+        
+        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: [
+            "identityMap.ECID[*].id",
+            "consent[*].value.metadata.time"
         ])
     }
     
@@ -540,7 +569,7 @@ class UpstreamIntegrationTests: XCTestCase {
         
         let jsonValidation = try? JSONDecoder().decode(AnyCodable.self, from: validationJSON.data(using: .utf8)!)
         let jsonInput = try? JSONDecoder().decode(AnyCodable.self, from: inputJSON.data(using: .utf8)!)
-        AnyCodableUtils.assertContains(
+        AnyCodableUtils.assertContainsDefaultTypeMatch(
             expected: jsonValidation,
             actual: jsonInput,
             exactMatchPaths: ["payload[*].scope"]
@@ -566,10 +595,9 @@ class UpstreamIntegrationTests: XCTestCase {
         
         let jsonValidation = try? JSONDecoder().decode(AnyCodable.self, from: validationJSON.data(using: .utf8)!)
         let jsonInput = try? JSONDecoder().decode(AnyCodable.self, from: inputJSON.data(using: .utf8)!)
-        AnyCodableUtils.assertContains(
+        AnyCodableUtils.assertContainsDefaultTypeMatch(
             expected: jsonValidation,
-            actual: jsonInput,
-            exactMatchPaths: []
+            actual: jsonInput
         )
     }
     
@@ -691,6 +719,7 @@ class UpstreamIntegrationTests: XCTestCase {
         let jsonValidation = try? JSONDecoder().decode(AnyCodable.self, from: multilineValidation.data(using: .utf8)!)
         let jsonInput = try? JSONDecoder().decode(AnyCodable.self, from: multilineInput.data(using: .utf8)!)
         AnyCodableUtils.assertEqual(expected: jsonValidation, actual: jsonInput)
+        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: jsonValidation, actual: jsonInput)
     }
     
     func testJSONComparison_ambiguousKeys() {
