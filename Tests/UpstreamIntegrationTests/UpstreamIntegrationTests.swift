@@ -37,7 +37,7 @@ extension EventSpec: Hashable & Equatable {
 }
 
 /// This test class validates proper intergration with upstream services, specifically Edge Network
-class UpstreamIntegrationTests: XCTestCase {
+class UpstreamIntegrationTests: XCTestCase, AnyCodableTestAssertions {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint? = nil
     
@@ -89,30 +89,9 @@ class UpstreamIntegrationTests: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
     }
-    
-    // IMPLEMENTATION PLAN
-    // 1. use instrumented extension to capture all events going through the Event Hub
-    // 2. use the event fetching method to extract relevant events
-    // 3. do the assertion using flexible json compare
-        // make notes on how often exact match is needed vs flexible and perform necessary base logic tweaking
-    
-    // dont have to convert every case, just good example cases from each class of assertions
-    
-    // For proving usefulness of tooling, create
-    /// for location hint validation example
-        // test case where you only strongly validate the "source" key
-        // test case where you only strongy valdiate multiple "source" keys (ex: EdgeNetwork and Target)
-        // test case where you strongly validate everything -> this is covered by the converted functional test cases
-    
-    // also create test cases outside of location hint that are relevant in the integration test case, to better prove out classes of assertions and need
-    // also convert some cases from the examples Emilia sent
-    /// Consent test cases
-    
-    // also need to create a test suite for the equality comparisons themselves
-    // and need to update the logic to compile all the results since right now it returns immediately?
 
     // MARK: - Functional test examples
-    // MARK: test request event format
+    // MARK: Test request event format
     func testSendEvent_withXDMData_sendsCorrectRequestEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
 
@@ -149,7 +128,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertEqual(expected: xdm.expected, actual: AnyCodable(AnyCodable.from(dictionary: eventDataDict)))
+        assertEqual(expected: xdm.expected, actual: AnyCodable(AnyCodable.from(dictionary: eventDataDict)))
     }
     
     func testSendEvent_withXDMDataAndCustomData_sendsCorrectRequestEvent() {
@@ -190,7 +169,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertEqual(expected: xdm.expected, actual: AnyCodable(AnyCodable.from(dictionary: eventDataDict)))
+        assertEqual(expected: xdm.expected, actual: AnyCodable(AnyCodable.from(dictionary: eventDataDict)))
     }
     
     /// This test case demonstrates flexible validation but only on exact match key paths
@@ -231,8 +210,7 @@ class UpstreamIntegrationTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
     }
     
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths
@@ -259,7 +237,7 @@ class UpstreamIntegrationTests: XCTestCase {
          "payload": [
            {
              "ttlSeconds" : 1800,
-             "scope" : "Target",
+             "scope" : "Target21",
              "hint" : "35"
            },
            {
@@ -281,7 +259,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"])
     }
     
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths; shows example failure message
@@ -328,7 +306,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"])
     }
     
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths
@@ -426,7 +404,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: [
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: [
             "meta",
             "query",
             "identityMap.ECID[0].authenticatedState",
@@ -436,7 +414,7 @@ class UpstreamIntegrationTests: XCTestCase {
             "consent[0].value.collect",
         ])
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: [
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: [
             "meta",
             "query",
             "identityMap.ECID[*].authenticatedState",
@@ -446,15 +424,13 @@ class UpstreamIntegrationTests: XCTestCase {
             "consent[*].value.collect",
         ])
         
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-        // One really cool thing is that the key path printed in test error output
-        // can literally be copy pasted as type/exact match paths - down to the array index!!
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: [
+        assertContains(expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, alternateModePaths: [
             "identityMap.ECID[0].id",
             "consent[0].value.metadata.time"
         ])
         
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: [
+        assertContains(expected: expected, actual: actual, alternateModePaths: [
             "identityMap.ECID[*].id",
             "consent[*].value.metadata.time"
         ])
@@ -533,19 +509,19 @@ class UpstreamIntegrationTests: XCTestCase {
     }
     
     func testFlexibleValidation() {
-        let validationJSON = #"""
+        let expectedJSON = #"""
         {
           "payload": [
             {
               "ttlSeconds" : 1800,
               "scope" : "EdgeNetwork",
-              "hint" : 1
+              "hint" : "1"
             }
           ]
         }
         """#
         
-        let inputJSON = #"""
+        let actualJSON = #"""
        {
          "payload": [
            {
@@ -567,12 +543,12 @@ class UpstreamIntegrationTests: XCTestCase {
        }
        """#
         
-        let jsonValidation = try? JSONDecoder().decode(AnyCodable.self, from: validationJSON.data(using: .utf8)!)
-        let jsonInput = try? JSONDecoder().decode(AnyCodable.self, from: inputJSON.data(using: .utf8)!)
-        AnyCodableUtils.assertContainsDefaultTypeMatch(
-            expected: jsonValidation,
-            actual: jsonInput,
-            exactMatchPaths: ["payload[*].scope"]
+        let expected = getAnyCodable(expectedJSON)!
+        let actual = getAnyCodable(actualJSON)!
+        assertContains(defaultMode: .typeMatch,
+            expected: expected,
+            actual: actual,
+            alternateModePaths: ["payload[*].scope"]
         )
     }
     
@@ -595,7 +571,7 @@ class UpstreamIntegrationTests: XCTestCase {
         
         let jsonValidation = try? JSONDecoder().decode(AnyCodable.self, from: validationJSON.data(using: .utf8)!)
         let jsonInput = try? JSONDecoder().decode(AnyCodable.self, from: inputJSON.data(using: .utf8)!)
-        AnyCodableUtils.assertContainsDefaultTypeMatch(
+        assertContains(defaultMode: .typeMatch,
             expected: jsonValidation,
             actual: jsonInput
         )
@@ -718,8 +694,8 @@ class UpstreamIntegrationTests: XCTestCase {
         
         let jsonValidation = try? JSONDecoder().decode(AnyCodable.self, from: multilineValidation.data(using: .utf8)!)
         let jsonInput = try? JSONDecoder().decode(AnyCodable.self, from: multilineInput.data(using: .utf8)!)
-        AnyCodableUtils.assertEqual(expected: jsonValidation, actual: jsonInput)
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: jsonValidation, actual: jsonInput)
+        assertEqual(expected: jsonValidation, actual: jsonInput)
+        assertContains(defaultMode: .typeMatch, expected: jsonValidation, actual: jsonInput)
     }
     
     func testJSONComparison_ambiguousKeys() {
@@ -751,7 +727,7 @@ class UpstreamIntegrationTests: XCTestCase {
         
         let jsonValidation = try? JSONDecoder().decode(AnyCodable.self, from: multilineValidation.data(using: .utf8)!)
         let jsonInput = try? JSONDecoder().decode(AnyCodable.self, from: multilineInput.data(using: .utf8)!)
-        AnyCodableUtils.assertEqual(expected: jsonValidation, actual: jsonInput)
+        assertEqual(expected: jsonValidation, actual: jsonInput)
     }
     
     // MARK: - Test helper methods

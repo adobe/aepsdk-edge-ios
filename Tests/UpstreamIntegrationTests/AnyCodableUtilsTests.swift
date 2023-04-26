@@ -16,13 +16,44 @@ import XCTest
 
 
 
-class AnyCodableUtilsTests: XCTestCase {
+class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
     override func setUp() {
 
     }
     
     public override func tearDown() {
         super.tearDown()
+    }
+    
+    // MARK: - Regex parsing
+    func testEscapedKeyPaths() {
+        let expectedJSON = #"""
+        {
+          "key1.key2": {
+            "key3": "value3"
+          }
+        }
+        """#
+        
+        let actualJSON = #"""
+        {
+          "key1.key2": {
+            "key3": "value1"
+          }
+        }
+        """#
+        guard let expected = getAnyCodable(expectedJSON), let actual = getAnyCodable(actualJSON) else {
+            XCTFail("Unable to decode JSON string. Test case unable to proceed.")
+            return
+        }
+        
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, alternateModePaths: [#"key1\.key2"#])
+        XCTExpectFailure("The following should fail") {
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: [#"key1\.key2"#])
+            assertContains(expected: expected, actual: actual)
+            assertEqual(expected: expected, actual: actual)
+        }
     }
     
     // MARK: - Empty collection tests
@@ -39,9 +70,9 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual)
+        assertEqual(expected: expected, actual: actual)
     }
     
     func testDictionary_whenNested_isEqual() {
@@ -65,13 +96,13 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["key0"])
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["key0.key1"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["key0"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["key0.key1"])
-        AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0.key1"])
+        assertContains(expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["key0"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["key0.key1"])
+        assertEqual(expected: expected, actual: actual)
     }
     
     func testArray_whenEmpty_isEqual() {
@@ -87,9 +118,9 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual)
+        assertEqual(expected: expected, actual: actual)
     }
     
     func testArray_whenEmptyNested_isEqual() {
@@ -105,15 +136,15 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]"])
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]"])
-        AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]"])
+        assertContains(expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]"])
+        assertEqual(expected: expected, actual: actual)
     }
     
     func testArray_whenNestedDictionary_isEqual() {
@@ -129,15 +160,15 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]"])
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]"])
-        AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]"])
+        assertContains(expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]"])
+        assertEqual(expected: expected, actual: actual)
     }
     
     func testDictionary_whenNestedArray_isEqual() {
@@ -157,11 +188,11 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["key0"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["key0"])
-        AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0"])
+        assertContains(expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["key0"])
+        assertEqual(expected: expected, actual: actual)
     }
     
     func testSingleKeyEquality() {
@@ -181,9 +212,9 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual)
+        assertEqual(expected: expected, actual: actual)
     }
     
     func testSingleKey_flexibleEquality() {
@@ -203,11 +234,11 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["key1"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["key1"])
         XCTExpectFailure("The following should fail") {
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-            AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual)
+            assertEqual(expected: expected, actual: actual)
         }
     }
     
@@ -224,11 +255,11 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual)
         XCTExpectFailure("The following should fail") {
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-            AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual)
+            assertEqual(expected: expected, actual: actual)
         }
     }
     
@@ -246,9 +277,9 @@ class AnyCodableUtilsTests: XCTestCase {
         }
         
         XCTExpectFailure("The following should fail") {
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-            AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual)
+            assertEqual(expected: expected, actual: actual)
         }
     }
     
@@ -265,14 +296,14 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]","[1]","[2]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
         XCTExpectFailure("The following should fail") {
             // Type match
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]","[1]","[2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
             // Exact match
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-            AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual)
+            assertEqual(expected: expected, actual: actual)
         }
     }
     
@@ -288,23 +319,23 @@ class AnyCodableUtilsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-//        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
+//        assertContains(expected: expected, actual: actual)
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]","[*1]","[*2]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
         
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]","[*1]","[*2]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]","[1]","[2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
         XCTExpectFailure("The following should fail") {
             // Type match
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]","[1]","[2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
             // Exact match
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual)
                 // Partials
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]","[*2]"])
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]","[1]"])
-            AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]"])
+            assertEqual(expected: expected, actual: actual)
         }
     }
     
@@ -320,35 +351,35 @@ class AnyCodableUtilsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]", "[*1]", "[2]"])
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[2]", "[*1]", "[*]"])
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]", "[*1]", "[*2]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]", "[*1]", "[2]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[2]", "[*1]", "[*]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]","[*1]","[*2]"])
-        
-        
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*]","[*1]","[2]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[2]","[*1]","[*]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
         
         
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]","[*1]","[*2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]","[*1]","[2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[2]","[*1]","[*]"])
+        
+        
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
         
         XCTExpectFailure("The following should fail") {
             // Type match
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]","[1]","[2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
             // Exact match
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]","[1]","[2]"])
+            assertContains(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
                 // Partials
             // Note the precedence of evaluation affecting the test passing
             // In this case, [*<INT>] is evaluated before non path keys (that is index 2)
             // so [*0] -> 0 takes index 2 -> 2
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]","[*1]"])
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]","[*2]"])
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]","[1]"])
-            AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]"])
+            assertEqual(expected: expected, actual: actual)
         }
     }
     
@@ -367,18 +398,18 @@ class AnyCodableUtilsTests: XCTestCase {
         
         XCTExpectFailure("The following should fail") {
             // Type match
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]","[*1]","[*2]"])
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]","[1]","[2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
             // Exact match
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*]"])
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]","[*1]","[*2]"])
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]","[1]","[2]"])
+            assertContains(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
                 // Partials
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]","[*2]"])
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]","[1]"])
-            AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]"])
+            assertEqual(expected: expected, actual: actual)
         }
     }
     
@@ -395,21 +426,21 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
 
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]","[*1]","[*2]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
         
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*]"])
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]","[*1]","[*2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
         XCTExpectFailure("The following should fail") {
             // Type match
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]","[1]","[2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
             // Exact match
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]","[1]","[2]"])
+            assertContains(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
                 // Partials
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[*0]","[*2]"])
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["[0]","[1]"])
-            AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]"])
+            assertEqual(expected: expected, actual: actual)
         }
     }
     
@@ -440,12 +471,12 @@ class AnyCodableUtilsTests: XCTestCase {
         
         XCTExpectFailure("The following should fail") {
             // Type match
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["key0","key1"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0","key1"])
             // Exact match
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["key0","key1"])
-            AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["key0","key1"])
+            assertEqual(expected: expected, actual: actual)
         }
     }
     
@@ -473,17 +504,17 @@ class AnyCodableUtilsTests: XCTestCase {
             return
         }
         
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual)
-        AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual, flexibleMatchPaths: ["key0","key1"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["key0","key1"])
         XCTExpectFailure("The following should fail") {
             // Type match
             // 2 Failures
-            AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["key0","key1"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0","key1"])
             // Exact match
             // 2 Failures
-            AnyCodableUtils.assertContainsDefaultExactMatch(expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual)
             // 1 Failures - fail count check
-            AnyCodableUtils.assertEqual(expected: expected, actual: actual)
+            assertEqual(expected: expected, actual: actual)
         }
     }
 
@@ -527,8 +558,7 @@ class AnyCodableUtilsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
-        AnyCodableUtils.assertContainsDefaultTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"])
     }
     
     // MARK: - Test helpers
