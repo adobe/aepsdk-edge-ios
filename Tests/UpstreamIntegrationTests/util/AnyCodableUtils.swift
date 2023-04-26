@@ -10,16 +10,15 @@
 // governing permissions and limitations under the License.
 //
 
-
-import Foundation
 import AEPServices
+import Foundation
 import XCTest
 
 extension AnyCodable: CustomStringConvertible {
     /// Converts `AnyCodable`'s default decode strategy of array `[Any?]`  into `[AnyCodable]` value type
     public static func from(array: [Any?]?) -> [AnyCodable]? {
         guard let unwrappedArray = array else { return nil }
-        
+
         var newArray: [AnyCodable] = []
         for val in unwrappedArray {
             if let anyCodableVal = val as? AnyCodable {
@@ -28,10 +27,10 @@ extension AnyCodable: CustomStringConvertible {
                 newArray.append(AnyCodable(val))
             }
         }
-        
+
         return newArray
     }
-    
+
     /// Convenience string description that prints a pretty JSON output of an `AnyCodable` instance without all the `Optional` and `AnyCodable` type wrappers in the output string
     public var description: String {
         if let anyCodableData = try? JSONEncoder().encode(self),
@@ -42,7 +41,7 @@ extension AnyCodable: CustomStringConvertible {
             return "\(String(describing: self.value))"
         }
     }
-    
+
 }
 
 enum AssertMode {
@@ -54,14 +53,14 @@ protocol AnyCodableTestAssertions {
     func assertEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any], file: StaticString, line: UInt, shouldAssert: Bool) -> Bool
     func assertEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], file: StaticString, line: UInt, shouldAssert: Bool) -> Bool
     func assertEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], file: StaticString, line: UInt, shouldAssert: Bool) -> Bool
-    
+
     func assertContains(defaultMode: AssertMode, expected: AnyCodable?, actual: AnyCodable?, alternateModePaths: [String], file: StaticString, line: UInt)
     func keyPathAsString(keyPath: [Any]) -> String
 }
 
 extension AnyCodableTestAssertions {
     // MARK: - AnyCodable exact equivalence test assertion methods
-    
+
     /// Performs testing assertions between two `AnyCodable` instances, using a similar logic path as the `AnyCodable ==` implementation.
     /// Traces the key path (both dictionary keys and array indices) and provides the trace on assertion failure, for easier debugging.
     /// Automatically performs any required conversions of underlying `Any?` types into `AnyCodable` format.
@@ -76,17 +75,17 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
-                
+
                     Expected: \#(String(describing: expected))
-                    
+
                     Actual: \#(String(describing: actual))
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
             return false
         }
-        
+
         switch (expected.value, actual.value) {
         case let (expected as String, actual as String):
             if shouldAssert {
@@ -120,18 +119,18 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     Expected and Actual types do not match.
-                
+
                     Expected: \#(expected)
-                    
+
                     Actual: \#(actual)
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
             return false
         }
     }
-    
+
     /// Performs testing assertions between two `[AnyCodable]` instances.
     @discardableResult
     func assertEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
@@ -142,11 +141,11 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
-                
+
                     Expected: \#(String(describing: expected))
-                    
+
                     Actual: \#(String(describing: actual))
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
@@ -156,14 +155,14 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     Expected and Actual counts do not match (exact equality).
-                    
+
                     Expected count: \#(expected.count)
                     Actual count: \#(actual.count)
-                    
+
                     Expected: \#(expected)
-                    
+
                     Actual: \#(actual)
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
@@ -181,7 +180,7 @@ extension AnyCodableTestAssertions {
         }
         return finalResult
     }
-    
+
     /// Performs testing assertions between two `[AnyCodable]` instances.
     @discardableResult
     func assertEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
@@ -192,11 +191,11 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
-                
+
                     Expected: \#(String(describing: expected))
-                    
+
                     Actual: \#(String(describing: actual))
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
@@ -206,14 +205,14 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     Expected and Actual counts do not match (exact equality).
-                
+
                     Expected count: \#(expected.count)
                     Actual count: \#(actual.count)
-                    
+
                     Expected: \#(expected)
-                    
+
                     Actual: \#(actual)
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
@@ -231,9 +230,9 @@ extension AnyCodableTestAssertions {
         }
         return finalResult
     }
-    
+
     // MARK: - AnyCodable flexible validation test assertion methods
-    
+
     /// Performs a flexible comparison where only the key value pairs on the expected side are required. There are two default equality modes which affect the type of validation performed.
     ///
     /// Given an expected JSON like the following:
@@ -264,7 +263,7 @@ extension AnyCodableTestAssertions {
         let pathTree = generatePathTree(paths: alternateModePaths)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, defaultExactEqualityMode: defaultMode == .exactMatch, file: file, line: line)
     }
-    
+
     /// Performs testing assertions between two `AnyCodable` instances, using a similar logic path as the `AnyCodable ==` implementation.
     /// Traces the key path (both dictionary keys and array indices) and provides the trace on assertion failure, for easier debugging.
     /// Automatically performs any required conversions of underlying `Any?` types into `AnyCodable` format.
@@ -279,17 +278,17 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     Expected JSON is non-nil but Actual JSON is nil.
-                
+
                     Expected: \#(String(describing: expected))
-                    
+
                     Actual: \#(String(describing: actual))
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
             return false
         }
-        
+
         switch (expected, actual) {
         case let (expected, actual) where (expected.value is String && actual.value is String):
             fallthrough
@@ -346,18 +345,18 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     Expected and Actual types do not match.
-                
+
                     Expected: \#(expected)
-                    
+
                     Actual: \#(actual)
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
             return false
         }
     }
-    
+
     /// Performs flexible comparison testing assertions between two `[AnyCodable]` instances.
     private func assertFlexibleEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], pathTree: [String: Any]?, defaultExactEqualityMode: Bool, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
         if expected == nil {
@@ -367,11 +366,11 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     Expected JSON is non-nil but Actual JSON is nil.
-                
+
                     Expected: \#(String(describing: expected))
-                    
+
                     Actual: \#(String(describing: actual))
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
@@ -381,22 +380,22 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     Expected JSON has more elements than Actual JSON. Impossible for Actual to fulfill Expected requirements.
-                
+
                     Expected count: \#(expected.count)
                     Actual count: \#(actual.count)
-                    
+
                     Expected: \#(expected)
-                    
+
                     Actual: \#(actual)
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
             return false
         }
-        
+
         // For explanation on the intended behavior of each alternate mode array path type, see docs for `assertContains`
-        
+
         // Matches array subscripts and all the inner content (ex: "[*123]". However, only captures the inner content: ex: "123", "*123"
         let arrayIndexValueRegex = #"\[(.*?)\]"#
         let indexValues = pathTree?.keys
@@ -415,7 +414,7 @@ extension AnyCodableTestAssertions {
         let exactIndices: [Int] = indexValues
             .filter { !$0.contains("*") }
             .compactMap { Int($0) }
-        
+
         var seenIndices: Set<Int> = []
         var finalExactIndices: [Int] = []
         for index in exactIndices {
@@ -423,21 +422,19 @@ extension AnyCodableTestAssertions {
                 let result = seenIndices.insert(index)
                 if result.inserted {
                     finalExactIndices.append(index)
-                }
-                else {
+                } else {
                     print("WARNING: index already seen: \(index)")
                 }
             }
         }
-        
+
         var finalWildcardIndices: [Int] = []
         for index in wildcardIndices {
             if expected.indices.contains(index) {
                 let result = seenIndices.insert(index)
                 if result.inserted {
                     finalWildcardIndices.append(index)
-                }
-                else {
+                } else {
                     print("WARNING: wildcard index already seen: \(index)")
                 }
             }
@@ -458,8 +455,7 @@ extension AnyCodableTestAssertions {
                     pathTree: nil, // Path terminus
                     defaultExactEqualityMode: !defaultExactEqualityMode, // Invert default mode
                     file: file, line: line, shouldAssert: shouldAssert) && finalResult
-            }
-            else {
+            } else {
                 finalResult = assertFlexibleEqual(
                     expected: expected[index],
                     actual: actual[index],
@@ -490,25 +486,23 @@ extension AnyCodableTestAssertions {
                 }) {
                     unmatchedRHSIndices.remove(unmatchedRHSElements[result].originalIndex)
                     unmatchedRHSElements.remove(at: result)
-                    
+
                     finalResult = finalResult && true
-                }
-                else {
+                } else {
                     XCTFail(#"""
                     Wildcard \#(!defaultExactEqualityMode ? "exact" : "type" ) match found no matches satisfying requirement on Actual side.
-                    
+
                     Requirement: \#(String(describing: matchTreeValue))
-                    
+
                     Expected: \#(expected[index])
-                    
+
                     Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                     """#, file: file, line: line)
                     finalResult = false
                 }
-            }
-            else {
+            } else {
                 if let result = unmatchedRHSElements.firstIndex(where: {
                     assertFlexibleEqual(
                         expected: expected[index],
@@ -518,22 +512,21 @@ extension AnyCodableTestAssertions {
                         defaultExactEqualityMode: defaultExactEqualityMode,
                         file: file, line: line, shouldAssert: false)
                 }) {
-                    
+
                     unmatchedRHSIndices.remove(unmatchedRHSElements[result].originalIndex)
                     unmatchedRHSElements.remove(at: result)
-                    
+
                     finalResult = finalResult && true
-                }
-                else {
+                } else {
                     XCTFail(#"""
                     Wildcard \#(defaultExactEqualityMode ? "exact" : "type" ) match found no matches satisfying requirement on Actual side.
-                    
+
                     Requirement: \#(String(describing: matchTreeValue))
-                    
+
                     Expected: \#(expected[index])
-                    
+
                     Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                     """#, file: file, line: line)
                     finalResult = false
@@ -559,25 +552,23 @@ extension AnyCodableTestAssertions {
                     }) {
                         unmatchedRHSIndices.remove(unmatchedRHSElements[result].originalIndex)
                         unmatchedRHSElements.remove(at: result)
-                        
+
                         finalResult = finalResult && true
-                    }
-                    else {
+                    } else {
                         XCTFail(#"""
                         Wildcard \#(!defaultExactEqualityMode ? "exact" : "type" ) match found no matches satisfying requirement on Actual side.
-                        
+
                         Requirement: \#(String(describing: matchTreeValue))
-                        
+
                         Expected: \#(expected[index])
-                        
+
                         Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
-                        
+
                         Key path: \#(keyPathAsString(keyPath: keyPath))
                         """#, file: file, line: line)
                         finalResult = false
                     }
-                }
-                else {
+                } else {
                     if let result = unmatchedRHSElements.firstIndex(where: {
                         assertFlexibleEqual(
                             expected: expected[index],
@@ -589,46 +580,45 @@ extension AnyCodableTestAssertions {
                     }) {
                         unmatchedRHSIndices.remove(unmatchedRHSElements[result].originalIndex)
                         unmatchedRHSElements.remove(at: result)
-                        
+
                         finalResult = finalResult && true
-                    }
-                    else {
+                    } else {
                         XCTFail(#"""
                         Wildcard \#(defaultExactEqualityMode ? "exact" : "type" ) match found no matches satisfying requirement on Actual side.
-                        
+
                         Requirement: \#(String(describing: matchTreeValue))
-                        
+
                         Expected: \#(expected[index])
-                        
+
                         Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
-                        
+
                         Key path: \#(keyPathAsString(keyPath: keyPath))
                         """#, file: file, line: line)
-                        
+
                         finalResult = false
                     }
                 }
             }
         }
-        
+
         for index in unmatchedLHSIndices.sorted(by: { $0 < $1 }) {
             var keyPath = keyPath
             keyPath.append(index)
-            
+
             guard unmatchedRHSIndices.contains(index) else {
                 XCTFail(#"""
                 Actual side's index \#(index) has already been taken by a wildcard match. Verify the test setup for correctness.
-                
+
                 Expected: \#(expected[index])
-                
+
                 Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
-                
+
                 Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
                 finalResult = false
                 continue
             }
-            
+
             finalResult = assertFlexibleEqual(
                 expected: expected[index],
                 actual: actual[index],
@@ -637,10 +627,10 @@ extension AnyCodableTestAssertions {
                 defaultExactEqualityMode: defaultExactEqualityMode,
                 file: file, line: line, shouldAssert: shouldAssert) && finalResult
         }
-        
+
         return finalResult
     }
-        
+
     /// Performs flexible comparison testing assertions between two `[String: AnyCodable]` instances.
     private func assertFlexibleEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], pathTree: [String: Any]?, defaultExactEqualityMode: Bool, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
         if expected == nil {
@@ -650,11 +640,11 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     Expected JSON is non-nil but Actual JSON is nil.
-                
+
                     Expected: \#(String(describing: expected))
-                    
+
                     Actual: \#(String(describing: actual))
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
@@ -664,14 +654,14 @@ extension AnyCodableTestAssertions {
             if shouldAssert {
                 XCTFail(#"""
                     Expected JSON has more elements than Actual JSON.
-                
+
                     Expected count: \#(expected.count)
                     Actual count: \#(actual.count)
-                    
+
                     Expected: \#(expected)
-                    
+
                     Actual: \#(actual)
-                    
+
                     Key path: \#(keyPathAsString(keyPath: keyPath))
                 """#, file: file, line: line)
             }
@@ -690,8 +680,7 @@ extension AnyCodableTestAssertions {
                     pathTree: nil, // is String means path terminates here
                     defaultExactEqualityMode: !defaultExactEqualityMode, // Invert default mode
                     file: file, line: line, shouldAssert: shouldAssert) && finalResult
-            }
-            else {
+            } else {
                 finalResult = assertFlexibleEqual(
                     expected: value,
                     actual: actual[key],
@@ -703,7 +692,7 @@ extension AnyCodableTestAssertions {
         }
         return finalResult
     }
-    
+
     // MARK: - Test setup and output helpers
     /// Applies the provided regex pattern to the text and returns all the capture groups from the regex pattern
     func getCapturedRegexGroups(text: String, regexPattern: String) -> [String?] {
@@ -727,7 +716,7 @@ extension AnyCodableTestAssertions {
             return []
         }
     }
-    
+
     /// Merges two constructed key path dictionaries, replacing `current` values with `new` ones, with the exception
     /// of existing values that are String types, which mean that it is a final key path from a different path string
     /// Merge order doesn't matter, the final result should always be the same
@@ -757,12 +746,11 @@ extension AnyCodableTestAssertions {
         if path.isEmpty {
             result = [first: pathString]
             return result
-        }
-        else {
+        } else {
             return [first: construct(path: path, pathString: pathString)]
         }
     }
-    
+
     func generatePathTree(paths: [String]) -> [String: Any]? {
         // Matches array subscripts and all the inner content. Captures the surrounding brackets and inner content: ex: "[123]", "[*123]"
         let arrayIndexRegex = #"(\[.*?\])"#
@@ -770,11 +758,11 @@ extension AnyCodableTestAssertions {
         // the path example would result in: ["key0\.key1", "key2[1][2]", "key3"]
         let jsonNestingRegex = #"(.+?)(?<!\\)(?:\.|$)"#
         var tree: [String: Any] = [:]
-        
+
         for exactValuePath in paths {
             var allPathComponents: [String] = []
             var pathExtractionSuccessful: Bool = true
-            
+
             // Break the path string into its component parts
             let splitByNesting = getCapturedRegexGroups(text: exactValuePath, regexPattern: jsonNestingRegex)
             for pathComponent in splitByNesting {
@@ -787,12 +775,12 @@ extension AnyCodableTestAssertions {
                     break
                 }
                 let pathComponent = validComponent.replacingOccurrences(of: "\\", with: "")
-                
+
                 // Get all array access levels for the given pathComponent, if any
                 // KNOWN LIMITATION: this regex only extracts all open+close square brackets and inner content ("[___]") regardless
                 // of their relative position within the path component, ex: "key0[2]key1[3]" will be interpreted as: "key0" with array component "[2][3]"
                 let arrayComponents = getCapturedRegexGroups(text: pathComponent, regexPattern: arrayIndexRegex)
-                
+
                 // If array components are detected, extract just the path component before array components if it exists
                 if !arrayComponents.isEmpty {
                     guard let bracketIndex = pathComponent.firstIndex(of: "[") else {
@@ -810,7 +798,7 @@ extension AnyCodableTestAssertions {
                 else {
                     allPathComponents.append(pathComponent)
                 }
-                
+
                 for arrayComponent in arrayComponents {
                     guard let arrayComponent = arrayComponent else {
                         XCTFail(#"""
@@ -823,18 +811,18 @@ extension AnyCodableTestAssertions {
                     allPathComponents.append(arrayComponent)
                 }
             }
-            
+
             guard pathExtractionSuccessful else {
                 XCTFail("TEST ERROR: some exact paths were not able to be extracted. Test will have unexpected results.")
                 continue
             }
             let constructedTree = construct(path: allPathComponents, pathString: exactValuePath)
             tree = merge(current: tree, new: constructedTree)
-            
+
         }
         return tree.isEmpty ? nil : tree
     }
-    
+
     /// Convenience function that outputs a given key path as a pretty string
     func keyPathAsString(keyPath: [Any]) -> String {
         var result = ""
@@ -846,8 +834,7 @@ extension AnyCodableTestAssertions {
                 }
                 if item.contains(".") {
                     result += item.replacingOccurrences(of: ".", with: "\\.")
-                }
-                else {
+                } else {
                     result += item
                 }
             case let item as Int:

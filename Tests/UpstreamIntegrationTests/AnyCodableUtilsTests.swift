@@ -14,17 +14,15 @@ import AEPServices
 import Foundation
 import XCTest
 
-
-
 class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
     override func setUp() {
 
     }
-    
+
     public override func tearDown() {
         super.tearDown()
     }
-    
+
     // MARK: - Regex parsing
     func testEscapedKeyPaths() {
         let expectedJSON = #"""
@@ -34,7 +32,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
           }
         }
         """#
-        
+
         let actualJSON = #"""
         {
           "key1.key2": {
@@ -46,7 +44,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual, alternateModePaths: [#"key1\.key2"#])
         XCTExpectFailure("The following should fail") {
@@ -55,13 +53,13 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
+
     // MARK: - Empty collection tests
     func testDictionary_whenEmpty_isEqual() {
         let expectedJSON = #"""
         {}
         """#
-        
+
         let actualJSON = #"""
         {}
         """#
@@ -69,12 +67,12 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual)
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testDictionary_whenNested_isEqual() {
         let expectedJSON = #"""
         {
@@ -83,7 +81,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
           }
         }
         """#
-        
+
         let actualJSON = #"""
         {
           "key0": {
@@ -95,7 +93,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0"])
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0.key1"])
@@ -104,12 +102,12 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
         assertContains(expected: expected, actual: actual, alternateModePaths: ["key0.key1"])
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testArray_whenEmpty_isEqual() {
         let expectedJSON = #"""
         []
         """#
-        
+
         let actualJSON = #"""
         []
         """#
@@ -117,17 +115,17 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual)
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testArray_whenEmptyNested_isEqual() {
         let expectedJSON = #"""
         [[]]
         """#
-        
+
         let actualJSON = #"""
         [[]]
         """#
@@ -135,7 +133,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]"])
@@ -146,12 +144,12 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]"])
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testArray_whenNestedDictionary_isEqual() {
         let expectedJSON = #"""
         [{}]
         """#
-        
+
         let actualJSON = #"""
         [{}]
         """#
@@ -159,7 +157,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]"])
@@ -170,14 +168,14 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]"])
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testDictionary_whenNestedArray_isEqual() {
         let expectedJSON = #"""
         {
           "key0": []
         }
         """#
-        
+
         let actualJSON = #"""
         {
           "key0": []
@@ -187,21 +185,21 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0"])
         assertContains(expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual, alternateModePaths: ["key0"])
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testSingleKeyEquality() {
         let expectedJSON = #"""
         {
             "key1": "value1"
         }
         """#
-        
+
         let actualJSON = #"""
         {
             "key1": "value1"
@@ -211,19 +209,19 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual)
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testSingleKey_flexibleEquality() {
         let expectedJSON = #"""
         {
             "key1": ""
         }
         """#
-        
+
         let actualJSON = #"""
         {
             "key1": "value1"
@@ -233,7 +231,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual, alternateModePaths: ["key1"])
         XCTExpectFailure("The following should fail") {
@@ -241,12 +239,12 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
+
     func testArray_whenExpectedHasFewerElements_isEqual() {
         let expectedJSON = #"""
         [1,2,3]
         """#
-        
+
         let actualJSON = #"""
         [1,2,3,4,5,6]
         """#
@@ -254,7 +252,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual)
         XCTExpectFailure("The following should fail") {
@@ -262,12 +260,12 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
+
     func testArray_whenExpectedHasMoreElements() {
         let expectedJSON = #"""
         [1,2,3,4,5,6]
         """#
-        
+
         let actualJSON = #"""
         [1,2,3]
         """#
@@ -275,19 +273,19 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         XCTExpectFailure("The following should fail") {
             assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
             assertContains(expected: expected, actual: actual)
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
+
     func testArray_whenExpectedHasFewerElements_sameType() {
         let expectedJSON = #"""
         [0,1,2,4]
         """#
-        
+
         let actualJSON = #"""
         [9,9,9,4,9,9]
         """#
@@ -295,23 +293,23 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
-        assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
         XCTExpectFailure("The following should fail") {
             // Type match
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
             // Exact match
             assertContains(expected: expected, actual: actual)
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
+
     func testArray_whenGeneralWildcard() {
         let expectedJSON = #"""
         [0,1,2]
         """#
-        
+
         let actualJSON = #"""
         [9,9,9,0,1,2]
         """#
@@ -320,30 +318,30 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 //        assertContains(expected: expected, actual: actual)
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
-        
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
-        assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
         XCTExpectFailure("The following should fail") {
             // Type match
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
             // Exact match
             assertContains(expected: expected, actual: actual)
                 // Partials
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*2]"])
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]"])
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
+
     func testArray_whenMixedWildcardPaths() {
         let expectedJSON = #"""
         [0,1,2]
         """#
-        
+
         let actualJSON = #"""
         ["a","b",2,0,1,9]
         """#
@@ -354,40 +352,38 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]", "[*1]", "[2]"])
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[2]", "[*1]", "[*]"])
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
-        
-        
-        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]","[*1]","[2]"])
-        assertContains(expected: expected, actual: actual, alternateModePaths: ["[2]","[*1]","[*]"])
-        
-        
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]", "[*1]", "[2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[2]", "[*1]", "[*]"])
+
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
-        
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+
         XCTExpectFailure("The following should fail") {
             // Type match
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
             // Exact match
             assertContains(expected: expected, actual: actual)
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
                 // Partials
             // Note the precedence of evaluation affecting the test passing
             // In this case, [*<INT>] is evaluated before non path keys (that is index 2)
             // so [*0] -> 0 takes index 2 -> 2
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]"])
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*2]"])
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]"])
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
+
     func testArray_whenGeneralWildcard_typeMismatch_mustFail() {
         let expectedJSON = #"""
         [0,1,2]
         """#
-        
+
         let actualJSON = #"""
         ["a","b","c","d","e",2]
         """#
@@ -395,29 +391,29 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         XCTExpectFailure("The following should fail") {
             // Type match
             assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
             // Exact match
             assertContains(expected: expected, actual: actual)
             assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
                 // Partials
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*2]"])
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]"])
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
+
     func testArray_whenGeneralWildcard_typeMismatch() {
         let expectedJSON = #"""
         [0,1,2]
         """#
-        
+
         let actualJSON = #"""
         ["a","b","c",0,1,2]
         """#
@@ -427,24 +423,23 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
         }
 
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
-        
+        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*1]","[*2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
         XCTExpectFailure("The following should fail") {
             // Type match
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
             // Exact match
             assertContains(expected: expected, actual: actual)
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]","[2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
                 // Partials
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]","[*2]"])
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]","[1]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]"])
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
-    
+
     func testDictionary_whenExpectedHasMoreElements() {
         let expectedJSON = #"""
         {
@@ -456,7 +451,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
           "key5": 5
         }
         """#
-        
+
         let actualJSON = #"""
         {
           "key0": 0,
@@ -468,18 +463,18 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         XCTExpectFailure("The following should fail") {
             // Type match
             assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0","key1"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0", "key1"])
             // Exact match
             assertContains(expected: expected, actual: actual)
-            assertContains(expected: expected, actual: actual, alternateModePaths: ["key0","key1"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["key0", "key1"])
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
+
     func testDictionary_whenExpectedHasFewerElements_sameType() {
         let expectedJSON = #"""
         {
@@ -488,7 +483,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
           "key2": 2
         }
         """#
-        
+
         let actualJSON = #"""
         {
           "key0": 9,
@@ -503,13 +498,13 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
-        assertContains(expected: expected, actual: actual, alternateModePaths: ["key0","key1"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["key0", "key1"])
         XCTExpectFailure("The following should fail") {
             // Type match
             // 2 Failures
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0","key1"])
+            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0", "key1"])
             // Exact match
             // 2 Failures
             assertContains(expected: expected, actual: actual)
@@ -531,7 +526,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
           ]
         }
         """#
-        
+
         let actualJSON = #"""
            {
              "payload": [
@@ -553,16 +548,16 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
              ]
            }
         """#
-        
+
         guard let expected = getAnyCodable(expectedJSON), let actual = getAnyCodable(actualJSON) else {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
         assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"])
     }
-    
+
     // MARK: - Test helpers
-    
+
     func getAnyCodable(_ jsonString: String) -> AnyCodable? {
         return try? JSONDecoder().decode(AnyCodable.self, from: jsonString.data(using: .utf8)!)
     }
