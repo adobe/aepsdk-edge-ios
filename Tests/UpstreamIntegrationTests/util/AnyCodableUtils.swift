@@ -355,240 +355,164 @@ extension XCTestCase {
             return false
         }
 
-        // For explanation on the intended behavior of each alternate mode array path type, see docs for `assertContains`
-
         // Matches array subscripts and all the inner content (ex: "[*123]". However, only captures the inner content: ex: "123", "*123"
         let arrayIndexValueRegex = #"\[(.*?)\]"#
+        // Get all of the alternate key paths for this level, and apply the array bracket inner content capture regex
         let indexValues = pathTree?.keys
             .flatMap { key in
                 getCapturedRegexGroups(text: key, regexPattern: arrayIndexValueRegex)
             }
             .compactMap {$0} ?? []
-        let hasWildcardAny: Bool = indexValues.contains("*")
-        let wildcardIndices: [Int] = indexValues
-            .filter { $0.contains("*") }
-            .compactMap {
-                var string = $0
-                string.removeFirst()
-                return Int(string)
-            }
-        let exactIndices: [Int] = indexValues
+        
+        // Converts "0" -> 0
+        var exactIndexes: [Int] = indexValues
             .filter { !$0.contains("*") }
             .compactMap { Int($0) }
-
-        var seenIndices: Set<Int> = []
-        var finalExactIndices: [Int] = []
-        for index in exactIndices {
-            if expected.indices.contains(index) {
-                let result = seenIndices.insert(index)
-                if result.inserted {
-                    finalExactIndices.append(index)
-                } else {
-                    print("WARNING: index already seen: \(index)")
-                }
+        
+        // Converts "*0" -> 0
+        var wildcardIndexes: [Int] = indexValues
+            .filter { $0.contains("*") }
+            .compactMap {
+                return Int($0.replacingOccurrences(of: "*", with: ""))
             }
-        }
+        
+        // Checks for [*]
+        let hasWildcardAny: Bool = indexValues.contains("*")
 
-        var finalWildcardIndices: [Int] = []
-        for index in wildcardIndices {
-            if expected.indices.contains(index) {
-                let result = seenIndices.insert(index)
-                if result.inserted {
-                    finalWildcardIndices.append(index)
-                } else {
-                    print("WARNING: wildcard index already seen: \(index)")
+        var seenIndexes: Set<Int> = []
+        
+        /// Relies on outer scope's:
+        /// 1. **mutates** `seenIndexes`
+        /// 2. `expected` array
+        func createSortedValidatedRange(_ range: [Int]) -> [Int] {
+            var result: [Int] = []
+            for index in range {
+                guard expected.indices.contains(index) else {
+                    XCTFail("WARNING: alternate match path is out of bounds.")
+                    continue
                 }
+                guard seenIndexes.insert(index).inserted else {
+                    XCTFail("WARNING: index already seen: \(index)")
+                    continue
+                }
+                result.append(index)
             }
+            return result.sorted()
         }
-        var unmatchedLHSIndices: Set<Int> = Set(expected.indices).subtracting(finalExactIndices)
-        var unmatchedRHSIndices: Set<Int> = Set(actual.indices).subtracting(finalExactIndices)
+        
+        exactIndexes = createSortedValidatedRange(exactIndexes)
+        wildcardIndexes = createSortedValidatedRange(wildcardIndexes)
+        
+        let unmatchedLHSIndices: Set<Int> = Set(expected.indices)
+                                                .subtracting(exactIndexes)
+                                                .subtracting(wildcardIndexes)
+
+        // Evaluation precedence is:
+        // Alternate match paths
+        // 1. [0]
+        // 2. [*0]
+        // 3. [*] - mutually exclusive with 4
+        // Default
+        // 4. Standard indexes, all remaining expected indexes unspecified by 1-3
+        
         var finalResult = true
-        // Alternate match paths with format: [0]
-        for index in finalExactIndices.sorted() {
+        // Handle alternate match paths with format: [0]
+        for index in exactIndexes {
             var keyPath = keyPath
             keyPath.append(index)
             let matchTreeValue = pathTree?["[\(index)]"]
-            if matchTreeValue is String {
-                finalResult = assertFlexibleEqual(
-                    expected: expected[index],
-                    actual: actual[index],
-                    keyPath: keyPath,
-                    pathTree: nil, // Path terminus
-                    defaultExactEqualityMode: !defaultExactEqualityMode, // Invert default mode
-                    file: file, line: line, shouldAssert: shouldAssert) && finalResult
-            } else {
-                finalResult = assertFlexibleEqual(
-                    expected: expected[index],
-                    actual: actual[index],
-                    keyPath: keyPath,
-                    pathTree: matchTreeValue as? [String: Any],
-                    defaultExactEqualityMode: defaultExactEqualityMode,
-                    file: file, line: line, shouldAssert: shouldAssert) && finalResult
-            }
-        }
-        // Alternate match paths with format: [*0]
-        var unmatchedRHSElements = unmatchedRHSIndices
-                                    .sorted(by: { $0 < $1 })
-                                    .map { (originalIndex: $0, element: actual[$0]) }
-        for index in finalWildcardIndices.sorted() {
-            unmatchedLHSIndices.remove(index)
-            var keyPath = keyPath
-            keyPath.append(index)
-            let matchTreeValue = pathTree?["[*\(index)]"]
-            if matchTreeValue is String {
-                if let result = unmatchedRHSElements.firstIndex(where: {
-                    assertFlexibleEqual(
-                        expected: expected[index],
-                        actual: $0.element,
-                        keyPath: keyPath,
-                        pathTree: nil, // Path terminus
-                        defaultExactEqualityMode: !defaultExactEqualityMode, // Invert default mode
-                        file: file, line: line, shouldAssert: false)
-                }) {
-                    unmatchedRHSIndices.remove(unmatchedRHSElements[result].originalIndex)
-                    unmatchedRHSElements.remove(at: result)
-
-                    finalResult = finalResult && true
-                } else {
-                    XCTFail(#"""
-                    Wildcard \#(!defaultExactEqualityMode ? "exact" : "type" ) match found no matches satisfying requirement on Actual side.
-
-                    Requirement: \#(String(describing: matchTreeValue))
-
-                    Expected: \#(expected[index])
-
-                    Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
-
-                    Key path: \#(keyPathAsString(keyPath))
-                    """#, file: file, line: line)
-                    finalResult = false
-                }
-            } else {
-                if let result = unmatchedRHSElements.firstIndex(where: {
-                    assertFlexibleEqual(
-                        expected: expected[index],
-                        actual: $0.element,
-                        keyPath: keyPath,
-                        pathTree: matchTreeValue as? [String: Any],
-                        defaultExactEqualityMode: defaultExactEqualityMode,
-                        file: file, line: line, shouldAssert: false)
-                }) {
-
-                    unmatchedRHSIndices.remove(unmatchedRHSElements[result].originalIndex)
-                    unmatchedRHSElements.remove(at: result)
-
-                    finalResult = finalResult && true
-                } else {
-                    XCTFail(#"""
-                    Wildcard \#(defaultExactEqualityMode ? "exact" : "type" ) match found no matches satisfying requirement on Actual side.
-
-                    Requirement: \#(String(describing: matchTreeValue))
-
-                    Expected: \#(expected[index])
-
-                    Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
-
-                    Key path: \#(keyPathAsString(keyPath))
-                    """#, file: file, line: line)
-                    finalResult = false
-                }
-            }
-        }
-        // Alternate match paths with format: [*]
-        if hasWildcardAny {
-            for index in unmatchedLHSIndices.sorted(by: { $0 < $1 }) {
-                unmatchedLHSIndices.remove(index)
-                var keyPath = keyPath
-                keyPath.append(index)
-                let matchTreeValue = pathTree?["[*]"]
-                if matchTreeValue is String {
-                    if let result = unmatchedRHSElements.firstIndex(where: {
-                        assertFlexibleEqual(
-                            expected: expected[index],
-                            actual: $0.element,
-                            keyPath: keyPath,
-                            pathTree: nil, // Path terminus
-                            defaultExactEqualityMode: !defaultExactEqualityMode, // Invert default mode
-                            file: file, line: line, shouldAssert: false)
-                    }) {
-                        unmatchedRHSIndices.remove(unmatchedRHSElements[result].originalIndex)
-                        unmatchedRHSElements.remove(at: result)
-
-                        finalResult = finalResult && true
-                    } else {
-                        XCTFail(#"""
-                        Wildcard \#(!defaultExactEqualityMode ? "exact" : "type" ) match found no matches satisfying requirement on Actual side.
-
-                        Requirement: \#(String(describing: matchTreeValue))
-
-                        Expected: \#(expected[index])
-
-                        Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
-
-                        Key path: \#(keyPathAsString(keyPath))
-                        """#, file: file, line: line)
-                        finalResult = false
-                    }
-                } else {
-                    if let result = unmatchedRHSElements.firstIndex(where: {
-                        assertFlexibleEqual(
-                            expected: expected[index],
-                            actual: $0.element,
-                            keyPath: keyPath,
-                            pathTree: matchTreeValue as? [String: Any],
-                            defaultExactEqualityMode: defaultExactEqualityMode,
-                            file: file, line: line, shouldAssert: false)
-                    }) {
-                        unmatchedRHSIndices.remove(unmatchedRHSElements[result].originalIndex)
-                        unmatchedRHSElements.remove(at: result)
-
-                        finalResult = finalResult && true
-                    } else {
-                        XCTFail(#"""
-                        Wildcard \#(defaultExactEqualityMode ? "exact" : "type" ) match found no matches satisfying requirement on Actual side.
-
-                        Requirement: \#(String(describing: matchTreeValue))
-
-                        Expected: \#(expected[index])
-
-                        Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
-
-                        Key path: \#(keyPathAsString(keyPath))
-                        """#, file: file, line: line)
-
-                        finalResult = false
-                    }
-                }
-            }
-        }
-
-        for index in unmatchedLHSIndices.sorted(by: { $0 < $1 }) {
-            var keyPath = keyPath
-            keyPath.append(index)
-
-            guard unmatchedRHSIndices.contains(index) else {
-                XCTFail(#"""
-                Actual side's index \#(index) has already been taken by a wildcard match. Verify the test setup for correctness.
-
-                Expected: \#(expected[index])
-
-                Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
-
-                Key path: \#(keyPathAsString(keyPath))
-                """#, file: file, line: line)
-                finalResult = false
-                continue
-            }
-
+            
+            let isPathEnd = matchTreeValue is String
+            
             finalResult = assertFlexibleEqual(
                 expected: expected[index],
                 actual: actual[index],
                 keyPath: keyPath,
-                pathTree: nil, // There should be no array based key paths at this point
-                defaultExactEqualityMode: defaultExactEqualityMode,
+                pathTree: isPathEnd ? nil : matchTreeValue as? [String: Any], // if pathEnd, nil out pathTree
+                defaultExactEqualityMode: isPathEnd ? !defaultExactEqualityMode : defaultExactEqualityMode, // if pathEnd, invert default equality mode
                 file: file, line: line, shouldAssert: shouldAssert) && finalResult
         }
 
+        var unmatchedRHSElements = Set(actual.indices).subtracting(exactIndexes)
+                                    .sorted()
+                                    .map { (originalIndex: $0, element: actual[$0]) }
+        
+        /// Relies on outer scope's:
+        /// 1. pathTree
+        /// 2. defaultExactEqualityMode
+        /// 3. **mutates** unmatchedRHSElements
+        /// 4. **mutates** finalResult
+        func performWildcardMatch(expectedIndexes: [Int], isGeneralWildcard: Bool) {
+            for index in expectedIndexes {
+                var keyPath = keyPath
+                keyPath.append(index)
+                let matchTreeValue = isGeneralWildcard ? pathTree?["[*]"] : pathTree?["[*\(index)]"]
+                
+                let isPathEnd = matchTreeValue is String
+                
+                guard let result = unmatchedRHSElements.firstIndex(where: {
+                    assertFlexibleEqual(
+                        expected: expected[index],
+                        actual: $0.element,
+                        keyPath: keyPath,
+                        pathTree: isPathEnd ? nil : matchTreeValue as? [String: Any], // if pathEnd, nil out pathTree
+                        defaultExactEqualityMode: isPathEnd ? !defaultExactEqualityMode : defaultExactEqualityMode, // if pathEnd, invert default equality mode
+                        file: file, line: line, shouldAssert: false)
+                }) else {
+                    XCTFail(#"""
+                    Wildcard \#((isPathEnd ? !defaultExactEqualityMode : defaultExactEqualityMode) ? "exact" : "type") match found no matches satisfying requirement on Actual side.
+
+                    Requirement: \#(String(describing: matchTreeValue))
+
+                    Expected: \#(expected[index])
+
+                    Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
+
+                    Key path: \#(keyPathAsString(keyPath))
+                    """#, file: file, line: line)
+                    finalResult = false
+                    continue
+                }
+                unmatchedRHSElements.remove(at: result)
+
+                finalResult = finalResult && true
+            }
+        }
+        
+        // Handle alternate match paths with format: [*<INT>]
+        performWildcardMatch(expectedIndexes: wildcardIndexes.sorted(), isGeneralWildcard: false)
+        // Handle alternate match paths with format: [*] - general wildcard is mutually exclusive with standard index comparison
+        if hasWildcardAny {
+            performWildcardMatch(expectedIndexes: unmatchedLHSIndices.sorted(by: { $0 < $1 }), isGeneralWildcard: true)
+        }
+        else {
+            for index in unmatchedLHSIndices.sorted(by: { $0 < $1 }) {
+                var keyPath = keyPath
+                keyPath.append(index)
+
+                guard unmatchedRHSElements.contains(where: { $0.originalIndex == index }) else {
+                    XCTFail(#"""
+                    Actual side's index \#(index) has already been taken by a wildcard match. Verify the test setup for correctness.
+
+                    Expected: \#(expected[index])
+
+                    Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
+
+                    Key path: \#(keyPathAsString(keyPath))
+                    """#, file: file, line: line)
+                    finalResult = false
+                    continue
+                }
+
+                finalResult = assertFlexibleEqual(
+                    expected: expected[index],
+                    actual: actual[index],
+                    keyPath: keyPath,
+                    pathTree: nil, // There should be no array based key paths at this point
+                    defaultExactEqualityMode: defaultExactEqualityMode,
+                    file: file, line: line, shouldAssert: shouldAssert) && finalResult
+            }
+        }
         return finalResult
     }
 
