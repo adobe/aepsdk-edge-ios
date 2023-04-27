@@ -14,36 +14,6 @@ import AEPServices
 import Foundation
 import XCTest
 
-extension AnyCodable: CustomStringConvertible {
-    /// Converts `AnyCodable`'s default decode strategy of array `[Any?]`  into `[AnyCodable]` value type
-    public static func from(array: [Any?]?) -> [AnyCodable]? {
-        guard let unwrappedArray = array else { return nil }
-
-        var newArray: [AnyCodable] = []
-        for val in unwrappedArray {
-            if let anyCodableVal = val as? AnyCodable {
-                newArray.append(anyCodableVal)
-            } else {
-                newArray.append(AnyCodable(val))
-            }
-        }
-
-        return newArray
-    }
-
-    /// Convenience string description that prints a pretty JSON output of an `AnyCodable` instance without all the `Optional` and `AnyCodable` type wrappers in the output string
-    public var description: String {
-        if let anyCodableData = try? JSONEncoder().encode(self),
-           let jsonObject = try? JSONSerialization.jsonObject(with: anyCodableData),
-           let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted) {
-            return String(decoding: jsonData, as: UTF8.self)
-        } else {
-            return "\(String(describing: self.value))"
-        }
-    }
-
-}
-
 enum AssertMode {
     case exactMatch
     case typeMatch
