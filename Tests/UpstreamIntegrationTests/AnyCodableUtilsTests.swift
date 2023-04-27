@@ -14,7 +14,7 @@ import AEPServices
 import Foundation
 import XCTest
 
-class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
+class AnyCodableUtilsTests: XCTestCase {
 
     // MARK: - Regex parsing
     func testEscapedKeyPaths() {
@@ -38,10 +38,10 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
         assertContains(expected: expected, actual: actual, alternateModePaths: [#"key1\.key2"#])
         XCTExpectFailure("The following should fail") {
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: [#"key1\.key2"#])
+            assertContains(expected: expected, actual: actual, alternateModePaths: [#"key1\.key2"#], mode: .typeMatch)
             assertContains(expected: expected, actual: actual)
             assertEqual(expected: expected, actual: actual)
         }
@@ -61,7 +61,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
         assertContains(expected: expected, actual: actual)
         assertEqual(expected: expected, actual: actual)
     }
@@ -87,9 +87,9 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0.key1"])
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["key0"], mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["key0.key1"], mode: .typeMatch)
         assertContains(expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual, alternateModePaths: ["key0"])
         assertContains(expected: expected, actual: actual, alternateModePaths: ["key0.key1"])
@@ -109,7 +109,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
         assertContains(expected: expected, actual: actual)
         assertEqual(expected: expected, actual: actual)
     }
@@ -127,10 +127,10 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]"])
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"], mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]"], mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]"], mode: .typeMatch)
         assertContains(expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]"])
@@ -151,10 +151,10 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]"])
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"], mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]"], mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]"], mode: .typeMatch)
         assertContains(expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]"])
@@ -179,8 +179,8 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0"])
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["key0"], mode: .typeMatch)
         assertContains(expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual, alternateModePaths: ["key0"])
         assertEqual(expected: expected, actual: actual)
@@ -203,7 +203,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
         assertContains(expected: expected, actual: actual)
         assertEqual(expected: expected, actual: actual)
     }
@@ -225,7 +225,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
         assertContains(expected: expected, actual: actual, alternateModePaths: ["key1"])
         XCTExpectFailure("The following should fail") {
             assertContains(expected: expected, actual: actual)
@@ -246,7 +246,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
         assertContains(expected: expected, actual: actual)
         XCTExpectFailure("The following should fail") {
             assertContains(expected: expected, actual: actual)
@@ -268,7 +268,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
         }
 
         XCTExpectFailure("The following should fail") {
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+            assertContains(expected: expected, actual: actual, mode: .typeMatch)
             assertContains(expected: expected, actual: actual)
             assertEqual(expected: expected, actual: actual)
         }
@@ -287,11 +287,11 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
         XCTExpectFailure("The following should fail") {
             // Type match
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"], mode: .typeMatch)
             // Exact match
             assertContains(expected: expected, actual: actual)
             assertEqual(expected: expected, actual: actual)
@@ -312,15 +312,15 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
         }
 //        assertContains(expected: expected, actual: actual)
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"], mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"], mode: .typeMatch)
 
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
         XCTExpectFailure("The following should fail") {
             // Type match
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"], mode: .typeMatch)
             // Exact match
             assertContains(expected: expected, actual: actual)
                 // Partials
@@ -342,12 +342,12 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]", "[*1]", "[2]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[2]", "[*1]", "[*]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]", "[*1]", "[2]"], mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[2]", "[*1]", "[*]"], mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"], mode: .typeMatch)
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"], mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"], mode: .typeMatch)
 
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]", "[*1]", "[2]"])
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[2]", "[*1]", "[*]"])
@@ -357,7 +357,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
 
         XCTExpectFailure("The following should fail") {
             // Type match
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"], mode: .typeMatch)
             // Exact match
             assertContains(expected: expected, actual: actual)
             assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
@@ -387,9 +387,9 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
 
         XCTExpectFailure("The following should fail") {
             // Type match
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"], mode: .typeMatch)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"], mode: .typeMatch)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"], mode: .typeMatch)
             // Exact match
             assertContains(expected: expected, actual: actual)
             assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
@@ -415,14 +415,14 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*]"])
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"], mode: .typeMatch)
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"], mode: .typeMatch)
 
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*]"])
         assertContains(expected: expected, actual: actual, alternateModePaths: ["[*0]", "[*1]", "[*2]"])
         XCTExpectFailure("The following should fail") {
             // Type match
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"], mode: .typeMatch)
             // Exact match
             assertContains(expected: expected, actual: actual)
             assertContains(expected: expected, actual: actual, alternateModePaths: ["[0]", "[1]", "[2]"])
@@ -459,8 +459,8 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
 
         XCTExpectFailure("The following should fail") {
             // Type match
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0", "key1"])
+            assertContains(expected: expected, actual: actual, mode: .typeMatch)
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["key0", "key1"], mode: .typeMatch)
             // Exact match
             assertContains(expected: expected, actual: actual)
             assertContains(expected: expected, actual: actual, alternateModePaths: ["key0", "key1"])
@@ -492,12 +492,12 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
         assertContains(expected: expected, actual: actual, alternateModePaths: ["key0", "key1"])
         XCTExpectFailure("The following should fail") {
             // Type match
             // 2 Failures
-            assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["key0", "key1"])
+            assertContains(expected: expected, actual: actual, alternateModePaths: ["key0", "key1"], mode: .typeMatch)
             // Exact match
             // 2 Failures
             assertContains(expected: expected, actual: actual)
@@ -546,7 +546,7 @@ class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"], mode: .typeMatch)
     }
 
     // MARK: - Test helpers

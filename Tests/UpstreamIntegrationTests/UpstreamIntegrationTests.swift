@@ -37,7 +37,7 @@ extension EventSpec: Hashable & Equatable {
 }
 
 /// This test class validates proper intergration with upstream services, specifically Edge Network
-class UpstreamIntegrationTests: XCTestCase, AnyCodableTestAssertions {
+class UpstreamIntegrationTests: XCTestCase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint?
 
@@ -209,7 +209,7 @@ class UpstreamIntegrationTests: XCTestCase, AnyCodableTestAssertions {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
     }
 
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths
@@ -258,7 +258,7 @@ class UpstreamIntegrationTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"], mode: .typeMatch)
     }
 
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths; shows example failure message
@@ -305,7 +305,7 @@ class UpstreamIntegrationTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"], mode: .typeMatch)
     }
 
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths
@@ -403,7 +403,7 @@ class UpstreamIntegrationTests: XCTestCase, AnyCodableTestAssertions {
             return
         }
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: [
+        assertContains(expected: expected, actual: actual, alternateModePaths: [
             "meta",
             "query",
             "identityMap.ECID[0].authenticatedState",
@@ -411,9 +411,9 @@ class UpstreamIntegrationTests: XCTestCase, AnyCodableTestAssertions {
             "consent[0].standard",
             "consent[0].version",
             "consent[0].value.collect"
-        ])
+        ], mode: .typeMatch)
 
-        assertContains(defaultMode: .typeMatch, expected: expected, actual: actual, alternateModePaths: [
+        assertContains(expected: expected, actual: actual, alternateModePaths: [
             "meta",
             "query",
             "identityMap.ECID[*].authenticatedState",
@@ -421,7 +421,7 @@ class UpstreamIntegrationTests: XCTestCase, AnyCodableTestAssertions {
             "consent[*].standard",
             "consent[*].version",
             "consent[*].value.collect"
-        ])
+        ], mode: .typeMatch)
 
         assertContains(expected: expected, actual: actual)
         assertContains(expected: expected, actual: actual, alternateModePaths: [

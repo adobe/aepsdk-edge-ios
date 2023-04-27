@@ -19,16 +19,7 @@ enum AssertMode {
     case typeMatch
 }
 
-protocol AnyCodableTestAssertions {
-    func assertEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any], file: StaticString, line: UInt, shouldAssert: Bool) -> Bool
-    func assertEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], file: StaticString, line: UInt, shouldAssert: Bool) -> Bool
-    func assertEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], file: StaticString, line: UInt, shouldAssert: Bool) -> Bool
-
-    func assertContains(defaultMode: AssertMode, expected: AnyCodable?, actual: AnyCodable?, alternateModePaths: [String], file: StaticString, line: UInt)
-    func keyPathAsString(keyPath: [Any]) -> String
-}
-
-extension AnyCodableTestAssertions {
+extension XCTestCase {
     // MARK: - AnyCodable exact equivalence test assertion methods
 
     /// Performs testing assertions between two `AnyCodable` instances, using a similar logic path as the `AnyCodable ==` implementation.
@@ -222,16 +213,16 @@ extension AnyCodableTestAssertions {
     /// - The default behavior is that elements from the expected JSON side are compared in order, up to the last element of the expected array
     ///
     /// - Parameters:
-    ///    - defaultExactEqualityMode: The default mode to use for the validation process. `true` uses exact match, and values require
-    ///    the same type and literal value. `false` uses type match, and values require only the same type (and non-nil, given the expected value is not `nil` itself)
     ///    - expected: The expected JSON in AnyCodable format used to perform the assertions
     ///    - actual: The actual JSON in AnyCodable format that is validated against `expected`
     ///    - alternateModePaths: the key paths in the expected JSON that should use the alternate matching mode (that is, the opposite of the one selected via `defaultExactEqualityMode`)
+    ///    - mode: The default mode to use for the validation process. `.exactMatch`: values require
+    ///    the same type and literal value. `typeMatch`: values require only the same type (and non-nil, given the expected value is not `nil` itself)
     ///    - file: the file to show test assertion failures in
     ///    - line: the line to show test assertion failures on
-    func assertContains(defaultMode: AssertMode = .exactMatch, expected: AnyCodable?, actual: AnyCodable?, alternateModePaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+    func assertContains(expected: AnyCodable?, actual: AnyCodable?, alternateModePaths: [String] = [], mode: AssertMode = .exactMatch, file: StaticString = #file, line: UInt = #line) {
         let pathTree = generatePathTree(paths: alternateModePaths)
-        assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, defaultExactEqualityMode: defaultMode == .exactMatch, file: file, line: line)
+        assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, defaultExactEqualityMode: mode == .exactMatch, file: file, line: line)
     }
 
     /// Performs testing assertions between two `AnyCodable` instances, using a similar logic path as the `AnyCodable ==` implementation.
