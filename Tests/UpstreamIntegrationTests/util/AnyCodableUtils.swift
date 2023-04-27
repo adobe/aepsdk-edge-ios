@@ -41,7 +41,7 @@ extension XCTestCase {
 
                     Actual: \#(String(describing: actual))
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -50,22 +50,22 @@ extension XCTestCase {
         switch (expected.value, actual.value) {
         case let (expected as String, actual as String):
             if shouldAssert {
-                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath: keyPath))", file: file, line: line)
+                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
             }
             return expected == actual
         case let (expected as Bool, actual as Bool):
             if shouldAssert {
-                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath: keyPath))", file: file, line: line)
+                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
             }
             return expected == actual
         case let (expected as Int, actual as Int):
             if shouldAssert {
-                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath: keyPath))", file: file, line: line)
+                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
             }
             return expected == actual
         case let (expected as Double, actual as Double):
             if shouldAssert {
-                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath: keyPath))", file: file, line: line)
+                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
             }
             return expected == actual
         case let (expected as [String: AnyCodable], actual as [String: AnyCodable]):
@@ -85,7 +85,7 @@ extension XCTestCase {
 
                     Actual: \#(actual)
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -107,7 +107,7 @@ extension XCTestCase {
 
                     Actual: \#(String(describing: actual))
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -124,7 +124,7 @@ extension XCTestCase {
 
                     Actual: \#(actual)
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -157,7 +157,7 @@ extension XCTestCase {
 
                     Actual: \#(String(describing: actual))
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -174,7 +174,7 @@ extension XCTestCase {
 
                     Actual: \#(actual)
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -244,7 +244,7 @@ extension XCTestCase {
 
                     Actual: \#(String(describing: actual))
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -261,7 +261,7 @@ extension XCTestCase {
             // Default: exact value matching
             if defaultExactEqualityMode {
                 if shouldAssert {
-                    XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath: keyPath))", file: file, line: line)
+                    XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
                 }
                 return expected == actual
             }
@@ -311,7 +311,7 @@ extension XCTestCase {
 
                     Actual: \#(actual)
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -332,7 +332,7 @@ extension XCTestCase {
 
                     Actual: \#(String(describing: actual))
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -349,7 +349,7 @@ extension XCTestCase {
 
                     Actual: \#(actual)
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -459,7 +459,7 @@ extension XCTestCase {
 
                     Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                     """#, file: file, line: line)
                     finalResult = false
                 }
@@ -488,7 +488,7 @@ extension XCTestCase {
 
                     Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                     """#, file: file, line: line)
                     finalResult = false
                 }
@@ -525,7 +525,7 @@ extension XCTestCase {
 
                         Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
 
-                        Key path: \#(keyPathAsString(keyPath: keyPath))
+                        Key path: \#(keyPathAsString(keyPath))
                         """#, file: file, line: line)
                         finalResult = false
                     }
@@ -553,7 +553,7 @@ extension XCTestCase {
 
                         Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
 
-                        Key path: \#(keyPathAsString(keyPath: keyPath))
+                        Key path: \#(keyPathAsString(keyPath))
                         """#, file: file, line: line)
 
                         finalResult = false
@@ -574,7 +574,7 @@ extension XCTestCase {
 
                 Actual (remaining unmatched elements): \#(unmatchedRHSElements.map { $0.element })
 
-                Key path: \#(keyPathAsString(keyPath: keyPath))
+                Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
                 finalResult = false
                 continue
@@ -606,7 +606,7 @@ extension XCTestCase {
 
                     Actual: \#(String(describing: actual))
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -623,7 +623,7 @@ extension XCTestCase {
 
                     Actual: \#(actual)
 
-                    Key path: \#(keyPathAsString(keyPath: keyPath))
+                    Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
             }
             return false
@@ -656,7 +656,7 @@ extension XCTestCase {
 
     // MARK: - Test setup and output helpers
     /// Applies the provided regex pattern to the text and returns all the capture groups from the regex pattern
-    func getCapturedRegexGroups(text: String, regexPattern: String) -> [String?] {
+    private func getCapturedRegexGroups(text: String, regexPattern: String) -> [String?] {
         do {
             let regex = try NSRegularExpression(pattern: regexPattern)
             let matches = regex.matches(in: text,
@@ -681,7 +681,7 @@ extension XCTestCase {
     /// Merges two constructed key path dictionaries, replacing `current` values with `new` ones, with the exception
     /// of existing values that are String types, which mean that it is a final key path from a different path string
     /// Merge order doesn't matter, the final result should always be the same
-    func merge(current: [String: Any], new: [String: Any]) -> [String: Any] {
+    private func merge(current: [String: Any], new: [String: Any]) -> [String: Any] {
         var current = current
         for (key, newValue) in new {
             let currentValue = current[key]
@@ -700,7 +700,7 @@ extension XCTestCase {
 
     /// Constructs a key path dictionary from a given key path component array, and the final value is
     /// assigned the original path string used to construct the path
-    func construct(path: [String], pathString: String) -> [String: Any] {
+    private func construct(path: [String], pathString: String) -> [String: Any] {
         var path = path
         let first = path.removeFirst()
         let result: [String: Any]
@@ -712,7 +712,7 @@ extension XCTestCase {
         }
     }
 
-    func generatePathTree(paths: [String]) -> [String: Any]? {
+    private func generatePathTree(paths: [String]) -> [String: Any]? {
         // Matches array subscripts and all the inner content. Captures the surrounding brackets and inner content: ex: "[123]", "[*123]"
         let arrayIndexRegex = #"(\[.*?\])"#
         // Matches key path access in the style of: "key0\.key1.key2[1][2].key3". Captures each of the groups separated by `.` character and ignores `\.` as nesting.
@@ -785,7 +785,7 @@ extension XCTestCase {
     }
 
     /// Convenience function that outputs a given key path as a pretty string
-    func keyPathAsString(keyPath: [Any]) -> String {
+    private func keyPathAsString(_ keyPath: [Any]) -> String {
         var result = ""
         for item in keyPath {
             switch item {
