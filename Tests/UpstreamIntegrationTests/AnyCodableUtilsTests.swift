@@ -15,13 +15,6 @@ import Foundation
 import XCTest
 
 class AnyCodableUtilsTests: XCTestCase, AnyCodableTestAssertions {
-    override func setUp() {
-
-    }
-
-    public override func tearDown() {
-        super.tearDown()
-    }
 
     // MARK: - Regex parsing
     func testEscapedKeyPaths() {
