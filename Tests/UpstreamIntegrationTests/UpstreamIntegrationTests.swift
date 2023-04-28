@@ -17,8 +17,13 @@ import AEPServices
 import Foundation
 import XCTest
 
+enum PayloadType: String {
+    case xdm
+    case data
+}
+
 /// This test class validates proper intergration with upstream services, specifically Edge Network
-class UpstreamIntegrationTests: XCTestCase {
+class UpstreamIntegrationTests: FunctionalTestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint?
 
@@ -44,7 +49,7 @@ class UpstreamIntegrationTests: XCTestCase {
         MobileCore.setLogLevel(.trace)
         // Set environment file ID for specific Edge Network environment
         setMobileCoreEnvironmentFileID(for: edgeEnvironment)
-        MobileCore.registerExtensions([Identity.self, Edge.self], {
+        MobileCore.registerExtensions([Identity.self, Edge.self, InstrumentedExtension.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
@@ -73,7 +78,7 @@ class UpstreamIntegrationTests: XCTestCase {
     // MARK: - Functional test examples
     // MARK: Test request event format
     func testSendEvent_withXDMData_sendsCorrectRequestEvent() {
-//        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
 
         let xdmJSON = #"""
         {
@@ -90,29 +95,29 @@ class UpstreamIntegrationTests: XCTestCase {
         }
         """#
 
-        guard let xdm = getAnyCodable(xdmJSON), let payload = xdm.dictionaryValue?["xdm"] as? [String: Any] else {
+        guard let xdm = getAnyCodableAndPayload(xdmJSON, type: .xdm) else {
             XCTFail("Unable to decode JSON string")
             return
         }
 
-        let experienceEvent = ExperienceEvent(xdm: payload)
+        let experienceEvent = ExperienceEvent(xdm: xdm.payload)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-//        assertExpectedEvents(ignoreUnexpectedEvents: true) // NOTE: this is different (true instead of false) from functional test case since the response is not mocked
-//        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
-//                                                   source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
-//
-//        guard let eventDataDict = resultEvents[0].data else {
-//            XCTFail("Failed to convert event data to [String: Any]")
-//            return
-//        }
-//
-//        assertEqual(expected: xdm.expected, actual: AnyCodable(AnyCodable.from(dictionary: eventDataDict)))
+        assertExpectedEvents(ignoreUnexpectedEvents: true) // NOTE: this is different (true instead of false) from functional test case since the response is not mocked
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                   source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+
+        guard let eventDataDict = resultEvents[0].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+
+        assertEqual(expected: xdm.anyCodable, actual: AnyCodable(AnyCodable.from(dictionary: eventDataDict)))
     }
 
     func testSendEvent_withXDMDataAndCustomData_sendsCorrectRequestEvent() {
-//        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
 
         let expectedJSON = #"""
         {
@@ -132,24 +137,24 @@ class UpstreamIntegrationTests: XCTestCase {
         }
         """#
 
-//        guard let xdm = getXDMPayload(expectedJSON), let data = getDataPayload(expectedJSON) else {
-//            XCTFail("Unable to decode JSON string")
-//            return
-//        }
-//
-//        let experienceEvent = ExperienceEvent(xdm: xdm.payload, data: data.payload)
-//        Edge.sendEvent(experienceEvent: experienceEvent)
-//
-//        // verify
-//        assertExpectedEvents(ignoreUnexpectedEvents: true)
-//        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
-//                                                   source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
-//        guard let eventDataDict = resultEvents[0].data else {
-//            XCTFail("Failed to convert event data to [String: Any]")
-//            return
-//        }
-//
-//        assertEqual(expected: xdm.expected, actual: AnyCodable(AnyCodable.from(dictionary: eventDataDict)))
+        guard let xdm = getAnyCodableAndPayload(expectedJSON, type: .xdm), let data = getAnyCodableAndPayload(expectedJSON, type: .data) else {
+            XCTFail("Unable to decode JSON string")
+            return
+        }
+
+        let experienceEvent = ExperienceEvent(xdm: xdm.payload, data: data.payload)
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // verify
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE,
+                                                   source: FunctionalTestConst.EventSource.REQUEST_CONTENT)
+        guard let eventDataDict = resultEvents[0].data else {
+            XCTFail("Failed to convert event data to [String: Any]")
+            return
+        }
+
+        assertEqual(expected: xdm.anyCodable, actual: AnyCodable(AnyCodable.from(dictionary: eventDataDict)))
     }
 
     /// This test case demonstrates flexible validation but only on exact match key paths
@@ -190,7 +195,7 @@ class UpstreamIntegrationTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        assertTypeMatch(expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, mode: .typeMatch)
     }
 
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths
@@ -239,7 +244,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
 
-        assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"], mode: .typeMatch)
     }
 
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths; shows example failure message
@@ -286,7 +291,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
 
-        assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
+        assertContains(expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"], mode: .typeMatch)
     }
 
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths
@@ -384,9 +389,35 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
 
-        assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [
+        assertContains(expected: expected, actual: actual, alternateModePaths: [
+            "meta",
+            "query",
+            "identityMap.ECID[0].authenticatedState",
+            "identityMap.ECID[0].primary",
+            "consent[0].standard",
+            "consent[0].version",
+            "consent[0].value.collect"
+        ], mode: .typeMatch)
+
+        assertContains(expected: expected, actual: actual, alternateModePaths: [
+            "meta",
+            "query",
+            "identityMap.ECID[*].authenticatedState",
+            "identityMap.ECID[*].primary",
+            "consent[*].standard",
+            "consent[*].version",
+            "consent[*].value.collect"
+        ], mode: .typeMatch)
+
+        assertContains(expected: expected, actual: actual)
+        assertContains(expected: expected, actual: actual, alternateModePaths: [
             "identityMap.ECID[0].id",
             "consent[0].value.metadata.time"
+        ])
+
+        assertContains(expected: expected, actual: actual, alternateModePaths: [
+            "identityMap.ECID[*].id",
+            "consent[*].value.metadata.time"
         ])
     }
 
@@ -457,8 +488,8 @@ class UpstreamIntegrationTests: XCTestCase {
         // Verify
         wait(for: [edgeRequestContentExpectation, networkResponseExpectation], timeout: asyncTimeout)
 
-//        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result")
-//        print(resultEvents)
+        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result")
+        print(resultEvents)
     }
 
     // MARK: - Test helper methods
@@ -502,5 +533,15 @@ class UpstreamIntegrationTests: XCTestCase {
 
     func getAnyCodable(_ jsonString: String) -> AnyCodable? {
         return try? JSONDecoder().decode(AnyCodable.self, from: jsonString.data(using: .utf8)!)
+    }
+    
+    func getAnyCodableAndPayload(_ jsonString: String, type: PayloadType) -> (anyCodable: AnyCodable, payload: [String: Any])? {
+        guard let anyCodable = getAnyCodable(jsonString) else {
+            return nil
+        }
+        guard let payload = anyCodable.dictionaryValue?[type.rawValue] as? [String: Any] else {
+            return nil
+        }
+        return (anyCodable: anyCodable, payload: payload)
     }
 }
