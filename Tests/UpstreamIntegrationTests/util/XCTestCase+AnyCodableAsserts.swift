@@ -58,7 +58,7 @@ extension XCTestCase {
     ///    - file: the file to show test assertion failures in
     ///    - line: the line to show test assertion failures on
     func assertTypeMatch(expected: AnyCodable?, actual: AnyCodable?, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
-        let pathTree = generatePathTree(paths: exactMatchPaths)
+        let pathTree = generatePathTree(paths: exactMatchPaths, file: file, line: line)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: false, file: file, line: line)
     }
 
@@ -88,7 +88,7 @@ extension XCTestCase {
     ///    - file: the file to show test assertion failures in
     ///    - line: the line to show test assertion failures on
     func assertExactMatch(expected: AnyCodable?, actual: AnyCodable?, typeMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
-        let pathTree = generatePathTree(paths: typeMatchPaths)
+        let pathTree = generatePathTree(paths: typeMatchPaths, file: file, line: line)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: true, file: file, line: line)
     }
     
@@ -375,7 +375,7 @@ extension XCTestCase {
         // Get all of the alternate key paths for this level, and apply the array bracket inner content capture regex
         let indexValues = pathTree?.keys
             .flatMap { key in
-                getCapturedRegexGroups(text: key, regexPattern: arrayIndexValueRegex)
+                getCapturedRegexGroups(text: key, regexPattern: arrayIndexValueRegex, file: file, line: line)
             }
             .compactMap {$0} ?? []
 
@@ -403,11 +403,11 @@ extension XCTestCase {
             var result: [Int] = []
             for index in range {
                 guard expected.indices.contains(index) else {
-                    XCTFail("WARNING: alternate match path is out of bounds.")
+                    XCTFail("TEST ERROR: alternate match path using index (\(index)) is out of bounds. Verify the test setup for correctness.", file: file, line: line)
                     continue
                 }
                 guard seenIndexes.insert(index).inserted else {
-                    XCTFail("WARNING: index already seen: \(index)")
+                    XCTFail("TEST ERROR: index already seen: \(index). Verify the test setup for correctness.", file: file, line: line)
                     continue
                 }
                 result.append(index)
@@ -602,7 +602,7 @@ extension XCTestCase {
 
     // MARK: - Test setup and output helpers
     /// Applies the provided regex pattern to the text and returns all the capture groups from the regex pattern
-    private func getCapturedRegexGroups(text: String, regexPattern: String) -> [String?] {
+    private func getCapturedRegexGroups(text: String, regexPattern: String, file: StaticString = #file, line: UInt = #line) -> [String?] {
         do {
             let regex = try NSRegularExpression(pattern: regexPattern)
             let matches = regex.matches(in: text,
@@ -619,7 +619,7 @@ extension XCTestCase {
                 $0.last
             }
         } catch let error {
-            print("Invalid regex: \(error.localizedDescription)")
+            XCTFail("TEST ERROR: Invalid regex: \(error.localizedDescription)", file: file, line: line)
             return []
         }
     }
@@ -658,7 +658,7 @@ extension XCTestCase {
         }
     }
 
-    private func generatePathTree(paths: [String]) -> [String: Any]? {
+    private func generatePathTree(paths: [String], file: StaticString = #file, line: UInt = #line) -> [String: Any]? {
         // Matches array subscripts and all the inner content. Captures the surrounding brackets and inner content: ex: "[123]", "[*123]"
         let arrayIndexRegex = #"(\[.*?\])"#
         // Matches key path access in the style of: "key0\.key1.key2[1][2].key3". Captures each of the groups separated by `.` character and ignores `\.` as nesting.
@@ -671,13 +671,13 @@ extension XCTestCase {
             var pathExtractionSuccessful: Bool = true
 
             // Break the path string into its component parts
-            let splitByNesting = getCapturedRegexGroups(text: exactValuePath, regexPattern: jsonNestingRegex)
+            let splitByNesting = getCapturedRegexGroups(text: exactValuePath, regexPattern: jsonNestingRegex, file: file, line: line)
             for pathComponent in splitByNesting {
                 guard let validComponent = pathComponent else {
                     XCTFail(#"""
                         TEST ERROR: unable to extract valid key path component from path: \#(exactValuePath)
                         Skipping this path in validation process.
-                    """#)
+                    """#, file: file, line: line)
                     pathExtractionSuccessful = false
                     break
                 }
@@ -686,7 +686,7 @@ extension XCTestCase {
                 // Get all array access levels for the given pathComponent, if any
                 // KNOWN LIMITATION: this regex only extracts all open+close square brackets and inner content ("[___]") regardless
                 // of their relative position within the path component, ex: "key0[2]key1[3]" will be interpreted as: "key0" with array component "[2][3]"
-                let arrayComponents = getCapturedRegexGroups(text: pathComponent, regexPattern: arrayIndexRegex)
+                let arrayComponents = getCapturedRegexGroups(text: exactValuePath, regexPattern: jsonNestingRegex, file: file, line: line)
 
                 // If no array components are detected, just add the path
                 if arrayComponents.isEmpty {
@@ -695,7 +695,7 @@ extension XCTestCase {
                 // Otherwise, extract just the path component before array components if it exists
                 else {
                     guard let bracketIndex = pathComponent.firstIndex(of: "[") else {
-                        XCTFail("TEST ERROR: unable to get bracket position from path: \(pathComponent). Skipping exact path: \(exactValuePath)")
+                        XCTFail("TEST ERROR: unable to get bracket position from path: \(pathComponent). Skipping exact path: \(exactValuePath)", file: file, line: line)
                         pathExtractionSuccessful = false
                         break
                     }
@@ -711,7 +711,7 @@ extension XCTestCase {
                         XCTFail(#"""
                             TEST ERROR: unable to extract valid array key path component from path: \#(exactValuePath)
                             Skipping this path in validation process.
-                        """#)
+                        """#, file: file, line: line)
                         pathExtractionSuccessful = false
                         break
                     }
@@ -720,7 +720,7 @@ extension XCTestCase {
             }
 
             guard pathExtractionSuccessful else {
-                XCTFail("TEST ERROR: some exact paths were not able to be extracted. Test will have unexpected results.")
+                XCTFail("TEST ERROR: some exact paths were not able to be extracted. Test will have unexpected results.", file: file, line: line)
                 continue
             }
             let constructedTree = construct(path: allPathComponents, pathString: exactValuePath)
