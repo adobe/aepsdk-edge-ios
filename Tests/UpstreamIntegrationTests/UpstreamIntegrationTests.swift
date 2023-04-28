@@ -190,7 +190,7 @@ class UpstreamIntegrationTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        assertContains(expected: expected, actual: actual, mode: .typeMatch)
+        assertTypeMatch(expected: expected, actual: actual)
     }
 
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths
@@ -239,7 +239,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
 
-        assertContains(expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"], mode: .typeMatch)
+        assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
     }
 
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths; shows example failure message
@@ -286,7 +286,7 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
 
-        assertContains(expected: expected, actual: actual, alternateModePaths: ["payload[*].scope"], mode: .typeMatch)
+        assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
     }
 
     /// Demonstrates flexible validation using general wildcard match but only on exact match key paths
@@ -384,35 +384,9 @@ class UpstreamIntegrationTests: XCTestCase {
             return
         }
 
-        assertContains(expected: expected, actual: actual, alternateModePaths: [
-            "meta",
-            "query",
-            "identityMap.ECID[0].authenticatedState",
-            "identityMap.ECID[0].primary",
-            "consent[0].standard",
-            "consent[0].version",
-            "consent[0].value.collect"
-        ], mode: .typeMatch)
-
-        assertContains(expected: expected, actual: actual, alternateModePaths: [
-            "meta",
-            "query",
-            "identityMap.ECID[*].authenticatedState",
-            "identityMap.ECID[*].primary",
-            "consent[*].standard",
-            "consent[*].version",
-            "consent[*].value.collect"
-        ], mode: .typeMatch)
-
-        assertContains(expected: expected, actual: actual)
-        assertContains(expected: expected, actual: actual, alternateModePaths: [
+        assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [
             "identityMap.ECID[0].id",
             "consent[0].value.metadata.time"
-        ])
-
-        assertContains(expected: expected, actual: actual, alternateModePaths: [
-            "identityMap.ECID[*].id",
-            "consent[*].value.metadata.time"
         ])
     }
 

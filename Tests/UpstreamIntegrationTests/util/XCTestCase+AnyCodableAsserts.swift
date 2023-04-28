@@ -166,8 +166,8 @@ extension XCTestCase {
     }
 
     // MARK: - AnyCodable flexible validation test assertion methods
-
-    /// Performs a flexible comparison where only the key value pairs on the expected side are required. There are two default equality modes which affect the type of validation performed.
+    /// Performs a flexible comparison where only the key value pairs on the expected side are required. Uses type match as the default validation mode, where values require
+    /// only the same type (and non-nil, given the expected value is not `nil` itself).
     ///
     /// Given an expected JSON like the following:
     /// {
@@ -180,29 +180,55 @@ extension XCTestCase {
     /// Alternate mode paths must start from the top level of the expected JSON. Whatever key is specified by the path, from that value onward, the alternate match mode is used.
     ///
     /// There are 3 different ways to specify alternate mode paths for arrays:
-    /// 1. The specific index: [\<INT\>] (ex: `[0]`, `[28]`, etc.) - The element at the specified index will use the alternate mode
-    /// 2. The wildcard index: [*\<INT\>] (ex: `[*1]`, `[*12]`, etc) - The element at the specified index will use the alternate mode and apply wildcard matching logic
+    /// 1. The specific index: [\<INT\>] (ex: `[0]`, `[28]`, etc.) - The element at the specified index will use the alternate mode.
+    /// 2. The wildcard index: [*\<INT\>] (ex: `[*1]`, `[*12]`, etc) - The element at the specified index will use the alternate mode and apply wildcard matching logic.
     /// 3. The general wildcard: [*] (must be in exactly this format) - Every element not explicitly specified by 1 or 2 will use the alternate mode and apply wildcard matching logic. This option is mututally exclusive with default behavior.
-    /// - The default behavior is that elements from the expected JSON side are compared in order, up to the last element of the expected array
+    /// - The default behavior is that elements from the expected JSON side are compared in order, up to the last element of the expected array.
     ///
     /// - Parameters:
     ///    - expected: The expected JSON in AnyCodable format used to perform the assertions
     ///    - actual: The actual JSON in AnyCodable format that is validated against `expected`
-    ///    - alternateModePaths: the key paths in the expected JSON that should use the alternate matching mode (that is, the opposite of the one selected via `defaultExactEqualityMode`)
-    ///    - mode: The default mode to use for the validation process. `.exactMatch`: values require
-    ///    the same type and literal value. `typeMatch`: values require only the same type (and non-nil, given the expected value is not `nil` itself)
+    ///    - exactMatchPaths: the key paths in the expected JSON that should use exact matching mode, where values require the same type and literal value.
     ///    - file: the file to show test assertion failures in
     ///    - line: the line to show test assertion failures on
-    func assertContains(expected: AnyCodable?, actual: AnyCodable?, alternateModePaths: [String] = [], mode: AssertMode = .exactMatch, file: StaticString = #file, line: UInt = #line) {
-        let pathTree = generatePathTree(paths: alternateModePaths)
-        assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, defaultExactEqualityMode: mode == .exactMatch, file: file, line: line)
+    func assertTypeMatch(expected: AnyCodable?, actual: AnyCodable?, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+        let pathTree = generatePathTree(paths: exactMatchPaths)
+        assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: false, file: file, line: line)
+    }
+    
+    /// Performs a flexible comparison where only the key value pairs on the expected side are required. Uses exact match as the default validation mode, where values
+    /// require the same type and literal value.
+    ///
+    /// Given an expected JSON like the following:
+    /// {
+    /// "key1": "value1",
+    /// "key2": [{ "nest1": 1}, {"nest2": 2}]
+    /// }
+    ///
+    /// An example alternate mode path for the example JSON could be: "key2[1].nest2"
+    ///
+    /// Alternate mode paths must start from the top level of the expected JSON. Whatever key is specified by the path, from that value onward, the alternate match mode is used.
+    ///
+    /// There are 3 different ways to specify alternate mode paths for arrays:
+    /// 1. The specific index: [\<INT\>] (ex: `[0]`, `[28]`, etc.) - The element at the specified index will use the alternate mode.
+    /// 2. The wildcard index: [*\<INT\>] (ex: `[*1]`, `[*12]`, etc) - The element at the specified index will use the alternate mode and apply wildcard matching logic.
+    /// 3. The general wildcard: [*] (must be in exactly this format) - Every element not explicitly specified by 1 or 2 will use the alternate mode and apply wildcard matching logic. This option is mututally exclusive with default behavior.
+    /// - The default behavior is that elements from the expected JSON side are compared in order, up to the last element of the expected array.
+    ///
+    /// - Parameters:
+    ///    - expected: The expected JSON in AnyCodable format used to perform the assertions
+    ///    - actual: The actual JSON in AnyCodable format that is validated against `expected`
+    ///    - typeMatchPaths: Optionally, the key paths in the expected JSON that should use type matching mode, where values require only the same type (and non-nil, given the expected value is not `nil` itself)
+    ///    - file: the file to show test assertion failures in
+    ///    - line: the line to show test assertion failures on
+    func assertExactMatch(expected: AnyCodable?, actual: AnyCodable?, typeMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+        let pathTree = generatePathTree(paths: typeMatchPaths)
+        assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: true, file: file, line: line)
     }
 
     /// Performs flexible comparison testing assertions between two `AnyCodable` instances.
-    ///
-    /// Use `assertContains` to perform the flexible JSON validation.
     @discardableResult
-    private func assertFlexibleEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any] = [], pathTree: [String: Any]?, defaultExactEqualityMode: Bool, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+    private func assertFlexibleEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any] = [], pathTree: [String: Any]?, exactMatchMode: Bool, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
         if expected?.value == nil {
             return true
         }
@@ -230,7 +256,7 @@ extension XCTestCase {
             fallthrough
         case let (expected, actual) where (expected.value is Double && actual.value is Double):
             // Default: exact value matching
-            if defaultExactEqualityMode {
+            if exactMatchMode {
                 if shouldAssert {
                     XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
                 }
@@ -247,7 +273,7 @@ extension XCTestCase {
                 actual: actual.value as? [String: AnyCodable],
                 keyPath: keyPath,
                 pathTree: pathTree,
-                defaultExactEqualityMode: defaultExactEqualityMode,
+                exactMatchMode: exactMatchMode,
                 file: file, line: line, shouldAssert: shouldAssert)
         case let (expected, actual) where (expected.value is [AnyCodable] && actual.value is [AnyCodable]):
             return assertFlexibleEqual(
@@ -255,7 +281,7 @@ extension XCTestCase {
                 actual: actual.value as? [AnyCodable],
                 keyPath: keyPath,
                 pathTree: pathTree,
-                defaultExactEqualityMode: defaultExactEqualityMode,
+                exactMatchMode: exactMatchMode,
                 file: file, line: line, shouldAssert: shouldAssert)
         case let (expected, actual) where (expected.value is [Any?] && actual.value is [Any?]):
             return assertFlexibleEqual(
@@ -263,7 +289,7 @@ extension XCTestCase {
                 actual: AnyCodable.from(array: actual.value as? [Any?]),
                 keyPath: keyPath,
                 pathTree: pathTree,
-                defaultExactEqualityMode: defaultExactEqualityMode,
+                exactMatchMode: exactMatchMode,
                 file: file, line: line, shouldAssert: shouldAssert)
         case let (expected, actual) where (expected.value is [String: Any?] && actual.value is [String: Any?]):
             return assertFlexibleEqual(
@@ -271,7 +297,7 @@ extension XCTestCase {
                 actual: AnyCodable.from(dictionary: actual.value as? [String: Any?]),
                 keyPath: keyPath,
                 pathTree: pathTree,
-                defaultExactEqualityMode: defaultExactEqualityMode,
+                exactMatchMode: exactMatchMode,
                 file: file, line: line, shouldAssert: shouldAssert)
         default:
             if shouldAssert {
@@ -290,7 +316,7 @@ extension XCTestCase {
     }
 
     /// Performs flexible comparison testing assertions between two `[AnyCodable]` instances.
-    private func assertFlexibleEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], pathTree: [String: Any]?, defaultExactEqualityMode: Bool, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+    private func assertFlexibleEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], pathTree: [String: Any]?, exactMatchMode: Bool, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
         if expected == nil {
             return true
         }
@@ -400,7 +426,7 @@ extension XCTestCase {
                 actual: actual[index],
                 keyPath: keyPath,
                 pathTree: isPathEnd ? nil : matchTreeValue as? [String: Any], // if pathEnd, nil out pathTree
-                defaultExactEqualityMode: isPathEnd ? !defaultExactEqualityMode : defaultExactEqualityMode, // if pathEnd, invert default equality mode
+                exactMatchMode: isPathEnd ? !exactMatchMode : exactMatchMode, // if pathEnd, invert default equality mode
                 file: file, line: line, shouldAssert: shouldAssert) && finalResult
         }
 
@@ -410,7 +436,7 @@ extension XCTestCase {
         
         /// Relies on outer scope's:
         /// 1. pathTree
-        /// 2. defaultExactEqualityMode
+        /// 2. exactMatchMode
         /// 3. **mutates** unmatchedRHSElements
         /// 4. **mutates** finalResult
         func performWildcardMatch(expectedIndexes: [Int], isGeneralWildcard: Bool) {
@@ -427,11 +453,11 @@ extension XCTestCase {
                         actual: $0.element,
                         keyPath: keyPath,
                         pathTree: isPathEnd ? nil : matchTreeValue as? [String: Any], // if pathEnd, nil out pathTree
-                        defaultExactEqualityMode: isPathEnd ? !defaultExactEqualityMode : defaultExactEqualityMode, // if pathEnd, invert default equality mode
+                        exactMatchMode: isPathEnd ? !exactMatchMode : exactMatchMode, // if pathEnd, invert default equality mode
                         file: file, line: line, shouldAssert: false)
                 }) else {
                     XCTFail(#"""
-                    Wildcard \#((isPathEnd ? !defaultExactEqualityMode : defaultExactEqualityMode) ? "exact" : "type") match found no matches satisfying requirement on Actual side.
+                    Wildcard \#((isPathEnd ? !exactMatchMode : exactMatchMode) ? "exact" : "type") match found no matches satisfying requirement on Actual side.
 
                     Requirement: \#(String(describing: matchTreeValue))
 
@@ -480,7 +506,7 @@ extension XCTestCase {
                     actual: actual[index],
                     keyPath: keyPath,
                     pathTree: nil, // There should be no array based key paths at this point
-                    defaultExactEqualityMode: defaultExactEqualityMode,
+                    exactMatchMode: exactMatchMode,
                     file: file, line: line, shouldAssert: shouldAssert) && finalResult
             }
         }
@@ -488,7 +514,7 @@ extension XCTestCase {
     }
 
     /// Performs flexible comparison testing assertions between two `[String: AnyCodable]` instances.
-    private func assertFlexibleEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], pathTree: [String: Any]?, defaultExactEqualityMode: Bool, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+    private func assertFlexibleEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], pathTree: [String: Any]?, exactMatchMode: Bool, file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
         if expected == nil {
             return true
         }
@@ -534,7 +560,7 @@ extension XCTestCase {
                     actual: actual[key],
                     keyPath: keyPath,
                     pathTree: nil, // is String means path terminates here
-                    defaultExactEqualityMode: !defaultExactEqualityMode, // Invert default mode
+                    exactMatchMode: !exactMatchMode, // Invert default mode
                     file: file, line: line, shouldAssert: shouldAssert) && finalResult
             } else {
                 finalResult = assertFlexibleEqual(
@@ -542,7 +568,7 @@ extension XCTestCase {
                     actual: actual[key],
                     keyPath: keyPath,
                     pathTree: pathTreeValue as? [String: Any],
-                    defaultExactEqualityMode: defaultExactEqualityMode,
+                    exactMatchMode: exactMatchMode,
                     file: file, line: line, shouldAssert: shouldAssert) && finalResult
             }
         }
