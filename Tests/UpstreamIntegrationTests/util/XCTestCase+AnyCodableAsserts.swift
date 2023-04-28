@@ -22,174 +22,147 @@ enum AssertMode {
 extension XCTestCase {
     // MARK: - AnyCodable exact equivalence test assertion methods
 
-    /// Performs testing assertions between two `AnyCodable` instances, using a similar logic path as the `AnyCodable ==` implementation.
+    /// Performs exact equality testing assertions between two `AnyCodable` instances, using a similar logic path as the `AnyCodable ==` implementation.
     /// Traces the key path (both dictionary keys and array indices) and provides the trace on assertion failure, for easier debugging.
     /// Automatically performs any required conversions of underlying `Any?` types into `AnyCodable` format.
     ///
-    /// Main entrypoint for `AnyCodable` testing assertions.
-    @discardableResult
-    func assertEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any] = [], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+    /// Main entrypoint for exact equality `AnyCodable` testing assertions.
+    func assertEqual(expected: AnyCodable?, actual: AnyCodable?, file: StaticString = #file, line: UInt = #line) {
+        assertEqual(expected: expected, actual: actual, keyPath: [], file: file, line: line)
+    }
+    
+    /// Performs equality testing assertions between two `AnyCodable` instances.
+    private func assertEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any] = [], file: StaticString = #file, line: UInt = #line) {
         if expected?.value == nil, actual?.value == nil {
-            return true
+            return
         }
         guard let expected = expected, let actual = actual else {
-            if shouldAssert {
-                XCTFail(#"""
-                    \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
+            XCTFail(#"""
+                \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
 
-                    Expected: \#(String(describing: expected))
+                Expected: \#(String(describing: expected))
 
-                    Actual: \#(String(describing: actual))
+                Actual: \#(String(describing: actual))
 
-                    Key path: \#(keyPathAsString(keyPath))
-                """#, file: file, line: line)
-            }
-            return false
+                Key path: \#(keyPathAsString(keyPath))
+            """#, file: file, line: line)
+            return
         }
 
         switch (expected.value, actual.value) {
         case let (expected as String, actual as String):
-            if shouldAssert {
-                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
-            }
-            return expected == actual
+            XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
         case let (expected as Bool, actual as Bool):
-            if shouldAssert {
-                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
-            }
-            return expected == actual
+            XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
         case let (expected as Int, actual as Int):
-            if shouldAssert {
-                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
-            }
-            return expected == actual
+            XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
         case let (expected as Double, actual as Double):
-            if shouldAssert {
-                XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
-            }
-            return expected == actual
+            XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
         case let (expected as [String: AnyCodable], actual as [String: AnyCodable]):
-            return assertEqual(expected: expected, actual: actual, keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+            assertEqual(expected: expected, actual: actual, keyPath: keyPath, file: file, line: line)
         case let (expected as [AnyCodable], actual as [AnyCodable]):
-            return assertEqual(expected: expected, actual: actual, keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+            assertEqual(expected: expected, actual: actual, keyPath: keyPath, file: file, line: line)
         case let (expected as [Any?], actual as [Any?]):
-            return assertEqual(expected: AnyCodable.from(array: expected), actual: AnyCodable.from(array: actual), keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+            assertEqual(expected: AnyCodable.from(array: expected), actual: AnyCodable.from(array: actual), keyPath: keyPath, file: file, line: line)
         case let (expected as [String: Any?], actual as [String: Any?]):
-            return assertEqual(expected: AnyCodable.from(dictionary: expected), actual: AnyCodable.from(dictionary: actual), keyPath: keyPath, file: file, line: line, shouldAssert: shouldAssert)
+            assertEqual(expected: AnyCodable.from(dictionary: expected), actual: AnyCodable.from(dictionary: actual), keyPath: keyPath, file: file, line: line)
         default:
-            if shouldAssert {
-                XCTFail(#"""
-                    Expected and Actual types do not match.
+            XCTFail(#"""
+                Expected and Actual types do not match.
 
-                    Expected: \#(expected)
+                Expected: \#(expected)
 
-                    Actual: \#(actual)
+                Actual: \#(actual)
 
-                    Key path: \#(keyPathAsString(keyPath))
-                """#, file: file, line: line)
-            }
-            return false
+                Key path: \#(keyPathAsString(keyPath))
+            """#, file: file, line: line)
         }
     }
 
-    /// Performs testing assertions between two `[AnyCodable]` instances.
-    @discardableResult
-    func assertEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+    /// Performs equality testing assertions between two `[AnyCodable]` instances.
+    private func assertEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) {
         if expected == nil, actual == nil {
-            return true
+            return
         }
         guard let expected = expected, let actual = actual else {
-            if shouldAssert {
-                XCTFail(#"""
-                    \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
+            XCTFail(#"""
+                \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
 
-                    Expected: \#(String(describing: expected))
+                Expected: \#(String(describing: expected))
 
-                    Actual: \#(String(describing: actual))
+                Actual: \#(String(describing: actual))
 
-                    Key path: \#(keyPathAsString(keyPath))
-                """#, file: file, line: line)
-            }
-            return false
+                Key path: \#(keyPathAsString(keyPath))
+            """#, file: file, line: line)
+            return
         }
         if expected.count != actual.count {
-            if shouldAssert {
-                XCTFail(#"""
-                    Expected and Actual counts do not match (exact equality).
+            XCTFail(#"""
+                Expected and Actual counts do not match (exact equality).
 
-                    Expected count: \#(expected.count)
-                    Actual count: \#(actual.count)
+                Expected count: \#(expected.count)
+                Actual count: \#(actual.count)
 
-                    Expected: \#(expected)
+                Expected: \#(expected)
 
-                    Actual: \#(actual)
+                Actual: \#(actual)
 
-                    Key path: \#(keyPathAsString(keyPath))
-                """#, file: file, line: line)
-            }
-            return false
+                Key path: \#(keyPathAsString(keyPath))
+            """#, file: file, line: line)
+            return
         }
-        var finalResult = true
         for (index, valueTuple) in zip(expected, actual).enumerated() {
             var keyPath = keyPath
             keyPath.append(index)
-            finalResult = assertEqual(
+            assertEqual(
                 expected: valueTuple.0,
                 actual: valueTuple.1,
                 keyPath: keyPath,
-                file: file, line: line, shouldAssert: shouldAssert) && finalResult
+                file: file, line: line)
         }
-        return finalResult
     }
 
-    /// Performs testing assertions between two `[AnyCodable]` instances.
-    @discardableResult
-    func assertEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line, shouldAssert: Bool = true) -> Bool {
+    /// Performs equality testing assertions between two `[String: AnyCodable]` instances.
+    private func assertEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line) {
         if expected == nil, actual == nil {
-            return true
+            return
         }
         guard let expected = expected, let actual = actual else {
-            if shouldAssert {
-                XCTFail(#"""
-                    \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
+            XCTFail(#"""
+                \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
 
-                    Expected: \#(String(describing: expected))
+                Expected: \#(String(describing: expected))
 
-                    Actual: \#(String(describing: actual))
+                Actual: \#(String(describing: actual))
 
-                    Key path: \#(keyPathAsString(keyPath))
-                """#, file: file, line: line)
-            }
-            return false
+                Key path: \#(keyPathAsString(keyPath))
+            """#, file: file, line: line)
+            return
         }
         if expected.count != actual.count {
-            if shouldAssert {
-                XCTFail(#"""
-                    Expected and Actual counts do not match (exact equality).
+            XCTFail(#"""
+                Expected and Actual counts do not match (exact equality).
 
-                    Expected count: \#(expected.count)
-                    Actual count: \#(actual.count)
+                Expected count: \#(expected.count)
+                Actual count: \#(actual.count)
 
-                    Expected: \#(expected)
+                Expected: \#(expected)
 
-                    Actual: \#(actual)
+                Actual: \#(actual)
 
-                    Key path: \#(keyPathAsString(keyPath))
-                """#, file: file, line: line)
-            }
-            return false
+                Key path: \#(keyPathAsString(keyPath))
+            """#, file: file, line: line)
+            return
         }
-        var finalResult = true
         for (key, value) in expected {
             var keyPath = keyPath
             keyPath.append(key)
-            finalResult = assertEqual(
+            assertEqual(
                 expected: value,
                 actual: actual[key],
                 keyPath: keyPath,
-                file: file, line: line, shouldAssert: shouldAssert) && finalResult
+                file: file, line: line)
         }
-        return finalResult
     }
 
     // MARK: - AnyCodable flexible validation test assertion methods
@@ -225,9 +198,7 @@ extension XCTestCase {
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, defaultExactEqualityMode: mode == .exactMatch, file: file, line: line)
     }
 
-    /// Performs testing assertions between two `AnyCodable` instances, using a similar logic path as the `AnyCodable ==` implementation.
-    /// Traces the key path (both dictionary keys and array indices) and provides the trace on assertion failure, for easier debugging.
-    /// Automatically performs any required conversions of underlying `Any?` types into `AnyCodable` format.
+    /// Performs flexible comparison testing assertions between two `AnyCodable` instances.
     ///
     /// Use `assertContains` to perform the flexible JSON validation.
     @discardableResult

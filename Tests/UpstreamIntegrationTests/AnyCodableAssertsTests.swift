@@ -14,7 +14,7 @@ import AEPServices
 import Foundation
 import XCTest
 
-class AnyCodableUtilsTests: XCTestCase {
+class AnyCodableAssertsTests: XCTestCase {
 
     // MARK: - Regex parsing
     func testEscapedKeyPaths() {
