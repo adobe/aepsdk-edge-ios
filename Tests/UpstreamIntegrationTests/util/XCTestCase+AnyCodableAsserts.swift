@@ -686,7 +686,7 @@ extension XCTestCase {
                 // Get all array access levels for the given pathComponent, if any
                 // KNOWN LIMITATION: this regex only extracts all open+close square brackets and inner content ("[___]") regardless
                 // of their relative position within the path component, ex: "key0[2]key1[3]" will be interpreted as: "key0" with array component "[2][3]"
-                let arrayComponents = getCapturedRegexGroups(text: exactValuePath, regexPattern: jsonNestingRegex, file: file, line: line)
+                let arrayComponents = getCapturedRegexGroups(text: pathComponent, regexPattern: arrayIndexRegex, file: file, line: line)
 
                 // If no array components are detected, just add the path
                 if arrayComponents.isEmpty {
