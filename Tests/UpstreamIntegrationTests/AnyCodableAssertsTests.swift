@@ -85,7 +85,7 @@ class AnyCodableAssertsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertTypeMatch(expected: expected, actual: actual)
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["key0"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["key0.key1"])
@@ -130,15 +130,15 @@ class AnyCodableAssertsTests: XCTestCase {
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]"])
-        
+
         assertExactMatch(expected: expected, actual: actual)
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*]"])
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*0]"])
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0]"])
-        
+
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testArray_whenDeeplyNested_isEqual() {
         let expectedJSON = #"""
         [[[[[[[[]]]]]]]]
@@ -156,12 +156,12 @@ class AnyCodableAssertsTests: XCTestCase {
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]"])
-        
+
         assertExactMatch(expected: expected, actual: actual)
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*]"])
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*0]"])
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0]"])
-        
+
         assertEqual(expected: expected, actual: actual)
     }
 
@@ -177,7 +177,7 @@ class AnyCodableAssertsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertTypeMatch(expected: expected, actual: actual)
         assertExactMatch(expected: expected, actual: actual)
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
@@ -188,7 +188,7 @@ class AnyCodableAssertsTests: XCTestCase {
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0]"])
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testArray_whenMultiType_isEqual() {
         let expectedJSON = #"""
         [
@@ -217,7 +217,7 @@ class AnyCodableAssertsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertTypeMatch(expected: expected, actual: actual)
         assertExactMatch(expected: expected, actual: actual)
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
@@ -228,7 +228,7 @@ class AnyCodableAssertsTests: XCTestCase {
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0]"])
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testDictionary_whenNestedArray_withMultiType_isEqual() {
         let expectedJSON = #"""
         {
@@ -268,7 +268,7 @@ class AnyCodableAssertsTests: XCTestCase {
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["key0"])
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testDictionary_whenMultiType_isEqual() {
         let expectedJSON = #"""
         {
@@ -393,15 +393,13 @@ class AnyCodableAssertsTests: XCTestCase {
         assertTypeMatch(expected: expected, actual: expected)
         assertExactMatch(expected: expected, actual: expected)
         assertEqual(expected: expected, actual: expected)
-        
+
         XCTExpectFailure("The following should fail") {
             assertTypeMatch(expected: expected, actual: actual)
             assertExactMatch(expected: expected, actual: actual)
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
-    
 
     func testDictionary_whenNestedArray_isEqual() {
         let expectedJSON = #"""
@@ -486,7 +484,7 @@ class AnyCodableAssertsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertTypeMatch(expected: expected, actual: actual)
         assertExactMatch(expected: expected, actual: actual)
         XCTExpectFailure("The following should fail") {
@@ -527,7 +525,7 @@ class AnyCodableAssertsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-                
+
         assertTypeMatch(expected: expected, actual: actual)
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0]", "[1]", "[2]"])
         XCTExpectFailure("The following should fail") {
@@ -552,15 +550,14 @@ class AnyCodableAssertsTests: XCTestCase {
             return
         }
 
-        
         assertTypeMatch(expected: expected, actual: actual)
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]", "[*1]", "[*2]"])
-        
+
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*]"])
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*0]", "[*1]", "[*2]"])
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0]", "[1]", "[2]"])
-        
+
         XCTExpectFailure("The following should fail") {
             // Type match
             assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]", "[1]", "[2]"])
@@ -585,12 +582,12 @@ class AnyCodableAssertsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*]", "[*1]", "[2]"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[2]", "[*1]", "[*]"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]", "[*1]", "[*2]"])
-        
+
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*]"])
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*]", "[*1]", "[2]"])
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[2]", "[*1]", "[*]"])

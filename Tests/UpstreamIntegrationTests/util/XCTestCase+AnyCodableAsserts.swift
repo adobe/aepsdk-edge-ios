@@ -30,7 +30,7 @@ extension XCTestCase {
     func assertEqual(expected: AnyCodable?, actual: AnyCodable?, file: StaticString = #file, line: UInt = #line) {
         assertEqual(expected: expected, actual: actual, keyPath: [], file: file, line: line)
     }
-    
+
     /// Performs equality testing assertions between two `AnyCodable` instances.
     private func assertEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any] = [], file: StaticString = #file, line: UInt = #line) {
         if expected?.value == nil, actual?.value == nil {
@@ -195,7 +195,7 @@ extension XCTestCase {
         let pathTree = generatePathTree(paths: exactMatchPaths)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: false, file: file, line: line)
     }
-    
+
     /// Performs a flexible comparison where only the key value pairs on the expected side are required. Uses exact match as the default validation mode, where values
     /// require the same type and literal value.
     ///
@@ -360,24 +360,24 @@ extension XCTestCase {
                 getCapturedRegexGroups(text: key, regexPattern: arrayIndexValueRegex)
             }
             .compactMap {$0} ?? []
-        
+
         // Converts "0" -> 0
         var exactIndexes: [Int] = indexValues
             .filter { !$0.contains("*") }
             .compactMap { Int($0) }
-        
+
         // Converts "*0" -> 0
         var wildcardIndexes: [Int] = indexValues
             .filter { $0.contains("*") }
             .compactMap {
                 return Int($0.replacingOccurrences(of: "*", with: ""))
             }
-        
+
         // Checks for [*]
         let hasWildcardAny: Bool = indexValues.contains("*")
 
         var seenIndexes: Set<Int> = []
-        
+
         /// Relies on outer scope's:
         /// 1. **mutates** `seenIndexes`
         /// 2. `expected` array
@@ -396,10 +396,10 @@ extension XCTestCase {
             }
             return result.sorted()
         }
-        
+
         exactIndexes = createSortedValidatedRange(exactIndexes)
         wildcardIndexes = createSortedValidatedRange(wildcardIndexes)
-        
+
         let unmatchedLHSIndices: Set<Int> = Set(expected.indices)
                                                 .subtracting(exactIndexes)
                                                 .subtracting(wildcardIndexes)
@@ -411,16 +411,16 @@ extension XCTestCase {
         // 3. [*] - mutually exclusive with 4
         // Default
         // 4. Standard indexes, all remaining expected indexes unspecified by 1-3
-        
+
         var finalResult = true
         // Handle alternate match paths with format: [0]
         for index in exactIndexes {
             var keyPath = keyPath
             keyPath.append(index)
             let matchTreeValue = pathTree?["[\(index)]"]
-            
+
             let isPathEnd = matchTreeValue is String
-            
+
             finalResult = assertFlexibleEqual(
                 expected: expected[index],
                 actual: actual[index],
@@ -433,7 +433,7 @@ extension XCTestCase {
         var unmatchedRHSElements = Set(actual.indices).subtracting(exactIndexes)
                                     .sorted()
                                     .map { (originalIndex: $0, element: actual[$0]) }
-        
+
         /// Relies on outer scope's:
         /// 1. pathTree
         /// 2. exactMatchMode
@@ -444,9 +444,9 @@ extension XCTestCase {
                 var keyPath = keyPath
                 keyPath.append(index)
                 let matchTreeValue = isGeneralWildcard ? pathTree?["[*]"] : pathTree?["[*\(index)]"]
-                
+
                 let isPathEnd = matchTreeValue is String
-                
+
                 guard let result = unmatchedRHSElements.firstIndex(where: {
                     assertFlexibleEqual(
                         expected: expected[index],
@@ -475,14 +475,13 @@ extension XCTestCase {
                 finalResult = finalResult && true
             }
         }
-        
+
         // Handle alternate match paths with format: [*<INT>]
         performWildcardMatch(expectedIndexes: wildcardIndexes.sorted(), isGeneralWildcard: false)
         // Handle alternate match paths with format: [*] - general wildcard is mutually exclusive with standard index comparison
         if hasWildcardAny {
             performWildcardMatch(expectedIndexes: unmatchedLHSIndices.sorted(by: { $0 < $1 }), isGeneralWildcard: true)
-        }
-        else {
+        } else {
             for index in unmatchedLHSIndices.sorted(by: { $0 < $1 }) {
                 var keyPath = keyPath
                 keyPath.append(index)
