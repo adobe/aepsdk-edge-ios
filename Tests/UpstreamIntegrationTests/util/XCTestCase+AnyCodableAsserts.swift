@@ -689,7 +689,7 @@ extension XCTestCase {
                 let arrayComponents = getCapturedRegexGroups(text: pathComponent, regexPattern: arrayIndexRegex)
 
                 // If no array components are detected, just add the path
-                if !arrayComponents.isEmpty {
+                if arrayComponents.isEmpty {
                     allPathComponents.append(pathComponent)
                 }
                 // Otherwise, extract just the path component before array components if it exists
