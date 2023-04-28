@@ -17,25 +17,6 @@ import AEPServices
 import Foundation
 import XCTest
 
-/// Struct defining the event specifications - contains the event type and source
-struct EventSpec {
-    let type: String
-    let source: String
-}
-
-/// Hashable `EventSpec`, to be used as key in Dictionaries
-extension EventSpec: Hashable & Equatable {
-
-    static func == (lhs: EventSpec, rhs: EventSpec) -> Bool {
-        return lhs.source.lowercased() == rhs.source.lowercased() && lhs.type.lowercased() == rhs.type.lowercased()
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(type)
-        hasher.combine(source)
-    }
-}
-
 /// This test class validates proper intergration with upstream services, specifically Edge Network
 class UpstreamIntegrationTests: XCTestCase {
     private var edgeEnvironment: EdgeEnvironment = .prod
