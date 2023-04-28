@@ -662,8 +662,12 @@ extension XCTestCase {
                 // of their relative position within the path component, ex: "key0[2]key1[3]" will be interpreted as: "key0" with array component "[2][3]"
                 let arrayComponents = getCapturedRegexGroups(text: pathComponent, regexPattern: arrayIndexRegex)
 
-                // If array components are detected, extract just the path component before array components if it exists
+                // If no array components are detected, just add the path
                 if !arrayComponents.isEmpty {
+                    allPathComponents.append(pathComponent)
+                }
+                // Otherwise, extract just the path component before array components if it exists
+                else {
                     guard let bracketIndex = pathComponent.firstIndex(of: "[") else {
                         XCTFail("TEST ERROR: unable to get bracket position from path: \(pathComponent). Skipping exact path: \(exactValuePath)")
                         pathExtractionSuccessful = false
@@ -674,10 +678,6 @@ extension XCTestCase {
                     if !extractedPathComponent.isEmpty {
                         allPathComponents.append(extractedPathComponent)
                     }
-                }
-                // Otherwise just add the path
-                else {
-                    allPathComponents.append(pathComponent)
                 }
 
                 for arrayComponent in arrayComponents {
