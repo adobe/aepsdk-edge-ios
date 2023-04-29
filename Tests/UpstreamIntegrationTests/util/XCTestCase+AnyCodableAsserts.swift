@@ -602,22 +602,68 @@ extension XCTestCase {
 
     // MARK: - Test setup and output helpers
     /// Applies the provided regex pattern to the text and returns all the capture groups from the regex pattern
-    private func getCapturedRegexGroups(text: String, regexPattern: String, file: StaticString = #file, line: UInt = #line) -> [String?] {
+    private func getCapturedRegexGroups(text: String, regexPattern: String, file: StaticString = #file, line: UInt = #line) -> [String] {
         do {
             let regex = try NSRegularExpression(pattern: regexPattern)
             let matches = regex.matches(in: text,
                                         range: NSRange(text.startIndex..., in: text))
-            return matches.map { match in
-                return (0..<match.numberOfRanges).map {
-                    let rangeBounds = match.range(at: $0)
+            var captureResult: [String] = []
+            for match in matches {
+                var capturedStrings: [String?] = []
+                // [(matched string), (capture group 0), (capture group 1), etc.]
+                for rangeIndex in 0..<match.numberOfRanges {
+                    let rangeBounds = match.range(at: rangeIndex)
                     guard let range = Range(rangeBounds, in: text) else {
-                        return ""
+                        capturedStrings.append(nil)
+                        continue
                     }
-                    return String(text[range])
+                    capturedStrings.append(String(text[range]))
                 }
-            }.map {
-                $0.last
+                // If there is a match it should be impossible for there to be no elements
+                capturedStrings.removeFirst() // Only interested in the capture group results
+                captureResult.append(contentsOf: capturedStrings.compactMap { $0 })
             }
+            return captureResult
+        } catch let error {
+            XCTFail("TEST ERROR: Invalid regex: \(error.localizedDescription)", file: file, line: line)
+            return []
+        }
+    }
+    
+    /// Extracts all key path components from a given key path string
+    private func getKeyPathComponents(text: String, file: StaticString = #file, line: UInt = #line) -> [String] {
+        // Matches key path access in the style of: "key0\.key1.key2[1][2].key3". Captures each of the groups separated by `.` character and ignores `\.` as nesting.
+        // the path example would result in: ["key0\.key1", "key2[1][2]", "key3"]
+        let jsonNestingRegex = #"(.*?)(?<!\\)(?:\.)|(.+?)(?:$)"#
+        do {
+            // The empty string is a special case that the regex doesn't handle
+            guard !text.isEmpty else {
+                return [""]
+            }
+            let regex = try NSRegularExpression(pattern: jsonNestingRegex)
+            let matches = regex.matches(in: text,
+                                        range: NSRange(text.startIndex..., in: text))
+            var captureResult: [String] = []
+            for match in matches {
+                var capturedStrings: [String?] = []
+                // [(matched string), (capture group 0), (capture group 1), etc.]
+                for rangeIndex in 0..<match.numberOfRanges {
+                    let rangeBounds = match.range(at: rangeIndex)
+                    guard let range = Range(rangeBounds, in: text) else {
+                        capturedStrings.append(nil)
+                        continue
+                    }
+                    capturedStrings.append(String(text[range]))
+                }
+                // If there is a match it should be impossible for there to be no elements
+                let matchString = capturedStrings.removeFirst() // Only interested in the capture group results
+                captureResult.append(contentsOf: capturedStrings.compactMap { $0 })
+                // If the very last matched substring ends with "." then add the empty string as the final key path
+                if matches.last == match && matchString?.last == "." {
+                    captureResult.append("")
+                }
+            }
+            return captureResult
         } catch let error {
             XCTFail("TEST ERROR: Invalid regex: \(error.localizedDescription)", file: file, line: line)
             return []
@@ -647,6 +693,9 @@ extension XCTestCase {
     /// Constructs a key path dictionary from a given key path component array, and the final value is
     /// assigned the original path string used to construct the path
     private func construct(path: [String], pathString: String) -> [String: Any] {
+        guard !path.isEmpty else {
+            return [:]
+        }
         var path = path
         let first = path.removeFirst()
         let result: [String: Any]
@@ -654,6 +703,7 @@ extension XCTestCase {
             result = [first: pathString]
             return result
         } else {
+            
             return [first: construct(path: path, pathString: pathString)]
         }
     }
@@ -661,9 +711,6 @@ extension XCTestCase {
     private func generatePathTree(paths: [String], file: StaticString = #file, line: UInt = #line) -> [String: Any]? {
         // Matches array subscripts and all the inner content. Captures the surrounding brackets and inner content: ex: "[123]", "[*123]"
         let arrayIndexRegex = #"(\[.*?\])"#
-        // Matches key path access in the style of: "key0\.key1.key2[1][2].key3". Captures each of the groups separated by `.` character and ignores `\.` as nesting.
-        // the path example would result in: ["key0\.key1", "key2[1][2]", "key3"]
-        let jsonNestingRegex = #"(.+?)(?<!\\)(?:\.|$)"#
         var tree: [String: Any] = [:]
 
         for exactValuePath in paths {
@@ -671,24 +718,16 @@ extension XCTestCase {
             var pathExtractionSuccessful: Bool = true
 
             // Break the path string into its component parts
-            let splitByNesting = getCapturedRegexGroups(text: exactValuePath, regexPattern: jsonNestingRegex, file: file, line: line)
-            for pathComponent in splitByNesting {
-                guard let validComponent = pathComponent else {
-                    XCTFail(#"""
-                        TEST ERROR: unable to extract valid key path component from path: \#(exactValuePath)
-                        Skipping this path in validation process.
-                    """#, file: file, line: line)
-                    pathExtractionSuccessful = false
-                    break
-                }
-                let pathComponent = validComponent.replacingOccurrences(of: "\\", with: "")
+            let keyPathComponents = getKeyPathComponents(text: exactValuePath, file: file, line: line)
+            for pathComponent in keyPathComponents {
+                let pathComponent = pathComponent.replacingOccurrences(of: "\\.", with: ".")
 
                 // Get all array access levels for the given pathComponent, if any
                 // KNOWN LIMITATION: this regex only extracts all open+close square brackets and inner content ("[___]") regardless
                 // of their relative position within the path component, ex: "key0[2]key1[3]" will be interpreted as: "key0" with array component "[2][3]"
                 let arrayComponents = getCapturedRegexGroups(text: pathComponent, regexPattern: arrayIndexRegex, file: file, line: line)
 
-                // If no array components are detected, just add the path
+                // If no array components are detected, just add the path as-is
                 if arrayComponents.isEmpty {
                     allPathComponents.append(pathComponent)
                 }
@@ -700,23 +739,13 @@ extension XCTestCase {
                         break
                     }
                     let extractedPathComponent = String(pathComponent[..<bracketIndex])
-                    // It is possible the path itself is an array index; in that case do not insert an empty string
+                    // It is possible the path itself starts with an array index: "[0][1]"
+                    // in that case, do not insert an empty string; all array components will be handled by the arrayComponents extraction
                     if !extractedPathComponent.isEmpty {
                         allPathComponents.append(extractedPathComponent)
                     }
                 }
-
-                for arrayComponent in arrayComponents {
-                    guard let arrayComponent = arrayComponent else {
-                        XCTFail(#"""
-                            TEST ERROR: unable to extract valid array key path component from path: \#(exactValuePath)
-                            Skipping this path in validation process.
-                        """#, file: file, line: line)
-                        pathExtractionSuccessful = false
-                        break
-                    }
-                    allPathComponents.append(arrayComponent)
-                }
+                allPathComponents.append(contentsOf: arrayComponents)
             }
 
             guard pathExtractionSuccessful else {
@@ -741,7 +770,11 @@ extension XCTestCase {
                 }
                 if item.contains(".") {
                     result += item.replacingOccurrences(of: ".", with: "\\.")
-                } else {
+                }
+                else if item.isEmpty {
+                    result += "\"\""
+                }
+                else {
                     result += item
                 }
             case let item as Int:
