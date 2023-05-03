@@ -601,73 +601,71 @@ extension XCTestCase {
     }
 
     // MARK: - Test setup and output helpers
-    /// Applies the provided regex pattern to the text and returns all the capture groups from the regex pattern
-    private func getCapturedRegexGroups(text: String, regexPattern: String, file: StaticString = #file, line: UInt = #line) -> [String] {
+    /// Performs regex match on the provided String, returning the original match and non-nil capture group results
+    private func extractRegexCaptureGroups(text: String, regexPattern: String, file: StaticString = #file, line: UInt = #line) -> [(matchString: String, captureGroups: [String])]? {
         do {
             let regex = try NSRegularExpression(pattern: regexPattern)
             let matches = regex.matches(in: text,
                                         range: NSRange(text.startIndex..., in: text))
-            var captureResult: [String] = []
+            var matchResult: [(matchString: String, captureGroups: [String])] = []
             for match in matches {
-                var capturedStrings: [String?] = []
+                var rangeStrings: [String] = []
                 // [(matched string), (capture group 0), (capture group 1), etc.]
-                for rangeIndex in 0..<match.numberOfRanges {
+                for rangeIndex in 0 ..< match.numberOfRanges {
                     let rangeBounds = match.range(at: rangeIndex)
                     guard let range = Range(rangeBounds, in: text) else {
-                        capturedStrings.append(nil)
                         continue
                     }
-                    capturedStrings.append(String(text[range]))
+                    rangeStrings.append(String(text[range]))
                 }
-                // If there is a match it should be impossible for there to be no elements
-                capturedStrings.removeFirst() // Only interested in the capture group results
-                captureResult.append(contentsOf: capturedStrings.compactMap { $0 })
+                guard !rangeStrings.isEmpty else {
+                    continue
+                }
+                let matchString = rangeStrings.removeFirst()
+                matchResult.append((matchString: matchString, captureGroups: rangeStrings))
             }
-            return captureResult
+            return matchResult
         } catch let error {
             XCTFail("TEST ERROR: Invalid regex: \(error.localizedDescription)", file: file, line: line)
+            return nil
+        }
+    }
+    /// Applies the provided regex pattern to the text and returns all the capture groups from the regex pattern
+    private func getCapturedRegexGroups(text: String, regexPattern: String, file: StaticString = #file, line: UInt = #line) -> [String] {
+        
+        guard let captureGroups = extractRegexCaptureGroups(text: text, regexPattern: regexPattern, file: file, line: line)?.flatMap({ $0.captureGroups }) else {
             return []
         }
+        
+        return captureGroups
     }
     
     /// Extracts all key path components from a given key path string
     private func getKeyPathComponents(text: String, file: StaticString = #file, line: UInt = #line) -> [String] {
+        // The empty string is a special case that the regex doesn't handle
+        guard !text.isEmpty else {
+            return [""]
+        }
+        
+        // Capture groups:
+        // 1. Any characters, or empty string before a `.` NOT preceded by a `\`
+        // OR
+        // 2. Any non-empty text preceding the end of the string
+        //
         // Matches key path access in the style of: "key0\.key1.key2[1][2].key3". Captures each of the groups separated by `.` character and ignores `\.` as nesting.
         // the path example would result in: ["key0\.key1", "key2[1][2]", "key3"]
         let jsonNestingRegex = #"(.*?)(?<!\\)(?:\.)|(.+?)(?:$)"#
-        do {
-            // The empty string is a special case that the regex doesn't handle
-            guard !text.isEmpty else {
-                return [""]
-            }
-            let regex = try NSRegularExpression(pattern: jsonNestingRegex)
-            let matches = regex.matches(in: text,
-                                        range: NSRange(text.startIndex..., in: text))
-            var captureResult: [String] = []
-            for match in matches {
-                var capturedStrings: [String?] = []
-                // [(matched string), (capture group 0), (capture group 1), etc.]
-                for rangeIndex in 0..<match.numberOfRanges {
-                    let rangeBounds = match.range(at: rangeIndex)
-                    guard let range = Range(rangeBounds, in: text) else {
-                        capturedStrings.append(nil)
-                        continue
-                    }
-                    capturedStrings.append(String(text[range]))
-                }
-                // If there is a match it should be impossible for there to be no elements
-                let matchString = capturedStrings.removeFirst() // Only interested in the capture group results
-                captureResult.append(contentsOf: capturedStrings.compactMap { $0 })
-                // If the very last matched substring ends with "." then add the empty string as the final key path
-                if matches.last == match && matchString?.last == "." {
-                    captureResult.append("")
-                }
-            }
-            return captureResult
-        } catch let error {
-            XCTFail("TEST ERROR: Invalid regex: \(error.localizedDescription)", file: file, line: line)
+        
+        guard let matchResult = extractRegexCaptureGroups(text: text, regexPattern: jsonNestingRegex, file: file, line: line) else {
             return []
         }
+        
+        var captureGroups = matchResult.flatMap({ $0.captureGroups })
+        
+        if matchResult.last?.matchString.last == "." {
+            captureGroups.append("")
+        }
+        return captureGroups
     }
 
     /// Merges two constructed key path dictionaries, replacing `current` values with `new` ones, with the exception
