@@ -35,10 +35,12 @@ extension EventSpec: Hashable & Equatable {
     }
 }
 
-class FunctionalTestBase: XCTestCase {
+class TestBase: XCTestCase {
+    /// Controls if the test base uses real network requests or mocked version
+    static var usingMockNetworkRequestMode: Bool = true
     /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
     private(set) static var isFirstRun: Bool = true
-    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService()
+    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService(usingMockNetworkRequestMode: TestBase.usingMockNetworkRequestMode)
     /// Use this setting to enable debug mode logging in the `FunctionalTestBase`
     static var debugEnabled = false
 
@@ -47,7 +49,7 @@ class FunctionalTestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
         MobileCore.setLogLevel(LogLevel.trace)
-        networkService = FunctionalTestNetworkService()
+        networkService = FunctionalTestNetworkService(usingMockNetworkRequestMode: TestBase.usingMockNetworkRequestMode)
         ServiceProvider.shared.networkService = networkService
     }
 
@@ -64,7 +66,7 @@ class FunctionalTestBase: XCTestCase {
         // wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
         usleep(200000)
         resetTestExpectations()
-        FunctionalTestBase.isFirstRun = false
+        TestBase.isFirstRun = false
         EventHub.reset()
         UserDefaults.clearAll()
         FileManager.default.clearCache()
@@ -74,7 +76,7 @@ class FunctionalTestBase: XCTestCase {
     func resetTestExpectations() {
         log("Resetting functional test expectations for events and network requests")
         InstrumentedExtension.reset()
-        FunctionalTestBase.networkService.reset()
+        TestBase.networkService.reset()
     }
 
     /// Unregisters the `InstrumentedExtension` from the Event Hub. This method executes asynchronous.
@@ -228,7 +230,7 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        _ = FunctionalTestBase.networkService.setResponseConnectionFor(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), responseConnection: responseHttpConnection)
+        _ = TestBase.networkService.setResponseConnectionFor(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), responseConnection: responseHttpConnection)
     }
 
     /// Set  a network request expectation.
@@ -251,14 +253,14 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        FunctionalTestBase.networkService.setExpectedNetworkRequest(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), count: expectedCount)
+        TestBase.networkService.setExpectedNetworkRequest(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), count: expectedCount)
     }
 
     /// Asserts that the correct number of network requests were being sent, based on the previously set expectations.
     /// - See also:
     ///     - setExpectationNetworkRequest(url:httpMethod:)
     func assertNetworkRequestsCount(file: StaticString = #file, line: UInt = #line) {
-        let expectedNetworkRequests = FunctionalTestBase.networkService.getExpectedNetworkRequests()
+        let expectedNetworkRequests = TestBase.networkService.getExpectedNetworkRequests()
         guard !expectedNetworkRequests.isEmpty else {
             assertionFailure("There are no network request expectations set, use this API after calling setExpectationNetworkRequest")
             return
@@ -290,13 +292,47 @@ class FunctionalTestBase: XCTestCase {
 
         let networkRequest = NetworkRequest(url: requestUrl, httpMethod: httpMethod)
 
-        if let waitResult = FunctionalTestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
+        if let waitResult = TestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
             XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(url) and HTTPMethod \(httpMethod.toString())", file: file, line: line)
         } else {
             wait(FunctionalTestConst.Defaults.WAIT_TIMEOUT)
         }
 
-        return FunctionalTestBase.networkService.getReceivedNetworkRequestsMatching(networkRequest: networkRequest)
+        return TestBase.networkService.getReceivedNetworkRequestKeysMatching(networkRequest: networkRequest)
+    }
+    
+    /// Returns the `HttpConnection` received in response to a `NetworkRequest` sent through the Core NetworkService, or `nil` if none is found.
+    /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
+    /// - Parameters:
+    ///   - url: The URL for which to retrieved the network requests sent, should be a valid URL
+    ///   - httpMethod: the `HttpMethod` for which to retrieve the network requests, along with the `url`
+    ///   - timeout: how long should this method wait for the expected network requests, in seconds; by default it waits up to 1 second
+    /// - Returns: list of network requests with the provided `url` and `httpMethod`, or empty if none was dispatched
+    /// - See also:
+    ///     - setExpectationNetworkRequest(url:httpMethod:)
+    func getNetworkResponseForRequestWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = FunctionalTestConst.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> HttpConnection? {
+        // construct a valid URL instance using the url string
+        guard let requestUrl = URL(string: url) else {
+            assertionFailure("Unable to convert the provided string \(url) to URL")
+            return nil
+        }
+
+        // create a NetworkRequest instance from the provided URL and http method
+        let networkRequest = NetworkRequest(url: requestUrl, httpMethod: httpMethod)
+
+        // wait for the network requests that match the signature of the provided request
+        // from the logic in FunctionalTestNetworkService.areNetworkRequestsEqual()
+        // aka - Equals compare based on host, scheme and URL path. Query params are not taken into consideration
+        // actually awaitFor only returns the first matching request - which in the test cases should be good enough
+        // since the same signature in the same test case is unlikely?
+        //
+        if let waitResult = TestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
+            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(url) and HTTPMethod \(httpMethod.toString())", file: file, line: line)
+        } else {
+            wait(FunctionalTestConst.Defaults.WAIT_TIMEOUT)
+        }
+
+        return TestBase.networkService.getMatchedResponseForUrlAndHttpMethod(networkRequest: networkRequest)
     }
 
     /// Use this API for JSON formatted `NetworkRequest` body in order to retrieve a flattened dictionary containing its data.
@@ -321,20 +357,20 @@ class FunctionalTestBase: XCTestCase {
     /// Sets the provided delay for all network responses, until reset
     /// - Parameter delaySec: delay in seconds
     func enableNetworkResponseDelay(delaySec: UInt32) {
-        FunctionalTestBase.networkService.enableDelayedResponse(delaySec: delaySec)
+        TestBase.networkService.enableDelayedResponse(delaySec: delaySec)
     }
 
     /// Print message to console if `FunctionalTestBase.debug` is true
     /// - Parameter message: message to log to console
     func log(_ message: String) {
-        FunctionalTestBase.log(message)
+        TestBase.log(message)
 
     }
 
     /// Print message to console if `FunctionalTestBase.debug` is true
     /// - Parameter message: message to log to console
     static func log(_ message: String) {
-        guard !message.isEmpty && FunctionalTestBase.debugEnabled else { return }
+        guard !message.isEmpty && TestBase.debugEnabled else { return }
         print("FunctionalTestBase - \(message)")
     }
 }

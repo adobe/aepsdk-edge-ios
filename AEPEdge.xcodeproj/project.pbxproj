@@ -51,18 +51,17 @@
 		4CBEE5CD29D637170084BC50 /* CountDownLatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BBB74248DC54F00775DAC /* CountDownLatch.swift */; };
 		4CBEE5D829D637170084BC50 /* AEPEdge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D444995F2519506B0093B364 /* AEPEdge.framework */; };
 		4CBEE5E629D637E90084BC50 /* UpstreamIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5E229D637E90084BC50 /* UpstreamIntegrationTests.swift */; };
-		4CBEE5E729D637E90084BC50 /* IntegrationTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5E329D637E90084BC50 /* IntegrationTestNetworkService.swift */; };
 		4CBEE5EB29D63B180084BC50 /* EnumUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5EA29D63B180084BC50 /* EnumUtils.swift */; };
 		4CBEE5EC29D648F90084BC50 /* FileManager+Testable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21888AF22555F9FC005677ED /* FileManager+Testable.swift */; };
 		4CBEE5EF29DB952E0084BC50 /* EdgeLocationHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5EE29DB952E0084BC50 /* EdgeLocationHint.swift */; };
 		4CBEE5F129DB953C0084BC50 /* EdgeEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5F029DB953C0084BC50 /* EdgeEnvironment.swift */; };
-		4CBEE5F529E4CD020084BC50 /* AnyCodableUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5F429E4CD020084BC50 /* AnyCodableUtils.swift */; };
-		4CBEE5F829F364540084BC50 /* AnyCodableUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5F729F364540084BC50 /* AnyCodableUtilsTests.swift */; };
 		4CBEE5FA29FB19600084BC50 /* AnyCodable+Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5F929FB19600084BC50 /* AnyCodable+Array.swift */; };
 		4CBEE5FB29FB47170084BC50 /* FunctionalTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FC246C9D1700A150E2 /* FunctionalTestBase.swift */; };
 		4CBEE5FC29FB47270084BC50 /* InstrumentedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */; };
 		4CBEE5FD29FB47270084BC50 /* FunctionalTestConst.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A473C52485938D00D31710 /* FunctionalTestConst.swift */; };
 		4CBEE5FE29FB4A540084BC50 /* FunctionalTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */; };
+		4CBEE6002A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */; };
+		4CBEE6022A02E2B70084BC50 /* AnyCodableAssertsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6012A02E2B70084BC50 /* AnyCodableAssertsTests.swift */; };
 		783A5F4E903F9B6EABA50D23 /* Pods_UnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */; };
 		BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
 		BF0C0935246120B200892B5D /* NetworkResponseHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* NetworkResponseHandlerFunctionalTests.swift */; };
@@ -261,13 +260,12 @@
 		316EF062B0B622235F6BB384 /* Pods_TestAppiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestAppiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CBEE5E029D637170084BC50 /* UpstreamIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UpstreamIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CBEE5E229D637E90084BC50 /* UpstreamIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpstreamIntegrationTests.swift; sourceTree = "<group>"; };
-		4CBEE5E329D637E90084BC50 /* IntegrationTestNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegrationTestNetworkService.swift; sourceTree = "<group>"; };
 		4CBEE5EA29D63B180084BC50 /* EnumUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumUtils.swift; sourceTree = "<group>"; };
 		4CBEE5EE29DB952E0084BC50 /* EdgeLocationHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeLocationHint.swift; sourceTree = "<group>"; };
 		4CBEE5F029DB953C0084BC50 /* EdgeEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEnvironment.swift; sourceTree = "<group>"; };
-		4CBEE5F429E4CD020084BC50 /* AnyCodableUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodableUtils.swift; sourceTree = "<group>"; };
-		4CBEE5F729F364540084BC50 /* AnyCodableUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodableUtilsTests.swift; sourceTree = "<group>"; };
 		4CBEE5F929FB19600084BC50 /* AnyCodable+Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyCodable+Array.swift"; sourceTree = "<group>"; };
+		4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCTestCase+AnyCodableAsserts.swift"; sourceTree = "<group>"; };
+		4CBEE6012A02E2B70084BC50 /* AnyCodableAssertsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyCodableAssertsTests.swift; sourceTree = "<group>"; };
 		5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E8ABC044CA69B7B3B6DA2B8 /* Pods-UpstreamIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UpstreamIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-UpstreamIntegrationTests/Pods-UpstreamIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7276A55D4B28344E8ED9D27B /* Pods-TestAppiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppiOS.debug.xcconfig"; path = "Target Support Files/Pods-TestAppiOS/Pods-TestAppiOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -485,8 +483,7 @@
 			children = (
 				4CBEE5E929D63AFA0084BC50 /* util */,
 				4CBEE5E229D637E90084BC50 /* UpstreamIntegrationTests.swift */,
-				4CBEE5F729F364540084BC50 /* AnyCodableUtilsTests.swift */,
-				4CBEE5E329D637E90084BC50 /* IntegrationTestNetworkService.swift */,
+				4CBEE6012A02E2B70084BC50 /* AnyCodableAssertsTests.swift */,
 			);
 			name = UpstreamIntegrationTests;
 			path = Tests/UpstreamIntegrationTests;
@@ -499,7 +496,7 @@
 				4CBEE5F929FB19600084BC50 /* AnyCodable+Array.swift */,
 				4CBEE5F029DB953C0084BC50 /* EdgeEnvironment.swift */,
 				4CBEE5EE29DB952E0084BC50 /* EdgeLocationHint.swift */,
-				4CBEE5F429E4CD020084BC50 /* AnyCodableUtils.swift */,
+				4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1303,17 +1300,16 @@
 				4CBEE5FB29FB47170084BC50 /* FunctionalTestBase.swift in Sources */,
 				4CBEE5EC29D648F90084BC50 /* FileManager+Testable.swift in Sources */,
 				4CBEE5EB29D63B180084BC50 /* EnumUtils.swift in Sources */,
+				4CBEE6002A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift in Sources */,
+				4CBEE6022A02E2B70084BC50 /* AnyCodableAssertsTests.swift in Sources */,
 				4CBEE5CA29D637170084BC50 /* TestUtils.swift in Sources */,
 				4CBEE5EF29DB952E0084BC50 /* EdgeLocationHint.swift in Sources */,
 				4CBEE5CB29D637170084BC50 /* EventHub+Test.swift in Sources */,
-				4CBEE5E729D637E90084BC50 /* IntegrationTestNetworkService.swift in Sources */,
-				4CBEE5F529E4CD020084BC50 /* AnyCodableUtils.swift in Sources */,
 				4CBEE5E629D637E90084BC50 /* UpstreamIntegrationTests.swift in Sources */,
 				4CBEE5CC29D637170084BC50 /* UserDefaults+Test.swift in Sources */,
 				4CBEE5F129DB953C0084BC50 /* EdgeEnvironment.swift in Sources */,
 				4CBEE5CD29D637170084BC50 /* CountDownLatch.swift in Sources */,
 				4CBEE5FA29FB19600084BC50 /* AnyCodable+Array.swift in Sources */,
-				4CBEE5F829F364540084BC50 /* AnyCodableUtilsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

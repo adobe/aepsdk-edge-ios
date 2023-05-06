@@ -475,7 +475,7 @@ extension XCTestCase {
                         file: file, line: line, shouldAssert: false)
                 }) else {
                     XCTFail(#"""
-                    Wildcard \#((isPathEnd ? !exactMatchMode : exactMatchMode) ? "exact" : "type") match found no matches satisfying requirement on Actual side.
+                    Wildcard \#((isPathEnd ? !exactMatchMode : exactMatchMode) ? "exact" : "type") match found no matches on Actual side satisfying the Expected requirement.
 
                     Requirement: \#(String(describing: matchTreeValue))
 
