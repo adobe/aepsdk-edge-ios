@@ -18,7 +18,7 @@ import AEPServices
 import Foundation
 import XCTest
 
-class EdgeConsentTests: FunctionalTestBase {
+class EdgeConsentTests: TestBase {
     private let EVENTS_COUNT: Int32 = 5
     private let experienceEvent = ExperienceEvent(xdm: ["test": "xdm"])
     private let responseBody = "\u{0000}{" +
@@ -49,7 +49,7 @@ class EdgeConsentTests: FunctionalTestBase {
 
     public class override func setUp() {
         super.setUp()
-        FunctionalTestBase.debugEnabled = true
+        TestBase.debugEnabled = true
     }
 
     override func setUp() {
@@ -57,7 +57,7 @@ class EdgeConsentTests: FunctionalTestBase {
         continueAfterFailure = false
         FileManager.default.clearCache()
 
-        // hub shared state update for 5 extensions (InstrumentedExtension (registered in FunctionalTestBase), Configuration, Edge, Consent, Edge Identity)
+        // hub shared state update for 5 extensions (InstrumentedExtension (registered in TestBase), Configuration, Edge, Consent, Edge Identity)
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 5)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONSENT, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
@@ -65,7 +65,7 @@ class EdgeConsentTests: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
-        // wait for async registration because the EventHub is already started in FunctionalTestBase
+        // wait for async registration because the EventHub is already started in TestBase
         let waitForRegistration = CountDownLatch(1)
         MobileCore.registerExtensions([Identity.self, Edge.self, Consent.self], {
             print("Extensions registration is complete")

@@ -20,7 +20,7 @@ import XCTest
 // swiftlint:disable type_body_length
 
 /// End-to-end testing for the AEPEdge public APIs
-class AEPEdgeFunctionalTests: FunctionalTestBase {
+class AEPEdgeFunctionalTests: TestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let exEdgeInteractProdUrl = URL(string: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
@@ -35,7 +35,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
     public class override func setUp() {
         super.setUp()
-        FunctionalTestBase.debugEnabled = true
+        TestBase.debugEnabled = true
     }
 
     override func setUp() {
@@ -43,14 +43,14 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false
         FileManager.default.clearCache()
 
-        // hub shared state update for 1 extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
+        // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
-        // wait for async registration because the EventHub is already started in FunctionalTestBase
+        // wait for async registration because the EventHub is already started in TestBase
         let waitForRegistration = CountDownLatch(1)
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")

@@ -17,14 +17,14 @@ import AEPServices
 import XCTest
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
-class NoConfigFunctionalTests: FunctionalTestBase {
+class NoConfigFunctionalTests: TestBase {
 
     override func setUp() {
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
-        FunctionalTestBase.debugEnabled = false
+        TestBase.debugEnabled = false
 
-        // event hub shared state for registered extensions (Edge, TestableEdge and InstrumentedExtension registered in FunctionalTestBase)
+        // event hub shared state for registered extensions (Edge, TestableEdge and InstrumentedExtension registered in TestBase)
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 2)
 
         MobileCore.registerExtensions([TestableEdge.self])

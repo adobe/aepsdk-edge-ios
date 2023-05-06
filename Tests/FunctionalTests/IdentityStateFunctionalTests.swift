@@ -16,23 +16,23 @@ import AEPServices
 import XCTest
 
 /// Functional test suite for tests which require no Identity shared state at startup to simulate a missing or pending state.
-class IdentityStateFunctionalTests: FunctionalTestBase {
+class IdentityStateFunctionalTests: TestBase {
 
     private let exEdgeInteractUrl = URL(string: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
 
     override func setUp() {
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
-        FunctionalTestBase.debugEnabled = false
+        TestBase.debugEnabled = false
 
-        // config state and 2 event hub states (Edge, TestableEdgeInternal, FakeIdentityExtension and InstrumentedExtension registered in FunctionalTestBase)
+        // config state and 2 event hub states (Edge, TestableEdgeInternal, FakeIdentityExtension and InstrumentedExtension registered in TestBase)
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 3)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
-        // wait for async registration because the EventHub is already started in FunctionalTestBase
+        // wait for async registration because the EventHub is already started in TestBase
         let waitForRegistration = CountDownLatch(1)
         MobileCore.registerExtensions([TestableEdge.self, FakeIdentityExtension.self], {
             print("Extensions registration is complete")

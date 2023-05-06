@@ -40,8 +40,8 @@ class TestBase: XCTestCase {
     static var usingMockNetworkRequestMode: Bool = true
     /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
     private(set) static var isFirstRun: Bool = true
-    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService(usingMockNetworkRequestMode: TestBase.usingMockNetworkRequestMode)
-    /// Use this setting to enable debug mode logging in the `FunctionalTestBase`
+    private static var networkService: TestNetworkService = TestNetworkService(usingMockNetworkRequestMode: TestBase.usingMockNetworkRequestMode)
+    /// Use this setting to enable debug mode logging in the `TestBase`
     static var debugEnabled = false
 
     public class override func setUp() {
@@ -49,7 +49,7 @@ class TestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
         MobileCore.setLogLevel(LogLevel.trace)
-        networkService = FunctionalTestNetworkService(usingMockNetworkRequestMode: TestBase.usingMockNetworkRequestMode)
+        networkService = TestNetworkService(usingMockNetworkRequestMode: TestBase.usingMockNetworkRequestMode)
         ServiceProvider.shared.networkService = networkService
     }
 
@@ -360,17 +360,17 @@ class TestBase: XCTestCase {
         TestBase.networkService.enableDelayedResponse(delaySec: delaySec)
     }
 
-    /// Print message to console if `FunctionalTestBase.debug` is true
+    /// Print message to console if `TestBase.debug` is true
     /// - Parameter message: message to log to console
     func log(_ message: String) {
         TestBase.log(message)
 
     }
 
-    /// Print message to console if `FunctionalTestBase.debug` is true
+    /// Print message to console if `TestBase.debug` is true
     /// - Parameter message: message to log to console
     static func log(_ message: String) {
         guard !message.isEmpty && TestBase.debugEnabled else { return }
-        print("FunctionalTestBase - \(message)")
+        print("TestBase - \(message)")
     }
 }

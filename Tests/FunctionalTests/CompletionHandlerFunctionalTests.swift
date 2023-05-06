@@ -18,7 +18,7 @@ import Foundation
 import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs with completion handlers
-class CompletionHandlerFunctionalTests: FunctionalTestBase {
+class CompletionHandlerFunctionalTests: TestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let responseBody = "{\"test\": \"json\"}"
@@ -31,7 +31,7 @@ class CompletionHandlerFunctionalTests: FunctionalTestBase {
 
     public class override func setUp() {
         super.setUp()
-        FunctionalTestBase.debugEnabled = true
+        TestBase.debugEnabled = true
     }
 
     override func setUp() {
@@ -39,7 +39,7 @@ class CompletionHandlerFunctionalTests: FunctionalTestBase {
         continueAfterFailure = false
         FileManager.default.clearCache()
 
-        // wait for async registration because the EventHub is already started in FunctionalTestBase
+        // wait for async registration because the EventHub is already started in TestBase
         let waitForRegistration = CountDownLatch(1)
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")

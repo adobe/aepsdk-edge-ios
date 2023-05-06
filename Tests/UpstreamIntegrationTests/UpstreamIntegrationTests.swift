@@ -23,7 +23,7 @@ enum PayloadType: String {
 }
 
 /// This test class validates proper intergration with upstream services, specifically Edge Network
-class UpstreamIntegrationTests: FunctionalTestBase {
+class UpstreamIntegrationTests: TestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint?
 
@@ -32,7 +32,7 @@ class UpstreamIntegrationTests: FunctionalTestBase {
     let asyncTimeout: TimeInterval = 10
 
     override class func setUp() {
-        FunctionalTestBase.usingMockNetworkRequestMode = false
+        TestBase.usingMockNetworkRequestMode = false
         super.setUp()
     }
     
@@ -118,23 +118,6 @@ class UpstreamIntegrationTests: FunctionalTestBase {
     }
 
     // MARK: - Test helper methods
-
-    /// Converts a JSON string into the provided type.
-    ///
-    /// NOTE: caller is reponsible for providing the correct casting type resulting JSON, otherwise decoding will fail
-    private func convertToJSON<T>(_ jsonString: String) -> T? {
-        guard let jsonData = jsonString.data(using: .utf8) else {
-            XCTFail("Unable to convert provided JSON string to Data: \(jsonString)")
-            return nil
-        }
-
-        guard let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? T else {
-            XCTFail("Unable to convert provided JSON string to JSON type \(T.self)")
-            return nil
-        }
-        return jsonDictionary
-    }
-
     private func setMobileCoreEnvironmentFileID(for edgeEnvironment: EdgeEnvironment) {
         switch edgeEnvironment {
         case .prod:
@@ -147,6 +130,7 @@ class UpstreamIntegrationTests: FunctionalTestBase {
         }
     }
     
+    // MARK: AnyCodable helpers
     private func getAnyCodable(_ jsonString: String) -> AnyCodable? {
         return try? JSONDecoder().decode(AnyCodable.self, from: jsonString.data(using: .utf8)!)
     }

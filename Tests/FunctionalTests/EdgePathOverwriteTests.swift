@@ -18,7 +18,7 @@ import Foundation
 import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs
-class AEPEdgePathOverwriteTests: FunctionalTestBase {
+class AEPEdgePathOverwriteTests: TestBase {
     static let EDGE_MEDIA_PROD_PATH_STR = "/ee/va/v1/sessionstart"
     static let EDGE_MEDIA_PRE_PROD_PATH_STR = "/ee-pre-prd/va/v1/sessionstart"
     static let EDGE_MEDIA_INTEGRATION_PATH_STR = "/ee/va/v1/sessionstart"
@@ -32,7 +32,7 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
 
     public class override func setUp() {
         super.setUp()
-        FunctionalTestBase.debugEnabled = true
+        TestBase.debugEnabled = true
     }
 
     override func setUp() {
@@ -40,14 +40,14 @@ class AEPEdgePathOverwriteTests: FunctionalTestBase {
         continueAfterFailure = false
         FileManager.default.clearCache()
 
-        // hub shared state update for 1 extension versions (InstrumentedExtension (registered in FunctionalTestBase), IdentityEdge, Edge) IdentityEdge XDM and Config shared state updates
+        // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM and Config shared state updates
         setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
 
         // expectations for update config request&response events
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
-        // wait for async registration because the EventHub is already started in FunctionalTestBase
+        // wait for async registration because the EventHub is already started in TestBase
         let waitForRegistration = CountDownLatch(1)
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
