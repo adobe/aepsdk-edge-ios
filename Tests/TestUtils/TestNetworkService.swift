@@ -19,14 +19,16 @@ import XCTest
 class TestNetworkService: NetworkService {
     private var mockNetworkService: Bool
     private var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [:]
-    /// Matches outgoing `NetworkRequest`s with their corresponding `HttpConnection` response.
-    /// When using mocks, the `HttpConnection` response can be set using `setResponseConnectionFor(networkRequest:responseConnection:)`
-    private var responseMatchers: [NetworkRequest: HttpConnection] = [:]
+    /// Matches outgoing `NetworkRequest`s with their corresponding **mocked** `HttpConnection` response.
+    /// Mocked `HttpConnection` response can be set using `setResponseConnectionFor(networkRequest:responseConnection:)`
+    private var mockedNetworkResponses: [NetworkRequest: HttpConnection] = [:]
+    /// Matches outgoing `NetworkRequest`s with their corresponding **real** `HttpConnection` response.
+    private var serverNetworkResponses: [NetworkRequest: HttpConnection] = [:]
     private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [:]
     private var delayedResponse: UInt32 = 0
     
-    init(usingMockNetworkRequestMode: Bool) {
-        self.mockNetworkService = usingMockNetworkRequestMode
+    init(mockNetworkService: Bool = true) {
+        self.mockNetworkService = mockNetworkService
         super.init()
     }
 
@@ -40,12 +42,34 @@ class TestNetworkService: NetworkService {
         }
 
         // Switch for mocked and real network requests
-        guard mockNetworkService else {
+        if mockNetworkService {
+            // Using mocked reponses to network requests
+            countDownExpected(networkRequest: networkRequest)
+            guard let unwrappedCompletionHandler = completionHandler else { return }
+            
+            if delayedResponse > 0 {
+                sleep(delayedResponse)
+            }
+            
+            if let response = getMatchedResponseForUrlAndHttpMethod(networkRequest: networkRequest) {
+                unwrappedCompletionHandler(response)
+            } else {
+                // Default mock response
+                unwrappedCompletionHandler(
+                    HttpConnection(
+                        data: "".data(using: .utf8),
+                        response: HTTPURLResponse(url: networkRequest.url,
+                                                  statusCode: 200,
+                                                  httpVersion: nil,
+                                                  headerFields: nil),
+                        error: nil)
+                )
+            }
+        }
+        else {
             // Using real network requests and receiving real responses
             super.connectAsync(networkRequest: networkRequest, completionHandler: { (connection: HttpConnection) in
-                print("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
-                
-                let responseInserted = self.setResponseConnectionFor(networkRequest: networkRequest, responseConnection: connection)
+                let responseInserted = self.setResponseConnectionFor(networkRequest: networkRequest, responseConnection: connection, isMockedResponse: false)
                 if !responseInserted {
                     XCTFail("Unable to insert response because one already exists for network request: \(networkRequest)")
                 }
@@ -56,25 +80,6 @@ class TestNetworkService: NetworkService {
             })
             return
         }
-        // Using mocked reponses to network requests
-        countDownExpected(networkRequest: networkRequest)
-        guard let unwrappedCompletionHandler = completionHandler else { return }
-        
-        if delayedResponse > 0 {
-            sleep(delayedResponse)
-        }
-
-        if let response = getMatchedResponseForUrlAndHttpMethod(networkRequest: networkRequest) {
-            unwrappedCompletionHandler(response)
-        } else {
-            // default response
-            unwrappedCompletionHandler(HttpConnection(data: "".data(using: .utf8),
-                                                      response: HTTPURLResponse(url: networkRequest.url,
-                                                                                statusCode: 200,
-                                                                                httpVersion: nil,
-                                                                                headerFields: nil),
-                                                      error: nil))
-        }
     }
 
     func enableDelayedResponse(delaySec: UInt32) {
@@ -84,7 +89,7 @@ class TestNetworkService: NetworkService {
     func reset() {
         expectedNetworkRequests.removeAll()
         receivedNetworkRequests.removeAll()
-        responseMatchers.removeAll()
+        mockedNetworkResponses.removeAll()
         delayedResponse = 0
     }
 
@@ -128,16 +133,21 @@ class TestNetworkService: NetworkService {
     /// Sets the `HttpConnection` response connection for a given `NetworkRequest`
     ///
     /// - Returns: `true` if the response was set, `false` if the response was unable to be set.
-    func setResponseConnectionFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) -> Bool {
-        for responseMatcher in responseMatchers {
+    func setResponseConnectionFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?, isMockedResponse: Bool = true) -> Bool {
+        for responseMatcher in isMockedResponse ? mockedNetworkResponses : serverNetworkResponses {
             if areNetworkRequestsEqual(lhs: responseMatcher.key, rhs: networkRequest) {
                 // NetworkRequest already has a response set; unable to override response matcher
                 return false
             }
         }
 
-        // add new entry if not present already
-        responseMatchers[networkRequest] = responseConnection
+        // Add new entry if not present already
+        if isMockedResponse {
+            mockedNetworkResponses[networkRequest] = responseConnection
+        }
+        else {
+            serverNetworkResponses[networkRequest] = responseConnection
+        }
         return true
     }
 
@@ -153,7 +163,7 @@ class TestNetworkService: NetworkService {
 
     // MARK: Network request response helpers
     func getMatchedResponseForUrlAndHttpMethod(networkRequest: NetworkRequest) -> HttpConnection? {
-        for responseMatcher in responseMatchers {
+        for responseMatcher in mockedNetworkResponses {
             if areNetworkRequestsEqual(lhs: responseMatcher.key, rhs: networkRequest) {
                 return responseMatcher.value
             }
