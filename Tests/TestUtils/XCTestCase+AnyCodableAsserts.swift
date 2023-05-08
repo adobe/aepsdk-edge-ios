@@ -10,6 +10,7 @@
 // governing permissions and limitations under the License.
 //
 
+import AEPCore
 import AEPServices
 import Foundation
 import XCTest
@@ -19,7 +20,31 @@ enum AssertMode {
     case typeMatch
 }
 
+enum PayloadType: String {
+    case xdm
+    case data
+}
+
 extension XCTestCase {
+    // MARK: - AnyCodable helpers
+    func getAnyCodable(_ jsonString: String) -> AnyCodable? {
+        return try? JSONDecoder().decode(AnyCodable.self, from: jsonString.data(using: .utf8)!)
+    }
+    
+    func getAnyCodableAndPayload(_ jsonString: String, type: PayloadType) -> (anyCodable: AnyCodable, payload: [String: Any])? {
+        guard let anyCodable = getAnyCodable(jsonString) else {
+            return nil
+        }
+        guard let payload = anyCodable.dictionaryValue?[type.rawValue] as? [String: Any] else {
+            return nil
+        }
+        return (anyCodable: anyCodable, payload: payload)
+    }
+    
+    func getAnyCodableFromEventPayload(event: Event) -> AnyCodable? {
+        return AnyCodable(AnyCodable.from(dictionary: event.data))
+    }
+    
     // MARK: - AnyCodable exact equivalence test assertion methods
 
     /// Performs exact equality testing assertions between two `AnyCodable` instances, using a similar logic path as the `AnyCodable ==` implementation.

@@ -17,11 +17,6 @@ import AEPServices
 import Foundation
 import XCTest
 
-enum PayloadType: String {
-    case xdm
-    case data
-}
-
 /// This test class validates proper intergration with upstream services, specifically Edge Network
 class UpstreamIntegrationTests: TestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
@@ -32,7 +27,7 @@ class UpstreamIntegrationTests: TestBase {
     let asyncTimeout: TimeInterval = 10
 
     override class func setUp() {
-        TestBase.usingMockNetworkRequestMode = false
+        TestBase.mockNetworkService = false
         super.setUp()
     }
     
@@ -128,24 +123,5 @@ class UpstreamIntegrationTests: TestBase {
             // TODO: create integration environment environment file ID
             MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
         }
-    }
-    
-    // MARK: AnyCodable helpers
-    private func getAnyCodable(_ jsonString: String) -> AnyCodable? {
-        return try? JSONDecoder().decode(AnyCodable.self, from: jsonString.data(using: .utf8)!)
-    }
-    
-    private func getAnyCodableAndPayload(_ jsonString: String, type: PayloadType) -> (anyCodable: AnyCodable, payload: [String: Any])? {
-        guard let anyCodable = getAnyCodable(jsonString) else {
-            return nil
-        }
-        guard let payload = anyCodable.dictionaryValue?[type.rawValue] as? [String: Any] else {
-            return nil
-        }
-        return (anyCodable: anyCodable, payload: payload)
-    }
-    
-    private func getAnyCodableFromEventPayload(event: Event) -> AnyCodable? {
-        return AnyCodable(AnyCodable.from(dictionary: event.data))
     }
 }

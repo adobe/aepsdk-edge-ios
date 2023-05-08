@@ -37,10 +37,10 @@ extension EventSpec: Hashable & Equatable {
 
 class TestBase: XCTestCase {
     /// Controls if the test base uses real network requests or mocked version
-    static var usingMockNetworkRequestMode: Bool = true
+    static var mockNetworkService: Bool = true
     /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
     private(set) static var isFirstRun: Bool = true
-    private static var networkService: TestNetworkService = TestNetworkService(usingMockNetworkRequestMode: TestBase.usingMockNetworkRequestMode)
+    private static var networkService: TestNetworkService = TestNetworkService(mockNetworkService: TestBase.mockNetworkService)
     /// Use this setting to enable debug mode logging in the `TestBase`
     static var debugEnabled = false
 
@@ -49,7 +49,7 @@ class TestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
         MobileCore.setLogLevel(LogLevel.trace)
-        networkService = TestNetworkService(usingMockNetworkRequestMode: TestBase.usingMockNetworkRequestMode)
+        networkService = TestNetworkService(mockNetworkService: TestBase.mockNetworkService)
         ServiceProvider.shared.networkService = networkService
     }
 

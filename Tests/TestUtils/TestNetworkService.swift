@@ -41,9 +41,8 @@ class TestNetworkService: NetworkService {
             receivedNetworkRequests[networkRequest] = [networkRequest]
         }
 
-        // Switch for mocked and real network requests
+        // Using mocked reponses to network requests
         if mockNetworkService {
-            // Using mocked reponses to network requests
             countDownExpected(networkRequest: networkRequest)
             guard let unwrappedCompletionHandler = completionHandler else { return }
             
@@ -66,8 +65,8 @@ class TestNetworkService: NetworkService {
                 )
             }
         }
+        // Using real network requests and receiving real responses
         else {
-            // Using real network requests and receiving real responses
             super.connectAsync(networkRequest: networkRequest, completionHandler: { (connection: HttpConnection) in
                 let responseInserted = self.setResponseConnectionFor(networkRequest: networkRequest, responseConnection: connection, isMockedResponse: false)
                 if !responseInserted {
@@ -132,7 +131,7 @@ class TestNetworkService: NetworkService {
 
     /// Sets the `HttpConnection` response connection for a given `NetworkRequest`
     ///
-    /// - Returns: `true` if the response was set, `false` if the response was unable to be set.
+    /// - Returns: `true` if the response was successfully set.
     func setResponseConnectionFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?, isMockedResponse: Bool = true) -> Bool {
         for responseMatcher in isMockedResponse ? mockedNetworkResponses : serverNetworkResponses {
             if areNetworkRequestsEqual(lhs: responseMatcher.key, rhs: networkRequest) {

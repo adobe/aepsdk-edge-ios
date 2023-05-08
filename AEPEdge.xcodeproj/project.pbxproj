@@ -496,7 +496,6 @@
 				4CBEE5F929FB19600084BC50 /* AnyCodable+Array.swift */,
 				4CBEE5F029DB953C0084BC50 /* EdgeEnvironment.swift */,
 				4CBEE5EE29DB952E0084BC50 /* EdgeLocationHint.swift */,
-				4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -556,6 +555,7 @@
 		D4655403246DF3B000A150E2 /* TestUtils */ = {
 			isa = PBXGroup;
 			children = (
+				4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */,
 				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
 				21888AF22555F9FC005677ED /* FileManager+Testable.swift */,
 				D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */,
