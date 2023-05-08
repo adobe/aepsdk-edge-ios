@@ -303,29 +303,22 @@ class TestBase: XCTestCase {
     
     /// Returns the `HttpConnection` received in response to a `NetworkRequest` sent through the Core NetworkService, or `nil` if none is found.
     /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
+    ///
+    /// See also:
+    ///    - setExpectationNetworkRequest(url:httpMethod:)
     /// - Parameters:
-    ///   - url: The URL for which to retrieved the network requests sent, should be a valid URL
-    ///   - httpMethod: the `HttpMethod` for which to retrieve the network requests, along with the `url`
-    ///   - timeout: how long should this method wait for the expected network requests, in seconds; by default it waits up to 1 second
-    /// - Returns: list of network requests with the provided `url` and `httpMethod`, or empty if none was dispatched
-    /// - See also:
-    ///     - setExpectationNetworkRequest(url:httpMethod:)
+    ///   - url: The `URL` of the `NetworkRequest`. Must be a valid `URL` or will return `nil`.
+    ///   - httpMethod: the `HttpMethod` of the `NetworkRequest`.
+    ///   - timeout: How long this method waits for **expected** `NetworkRequest`s, in seconds. `NetworkRequest`s without an expectation wait the default timeout, regardless of the value set here.
+    /// - Returns: The `HttpConnection` received for the `NetworkRequest`, or `nil` if none exists or the provided URL was invalid.
     func getNetworkResponseForRequestWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = FunctionalTestConst.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> HttpConnection? {
-        // construct a valid URL instance using the url string
         guard let requestUrl = URL(string: url) else {
             assertionFailure("Unable to convert the provided string \(url) to URL")
             return nil
         }
 
-        // create a NetworkRequest instance from the provided URL and http method
         let networkRequest = NetworkRequest(url: requestUrl, httpMethod: httpMethod)
 
-        // wait for the network requests that match the signature of the provided request
-        // from the logic in FunctionalTestNetworkService.areNetworkRequestsEqual()
-        // aka - Equals compare based on host, scheme and URL path. Query params are not taken into consideration
-        // actually awaitFor only returns the first matching request - which in the test cases should be good enough
-        // since the same signature in the same test case is unlikely?
-        //
         if let waitResult = TestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
             XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(url) and HTTPMethod \(httpMethod.toString())", file: file, line: line)
         } else {
