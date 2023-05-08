@@ -17,7 +17,7 @@ import XCTest
 
 /// Overriding NetworkService used for functional tests when extending the TestBase
 class TestNetworkService: NetworkService {
-    private var usingMockNetworkRequestMode: Bool
+    private var mockNetworkService: Bool
     private var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [:]
     /// Matches outgoing `NetworkRequest`s with their corresponding `HttpConnection` response.
     /// When using mocks, the `HttpConnection` response can be set using `setResponseConnectionFor(networkRequest:responseConnection:)`
@@ -26,7 +26,7 @@ class TestNetworkService: NetworkService {
     private var delayedResponse: UInt32 = 0
     
     init(usingMockNetworkRequestMode: Bool) {
-        self.usingMockNetworkRequestMode = usingMockNetworkRequestMode
+        self.mockNetworkService = usingMockNetworkRequestMode
         super.init()
     }
 
@@ -40,7 +40,7 @@ class TestNetworkService: NetworkService {
         }
 
         // Switch for mocked and real network requests
-        guard usingMockNetworkRequestMode else {
+        guard mockNetworkService else {
             // Using real network requests and receiving real responses
             super.connectAsync(networkRequest: networkRequest, completionHandler: { (connection: HttpConnection) in
                 print("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
