@@ -45,13 +45,13 @@ class InstrumentedExtension: NSObject, Extension {
 
     // MARK: Event Processors
     func wildcardListenerProcessor(_ event: Event) {
-        if event.type.lowercased() == FunctionalTestConst.EventType.INSTRUMENTED_EXTENSION.lowercased() {
+        if event.type.lowercased() == TestConstants.EventType.INSTRUMENTED_EXTENSION.lowercased() {
             // process the shared state request event
-            if event.source.lowercased() == FunctionalTestConst.EventSource.SHARED_STATE_REQUEST.lowercased() {
+            if event.source.lowercased() == TestConstants.EventSource.SHARED_STATE_REQUEST.lowercased() {
                 processSharedStateRequest(event)
             }
             // process the unregister extension event
-            else if event.source.lowercased() == FunctionalTestConst.EventSource.UNREGISTER_EXTENSION.lowercased() {
+            else if event.source.lowercased() == TestConstants.EventSource.UNREGISTER_EXTENSION.lowercased() {
                 unregisterExtension()
             }
 
@@ -81,16 +81,16 @@ class InstrumentedExtension: NSObject, Extension {
     /// - Parameter event: event sent from `getSharedStateFor` which specifies the shared state `stateowner` to retrieve
     func processSharedStateRequest(_ event: Event) {
         guard let eventData = event.data, !eventData.isEmpty  else { return }
-        guard let owner = eventData[FunctionalTestConst.EventDataKey.STATE_OWNER] as? String else { return }
+        guard let owner = eventData[TestConstants.EventDataKey.STATE_OWNER] as? String else { return }
 
-        var responseData: [String: Any?] = [FunctionalTestConst.EventDataKey.STATE_OWNER: owner, FunctionalTestConst.EventDataKey.STATE: nil]
+        var responseData: [String: Any?] = [TestConstants.EventDataKey.STATE_OWNER: owner, TestConstants.EventDataKey.STATE: nil]
         if let state = runtime.getSharedState(extensionName: owner, event: event, barrier: false) {
-            responseData[FunctionalTestConst.EventDataKey.STATE] = state
+            responseData[TestConstants.EventDataKey.STATE] = state
         }
 
         let responseEvent = event.createResponseEvent(name: "Get Shared State Response",
-                                                      type: FunctionalTestConst.EventType.INSTRUMENTED_EXTENSION,
-                                                      source: FunctionalTestConst.EventSource.SHARED_STATE_RESPONSE,
+                                                      type: TestConstants.EventType.INSTRUMENTED_EXTENSION,
+                                                      source: TestConstants.EventSource.SHARED_STATE_RESPONSE,
                                                       data: responseData as [String: Any])
 
         Log.debug(label: InstrumentedExtension.logTag, "ProcessSharedStateRequest Responding with shared state \(String(describing: responseData))")

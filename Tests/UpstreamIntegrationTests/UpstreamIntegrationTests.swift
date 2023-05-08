@@ -101,7 +101,7 @@ class UpstreamIntegrationTests: TestBase {
             return
         }
         
-        let resultEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "locationHint:result")
+        let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: "locationHint:result")
         XCTAssertEqual(1, resultEvents.count) // Do we want strict count validation for number of locationHint:result responses?
         guard let locationHintEvent = resultEvents.first else {
             XCTFail("No valid location hint event found")
