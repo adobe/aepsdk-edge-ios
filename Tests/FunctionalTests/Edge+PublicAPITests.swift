@@ -17,7 +17,7 @@ import AEPServices
 import XCTest
 
 class EdgePublicAPITests: TestBase {
-    private let exEdgeInteractProdUrlLocHint = URL(string: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC)! // swiftlint:disable:this force_unwrapping
+    private let exEdgeInteractProdUrlLocHint = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC)! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
 
     public class override func setUp() {
@@ -31,11 +31,11 @@ class EdgePublicAPITests: TestBase {
         FileManager.default.clearCache()
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 4)
+        setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)
 
         // expectations for update config request&response events
-        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.REQUEST_CONTENT, expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.CONFIGURATION, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        setExpectationEvent(type: TestConstants.EventType.CONFIGURATION, source: TestConstants.EventSource.REQUEST_CONTENT, expectedCount: 1)
+        setExpectationEvent(type: TestConstants.EventType.CONFIGURATION, source: TestConstants.EventSource.RESPONSE_CONTENT, expectedCount: 1)
 
         // wait for async registration because the EventHub is already started in TestBase
         let waitForRegistration = CountDownLatch(1)
@@ -51,9 +51,9 @@ class EdgePublicAPITests: TestBase {
     }
 
     func testSetLocationHint_sendEvent_sendsNetworkRequestWithLocationHint() {
-        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
 
-        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
+        Edge.setLocationHint(TestConstants.OR2_LOC)
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
         Edge.sendEvent(experienceEvent: experienceEvent)
@@ -66,12 +66,12 @@ class EdgePublicAPITests: TestBase {
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
 
-        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
-        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
+        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
+        Edge.setLocationHint(TestConstants.OR2_LOC)
         Edge.sendEvent(experienceEvent: experienceEvent)
         assertNetworkRequestsCount()
 
-        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         Edge.setLocationHint(nil)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
@@ -83,12 +83,12 @@ class EdgePublicAPITests: TestBase {
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
 
-        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
-        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
+        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
+        Edge.setLocationHint(TestConstants.OR2_LOC)
         Edge.sendEvent(experienceEvent: experienceEvent)
         assertNetworkRequestsCount()
 
-        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         Edge.setLocationHint("")
         Edge.sendEvent(experienceEvent: experienceEvent)
 
@@ -110,11 +110,11 @@ class EdgePublicAPITests: TestBase {
     }
 
     func testGetLocationHint_withSet_returnsHint() {
-        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
+        Edge.setLocationHint(TestConstants.OR2_LOC)
         let expectation = XCTestExpectation(description: "Request Location Hint")
         expectation.assertForOverFulfill = true
         Edge.getLocationHint({ hint, error in
-            XCTAssertEqual(FunctionalTestConst.OR2_LOC, hint)
+            XCTAssertEqual(TestConstants.OR2_LOC, hint)
             XCTAssertNil(error)
             expectation.fulfill()
         })
@@ -124,7 +124,7 @@ class EdgePublicAPITests: TestBase {
     }
 
     func testGetLocationHint_clearHint_returnsNilHint() {
-        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
+        Edge.setLocationHint(TestConstants.OR2_LOC)
         Edge.setLocationHint(nil)
         let expectation = XCTestExpectation(description: "Request Location Hint")
         expectation.assertForOverFulfill = true
