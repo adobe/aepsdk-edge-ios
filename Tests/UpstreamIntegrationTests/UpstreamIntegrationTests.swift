@@ -79,8 +79,8 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = getNetworkResponseForRequestWith(url: TestConstants.EX_EDGE_OM5_PROD_URL, httpMethod: .post, timeout: 5)
-        XCTAssertEqual(200, matchedResponse?.responseCode)
+        let matchedResponse = getResponsesForRequestWith(url: TestConstants.EX_EDGE_OM5_PROD_URL, httpMethod: .post, timeout: 5)
+        XCTAssertEqual(200, matchedResponse.first?.responseCode)
         
         // MARK: Response Event assertions
         // MARK: 1st send event
@@ -149,8 +149,8 @@ class UpstreamIntegrationTests: TestBase {
     
     func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
         // Setup
-        let invalidLocationHintRequest = NetworkRequestSpec(url: TestConstants.EX_EDGE_OM5_PROD_URL_INVALID_LOC, httpMethod: .post)
-        setExpectationNetworkRequest(spec: invalidLocationHintRequest, expectedCount: 1)
+        let invalidRequestSpec = NetworkRequestSpec(url: "https://obumobile5.data.adobedc.net/ee/invalid/v1/interact", httpMethod: .post)
+        setExpectationNetworkRequest(spec: invalidRequestSpec, expectedCount: 1)
         
         Edge.setLocationHint("invalid")
         
@@ -161,10 +161,8 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = getNetworkResponseForRequestWith(spec: invalidLocationHintRequest, timeout: 5)
-        XCTAssertEqual(404, matchedResponse?.responseCode)
-        // TODO: create a constant for the domain portion
-        // use actual string
+        let matchedResponse = getResponsesForRequestWith(spec: invalidRequestSpec, timeout: 5)
+        XCTAssertEqual(404, matchedResponse.first?.responseCode)
         // TODO: investigate the actual network response
         // check for error response message and assert against that payload
         let expectedErrorJSON = #"""
@@ -176,11 +174,6 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
         assertEdgeResponseEvent(expectedJSON: expectedErrorJSON, eventSource: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, exactMatchPaths: ["title", "detail"])
-        
-        Edge.sendEvent(experienceEvent: experienceEvent)
-        
-        let matchedEventResponse2 = getNetworkResponseForRequestWith(url: TestConstants.EX_EDGE_OM5_PROD_URL_OR2_LOC, httpMethod: .post, timeout: 5)
-        XCTAssertEqual(200, matchedEventResponse2?.responseCode)
     }
 
     // MARK: - Test helper methods

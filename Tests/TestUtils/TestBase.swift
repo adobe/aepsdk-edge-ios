@@ -25,6 +25,18 @@ struct EventSpec {
 struct NetworkRequestSpec {
     let url: String
     let httpMethod: HttpMethod
+    
+//    init(url: URL, httpMethod: HttpMethod) {
+//        self.url = url
+//        self.httpMethod = httpMethod
+//    }
+//
+//    init?(url: String, httpMethod: HttpMethod) {
+//        guard let url = URL(string: url) else {
+//            return nil
+//        }
+//        self.init(url: url, httpMethod: httpMethod)
+//    }
 }
 
 /// Hashable `EventSpec`, to be used as key in Dictionaries
@@ -357,8 +369,8 @@ class TestBase: XCTestCase {
     ///   - spec: The `NetworkRequestSpec` to use to construct the `NetworkRequest`.
     ///   - timeout: How long this method waits for **expected** `NetworkRequest`s, in seconds. `NetworkRequest`s without an expectation wait the default timeout, regardless of the value set here.
     /// - Returns: The `HttpConnection` received for the `NetworkRequest`, or `nil` if none exists or the provided URL was invalid.
-    func getNetworkResponseForRequestWith(spec: NetworkRequestSpec, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> HttpConnection? {
-        return getNetworkResponseForRequestWith(url: spec.url, httpMethod: spec.httpMethod, timeout: timeout, file: file, line: line)
+    func getResponsesForRequestWith(spec: NetworkRequestSpec, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [HttpConnection] {
+        return getResponsesForRequestWith(url: spec.url, httpMethod: spec.httpMethod, timeout: timeout, file: file, line: line)
     }
 
     /// Use this API for JSON formatted `NetworkRequest` body in order to retrieve a flattened dictionary containing its data.
