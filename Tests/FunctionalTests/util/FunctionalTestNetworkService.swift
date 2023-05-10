@@ -175,3 +175,13 @@ extension URL {
         return url.queryItems?.first(where: { $0.name == param })?.value
     }
 }
+
+extension NetworkRequest {
+    convenience init?(urlString: String, httpMethod: HttpMethod) {
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Unable to convert the provided string \(urlString) to URL")
+            return nil
+        }
+        self.init(url: url, httpMethod: httpMethod)
+    }
+}
