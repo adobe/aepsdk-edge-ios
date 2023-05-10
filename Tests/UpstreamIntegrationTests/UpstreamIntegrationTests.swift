@@ -79,8 +79,8 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponsePost = getNetworkResponseForRequestWith(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post, timeout: 5)
-        XCTAssertEqual(200, matchedResponsePost?.responseCode)
+        let matchedResponsePost = getResponsesForRequestWith(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post, timeout: 5)
+        XCTAssertEqual(200, matchedResponsePost.first?.responseCode)
         
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
@@ -96,13 +96,10 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
         
-        guard let expected = getAnyCodable(expectedJSON) else {
-            XCTFail("Unable to decode JSON string. Test case unable to proceed.")
-            return
-        }
+        let expected = getAnyCodable(expectedJSON)!
         
         let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: "locationHint:result")
-        XCTAssertEqual(1, resultEvents.count) // Do we want strict count validation for number of locationHint:result responses?
+        XCTAssertEqual(1, resultEvents.count)
         guard let locationHintEvent = resultEvents.first else {
             XCTFail("No valid location hint event found")
             return

@@ -40,7 +40,7 @@ class TestBase: XCTestCase {
     static var mockNetworkService: Bool = true
     /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
     private(set) static var isFirstRun: Bool = true
-    private static var networkService: TestNetworkService = TestNetworkService(mockNetworkService: TestBase.mockNetworkService)
+    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService(mockNetworkService: TestBase.mockNetworkService)
     /// Use this setting to enable debug mode logging in the `TestBase`
     static var debugEnabled = false
 
@@ -49,7 +49,7 @@ class TestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
         MobileCore.setLogLevel(LogLevel.trace)
-        networkService = TestNetworkService(mockNetworkService: TestBase.mockNetworkService)
+        networkService = FunctionalTestNetworkService(mockNetworkService: TestBase.mockNetworkService)
         ServiceProvider.shared.networkService = networkService
     }
 
@@ -218,7 +218,7 @@ class TestBase: XCTestCase {
 
     // MARK: Network Service helpers
 
-    /// Set a custom network response to a network request
+    /// Set a custom (mock) network response to a network request
     /// - Parameters:
     ///   - url: The URL for which to return the response
     ///   - httpMethod: The `HttpMethod` for which to return the response, along with the `url`
@@ -230,7 +230,7 @@ class TestBase: XCTestCase {
             return
         }
 
-        _ = TestBase.networkService.setMockResponseFor(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), response: responseHttpConnection)
+        TestBase.networkService.setMockResponseFor(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), response: responseHttpConnection)
     }
 
     /// Set  a network request expectation.
@@ -285,18 +285,11 @@ class TestBase: XCTestCase {
     /// - See also:
     ///     - setExpectationNetworkRequest(url:httpMethod:)
     func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
-        guard let requestUrl = URL(string: url) else {
-            assertionFailure("Unable to convert the provided string \(url) to URL")
+        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return []
         }
 
-        let networkRequest = NetworkRequest(url: requestUrl, httpMethod: httpMethod)
-
-        if let waitResult = TestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
-            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(url) and HTTPMethod \(httpMethod.toString())", file: file, line: line)
-        } else {
-            wait(TestConstants.Defaults.WAIT_TIMEOUT)
-        }
+        awaitRequest(networkRequest, timeout: timeout)
 
         return TestBase.networkService.getReceivedNetworkRequestKeysMatching(networkRequest: networkRequest)
     }
@@ -311,21 +304,14 @@ class TestBase: XCTestCase {
     ///   - httpMethod: the `HttpMethod` of the `NetworkRequest`.
     ///   - timeout: How long this method waits for **expected** `NetworkRequest`s, in seconds. `NetworkRequest`s without an expectation wait the default timeout, regardless of the value set here.
     /// - Returns: The `HttpConnection` received for the `NetworkRequest`, or `nil` if none exists or the provided URL was invalid.
-    func getNetworkResponseForRequestWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> HttpConnection? {
-        guard let requestUrl = URL(string: url) else {
-            assertionFailure("Unable to convert the provided string \(url) to URL")
-            return nil
+    func getResponsesForRequestWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [HttpConnection] {
+        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
+            return []
         }
+        
+        awaitRequest(networkRequest, timeout: timeout)
 
-        let networkRequest = NetworkRequest(url: requestUrl, httpMethod: httpMethod)
-
-        if let waitResult = TestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
-            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(url) and HTTPMethod \(httpMethod.toString())", file: file, line: line)
-        } else {
-            wait(TestConstants.Defaults.WAIT_TIMEOUT)
-        }
-
-        return TestBase.networkService.getResponseFor(networkRequest: networkRequest)
+        return TestBase.networkService.getResponsesFor(networkRequest: networkRequest)
     }
 
     /// Use this API for JSON formatted `NetworkRequest` body in order to retrieve a flattened dictionary containing its data.
@@ -365,5 +351,24 @@ class TestBase: XCTestCase {
     static func log(_ message: String) {
         guard !message.isEmpty && TestBase.debugEnabled else { return }
         print("TestBase - \(message)")
+    }
+    
+    private func awaitRequest(_ networkRequest: NetworkRequest, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) {
+
+        if let waitResult = TestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
+            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(networkRequest.url) and HTTPMethod \(networkRequest.httpMethod.toString())", file: file, line: line)
+        } else {
+            wait(TestConstants.Defaults.WAIT_TIMEOUT)
+        }
+    }
+}
+
+extension NetworkRequest {
+    convenience init?(urlString: String, httpMethod: HttpMethod) {
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Unable to convert the provided string \(urlString) to URL")
+            return nil
+        }
+        self.init(url: url, httpMethod: httpMethod)
     }
 }

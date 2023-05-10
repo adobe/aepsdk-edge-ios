@@ -61,6 +61,7 @@
 		4CBEE5FD29FB47270084BC50 /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A473C52485938D00D31710 /* TestConstants.swift */; };
 		4CBEE6002A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */; };
 		4CBEE6022A02E2B70084BC50 /* AnyCodableAssertsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6012A02E2B70084BC50 /* AnyCodableAssertsTests.swift */; };
+		4CBEE6032A0B47B00084BC50 /* FunctionalTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */; };
 		783A5F4E903F9B6EABA50D23 /* Pods_UnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */; };
 		BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
 		BF0C0935246120B200892B5D /* NetworkResponseHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B53524325AB700CAB6E4 /* NetworkResponseHandlerFunctionalTests.swift */; };
@@ -1293,6 +1294,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CBEE6032A0B47B00084BC50 /* FunctionalTestNetworkService.swift in Sources */,
 				4CBEE5FC29FB47270084BC50 /* InstrumentedExtension.swift in Sources */,
 				4CBEE5FD29FB47270084BC50 /* TestConstants.swift in Sources */,
 				4CBEE5FB29FB47170084BC50 /* TestBase.swift in Sources */,

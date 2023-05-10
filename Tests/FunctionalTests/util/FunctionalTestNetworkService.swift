@@ -26,7 +26,7 @@ class FunctionalTestNetworkService: NetworkService {
     private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [:]
     private var delayedResponse: UInt32 = 0
     
-    init(mockNetworkService: Bool = true) {
+    init(mockNetworkService: Bool) {
         self.mockNetworkService = mockNetworkService
         super.init()
     }
@@ -49,7 +49,7 @@ class FunctionalTestNetworkService: NetworkService {
                 sleep(delayedResponse)
             }
             
-            if let response = getResponseFor(networkRequest: networkRequest) {
+            if let response = getResponsesFor(networkRequest: networkRequest).first {
                 unwrappedCompletionHandler(response)
             } else {
                 // Default mock response
@@ -67,10 +67,7 @@ class FunctionalTestNetworkService: NetworkService {
         // Using real network requests and receiving real responses
         else {
             super.connectAsync(networkRequest: networkRequest, completionHandler: { (connection: HttpConnection) in
-                let responseInserted = self.setResponseFor(networkRequest: networkRequest, responseConnection: connection)
-                if !responseInserted {
-                    XCTFail("Unable to insert response because one already exists for network request: \(networkRequest)")
-                }
+                self.setResponseFor(networkRequest: networkRequest, responseConnection: connection)
                 self.countDownExpected(networkRequest: networkRequest)
                     
                 // Finally call the original completion handler
@@ -132,23 +129,19 @@ class FunctionalTestNetworkService: NetworkService {
     /// when in mock mode.
     ///
     /// - Returns: `true` if the response was successfully set.
-    func setMockResponseFor(networkRequest: NetworkRequest, response: HttpConnection?) -> Bool {
+    func setMockResponseFor(networkRequest: NetworkRequest, response: HttpConnection?) {
         guard mockNetworkService else {
             XCTFail("Setting mock responses when not in mock network service mode is not allowed.")
-            return false
+            return
         }
-        return setResponseFor(networkRequest: networkRequest, responseConnection: response)
+        setResponseFor(networkRequest: networkRequest, responseConnection: response)
     }
     
     // MARK: Network request response helpers
-    func getResponseFor(networkRequest: NetworkRequest) -> HttpConnection? {
-        for responseMatcher in networkResponses {
-            if areNetworkRequestsEqual(lhs: responseMatcher.key, rhs: networkRequest) {
-                return responseMatcher.value
-            }
-        }
-
-        return nil
+    func getResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {
+        return networkResponses
+            .filter { areNetworkRequestsEqual(lhs: $0.key, rhs: networkRequest) }
+            .map { $0.value }
     }
 
     // MARK: - Private helpers
@@ -162,19 +155,8 @@ class FunctionalTestNetworkService: NetworkService {
     }
     
     /// Sets the `HttpConnection` response connection for a given `NetworkRequest`
-    ///
-    /// - Returns: `true` if the response was successfully set.
-    private func setResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) -> Bool {
-        for responseMatcher in networkResponses {
-            if areNetworkRequestsEqual(lhs: responseMatcher.key, rhs: networkRequest) {
-                // NetworkRequest already has a response set; unable to override response matcher
-                return false
-            }
-        }
-
-        // Add new entry if not present already
+    private func setResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
         networkResponses[networkRequest] = responseConnection
-        return true
     }
 
     // MARK: General helpers
