@@ -40,7 +40,7 @@ class TestBase: XCTestCase {
     static var mockNetworkService: Bool = true
     /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
     private(set) static var isFirstRun: Bool = true
-    private static var networkService: TestNetworkService = TestNetworkService(mockNetworkService: TestBase.mockNetworkService)
+    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService(mockNetworkService: TestBase.mockNetworkService)
     /// Use this setting to enable debug mode logging in the `TestBase`
     static var debugEnabled = false
 
@@ -49,7 +49,7 @@ class TestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
         MobileCore.setLogLevel(LogLevel.trace)
-        networkService = TestNetworkService(mockNetworkService: TestBase.mockNetworkService)
+        networkService = FunctionalTestNetworkService(mockNetworkService: TestBase.mockNetworkService)
         ServiceProvider.shared.networkService = networkService
     }
 
