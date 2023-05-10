@@ -12,7 +12,7 @@
 
 import Foundation
 
-enum FunctionalTestConst {
+enum TestConstants {
 
     enum EventType {
         static let EDGE = "com.adobe.eventType.edge"

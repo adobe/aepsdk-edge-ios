@@ -35,11 +35,13 @@ extension EventSpec: Hashable & Equatable {
     }
 }
 
-class FunctionalTestBase: XCTestCase {
+class TestBase: XCTestCase {
+    /// Controls if the test base uses real network requests or mocked version
+    static var mockNetworkService: Bool = true
     /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
     private(set) static var isFirstRun: Bool = true
-    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService()
-    /// Use this setting to enable debug mode logging in the `FunctionalTestBase`
+    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService(mockNetworkService: TestBase.mockNetworkService)
+    /// Use this setting to enable debug mode logging in the `TestBase`
     static var debugEnabled = false
 
     public class override func setUp() {
@@ -47,7 +49,7 @@ class FunctionalTestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
         MobileCore.setLogLevel(LogLevel.trace)
-        networkService = FunctionalTestNetworkService()
+        networkService = FunctionalTestNetworkService(mockNetworkService: TestBase.mockNetworkService)
         ServiceProvider.shared.networkService = networkService
     }
 
@@ -64,7 +66,7 @@ class FunctionalTestBase: XCTestCase {
         // wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
         usleep(200000)
         resetTestExpectations()
-        FunctionalTestBase.isFirstRun = false
+        TestBase.isFirstRun = false
         EventHub.reset()
         UserDefaults.clearAll()
         FileManager.default.clearCache()
@@ -74,14 +76,14 @@ class FunctionalTestBase: XCTestCase {
     func resetTestExpectations() {
         log("Resetting functional test expectations for events and network requests")
         InstrumentedExtension.reset()
-        FunctionalTestBase.networkService.reset()
+        TestBase.networkService.reset()
     }
 
     /// Unregisters the `InstrumentedExtension` from the Event Hub. This method executes asynchronous.
     func unregisterInstrumentedExtension() {
         let event = Event(name: "Unregister Instrumented Extension",
-                          type: FunctionalTestConst.EventType.INSTRUMENTED_EXTENSION,
-                          source: FunctionalTestConst.EventSource.UNREGISTER_EXTENSION,
+                          type: TestConstants.EventType.INSTRUMENTED_EXTENSION,
+                          source: TestConstants.EventSource.UNREGISTER_EXTENSION,
                           data: nil)
 
         MobileCore.dispatch(event: event)
@@ -123,7 +125,7 @@ class FunctionalTestBase: XCTestCase {
 
         let currentExpectedEvents = InstrumentedExtension.expectedEvents.shallowCopy
         for expectedEvent in currentExpectedEvents {
-            let waitResult = expectedEvent.value.await(timeout: FunctionalTestConst.Defaults.WAIT_EVENT_TIMEOUT)
+            let waitResult = expectedEvent.value.await(timeout: TestConstants.Defaults.WAIT_EVENT_TIMEOUT)
             let expectedCount: Int32 = expectedEvent.value.getInitialCount()
             let receivedCount: Int32 = expectedEvent.value.getInitialCount() - expectedEvent.value.getCurrentCount()
             XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(expectedEvent.key.type) and source \(expectedEvent.key.source), expected \(expectedCount), but received \(receivedCount)", file: (file), line: line)
@@ -146,7 +148,7 @@ class FunctionalTestBase: XCTestCase {
 
             // check if event is expected and it is over the expected count
             if let expectedEvent = InstrumentedExtension.expectedEvents[EventSpec(type: receivedEvent.key.type, source: receivedEvent.key.source)] {
-                _ = expectedEvent.await(timeout: FunctionalTestConst.Defaults.WAIT_EVENT_TIMEOUT)
+                _ = expectedEvent.await(timeout: TestConstants.Defaults.WAIT_EVENT_TIMEOUT)
                 let expectedCount: Int32 = expectedEvent.getInitialCount()
                 let receivedCount: Int32 = expectedEvent.getInitialCount() - expectedEvent.getCurrentCount()
                 XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) events of type \(receivedEvent.key.type) and source \(receivedEvent.key.source), but received \(receivedCount)", file: (file), line: line)
@@ -165,7 +167,7 @@ class FunctionalTestBase: XCTestCase {
     /// To be revisited once AMSDK-10169 is implemented
     /// - Parameters:
     ///   - timeout:how long should this method wait, in seconds; by default it waits up to 1 second
-    func wait(_ timeout: UInt32? = FunctionalTestConst.Defaults.WAIT_TIMEOUT) {
+    func wait(_ timeout: UInt32? = TestConstants.Defaults.WAIT_TIMEOUT) {
         if let timeout = timeout {
             sleep(timeout)
         }
@@ -178,12 +180,12 @@ class FunctionalTestBase: XCTestCase {
     ///   - source: the event source as in the expectation
     ///   - timeout: how long should this method wait for the expected event, in seconds; by default it waits up to 1 second
     /// - Returns: list of events with the provided `type` and `source`, or empty if none was dispatched
-    func getDispatchedEventsWith(type: String, source: String, timeout: TimeInterval = FunctionalTestConst.Defaults.WAIT_EVENT_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [Event] {
+    func getDispatchedEventsWith(type: String, source: String, timeout: TimeInterval = TestConstants.Defaults.WAIT_EVENT_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [Event] {
         if InstrumentedExtension.expectedEvents[EventSpec(type: type, source: source)] != nil {
             let waitResult = InstrumentedExtension.expectedEvents[EventSpec(type: type, source: source)]?.await(timeout: timeout)
             XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(type) and source \(source)", file: file, line: line)
         } else {
-            wait(FunctionalTestConst.Defaults.WAIT_TIMEOUT)
+            wait(TestConstants.Defaults.WAIT_TIMEOUT)
         }
         return InstrumentedExtension.receivedEvents[EventSpec(type: type, source: source)] ?? []
     }
@@ -192,11 +194,11 @@ class FunctionalTestBase: XCTestCase {
     /// - Parameter ownerExtension: the owner extension of the shared state (typically the name of the extension)
     /// - Parameter timeout: how long should this method wait for the requested shared state, in seconds; by default it waits up to 3 second
     /// - Returns: latest shared state of the given `stateOwner` or nil if no shared state was found
-    func getSharedStateFor(_ ownerExtension: String, timeout: TimeInterval = FunctionalTestConst.Defaults.WAIT_SHARED_STATE_TIMEOUT) -> [AnyHashable: Any]? {
+    func getSharedStateFor(_ ownerExtension: String, timeout: TimeInterval = TestConstants.Defaults.WAIT_SHARED_STATE_TIMEOUT) -> [AnyHashable: Any]? {
         log("GetSharedState for \(ownerExtension)")
         let event = Event(name: "Get Shared State",
-                          type: FunctionalTestConst.EventType.INSTRUMENTED_EXTENSION,
-                          source: FunctionalTestConst.EventSource.SHARED_STATE_REQUEST,
+                          type: TestConstants.EventType.INSTRUMENTED_EXTENSION,
+                          source: TestConstants.EventSource.SHARED_STATE_REQUEST,
                           data: ["stateowner": ownerExtension])
 
         var returnedState: [AnyHashable: Any]?
@@ -216,7 +218,7 @@ class FunctionalTestBase: XCTestCase {
 
     // MARK: Network Service helpers
 
-    /// Set a custom network response to a network request
+    /// Set a custom (mock) network response to a network request
     /// - Parameters:
     ///   - url: The URL for which to return the response
     ///   - httpMethod: The `HttpMethod` for which to return the response, along with the `url`
@@ -228,7 +230,7 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        _ = FunctionalTestBase.networkService.setResponseConnectionFor(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), responseConnection: responseHttpConnection)
+        TestBase.networkService.setMockResponseFor(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), response: responseHttpConnection)
     }
 
     /// Set  a network request expectation.
@@ -251,14 +253,14 @@ class FunctionalTestBase: XCTestCase {
             return
         }
 
-        FunctionalTestBase.networkService.setExpectedNetworkRequest(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), count: expectedCount)
+        TestBase.networkService.setExpectedNetworkRequest(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), count: expectedCount)
     }
 
     /// Asserts that the correct number of network requests were being sent, based on the previously set expectations.
     /// - See also:
     ///     - setExpectationNetworkRequest(url:httpMethod:)
     func assertNetworkRequestsCount(file: StaticString = #file, line: UInt = #line) {
-        let expectedNetworkRequests = FunctionalTestBase.networkService.getExpectedNetworkRequests()
+        let expectedNetworkRequests = TestBase.networkService.getExpectedNetworkRequests()
         guard !expectedNetworkRequests.isEmpty else {
             assertionFailure("There are no network request expectations set, use this API after calling setExpectationNetworkRequest")
             return
@@ -282,21 +284,34 @@ class FunctionalTestBase: XCTestCase {
     /// - Returns: list of network requests with the provided `url` and `httpMethod`, or empty if none was dispatched
     /// - See also:
     ///     - setExpectationNetworkRequest(url:httpMethod:)
-    func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = FunctionalTestConst.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
-        guard let requestUrl = URL(string: url) else {
-            assertionFailure("Unable to convert the provided string \(url) to URL")
+    func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
+        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return []
         }
 
-        let networkRequest = NetworkRequest(url: requestUrl, httpMethod: httpMethod)
+        awaitRequest(networkRequest, timeout: timeout)
 
-        if let waitResult = FunctionalTestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
-            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(url) and HTTPMethod \(httpMethod.toString())", file: file, line: line)
-        } else {
-            wait(FunctionalTestConst.Defaults.WAIT_TIMEOUT)
+        return TestBase.networkService.getReceivedNetworkRequestKeysMatching(networkRequest: networkRequest)
+    }
+    
+    /// Returns the `HttpConnection` received in response to a `NetworkRequest` sent through the Core NetworkService, or `nil` if none is found.
+    /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
+    ///
+    /// See also:
+    ///    - setExpectationNetworkRequest(url:httpMethod:)
+    /// - Parameters:
+    ///   - url: The `URL` of the `NetworkRequest`. Must be a valid `URL` or will return `nil`.
+    ///   - httpMethod: the `HttpMethod` of the `NetworkRequest`.
+    ///   - timeout: How long this method waits for **expected** `NetworkRequest`s, in seconds. `NetworkRequest`s without an expectation wait the default timeout, regardless of the value set here.
+    /// - Returns: The `HttpConnection` received for the `NetworkRequest`, or `nil` if none exists or the provided URL was invalid.
+    func getResponsesForRequestWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [HttpConnection] {
+        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
+            return []
         }
+        
+        awaitRequest(networkRequest, timeout: timeout)
 
-        return FunctionalTestBase.networkService.getReceivedNetworkRequestsMatching(networkRequest: networkRequest)
+        return TestBase.networkService.getResponsesFor(networkRequest: networkRequest)
     }
 
     /// Use this API for JSON formatted `NetworkRequest` body in order to retrieve a flattened dictionary containing its data.
@@ -321,20 +336,30 @@ class FunctionalTestBase: XCTestCase {
     /// Sets the provided delay for all network responses, until reset
     /// - Parameter delaySec: delay in seconds
     func enableNetworkResponseDelay(delaySec: UInt32) {
-        FunctionalTestBase.networkService.enableDelayedResponse(delaySec: delaySec)
+        TestBase.networkService.enableDelayedResponse(delaySec: delaySec)
     }
 
-    /// Print message to console if `FunctionalTestBase.debug` is true
+    /// Print message to console if `TestBase.debug` is true
     /// - Parameter message: message to log to console
     func log(_ message: String) {
-        FunctionalTestBase.log(message)
+        TestBase.log(message)
 
     }
 
-    /// Print message to console if `FunctionalTestBase.debug` is true
+    /// Print message to console if `TestBase.debug` is true
     /// - Parameter message: message to log to console
     static func log(_ message: String) {
-        guard !message.isEmpty && FunctionalTestBase.debugEnabled else { return }
-        print("FunctionalTestBase - \(message)")
+        guard !message.isEmpty && TestBase.debugEnabled else { return }
+        print("TestBase - \(message)")
+    }
+    
+    private func awaitRequest(_ networkRequest: NetworkRequest, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) {
+
+        if let waitResult = TestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
+            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(networkRequest.url) and HTTPMethod \(networkRequest.httpMethod.toString())", file: file, line: line)
+        } else {
+            wait(TestConstants.Defaults.WAIT_TIMEOUT)
+        }
     }
 }
+

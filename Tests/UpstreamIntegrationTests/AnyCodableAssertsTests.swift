@@ -887,10 +887,4 @@ class AnyCodableAssertsTests: XCTestCase {
         }
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["payload[*].scope"])
     }
-
-    // MARK: - Test helpers
-
-    func getAnyCodable(_ jsonString: String) -> AnyCodable? {
-        return try? JSONDecoder().decode(AnyCodable.self, from: jsonString.data(using: .utf8)!)
-    }
 }

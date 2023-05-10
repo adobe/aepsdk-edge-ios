@@ -17,15 +17,15 @@ import AEPServices
 import XCTest
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
-class NoConfigFunctionalTests: FunctionalTestBase {
+class NoConfigFunctionalTests: TestBase {
 
     override func setUp() {
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
-        FunctionalTestBase.debugEnabled = false
+        TestBase.debugEnabled = false
 
-        // event hub shared state for registered extensions (Edge, TestableEdge and InstrumentedExtension registered in FunctionalTestBase)
-        setExpectationEvent(type: FunctionalTestConst.EventType.HUB, source: FunctionalTestConst.EventSource.SHARED_STATE, expectedCount: 2)
+        // event hub shared state for registered extensions (Edge, TestableEdge and InstrumentedExtension registered in TestBase)
+        setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 2)
 
         MobileCore.registerExtensions([TestableEdge.self])
 
@@ -35,7 +35,7 @@ class NoConfigFunctionalTests: FunctionalTestBase {
 
     func testHandleExperienceEventRequest_withPendingConfigurationState_expectEventsQueueIsBlocked() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
-        let configState = getSharedStateFor(FunctionalTestConst.SharedState.CONFIGURATION)
+        let configState = getSharedStateFor(TestConstants.SharedState.CONFIGURATION)
         XCTAssertNil(configState)
 
         // set expectations
@@ -48,8 +48,8 @@ class NoConfigFunctionalTests: FunctionalTestBase {
 
         // Dispatch request event which will block request queue as Configuration state is nil
         let requestEvent = Event(name: "Request Test",
-                                 type: FunctionalTestConst.EventType.EDGE,
-                                 source: FunctionalTestConst.EventSource.REQUEST_CONTENT,
+                                 type: TestConstants.EventType.EDGE,
+                                 source: TestConstants.EventSource.REQUEST_CONTENT,
                                  data: ["key": "value"])
         MobileCore.dispatch(event: requestEvent)
 
@@ -65,14 +65,14 @@ class NoConfigFunctionalTests: FunctionalTestBase {
 
         // swiftlint:disable:next line_length
         let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{                           \"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\"},{\"payload\": [{\"type\": \"url\",\"id\": 411,\"spec\": {\"url\": \"//example.url?d_uuid=9876\",\"hideReferrer\": false,\"ttlMinutes\": 10080}}],\"type\": \"identity:exchange\"}]}\n"
-        let edgeUrl = URL(string: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
+        let edgeUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                             response: HTTPURLResponse(url: edgeUrl,
                                                                                       statusCode: 200,
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        setNetworkResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
 
         // test sendEvent does not send the event when config is pending
         MobileCore.registerExtension(Identity.self)
@@ -83,18 +83,18 @@ class NoConfigFunctionalTests: FunctionalTestBase {
                                                             receivedHandles = handles
                                                             expectation.fulfill()
                                                         })
-        var resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        var resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(0, resultNetworkRequests.count)
 
         // test event gets processed when config shared state is resolved\
-        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "123567"])
 
         // verify
         assertNetworkRequestsCount()
         wait(for: [expectation], timeout: 0.2)
 
-        resultNetworkRequests = getNetworkRequestsWith(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(2, receivedHandles.count)
         XCTAssertEqual("personalization:decisions", receivedHandles[0].type)
         XCTAssertEqual(1, receivedHandles[0].payload?.count)

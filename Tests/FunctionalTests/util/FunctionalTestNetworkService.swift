@@ -13,39 +13,67 @@
 @testable import AEPEdge
 @testable import AEPServices
 import Foundation
+import XCTest
 
-/// Overriding NetworkService used for functional tests when extending the FunctionalTestBase
+/// Overriding NetworkService used for functional tests when extending the TestBase
 class FunctionalTestNetworkService: NetworkService {
-    private var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [NetworkRequest: [NetworkRequest]]()
-    private var responseMatchers: [NetworkRequest: HttpConnection] = [NetworkRequest: HttpConnection]()
-    private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [NetworkRequest: CountDownLatch]()
+    private var mockNetworkService: Bool
+    private var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [:]
+    /// Matches outgoing `NetworkRequest`s with their corresponding `HttpConnection` response.
+    /// Mock or real server response controlled by `mockNetworkService`
+    /// Mocked `HttpConnection` response can be set using `setResponseConnectionFor(networkRequest:responseConnection:)`
+    private var networkResponses: [NetworkRequest: HttpConnection] = [:]
+    private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [:]
     private var delayedResponse: UInt32 = 0
+    
+    init(mockNetworkService: Bool) {
+        self.mockNetworkService = mockNetworkService
+        super.init()
+    }
 
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
-        FunctionalTestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
+        TestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
         if var requests = receivedNetworkRequests[networkRequest] {
             requests.append(networkRequest)
+            receivedNetworkRequests[networkRequest] = requests
         } else {
             receivedNetworkRequests[networkRequest] = [networkRequest]
         }
 
-        countDownExpected(networkRequest: networkRequest)
-        guard let unwrappedCompletionHandler = completionHandler else { return }
-
-        if delayedResponse > 0 {
-            sleep(delayedResponse)
+        // Using mocked reponses to network requests
+        if mockNetworkService {
+            countDownExpected(networkRequest: networkRequest)
+            guard let unwrappedCompletionHandler = completionHandler else { return }
+            
+            if delayedResponse > 0 {
+                sleep(delayedResponse)
+            }
+            
+            if let response = getResponsesFor(networkRequest: networkRequest).first {
+                unwrappedCompletionHandler(response)
+            } else {
+                // Default mock response
+                unwrappedCompletionHandler(
+                    HttpConnection(
+                        data: "".data(using: .utf8),
+                        response: HTTPURLResponse(url: networkRequest.url,
+                                                  statusCode: 200,
+                                                  httpVersion: nil,
+                                                  headerFields: nil),
+                        error: nil)
+                )
+            }
         }
-
-        if let response = getMatchedResponseForUrlAndHttpMethod(networkRequest: networkRequest) {
-            unwrappedCompletionHandler(response)
-        } else {
-            // default response
-            unwrappedCompletionHandler(HttpConnection(data: "".data(using: .utf8),
-                                                      response: HTTPURLResponse(url: networkRequest.url,
-                                                                                statusCode: 200,
-                                                                                httpVersion: nil,
-                                                                                headerFields: nil),
-                                                      error: nil))
+        // Using real network requests and receiving real responses
+        else {
+            super.connectAsync(networkRequest: networkRequest, completionHandler: { (connection: HttpConnection) in
+                self.setResponseFor(networkRequest: networkRequest, responseConnection: connection)
+                self.countDownExpected(networkRequest: networkRequest)
+                    
+                // Finally call the original completion handler
+                completionHandler?(connection)
+            })
+            return
         }
     }
 
@@ -56,10 +84,16 @@ class FunctionalTestNetworkService: NetworkService {
     func reset() {
         expectedNetworkRequests.removeAll()
         receivedNetworkRequests.removeAll()
-        responseMatchers.removeAll()
+        networkResponses.removeAll()
         delayedResponse = 0
     }
 
+    /// Starts the deadline timer for the given `NetworkRequest`, requiring all of its expected responses to have completed before the allotted time given in `timeout`.
+    ///
+    /// Note that it only sets the timer for the first `NetworkRequest` instance satisfying `areNetworkRequestsEqual`, using a dictionary backing.
+    /// This method is not recommended for instances where:
+    /// 1. Mutliple `NetworkRequest` instances would satisfy `areNetworkRequestsEqual` and all of them need the deadline timer started
+    /// 2. Order of the deadline timer application is important
     func awaitFor(networkRequest: NetworkRequest, timeout: TimeInterval) -> DispatchTimeoutResult? {
         for expectedNetworkRequest in expectedNetworkRequests {
             if areNetworkRequestsEqual(lhs: expectedNetworkRequest.key, rhs: networkRequest) {
@@ -70,7 +104,8 @@ class FunctionalTestNetworkService: NetworkService {
         return nil
     }
 
-    func getReceivedNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
+    /// Returns all of the original outgoing `NetworkRequest`s for received network responses, satisfying `areNetworkRequestsEqual`.
+    func getReceivedNetworkRequestKeysMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
         var matchingRequests: [NetworkRequest] = []
         for receivedRequest in receivedNetworkRequests {
             if areNetworkRequestsEqual(lhs: receivedRequest.key, rhs: networkRequest) {
@@ -81,6 +116,7 @@ class FunctionalTestNetworkService: NetworkService {
         return matchingRequests
     }
 
+    /// Sets the number of times a NetworkRequest is expected to be seen
     func setExpectedNetworkRequest(networkRequest: NetworkRequest, count: Int32) {
         expectedNetworkRequests[networkRequest] = CountDownLatch(count)
     }
@@ -89,19 +125,27 @@ class FunctionalTestNetworkService: NetworkService {
         return expectedNetworkRequests
     }
 
-    func setResponseConnectionFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) -> Bool {
-        for responseMatcher in responseMatchers {
-            if areNetworkRequestsEqual(lhs: responseMatcher.key, rhs: networkRequest) {
-                // unable to override response matcher
-                return false
-            }
+    /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
+    /// when in mock mode.
+    ///
+    /// - Returns: `true` if the response was successfully set.
+    func setMockResponseFor(networkRequest: NetworkRequest, response: HttpConnection?) {
+        guard mockNetworkService else {
+            XCTFail("Setting mock responses when not in mock network service mode is not allowed.")
+            return
         }
-
-        // add new entry if not present already
-        responseMatchers[networkRequest] = responseConnection
-        return true
+        setResponseFor(networkRequest: networkRequest, responseConnection: response)
+    }
+    
+    // MARK: Network request response helpers
+    func getResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {
+        return networkResponses
+            .filter { areNetworkRequestsEqual(lhs: $0.key, rhs: networkRequest) }
+            .map { $0.value }
     }
 
+    // MARK: - Private helpers
+    // MARK: Network request expectation helpers
     private func countDownExpected(networkRequest: NetworkRequest) {
         for expectedNetworkRequest in expectedNetworkRequests {
             if areNetworkRequestsEqual(lhs: expectedNetworkRequest.key, rhs: networkRequest) {
@@ -109,17 +153,13 @@ class FunctionalTestNetworkService: NetworkService {
             }
         }
     }
-
-    private func getMatchedResponseForUrlAndHttpMethod(networkRequest: NetworkRequest) -> HttpConnection? {
-        for responseMatcher in responseMatchers {
-            if areNetworkRequestsEqual(lhs: responseMatcher.key, rhs: networkRequest) {
-                return responseMatcher.value
-            }
-        }
-
-        return nil
+    
+    /// Sets the `HttpConnection` response connection for a given `NetworkRequest`
+    private func setResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
+        networkResponses[networkRequest] = responseConnection
     }
 
+    // MARK: General helpers
     /// Equals compare based on host, scheme and URL path. Query params are not taken into consideration
     private func areNetworkRequestsEqual(lhs: NetworkRequest, rhs: NetworkRequest) -> Bool {
         return lhs.url.host?.lowercased() == rhs.url.host?.lowercased()
@@ -133,5 +173,15 @@ extension URL {
     func queryParam(_ param: String) -> String? {
         guard let url = URLComponents(string: self.absoluteString) else { return nil }
         return url.queryItems?.first(where: { $0.name == param })?.value
+    }
+}
+
+extension NetworkRequest {
+    convenience init?(urlString: String, httpMethod: HttpMethod) {
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Unable to convert the provided string \(urlString) to URL")
+            return nil
+        }
+        self.init(url: url, httpMethod: httpMethod)
     }
 }
