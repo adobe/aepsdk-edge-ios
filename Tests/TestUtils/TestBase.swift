@@ -22,6 +22,11 @@ struct EventSpec {
     let source: String
 }
 
+struct NetworkRequestSpec {
+    let url: String
+    let httpMethod: HttpMethod
+}
+
 /// Hashable `EventSpec`, to be used as key in Dictionaries
 extension EventSpec: Hashable & Equatable {
 

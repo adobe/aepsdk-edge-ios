@@ -34,6 +34,8 @@ enum TestConstants {
         static let RESPONSE_IDENTITY = "com.adobe.eventSource.responseIdentity"
         static let REQUEST_IDENTITY = "com.adobe.eventSource.requestIdentity"
         static let BOOTED = "com.adobe.eventSource.booted"
+        static let LOCATION_HINT_RESULT = "locationHint:result"
+        static let STATE_STORE = "state:store"
     }
 
     enum EventDataKey {
@@ -71,4 +73,8 @@ enum TestConstants {
     static let EX_EDGE_MEDIA_PROD_URL_STR = "https://edge.adobedc.net/ee/va/v1/sessionstart"
     static let EX_EDGE_MEDIA_PRE_PROD_URL_STR = "https://edge.adobedc.net/ee-pre-prd/va/v1/sessionstart"
     static let EX_EDGE_MEDIA_INTEGRATION_URL_STR = "https://edge-int.adobedc.net/ee/va/v1/sessionstart"
+    
+    static let EX_EDGE_OM5_PROD_URL = "https://obumobile5.data.adobedc.net/ee/v1/interact"
+    static let EX_EDGE_OM5_PROD_URL_OR2_LOC = "https://obumobile5.data.adobedc.net/ee/or2/v1/interact"
+    static let EX_EDGE_OM5_PROD_URL_INVALID_LOC = "https://obumobile5.data.adobedc.net/ee/invalid/v1/interact"
 }
