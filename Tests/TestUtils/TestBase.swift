@@ -22,6 +22,11 @@ struct EventSpec {
     let source: String
 }
 
+struct NetworkRequestSpec {
+    let url: String
+    let httpMethod: HttpMethod
+}
+
 /// Hashable `EventSpec`, to be used as key in Dictionaries
 extension EventSpec: Hashable & Equatable {
 
@@ -255,6 +260,19 @@ class TestBase: XCTestCase {
 
         TestBase.networkService.setExpectedNetworkRequest(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), count: expectedCount)
     }
+    
+    /// Set a network request expectation. Convenience wrapper for `setExpectationNetworkRequest(url:httpMethod:expectedCount:file:line:)`.
+    ///
+    /// - Parameters:
+    ///   - spec: The `NetworkRequestSpec` to use to construct the `NetworkRequest`
+    ///   - httpMethod: the `HttpMethod` for which to set the expectation, along with the `url`
+    ///   - count: how many times a request with this url and httpMethod is expected to be sent, by default it is set to 1
+    /// - See also:
+    ///     - assertNetworkRequestsCount()
+    ///     - getNetworkRequestsWith(url:httpMethod:)
+    func setExpectationNetworkRequest(spec: NetworkRequestSpec, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
+        setExpectationNetworkRequest(url: spec.url, httpMethod: spec.httpMethod, expectedCount: expectedCount, file: file, line: line)
+    }
 
     /// Asserts that the correct number of network requests were being sent, based on the previously set expectations.
     /// - See also:
@@ -294,6 +312,21 @@ class TestBase: XCTestCase {
         return TestBase.networkService.getReceivedNetworkRequestKeysMatching(networkRequest: networkRequest)
     }
     
+    /// Returns the `NetworkRequest`(s) sent through the Core NetworkService, or empty if none was found.
+    /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time.
+    /// Convenience wrapper for `getNetworkRequestsWith(url:httpMethod:timeout:file:line:)`.
+    ///
+    /// - Parameters:
+    ///   - spec: The `NetworkRequestSpec` to use to construct the `NetworkRequest`
+    ///   - timeout: how long should this method wait for the expected network requests, in seconds; by default it waits up to 1 second
+    /// - Returns: list of network requests with the provided `url` and `httpMethod`, or empty if none was dispatched
+    /// - See also:
+    ///     - setExpectationNetworkRequest(url:httpMethod:)
+    func getNetworkRequestsWith(spec: NetworkRequestSpec, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
+        
+        return getNetworkRequestsWith(url: spec.url, httpMethod: spec.httpMethod, timeout: timeout, file: file, line: line)
+    }
+    
     /// Returns the `HttpConnection` received in response to a `NetworkRequest` sent through the Core NetworkService, or `nil` if none is found.
     /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
     ///
@@ -312,6 +345,20 @@ class TestBase: XCTestCase {
         awaitRequest(networkRequest, timeout: timeout)
 
         return TestBase.networkService.getResponsesFor(networkRequest: networkRequest)
+    }
+    
+    /// Returns the `HttpConnection` received in response to a `NetworkRequest` sent through the Core NetworkService, or `nil` if none is found.
+    /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time.
+    /// Convenience wrapper for `getNetworkResponseForRequestWith(url:httpMethod:timeout:file:line:)`.
+    ///
+    /// See also:
+    ///    - setExpectationNetworkRequest(url:httpMethod:)
+    /// - Parameters:
+    ///   - spec: The `NetworkRequestSpec` to use to construct the `NetworkRequest`.
+    ///   - timeout: How long this method waits for **expected** `NetworkRequest`s, in seconds. `NetworkRequest`s without an expectation wait the default timeout, regardless of the value set here.
+    /// - Returns: The `HttpConnection` received for the `NetworkRequest`, or `nil` if none exists or the provided URL was invalid.
+    func getNetworkResponseForRequestWith(spec: NetworkRequestSpec, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> HttpConnection? {
+        return getNetworkResponseForRequestWith(url: spec.url, httpMethod: spec.httpMethod, timeout: timeout, file: file, line: line)
     }
 
     /// Use this API for JSON formatted `NetworkRequest` body in order to retrieve a flattened dictionary containing its data.

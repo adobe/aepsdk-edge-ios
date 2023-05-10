@@ -61,8 +61,8 @@ class UpstreamIntegrationTests: TestBase {
         resetTestExpectations()
     }
 
+    // datastream ID - is edge.configId from the configuration - this is already tested by sendEvent 
     // MARK: - Upstream integration test cases
-
     // MARK: 1st launch scenarios
     func testSendEvent_withStandardExperienceEvent_receivesExpectedEventHandles() {
         // Setup
@@ -70,7 +70,7 @@ class UpstreamIntegrationTests: TestBase {
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
-        setExpectationNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_OM5_PROD_URL, httpMethod: HttpMethod.post, expectedCount: 1)
         
         // Test
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
@@ -79,12 +79,13 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponsePost = getResponsesForRequestWith(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post, timeout: 5)
-        XCTAssertEqual(200, matchedResponsePost.first?.responseCode)
+        let matchedResponse = getNetworkResponseForRequestWith(url: TestConstants.EX_EDGE_OM5_PROD_URL, httpMethod: .post, timeout: 5)
+        XCTAssertEqual(200, matchedResponse?.responseCode)
         
         // MARK: Response Event assertions
+        // MARK: 1st send event
         // Only validate for the location hint relevant to Edge Network extension
-        let expectedJSON = #"""
+        let expectedLocationHintJSON = #"""
         {
           "payload": [
             {
@@ -95,18 +96,91 @@ class UpstreamIntegrationTests: TestBase {
           ]
         }
         """#
+       
+        assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope"])
         
-        let expected = getAnyCodable(expectedJSON)!
-        
-        let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: "locationHint:result")
-        XCTAssertEqual(1, resultEvents.count)
-        guard let locationHintEvent = resultEvents.first else {
-            XCTFail("No valid location hint event found")
-            return
+        let expectedStateStore1stJSON = #"""
+        {
+          "payload": [
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            },
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            }
+          ]
         }
+        """#
         
-        assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: locationHintEvent), exactMatchPaths: ["payload[*].scope"])
-        print(resultEvents)
+        assertEdgeResponseEvent(expectedJSON: expectedStateStore1stJSON, eventSource: TestConstants.EventSource.STATE_STORE)
+        
+        // MARK: 2nd send event
+        resetTestExpectations()
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Assert location hint response is correct
+        assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope"])
+        // TODO: strong validation against org ID portion of key
+        let expectedStateStore2ndJSON = #"""
+        {
+          "payload": [
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            }
+          ]
+        }
+        """#
+        
+        // Assert state store response is correct
+        assertEdgeResponseEvent(expectedJSON: expectedStateStore2ndJSON, eventSource: TestConstants.EventSource.STATE_STORE)
+    }
+    
+    // MARK: - Error scenarios
+    
+    // error scenarios
+    // 1. invalid datastream id
+    // 2. invalid location hint set manually
+    
+    func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
+        // Setup
+        let invalidLocationHintRequest = NetworkRequestSpec(url: TestConstants.EX_EDGE_OM5_PROD_URL_INVALID_LOC, httpMethod: .post)
+        setExpectationNetworkRequest(spec: invalidLocationHintRequest, expectedCount: 1)
+        
+        Edge.setLocationHint("invalid")
+        
+        // Test
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                              data: ["data": ["test": "data"]])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // Verify
+        // MARK: Network response assertions
+        let matchedResponse = getNetworkResponseForRequestWith(spec: invalidLocationHintRequest, timeout: 5)
+        XCTAssertEqual(404, matchedResponse?.responseCode)
+        // TODO: create a constant for the domain portion
+        // use actual string
+        // TODO: investigate the actual network response
+        // check for error response message and assert against that payload
+        let expectedErrorJSON = #"""
+        {
+          "title" : "Unexpected Error",
+          "detail" : "",
+          "requestEventId" : "stringType",
+          "requestId" : "stringType"
+        }
+        """#
+        assertEdgeResponseEvent(expectedJSON: expectedErrorJSON, eventSource: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, exactMatchPaths: ["title", "detail"])
+        
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        let matchedEventResponse2 = getNetworkResponseForRequestWith(url: TestConstants.EX_EDGE_OM5_PROD_URL_OR2_LOC, httpMethod: .post, timeout: 5)
+        XCTAssertEqual(200, matchedEventResponse2?.responseCode)
     }
 
     // MARK: - Test helper methods
@@ -120,5 +194,24 @@ class UpstreamIntegrationTests: TestBase {
             // TODO: create integration environment environment file ID
             MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
         }
+    }
+    
+    // MARK: Assertion helpers
+    private func assertEdgeResponseEvent(expectedJSON: String, eventSource: String, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+        guard let expected = getAnyCodable(expectedJSON) else {
+            XCTFail("Unable to decode JSON string. Test case unable to proceed.")
+            return
+        }
+        
+        let stateStoreEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: eventSource)
+        
+        XCTAssertEqual(1, stateStoreEvents.count, file: file, line: line)
+        
+        guard let stateStoreEvent = stateStoreEvents.first else {
+            XCTFail("No valid location hint event found")
+            return
+        }
+        
+        assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: stateStoreEvent), exactMatchPaths: exactMatchPaths, file: file, line: line)
     }
 }
