@@ -503,6 +503,7 @@
 			isa = PBXGroup;
 			children = (
 				BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */,
+				D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */,
 				BF0C09472465E42100892B5D /* TestableEdge.swift */,
 				D48CBD2124A17EEA00A24BD8 /* TestXDMSchema.swift */,
 			);
@@ -555,7 +556,6 @@
 			isa = PBXGroup;
 			children = (
 				4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */,
-				D4EED36B2489ACE200D4815C /* FunctionalTestNetworkService.swift */,
 				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
 				21888AF22555F9FC005677ED /* FileManager+Testable.swift */,
 				D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */,
