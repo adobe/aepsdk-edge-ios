@@ -16,7 +16,7 @@ import Foundation
 import XCTest
 
 /// Overriding NetworkService used for functional tests when extending the TestBase
-class TestNetworkService: NetworkService {
+class FunctionalTestNetworkService: NetworkService {
     private var mockNetworkService: Bool
     private var receivedNetworkRequests: [NetworkRequest: [NetworkRequest]] = [:]
     /// Matches outgoing `NetworkRequest`s with their corresponding `HttpConnection` response.
