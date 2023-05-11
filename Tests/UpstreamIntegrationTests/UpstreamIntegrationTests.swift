@@ -21,17 +21,19 @@ import XCTest
 class UpstreamIntegrationTests: TestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint?
+    private var networkService: ServerTestNetworkService = ServerTestNetworkService()
 
     let LOG_SOURCE = "SampleFunctionalTests"
 
     let asyncTimeout: TimeInterval = 10
 
     override class func setUp() {
-        TestBase.mockNetworkService = false
         super.setUp()
     }
     
     override func setUp() {
+        networkService = ServerTestNetworkService()
+        ServiceProvider.shared.networkService = networkService
         super.setUp()
         continueAfterFailure = true
         // Extract Edge Network environment level from shell environment; see init for default value
@@ -45,7 +47,7 @@ class UpstreamIntegrationTests: TestBase {
         MobileCore.setLogLevel(.trace)
         // Set environment file ID for specific Edge Network environment
         setMobileCoreEnvironmentFileID(for: edgeEnvironment)
-        MobileCore.registerExtensions([Identity.self, Edge.self, InstrumentedExtension.self], {
+        MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
@@ -58,7 +60,7 @@ class UpstreamIntegrationTests: TestBase {
         } else {
             print("No preset Edge location hint is being used for this test.")
         }
-        resetTestExpectations()
+        resetTestExpectations(testNetworkService: networkService)
     }
 
     // MARK: - Upstream integration test cases
@@ -70,7 +72,7 @@ class UpstreamIntegrationTests: TestBase {
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
-        setExpectationNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        networkService.setExpectationForNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
         
         // Test
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
@@ -79,7 +81,8 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponsePost = getResponsesForRequestWith(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post, timeout: 5)
+        let networkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        let matchedResponsePost = networkService.getResponsesFor(networkRequest: networkRequest, timeout: 5)
         XCTAssertEqual(200, matchedResponsePost.first?.responseCode)
         
         // MARK: Response Event assertions

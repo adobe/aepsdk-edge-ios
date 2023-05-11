@@ -29,7 +29,8 @@ class ServerTestNetworkService: TestNetworkService {
         })
     }
     
-    func getResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {
+    func getResponsesFor(networkRequest: NetworkRequest, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT) -> [HttpConnection] {
+        awaitRequest(networkRequest, timeout: timeout)
         return networkResponses
             .filter { areNetworkRequestsEqual(lhs: $0.key, rhs: networkRequest) }
             .map { $0.value }

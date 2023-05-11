@@ -65,7 +65,7 @@ class TestNetworkService: NetworkService {
     /// This method is not recommended for instances where:
     /// 1. Mutliple `NetworkRequest` instances would satisfy `areNetworkRequestsEqual` and all of them need the deadline timer started
     /// 2. Order of the deadline timer application is important
-    func awaitFor(networkRequest: NetworkRequest, timeout: TimeInterval) -> DispatchTimeoutResult? {
+    private func awaitFor(networkRequest: NetworkRequest, timeout: TimeInterval) -> DispatchTimeoutResult? {
         for expectedNetworkRequest in expectedNetworkRequests {
             if areNetworkRequestsEqual(lhs: expectedNetworkRequest.key, rhs: networkRequest) {
                 return expectedNetworkRequest.value.await(timeout: timeout)
@@ -78,28 +78,97 @@ class TestNetworkService: NetworkService {
     /// Returns all of the original outgoing `NetworkRequest`s satisfying `areNetworkRequestsEqual(lhs:rhs:)`.
     func getSentNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
         var matchingRequests: [NetworkRequest] = []
-        for receivedRequest in sentNetworkRequests {
-            if areNetworkRequestsEqual(lhs: receivedRequest.key, rhs: networkRequest) {
-                matchingRequests.append(receivedRequest.key)
+        for request in sentNetworkRequests {
+            if areNetworkRequestsEqual(lhs: request.key, rhs: networkRequest) {
+                return request.value
             }
         }
 
         return matchingRequests
-    }
-
-    /// Sets the number of times a NetworkRequest is expected to be seen
-    func setExpectedNetworkRequest(networkRequest: NetworkRequest, count: Int32) {
-        expectedNetworkRequests[networkRequest] = CountDownLatch(count)
-    }
-
-    func getExpectedNetworkRequests() -> [NetworkRequest: CountDownLatch] {
-        return expectedNetworkRequests
     }
     
     // MARK: Network request response helpers
     /// Sets the `HttpConnection` response connection for a given `NetworkRequest`
     func setResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
         networkResponses[networkRequest] = responseConnection
+    }
+    
+    // MARK: Assertion helpers
+    /// Set the expected number of times a NetworkRequest should be seen.
+    ///
+    /// - Parameters:
+    ///   - url: The URL for which to set the expectation
+    ///   - httpMethod: the `HttpMethod` for which to set the expectation, along with the `url`
+    ///   - count: how many times a request with this url and httpMethod is expected to be sent, by default it is set to 1
+    /// - See also:
+    ///     - assertNetworkRequestsCount()
+    ///     - getNetworkRequestsWith(url:httpMethod:)
+    func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
+        guard expectedCount > 0 else {
+            assertionFailure("Expected event count should be greater than 0")
+            return
+        }
+
+        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
+            return
+        }
+
+        expectedNetworkRequests[networkRequest] = CountDownLatch(expectedCount)
+    }
+    
+    /// For all previously set expections, asserts that the correct number of network requests were sent.
+    /// - See also:
+    ///     - `setExpectationNetworkRequest(url:httpMethod:)`
+    func assertAllNetworkRequestExpectations(file: StaticString = #file, line: UInt = #line) {
+        guard !expectedNetworkRequests.isEmpty else {
+            assertionFailure("There are no network request expectations set, use this API after calling setExpectationNetworkRequest")
+            return
+        }
+
+        for expectedRequest in expectedNetworkRequests {
+            let waitResult = expectedRequest.value.await(timeout: 10)
+            let expectedCount: Int32 = expectedRequest.value.getInitialCount()
+            let receivedCount: Int32 = expectedRequest.value.getInitialCount() - expectedRequest.value.getCurrentCount()
+            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(expectedRequest.key.url.absoluteString) and HTTPMethod \(expectedRequest.key.httpMethod.toString()), expected \(expectedCount) but received \(receivedCount)", file: file, line: line)
+            XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) network request(s) for URL \(expectedRequest.key.url.absoluteString) and HTTPMethod \(expectedRequest.key.httpMethod.toString()), but received \(receivedCount)", file: file, line: line)
+        }
+    }
+    
+    /// Returns the `NetworkRequest`(s) sent through the Core NetworkService, or empty if none was found.
+    /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
+    /// - Parameters:
+    ///   - url: The URL for which to retrieved the network requests sent, should be a valid URL
+    ///   - httpMethod: the `HttpMethod` for which to retrieve the network requests, along with the `url`
+    ///   - timeout: how long should this method wait for the expected network requests, in seconds; by default it waits up to 1 second
+    /// - Returns: list of network requests with the provided `url` and `httpMethod`, or empty if none was dispatched
+    /// - See also:
+    ///     - setExpectationNetworkRequest(url:httpMethod:)
+    func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
+        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
+            return []
+        }
+
+        awaitRequest(networkRequest, timeout: timeout)
+
+        return getSentNetworkRequestsMatching(networkRequest: networkRequest)
+    }
+    
+    func awaitRequest(_ networkRequest: NetworkRequest, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) {
+
+        if let waitResult = awaitFor(networkRequest: networkRequest, timeout: timeout) {
+            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(networkRequest.url) and HTTPMethod \(networkRequest.httpMethod.toString())", file: file, line: line)
+        } else {
+            wait(TestConstants.Defaults.WAIT_TIMEOUT)
+        }
+    }
+    
+    /// To be revisited once AMSDK-10169 is implemented
+    /// - Parameters:
+    ///   - timeout:how long should this method wait, in seconds; by default it waits up to 1 second
+    func wait(_ timeout: UInt32? = TestConstants.Defaults.WAIT_TIMEOUT) {
+        if let timeout = timeout {
+            sleep(timeout)
+        }
     }
 }
 

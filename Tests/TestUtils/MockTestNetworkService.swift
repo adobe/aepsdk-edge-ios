@@ -49,7 +49,9 @@ class MockTestNetworkService: TestNetworkService {
         super.reset()
     }
 
-    func enableDelayedResponse(delaySec: UInt32) {
+    /// Sets the provided delay for all network responses, until reset
+    /// - Parameter delaySec: delay in seconds
+    func enableNetworkResponseDelay(delaySec: UInt32) {
         delayedResponse = delaySec
     }
 
@@ -58,6 +60,17 @@ class MockTestNetworkService: TestNetworkService {
     ///
     /// - Returns: `true` if the response was successfully set.
     func setMockResponseFor(networkRequest: NetworkRequest, response: HttpConnection?) {
+        setResponseFor(networkRequest: networkRequest, responseConnection: response)
+    }
+    
+    /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
+    /// when in mock mode.
+    ///
+    /// - Returns: `true` if the response was successfully set.
+    func setMockResponseFor(url: String, httpMethod: HttpMethod, response: HttpConnection?) {
+        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
+            return
+        }
         setResponseFor(networkRequest: networkRequest, responseConnection: response)
     }
     
