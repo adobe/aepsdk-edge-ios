@@ -60,7 +60,7 @@ class TestBase: XCTestCase {
         // to revisit when AMSDK-10169 is available
         // wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
         usleep(200000)
-        resetTestExpectations(testNetworkService: nil)
+        resetTestExpectations()
         TestBase.isFirstRun = false
         EventHub.reset()
         UserDefaults.clearAll()
@@ -68,10 +68,9 @@ class TestBase: XCTestCase {
     }
     
     /// Reset event and network request expectations and drop the items received until this point
-    func resetTestExpectations(testNetworkService: TestNetworkService?) {
+    func resetTestExpectations() {
         log("Resetting functional test expectations for events and network requests")
         InstrumentedExtension.reset()
-        testNetworkService?.reset()
     }
 
     /// Unregisters the `InstrumentedExtension` from the Event Hub. This method executes asynchronous.
