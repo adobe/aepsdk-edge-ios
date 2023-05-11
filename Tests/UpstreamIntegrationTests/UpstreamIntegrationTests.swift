@@ -163,8 +163,20 @@ class UpstreamIntegrationTests: TestBase {
         // MARK: Network response assertions
         let matchedResponse = getResponsesForRequestWith(spec: invalidRequestSpec, timeout: 5)
         XCTAssertEqual(404, matchedResponse.first?.responseCode)
-        // TODO: investigate the actual network response
-        // check for error response message and assert against that payload
+        // NOTE: the actual network response has NO data body (0 bytes)
+        // and the content length header supports that with content size 0
+        // Then validating against the literal strings for title and detail
+        // which Edge automatically uses as a the default when there is no error
+        // text effectively checks this fact?
+        // although in an integration case, only the data body from the response matters in this case
+        // since the way Edge converts no data body is an implementation detail on our side
+        
+        // so the test can be split:
+        // 1. the integration test handles the direct response from konductor, validating the
+        //     a. httpcode - 404
+        //     b. data payload, maybe the header?
+        // 2. the functional test handles the conversion of empty payload error responses into
+        // the expected format; that is, title + detail
         let expectedErrorJSON = #"""
         {
           "title" : "Unexpected Error",
