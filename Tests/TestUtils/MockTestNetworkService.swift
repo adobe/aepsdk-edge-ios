@@ -57,17 +57,17 @@ class MockTestNetworkService: TestNetworkService {
 
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
     /// when in mock mode.
-    func setMockResponseFor(networkRequest: NetworkRequest, response: HttpConnection?) {
-        setResponseFor(networkRequest: networkRequest, responseConnection: response)
+    func setMockResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
+        setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
     }
     
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
     /// when in mock mode.
-    func setMockResponseFor(url: String, httpMethod: HttpMethod, response: HttpConnection?) {
+    func setMockResponseFor(url: String, httpMethod: HttpMethod, responseConnection: HttpConnection?) {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
         }
-        setResponseFor(networkRequest: networkRequest, responseConnection: response)
+        setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
     }
     
     // MARK: Network request response helpers
