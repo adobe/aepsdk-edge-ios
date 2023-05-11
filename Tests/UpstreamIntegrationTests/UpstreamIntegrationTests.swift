@@ -116,6 +116,53 @@ class UpstreamIntegrationTests: TestBase {
         assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: locationHintEvent), exactMatchPaths: ["payload[*].scope"])
         print(resultEvents)
     }
+    
+    // MARK: - Error scenarios
+    
+    // error scenarios
+    // 1. invalid datastream id
+    // 2. invalid location hint set manually
+    
+    func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
+        // Setup
+        let invalidRequestSpec = NetworkRequestSpec(url: "https://obumobile5.data.adobedc.net/ee/invalid/v1/interact", httpMethod: .post)
+        setExpectationNetworkRequest(spec: invalidRequestSpec, expectedCount: 1)
+        
+        Edge.setLocationHint("invalid")
+        
+        // Test
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                              data: ["data": ["test": "data"]])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // Verify
+        // MARK: Network response assertions
+        let matchedResponse = getResponsesForRequestWith(spec: invalidRequestSpec, timeout: 5)
+        XCTAssertEqual(404, matchedResponse.first?.responseCode)
+        // NOTE: the actual network response has NO data body (0 bytes)
+        // and the content length header supports that with content size 0
+        // Then validating against the literal strings for title and detail
+        // which Edge automatically uses as a the default when there is no error
+        // text effectively checks this fact?
+        // although in an integration case, only the data body from the response matters in this case
+        // since the way Edge converts no data body is an implementation detail on our side
+        
+        // so the test can be split:
+        // 1. the integration test handles the direct response from konductor, validating the
+        //     a. httpcode - 404
+        //     b. data payload, maybe the header?
+        // 2. the functional test handles the conversion of empty payload error responses into
+        // the expected format; that is, title + detail
+        let expectedErrorJSON = #"""
+        {
+          "title" : "Unexpected Error",
+          "detail" : "",
+          "requestEventId" : "stringType",
+          "requestId" : "stringType"
+        }
+        """#
+        assertEdgeResponseEvent(expectedJSON: expectedErrorJSON, eventSource: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, exactMatchPaths: ["title", "detail"])
+    }
 
     // MARK: - Test helper methods
     private func setMobileCoreEnvironmentFileID(for edgeEnvironment: EdgeEnvironment) {
