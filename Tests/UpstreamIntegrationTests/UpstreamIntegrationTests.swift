@@ -23,13 +23,9 @@ class UpstreamIntegrationTests: TestBase {
     private var edgeLocationHint: EdgeLocationHint?
     private var networkService: ServerTestNetworkService = ServerTestNetworkService()
 
-    let LOG_SOURCE = "SampleFunctionalTests"
+    let LOG_SOURCE = "UpstreamIntegrationTests"
 
     let asyncTimeout: TimeInterval = 10
-
-    override class func setUp() {
-        super.setUp()
-    }
     
     override func setUp() {
         networkService = ServerTestNetworkService()
@@ -60,7 +56,8 @@ class UpstreamIntegrationTests: TestBase {
         } else {
             print("No preset Edge location hint is being used for this test.")
         }
-        resetTestExpectations(testNetworkService: networkService)
+        resetTestExpectations()
+        networkService.reset()
     }
 
     // MARK: - Upstream integration test cases
