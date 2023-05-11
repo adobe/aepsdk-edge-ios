@@ -291,7 +291,7 @@ class TestBase: XCTestCase {
 
         awaitRequest(networkRequest, timeout: timeout)
 
-        return TestBase.networkService.getReceivedNetworkRequestKeysMatching(networkRequest: networkRequest)
+        return TestBase.networkService.getSentNetworkRequestsMatching(networkRequest: networkRequest)
     }
     
     /// Returns the `HttpConnection` received in response to a `NetworkRequest` sent through the Core NetworkService, or `nil` if none is found.
