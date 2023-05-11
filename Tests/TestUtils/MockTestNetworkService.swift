@@ -17,15 +17,15 @@ import XCTest
 
 /// Overriding NetworkService used for functional tests when extending the TestBase
 class MockTestNetworkService: TestNetworkService {
-    private var delayedResponse: UInt32 = 0
+    private var responseDelay: UInt32 = 0
 
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         recordSentNetworkRequest(networkRequest)
         self.countDownExpected(networkRequest: networkRequest)
         guard let unwrappedCompletionHandler = completionHandler else { return }
         
-        if self.delayedResponse > 0 {
-            sleep(self.delayedResponse)
+        if self.responseDelay > 0 {
+            sleep(self.responseDelay)
         }
         
         if let response = self.getMockResponsesFor(networkRequest: networkRequest).first {
@@ -45,28 +45,24 @@ class MockTestNetworkService: TestNetworkService {
     }
     
     override func reset() {
-        delayedResponse = 0
+        responseDelay = 0
         super.reset()
     }
 
     /// Sets the provided delay for all network responses, until reset
     /// - Parameter delaySec: delay in seconds
-    func enableNetworkResponseDelay(delaySec: UInt32) {
-        delayedResponse = delaySec
+    func enableNetworkResponseDelay(timeInSeconds: UInt32) {
+        responseDelay = timeInSeconds
     }
 
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
     /// when in mock mode.
-    ///
-    /// - Returns: `true` if the response was successfully set.
     func setMockResponseFor(networkRequest: NetworkRequest, response: HttpConnection?) {
         setResponseFor(networkRequest: networkRequest, responseConnection: response)
     }
     
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
     /// when in mock mode.
-    ///
-    /// - Returns: `true` if the response was successfully set.
     func setMockResponseFor(url: String, httpMethod: HttpMethod, response: HttpConnection?) {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
