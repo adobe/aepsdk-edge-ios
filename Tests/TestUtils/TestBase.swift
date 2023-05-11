@@ -57,8 +57,7 @@ class TestBase: XCTestCase {
     public override func tearDown() {
         super.tearDown()
 
-        // to revisit when AMSDK-10169 is available
-        // wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
+        // Wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
         usleep(200000)
         resetTestExpectations()
         TestBase.isFirstRun = false
@@ -242,7 +241,4 @@ class TestBase: XCTestCase {
         guard !message.isEmpty && TestBase.debugEnabled else { return }
         print("TestBase - \(message)")
     }
-    
-    
 }
-
