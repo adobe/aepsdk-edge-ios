@@ -35,12 +35,8 @@ class AEPEdgeFunctionalTests: TestBase {
     
     private var networkService: MockTestNetworkService = MockTestNetworkService()
 
-    public class override func setUp() {
-        super.setUp()
-        TestBase.debugEnabled = true
-    }
-
     override func setUp() {
+        TestBase.debugEnabled = true
         networkService = MockTestNetworkService()
         ServiceProvider.shared.networkService = networkService
         super.setUp()
@@ -64,7 +60,8 @@ class AEPEdgeFunctionalTests: TestBase {
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
-        resetTestExpectations(testNetworkService: networkService)
+        resetTestExpectations()
+        networkService.reset()
     }
 
     func testUnregistered() {
@@ -471,7 +468,6 @@ class AEPEdgeFunctionalTests: TestBase {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        // verify
         networkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = networkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
@@ -508,7 +504,8 @@ class AEPEdgeFunctionalTests: TestBase {
         XCTAssertEqual(1, resultNetworkRequests.count)
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(12, requestBody.count)
-        resetTestExpectations(testNetworkService: networkService)
+        resetTestExpectations()
+        networkService.reset()
 
         sleep(1)
 
@@ -566,7 +563,8 @@ class AEPEdgeFunctionalTests: TestBase {
         XCTAssertEqual(1, resultNetworkRequests.count)
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(12, requestBody.count)
-        resetTestExpectations(testNetworkService: networkService)
+        resetTestExpectations()
+        networkService.reset()
 
         sleep(1)
 
@@ -620,7 +618,8 @@ class AEPEdgeFunctionalTests: TestBase {
         XCTAssertEqual(1, resultNetworkRequests.count)
         var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
         XCTAssertEqual(12, requestBody.count)
-        resetTestExpectations(testNetworkService: networkService)
+        resetTestExpectations()
+        networkService.reset()
 
         sleep(1)
 
@@ -756,7 +755,8 @@ class AEPEdgeFunctionalTests: TestBase {
                                                     "testDictionary": ["key": "val"]])
         Edge.sendEvent(experienceEvent: experienceEvent)
         networkService.assertAllNetworkRequestExpectations()
-        resetTestExpectations(testNetworkService: networkService)
+        resetTestExpectations()
+        networkService.reset()
 
         // good connection, hits sent
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
@@ -795,7 +795,8 @@ class AEPEdgeFunctionalTests: TestBase {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         networkService.assertAllNetworkRequestExpectations()
-        resetTestExpectations(testNetworkService: networkService)
+        resetTestExpectations()
+        networkService.reset()
 
         // good connection, hits sent
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
