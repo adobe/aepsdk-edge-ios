@@ -35,6 +35,7 @@ class AEPEdgeFunctionalTests: TestBase {
     
     private static let networkService: MockTestNetworkService = MockTestNetworkService()
 
+    // Run once per test suite
     override class func setUp() {
         super.setUp()
         
@@ -42,6 +43,7 @@ class AEPEdgeFunctionalTests: TestBase {
         ServiceProvider.shared.networkService = networkService
     }
     
+    // Run before each test case
     override func setUp() {
         super.setUp()
         

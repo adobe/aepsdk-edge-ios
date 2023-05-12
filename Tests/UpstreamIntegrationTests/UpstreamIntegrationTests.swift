@@ -21,15 +21,22 @@ import XCTest
 class UpstreamIntegrationTests: TestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint?
-    private var networkService: ServerTestNetworkService = ServerTestNetworkService()
+    private static let networkService: ServerTestNetworkService = ServerTestNetworkService()
 
     let LOG_SOURCE = "UpstreamIntegrationTests"
 
     let asyncTimeout: TimeInterval = 10
     
-    override func setUp() {
-        networkService = ServerTestNetworkService()
+    // Run once per test suite
+    override class func setUp() {
+        super.setUp()
+        
+        TestBase.debugEnabled = true
         ServiceProvider.shared.networkService = networkService
+    }
+    
+    // Run before each test case
+    override func setUp() {
         super.setUp()
         continueAfterFailure = true
         // Extract Edge Network environment level from shell environment; see init for default value
@@ -57,7 +64,7 @@ class UpstreamIntegrationTests: TestBase {
             print("No preset Edge location hint is being used for this test.")
         }
         resetTestExpectations()
-        networkService.reset()
+        Self.networkService.reset()
     }
 
     // MARK: - Upstream integration test cases
@@ -69,7 +76,7 @@ class UpstreamIntegrationTests: TestBase {
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
-        networkService.setExpectationForNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        Self.networkService.setExpectationForNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
         
         // Test
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
@@ -79,7 +86,7 @@ class UpstreamIntegrationTests: TestBase {
         // Verify
         // MARK: Network response assertions
         let networkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
-        let matchedResponsePost = networkService.getResponsesFor(networkRequest: networkRequest, timeout: 5)
+        let matchedResponsePost = Self.networkService.getResponsesFor(networkRequest: networkRequest, timeout: 5)
         XCTAssertEqual(200, matchedResponsePost.first?.responseCode)
         
         // MARK: Response Event assertions
