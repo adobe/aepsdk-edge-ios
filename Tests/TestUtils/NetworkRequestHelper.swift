@@ -71,14 +71,13 @@ class NetworkRequestHelper {
 
     /// Returns all of the original outgoing `NetworkRequest`s satisfying `areNetworkRequestsEqual(lhs:rhs:)`.
     func getSentNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
-        var matchingRequests: [NetworkRequest] = []
         for request in sentNetworkRequests {
             if networkRequest == request.key {
                 return request.value
             }
         }
 
-        return matchingRequests
+        return []
     }
     
     // MARK: Network request response helpers
@@ -156,7 +155,6 @@ class NetworkRequestHelper {
         }
     }
     
-    /// To be revisited once AMSDK-10169 is implemented
     /// - Parameters:
     ///   - timeout:how long should this method wait, in seconds; by default it waits up to 1 second
     func wait(_ timeout: UInt32? = TestConstants.Defaults.WAIT_TIMEOUT) {
@@ -183,7 +181,7 @@ extension NetworkRequest {
     }
     
     /// Custom equals compare based on host, scheme and URL path. Query params are not taken into consideration.
-    func isCustomEqual(_ other: NetworkRequest) -> Bool {
+    func isEqual(_ other: NetworkRequest) -> Bool { // Maybe isCustomEqual?
         return self.url.host?.lowercased() == other.url.host?.lowercased()
             && self.url.scheme?.lowercased() == other.url.scheme?.lowercased()
             && self.url.path.lowercased() == other.url.path.lowercased()
