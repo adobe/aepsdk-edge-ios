@@ -16,7 +16,7 @@ import Foundation
 import XCTest
 
 /// Overriding NetworkService used for functional tests when extending the TestBase
-class MockTestNetworkService: Networking {
+class MockNetworkService: Networking {
     private let helper: NetworkRequestHelper = NetworkRequestHelper()
     private var responseDelay: UInt32 = 0
 

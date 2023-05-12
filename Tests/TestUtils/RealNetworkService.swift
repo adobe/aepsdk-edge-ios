@@ -16,7 +16,7 @@ import Foundation
 import XCTest
 
 /// Overriding NetworkService used for integration tests
-class RealTestNetworkService: NetworkService {
+class RealNetworkService: NetworkService {
     private let helper: NetworkRequestHelper = NetworkRequestHelper()
     
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {

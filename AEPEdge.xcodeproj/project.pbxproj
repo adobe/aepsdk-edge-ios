@@ -61,8 +61,8 @@
 		4CBEE6002A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */; };
 		4CBEE6022A02E2B70084BC50 /* AnyCodableAssertsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6012A02E2B70084BC50 /* AnyCodableAssertsTests.swift */; };
 		4CBEE6032A0B47B00084BC50 /* NetworkRequestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EED36B2489ACE200D4815C /* NetworkRequestHelper.swift */; };
-		4CBEE6052A0C484E0084BC50 /* MockTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6042A0C484E0084BC50 /* MockTestNetworkService.swift */; };
-		4CBEE6072A0C4B610084BC50 /* RealTestNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6062A0C4B610084BC50 /* RealTestNetworkService.swift */; };
+		4CBEE6052A0C484E0084BC50 /* MockNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6042A0C484E0084BC50 /* MockNetworkService.swift */; };
+		4CBEE6072A0C4B610084BC50 /* RealNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6062A0C4B610084BC50 /* RealNetworkService.swift */; };
 		783A5F4E903F9B6EABA50D23 /* Pods_UnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */; };
 		BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
 		BF0C09482465E42100892B5D /* TestableEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableEdge.swift */; };
@@ -259,8 +259,8 @@
 		4CBEE5F929FB19600084BC50 /* AnyCodable+Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyCodable+Array.swift"; sourceTree = "<group>"; };
 		4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCTestCase+AnyCodableAsserts.swift"; sourceTree = "<group>"; };
 		4CBEE6012A02E2B70084BC50 /* AnyCodableAssertsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyCodableAssertsTests.swift; sourceTree = "<group>"; };
-		4CBEE6042A0C484E0084BC50 /* MockTestNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTestNetworkService.swift; sourceTree = "<group>"; };
-		4CBEE6062A0C4B610084BC50 /* RealTestNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealTestNetworkService.swift; sourceTree = "<group>"; };
+		4CBEE6042A0C484E0084BC50 /* MockNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkService.swift; sourceTree = "<group>"; };
+		4CBEE6062A0C4B610084BC50 /* RealNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealNetworkService.swift; sourceTree = "<group>"; };
 		5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E8ABC044CA69B7B3B6DA2B8 /* Pods-UpstreamIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UpstreamIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-UpstreamIntegrationTests/Pods-UpstreamIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7276A55D4B28344E8ED9D27B /* Pods-TestAppiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppiOS.debug.xcconfig"; path = "Target Support Files/Pods-TestAppiOS/Pods-TestAppiOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -550,8 +550,8 @@
 				D46553FC246C9D1700A150E2 /* TestBase.swift */,
 				D4A473C52485938D00D31710 /* TestConstants.swift */,
 				D4EED36B2489ACE200D4815C /* NetworkRequestHelper.swift */,
-				4CBEE6062A0C4B610084BC50 /* RealTestNetworkService.swift */,
-				4CBEE6042A0C484E0084BC50 /* MockTestNetworkService.swift */,
+				4CBEE6062A0C4B610084BC50 /* RealNetworkService.swift */,
+				4CBEE6042A0C484E0084BC50 /* MockNetworkService.swift */,
 				D45F2E6B25ED8EB1000AC350 /* TestableExtensionRuntime.swift */,
 				D45F2E7325EDD2EF000AC350 /* MockDataQueue.swift */,
 				D45F2E7725EDE0D6000AC350 /* MockHitProcessor.swift */,
@@ -1276,7 +1276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4CBEE6072A0C4B610084BC50 /* RealTestNetworkService.swift in Sources */,
+				4CBEE6072A0C4B610084BC50 /* RealNetworkService.swift in Sources */,
 				4CBEE6032A0B47B00084BC50 /* NetworkRequestHelper.swift in Sources */,
 				4CBEE5FC29FB47270084BC50 /* InstrumentedExtension.swift in Sources */,
 				4CBEE5FD29FB47270084BC50 /* TestConstants.swift in Sources */,
@@ -1389,7 +1389,7 @@
 				D45F2E7825EDE0D6000AC350 /* MockHitProcessor.swift in Sources */,
 				D44BBB75248DC54F00775DAC /* CountDownLatch.swift in Sources */,
 				D4A473CB2485A8F300D31710 /* TestUtils.swift in Sources */,
-				4CBEE6052A0C484E0084BC50 /* MockTestNetworkService.swift in Sources */,
+				4CBEE6052A0C484E0084BC50 /* MockNetworkService.swift in Sources */,
 				D4A473C7248595CA00D31710 /* TestConstants.swift in Sources */,
 				D4655400246CBF5E00A150E2 /* TestBase.swift in Sources */,
 				BF0C09482465E42100892B5D /* TestableEdge.swift in Sources */,
