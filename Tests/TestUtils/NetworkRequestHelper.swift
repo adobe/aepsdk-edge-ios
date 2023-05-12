@@ -15,11 +15,13 @@
 import Foundation
 import XCTest
 
-/// DO NOT use this class directly in tests. Use the child classes, either `MockTestNetworkService` or
-/// `ServerTestNetworkService` depending on which is appropriate for your use case.
-/// The base NetworkService class that implements shared utilities and logic for NetworkService class implementations
+/// Implements shared utilities and logic for `NetworkService`/`Networking` class implementations
 /// used for testing.
-class TestNetworkService: NetworkService {
+///
+/// - See also:
+///    - ``MockTestNetworkService``
+///    - ``RealTestNetworkService``
+class NetworkRequestHelper {
     private var sentNetworkRequests: [NetworkRequest: [NetworkRequest]] = [:]
     /// Matches sent `NetworkRequest`s with their corresponding `HttpConnection` response.
     private(set) var networkResponses: [NetworkRequest: HttpConnection] = [:]
@@ -28,7 +30,7 @@ class TestNetworkService: NetworkService {
     func recordSentNetworkRequest(_ networkRequest: NetworkRequest) {
         TestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
         if let equalNetworkRequest = sentNetworkRequests.first(where: { key, value in
-            areNetworkRequestsEqual(lhs: networkRequest, rhs: key)
+            networkRequest == key
         }) {
             sentNetworkRequests[equalNetworkRequest.key]!.append(networkRequest)
         }
@@ -43,17 +45,9 @@ class TestNetworkService: NetworkService {
         networkResponses.removeAll()
     }
     
-    /// Equals compare based on host, scheme and URL path. Query params are not taken into consideration
-    func areNetworkRequestsEqual(lhs: NetworkRequest, rhs: NetworkRequest) -> Bool {
-        return lhs.url.host?.lowercased() == rhs.url.host?.lowercased()
-            && lhs.url.scheme?.lowercased() == rhs.url.scheme?.lowercased()
-            && lhs.url.path.lowercased() == rhs.url.path.lowercased()
-            && lhs.httpMethod.rawValue == rhs.httpMethod.rawValue
-    }
-    
     func countDownExpected(networkRequest: NetworkRequest) {
         for expectedNetworkRequest in expectedNetworkRequests {
-            if areNetworkRequestsEqual(lhs: expectedNetworkRequest.key, rhs: networkRequest) {
+            if networkRequest == expectedNetworkRequest.key {
                 expectedNetworkRequest.value.countDown()
             }
         }
@@ -67,7 +61,7 @@ class TestNetworkService: NetworkService {
     /// 2. Order of the deadline timer application is important
     private func awaitFor(networkRequest: NetworkRequest, timeout: TimeInterval) -> DispatchTimeoutResult? {
         for expectedNetworkRequest in expectedNetworkRequests {
-            if areNetworkRequestsEqual(lhs: expectedNetworkRequest.key, rhs: networkRequest) {
+            if networkRequest == expectedNetworkRequest.key {
                 return expectedNetworkRequest.value.await(timeout: timeout)
             }
         }
@@ -79,7 +73,7 @@ class TestNetworkService: NetworkService {
     func getSentNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
         var matchingRequests: [NetworkRequest] = []
         for request in sentNetworkRequests {
-            if areNetworkRequestsEqual(lhs: request.key, rhs: networkRequest) {
+            if networkRequest == request.key {
                 return request.value
             }
         }
@@ -186,5 +180,21 @@ extension NetworkRequest {
             return nil
         }
         self.init(url: url, httpMethod: httpMethod)
+    }
+    
+    /// Custom equals compare based on host, scheme and URL path. Query params are not taken into consideration.
+    func isCustomEqual(_ other: NetworkRequest) -> Bool {
+        return self.url.host?.lowercased() == other.url.host?.lowercased()
+            && self.url.scheme?.lowercased() == other.url.scheme?.lowercased()
+            && self.url.path.lowercased() == other.url.path.lowercased()
+            && self.httpMethod.rawValue == other.httpMethod.rawValue
+    }
+    
+    /// Custom equals compare based on host, scheme and URL path. Query params are not taken into consideration.
+    static func ==(lhs: NetworkRequest, rhs: NetworkRequest) -> Bool {
+        return lhs.url.host?.lowercased() == rhs.url.host?.lowercased()
+            && lhs.url.scheme?.lowercased() == rhs.url.scheme?.lowercased()
+            && lhs.url.path.lowercased() == rhs.url.path.lowercased()
+            && lhs.httpMethod.rawValue == rhs.httpMethod.rawValue
     }
 }

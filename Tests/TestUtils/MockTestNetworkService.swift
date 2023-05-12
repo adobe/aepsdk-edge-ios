@@ -16,12 +16,13 @@ import Foundation
 import XCTest
 
 /// Overriding NetworkService used for functional tests when extending the TestBase
-class MockTestNetworkService: TestNetworkService {
+class MockTestNetworkService: Networking {
+    private let helper: NetworkRequestHelper = NetworkRequestHelper()
     private var responseDelay: UInt32 = 0
 
-    override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
-        recordSentNetworkRequest(networkRequest)
-        self.countDownExpected(networkRequest: networkRequest)
+    func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
+        helper.recordSentNetworkRequest(networkRequest)
+        self.helper.countDownExpected(networkRequest: networkRequest)
         guard let unwrappedCompletionHandler = completionHandler else { return }
         
         if self.responseDelay > 0 {
@@ -44,9 +45,9 @@ class MockTestNetworkService: TestNetworkService {
         }
     }
     
-    override func reset() {
+    func reset() {
         responseDelay = 0
-        super.reset()
+        helper.reset()
     }
 
     /// Sets the provided delay for all network responses, until reset
@@ -58,7 +59,7 @@ class MockTestNetworkService: TestNetworkService {
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
     /// when in mock mode.
     func setMockResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
-        setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
+        helper.setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
     }
     
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
@@ -67,13 +68,26 @@ class MockTestNetworkService: TestNetworkService {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
         }
-        setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
+        helper.setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
     }
     
     // MARK: Network request response helpers
     func getMockResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {
-        return networkResponses
-            .filter { areNetworkRequestsEqual(lhs: $0.key, rhs: networkRequest) }
+        return helper.networkResponses
+            .filter { networkRequest == $0.key }
             .map { $0.value }
+    }
+    
+    // MARK: - Passthrough for shared helper APIs
+    func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
+        helper.setExpectationForNetworkRequest(url: url, httpMethod: httpMethod, expectedCount: expectedCount, file: file, line: line)
+    }
+    
+    func assertAllNetworkRequestExpectations(file: StaticString = #file, line: UInt = #line) {
+        helper.assertAllNetworkRequestExpectations(file: file, line: line)
+    }
+    
+    func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
+        helper.getNetworkRequestsWith(url: url, httpMethod: httpMethod, timeout: timeout, file: file, line: line)
     }
 }

@@ -21,7 +21,8 @@ import XCTest
 class UpstreamIntegrationTests: TestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint?
-    private static let networkService: ServerTestNetworkService = ServerTestNetworkService()
+//    private static let networkService: ServerTestNetworkService = ServerTestNetworkService()
+    private var networkService: RealTestNetworkService = RealTestNetworkService()
 
     let LOG_SOURCE = "UpstreamIntegrationTests"
 
@@ -32,7 +33,7 @@ class UpstreamIntegrationTests: TestBase {
         super.setUp()
         
         TestBase.debugEnabled = true
-        ServiceProvider.shared.networkService = networkService
+        
     }
     
     // Run before each test case
@@ -64,7 +65,7 @@ class UpstreamIntegrationTests: TestBase {
             print("No preset Edge location hint is being used for this test.")
         }
         resetTestExpectations()
-        Self.networkService.reset()
+        networkService.reset()
     }
 
     // MARK: - Upstream integration test cases
@@ -76,7 +77,7 @@ class UpstreamIntegrationTests: TestBase {
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
-        Self.networkService.setExpectationForNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        networkService.setExpectationForNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
         
         // Test
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
@@ -86,7 +87,7 @@ class UpstreamIntegrationTests: TestBase {
         // Verify
         // MARK: Network response assertions
         let networkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
-        let matchedResponsePost = Self.networkService.getResponsesFor(networkRequest: networkRequest, timeout: 5)
+        let matchedResponsePost = networkService.getResponsesFor(networkRequest: networkRequest, timeout: 5)
         XCTAssertEqual(200, matchedResponsePost.first?.responseCode)
         
         // MARK: Response Event assertions
