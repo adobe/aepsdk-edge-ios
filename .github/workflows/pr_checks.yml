@@ -1,0 +1,21 @@
+on: 
+  pull_request_target:
+    types: [opened, reopened, synchronize, assigned, edited, ready_for_review]
+    paths-ignore: 
+      - '.circleci/**'
+      - '.githooks/**'
+      - '.github/**'
+      - 'Documentation/**'
+      - 'Script/**'
+      - 'Makefile'
+      - '*.md'
+
+jobs:
+  trigger-circleci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CircleCI trigger for pull requests checks
+        id: trigger-circleci
+        uses: CircleCI-Public/trigger-circleci-pipeline-action@v1.1.0
+        env:
+          CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
