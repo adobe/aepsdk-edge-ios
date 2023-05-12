@@ -153,7 +153,25 @@ class UpstreamIntegrationTests: TestBase {
     
     // error scenarios
     // 1. invalid datastream id
-    // 2. invalid location hint set manually
+        // DONE // 2. invalid location hint set manually
+    
+    func testSendEvent_withInvalidDatastreamID_receivesExpectedError() {
+        // Setup
+        let validRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        
+        setExpectationNetworkRequest(url: validRequest.url.absoluteString, httpMethod: validRequest.httpMethod, expectedCount: 1)
+        
+        MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
+        // Test
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                              data: ["data": ["test": "data"]])
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // Verify
+        // MARK: Network response assertions
+        let matchedResponse = getResponsesForRequestWith(url: validRequest.url.absoluteString, httpMethod: validRequest.httpMethod, timeout: 5)
+        XCTAssertEqual(200, matchedResponse.first?.responseCode)
+    }
     
     func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
         // Setup
@@ -169,31 +187,12 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = getResponsesForRequestWith(spec: invalidRequestSpec, timeout: 5)
-        XCTAssertEqual(404, matchedResponse.first?.responseCode)
-        // NOTE: the actual network response has NO data body (0 bytes)
-        // and the content length header supports that with content size 0
-        // Then validating against the literal strings for title and detail
-        // which Edge automatically uses as a the default when there is no error
-        // text effectively checks this fact?
-        // although in an integration case, only the data body from the response matters in this case
-        // since the way Edge converts no data body is an implementation detail on our side
-        
-        // so the test can be split:
-        // 1. the integration test handles the direct response from konductor, validating the
-        //     a. httpcode - 404
-        //     b. data payload, maybe the header?
-        // 2. the functional test handles the conversion of empty payload error responses into
-        // the expected format; that is, title + detail
-        let expectedErrorJSON = #"""
-        {
-          "title" : "Unexpected Error",
-          "detail" : "",
-          "requestEventId" : "stringType",
-          "requestId" : "stringType"
+        guard let matchedResponse = getResponsesForRequestWith(spec: invalidRequestSpec, timeout: 5).first else {
+            XCTFail("No valid response found for request: \(invalidRequestSpec)")
+            return
         }
-        """#
-        assertEdgeResponseEvent(expectedJSON: expectedErrorJSON, eventSource: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, exactMatchPaths: ["title", "detail"])
+        XCTAssertEqual(404, matchedResponse.responseCode)
+        XCTAssertEqual(0, matchedResponse.data?.count)
     }
 
     // MARK: - Test helper methods
