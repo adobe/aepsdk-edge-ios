@@ -22,11 +22,11 @@ public class Edge: NSObject, Extension {
     internal var state: EdgeState?
 
     // MARK: - Extension
-    public let name = EdgeConstants.EXTENSION_NAME
     public let friendlyName = EdgeConstants.FRIENDLY_NAME
+    public let name = EdgeConstants.EXTENSION_NAME
     public static let extensionVersion = EdgeConstants.EXTENSION_VERSION
-    public let metadata: [String: String]? = nil
     public let runtime: ExtensionRuntime
+    public let metadata: [String: String]? = nil
 
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
