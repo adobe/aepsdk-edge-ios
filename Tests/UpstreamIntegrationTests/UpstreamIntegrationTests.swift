@@ -98,7 +98,7 @@ class UpstreamIntegrationTests: TestBase {
             {
               "ttlSeconds" : 1800,
               "scope" : "EdgeNetwork",
-              "hint" : "or2"
+              "hint" : "stringType"
             }
           ]
         }
@@ -117,12 +117,222 @@ class UpstreamIntegrationTests: TestBase {
         print(resultEvents)
     }
     
+    // Tests standard sendEvent with both XDM and data, where data is complex - many keys and
+    // different value types
+    func testSendEvent_withEventXDMAndData_receivesExpectedEventHandles() {
+        // Setup
+        setExpectationNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        
+        let eventPayloadJSON = #"""
+        {
+          "xdm": {
+            "testString": "xdm"
+          },
+          "data": {
+            "testDataString": "stringValue",
+            "testDataInt": 101,
+            "testDataBool": true,
+            "testDataDouble": 13.66,
+            "testDataArray": ["arrayElem1", 2, true],
+            "testDataDictionary": {
+              "key": "val"
+            }
+          }
+        }
+        """#
+        
+        // Test constructs should always be valid
+        let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
+        let data = getAnyCodableAndPayload(eventPayloadJSON, type: .data)!
+        
+        let experienceEvent = ExperienceEvent(xdm: xdm.payload, data: data.payload)
+        
+        // Test
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // Verify
+        // MARK: Network response assertions
+        let matchedResponse = getResponsesForRequestWith(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post, timeout: 5)
+        XCTAssertEqual(200, matchedResponse.first?.responseCode)
+        
+        // MARK: Response Event assertions
+        // Only validate for the location hint relevant to Edge Network extension
+        let expectedLocationHintJSON = #"""
+        {
+          "payload": [
+            {
+              "ttlSeconds" : 1800,
+              "scope" : "EdgeNetwork",
+              "hint" : "stringType"
+            }
+          ]
+        }
+        """#
+       
+        assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope"])
+        
+        let expectedStateStore1stJSON = #"""
+        {
+          "payload": [
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            },
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            }
+          ]
+        }
+        """#
+        
+        assertEdgeResponseEvent(expectedJSON: expectedStateStore1stJSON, eventSource: TestConstants.EventSource.STATE_STORE)
+    }
+    
+    // Tests standard sendEvent with complex XDM - many keys and different value types
+    func testSendEvent_withEventXDMOnly_receivesExpectedEventHandles() {
+        // Setup
+        setExpectationNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        
+        let eventPayloadJSON = #"""
+        {
+          "xdm": {
+            "testString": "xdm",
+            "testInt": 10,
+            "testBool": false,
+            "testDouble": 12.89,
+            "testArray": ["arrayElem1", 2, true],
+            "testDictionary": {
+              "key": "val"
+            }
+          }
+        }
+        """#
+        
+        // Test constructs should always be valid
+        let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
+        
+        let experienceEvent = ExperienceEvent(xdm: xdm.payload)
+        
+        // Test
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // Verify
+        // MARK: Network response assertions
+        let matchedResponse = getResponsesForRequestWith(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post, timeout: 5)
+        XCTAssertEqual(200, matchedResponse.first?.responseCode)
+        
+        // MARK: Response Event assertions
+        // Only validate for the location hint relevant to Edge Network extension
+        let expectedLocationHintJSON = #"""
+        {
+          "payload": [
+            {
+              "ttlSeconds" : 1800,
+              "scope" : "EdgeNetwork",
+              "hint" : "stringType"
+            }
+          ]
+        }
+        """#
+       
+        assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope"])
+        
+        let expectedStateStore1stJSON = #"""
+        {
+          "payload": [
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            },
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            }
+          ]
+        }
+        """#
+        
+        assertEdgeResponseEvent(expectedJSON: expectedStateStore1stJSON, eventSource: TestConstants.EventSource.STATE_STORE)
+    }
+    
+    // MARK: - Configuration tests
+    // Tests standard sendEvent with both XDM and data, where data is complex - many keys and
+    // different value types
+    func testSendEvent_withSetLocationHint_receivesExpectedEventHandles() {
+        // Setup
+        setExpectationNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/va6/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        
+        Edge.setLocationHint("va6")
+        
+        let eventPayloadJSON = #"""
+        {
+          "xdm": {
+            "testString": "xdm"
+          },
+          "data": {
+            "testDataString": "stringValue"
+          }
+        }
+        """#
+        
+        // Test constructs should always be valid
+        let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
+        let data = getAnyCodableAndPayload(eventPayloadJSON, type: .data)!
+        
+        let experienceEvent = ExperienceEvent(xdm: xdm.payload, data: data.payload)
+        
+        // Test
+        Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // Verify
+        // MARK: Network response assertions
+        let matchedResponse = getResponsesForRequestWith(url: "https://obumobile5.data.adobedc.net/ee/va6/v1/interact", httpMethod: .post, timeout: 5)
+        XCTAssertEqual(200, matchedResponse.first?.responseCode)
+        
+        // MARK: Response Event assertions
+        // Only validate for the location hint relevant to Edge Network extension
+        let expectedLocationHintJSON = #"""
+        {
+          "payload": [
+            {
+              "ttlSeconds" : 1800,
+              "scope" : "EdgeNetwork",
+              "hint" : "va6"
+            }
+          ]
+        }
+        """#
+       
+        assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
+        
+        let expectedStateStore1stJSON = #"""
+        {
+          "payload": [
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            },
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            }
+          ]
+        }
+        """#
+        
+        assertEdgeResponseEvent(expectedJSON: expectedStateStore1stJSON, eventSource: TestConstants.EventSource.STATE_STORE)
+    }
+    
     // MARK: - Error scenarios
     
-    // error scenarios
-    // 1. invalid datastream id
-        // DONE // 2. invalid location hint set manually
-    
+    // Tests that an invalid datastream ID returns the expected error
     func testSendEvent_withInvalidDatastreamID_receivesExpectedError() {
         // Setup
         let validRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
@@ -138,9 +348,28 @@ class UpstreamIntegrationTests: TestBase {
         // Verify
         // MARK: Network response assertions
         let matchedResponse = getResponsesForRequestWith(url: validRequest.url.absoluteString, httpMethod: validRequest.httpMethod, timeout: 5)
-        XCTAssertEqual(200, matchedResponse.first?.responseCode)
+        XCTAssertEqual(400, matchedResponse.first?.responseCode)
+        
+        // MARK: Event assertions
+        let expectedErrorJSON = #"""
+        {
+            "status": 400,
+            "detail": "stringType",
+            "report": {
+              "requestId": "stringType"
+            },
+            "requestEventId": "stringType",
+            "title": "Invalid datastream ID",
+            "type": "stringType",
+            "requestId": "stringType"
+          }
+        """#
+        
+        assertEdgeResponseEvent(expectedJSON: expectedErrorJSON, eventSource: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, exactMatchPaths: ["status", "title"])
+        
     }
     
+    // Tests that an invalid location hint returns the expected error with 0 byte data body
     func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
         // Setup
         let invalidRequestSpec = NetworkRequestSpec(url: "https://obumobile5.data.adobedc.net/ee/invalid/v1/interact", httpMethod: .post)
