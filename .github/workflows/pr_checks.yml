@@ -1,3 +1,4 @@
+name: PR Checks (CircleCI)
 on: 
   pull_request_target:
     types: [opened, reopened, synchronize, assigned, edited, ready_for_review]
@@ -11,7 +12,7 @@ on:
       - '*.md'
 
 jobs:
-  trigger-circleci:
+  pr-checks-circleci:
     runs-on: ubuntu-latest
     steps:
       - name: CircleCI trigger for pull requests checks
@@ -29,7 +30,7 @@ jobs:
 
           while [ "$STATUS" == "running" ]; do
             echo CircleCI workflow still running
-            sleep 10
+            sleep 30
             WORKFLOW=$(curl "https://circleci.com/api/v2/pipeline/$PIPELINE_ID/workflow?circle-token=$CCI_TOKEN")
             STATUS=$($WORKFLOW | jq -r '.items[].status')
           done
@@ -37,7 +38,6 @@ jobs:
           echo CircleCI finally done, workflow status: $STATUS
           echo CCI_WORKFLOW_ID=$($WORKFLOW | jq -r '.items[].id') >> $GITHUB_OUTPUT
           echo CCI_WORKFLOW_STATUS=$STATUS >> $GITHUB_OUTPUT
-          
         env:
           PIPELINE_ID: ${{ steps.trigger-circleci.outputs.id }}
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
