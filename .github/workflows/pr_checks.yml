@@ -57,7 +57,7 @@ jobs:
           fi
 
         env:
-          PIPELINE_NUMBER: $${{ steps.trigger-circleci.outputs.number }}
+          PIPELINE_NUMBER: ${{ steps.trigger-circleci.outputs.number }}
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
-          CCI_WORKFLOW_ID: ${{ steps.wait-circleci.outputs.CCI_WORKFLOW }}
+          CCI_WORKFLOW_ID: ${{ steps.wait-circleci.outputs.CCI_WORKFLOW_ID }}
           CCI_WORKFLOW_STATUS: ${{ steps.wait-circleci.outputs.CCI_WORKFLOW_STATUS }}
