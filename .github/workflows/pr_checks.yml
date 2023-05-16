@@ -46,7 +46,7 @@ jobs:
       - name: Check CircleCI workflow status per job
         id: log-circleci-jobs-status
         run: |
-          JOBS=$(curl "https://circleci.com/api/v2/workflow/$CCI_WORKFLOW_ID/workflow?circle-token=$CCI_TOKEN")
+          JOBS=$(curl "https://circleci.com/api/v2/workflow/$CCI_WORKFLOW_ID/job?circle-token=$CCI_TOKEN")
           echo $JOBS | jq --raw-output '.items[] | "Job \(.name) finished with status: \(.status)"'
 
           if [[ "$CCI_WORKFLOW" == "success" ]]; then
