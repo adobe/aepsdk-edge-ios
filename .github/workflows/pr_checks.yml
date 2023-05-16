@@ -19,3 +19,27 @@ jobs:
         uses: CircleCI-Public/trigger-circleci-pipeline-action@v1.1.0
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
+
+      - name: Wait CircleCI pipeline status
+        id: wait-circleci
+        run: |
+          echo CircleCI pipeline triggered with ID $PIPELINE_ID, waiting for it to finish before reporting PR checks status
+          STATUS=$(curl "https://circleci.com/api/v2/pipeline/$PIPELINE_ID/workflow?circle-token=$CCI_TOKEN" | jq -r '.items[].status')
+
+          while [ "$STATUS" == "running" ]; do
+            echo CircleCI workflow still running
+            sleep 10
+            STATUS=$(curl -s "https://circleci.com/api/v2/pipeline/$PIPELINE_ID/workflow?circle-token=$CCI_TOKEN" | jq -r '.items[].status')
+          done
+
+          echo CircleCI finally done, checking final status: $STATUS
+          if [[ "$STATUS" == "success" ]]; then
+            echo Proceeding with build, as triggered pipeline was successful
+            exit 0
+          else
+            echo "Stopping build, triggered pipeline failed"
+            exit 1
+          fi
+        env:
+          PIPELINE_ID: ${{ steps.trigger-circleci.outputs.id }}
+          CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
