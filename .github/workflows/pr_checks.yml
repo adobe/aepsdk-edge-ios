@@ -32,14 +32,31 @@ jobs:
             STATUS=$(curl -s "https://circleci.com/api/v2/pipeline/$PIPELINE_ID/workflow?circle-token=$CCI_TOKEN" | jq -r '.items[].status')
           done
 
-          echo CircleCI finally done, checking final status: $STATUS
-          if [[ "$STATUS" == "success" ]]; then
-            echo Proceeding with build, as triggered pipeline was successful
+          echo CircleCI finally done, workflow status: $STATUS
+          echo CCI_WORKFLOW_STATUS=$STATUS >> $GITHUB_OUTPUT
+          
+        env:
+         # PIPELINE_ID: ${{ steps.trigger-circleci.outputs.id }}
+          PIPELINE_ID: "ace0e4d6-5e0a-4492-8676-678c0eca7547"
+          CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
+
+      - name: Check CircleCI workflow status per job
+        id: log-circleci-jobs-status
+        run: |
+          WORKFLOW_ID=$(curl -s "https://circleci.com/api/v2/pipeline/$PIPELINE_ID/workflow?circle-token=$CCI_TOKEN" | jq -r '.items[].id')
+          JOBS=$(curl "https://circleci.com/api/v2/pipeline/$WORKFLOW_ID/workflow?circle-token=$CCI_TOKEN")
+          echo $RESPONSE | jq '.items[] | "Job \(.name) finished with status: \(.status)"'
+
+          if [[ "$CCI_WORKFLOW_STATUS" == "success" ]]; then
+            echo PR checks passed
             exit 0
           else
-            echo "Stopping build, triggered pipeline failed"
+            echo PR checks failed, see CircleCI for details
             exit 1
           fi
+
         env:
-          PIPELINE_ID: ${{ steps.trigger-circleci.outputs.id }}
+          # PIPELINE_ID: ${{ steps.trigger-circleci.outputs.id }}
+          PIPELINE_ID: "ace0e4d6-5e0a-4492-8676-678c0eca7547"
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
+          CCI_WORKFLOW_STATUS: ${{ steps.wait-circleci.outputs.CCI_WORKFLOW_STATUS }}
