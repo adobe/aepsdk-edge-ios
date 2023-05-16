@@ -36,7 +36,8 @@ jobs:
           done
 
           echo CircleCI finally done, workflow status: $STATUS
-          echo CCI_WORKFLOW_ID=$(echo $WORKFLOW | jq -r '.items[].id') >> $GITHUB_OUTPUT
+          ID=$(echo $WORKFLOW | jq -r '.items[].id')
+          echo CCI_WORKFLOW_ID=$ID >> $GITHUB_OUTPUT
           echo CCI_WORKFLOW_STATUS=$STATUS >> $GITHUB_OUTPUT
         env:
           PIPELINE_ID: ${{ steps.trigger-circleci.outputs.id }}
@@ -45,7 +46,7 @@ jobs:
       - name: Check CircleCI workflow status per job
         id: log-circleci-jobs-status
         run: |
-          JOBS=$(curl "https://circleci.com/api/v2/pipeline/$CCI_WORKFLOW_ID/workflow?circle-token=$CCI_TOKEN")
+          JOBS=$(curl "https://circleci.com/api/v2/workflow/$CCI_WORKFLOW_ID/workflow?circle-token=$CCI_TOKEN")
           echo $JOBS | jq --raw-output '.items[] | "Job \(.name) finished with status: \(.status)"'
 
           if [[ "$CCI_WORKFLOW" == "success" ]]; then
