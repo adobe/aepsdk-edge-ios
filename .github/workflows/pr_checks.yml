@@ -26,17 +26,17 @@ jobs:
         run: |
           echo CircleCI pipeline triggered with ID $PIPELINE_ID, waiting for it to finish before reporting PR checks status
           WORKFLOW=$(curl "https://circleci.com/api/v2/pipeline/$PIPELINE_ID/workflow?circle-token=$CCI_TOKEN")
-          STATUS=$($WORKFLOW | jq -r '.items[].status')
+          STATUS=$(echo $WORKFLOW | jq -r '.items[].status')
 
           while [ "$STATUS" == "running" ]; do
             echo CircleCI workflow still running
             sleep 30
             WORKFLOW=$(curl "https://circleci.com/api/v2/pipeline/$PIPELINE_ID/workflow?circle-token=$CCI_TOKEN")
-            STATUS=$($WORKFLOW | jq -r '.items[].status')
+            STATUS=$(echo $WORKFLOW | jq -r '.items[].status')
           done
 
           echo CircleCI finally done, workflow status: $STATUS
-          echo CCI_WORKFLOW_ID=$($WORKFLOW | jq -r '.items[].id') >> $GITHUB_OUTPUT
+          echo CCI_WORKFLOW_ID=$(echo $WORKFLOW | jq -r '.items[].id') >> $GITHUB_OUTPUT
           echo CCI_WORKFLOW_STATUS=$STATUS >> $GITHUB_OUTPUT
         env:
           PIPELINE_ID: ${{ steps.trigger-circleci.outputs.id }}
@@ -46,7 +46,7 @@ jobs:
         id: log-circleci-jobs-status
         run: |
           JOBS=$(curl "https://circleci.com/api/v2/pipeline/$CCI_WORKFLOW_ID/workflow?circle-token=$CCI_TOKEN")
-          echo $JOBS | jq '.items[] | "Job \(.name) finished with status: \(.status)"'
+          echo $JOBS | jq --raw-output '.items[] | "Job \(.name) finished with status: \(.status)"'
 
           if [[ "$CCI_WORKFLOW" == "success" ]]; then
             echo PR checks passed: https://app.circleci.com/pipelines/github/GITHUB_REPOSITORY/$PIPELINE_NUMBER/workflows/$CCI_WORKFLOW_ID
