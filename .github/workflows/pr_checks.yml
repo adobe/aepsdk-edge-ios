@@ -1,4 +1,5 @@
 name: PR Checks (CircleCI)
+run-name: PR Checks (CircleCI)
 on: 
   pull_request_target:
     types: [opened, reopened, synchronize, assigned, edited, ready_for_review]
