@@ -44,7 +44,7 @@ jobs:
           PIPELINE_ID: ${{ steps.trigger-circleci.outputs.id }}
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
 
-      - name: Check CircleCI workflow status per job
+      - name: PR checks status
         id: log-circleci-jobs-status
         run: |
           JOBS=$(curl "https://circleci.com/api/v2/workflow/$CCI_WORKFLOW_ID/job?circle-token=$CCI_TOKEN")
