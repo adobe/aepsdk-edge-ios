@@ -47,13 +47,17 @@ jobs:
         id: log-circleci-jobs-status
         run: |
           JOBS=$(curl "https://circleci.com/api/v2/workflow/$CCI_WORKFLOW_ID/job?circle-token=$CCI_TOKEN")
+
+          echo --------------------------------------------------------------------------------
+          echo PR checks status
+          echo --------------------------------------------------------------------------------
           echo $JOBS | jq --raw-output '.items[] | "Job \(.name) finished with status: \(.status)"'
 
-          if [[ "$CCI_WORKFLOW" == "success" ]]; then
+          if [[ "$CCI_WORKFLOW_STATUS" == "success" ]]; then
             echo PR checks passed: https://app.circleci.com/pipelines/github/GITHUB_REPOSITORY/$PIPELINE_NUMBER/workflows/$CCI_WORKFLOW_ID
             exit 0
           else
-            echo PR checks failed, see CircleCI for details: https://app.circleci.com/pipelines/github/$GITHUB_REPOSITORY/$PIPELINE_NUMBER/workflows/$CCI_WORKFLOW_ID
+            echo PR checks failed with status $CCI_WORKFLOW_STATUS: https://app.circleci.com/pipelines/github/$GITHUB_REPOSITORY/$PIPELINE_NUMBER/workflows/$CCI_WORKFLOW_ID
             exit 1
           fi
 
