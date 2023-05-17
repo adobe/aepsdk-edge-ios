@@ -38,8 +38,13 @@ class RealNetworkService: NetworkService {
     func reset() {
         helper.reset()
     }
-
-    func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
-        helper.setExpectationForNetworkRequest(url: url, httpMethod: httpMethod, expectedCount: expectedCount, file: file, line: line)
+    
+    /// Set the expected number of times a `NetworkRequest` should be seen.
+    ///
+    /// - Parameters:
+    ///   - networkRequest: the `NetworkRequest` to set the expectation for
+    ///   - expectedCount: how many times a request with this url and httpMethod is expected to be sent, by default it is set to 1
+    func setExpectationForNetworkRequest(networkRequest: NetworkRequest, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
+        helper.setExpectationForNetworkRequest(networkRequest: networkRequest, expectedCount: expectedCount, file: file, line: line)
     }
 }
