@@ -20,8 +20,13 @@ class IdentityStateFunctionalTests: TestBase {
 
     private let exEdgeInteractUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
 
+    private let mockNetworkService: MockNetworkService = MockNetworkService()
+    
     override func setUp() {
+        ServiceProvider.shared.networkService = mockNetworkService
+        
         super.setUp()
+        
         continueAfterFailure = false // fail so nil checks stop execution
         TestBase.debugEnabled = false
 
@@ -42,19 +47,20 @@ class IdentityStateFunctionalTests: TestBase {
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+        mockNetworkService.reset()
     }
 
     func testSendEvent_withPendingIdentityState_noRequestSent() {
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
-        let requests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
+        let requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertTrue(requests.isEmpty)
     }
 
     func testSendEvent_withPendingIdentityState_thenValidIdentityState_requestSentAfterChange() {
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
-        var requests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
+        var requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertTrue(requests.isEmpty) // no network request sent yet
 
         guard let responseBody = "{\"test\": \"json\"}".data(using: .utf8) else {
@@ -67,8 +73,8 @@ class IdentityStateFunctionalTests: TestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
-        setNetworkResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         // Once the shared state is set, the Edge Extension is expected to reprocess the original
         // Send Event request once the Hub Shared State event is received.
@@ -90,11 +96,11 @@ class IdentityStateFunctionalTests: TestBase {
         }
         let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
         FakeIdentityExtension.setXDMSharedState(state: identityMap!)
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
 
-        requests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, requests.count)
-        let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])
+        let flattenRequestBody = requests[0].getFlattenedBody()
         XCTAssertEqual("1234", flattenRequestBody["xdm.identityMap.ECID[0].id"] as? String)
     }
 
@@ -129,17 +135,17 @@ class IdentityStateFunctionalTests: TestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
-        setNetworkResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
 
         // Assert network request does not contain an ECID
-        let requests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        let requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, requests.count)
-        let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])
+        let flattenRequestBody = requests[0].getFlattenedBody()
         XCTAssertNil(flattenRequestBody["xdm.identityMap.ECID[0].id"])
     }
 

@@ -51,11 +51,12 @@ class EdgeConsentTests: TestBase {
     
     // Runs before each test case
     override func setUp() {
-        TestBase.debugEnabled = true
         ServiceProvider.shared.networkService = mockNetworkService
         
         super.setUp()
+        
         continueAfterFailure = false
+        TestBase.debugEnabled = true
         FileManager.default.clearCache()
 
         // hub shared state update for 5 extensions (InstrumentedExtension (registered in TestBase), Configuration, Edge, Consent, Edge Identity)

@@ -33,11 +33,12 @@ class CompletionHandlerFunctionalTests: TestBase {
     
     // Runs before each test case
     override func setUp() {
-        TestBase.debugEnabled = true
         ServiceProvider.shared.networkService = mockNetworkService
         
         super.setUp()
+        
         continueAfterFailure = false
+        TestBase.debugEnabled = true
         FileManager.default.clearCache()
 
         // wait for async registration because the EventHub is already started in TestBase

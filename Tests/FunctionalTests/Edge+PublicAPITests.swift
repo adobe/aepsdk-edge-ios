@@ -24,11 +24,12 @@ class EdgePublicAPITests: TestBase {
 
     // Runs before each test case
     override func setUp() {
-        TestBase.debugEnabled = true
         ServiceProvider.shared.networkService = mockNetworkService
         
         super.setUp()
+        
         continueAfterFailure = true
+        TestBase.debugEnabled = true
         FileManager.default.clearCache()
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
