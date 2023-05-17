@@ -122,14 +122,13 @@ jobs:
       xcode: 13.4.0 # Specify the Xcode version to use
 
     steps:
+      - checkout
       - when:
           condition:
             or:
               - equal: [ main, << pipeline.git.branch >> ]
               - equal: [ staging, << pipeline.git.branch >> ]
           steps:
-            - checkout
-
             - install_dependencies
 
             - prestart_ios_simulator
