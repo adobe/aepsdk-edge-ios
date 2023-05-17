@@ -16,6 +16,9 @@ workflows:
       - test-ios:
           requires:
             - validate-code
+      - test-ios-integration:
+          requires:
+            - validate-code
       - test-tvos:
           requires:
             - validate-code
@@ -113,6 +116,28 @@ jobs:
           flags: ios-tests
           upload_name: Coverage Report for iOS Tests
           xtra_args: -c -v --xc --xp iosresults.xcresult
+  
+  test-ios-integration:
+    macos:
+      xcode: 13.4.0 # Specify the Xcode version to use
+
+    steps:
+      - checkout
+
+      - install_dependencies
+
+      - prestart_ios_simulator
+
+      - run:
+          name: Run iOS Tests
+          command: make test-integration-upstream
+
+      # Code coverage upload using Codecov
+      # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
+      - codecov/upload:
+          flags: ios-tests
+          upload_name: Coverage Report for iOS Tests
+          xtra_args: -c -v --xc --xp coverage/upstreamIntegrationTest/iosresults.xcresult
   
   test-tvos:
     macos:
