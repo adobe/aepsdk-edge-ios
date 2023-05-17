@@ -94,22 +94,15 @@ class NetworkRequestHelper {
     }
 
     // MARK: Assertion helpers
-    /// Set the expected number of times a NetworkRequest should be seen.
+    
+    /// Set the expected number of times a `NetworkRequest` should be seen.
     ///
     /// - Parameters:
-    ///   - url: The URL for which to set the expectation
-    ///   - httpMethod: the `HttpMethod` for which to set the expectation, along with the `url`
-    ///   - count: how many times a request with this url and httpMethod is expected to be sent, by default it is set to 1
-    /// - See also:
-    ///     - assertNetworkRequestsCount()
-    ///     - getNetworkRequestsWith(url:httpMethod:)
-    func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
+    ///   - networkRequest: the `NetworkRequest` to set the expectation for
+    ///   - expectedCount: how many times a request with this url and httpMethod is expected to be sent, by default it is set to 1
+    func setExpectationForNetworkRequest(networkRequest: NetworkRequest, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
         guard expectedCount > 0 else {
             assertionFailure("Expected event count should be greater than 0")
-            return
-        }
-
-        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
         }
 

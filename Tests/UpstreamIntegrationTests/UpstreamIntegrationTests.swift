@@ -28,18 +28,14 @@ class UpstreamIntegrationTests: TestBase {
 
     let asyncTimeout: TimeInterval = 10
 
-    // Run once per test suite
-    override class func setUp() {
-        super.setUp()
-
-        TestBase.debugEnabled = true
-
-    }
-
     // Run before each test case
     override func setUp() {
+        ServiceProvider.shared.networkService = networkService
+        
         super.setUp()
+        
         continueAfterFailure = true
+        TestBase.debugEnabled = true
         // Extract Edge Network environment level from shell environment; see init for default value
         self.edgeEnvironment = EdgeEnvironment()
         print("Using Edge Network environment: \(edgeEnvironment.rawValue)")
@@ -73,11 +69,11 @@ class UpstreamIntegrationTests: TestBase {
     // MARK: 1st launch scenarios
     func testSendEvent_withStandardExperienceEvent_receivesExpectedEventHandles() {
         // Setup
-
+        let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
-        networkService.setExpectationForNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
 
         // Test
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
@@ -86,8 +82,7 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let networkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
-        let matchedResponsePost = networkService.getResponsesFor(networkRequest: networkRequest, timeout: 5)
+        let matchedResponsePost = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
         XCTAssertEqual(200, matchedResponsePost.first?.responseCode)
 
         // MARK: Response Event assertions
@@ -121,7 +116,8 @@ class UpstreamIntegrationTests: TestBase {
     // different value types
     func testSendEvent_withEventXDMAndData_receivesExpectedEventHandles() {
         // Setup
-        setExpectationNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
         
         let eventPayloadJSON = #"""
         {
@@ -152,7 +148,8 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = getResponsesForRequestWith(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post, timeout: 5)
+        let matchedResponse = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
+        
         XCTAssertEqual(200, matchedResponse.first?.responseCode)
         
         // MARK: Response Event assertions
@@ -194,7 +191,8 @@ class UpstreamIntegrationTests: TestBase {
     // Tests standard sendEvent with complex XDM - many keys and different value types
     func testSendEvent_withEventXDMOnly_receivesExpectedEventHandles() {
         // Setup
-        setExpectationNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
         
         let eventPayloadJSON = #"""
         {
@@ -221,7 +219,7 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = getResponsesForRequestWith(url: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post, timeout: 5)
+        let matchedResponse = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
         XCTAssertEqual(200, matchedResponse.first?.responseCode)
         
         // MARK: Response Event assertions
@@ -265,7 +263,8 @@ class UpstreamIntegrationTests: TestBase {
     // different value types
     func testSendEvent_withSetLocationHint_receivesExpectedEventHandles() {
         // Setup
-        setExpectationNetworkRequest(url: "https://obumobile5.data.adobedc.net/ee/va6/v1/interact", httpMethod: HttpMethod.post, expectedCount: 1)
+        let locationHintNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/va6/v1/interact", httpMethod: .post)!
+        networkService.setExpectationForNetworkRequest(networkRequest: locationHintNetworkRequest, expectedCount: 1)
         
         Edge.setLocationHint("va6")
         
@@ -291,7 +290,7 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = getResponsesForRequestWith(url: "https://obumobile5.data.adobedc.net/ee/va6/v1/interact", httpMethod: .post, timeout: 5)
+        let matchedResponse = networkService.getResponsesFor(networkRequest: locationHintNetworkRequest, timeout: 5)
         XCTAssertEqual(200, matchedResponse.first?.responseCode)
         
         // MARK: Response Event assertions
@@ -335,9 +334,9 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid datastream ID returns the expected error
     func testSendEvent_withInvalidDatastreamID_receivesExpectedError() {
         // Setup
-        let validRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
         
-        setExpectationNetworkRequest(url: validRequest.url.absoluteString, httpMethod: validRequest.httpMethod, expectedCount: 1)
+        networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
         
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
         // Test
@@ -347,7 +346,7 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = getResponsesForRequestWith(url: validRequest.url.absoluteString, httpMethod: validRequest.httpMethod, timeout: 5)
+        let matchedResponse = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
         XCTAssertEqual(400, matchedResponse.first?.responseCode)
         
         // MARK: Event assertions
@@ -372,8 +371,8 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid location hint returns the expected error with 0 byte data body
     func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
         // Setup
-        let invalidRequestSpec = NetworkRequestSpec(url: "https://obumobile5.data.adobedc.net/ee/invalid/v1/interact", httpMethod: .post)
-        setExpectationNetworkRequest(spec: invalidRequestSpec, expectedCount: 1)
+        let invalidNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/invalid/v1/interact", httpMethod: .post)!
+        networkService.setExpectationForNetworkRequest(networkRequest: invalidNetworkRequest, expectedCount: 1)
         
         Edge.setLocationHint("invalid")
         
@@ -384,8 +383,8 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        guard let matchedResponse = getResponsesForRequestWith(spec: invalidRequestSpec, timeout: 5).first else {
-            XCTFail("No valid response found for request: \(invalidRequestSpec)")
+        guard let matchedResponse = networkService.getResponsesFor(networkRequest: invalidNetworkRequest, timeout: 5).first else {
+            XCTFail("No valid response found for request: \(invalidNetworkRequest)")
             return
         }
         XCTAssertEqual(404, matchedResponse.responseCode)
