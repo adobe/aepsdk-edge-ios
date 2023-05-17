@@ -30,13 +30,13 @@ class CompletionHandlerFunctionalTests: TestBase {
     let responseBodyWithTwoErrors = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a27\",\"errors\": [{\"message\": \"An error occurred while calling the 'X' service for this request. Please try again.\", \"code\": \"502\"}, {\"message\": \"An error occurred while calling the 'Y', service unavailable\", \"code\": \"503\"}]}\n"
 
     private let mockNetworkService: MockNetworkService = MockNetworkService()
-    
+
     // Runs before each test case
     override func setUp() {
         ServiceProvider.shared.networkService = mockNetworkService
-        
+
         super.setUp()
-        
+
         continueAfterFailure = false
         TestBase.debugEnabled = true
         FileManager.default.clearCache()

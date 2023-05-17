@@ -25,15 +25,14 @@ class NetworkRequestHelper {
     /// Matches sent `NetworkRequest`s with their corresponding `HttpConnection` response.
     private(set) var networkResponses: [NetworkRequest: HttpConnection] = [:]
     private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [:]
-    
+
     func recordSentNetworkRequest(_ networkRequest: NetworkRequest) {
         TestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
-        if let equalNetworkRequest = sentNetworkRequests.first(where: { key, value in
+        if let equalNetworkRequest = sentNetworkRequests.first(where: { key, _ in
             networkRequest.isCustomEqual(key)
         }) {
             sentNetworkRequests[equalNetworkRequest.key]!.append(networkRequest)
-        }
-        else {
+        } else {
             sentNetworkRequests[networkRequest] = [networkRequest]
         }
     }
@@ -43,7 +42,7 @@ class NetworkRequestHelper {
         sentNetworkRequests.removeAll()
         networkResponses.removeAll()
     }
-    
+
     func countDownExpected(networkRequest: NetworkRequest) {
         for expectedNetworkRequest in expectedNetworkRequests {
             if networkRequest.isCustomEqual(expectedNetworkRequest.key) {
@@ -78,13 +77,13 @@ class NetworkRequestHelper {
 
         return []
     }
-    
+
     // MARK: - Network response helpers
     /// Sets the `HttpConnection` response connection for a given `NetworkRequest`
     func setResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
         networkResponses[networkRequest] = responseConnection
     }
-    
+
     /// Gets all network responses for `NetworkRequest`s matching the given `NetworkRequest`
     ///
     /// See:
@@ -93,7 +92,7 @@ class NetworkRequestHelper {
             .filter { networkRequest.isCustomEqual($0.key) }
             .map { $0.value }
     }
-    
+
     // MARK: Assertion helpers
     /// Set the expected number of times a NetworkRequest should be seen.
     ///
@@ -116,7 +115,7 @@ class NetworkRequestHelper {
 
         expectedNetworkRequests[networkRequest] = CountDownLatch(expectedCount)
     }
-    
+
     /// For all previously set expections, asserts that the correct number of network requests were sent.
     /// - See also:
     ///     - `setExpectationNetworkRequest(url:httpMethod:)`
@@ -134,7 +133,7 @@ class NetworkRequestHelper {
             XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) network request(s) for URL \(expectedRequest.key.url.absoluteString) and HTTPMethod \(expectedRequest.key.httpMethod.toString()), but received \(receivedCount)", file: file, line: line)
         }
     }
-    
+
     /// Returns the `NetworkRequest`(s) sent through the Core NetworkService, or empty if none was found.
     /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
     /// - Parameters:
@@ -153,7 +152,7 @@ class NetworkRequestHelper {
 
         return getSentNetworkRequestsMatching(networkRequest: networkRequest)
     }
-    
+
     func awaitRequest(_ networkRequest: NetworkRequest, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) {
 
         if let waitResult = awaitFor(networkRequest: networkRequest, timeout: timeout) {
@@ -162,7 +161,7 @@ class NetworkRequestHelper {
             wait(TestConstants.Defaults.WAIT_TIMEOUT)
         }
     }
-    
+
     /// - Parameters:
     ///   - timeout:how long should this method wait, in seconds; by default it waits up to 1 second
     func wait(_ timeout: UInt32? = TestConstants.Defaults.WAIT_TIMEOUT) {
@@ -187,7 +186,7 @@ extension NetworkRequest {
         }
         self.init(url: url, httpMethod: httpMethod)
     }
-    
+
     /// Custom equals compare based on host, scheme and URL path. Query params are not taken into consideration.
     func isCustomEqual(_ other: NetworkRequest) -> Bool { // Maybe isCustomEqual?
         return self.url.host?.lowercased() == other.url.host?.lowercased()
@@ -195,7 +194,7 @@ extension NetworkRequest {
             && self.url.path.lowercased() == other.url.path.lowercased()
             && self.httpMethod.rawValue == other.httpMethod.rawValue
     }
-    
+
     /// Converts the `connectPayload` into a flattened dictionary containing its data.
     /// This API fails the assertion if the request body cannot be parsed as JSON.
     /// - Returns: The JSON request body represented as a flattened dictionary

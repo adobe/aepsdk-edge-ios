@@ -21,12 +21,12 @@ class IdentityStateFunctionalTests: TestBase {
     private let exEdgeInteractUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
 
     private let mockNetworkService: MockNetworkService = MockNetworkService()
-    
+
     override func setUp() {
         ServiceProvider.shared.networkService = mockNetworkService
-        
+
         super.setUp()
-        
+
         continueAfterFailure = false // fail so nil checks stop execution
         TestBase.debugEnabled = false
 

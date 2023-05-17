@@ -29,9 +29,9 @@ class SampleFunctionalTests: TestBase {
 
     override func setUp() {
         ServiceProvider.shared.networkService = mockNetworkService
-        
+
         super.setUp()
-        
+
         continueAfterFailure = false
         TestBase.debugEnabled = true
 

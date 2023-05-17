@@ -67,7 +67,7 @@ class TestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
     }
-    
+
     /// Reset event expectations and drop the items received until this point
     func resetTestExpectations() {
         log("Resetting test expectations for events")

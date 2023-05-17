@@ -35,9 +35,9 @@ class AEPEdgePathOverwriteTests: TestBase {
     // Runs before each test case
     override func setUp() {
         ServiceProvider.shared.networkService = mockNetworkService
-        
+
         super.setUp()
-        
+
         continueAfterFailure = false
         TestBase.debugEnabled = true
         FileManager.default.clearCache()

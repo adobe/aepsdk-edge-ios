@@ -23,11 +23,11 @@ class MockNetworkService: Networking {
         helper.recordSentNetworkRequest(networkRequest)
         self.helper.countDownExpected(networkRequest: networkRequest)
         guard let unwrappedCompletionHandler = completionHandler else { return }
-        
+
         if self.responseDelay > 0 {
             sleep(self.responseDelay)
         }
-        
+
         if let response = self.getMockResponsesFor(networkRequest: networkRequest).first {
             unwrappedCompletionHandler(response)
         } else {
@@ -43,7 +43,7 @@ class MockNetworkService: Networking {
             )
         }
     }
-    
+
     func reset() {
         responseDelay = 0
         helper.reset()
@@ -60,7 +60,7 @@ class MockNetworkService: Networking {
     func setMockResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
         helper.setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
     }
-    
+
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
     /// when in mock mode.
     func setMockResponseFor(url: String, httpMethod: HttpMethod, responseConnection: HttpConnection?) {
@@ -69,20 +69,20 @@ class MockNetworkService: Networking {
         }
         helper.setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
     }
-    
+
     // MARK: - Passthrough for shared helper APIs
     func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
         helper.setExpectationForNetworkRequest(url: url, httpMethod: httpMethod, expectedCount: expectedCount, file: file, line: line)
     }
-    
+
     func assertAllNetworkRequestExpectations(file: StaticString = #file, line: UInt = #line) {
         helper.assertAllNetworkRequestExpectations(file: file, line: line)
     }
-    
+
     func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
         helper.getNetworkRequestsWith(url: url, httpMethod: httpMethod, timeout: timeout, file: file, line: line)
     }
-    
+
     // MARK: - Private helpers
     // MARK: Network request response helpers
     private func getMockResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {

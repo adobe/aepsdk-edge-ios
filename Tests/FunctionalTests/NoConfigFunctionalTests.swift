@@ -22,7 +22,7 @@ class NoConfigFunctionalTests: TestBase {
 
     override func setUp() {
         ServiceProvider.shared.networkService = mockNetworkService
-        
+
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
         TestBase.debugEnabled = false

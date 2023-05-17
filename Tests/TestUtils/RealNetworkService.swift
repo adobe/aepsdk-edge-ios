@@ -17,28 +17,28 @@ import XCTest
 /// Overriding NetworkService used for integration tests
 class RealNetworkService: NetworkService {
     private let helper: NetworkRequestHelper = NetworkRequestHelper()
-    
+
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         helper.recordSentNetworkRequest(networkRequest)
         super.connectAsync(networkRequest: networkRequest, completionHandler: { (connection: HttpConnection) in
             self.helper.setResponseFor(networkRequest: networkRequest, responseConnection: connection)
             self.helper.countDownExpected(networkRequest: networkRequest)
-                
+
             // Finally call the original completion handler
             completionHandler?(connection)
         })
     }
-    
+
     func getResponsesFor(networkRequest: NetworkRequest, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [HttpConnection] {
         helper.awaitRequest(networkRequest, timeout: timeout, file: file, line: line)
         return helper.getResponsesFor(networkRequest: networkRequest)
     }
-    
+
     // MARK: - Passthrough for shared helper APIs
     func reset() {
         helper.reset()
     }
-    
+
     func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
         helper.setExpectationForNetworkRequest(url: url, httpMethod: httpMethod, expectedCount: expectedCount, file: file, line: line)
     }
