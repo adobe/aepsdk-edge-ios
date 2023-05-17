@@ -78,6 +78,7 @@ class EdgeConsentTests: TestBase {
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+        mockNetworkService.reset()
     }
 
     // MARK: test experience events handling based on collect consent value
@@ -86,6 +87,7 @@ class EdgeConsentTests: TestBase {
         updateCollectConsent(status: ConsentStatus.no)
         getConsentsSync()
         resetTestExpectations()
+        mockNetworkService.reset()
 
         // test
         fireManyEvents()
@@ -100,6 +102,7 @@ class EdgeConsentTests: TestBase {
         updateCollectConsent(status: ConsentStatus.yes)
         getConsentsSync()
         resetTestExpectations()
+        mockNetworkService.reset()
 
         // test
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: EVENTS_COUNT)
