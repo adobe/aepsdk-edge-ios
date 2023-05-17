@@ -33,7 +33,6 @@ class AEPEdgeFunctionalTests: TestBase {
     private let EXPECTED_BASE_PATH = "https://ns.adobe.com/experience/mobilesdk/tvos"
     #endif
     
-//    private static let networkService: MockTestNetworkService = MockTestNetworkService()
     private let mockNetworkService: MockNetworkService = MockNetworkService()
 
     // Run once per test suite
