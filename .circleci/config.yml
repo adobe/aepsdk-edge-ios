@@ -129,7 +129,7 @@ jobs:
       - prestart_ios_simulator
 
       - run:
-          name: Run iOS Tests
+          name: Run iOS integration tests
           command: make test-integration-upstream
 
       # Code coverage upload using Codecov
