@@ -41,6 +41,7 @@ class TestBase: XCTestCase {
     /// Use this setting to enable debug mode logging in the `TestBase`
     static var debugEnabled = false
 
+    // Runs once per test suite
     public class override func setUp() {
         super.setUp()
         UserDefaults.clearAll()
@@ -48,6 +49,7 @@ class TestBase: XCTestCase {
         MobileCore.setLogLevel(LogLevel.trace)
     }
 
+    // Runs before each test case
     public override func setUp() {
         super.setUp()
         continueAfterFailure = false

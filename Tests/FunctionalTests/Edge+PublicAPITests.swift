@@ -22,6 +22,7 @@ class EdgePublicAPITests: TestBase {
 
     private let mockNetworkService: MockNetworkService = MockNetworkService()
 
+    // Runs before each test case
     override func setUp() {
         TestBase.debugEnabled = true
         ServiceProvider.shared.networkService = mockNetworkService

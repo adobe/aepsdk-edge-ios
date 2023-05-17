@@ -30,12 +30,13 @@ class AEPEdgePathOverwriteTests: TestBase {
     private let exEdgeMediaIntegrationUrl = URL(string: TestConstants.EX_EDGE_MEDIA_INTEGRATION_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
 
-    public class override func setUp() {
-        super.setUp()
-        TestBase.debugEnabled = true
-    }
+    private let mockNetworkService: MockNetworkService = MockNetworkService()
 
+    // Runs before each test case
     override func setUp() {
+        TestBase.debugEnabled = true
+        ServiceProvider.shared.networkService = mockNetworkService
+        
         super.setUp()
         continueAfterFailure = false
         FileManager.default.clearCache()
@@ -58,6 +59,7 @@ class AEPEdgePathOverwriteTests: TestBase {
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+        mockNetworkService.reset()
     }
 
     // MARK: test network request with custom path
@@ -68,15 +70,15 @@ class AEPEdgePathOverwriteTests: TestBase {
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "/va/v1/sessionstart"]])
         MobileCore.dispatch(event: experienceEventWithOverwritePath)
 
         // verify
-        assertNetworkRequestsCount()
-        let resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertEqual(Self.EDGE_MEDIA_PROD_PATH_STR, requestUrl.path)
@@ -94,15 +96,15 @@ class AEPEdgePathOverwriteTests: TestBase {
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: TestConstants.EX_EDGE_MEDIA_PRE_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_MEDIA_PRE_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_MEDIA_PRE_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_MEDIA_PRE_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "/va/v1/sessionstart"]])
         MobileCore.dispatch(event: experienceEventWithOverwritePath)
 
         // verify
-        assertNetworkRequestsCount()
-        let resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PRE_PROD_URL_STR, httpMethod: HttpMethod.post)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PRE_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertEqual(Self.EDGE_MEDIA_PRE_PROD_PATH_STR, requestUrl.path)
@@ -120,15 +122,15 @@ class AEPEdgePathOverwriteTests: TestBase {
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: TestConstants.EX_EDGE_MEDIA_INTEGRATION_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_MEDIA_INTEGRATION_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_MEDIA_INTEGRATION_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_MEDIA_INTEGRATION_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "/va/v1/sessionstart"]])
         MobileCore.dispatch(event: experienceEventWithOverwritePath)
 
         // verify
-        assertNetworkRequestsCount()
-        let resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_INTEGRATION_URL_STR, httpMethod: HttpMethod.post)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_INTEGRATION_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertEqual(Self.EDGE_MEDIA_INTEGRATION_PATH_STR, requestUrl.path)
@@ -144,15 +146,15 @@ class AEPEdgePathOverwriteTests: TestBase {
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]], "request": ["path": "/va/v1/sessionstart"]])
         MobileCore.dispatch(event: experienceEventWithOverwritePath)
 
         // verify
-        assertNetworkRequestsCount()
-        let resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertEqual(Self.EDGE_CONSENT_PATH_STR, requestUrl.path)
@@ -165,15 +167,15 @@ class AEPEdgePathOverwriteTests: TestBase {
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        setNetworkResponseFor(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "/va/v1/sessionstart"]])
         MobileCore.dispatch(event: experienceEventWithOverwritePath)
 
         // verify
-        assertNetworkRequestsCount()
-        let resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestPayload = resultNetworkRequests[0].connectPayload
 
