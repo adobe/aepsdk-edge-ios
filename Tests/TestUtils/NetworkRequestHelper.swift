@@ -18,8 +18,8 @@ import XCTest
 /// used for testing.
 ///
 /// - See also:
-///    - ``MockTestNetworkService``
-///    - ``RealTestNetworkService``
+///    - ``MockNetworkService``
+///    - ``RealNetworkService``
 class NetworkRequestHelper {
     private var sentNetworkRequests: [NetworkRequest: [NetworkRequest]] = [:]
     /// Matches sent `NetworkRequest`s with their corresponding `HttpConnection` response.
