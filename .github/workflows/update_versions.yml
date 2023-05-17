@@ -9,7 +9,7 @@ on:
     # Inputs the workflow accepts.
     inputs:
       version:
-        description: 'New version to use for the extension.  Example: 1.5.2'
+        description: 'New version to use for the extension. Example: 1.5.2'
         required: true
         
       branch:
