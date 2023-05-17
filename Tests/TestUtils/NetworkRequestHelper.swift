@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-@testable import AEPEdge
 @testable import AEPServices
 import Foundation
 import XCTest
