@@ -70,11 +70,6 @@ class MockNetworkService: Networking {
         helper.setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
     }
     
-    // MARK: Network request response helpers
-    func getMockResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {
-        return helper.getResponsesFor(networkRequest: networkRequest)
-    }
-    
     // MARK: - Passthrough for shared helper APIs
     func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
         helper.setExpectationForNetworkRequest(url: url, httpMethod: httpMethod, expectedCount: expectedCount, file: file, line: line)
@@ -86,5 +81,11 @@ class MockNetworkService: Networking {
     
     func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
         helper.getNetworkRequestsWith(url: url, httpMethod: httpMethod, timeout: timeout, file: file, line: line)
+    }
+    
+    // MARK: - Private helpers
+    // MARK: Network request response helpers
+    private func getMockResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {
+        return helper.getResponsesFor(networkRequest: networkRequest)
     }
 }
