@@ -63,21 +63,23 @@ class UpstreamIntegrationTests: TestBase {
         resetTestExpectations()
         networkService.reset()
     }
-
+ 
     // MARK: - Upstream integration test cases
 
     // MARK: 1st launch scenarios
     func testSendEvent_withStandardExperienceEvent_receivesExpectedEventHandles() {
         // Setup
+        // Test constructs should always be valid
         let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
         networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
 
-        // Test
+        
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
+        // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
@@ -137,7 +139,6 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
         
-        // Test constructs should always be valid
         let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
         let data = getAnyCodableAndPayload(eventPayloadJSON, type: .data)!
         
@@ -209,7 +210,6 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
         
-        // Test constructs should always be valid
         let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
         
         let experienceEvent = ExperienceEvent(xdm: xdm.payload)
@@ -279,7 +279,6 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
         
-        // Test constructs should always be valid
         let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
         let data = getAnyCodableAndPayload(eventPayloadJSON, type: .data)!
         
