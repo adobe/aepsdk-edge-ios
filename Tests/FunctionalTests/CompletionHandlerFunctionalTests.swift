@@ -50,6 +50,7 @@ class CompletionHandlerFunctionalTests: TestBase {
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
         resetTestExpectations()
+        mockNetworkService.reset()
     }
 
     func testSendEvent_withCompletionHandler_callsCompletionCorrectly() {
@@ -144,6 +145,7 @@ class CompletionHandlerFunctionalTests: TestBase {
         wait(for: [expectation1], timeout: 1)
 
         resetTestExpectations()
+        mockNetworkService.reset()
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection2)
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
