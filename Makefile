@@ -123,7 +123,7 @@ test-integration-upstream: pod-install; \
 	-quiet \
 	-workspace $(PROJECT_NAME).xcworkspace \
 	-scheme UpstreamIntegrationTests \
-	-destination 'platform=iOS Simulator,name=iPhone 14' \
+	-destination 'platform=iOS Simulator,name=iPhone 8' \
 	-derivedDataPath build/out \
 	-resultBundlePath coverage/upstreamIntegrationTest/iosresults.xcresult \
 	-enableCodeCoverage YES \
