@@ -419,7 +419,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("MCMID|29068398647607325310376254630528178721", flattenReceivedData["payload[0].value"] as? String)
         XCTAssertEqual(15552000, flattenReceivedData["payload[0].maxAge"] as? Int)
     }
-    
+
     func testProcessResponseOnSuccess_WhenOneEventHandle_emptyEventHandlePayload_dispatchesEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         let jsonResponse = "{\n" +
@@ -439,14 +439,14 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data")
             return
         }
-        
+
         XCTAssertEqual(3, receivedData.count)
         XCTAssertEqual("state:store", receivedData["type"] as? String)
         XCTAssertEqual("123", receivedData["requestId"] as? String)
         XCTAssertNotNil(receivedData["payload"])
         XCTAssertTrue((receivedData["payload"] as? [[String: Any]])?.isEmpty ?? false)
     }
-    
+
     func testProcessResponseOnSuccess_WhenOneEventHandle_noEventHandlePayload_dispatchesEvent() {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         let jsonResponse = "{\n" +
@@ -465,7 +465,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             XCTFail("Invalid event data")
             return
         }
-        
+
         XCTAssertEqual(2, receivedData.count)
         XCTAssertEqual("state:store", receivedData["type"] as? String)
         XCTAssertEqual("123", receivedData["requestId"] as? String)
