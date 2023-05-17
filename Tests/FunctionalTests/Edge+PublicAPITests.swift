@@ -20,12 +20,12 @@ class EdgePublicAPITests: TestBase {
     private let exEdgeInteractProdUrlLocHint = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC)! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
 
-    public class override func setUp() {
-        super.setUp()
-        TestBase.debugEnabled = true
-    }
+    private let mockNetworkService: MockNetworkService = MockNetworkService()
 
     override func setUp() {
+        TestBase.debugEnabled = true
+        ServiceProvider.shared.networkService = mockNetworkService
+        
         super.setUp()
         continueAfterFailure = true
         FileManager.default.clearCache()
@@ -48,10 +48,11 @@ class EdgePublicAPITests: TestBase {
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+        mockNetworkService.reset()
     }
 
     func testSetLocationHint_sendEvent_sendsNetworkRequestWithLocationHint() {
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
 
         Edge.setLocationHint(TestConstants.OR2_LOC)
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
@@ -59,41 +60,41 @@ class EdgePublicAPITests: TestBase {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
     }
 
     func testSetLocationHint_withNilHint_sendEvent_sendsNetworkRequestWithoutLocationHint() {
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
 
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
         Edge.setLocationHint(TestConstants.OR2_LOC)
         Edge.sendEvent(experienceEvent: experienceEvent)
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
 
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         Edge.setLocationHint(nil)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
     }
 
     func testSetLocationHint_withEmptyHint_sendEvent_sendsNetworkRequestWithoutLocationHint() {
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
 
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC, httpMethod: HttpMethod.post, expectedCount: 1)
         Edge.setLocationHint(TestConstants.OR2_LOC)
         Edge.sendEvent(experienceEvent: experienceEvent)
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
 
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         Edge.setLocationHint("")
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
     }
 
     func testGetLocationHint_withoutSet_returnsNilHint() {
