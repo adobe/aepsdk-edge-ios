@@ -122,15 +122,21 @@ jobs:
       xcode: 13.4.0 # Specify the Xcode version to use
 
     steps:
-      - checkout
+      - when:
+          condition:
+            or:
+              - equal: [ main, << pipeline.git.branch >> ]
+              - equal: [ staging, << pipeline.git.branch >> ]
+          steps:
+            - checkout
 
-      - install_dependencies
+            - install_dependencies
 
-      - prestart_ios_simulator
+            - prestart_ios_simulator
 
-      - run:
-          name: Run iOS integration tests
-          command: make test-integration-upstream
+            - run:
+                name: Run iOS integration tests
+                command: make test-integration-upstream
   
   test-tvos:
     macos:
