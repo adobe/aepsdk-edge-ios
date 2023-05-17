@@ -131,13 +131,6 @@ jobs:
       - run:
           name: Run iOS integration tests
           command: make test-integration-upstream
-
-      # Code coverage upload using Codecov
-      # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
-      - codecov/upload:
-          flags: ios-tests
-          upload_name: Coverage Report for iOS Tests
-          xtra_args: -c -v --xc --xp coverage/upstreamIntegrationTest/iosresults.xcresult
   
   test-tvos:
     macos:
