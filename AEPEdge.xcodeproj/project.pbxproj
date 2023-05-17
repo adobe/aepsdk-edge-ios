@@ -70,6 +70,7 @@
 		4CBEE61F2A15764B0084BC50 /* IdentityStateFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE61E2A15764B0084BC50 /* IdentityStateFunctionalTests.swift */; };
 		4CBEE6212A1577660084BC50 /* NetworkResponseHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6202A1577660084BC50 /* NetworkResponseHandlerFunctionalTests.swift */; };
 		4CBEE6232A1577E40084BC50 /* NoConfigFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6222A1577E40084BC50 /* NoConfigFunctionalTests.swift */; };
+		4CBEE6252A157CB40084BC50 /* SampleFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6242A157CB40084BC50 /* SampleFunctionalTests.swift */; };
 		783A5F4E903F9B6EABA50D23 /* Pods_UnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */; };
 		BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
 		BF0C09482465E42100892B5D /* TestableEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableEdge.swift */; };
@@ -275,6 +276,7 @@
 		4CBEE61E2A15764B0084BC50 /* IdentityStateFunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IdentityStateFunctionalTests.swift; sourceTree = "<group>"; };
 		4CBEE6202A1577660084BC50 /* NetworkResponseHandlerFunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkResponseHandlerFunctionalTests.swift; sourceTree = "<group>"; };
 		4CBEE6222A1577E40084BC50 /* NoConfigFunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoConfigFunctionalTests.swift; sourceTree = "<group>"; };
+		4CBEE6242A157CB40084BC50 /* SampleFunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleFunctionalTests.swift; sourceTree = "<group>"; };
 		5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E8ABC044CA69B7B3B6DA2B8 /* Pods-UpstreamIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UpstreamIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-UpstreamIntegrationTests/Pods-UpstreamIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7276A55D4B28344E8ED9D27B /* Pods-TestAppiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppiOS.debug.xcconfig"; path = "Target Support Files/Pods-TestAppiOS/Pods-TestAppiOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -670,6 +672,7 @@
 				4CBEE61E2A15764B0084BC50 /* IdentityStateFunctionalTests.swift */,
 				4CBEE6202A1577660084BC50 /* NetworkResponseHandlerFunctionalTests.swift */,
 				4CBEE6222A1577E40084BC50 /* NoConfigFunctionalTests.swift */,
+				4CBEE6242A157CB40084BC50 /* SampleFunctionalTests.swift */,
 				D4D5B53724325AB700CAB6E4 /* Info.plist */,
 			);
 			name = FunctionalTests;
@@ -1425,6 +1428,7 @@
 				4CBEE6192A1571DC0084BC50 /* Edge+ConsentTests.swift in Sources */,
 				D48CBD2224A17EEA00A24BD8 /* TestXDMSchema.swift in Sources */,
 				D4EED36C2489ACE200D4815C /* NetworkRequestHelper.swift in Sources */,
+				4CBEE6252A157CB40084BC50 /* SampleFunctionalTests.swift in Sources */,
 				4CBEE61D2A1574CE0084BC50 /* EdgePathOverwriteTests.swift in Sources */,
 				240E3C9A24EF357100D44993 /* MockDataStore.swift in Sources */,
 				D45F2E6C25ED8EB1000AC350 /* TestableExtensionRuntime.swift in Sources */,

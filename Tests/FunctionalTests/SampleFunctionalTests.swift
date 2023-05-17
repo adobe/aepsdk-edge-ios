@@ -25,14 +25,15 @@ class SampleFunctionalTests: TestBase {
     private let exEdgeInteractUrl = URL(string: "https://edge.adobedc.net/ee/v1/interact")! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
 
-    public class override func setUp() {
-        super.setUp()
-        TestBase.debugEnabled = true
-    }
+    private let mockNetworkService: MockNetworkService = MockNetworkService()
 
     override func setUp() {
+        ServiceProvider.shared.networkService = mockNetworkService
+        
         super.setUp()
+        
         continueAfterFailure = false
+        TestBase.debugEnabled = true
 
         // hub shared state update for extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge), Edge extension, IdentityEdge XDM shared state and Config shared state updates
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)
@@ -52,6 +53,7 @@ class SampleFunctionalTests: TestBase {
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+        mockNetworkService.reset()
     }
 
     // MARK: sample tests for the FunctionalTest framework usage
@@ -101,13 +103,13 @@ class SampleFunctionalTests: TestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
-        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
+        mockNetworkService.setMockResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test2": "xdm"], data: nil))
 
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
     }
 
     func testSample_AssertNetworkRequestAndResponseEvent() {
@@ -121,15 +123,15 @@ class SampleFunctionalTests: TestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setExpectationNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
-        setNetworkResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setMockResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
 
-        let requests = getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
+        let requests = mockNetworkService.getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
 
         XCTAssertEqual(1, requests.count)
-        let flattenRequestBody = getFlattenNetworkRequestBody(requests[0])
+        let flattenRequestBody = requests[0].getFlattenedBody()
         XCTAssertEqual("testType", flattenRequestBody["events[0].xdm.eventType"] as? String)
 
         assertExpectedEvents(ignoreUnexpectedEvents: true)
