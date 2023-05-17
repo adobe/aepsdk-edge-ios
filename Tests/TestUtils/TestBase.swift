@@ -66,9 +66,9 @@ class TestBase: XCTestCase {
         FileManager.default.clearCache()
     }
     
-    /// Reset event and network request expectations and drop the items received until this point
+    /// Reset event expectations and drop the items received until this point
     func resetTestExpectations() {
-        log("Resetting functional test expectations for events and network requests")
+        log("Resetting test expectations for events")
         InstrumentedExtension.reset()
     }
 
@@ -207,25 +207,6 @@ class TestBase: XCTestCase {
 
         wait(for: [expectation], timeout: timeout)
         return returnedState
-    }
-
-    /// Use this API for JSON formatted `NetworkRequest` body in order to retrieve a flattened dictionary containing its data.
-    /// This API fails the assertion if the request body cannot be parsed as JSON.
-    /// - Parameters:
-    ///   - networkRequest: the NetworkRequest to parse
-    /// - Returns: The JSON request body represented as a flatten dictionary
-    func getFlattenNetworkRequestBody(_ networkRequest: NetworkRequest, file: StaticString = #file, line: UInt = #line) -> [String: Any] {
-
-        if !networkRequest.connectPayload.isEmpty {
-            if let payloadAsDictionary = try? JSONSerialization.jsonObject(with: networkRequest.connectPayload, options: []) as? [String: Any] {
-                return flattenDictionary(dict: payloadAsDictionary)
-            } else {
-                XCTFail("Failed to parse networkRequest.connectionPayload to JSON", file: file, line: line)
-            }
-        }
-
-        log("Connection payload is empty for network request with URL \(networkRequest.url.absoluteString), HTTPMethod \(networkRequest.httpMethod.toString())")
-        return [:]
     }
 
     /// Print message to console if `TestBase.debug` is true

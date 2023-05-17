@@ -277,7 +277,7 @@ class AEPEdgeFunctionalTests: TestBase {
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
-        let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(19, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
@@ -326,7 +326,7 @@ class AEPEdgeFunctionalTests: TestBase {
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
-        let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(20, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
@@ -380,7 +380,7 @@ class AEPEdgeFunctionalTests: TestBase {
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
-        let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(17, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
@@ -479,7 +479,7 @@ class AEPEdgeFunctionalTests: TestBase {
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
-        let requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        let requestBody = resultNetworkRequests[0].getFlattenedBody()
 
         XCTAssertEqual("query", requestBody["events[0].query.testString"] as? String)
         XCTAssertEqual(10, requestBody["events[0].query.testInt"] as? Int)
@@ -511,7 +511,7 @@ class AEPEdgeFunctionalTests: TestBase {
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        var requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(12, requestBody.count)
         resetTestExpectations()
         mockNetworkService.reset()
@@ -525,7 +525,7 @@ class AEPEdgeFunctionalTests: TestBase {
 
         resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(18, requestBody.count)
 
         guard let firstStore = requestBody["meta.state.entries[0].key"] as? String,
@@ -570,7 +570,7 @@ class AEPEdgeFunctionalTests: TestBase {
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        var requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(12, requestBody.count)
         resetTestExpectations()
         mockNetworkService.reset()
@@ -584,7 +584,7 @@ class AEPEdgeFunctionalTests: TestBase {
 
         resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(18, requestBody.count)
 
         guard let firstStore = requestBody["meta.state.entries[0].key"] as? String,
@@ -625,7 +625,7 @@ class AEPEdgeFunctionalTests: TestBase {
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        var requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        var requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(12, requestBody.count)
         resetTestExpectations()
         mockNetworkService.reset()
@@ -643,7 +643,7 @@ class AEPEdgeFunctionalTests: TestBase {
 
         resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        requestBody = getFlattenNetworkRequestBody(resultNetworkRequests[0])
+        requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(12, requestBody.count)
 
         XCTAssertNil(requestBody["meta.state"]) // no state should be appended

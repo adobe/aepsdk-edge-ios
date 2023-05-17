@@ -195,4 +195,20 @@ extension NetworkRequest {
             && self.url.path.lowercased() == other.url.path.lowercased()
             && self.httpMethod.rawValue == other.httpMethod.rawValue
     }
+    
+    /// Converts the `connectPayload` into a flattened dictionary containing its data.
+    /// This API fails the assertion if the request body cannot be parsed as JSON.
+    /// - Returns: The JSON request body represented as a flattened dictionary
+    func getFlattenedBody(file: StaticString = #file, line: UInt = #line) -> [String: Any] {
+        if !self.connectPayload.isEmpty {
+            if let payloadAsDictionary = try? JSONSerialization.jsonObject(with: self.connectPayload, options: []) as? [String: Any] {
+                return flattenDictionary(dict: payloadAsDictionary)
+            } else {
+                XCTFail("Failed to parse networkRequest.connectionPayload to JSON", file: file, line: line)
+            }
+        }
+
+        print("Connection payload is empty for network request with URL \(self.url.absoluteString), HTTPMethod \(self.httpMethod.toString())")
+        return [:]
+    }
 }
