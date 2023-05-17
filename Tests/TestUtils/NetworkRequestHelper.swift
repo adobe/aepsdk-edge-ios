@@ -68,7 +68,7 @@ class NetworkRequestHelper {
         return nil
     }
 
-    /// Returns all of the original outgoing `NetworkRequest`s satisfying `areNetworkRequestsEqual(lhs:rhs:)`.
+    /// Returns all of the original outgoing `NetworkRequest`s satisfying `NetworkRequest.isCustomEqual(_:)`.
     func getSentNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
         for request in sentNetworkRequests {
             if networkRequest.isCustomEqual(request.key) {

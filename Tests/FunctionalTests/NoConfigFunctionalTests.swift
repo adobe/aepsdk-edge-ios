@@ -18,8 +18,11 @@ import XCTest
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
 class NoConfigFunctionalTests: TestBase {
+    private let mockNetworkService: MockNetworkService = MockNetworkService()
 
     override func setUp() {
+        ServiceProvider.shared.networkService = mockNetworkService
+        
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
         TestBase.debugEnabled = false
@@ -31,6 +34,7 @@ class NoConfigFunctionalTests: TestBase {
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+        mockNetworkService.reset()
     }
 
     func testHandleExperienceEventRequest_withPendingConfigurationState_expectEventsQueueIsBlocked() {
@@ -72,7 +76,7 @@ class NoConfigFunctionalTests: TestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        setNetworkResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: httpConnection)
+        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         // test sendEvent does not send the event when config is pending
         MobileCore.registerExtension(Identity.self)
@@ -83,18 +87,18 @@ class NoConfigFunctionalTests: TestBase {
                                                             receivedHandles = handles
                                                             expectation.fulfill()
                                                         })
-        var resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(0, resultNetworkRequests.count)
 
         // test event gets processed when config shared state is resolved\
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "123567"])
 
         // verify
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
         wait(for: [expectation], timeout: 0.2)
 
-        resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(2, receivedHandles.count)
         XCTAssertEqual("personalization:decisions", receivedHandles[0].type)
         XCTAssertEqual(1, receivedHandles[0].payload?.count)
