@@ -34,18 +34,12 @@ class AEPEdgeFunctionalTests: TestBase {
     #endif
     
     private let mockNetworkService: MockNetworkService = MockNetworkService()
-
-    // Run once per test suite
-    override class func setUp() {
-        super.setUp()
-        
-        TestBase.debugEnabled = true
-        
-    }
     
-    // Run before each test case
+    // Runs before each test case
     override func setUp() {
+        TestBase.debugEnabled = true
         ServiceProvider.shared.networkService = mockNetworkService
+        
         super.setUp()
         
         continueAfterFailure = false
