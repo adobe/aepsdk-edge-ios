@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-@testable import AEPEdge
 @testable import AEPServices
 import Foundation
 import XCTest
@@ -73,9 +72,7 @@ class MockNetworkService: Networking {
     
     // MARK: Network request response helpers
     func getMockResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {
-        return helper.networkResponses
-            .filter { networkRequest == $0.key }
-            .map { $0.value }
+        return helper.getResponsesFor(networkRequest: networkRequest)
     }
     
     // MARK: - Passthrough for shared helper APIs

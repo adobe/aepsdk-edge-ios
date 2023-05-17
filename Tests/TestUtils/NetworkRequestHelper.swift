@@ -30,7 +30,7 @@ class NetworkRequestHelper {
     func recordSentNetworkRequest(_ networkRequest: NetworkRequest) {
         TestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
         if let equalNetworkRequest = sentNetworkRequests.first(where: { key, value in
-            networkRequest == key
+            networkRequest.isCustomEqual(key)
         }) {
             sentNetworkRequests[equalNetworkRequest.key]!.append(networkRequest)
         }
@@ -47,7 +47,7 @@ class NetworkRequestHelper {
     
     func countDownExpected(networkRequest: NetworkRequest) {
         for expectedNetworkRequest in expectedNetworkRequests {
-            if networkRequest == expectedNetworkRequest.key {
+            if networkRequest.isCustomEqual(expectedNetworkRequest.key) {
                 expectedNetworkRequest.value.countDown()
             }
         }
@@ -61,7 +61,7 @@ class NetworkRequestHelper {
     /// 2. Order of the deadline timer application is important
     private func awaitFor(networkRequest: NetworkRequest, timeout: TimeInterval) -> DispatchTimeoutResult? {
         for expectedNetworkRequest in expectedNetworkRequests {
-            if networkRequest == expectedNetworkRequest.key {
+            if networkRequest.isCustomEqual(expectedNetworkRequest.key) {
                 return expectedNetworkRequest.value.await(timeout: timeout)
             }
         }
@@ -72,7 +72,7 @@ class NetworkRequestHelper {
     /// Returns all of the original outgoing `NetworkRequest`s satisfying `areNetworkRequestsEqual(lhs:rhs:)`.
     func getSentNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
         for request in sentNetworkRequests {
-            if networkRequest == request.key {
+            if networkRequest.isCustomEqual(request.key) {
                 return request.value
             }
         }
@@ -80,10 +80,19 @@ class NetworkRequestHelper {
         return []
     }
     
-    // MARK: Network request response helpers
+    // MARK: - Network response helpers
     /// Sets the `HttpConnection` response connection for a given `NetworkRequest`
     func setResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
         networkResponses[networkRequest] = responseConnection
+    }
+    
+    /// Gets all network responses for `NetworkRequest`s matching the given `NetworkRequest`
+    ///
+    /// See:
+    func getResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {
+        return networkResponses
+            .filter { networkRequest.isCustomEqual($0.key) }
+            .map { $0.value }
     }
     
     // MARK: Assertion helpers
@@ -181,18 +190,10 @@ extension NetworkRequest {
     }
     
     /// Custom equals compare based on host, scheme and URL path. Query params are not taken into consideration.
-    func isEqual(_ other: NetworkRequest) -> Bool { // Maybe isCustomEqual?
+    func isCustomEqual(_ other: NetworkRequest) -> Bool { // Maybe isCustomEqual?
         return self.url.host?.lowercased() == other.url.host?.lowercased()
             && self.url.scheme?.lowercased() == other.url.scheme?.lowercased()
             && self.url.path.lowercased() == other.url.path.lowercased()
             && self.httpMethod.rawValue == other.httpMethod.rawValue
-    }
-    
-    /// Custom equals compare based on host, scheme and URL path. Query params are not taken into consideration.
-    static func ==(lhs: NetworkRequest, rhs: NetworkRequest) -> Bool {
-        return lhs.url.host?.lowercased() == rhs.url.host?.lowercased()
-            && lhs.url.scheme?.lowercased() == rhs.url.scheme?.lowercased()
-            && lhs.url.path.lowercased() == rhs.url.path.lowercased()
-            && lhs.httpMethod.rawValue == rhs.httpMethod.rawValue
     }
 }

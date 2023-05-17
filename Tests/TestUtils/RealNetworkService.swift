@@ -32,9 +32,7 @@ class RealNetworkService: NetworkService {
     
     func getResponsesFor(networkRequest: NetworkRequest, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [HttpConnection] {
         helper.awaitRequest(networkRequest, timeout: timeout, file: file, line: line)
-        return helper.networkResponses
-            .filter { networkRequest == $0.key }
-            .map { $0.value }
+        return helper.getResponsesFor(networkRequest: networkRequest)
     }
     
     // MARK: - Passthrough for shared helper APIs
