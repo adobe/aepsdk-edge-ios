@@ -126,8 +126,9 @@ jobs:
       - when:
           condition:
             or:
-              - equal: [ main, << pipeline.git.branch >> ]
               - equal: [ staging, << pipeline.git.branch >> ]
+              - equal: [ dev, << pipeline.git.branch >> ]
+              - equal: [ IT-workflow-REBASE, << pipeline.git.branch >> ]
           steps:
             - install_dependencies
 
