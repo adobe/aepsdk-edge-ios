@@ -22,6 +22,23 @@ struct EventSpec {
     let source: String
 }
 
+struct NetworkRequestSpec {
+    let url: String
+    let httpMethod: HttpMethod
+    
+//    init(url: URL, httpMethod: HttpMethod) {
+//        self.url = url
+//        self.httpMethod = httpMethod
+//    }
+//
+//    init?(url: String, httpMethod: HttpMethod) {
+//        guard let url = URL(string: url) else {
+//            return nil
+//        }
+//        self.init(url: url, httpMethod: httpMethod)
+//    }
+}
+
 /// Hashable `EventSpec`, to be used as key in Dictionaries
 extension EventSpec: Hashable & Equatable {
 
