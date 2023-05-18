@@ -86,7 +86,7 @@ class MockNetworkService: Networking {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
         }
-        setExpectationForNetworkRequest(networkRequest: networkRequest)
+        setExpectationForNetworkRequest(networkRequest: networkRequest, expectedCount: expectedCount, file: file, line: line)
     }
 
     func assertAllNetworkRequestExpectations(file: StaticString = #file, line: UInt = #line) {
