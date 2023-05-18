@@ -127,8 +127,8 @@ jobs:
           name: Test fetching branch names without tokens
           command: |
             GITHUB_PR_JSON=`curl -s https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls/${CIRCLE_PR_NUMBER}`;
-            CIRCLE_PR_BRANCH=`$GITHUB_PR_JSON | jq -r '.head.ref'`;
-            CIRCLE_PR_BASE_BRANCH=`$GITHUB_PR_JSON | jq -r '.base.ref'`;
+            CIRCLE_PR_BRANCH=`echo "$GITHUB_PR_JSON" | jq -r '.head.ref'`;
+            CIRCLE_PR_BASE_BRANCH=`echo "$GITHUB_PR_JSON" | jq -r '.base.ref'`;
             echo $CIRCLE_PR_BRANCH;
             echo $CIRCLE_PR_BASE_BRANCH;
 
