@@ -47,14 +47,16 @@ class EdgeConsentTests: TestBase {
         "      ]" +
         "    }\n"
 
-    public class override func setUp() {
-        super.setUp()
-        TestBase.debugEnabled = true
-    }
+    private let mockNetworkService: MockNetworkService = MockNetworkService()
 
+    // Runs before each test case
     override func setUp() {
+        ServiceProvider.shared.networkService = mockNetworkService
+
         super.setUp()
+
         continueAfterFailure = false
+        TestBase.debugEnabled = true
         FileManager.default.clearCache()
 
         // hub shared state update for 5 extensions (InstrumentedExtension (registered in TestBase), Configuration, Edge, Consent, Edge Identity)
@@ -77,6 +79,7 @@ class EdgeConsentTests: TestBase {
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+        mockNetworkService.reset()
     }
 
     // MARK: test experience events handling based on collect consent value
@@ -85,12 +88,13 @@ class EdgeConsentTests: TestBase {
         updateCollectConsent(status: ConsentStatus.no)
         getConsentsSync()
         resetTestExpectations()
+        mockNetworkService.reset()
 
         // test
         fireManyEvents()
 
         // verify
-        let resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertTrue(resultNetworkRequests.isEmpty)
     }
 
@@ -99,13 +103,14 @@ class EdgeConsentTests: TestBase {
         updateCollectConsent(status: ConsentStatus.yes)
         getConsentsSync()
         resetTestExpectations()
+        mockNetworkService.reset()
 
         // test
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: EVENTS_COUNT)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: EVENTS_COUNT)
         fireManyEvents()
 
         // verify
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
     }
 
     func testCollectConsent_whenPending_thenHits_thenYes_hitsSent() {
@@ -115,7 +120,7 @@ class EdgeConsentTests: TestBase {
         fireManyEvents()
 
         // verify
-        var resultNetworkRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
+        var resultNetworkRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertEqual(0, resultNetworkRequests.count)
 
         // test - change to yes
@@ -123,7 +128,7 @@ class EdgeConsentTests: TestBase {
         getConsentsSync()
 
         // verify
-        resultNetworkRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
+        resultNetworkRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 2)
         XCTAssertEqual(Int(EVENTS_COUNT), resultNetworkRequests.count)
     }
 
@@ -138,7 +143,7 @@ class EdgeConsentTests: TestBase {
         getConsentsSync()
 
         // verify
-        let resultNetworkRequests = getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertTrue(resultNetworkRequests.isEmpty)
     }
 
@@ -154,7 +159,7 @@ class EdgeConsentTests: TestBase {
         getConsentsSync()
 
         // verify
-        let resultNetworkRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        let resultNetworkRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(0, resultNetworkRequests.count)
     }
 
@@ -169,12 +174,12 @@ class EdgeConsentTests: TestBase {
         updateCollectConsent(status: ConsentStatus.no)
 
         // verify
-        let resultNetworkRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        let resultNetworkRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(0, resultNetworkRequests.count)
     }
 
     func testCollectConsent_whenNo_thenPending_thenHits_thenYes_hitsSent() {
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 5)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 5)
 
         // initial no, pending
         updateCollectConsent(status: ConsentStatus.no)
@@ -186,23 +191,23 @@ class EdgeConsentTests: TestBase {
         updateCollectConsent(status: ConsentStatus.yes)
 
         // verify
-        assertNetworkRequestsCount()
+        mockNetworkService.assertAllNetworkRequestExpectations()
     }
 
     // MARK: test consent events are being sent to Edge Network
     func testCollectConsentNo_sendsRequestToEdgeNetwork() {
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         // test
         updateCollectConsent(status: ConsentStatus.no)
 
         // verify
-        assertNetworkRequestsCount()
-        let interactRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let interactRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(0, interactRequests.count)
-        let consentRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        let consentRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
-        let requestBody = getFlattenNetworkRequestBody(consentRequests[0])
+        let requestBody = consentRequests[0].getFlattenedBody()
         print(requestBody)
         XCTAssertEqual(11, requestBody.count)
         XCTAssertEqual("update", requestBody["query.consent.operation"] as? String)
@@ -219,18 +224,18 @@ class EdgeConsentTests: TestBase {
     }
 
     func testCollectConsentYes_sendsRequestToEdgeNetwork() {
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         // test
         updateCollectConsent(status: ConsentStatus.yes)
 
         // verify
-        assertNetworkRequestsCount()
-        let interactRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let interactRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(0, interactRequests.count)
-        let consentRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        let consentRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
-        let requestBody = getFlattenNetworkRequestBody(consentRequests[0])
+        let requestBody = consentRequests[0].getFlattenedBody()
         print(requestBody)
         XCTAssertEqual(11, requestBody.count)
         XCTAssertEqual("update", requestBody["query.consent.operation"] as? String)
@@ -253,23 +258,23 @@ class EdgeConsentTests: TestBase {
         updateCollectConsent(status: "some value")
 
         // verify
-        let interactRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        let interactRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(0, interactRequests.count)
-        let consentRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        let consentRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(0, consentRequests.count)
     }
 
     // MARK: Configurable Endpoint
 
     func testCollectConsent_withConfigurableEndpoint_withEmptyConfigEndpoint_UsesProduction() {
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         // test
         updateCollectConsent(status: ConsentStatus.yes)
 
         // verify
-        assertNetworkRequestsCount()
-        let consentRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let consentRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
         XCTAssertTrue(consentRequests[0].url.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_CONSENT_PROD_URL_STR))
     }
@@ -277,14 +282,14 @@ class EdgeConsentTests: TestBase {
     func testCollectConsent_withConfigurableEndpoint_withInvalidConfigEndpoint_UsesProduction() {
         // set to invalid endpoint
         MobileCore.updateConfigurationWith(configDict: ["edge.environment": "invalid-endpoint"])
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         // test
         updateCollectConsent(status: ConsentStatus.yes)
 
         // verify
-        assertNetworkRequestsCount()
-        let consentRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let consentRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
         XCTAssertTrue(consentRequests[0].url.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_CONSENT_PROD_URL_STR))
     }
@@ -292,14 +297,14 @@ class EdgeConsentTests: TestBase {
     func testCollectConsent_withConfigurableEndpoint_withProductionConfigEndpoint_UsesProduction() {
         // set to prod endpoint
         MobileCore.updateConfigurationWith(configDict: ["edge.environment": "prod"])
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         // test
         updateCollectConsent(status: ConsentStatus.yes)
 
         // verify
-        assertNetworkRequestsCount()
-        let consentRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let consentRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
         XCTAssertTrue(consentRequests[0].url.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_CONSENT_PROD_URL_STR))
     }
@@ -307,14 +312,14 @@ class EdgeConsentTests: TestBase {
     func testCollectConsent_withConfigurableEndpoint_withPreProductionConfigEndpoint_UsesPreProduction() {
         // set to pre-prod endpoint
         MobileCore.updateConfigurationWith(configDict: ["edge.environment": "pre-prod"])
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PRE_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_PRE_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         // test
         updateCollectConsent(status: ConsentStatus.yes)
 
         // verify
-        assertNetworkRequestsCount()
-        let consentRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PRE_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let consentRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PRE_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
         XCTAssertTrue(consentRequests[0].url.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_CONSENT_PRE_PROD_URL_STR))
     }
@@ -322,14 +327,14 @@ class EdgeConsentTests: TestBase {
     func testCollectConsent_withConfigurableEndpoint_withIntegrationConfigEndpoint_UsesIntegration() {
         // set to integration endpoint
         MobileCore.updateConfigurationWith(configDict: ["edge.environment": "int"])
-        setExpectationNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_INTEGRATION_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_CONSENT_INTEGRATION_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         // test
         updateCollectConsent(status: ConsentStatus.yes)
 
         // verify
-        assertNetworkRequestsCount()
-        let consentRequests = self.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_INTEGRATION_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        let consentRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_INTEGRATION_URL_STR, httpMethod: HttpMethod.post, timeout: 1)
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
         XCTAssertTrue(consentRequests[0].url.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_CONSENT_INTEGRATION_URL_STR))
     }

@@ -36,23 +36,20 @@ extension EventSpec: Hashable & Equatable {
 }
 
 class TestBase: XCTestCase {
-    /// Controls if the test base uses real network requests or mocked version
-    static var mockNetworkService: Bool = true
     /// Use this property to execute code logic in the first run in this test class; this value changes to False after the parent tearDown is executed
     private(set) static var isFirstRun: Bool = true
-    private static var networkService: FunctionalTestNetworkService = FunctionalTestNetworkService(mockNetworkService: TestBase.mockNetworkService)
     /// Use this setting to enable debug mode logging in the `TestBase`
     static var debugEnabled = false
 
+    // Runs once per test suite
     public class override func setUp() {
         super.setUp()
         UserDefaults.clearAll()
         FileManager.default.clearCache()
         MobileCore.setLogLevel(LogLevel.trace)
-        networkService = FunctionalTestNetworkService(mockNetworkService: TestBase.mockNetworkService)
-        ServiceProvider.shared.networkService = networkService
     }
 
+    // Runs before each test case
     public override func setUp() {
         super.setUp()
         continueAfterFailure = false
@@ -62,8 +59,7 @@ class TestBase: XCTestCase {
     public override func tearDown() {
         super.tearDown()
 
-        // to revisit when AMSDK-10169 is available
-        // wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
+        // Wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
         usleep(200000)
         resetTestExpectations()
         TestBase.isFirstRun = false
@@ -71,12 +67,11 @@ class TestBase: XCTestCase {
         UserDefaults.clearAll()
         FileManager.default.clearCache()
     }
-    
-    /// Reset event and network request expectations and drop the items received until this point
+
+    /// Reset event expectations and drop the items received until this point
     func resetTestExpectations() {
-        log("Resetting functional test expectations for events and network requests")
+        log("Resetting test expectations for events")
         InstrumentedExtension.reset()
-        TestBase.networkService.reset()
     }
 
     /// Unregisters the `InstrumentedExtension` from the Event Hub. This method executes asynchronous.
@@ -216,129 +211,6 @@ class TestBase: XCTestCase {
         return returnedState
     }
 
-    // MARK: Network Service helpers
-
-    /// Set a custom (mock) network response to a network request
-    /// - Parameters:
-    ///   - url: The URL for which to return the response
-    ///   - httpMethod: The `HttpMethod` for which to return the response, along with the `url`
-    ///   - responseHttpConnection: `HttpConnection` to be returned when a `NetworkRequest` with the specified `url` and `httpMethod` is seen; when nil  is provided the default
-    ///                             `HttpConnection` is returned
-    func setNetworkResponseFor(url: String, httpMethod: HttpMethod, responseHttpConnection: HttpConnection?) {
-        guard let requestUrl = URL(string: url) else {
-            assertionFailure("Unable to convert the provided string \(url) to URL")
-            return
-        }
-
-        TestBase.networkService.setMockResponseFor(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), response: responseHttpConnection)
-    }
-
-    /// Set  a network request expectation.
-    ///
-    /// - Parameters:
-    ///   - url: The URL for which to set the expectation
-    ///   - httpMethod: the `HttpMethod` for which to set the expectation, along with the `url`
-    ///   - count: how many times a request with this url and httpMethod is expected to be sent, by default it is set to 1
-    /// - See also:
-    ///     - assertNetworkRequestsCount()
-    ///     - getNetworkRequestsWith(url:httpMethod:)
-    func setExpectationNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
-        guard expectedCount > 0 else {
-            assertionFailure("Expected event count should be greater than 0")
-            return
-        }
-
-        guard let requestUrl = URL(string: url) else {
-            assertionFailure("Unable to convert the provided string \(url) to URL")
-            return
-        }
-
-        TestBase.networkService.setExpectedNetworkRequest(networkRequest: NetworkRequest(url: requestUrl, httpMethod: httpMethod), count: expectedCount)
-    }
-
-    /// Asserts that the correct number of network requests were being sent, based on the previously set expectations.
-    /// - See also:
-    ///     - setExpectationNetworkRequest(url:httpMethod:)
-    func assertNetworkRequestsCount(file: StaticString = #file, line: UInt = #line) {
-        let expectedNetworkRequests = TestBase.networkService.getExpectedNetworkRequests()
-        guard !expectedNetworkRequests.isEmpty else {
-            assertionFailure("There are no network request expectations set, use this API after calling setExpectationNetworkRequest")
-            return
-        }
-
-        for expectedRequest in expectedNetworkRequests {
-            let waitResult = expectedRequest.value.await(timeout: 10)
-            let expectedCount: Int32 = expectedRequest.value.getInitialCount()
-            let receivedCount: Int32 = expectedRequest.value.getInitialCount() - expectedRequest.value.getCurrentCount()
-            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(expectedRequest.key.url.absoluteString) and HTTPMethod \(expectedRequest.key.httpMethod.toString()), expected \(expectedCount) but received \(receivedCount)", file: file, line: line)
-            XCTAssertEqual(expectedCount, receivedCount, "Expected \(expectedCount) network request(s) for URL \(expectedRequest.key.url.absoluteString) and HTTPMethod \(expectedRequest.key.httpMethod.toString()), but received \(receivedCount)", file: file, line: line)
-        }
-    }
-
-    /// Returns the `NetworkRequest`(s) sent through the Core NetworkService, or empty if none was found.
-    /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
-    /// - Parameters:
-    ///   - url: The URL for which to retrieved the network requests sent, should be a valid URL
-    ///   - httpMethod: the `HttpMethod` for which to retrieve the network requests, along with the `url`
-    ///   - timeout: how long should this method wait for the expected network requests, in seconds; by default it waits up to 1 second
-    /// - Returns: list of network requests with the provided `url` and `httpMethod`, or empty if none was dispatched
-    /// - See also:
-    ///     - setExpectationNetworkRequest(url:httpMethod:)
-    func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
-        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
-            return []
-        }
-
-        awaitRequest(networkRequest, timeout: timeout)
-
-        return TestBase.networkService.getReceivedNetworkRequestKeysMatching(networkRequest: networkRequest)
-    }
-    
-    /// Returns the `HttpConnection` received in response to a `NetworkRequest` sent through the Core NetworkService, or `nil` if none is found.
-    /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
-    ///
-    /// See also:
-    ///    - setExpectationNetworkRequest(url:httpMethod:)
-    /// - Parameters:
-    ///   - url: The `URL` of the `NetworkRequest`. Must be a valid `URL` or will return `nil`.
-    ///   - httpMethod: the `HttpMethod` of the `NetworkRequest`.
-    ///   - timeout: How long this method waits for **expected** `NetworkRequest`s, in seconds. `NetworkRequest`s without an expectation wait the default timeout, regardless of the value set here.
-    /// - Returns: The `HttpConnection` received for the `NetworkRequest`, or `nil` if none exists or the provided URL was invalid.
-    func getResponsesForRequestWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [HttpConnection] {
-        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
-            return []
-        }
-        
-        awaitRequest(networkRequest, timeout: timeout)
-
-        return TestBase.networkService.getResponsesFor(networkRequest: networkRequest)
-    }
-
-    /// Use this API for JSON formatted `NetworkRequest` body in order to retrieve a flattened dictionary containing its data.
-    /// This API fails the assertion if the request body cannot be parsed as JSON.
-    /// - Parameters:
-    ///   - networkRequest: the NetworkRequest to parse
-    /// - Returns: The JSON request body represented as a flatten dictionary
-    func getFlattenNetworkRequestBody(_ networkRequest: NetworkRequest, file: StaticString = #file, line: UInt = #line) -> [String: Any] {
-
-        if !networkRequest.connectPayload.isEmpty {
-            if let payloadAsDictionary = try? JSONSerialization.jsonObject(with: networkRequest.connectPayload, options: []) as? [String: Any] {
-                return flattenDictionary(dict: payloadAsDictionary)
-            } else {
-                XCTFail("Failed to parse networkRequest.connectionPayload to JSON", file: file, line: line)
-            }
-        }
-
-        log("Connection payload is empty for network request with URL \(networkRequest.url.absoluteString), HTTPMethod \(networkRequest.httpMethod.toString())")
-        return [:]
-    }
-
-    /// Sets the provided delay for all network responses, until reset
-    /// - Parameter delaySec: delay in seconds
-    func enableNetworkResponseDelay(delaySec: UInt32) {
-        TestBase.networkService.enableDelayedResponse(delaySec: delaySec)
-    }
-
     /// Print message to console if `TestBase.debug` is true
     /// - Parameter message: message to log to console
     func log(_ message: String) {
@@ -352,14 +224,4 @@ class TestBase: XCTestCase {
         guard !message.isEmpty && TestBase.debugEnabled else { return }
         print("TestBase - \(message)")
     }
-    
-    private func awaitRequest(_ networkRequest: NetworkRequest, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) {
-
-        if let waitResult = TestBase.networkService.awaitFor(networkRequest: networkRequest, timeout: timeout) {
-            XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for network request(s) with URL \(networkRequest.url) and HTTPMethod \(networkRequest.httpMethod.toString())", file: file, line: line)
-        } else {
-            wait(TestConstants.Defaults.WAIT_TIMEOUT)
-        }
-    }
 }
-
