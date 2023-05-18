@@ -21,7 +21,7 @@ import XCTest
 class UpstreamIntegrationTests: TestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint?
-//    private static let networkService: ServerTestNetworkService = ServerTestNetworkService()
+    
     private var networkService: RealNetworkService = RealNetworkService()
 
     let LOG_SOURCE = "UpstreamIntegrationTests"
