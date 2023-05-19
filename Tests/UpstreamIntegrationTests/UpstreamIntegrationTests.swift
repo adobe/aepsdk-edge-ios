@@ -67,7 +67,7 @@ class UpstreamIntegrationTests: TestBase {
     // MARK: - Upstream integration test cases
 
     // MARK: 1st launch scenarios
-    func testSendEvent_withStandardExperienceEvent_receivesExpectedEventHandles() {
+    func testSendEvent_withStandardExperienceEventTwice_receivesExpectedEventHandles() {
         // Setup
         // Test constructs should always be valid
         let interactNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
@@ -93,7 +93,7 @@ class UpstreamIntegrationTests: TestBase {
         // JSON comparison system defined in XCTestCase+AnyCodableAsserts where test assertions
         // between JSON values can be based on their data types instead of exact values.
         // See the assertTypeMatch -> exactMatchPaths arg to see which key paths will use exact matching for values
-        let expectedJSON = #"""
+        let expectedLocationHintJSON = #"""
         {
           "payload": [
             {
@@ -104,18 +104,49 @@ class UpstreamIntegrationTests: TestBase {
           ]
         }
         """#
-
-        let expected = getAnyCodable(expectedJSON)!
-
-        let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: "locationHint:result")
-        XCTAssertEqual(1, resultEvents.count)
-        guard let locationHintEvent = resultEvents.first else {
-            XCTFail("No valid location hint event found")
-            return
+       
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+        
+        let expectedStateStore1stJSON = #"""
+        {
+          "payload": [
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            },
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            }
+          ]
         }
-
-        assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: locationHintEvent), exactMatchPaths: ["payload[*].scope"])
-        print(resultEvents)
+        """#
+        
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON)
+        
+        // MARK: 2nd send event
+        resetTestExpectations()
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Assert location hint response is correct
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+        // TODO: strong validation against org ID portion of key
+        let expectedStateStore2ndJSON = #"""
+        {
+          "payload": [
+            {
+              "maxAge": 1,
+              "key": "stringType",
+              "value": "stringType"
+            }
+          ]
+        }
+        """#
+        
+        // Assert state store response is correct
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore2ndJSON)
     }
 
     // Tests standard sendEvent with both XDM and data, where data is complex - many keys and
