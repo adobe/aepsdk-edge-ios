@@ -25,18 +25,26 @@ pod-install:
 open:
 	open $(PROJECT_NAME).xcworkspace
 
-build-app: setup
-	@echo "######################################################################"
-	@echo "### Building $(TEST_APP_IOS_SCHEME)"
-	@echo "######################################################################"
-	xcodebuild clean build -workspace $(PROJECT_NAME).xcworkspace -scheme $(TEST_APP_IOS_SCHEME) -destination 'generic/platform=iOS Simulator'
-	
-	@echo "######################################################################"
-	@echo "### Building $(TEST_APP_TVOS_SCHEME)"
-	@echo "######################################################################"
-	xcodebuild clean build -workspace $(PROJECT_NAME).xcworkspace -scheme $(TEST_APP_TVOS_SCHEME) -destination 'generic/platform=tvOS Simulator'
+pod-repo-update:
+	pod repo update
 
-archive: clean pod-install build-ios build-tvos
+pod-update: pod-repo-update
+	pod update
+
+ci-pod-repo-update:
+	bundle exec pod repo update
+
+ci-pod-install:
+	bundle exec pod install --repo-update
+
+ci-pod-update: ci-pod-repo-update
+	bundle exec pod update
+
+ci-archive: ci-pod-update _archive
+
+archive: pod-update _archive
+
+_archive: clean build-ios build-tvos
 	@echo "######################################################################"
 	@echo "### Generating iOS and tvOS Frameworks for $(PROJECT_NAME)"
 	@echo "######################################################################"
@@ -62,6 +70,17 @@ build-tvos:
 zip:
 	cd build && zip -r -X $(PROJECT_NAME).xcframework.zip $(PROJECT_NAME).xcframework/
 	swift package compute-checksum build/$(PROJECT_NAME).xcframework.zip
+
+build-app: setup
+	@echo "######################################################################"
+	@echo "### Building $(TEST_APP_IOS_SCHEME)"
+	@echo "######################################################################"
+	xcodebuild clean build -workspace $(PROJECT_NAME).xcworkspace -scheme $(TEST_APP_IOS_SCHEME) -destination 'generic/platform=iOS Simulator'
+
+	@echo "######################################################################"
+	@echo "### Building $(TEST_APP_TVOS_SCHEME)"
+	@echo "######################################################################"
+	xcodebuild clean build -workspace $(PROJECT_NAME).xcworkspace -scheme $(TEST_APP_TVOS_SCHEME) -destination 'generic/platform=tvOS Simulator'
 
 test-ios:
 	@echo "######################################################################"
