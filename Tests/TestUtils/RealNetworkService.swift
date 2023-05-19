@@ -14,7 +14,7 @@
 import Foundation
 import XCTest
 
-/// Overriding NetworkService used for integration tests
+/// Overriding NetworkService used for tests that require real outgoing network requests
 class RealNetworkService: NetworkService {
     private let helper: NetworkRequestHelper = NetworkRequestHelper()
 
