@@ -70,11 +70,11 @@ class UpstreamIntegrationTests: TestBase {
     func testSendEvent_withStandardExperienceEvent_receivesExpectedEventHandles() {
         // Setup
         // Test constructs should always be valid
-        let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
-        networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
+        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
@@ -83,8 +83,9 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponsePost = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
-        XCTAssertEqual(200, matchedResponsePost.first?.responseCode)
+        let receivedResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        XCTAssertEqual(1, receivedResponses.count)
+        XCTAssertEqual(200, receivedResponses.first?.responseCode)
 
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
@@ -120,8 +121,8 @@ class UpstreamIntegrationTests: TestBase {
     // different value types
     func testSendEvent_withEventXDMAndData_receivesExpectedEventHandles() {
         // Setup
-        let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
+        let interactNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let eventPayloadJSON = #"""
         {
@@ -151,7 +152,7 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
+        let matchedResponse = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
         XCTAssertEqual(200, matchedResponse.first?.responseCode)
 
@@ -194,8 +195,8 @@ class UpstreamIntegrationTests: TestBase {
     // Tests standard sendEvent with complex XDM - many keys and different value types
     func testSendEvent_withEventXDMOnly_receivesExpectedEventHandles() {
         // Setup
-        let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
+        let interactNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let eventPayloadJSON = #"""
         {
@@ -221,7 +222,7 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
+        let matchedResponse = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
         XCTAssertEqual(200, matchedResponse.first?.responseCode)
 
         // MARK: Response Event assertions
@@ -335,9 +336,9 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid datastream ID returns the expected error
     func testSendEvent_withInvalidDatastreamID_receivesExpectedError() {
         // Setup
-        let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
 
-        networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
+        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
         // Test
@@ -347,7 +348,7 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
+        let matchedResponse = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
         XCTAssertEqual(400, matchedResponse.first?.responseCode)
 
         // MARK: Event assertions
@@ -404,4 +405,22 @@ class UpstreamIntegrationTests: TestBase {
             MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
         }
     }
+    
+    private func assertEdgeResponseEvent(expectedJSON: String, eventSource: String, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+            guard let expected = getAnyCodable(expectedJSON) else {
+                XCTFail("Unable to decode JSON string. Test case unable to proceed.")
+                return
+            }
+            
+            let stateStoreEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: eventSource)
+            
+            XCTAssertEqual(1, stateStoreEvents.count, file: file, line: line)
+            
+            guard let stateStoreEvent = stateStoreEvents.first else {
+                XCTFail("No valid location hint event found")
+                return
+            }
+            
+            assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: stateStoreEvent), exactMatchPaths: exactMatchPaths, file: file, line: line)
+        }
 }
