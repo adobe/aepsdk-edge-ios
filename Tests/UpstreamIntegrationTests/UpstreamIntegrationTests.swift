@@ -17,7 +17,7 @@ import AEPServices
 import Foundation
 import XCTest
 
-/// This test class validates proper intergration with upstream services, specifically Edge Network
+/// Performs validation on intergration with the Edge Network upstream service
 class UpstreamIntegrationTests: TestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint?
@@ -89,6 +89,9 @@ class UpstreamIntegrationTests: TestBase {
 
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
+        // NOTE: the key value pair "hint": "stringType" is taking advantage of the flexible
+        // JSON comparison system defined in XCTestCase+AnyCodableAsserts where test assertions
+        // between JSON values can be based on their data types instead of exact values.
         let expectedJSON = #"""
         {
           "payload": [
