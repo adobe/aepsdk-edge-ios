@@ -89,9 +89,10 @@ class UpstreamIntegrationTests: TestBase {
 
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
-        // NOTE: the key value pair "hint": "stringType" is taking advantage of the flexible
+        // NOTE: when using `assertTypeMatch`, key value pairs take advantage of the flexible
         // JSON comparison system defined in XCTestCase+AnyCodableAsserts where test assertions
         // between JSON values can be based on their data types instead of exact values.
+        // See the assertTypeMatch -> exactMatchPaths arg to see which key paths will use exact matching for values
         let expectedJSON = #"""
         {
           "payload": [
@@ -170,7 +171,7 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope"])
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
 
         let expectedStateStore1stJSON = #"""
         {
@@ -189,7 +190,7 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseEvent(expectedJSON: expectedStateStore1stJSON, eventSource: TestConstants.EventSource.STATE_STORE)
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON)
     }
 
     // Tests standard sendEvent with complex XDM - many keys and different value types
@@ -239,7 +240,7 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope"])
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
 
         let expectedStateStore1stJSON = #"""
         {
@@ -258,18 +259,18 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseEvent(expectedJSON: expectedStateStore1stJSON, eventSource: TestConstants.EventSource.STATE_STORE)
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON)
     }
 
     // MARK: - Configuration tests
-    // Tests standard sendEvent with both XDM and data, where data is complex - many keys and
-    // different value types
+    // Tests standard sendEvent with preset location hint
     func testSendEvent_withSetLocationHint_receivesExpectedEventHandles() {
         // Setup
-        let locationHintNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/va6/v1/interact", httpMethod: .post)!
+        let locationHint = "va6"
+        let locationHintNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/\(locationHint)/v1/interact", httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: locationHintNetworkRequest, expectedCount: 1)
 
-        Edge.setLocationHint("va6")
+        Edge.setLocationHint(locationHint)
 
         let eventPayloadJSON = #"""
         {
@@ -303,13 +304,13 @@ class UpstreamIntegrationTests: TestBase {
             {
               "ttlSeconds" : 1800,
               "scope" : "EdgeNetwork",
-              "hint" : "va6"
+              "hint" : "\#(locationHint)"
             }
           ]
         }
         """#
 
-        assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
 
         let expectedStateStore1stJSON = #"""
         {
@@ -328,7 +329,7 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseEvent(expectedJSON: expectedStateStore1stJSON, eventSource: TestConstants.EventSource.STATE_STORE)
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON)
     }
 
     // MARK: - Error scenarios
@@ -366,8 +367,7 @@ class UpstreamIntegrationTests: TestBase {
           }
         """#
 
-        assertEdgeResponseEvent(expectedJSON: expectedErrorJSON, eventSource: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, exactMatchPaths: ["status", "title"])
-
+        assertEdgeResponseError(expectedErrorDetails: expectedErrorJSON, exactMatchPaths: ["status", "title"])
     }
 
     // Tests that an invalid location hint returns the expected error with 0 byte data body
@@ -406,21 +406,25 @@ class UpstreamIntegrationTests: TestBase {
         }
     }
     
-    private func assertEdgeResponseEvent(expectedJSON: String, eventSource: String, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
-            guard let expected = getAnyCodable(expectedJSON) else {
-                XCTFail("Unable to decode JSON string. Test case unable to proceed.")
-                return
-            }
-            
-            let stateStoreEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: eventSource)
-            
-            XCTAssertEqual(1, stateStoreEvents.count, file: file, line: line)
-            
-            guard let stateStoreEvent = stateStoreEvents.first else {
-                XCTFail("No valid location hint event found")
-                return
-            }
-            
-            assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: stateStoreEvent), exactMatchPaths: exactMatchPaths, file: file, line: line)
+    private func assertEdgeResponseHandle(expectedHandleType: String, expectedHandle: String, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+        guard let expected = getAnyCodable(expectedHandle) else {
+            XCTFail("Unable to decode JSON string. Test case unable to proceed.", file: file, line: line)
+            return
         }
+        
+        let responseHandleEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
+        
+        XCTAssertEqual(1, responseHandleEvents.count, file: file, line: line)
+        
+        guard let responseHandleEvent = responseHandleEvents.first else {
+            XCTFail("No valid response handle event found", file: file, line: line)
+            return
+        }
+        
+        assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: responseHandleEvent), exactMatchPaths: exactMatchPaths, file: file, line: line)
+    }
+    
+    private func assertEdgeResponseError(expectedErrorDetails: String, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedHandle: expectedErrorDetails, file: file, line: line)
+    }
 }
