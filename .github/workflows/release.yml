@@ -54,6 +54,12 @@ jobs:
         set -eo pipefail
         echo podspec file verification starts:
         make test-podspec
+        
+    - name: Build Artifacts
+      if: ${{ github.event.inputs.action_tag == 'yes' }}
+      run: |
+        make archive
+        make zip
 
     - name: Create GH Release
       id: create_release
@@ -67,7 +73,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-   - name: Upload - AEPEdge
+    - name: Upload - AEPEdge
       uses: actions/upload-release-asset@v1
       if: ${{ github.event.inputs.action_tag == 'yes' }}
       with:
