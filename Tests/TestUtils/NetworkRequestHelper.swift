@@ -94,7 +94,7 @@ class NetworkRequestHelper {
     }
 
     // MARK: Assertion helpers
-    
+
     /// Set the expected number of times a `NetworkRequest` should be seen.
     ///
     /// - Parameters:

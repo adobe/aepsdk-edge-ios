@@ -21,7 +21,7 @@ import XCTest
 class UpstreamIntegrationTests: TestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint?
-    
+
     private var networkService: RealNetworkService = RealNetworkService()
 
     let LOG_SOURCE = "UpstreamIntegrationTests"
@@ -31,9 +31,9 @@ class UpstreamIntegrationTests: TestBase {
     // Run before each test case
     override func setUp() {
         ServiceProvider.shared.networkService = networkService
-        
+
         super.setUp()
-        
+
         continueAfterFailure = true
         TestBase.debugEnabled = true
         // Extract Edge Network environment level from shell environment; see init for default value
@@ -63,7 +63,7 @@ class UpstreamIntegrationTests: TestBase {
         resetTestExpectations()
         networkService.reset()
     }
- 
+
     // MARK: - Upstream integration test cases
 
     // MARK: 1st launch scenarios
@@ -76,7 +76,6 @@ class UpstreamIntegrationTests: TestBase {
         // 2. Waiting on a response for the specific network request (with timeout)
         networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
 
-        
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
         // Test
@@ -116,14 +115,14 @@ class UpstreamIntegrationTests: TestBase {
         assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: locationHintEvent), exactMatchPaths: ["payload[*].scope"])
         print(resultEvents)
     }
-    
+
     // Tests standard sendEvent with both XDM and data, where data is complex - many keys and
     // different value types
     func testSendEvent_withEventXDMAndData_receivesExpectedEventHandles() {
         // Setup
         let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
-        
+
         let eventPayloadJSON = #"""
         {
           "xdm": {
@@ -141,21 +140,21 @@ class UpstreamIntegrationTests: TestBase {
           }
         }
         """#
-        
+
         let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
         let data = getAnyCodableAndPayload(eventPayloadJSON, type: .data)!
-        
+
         let experienceEvent = ExperienceEvent(xdm: xdm.payload, data: data.payload)
-        
+
         // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
         // MARK: Network response assertions
         let matchedResponse = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
-        
+
         XCTAssertEqual(200, matchedResponse.first?.responseCode)
-        
+
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
         let expectedLocationHintJSON = #"""
@@ -169,9 +168,9 @@ class UpstreamIntegrationTests: TestBase {
           ]
         }
         """#
-       
+
         assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope"])
-        
+
         let expectedStateStore1stJSON = #"""
         {
           "payload": [
@@ -188,16 +187,16 @@ class UpstreamIntegrationTests: TestBase {
           ]
         }
         """#
-        
+
         assertEdgeResponseEvent(expectedJSON: expectedStateStore1stJSON, eventSource: TestConstants.EventSource.STATE_STORE)
     }
-    
+
     // Tests standard sendEvent with complex XDM - many keys and different value types
     func testSendEvent_withEventXDMOnly_receivesExpectedEventHandles() {
         // Setup
         let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
-        
+
         let eventPayloadJSON = #"""
         {
           "xdm": {
@@ -212,11 +211,11 @@ class UpstreamIntegrationTests: TestBase {
           }
         }
         """#
-        
+
         let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
-        
+
         let experienceEvent = ExperienceEvent(xdm: xdm.payload)
-        
+
         // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
 
@@ -224,7 +223,7 @@ class UpstreamIntegrationTests: TestBase {
         // MARK: Network response assertions
         let matchedResponse = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
         XCTAssertEqual(200, matchedResponse.first?.responseCode)
-        
+
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
         let expectedLocationHintJSON = #"""
@@ -238,9 +237,9 @@ class UpstreamIntegrationTests: TestBase {
           ]
         }
         """#
-       
+
         assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope"])
-        
+
         let expectedStateStore1stJSON = #"""
         {
           "payload": [
@@ -257,10 +256,10 @@ class UpstreamIntegrationTests: TestBase {
           ]
         }
         """#
-        
+
         assertEdgeResponseEvent(expectedJSON: expectedStateStore1stJSON, eventSource: TestConstants.EventSource.STATE_STORE)
     }
-    
+
     // MARK: - Configuration tests
     // Tests standard sendEvent with both XDM and data, where data is complex - many keys and
     // different value types
@@ -268,9 +267,9 @@ class UpstreamIntegrationTests: TestBase {
         // Setup
         let locationHintNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/va6/v1/interact", httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: locationHintNetworkRequest, expectedCount: 1)
-        
+
         Edge.setLocationHint("va6")
-        
+
         let eventPayloadJSON = #"""
         {
           "xdm": {
@@ -281,12 +280,12 @@ class UpstreamIntegrationTests: TestBase {
           }
         }
         """#
-        
+
         let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
         let data = getAnyCodableAndPayload(eventPayloadJSON, type: .data)!
-        
+
         let experienceEvent = ExperienceEvent(xdm: xdm.payload, data: data.payload)
-        
+
         // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
 
@@ -294,7 +293,7 @@ class UpstreamIntegrationTests: TestBase {
         // MARK: Network response assertions
         let matchedResponse = networkService.getResponsesFor(networkRequest: locationHintNetworkRequest, timeout: 5)
         XCTAssertEqual(200, matchedResponse.first?.responseCode)
-        
+
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
         let expectedLocationHintJSON = #"""
@@ -308,9 +307,9 @@ class UpstreamIntegrationTests: TestBase {
           ]
         }
         """#
-       
+
         assertEdgeResponseEvent(expectedJSON: expectedLocationHintJSON, eventSource: TestConstants.EventSource.LOCATION_HINT_RESULT, exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
-        
+
         let expectedStateStore1stJSON = #"""
         {
           "payload": [
@@ -327,19 +326,19 @@ class UpstreamIntegrationTests: TestBase {
           ]
         }
         """#
-        
+
         assertEdgeResponseEvent(expectedJSON: expectedStateStore1stJSON, eventSource: TestConstants.EventSource.STATE_STORE)
     }
-    
+
     // MARK: - Error scenarios
-    
+
     // Tests that an invalid datastream ID returns the expected error
     func testSendEvent_withInvalidDatastreamID_receivesExpectedError() {
         // Setup
         let standardNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
-        
+
         networkService.setExpectationForNetworkRequest(networkRequest: standardNetworkRequest, expectedCount: 1)
-        
+
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
         // Test
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
@@ -350,7 +349,7 @@ class UpstreamIntegrationTests: TestBase {
         // MARK: Network response assertions
         let matchedResponse = networkService.getResponsesFor(networkRequest: standardNetworkRequest, timeout: 5)
         XCTAssertEqual(400, matchedResponse.first?.responseCode)
-        
+
         // MARK: Event assertions
         let expectedErrorJSON = #"""
         {
@@ -365,19 +364,19 @@ class UpstreamIntegrationTests: TestBase {
             "requestId": "stringType"
           }
         """#
-        
+
         assertEdgeResponseEvent(expectedJSON: expectedErrorJSON, eventSource: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, exactMatchPaths: ["status", "title"])
-        
+
     }
-    
+
     // Tests that an invalid location hint returns the expected error with 0 byte data body
     func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
         // Setup
         let invalidNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/invalid/v1/interact", httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: invalidNetworkRequest, expectedCount: 1)
-        
+
         Edge.setLocationHint("invalid")
-        
+
         // Test
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])

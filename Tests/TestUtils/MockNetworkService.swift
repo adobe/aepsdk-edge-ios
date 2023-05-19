@@ -71,7 +71,7 @@ class MockNetworkService: Networking {
     }
 
     // MARK: - Passthrough for shared helper APIs
-    
+
     /// Set the expected number of times a `NetworkRequest` should be seen.
     ///
     /// - Parameters:
@@ -80,7 +80,7 @@ class MockNetworkService: Networking {
     func setExpectationForNetworkRequest(networkRequest: NetworkRequest, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
         helper.setExpectationForNetworkRequest(networkRequest: networkRequest, expectedCount: expectedCount, file: file, line: line)
     }
-    
+
     /// Convenience method that allows using URL string and `HttpMethod` instead of `NetworkRequest`
     func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {

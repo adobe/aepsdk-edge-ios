@@ -38,7 +38,7 @@ class RealNetworkService: NetworkService {
     func reset() {
         helper.reset()
     }
-    
+
     /// Set the expected number of times a `NetworkRequest` should be seen.
     ///
     /// - Parameters:
