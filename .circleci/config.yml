@@ -4,12 +4,11 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@3.2.4
+  codecov: codecov/codecov@3.2.5
   macos: circleci/macos@2
   
 # Workflows orchestrate a set of jobs to be run;
 workflows:
-  version: 2
   build-test:
     jobs:
       - validate-code
@@ -70,18 +69,20 @@ commands:
     steps:
       - macos/preboot-simulator:
           platform: "iOS"
-          device: "iPhone 8"
+          version: "16.1"
+          device: "iPhone 14"
 
   prestart_tvos_simulator:
     steps:
       - macos/preboot-simulator:
           platform: "tvOS"
+          version: "16.1"
           device: "Apple TV"
 
 jobs:
   validate-code:
     macos:
-      xcode: 13.4.0 # Specify the Xcode version to use
+      xcode: 14.1.0 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -94,7 +95,7 @@ jobs:
 
   test-ios:
     macos:
-      xcode: 13.4.0 # Specify the Xcode version to use
+      xcode: 14.1.0 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -116,7 +117,7 @@ jobs:
   
   test-tvos:
     macos:
-      xcode: 13.4.0 # Specify the Xcode version to use
+      xcode: 14.1.0 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -138,7 +139,7 @@ jobs:
 
   build_xcframework_and_app:  
     macos:
-      xcode: 13.4.0 # Specify the Xcode version to use
+      xcode: 14.1.0 # Specify the Xcode version to use
     
     steps:
       - checkout

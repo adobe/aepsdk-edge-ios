@@ -97,7 +97,7 @@ test-ios:
 	   final_scheme="$(EXTENSION_NAME)" ; \
 	   echo $$final_scheme ; \
 	fi; \
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=iOS Simulator,name=iPhone 8' -derivedDataPath build/out -resultBundlePath iosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath build/out -resultBundlePath iosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 test-tvos:
 	@echo "######################################################################"
