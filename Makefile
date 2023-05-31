@@ -125,16 +125,16 @@ lint-autocorrect:
 	./Pods/SwiftLint/swiftlint autocorrect
 
 lint:
-	(./Pods/SwiftLint/swiftlint lint Sources TestApps/$(APP_NAME))
+	./Pods/SwiftLint/swiftlint lint Sources TestApps
 
 check-version:
-	(sh ./Script/version.sh $(VERSION))
+	sh ./Script/version.sh $(VERSION)
 
 test-SPM-integration:
-	(sh ./Script/test-SPM.sh)
+	sh ./Script/test-SPM.sh
 
 test-podspec:
-	(sh ./Script/test-podspec.sh)
+	sh ./Script/test-podspec.sh
 
 test-version-update:
-	(sh ./Script/update-versions.sh -n Edge -v 9.9.9)
+	sh ./Script/update-versions.sh -n Edge -v 9.9.9
