@@ -19,6 +19,12 @@ setup-tools: install-githook
 clean:
 	rm -rf ./build
 
+clean-ios-test-files:
+	rm -rf iosresults.xcresult
+
+clean-tvos-test-files:
+	rm -rf tvosresults.xcresult
+
 pod-install:
 	pod install --repo-update
 
@@ -84,7 +90,7 @@ build-app: setup
 
 test: test-ios test-tvos
 
-test-ios:
+test-ios: clean-ios-test-files
 	@echo "######################################################################"
 	@echo "### Testing iOS"
 	@echo "######################################################################"
@@ -101,7 +107,7 @@ test-ios:
 	fi; \
 	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath build/out -resultBundlePath iosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
-test-tvos:
+test-tvos: clean-tvos-test-files
 	@echo "######################################################################"
 	@echo "### Testing tvOS"
 	@echo "######################################################################"
