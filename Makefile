@@ -82,6 +82,8 @@ build-app: setup
 	@echo "######################################################################"
 	xcodebuild clean build -workspace $(PROJECT_NAME).xcworkspace -scheme $(TEST_APP_TVOS_SCHEME) -destination 'generic/platform=tvOS Simulator'
 
+test: test-ios test-tvos
+
 test-ios:
 	@echo "######################################################################"
 	@echo "### Testing iOS"
