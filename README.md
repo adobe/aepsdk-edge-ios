@@ -11,7 +11,7 @@ The AEP Edge Network mobile extension is an extension for the [Adobe Experience 
 To learn more about this extension, read the [Adobe Experience Platform Edge Network](https://aep-sdks.gitbook.io/docs/foundation-extensions/experience-platform-extension) documentation.
 
 ## Requirements
-- Xcode 11.0 (or newer)
+- Xcode 14.1 (or newer)
 - Swift 5.1 (or newer)
 
 ## Installation
