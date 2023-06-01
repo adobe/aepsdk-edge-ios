@@ -90,7 +90,7 @@ class EdgeHitProcessorTests: XCTestCase {
     override func setUp() {
         ServiceProvider.shared.networkService = MockNetworking()
         networkService = EdgeNetworkService()
-        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_ :String?, _ :TimeInterval?) -> Void in  })
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  })
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: resolveSharedState(extensionName:event:),
