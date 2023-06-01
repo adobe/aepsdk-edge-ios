@@ -7,7 +7,7 @@ use_frameworks!
 workspace 'AEPEdge'
 project 'AEPEdge.xcodeproj'
 
-pod 'SwiftLint', '0.44.0'
+pod 'SwiftLint', '0.52.0'
 
 target 'AEPEdge' do
   pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'staging'

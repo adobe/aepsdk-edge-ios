@@ -15,7 +15,7 @@ PODS:
     - AEPCore (>= 4.0.0)
   - AEPRulesEngine (4.0.0)
   - AEPServices (4.0.0)
-  - SwiftLint (0.44.0)
+  - SwiftLint (0.52.0)
 
 DEPENDENCIES:
   - AEPAssurance
@@ -24,7 +24,7 @@ DEPENDENCIES:
   - AEPEdgeConsent (from `https://github.com/adobe/aepsdk-edgeconsent-ios.git`, branch `dev`)
   - AEPEdgeIdentity (from `https://github.com/adobe/aepsdk-edgeidentity-ios.git`, branch `dev`)
   - AEPServices (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `staging`)
-  - SwiftLint (= 0.44.0)
+  - SwiftLint (= 0.52.0)
 
 SPEC REPOS:
   trunk:
@@ -70,8 +70,8 @@ SPEC CHECKSUMS:
   AEPEdgeIdentity: c2396b9119abd6eb530ea11efc58ec019b163bd4
   AEPRulesEngine: 458450a34922823286ead045a0c2bd8c27e224c6
   AEPServices: ca493988df250d84fda050124ff7549bcc43c65f
-  SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
+  SwiftLint: 13280e21cdda6786ad908dc6e416afe5acd1fcb7
 
-PODFILE CHECKSUM: 260c4f1b497e6fd8a033e00f258f824026213332
+PODFILE CHECKSUM: e4e2bb4f7f56d25c898eed08568421172f19193e
 
 COCOAPODS: 1.11.3
