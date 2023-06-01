@@ -58,6 +58,6 @@ extension MobileSDKCommerceSchema {
         if let unwrapped = eventMergeId { try container.encode(unwrapped, forKey: .eventMergeId) }
         if let unwrapped = eventType { try container.encode(unwrapped, forKey: .eventType) }
         if let unwrapped = productListItems { try container.encode(unwrapped, forKey: .productListItems) }
-        if let unwrapped = XDMFormatters.dateToISO8601String(from: timestamp) { try container.encode(unwrapped, forKey: .timestamp) }
+        if let unwrapped = timestamp?.getISO8601UTCDateWithMilliseconds() { try container.encode(unwrapped, forKey: .timestamp) }
     }
 }
