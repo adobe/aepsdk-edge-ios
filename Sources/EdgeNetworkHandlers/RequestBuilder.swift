@@ -112,7 +112,7 @@ class RequestBuilder {
             }
 
             if eventData[EdgeConstants.JsonKeys.XDM] == nil {
-                eventData[EdgeConstants.JsonKeys.XDM] = [:]
+                eventData[EdgeConstants.JsonKeys.XDM] = [String: Any]()
             }
 
             if var xdm = eventData[EdgeConstants.JsonKeys.XDM] as? [String: Any] {
