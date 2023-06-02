@@ -9,9 +9,9 @@
 
 The Adobe Experience Platform Edge Network mobile extension allows you to send data to the Adobe  Edge Network from a mobile application. This extension allows you to implement Adobe Experience Cloud capabilities in a more robust way, serve multiple Adobe solutions though one network call, and simultaneously forward this information to the Adobe Experience Platform.
 
-The AEP Edge Network mobile extension is an extension for the [Adobe Experience Platform SDK](https://aep-sdks.gitbook.io) and requires the `AEPCore` and `AEPServices` extensions for event handling, as well as the `AEPEdgeIdentity` extension for retrieving the identities, such as ECID.
+The Edge Network mobile extension is an extension for the [Adobe Experience Platform SDK](https://developer.adobe.com/client-sdks) and requires the `AEPCore` and `AEPServices` extensions for event handling, as well as the `AEPEdgeIdentity` extension for retrieving the identities, such as ECID.
 
-To learn more about this extension, read the [Adobe Experience Platform Edge Network](https://aep-sdks.gitbook.io/docs/foundation-extensions/experience-platform-extension) documentation.
+To learn more about this extension, read the [Adobe Experience Platform Edge Network](https://developer.adobe.com/client-sdks/documentation/edge-network/) documentation.
 
 ## Requirements
 - Xcode 14.1 (or newer)
