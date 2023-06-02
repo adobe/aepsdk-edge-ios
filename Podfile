@@ -19,16 +19,16 @@ end
 
 target 'FunctionalTests' do
   pod 'AEPCore'
-  pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'dev'
-  pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'dev'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPEdgeConsent'
   pod 'AEPEdge', :path => './AEPEdge.podspec'
 end
 
 target 'TestAppiOS' do
   pod 'AEPCore'
   pod 'AEPServices'
-  pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'dev'
-  pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'dev'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPEdgeConsent'
   pod 'AEPEdge', :path => './AEPEdge.podspec'
   pod 'AEPAssurance'
 end
@@ -36,8 +36,8 @@ end
 target 'TestApptvOS' do
   pod 'AEPCore'
   pod 'AEPServices'
-  pod 'AEPEdgeIdentity', :git => 'https://github.com/adobe/aepsdk-edgeidentity-ios.git', :branch => 'dev'
-  pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'dev'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPEdgeConsent'
   pod 'AEPEdge', :path => './AEPEdge.podspec'
 end
 
