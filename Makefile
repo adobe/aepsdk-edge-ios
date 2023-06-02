@@ -16,6 +16,9 @@ TVOS_ARCHIVE_DSYM_PATH = $(CURR_DIR)/build/tvos.xcarchive/dSYMs/
 
 setup-tools: install-githook
 
+setup:
+	pod install
+
 clean:
 	rm -rf build
 
