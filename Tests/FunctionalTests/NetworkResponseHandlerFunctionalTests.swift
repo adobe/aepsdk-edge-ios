@@ -19,7 +19,7 @@ import XCTest
 class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private var networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_ :String?, _ :TimeInterval?) -> Void in  })
+    private var networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  })
     private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
 
     override func setUp() {
@@ -323,7 +323,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
     /// Tests that when an event is processed after a persisted reset event that the store payloads are saved
     func testProcessResponseOnSuccess_afterPersistedResetEvent_savesStorePayloads() {
         dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: Date().timeIntervalSince1970 - 10) // date is before `event.timestamp`
-        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_ :String?, _ :TimeInterval?) -> Void in  }) // loads reset time on init
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  }) // loads reset time on init
 
         let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
 
@@ -358,7 +358,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         let event = Event(name: "test", type: "test-type", source: "test-source", data: nil)
 
         dataStore.set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: Date().timeIntervalSince1970 + 10) // date is after `event.timestamp`
-        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_ :String?, _ :TimeInterval?) -> Void in  }) // loads reset time on init
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  }) // loads reset time on init
         networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8",
                                                 batchedEvents: [event])
 
@@ -418,6 +418,57 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("s_ecid", flattenReceivedData["payload[0].key"] as? String)
         XCTAssertEqual("MCMID|29068398647607325310376254630528178721", flattenReceivedData["payload[0].value"] as? String)
         XCTAssertEqual(15552000, flattenReceivedData["payload[0].maxAge"] as? Int)
+    }
+
+    func testProcessResponseOnSuccess_WhenOneEventHandle_emptyEventHandlePayload_dispatchesEvent() {
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"state:store\",\n" +
+            "            \"payload\": []" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
+
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "state:store")
+        XCTAssertEqual(1, dispatchEvents.count)
+        guard let receivedData = dispatchEvents[0].data else {
+            XCTFail("Invalid event data")
+            return
+        }
+
+        XCTAssertEqual(3, receivedData.count)
+        XCTAssertEqual("state:store", receivedData["type"] as? String)
+        XCTAssertEqual("123", receivedData["requestId"] as? String)
+        XCTAssertNotNil(receivedData["payload"])
+        XCTAssertTrue((receivedData["payload"] as? [[String: Any]])?.isEmpty ?? false)
+    }
+
+    func testProcessResponseOnSuccess_WhenOneEventHandle_noEventHandlePayload_dispatchesEvent() {
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        let jsonResponse = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [" +
+            "           {\n" +
+            "            \"type\": \"state:store\"\n" +
+            "        }],\n" +
+            "      \"errors\": []\n" +
+            "    }"
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "123")
+
+        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "state:store")
+        XCTAssertEqual(1, dispatchEvents.count)
+        guard let receivedData = dispatchEvents[0].data else {
+            XCTFail("Invalid event data")
+            return
+        }
+
+        XCTAssertEqual(2, receivedData.count)
+        XCTAssertEqual("state:store", receivedData["type"] as? String)
+        XCTAssertEqual("123", receivedData["requestId"] as? String)
     }
 
     func testProcessResponseOnSuccess_WhenOneEventHandle_emptyEventHandleType_dispatchesEvent() {
