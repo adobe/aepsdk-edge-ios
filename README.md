@@ -1,12 +1,15 @@
 # Adobe Experience Platform Edge Network Mobile Extension
 
-[![Cocoapods](https://img.shields.io/cocoapods/v/AEPEdge.svg?color=orange&label=AEPEdge&logo=apple&logoColor=white)](https://cocoapods.org/pods/AEPEdge)[![SPM](https://img.shields.io/badge/SPM-Supported-orange.svg?logo=apple&logoColor=white)](https://swift.org/package-manager/)[![CircleCI](https://img.shields.io/circleci/project/github/adobe/aepsdk-edge-ios/main.svg?logo=circleci)](https://circleci.com/gh/adobe/workflows/aepsdk-edge-ios)[![Code Coverage](https://img.shields.io/codecov/c/github/adobe/aepsdk-edge-ios/main.svg?logo=codecov)](https://codecov.io/gh/adobe/aepsdk-edge-ios/branch/main)
+[![CocoaPods](https://img.shields.io/github/v/release/adobe/aepsdk-edge-ios?label=CocoaPods&logo=apple&logoColor=white&color=orange)](https://cocoapods.org/pods/AEPEdge)
+[![SPM](https://img.shields.io/github/v/release/adobe/aepsdk-edge-ios?label=SPM&logo=apple&logoColor=white&color=orange)](https://github.com/adobe/aepsdk-edge-ios/releases)
+[![CircleCI](https://img.shields.io/circleci/project/github/adobe/aepsdk-edge-ios/main.svg?label=Build&logo=circleci)](https://circleci.com/gh/adobe/workflows/aepsdk-edge-ios)
+[![Code Coverage](https://img.shields.io/codecov/c/github/adobe/aepsdk-edge-ios/main.svg?label=Coverage&logo=codecov)](https://codecov.io/gh/adobe/aepsdk-edge-ios/branch/main)
 
 ## About this project
 
 The Adobe Experience Platform Edge Network mobile extension allows you to send data to the Adobe  Edge Network from a mobile application. This extension allows you to implement Adobe Experience Cloud capabilities in a more robust way, serve multiple Adobe solutions though one network call, and simultaneously forward this information to the Adobe Experience Platform.
 
-The AEP Edge Network mobile extension is an extension for the [Adobe Experience Platform SDK](https://aep-sdks.gitbook.io) and requires the `AEPCore` and `AEPServices` extensions for event handling, as well as the `AEPEdgeIdentity` extension for retrieving the identities, such as ECID. 
+The AEP Edge Network mobile extension is an extension for the [Adobe Experience Platform SDK](https://aep-sdks.gitbook.io) and requires the `AEPCore` and `AEPServices` extensions for event handling, as well as the `AEPEdgeIdentity` extension for retrieving the identities, such as ECID.
 
 To learn more about this extension, read the [Adobe Experience Platform Edge Network](https://aep-sdks.gitbook.io/docs/foundation-extensions/experience-platform-extension) documentation.
 
@@ -51,7 +54,7 @@ To add the AEPEdge Package to your application, from the Xcode menu select:
 
 `File > Add Packages...`
 
-> **Note** 
+> **Note**
 >  The menu options may vary depending on the version of Xcode being used.
 
 Enter the URL for the AEPEdge package repository: `https://github.com/adobe/aepsdk-edge-ios.git`.
