@@ -65,6 +65,7 @@ public class Edge: NSObject, Extension {
         print("Extension unregistered from MobileCore: \(EdgeConstants.FRIENDLY_NAME)")
     }
 
+    // ready for current event
     public func readyForEvent(_ event: Event) -> Bool {
         guard canProcessEvents(event: event) else { return false }
 
