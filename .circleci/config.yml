@@ -130,15 +130,9 @@ jobs:
     macos:
       xcode: 13.4.0 # Specify the Xcode version to use
 
-    steps:
-      - checkout
-
-      - install_dependencies
-
-      - prestart_tvos_simulator
-      
+    steps:      
       - run:
-          name: Run tvOS Tests
+          name: Run tvOS Tests (updated for testing)
           command: make test-tvos
 
       # Code coverage upload using Codecov
