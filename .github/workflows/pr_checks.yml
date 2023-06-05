@@ -26,7 +26,7 @@ jobs:
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
 
-      - name: Wait CircleCI pipeline status
+      - name: Wait longer for CircleCI pipeline status
         id: wait-circleci
         run: |
           echo CircleCI pipeline triggered with ID $PIPELINE_ID, waiting for it to finish before reporting PR checks status
