@@ -46,7 +46,7 @@ commands:
 
       # make sure we're on the right version of cocoapods
       - run:
-          name: Verify Cocoapods Version
+          name: Verify Cocoapods Version (changed for testing)
           command: bundle check || bundle install --path vendor/bundle
 
       # save cocoapods version gem data
