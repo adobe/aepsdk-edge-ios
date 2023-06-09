@@ -24,7 +24,7 @@ class NetworkResponseHandler {
     private var updateLocationHint: (String, _ ttlSeconds: TimeInterval) -> Void
 
     // the order of the request events matter for matching them with the response events
-    private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [(uuid: String, date: Date)]>()
+    private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [Event]>()
 
     /// Date of the last generic identity reset request event, for more info see `shouldIgnoreStorePayload`
     private var lastResetDate = Atomic<Date>(Date(timeIntervalSince1970: 0))
@@ -48,9 +48,7 @@ class NetworkResponseHandler {
                 Log.warning(label: self.LOG_TAG, "Name collision for requestId \(requestId), events list is overwritten.")
             }
 
-            let uuids = batchedEvents.map { $0.id.uuidString }
-            let timestamps = batchedEvents.map { $0.timestamp }
-            self.sentEventsWaitingResponse[requestId] = zip(uuids, timestamps).map { ($0, $1) }
+            self.sentEventsWaitingResponse[requestId] = batchedEvents
         }
     }
 
@@ -69,15 +67,15 @@ class NetworkResponseHandler {
     func removeWaitingEvents(requestId: String) -> [String]? {
         guard !requestId.isEmpty else { return nil }
 
-        return sentEventsWaitingResponse.removeValue(forKey: requestId)?.map({$0.uuid})
+        return sentEventsWaitingResponse.removeValue(forKey: requestId)?.map({$0.id.uuidString})
     }
 
     /// Returns the list of unique event ids associated with the provided requestId or empty if not found.
     /// - Parameter requestId: batch request id
-    /// - Returns: the list of unique event ids associated with the requestId or nil if none found
-    func getWaitingEvents(requestId: String) -> [String]? {
+    /// - Returns: the list of events associated with the requestId or nil if none found
+    func getWaitingEvents(requestId: String) -> [Event]? {
         guard !requestId.isEmpty else { return nil }
-        return sentEventsWaitingResponse[requestId]?.map({$0.uuid})
+        return sentEventsWaitingResponse[requestId]
     }
 
     /// Sets the last reset date
@@ -150,7 +148,7 @@ class NetworkResponseHandler {
         Log.trace(label: LOG_TAG, "processEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
 
         for eventHandle in unwrappedEventHandles {
-            let requestEventId = extractRequestEventId(forEventIndex: eventHandle.eventIndex, requestId: requestId)
+            let requestEvent = extractRequestEvent(forEventIndex: eventHandle.eventIndex, requestId: requestId)
             if ignoreStorePayloads {
                 Log.debug(label: LOG_TAG, "Identities were reset recently, ignoring state:store payload for request with id: \(requestId)")
             } else {
@@ -166,9 +164,9 @@ class NetworkResponseHandler {
             guard let eventHandleAsDictionary = eventHandle.asDictionary() else { continue }
             dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary,
                                   requestId: requestId,
-                                  requestEventId: requestEventId,
+                                  requestParentEvent: requestEvent,
                                   eventSource: eventHandle.type)
-            CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: requestEventId, eventHandle)
+            CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: requestEvent?.id.uuidString, eventHandle)
         }
     }
 
@@ -178,32 +176,32 @@ class NetworkResponseHandler {
     /// - Parameters:
     ///   - forEventIndex: the `EdgeEventHandle`/ `EdgeEventError` event index
     ///   - requestId: edge request id used to fetch the waiting events associated with it (if any)
-    /// - Returns: the request event unique identifier for which this event handle was received, nil if not found
-    private func extractRequestEventId(forEventIndex: Int?, requestId: String) -> String? {
-        guard let requestEventIdsList = getWaitingEvents(requestId: requestId) else { return nil }
+    /// - Returns: the request event for which this event handle was received, nil if not found
+    private func extractRequestEvent(forEventIndex: Int?, requestId: String) -> Event? {
+        guard let requestEventList = getWaitingEvents(requestId: requestId) else { return nil }
 
         // Note: ExEdge does not return eventIndex when there is only one event in the request.
         // The event handles and errors are associated to that request event, so defaulting to 0 here.
         let index = forEventIndex ?? 0
-        guard index >= 0, index < requestEventIdsList.count else {
+        guard index >= 0, index < requestEventList.count else {
             return nil
         }
 
-        return requestEventIdsList[index]
+        return requestEventList[index]
     }
 
     /// Dispatches a response event with the provided event handle as `[String: Any]`, including the request event id and request identifier
     /// - Parameters:
     ///   - handleAsDictionary: represents an `EdgeEventHandle` parsed as [String:Any]
     ///   - requestId: the edge request identifier associated with this response
-    ///   - requestEventId: the request event identifier for which this response event handle was received
+    ///   - requestParentEvent: the request event for which this response event handle was received
     ///   - eventSource type of the `EdgeEventHandle`
-    private func dispatchResponseEvent(handleAsDictionary: [String: Any], requestId: String, requestEventId: String?, eventSource: String?) {
+    private func dispatchResponseEvent(handleAsDictionary: [String: Any], requestId: String, requestParentEvent: Event?, eventSource: String?) {
         guard !handleAsDictionary.isEmpty else { return }
 
         // set eventRequestId and edge requestId on the response event and dispatch data
-        let eventData = addEventAndRequestIdToDictionary(handleAsDictionary, requestId: requestId, requestEventId: requestEventId)
-        dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: false, eventSource: eventSource)
+        let eventData = addEventAndRequestIdToDictionary(handleAsDictionary, requestId: requestId, requestEventId: requestParentEvent?.id.uuidString)
+        dispatchResponseEventWithData(eventData, requestParentEvent: requestParentEvent, isErrorResponseEvent: false, eventSource: eventSource)
     }
 
     /// Iterates over the provided `errorsArray` and dispatches a new error event to the Event Hub.
@@ -224,13 +222,13 @@ class NetworkResponseHandler {
             if let errorAsDictionary = error.asDictionary() {
                 logErrorMessage(errorAsDictionary, isError: true, requestId: requestId)
 
-                let requestEventId = extractRequestEventId(forEventIndex: error.eventIndex, requestId: requestId)
+                let requestEvent = extractRequestEvent(forEventIndex: error.eventIndex, requestId: requestId)
                 // set eventRequestId and Edge requestId on the response event and dispatch data
                 let eventData = addEventAndRequestIdToDictionary(errorAsDictionary,
                                                                  requestId: requestId,
-                                                                 requestEventId: requestEventId)
+                                                                 requestEventId: requestEvent?.id.uuidString)
                 guard !eventData.isEmpty else { continue }
-                dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true, eventSource: nil)
+                dispatchResponseEventWithData(eventData, requestParentEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
             }
         }
     }
@@ -253,13 +251,13 @@ class NetworkResponseHandler {
             if let warningsAsDictionary = warning.asDictionary() {
                 logErrorMessage(warningsAsDictionary, isError: false, requestId: requestId)
 
-                let requestEventId = extractRequestEventId(forEventIndex: warning.eventIndex, requestId: requestId)
+                let requestEvent = extractRequestEvent(forEventIndex: warning.eventIndex, requestId: requestId)
                 // set eventRequestId and Edge requestId on the response event and dispatch data
                 let eventData = addEventAndRequestIdToDictionary(warningsAsDictionary,
                                                                  requestId: requestId,
-                                                                 requestEventId: requestEventId)
+                                                                 requestEventId: requestEvent?.id.uuidString)
                 guard !eventData.isEmpty else { return }
-                dispatchResponseEventWithData(eventData, requestId: requestId, isErrorResponseEvent: true, eventSource: nil)
+                dispatchResponseEventWithData(eventData, requestParentEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
             }
         }
     }
@@ -267,22 +265,32 @@ class NetworkResponseHandler {
     /// Dispatched a new event with the provided `eventData` as responseContent or as errorResponseContent based on the `isErrorResponseEvent` setting
     /// - Parameters:
     ///   - eventData: Event data to be dispatched, should not be empty
-    ///   - requestId: The request identifier associated with this response event, used for logging
+    ///   - requestParentEvent: The request parent event associated with this response event
     ///   - isErrorResponseEvent: indicates if this should be dispatched as an error or regular response content event
     ///   - eventSource: an optional `String` to be used as the event source.
     ///   If `eventSource` is nil either Constants.EventSource.ERROR_RESPONSE_CONTENT or Constants.EventSource.RESPONSE_CONTENT will be used for the event source depending on `isErrorResponseEvent`
-    private func dispatchResponseEventWithData(_ eventData: [String: Any], requestId: String, isErrorResponseEvent: Bool, eventSource: String?) {
+    private func dispatchResponseEventWithData(_ eventData: [String: Any], requestParentEvent: Event?, isErrorResponseEvent: Bool, eventSource: String?) {
         guard !eventData.isEmpty else { return }
         var source = isErrorResponseEvent ? EdgeConstants.EventSource.ERROR_RESPONSE_CONTENT : EventSource.responseContent
         if let eventSource = eventSource, !eventSource.isEmpty {
             source = eventSource
         }
-
-        let responseEvent = Event(name: isErrorResponseEvent ?
-                                    EdgeConstants.EventName.ERROR_RESPONSE_CONTENT : EdgeConstants.EventName.RESPONSE_CONTENT,
+        
+        let eventName = isErrorResponseEvent ? EdgeConstants.EventName.ERROR_RESPONSE_CONTENT : EdgeConstants.EventName.RESPONSE_CONTENT
+        let responseEvent: Event
+        
+        if let requestParentEvent = requestParentEvent {
+            responseEvent = requestParentEvent.createChainedEvent(name: eventName,
+                                                                  type: EventType.edge,
+                                                                  source: source,
+                                                                  data: eventData)
+        } else {
+            Log.debug(label: LOG_TAG, "dispatchResponseEventWtihData - Parent Event is nil, dispatching network response event without chained parent.")
+            responseEvent = Event(name: eventName,
                                   type: EventType.edge,
                                   source: source,
                                   data: eventData)
+        }
 
         MobileCore.dispatch(event: responseEvent)
     }
@@ -365,7 +373,7 @@ class NetworkResponseHandler {
     /// - Returns: true if we should ignore store payload responses for `requestId`
     private func shouldIgnoreStorePayload(requestId: String) -> Bool {
         if let firstEvent = sentEventsWaitingResponse[requestId]?.first {
-            return firstEvent.date < lastResetDate.value
+            return firstEvent.timestamp < lastResetDate.value
         }
 
         return false
