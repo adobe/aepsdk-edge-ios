@@ -192,7 +192,7 @@ public class Edge: NSObject, Extension {
                                                       type: EventType.edge,
                                                       source: EventSource.responseIdentity,
                                                       data: data)
-        dispatch(event: responseEvent)
+        //dispatch(event: responseEvent)
     }
 
     func handleUpdateLocationHint(_ event: Event) {
