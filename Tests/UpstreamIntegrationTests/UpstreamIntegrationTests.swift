@@ -106,33 +106,33 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
        
-        assertEdgeResponse(expectedType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedPayload: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
         
         let expectedStateStore1stJSON = #"""
         {
           "payload": [
             {
               "maxAge": 1,
-              "key": "stringType",
+              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
               "value": "stringType"
             },
             {
               "maxAge": 1,
-              "key": "stringType",
+              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_identity",
               "value": "stringType"
             }
           ]
         }
         """#
         
-        assertEdgeResponse(expectedType: TestConstants.EventSource.STATE_STORE, expectedPayload: expectedStateStore1stJSON)
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON, exactMatchPaths: ["payload[0].key", "payload[1].key"])
         
         // MARK: 2nd send event
         resetTestExpectations()
         Edge.sendEvent(experienceEvent: experienceEvent)
         
         // Assert location hint response is correct
-        assertEdgeResponse(expectedType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedPayload: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
 
         let expectedStateStore2ndJSON = #"""
         {
@@ -147,7 +147,7 @@ class UpstreamIntegrationTests: TestBase {
         """#
         
         // Assert state store response is correct
-        assertEdgeResponse(expectedType: TestConstants.EventSource.STATE_STORE, expectedPayload: expectedStateStore2ndJSON, exactMatchPaths: ["payload[*].key"])
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore2ndJSON, exactMatchPaths: ["payload[0].key"])
     }
 
     // Tests standard sendEvent with both XDM and data, where data is complex - many keys and
@@ -204,26 +204,26 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponse(expectedType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedPayload: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
 
         let expectedStateStore1stJSON = #"""
         {
           "payload": [
             {
               "maxAge": 1,
-              "key": "stringType",
+              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
               "value": "stringType"
             },
             {
               "maxAge": 1,
-              "key": "stringType",
+              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_identity",
               "value": "stringType"
             }
           ]
         }
         """#
 
-        assertEdgeResponse(expectedType: TestConstants.EventSource.STATE_STORE, expectedPayload: expectedStateStore1stJSON)
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON, exactMatchPaths: ["payload[0].key", "payload[1].key"])
     }
 
     // Tests standard sendEvent with complex XDM - many keys and different value types
@@ -275,26 +275,26 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponse(expectedType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedPayload: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
 
         let expectedStateStore1stJSON = #"""
         {
           "payload": [
             {
               "maxAge": 1,
-              "key": "stringType",
+              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
               "value": "stringType"
             },
             {
               "maxAge": 1,
-              "key": "stringType",
+              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_identity",
               "value": "stringType"
             }
           ]
         }
         """#
 
-        assertEdgeResponse(expectedType: TestConstants.EventSource.STATE_STORE, expectedPayload: expectedStateStore1stJSON)
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON, exactMatchPaths: ["payload[0].key", "payload[1].key"])
     }
 
     // MARK: - Configuration tests
@@ -347,26 +347,26 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponse(expectedType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedPayload: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
 
         let expectedStateStore1stJSON = #"""
         {
           "payload": [
             {
               "maxAge": 1,
-              "key": "stringType",
+              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
               "value": "stringType"
             },
             {
               "maxAge": 1,
-              "key": "stringType",
+              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_identity",
               "value": "stringType"
             }
           ]
         }
         """#
 
-        assertEdgeResponse(expectedType: TestConstants.EventSource.STATE_STORE, expectedPayload: expectedStateStore1stJSON)
+        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON, exactMatchPaths: ["payload[0].key", "payload[1].key"])
     }
 
     // MARK: - Error scenarios
@@ -401,12 +401,12 @@ class UpstreamIntegrationTests: TestBase {
             },
             "requestEventId": "stringType",
             "title": "Invalid datastream ID",
-            "type": "stringType",
+            "type": "https://ns.adobe.com/aep/errors/EXEG-0003-400",
             "requestId": "stringType"
           }
         """#
 
-        assertEdgeResponseError(expectedErrorDetails: expectedErrorJSON, exactMatchPaths: ["status", "title"])
+        assertEdgeResponseError(expectedErrorDetails: expectedErrorJSON, exactMatchPaths: ["status", "title", "type"])
     }
 
     // Tests that an invalid location hint returns the expected error with 0 byte data body
@@ -463,25 +463,33 @@ class UpstreamIntegrationTests: TestBase {
         return "https://obumobile5.data.adobedc.net/ee/\(locationHint)/v1/interact"
     }
     
-    private func assertEdgeResponse(expectedType: String, expectedPayload: String, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
-        guard let expected = getAnyCodable(expectedPayload) else {
+    private func assertEdgeResponseHandle(expectedHandleType: String, expectedHandle: String, expectedCount: Int = 1, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+        guard let expected = getAnyCodable(expectedHandle) else {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.", file: file, line: line)
             return
         }
         
-        let responseHandleEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedType)
+        let responseHandleEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
         
-        XCTAssertEqual(1, responseHandleEvents.count, file: file, line: line)
+        XCTAssertEqual(expectedCount, responseHandleEvents.count, file: file, line: line)
         
-        guard let responseHandleEvent = responseHandleEvents.first else {
-            XCTFail("No valid response handle event found", file: file, line: line)
+        for event in responseHandleEvents {
+            assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: event), exactMatchPaths: exactMatchPaths, file: file, line: line)
+        }
+    }
+    
+    private func assertEdgeResponseError(expectedErrorDetails: String, expectedCount: Int = 1, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+        guard let expected = getAnyCodable(expectedErrorDetails) else {
+            XCTFail("Unable to decode JSON string. Test case unable to proceed.", file: file, line: line)
             return
         }
         
-        assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: responseHandleEvent), exactMatchPaths: exactMatchPaths, file: file, line: line)
-    }
-    
-    private func assertEdgeResponseError(expectedErrorDetails: String, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
-        assertEdgeResponse(expectedType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedPayload: expectedErrorDetails, file: file, line: line)
+        let responseHandleEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
+        
+        XCTAssertEqual(expectedCount, responseHandleEvents.count, file: file, line: line)
+        
+        for event in responseHandleEvents {
+            assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: event), exactMatchPaths: exactMatchPaths, file: file, line: line)
+        }
     }
 }
