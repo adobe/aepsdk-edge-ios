@@ -70,7 +70,7 @@ class UpstreamIntegrationTests: TestBase {
     func testSendEvent_withStandardExperienceEventTwice_receivesExpectedEventHandles() {
         // Setup
         // Test constructs should always be valid
-        let interactNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
@@ -105,7 +105,7 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
        
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+        assertEdgeResponse(expectedType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedPayload: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
         
         let expectedStateStore1stJSON = #"""
         {
@@ -124,21 +124,21 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
         
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON)
+        assertEdgeResponse(expectedType: TestConstants.EventSource.STATE_STORE, expectedPayload: expectedStateStore1stJSON)
         
         // MARK: 2nd send event
         resetTestExpectations()
         Edge.sendEvent(experienceEvent: experienceEvent)
         
         // Assert location hint response is correct
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
-        // TODO: strong validation against org ID portion of key
+        assertEdgeResponse(expectedType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedPayload: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+
         let expectedStateStore2ndJSON = #"""
         {
           "payload": [
             {
               "maxAge": 1,
-              "key": "stringType",
+              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
               "value": "stringType"
             }
           ]
@@ -146,14 +146,14 @@ class UpstreamIntegrationTests: TestBase {
         """#
         
         // Assert state store response is correct
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore2ndJSON)
+        assertEdgeResponse(expectedType: TestConstants.EventSource.STATE_STORE, expectedPayload: expectedStateStore2ndJSON, exactMatchPaths: ["payload[*].key"])
     }
 
     // Tests standard sendEvent with both XDM and data, where data is complex - many keys and
     // different value types
     func testSendEvent_withEventXDMAndData_receivesExpectedEventHandles() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let eventPayloadJSON = #"""
@@ -202,7 +202,7 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+        assertEdgeResponse(expectedType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedPayload: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
 
         let expectedStateStore1stJSON = #"""
         {
@@ -221,13 +221,13 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON)
+        assertEdgeResponse(expectedType: TestConstants.EventSource.STATE_STORE, expectedPayload: expectedStateStore1stJSON)
     }
 
     // Tests standard sendEvent with complex XDM - many keys and different value types
     func testSendEvent_withEventXDMOnly_receivesExpectedEventHandles() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let eventPayloadJSON = #"""
@@ -271,7 +271,7 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+        assertEdgeResponse(expectedType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedPayload: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
 
         let expectedStateStore1stJSON = #"""
         {
@@ -290,7 +290,7 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON)
+        assertEdgeResponse(expectedType: TestConstants.EventSource.STATE_STORE, expectedPayload: expectedStateStore1stJSON)
     }
 
     // MARK: - Configuration tests
@@ -298,7 +298,7 @@ class UpstreamIntegrationTests: TestBase {
     func testSendEvent_withSetLocationHint_receivesExpectedEventHandles() {
         // Setup
         let locationHint = "va6"
-        let locationHintNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/\(locationHint)/v1/interact", httpMethod: .post)!
+        let locationHintNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: locationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: locationHintNetworkRequest, expectedCount: 1)
 
         Edge.setLocationHint(locationHint)
@@ -341,7 +341,7 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
+        assertEdgeResponse(expectedType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedPayload: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
 
         let expectedStateStore1stJSON = #"""
         {
@@ -360,7 +360,7 @@ class UpstreamIntegrationTests: TestBase {
         }
         """#
 
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON)
+        assertEdgeResponse(expectedType: TestConstants.EventSource.STATE_STORE, expectedPayload: expectedStateStore1stJSON)
     }
 
     // MARK: - Error scenarios
@@ -368,7 +368,7 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid datastream ID returns the expected error
     func testSendEvent_withInvalidDatastreamID_receivesExpectedError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/v1/interact", httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
 
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
@@ -404,7 +404,7 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid location hint returns the expected error with 0 byte data body
     func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
         // Setup
-        let invalidNetworkRequest = NetworkRequest(urlString: "https://obumobile5.data.adobedc.net/ee/invalid/v1/interact", httpMethod: .post)!
+        let invalidNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: "invalid"), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: invalidNetworkRequest, expectedCount: 1)
 
         Edge.setLocationHint("invalid")
@@ -437,13 +437,32 @@ class UpstreamIntegrationTests: TestBase {
         }
     }
     
-    private func assertEdgeResponseHandle(expectedHandleType: String, expectedHandle: String, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
-        guard let expected = getAnyCodable(expectedHandle) else {
+    /// Creates a valid interact URL using the provided location hint. If location hint is invalid, returns default URL with no location hint.
+    /// - Parameters:
+    ///    - locationHint: The `EdgeLocationHint`'s raw value to use in the URL
+    /// - Returns: The interact URL with location hint applied, default URL if location hint is invalid
+    private func createURLWith(locationHint: EdgeLocationHint?) -> String {
+        guard let locationHint = locationHint else {
+            return "https://obumobile5.data.adobedc.net/ee/v1/interact"
+        }
+        return createURLWith(locationHint: locationHint.rawValue)
+    }
+    
+    /// Creates a valid interact URL using the provided location hint.
+    /// - Parameters:
+    ///    - locationHint: The location hint String to use in the URL
+    /// - Returns: The interact URL with location hint applied
+    private func createURLWith(locationHint: String) -> String {
+        return "https://obumobile5.data.adobedc.net/ee/\(locationHint)/v1/interact"
+    }
+    
+    private func assertEdgeResponse(expectedType: String, expectedPayload: String, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+        guard let expected = getAnyCodable(expectedPayload) else {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.", file: file, line: line)
             return
         }
         
-        let responseHandleEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
+        let responseHandleEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedType)
         
         XCTAssertEqual(1, responseHandleEvents.count, file: file, line: line)
         
@@ -456,6 +475,6 @@ class UpstreamIntegrationTests: TestBase {
     }
     
     private func assertEdgeResponseError(expectedErrorDetails: String, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedHandle: expectedErrorDetails, file: file, line: line)
+        assertEdgeResponse(expectedType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedPayload: expectedErrorDetails, file: file, line: line)
     }
 }
