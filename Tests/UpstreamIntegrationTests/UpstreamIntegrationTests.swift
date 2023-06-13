@@ -83,9 +83,10 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let receivedResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
-        XCTAssertEqual(1, receivedResponses.count)
-        XCTAssertEqual(200, receivedResponses.first?.responseCode)
+        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        
+        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(200, matchingResponses.first?.responseCode)
 
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
@@ -184,9 +185,10 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
-        XCTAssertEqual(200, matchedResponse.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(200, matchingResponses.first?.responseCode)
 
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
@@ -254,8 +256,10 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
-        XCTAssertEqual(200, matchedResponse.first?.responseCode)
+        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        
+        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(200, matchingResponses.first?.responseCode)
 
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
@@ -324,8 +328,10 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = networkService.getResponsesFor(networkRequest: locationHintNetworkRequest, timeout: 5)
-        XCTAssertEqual(200, matchedResponse.first?.responseCode)
+        let matchingResponses = networkService.getResponsesFor(networkRequest: locationHintNetworkRequest, timeout: 5)
+        
+        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(200, matchingResponses.first?.responseCode)
 
         // MARK: Response Event assertions
         // Only validate for the location hint relevant to Edge Network extension
@@ -380,8 +386,10 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        let matchedResponse = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
-        XCTAssertEqual(400, matchedResponse.first?.responseCode)
+        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        
+        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(400, matchingResponses.first?.responseCode)
 
         // MARK: Event assertions
         let expectedErrorJSON = #"""
@@ -416,12 +424,11 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // MARK: Network response assertions
-        guard let matchedResponse = networkService.getResponsesFor(networkRequest: invalidNetworkRequest, timeout: 5).first else {
-            XCTFail("No valid response found for request: \(invalidNetworkRequest)")
-            return
-        }
-        XCTAssertEqual(404, matchedResponse.responseCode)
-        XCTAssertEqual(0, matchedResponse.data?.count)
+        let matchingResponses = networkService.getResponsesFor(networkRequest: invalidNetworkRequest, timeout: 5)
+        
+        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(404, matchingResponses.first?.responseCode)
+        XCTAssertEqual(0, matchingResponses.first?.data?.count)
     }
 
     // MARK: - Test helper methods
