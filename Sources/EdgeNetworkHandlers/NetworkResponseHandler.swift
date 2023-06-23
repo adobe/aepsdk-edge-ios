@@ -170,8 +170,7 @@ class NetworkResponseHandler {
         }
     }
 
-    /// Extracts the request event identifiers paired with this event handle/error handle based on the index. If no matches are found or the event handle index is missing,
-    /// this method returns nil
+    /// Extracts the request event paired with this event handle/error handle based on the index. If no match is found or the event handle index is missing, this method returns nil.
     ///
     /// - Parameters:
     ///   - forEventIndex: the `EdgeEventHandle`/ `EdgeEventError` event index
@@ -201,7 +200,7 @@ class NetworkResponseHandler {
 
         // set eventRequestId and edge requestId on the response event and dispatch data
         let eventData = addEventAndRequestIdToDictionary(handleAsDictionary, requestId: requestId, requestEventId: requestParentEvent?.id.uuidString)
-        dispatchResponseEventWithData(eventData, requestParentEvent: requestParentEvent, isErrorResponseEvent: false, eventSource: eventSource)
+        dispatchResponseEventWithData(eventData, parentRequestEvent: requestParentEvent, isErrorResponseEvent: false, eventSource: eventSource)
     }
 
     /// Iterates over the provided `errorsArray` and dispatches a new error event to the Event Hub.
@@ -228,7 +227,7 @@ class NetworkResponseHandler {
                                                                  requestId: requestId,
                                                                  requestEventId: requestEvent?.id.uuidString)
                 guard !eventData.isEmpty else { continue }
-                dispatchResponseEventWithData(eventData, requestParentEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
+                dispatchResponseEventWithData(eventData, parentRequestEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
             }
         }
     }
@@ -257,7 +256,7 @@ class NetworkResponseHandler {
                                                                  requestId: requestId,
                                                                  requestEventId: requestEvent?.id.uuidString)
                 guard !eventData.isEmpty else { return }
-                dispatchResponseEventWithData(eventData, requestParentEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
+                dispatchResponseEventWithData(eventData, parentRequestEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
             }
         }
     }
@@ -269,23 +268,23 @@ class NetworkResponseHandler {
     ///   - isErrorResponseEvent: indicates if this should be dispatched as an error or regular response content event
     ///   - eventSource: an optional `String` to be used as the event source.
     ///   If `eventSource` is nil either Constants.EventSource.ERROR_RESPONSE_CONTENT or Constants.EventSource.RESPONSE_CONTENT will be used for the event source depending on `isErrorResponseEvent`
-    private func dispatchResponseEventWithData(_ eventData: [String: Any], requestParentEvent: Event?, isErrorResponseEvent: Bool, eventSource: String?) {
+    private func dispatchResponseEventWithData(_ eventData: [String: Any], parentRequestEvent: Event?, isErrorResponseEvent: Bool, eventSource: String?) {
         guard !eventData.isEmpty else { return }
         var source = isErrorResponseEvent ? EdgeConstants.EventSource.ERROR_RESPONSE_CONTENT : EventSource.responseContent
         if let eventSource = eventSource, !eventSource.isEmpty {
             source = eventSource
         }
-        
+
         let eventName = isErrorResponseEvent ? EdgeConstants.EventName.ERROR_RESPONSE_CONTENT : EdgeConstants.EventName.RESPONSE_CONTENT
         let responseEvent: Event
-        
-        if let requestParentEvent = requestParentEvent {
+
+        if let requestParentEvent = parentRequestEvent {
             responseEvent = requestParentEvent.createChainedEvent(name: eventName,
                                                                   type: EventType.edge,
                                                                   source: source,
                                                                   data: eventData)
         } else {
-            Log.debug(label: LOG_TAG, "dispatchResponseEventWtihData - Parent Event is nil, dispatching network response event without chained parent.")
+            Log.debug(label: LOG_TAG, "dispatchResponseEventWithData - Parent Event is nil, dispatching response event without chained parent.")
             responseEvent = Event(name: eventName,
                                   type: EventType.edge,
                                   source: source,
