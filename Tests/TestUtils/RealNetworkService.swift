@@ -35,6 +35,10 @@ class RealNetworkService: NetworkService {
     }
 
     // MARK: - Passthrough for shared helper APIs
+    func assertAllNetworkRequestExpectations() {
+        helper.assertAllNetworkRequestExpectations()
+    }
+    
     func reset() {
         helper.reset()
     }

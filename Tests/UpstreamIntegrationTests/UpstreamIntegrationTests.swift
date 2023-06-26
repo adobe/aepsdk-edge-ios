@@ -54,6 +54,7 @@ class UpstreamIntegrationTests: TestBase {
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
 
         // Set Edge location hint value if one is set for the test target
+        edgeLocationHint = .ind1
         if edgeLocationHint != nil {
             print("Setting Edge location hint to: \(String(describing: edgeLocationHint?.rawValue))")
             Edge.setLocationHint(edgeLocationHint?.rawValue)
@@ -65,98 +66,36 @@ class UpstreamIntegrationTests: TestBase {
     }
 
     // MARK: - Upstream integration test cases
-
-    // MARK: 1st launch scenarios
-    func testSendEvent_withStandardExperienceEventTwice_receivesExpectedEventHandles() {
+    
+    /// Tests that a standard sendEvent receives a single network response with HTTP code 200
+    func testSendEvent_receivesExpectedNetworkResponse() {
         // Setup
-        // Test constructs should always be valid
+        // Note: test constructs should always be valid
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
 
-        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                              data: ["data": ["test": "data"]])
         // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
-
-        // Verify
-        // MARK: Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
         
+        // Verify
+        // Network response assertions
+        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+
         XCTAssertEqual(1, matchingResponses.count)
         XCTAssertEqual(200, matchingResponses.first?.responseCode)
-
-        // MARK: Response Event assertions
-        // Only validate for the location hint relevant to Edge Network extension
-        // NOTE: when using `assertTypeMatch`, key value pairs take advantage of the flexible
-        // JSON comparison system defined in XCTestCase+AnyCodableAsserts where test assertions
-        // between JSON values can be based on their data types instead of exact values.
-        // See the assertTypeMatch -> exactMatchPaths arg to see which key paths will use exact matching for values
-        let expectedLocationHintJSON = #"""
-        {
-          "payload": [
-            {
-              "ttlSeconds" : 1800,
-              "scope" : "EdgeNetwork",
-              "hint" : "stringType"
-            }
-          ]
-        }
-        """#
-       
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
-        
-        let expectedStateStore1stJSON = #"""
-        {
-          "payload": [
-            {
-              "maxAge": 1,
-              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
-              "value": "stringType"
-            },
-            {
-              "maxAge": 1,
-              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_identity",
-              "value": "stringType"
-            }
-          ]
-        }
-        """#
-        
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON, exactMatchPaths: ["payload[0].key", "payload[1].key"])
-        
-        // MARK: 2nd send event
-        resetTestExpectations()
-        Edge.sendEvent(experienceEvent: experienceEvent)
-        
-        // Assert location hint response is correct
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
-
-        let expectedStateStore2ndJSON = #"""
-        {
-          "payload": [
-            {
-              "maxAge": 1,
-              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
-              "value": "stringType"
-            }
-          ]
-        }
-        """#
-        
-        // Assert state store response is correct
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore2ndJSON, exactMatchPaths: ["payload[0].key"])
     }
-
-    // Tests standard sendEvent with both XDM and data, where data is complex - many keys and
-    // different value types
-    func testSendEvent_withEventXDMAndData_receivesExpectedEventHandles() {
+    
+    /// Tests that a standard sendEvent receives a single network response with HTTP code 200
+    func testSendEvent_whenComplexEvent_receivesExpectedNetworkResponse() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
+        
         let eventPayloadJSON = #"""
         {
           "xdm": {
@@ -182,56 +121,21 @@ class UpstreamIntegrationTests: TestBase {
 
         // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
-
+        
         // Verify
-        // MARK: Network response assertions
+        // Network response assertions
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
         XCTAssertEqual(1, matchingResponses.count)
         XCTAssertEqual(200, matchingResponses.first?.responseCode)
-
-        // MARK: Response Event assertions
-        // Only validate for the location hint relevant to Edge Network extension
-        let expectedLocationHintJSON = #"""
-        {
-          "payload": [
-            {
-              "ttlSeconds" : 1800,
-              "scope" : "EdgeNetwork",
-              "hint" : "stringType"
-            }
-          ]
-        }
-        """#
-
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
-
-        let expectedStateStore1stJSON = #"""
-        {
-          "payload": [
-            {
-              "maxAge": 1,
-              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
-              "value": "stringType"
-            },
-            {
-              "maxAge": 1,
-              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_identity",
-              "value": "stringType"
-            }
-          ]
-        }
-        """#
-
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON, exactMatchPaths: ["payload[0].key", "payload[1].key"])
     }
-
-    // Tests standard sendEvent with complex XDM - many keys and different value types
-    func testSendEvent_withEventXDMOnly_receivesExpectedEventHandles() {
+    
+    /// Tests that a standard sendEvent () receives a single network response with HTTP code 200
+    func testSendEvent_whenComplexXDMEvent_receivesExpectedNetworkResponse() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
+        
         let eventPayloadJSON = #"""
         {
           "xdm": {
@@ -253,121 +157,328 @@ class UpstreamIntegrationTests: TestBase {
 
         // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
-
-        // Verify
-        // MARK: Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
         
+        // Verify
+        // Network response assertions
+        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+
         XCTAssertEqual(1, matchingResponses.count)
         XCTAssertEqual(200, matchingResponses.first?.responseCode)
+    }
+    
+    /// Tests that a standard sendEvent receives the expected event handles
+    func testSendEvent_receivesExpectedEventHandles() {
+        // Setup
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 1)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 1)
 
-        // MARK: Response Event assertions
-        // Only validate for the location hint relevant to Edge Network extension
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
+
+        // Test
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Verify
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+    }
+    
+    /// Tests that a standard sendEvent receives the expected event handles
+    func testSendEvent_doesNotReceivesErrorEvent() {
+        // Setup
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 1)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 1)
+
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
+
+        // Test
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Verify
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        
+        let errorEvents = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
+        XCTAssertEqual(0, errorEvents.count)
+    }
+    
+    /// Tests that a standard sendEvent with no prior location hint value set receives the expected location hint event handle.
+    /// That is, checks for a string type location hint
+    func testSendEvent_with_NO_priorLocationHint_receivesExpectedLocationHintEventHandle() {
+        // Setup
+        // Clear any existing location hint
+        Edge.setLocationHint(nil)
+        
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 1)
+
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
+
+        // Test
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Verify
         let expectedLocationHintJSON = #"""
         {
           "payload": [
             {
-              "ttlSeconds" : 1800,
+              "ttlSeconds" : 123,
               "scope" : "EdgeNetwork",
               "hint" : "stringType"
             }
           ]
         }
         """#
+        
+        // See testSendEvent_receivesExpectedEventHandles for existence validation
+        let locationHintResult = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
+        
+        // Even though assertTypeMatch can accept a nil AnyCodable, expected uses ! because expectation is
+        // a test construct that should not be nil, and will be able to catch a nil actual
+        assertTypeMatch(expected: getAnyCodable(expectedLocationHintJSON)!,
+                        actual: getAnyCodable(locationHintResult),
+                        exactMatchPaths: ["payload[*].scope"])
+    }
+    
+    /// Tests that a standard sendEvent WITH prior location hint value set receives the expected location hint event handle.
+    /// That is, checks for consistency between prior location hint value and received location hint result
+    func testSendEvent_withPriorLocationHint_receivesExpectedLocationHintEventHandle() {
+        // Setup
+        // Uses all the valid location hint cases in random order to prevent order dependent edge cases slipping through
+        for locationHint in (EdgeLocationHint.allCases).map({ $0.rawValue }).shuffled() {
+            Edge.setLocationHint(locationHint)
+            
+            expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 1)
 
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope"])
+            let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
 
-        let expectedStateStore1stJSON = #"""
+            // Test
+            Edge.sendEvent(experienceEvent: experienceEvent)
+            
+            // Verify
+            let expectedLocationHintJSON = #"""
+            {
+              "payload": [
+                {
+                  "ttlSeconds" : 123,
+                  "scope" : "EdgeNetwork",
+                  "hint" : "\#(locationHint)"
+                }
+              ]
+            }
+            """#
+            
+            let locationHintResult = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
+            
+            assertTypeMatch(expected: getAnyCodable(expectedLocationHintJSON)!,
+                            actual: getAnyCodable(locationHintResult),
+                            exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
+            
+            resetTestExpectations()
+            networkService.reset()
+        }
+    }
+    
+    /// Tests that a standard sendEvent with no prior state receives the expected state store event handle.
+    func testSendEvent_with_NO_priorState_receivesExpectedStateStoreEventHandle() {
+        // Setup
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 1)
+
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
+
+        // Test
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Verify
+        let expectedStateStoreJSON = #"""
         {
           "payload": [
             {
-              "maxAge": 1,
+              "maxAge": 123,
               "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
               "value": "stringType"
             },
             {
-              "maxAge": 1,
+              "maxAge": 123,
               "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_identity",
               "value": "stringType"
             }
           ]
         }
         """#
-
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON, exactMatchPaths: ["payload[0].key", "payload[1].key"])
+        
+        // See testSendEvent_receivesExpectedEventHandles for existence validation
+        let stateStoreEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.STATE_STORE).last!
+        
+        // Exact match used here to strictly validate `payload` array element count == 2
+        assertExactMatch(expected: getAnyCodable(expectedStateStoreJSON)!,
+                        actual: getAnyCodable(stateStoreEvent),
+                        typeMatchPaths: ["payload[0].maxAge", "payload[0].value", "payload[1].maxAge", "payload[1].value"])
     }
-
-    // MARK: - Configuration tests
-    // Tests standard sendEvent with preset location hint
-    func testSendEvent_withSetLocationHint_receivesExpectedEventHandles() {
+    
+    /// Tests that a standard sendEvent with prior state receives the expected state store event handle.
+    func testSendEvent_withPriorState_receivesExpectedStateStoreEventHandle() {
         // Setup
-        let locationHint = "va6"
-        let locationHintNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: locationHint), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: locationHintNetworkRequest, expectedCount: 1)
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
 
-        Edge.setLocationHint(locationHint)
-
-        let eventPayloadJSON = #"""
-        {
-          "xdm": {
-            "testString": "xdm"
-          },
-          "data": {
-            "testDataString": "stringValue"
-          }
-        }
-        """#
-
-        let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
-        let data = getAnyCodableAndPayload(eventPayloadJSON, type: .data)!
-
-        let experienceEvent = ExperienceEvent(xdm: xdm.payload, data: data.payload)
-
-        // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        resetTestExpectations()
+        networkService.reset()
+        
+        for locationHint in (EdgeLocationHint.allCases).map({ $0.rawValue }).shuffled() {
+            Edge.setLocationHint(locationHint)
+            
+            expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 1)
+            
+            // Test
+            Edge.sendEvent(experienceEvent: experienceEvent)
+            
+            // Verify
+            let expectedStateStoreJSON = #"""
+            {
+              "payload": [
+                {
+                  "maxAge": 123,
+                  "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
+                  "value": "\#(locationHint)"
+                }
+              ]
+            }
+            """#
+            
+            // See testSendEvent_receivesExpectedEventHandles for existence validation
+            let stateStoreEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.STATE_STORE).last!
+            
+            // Exact match used here to strictly validate `payload` array element count == 2
+            assertExactMatch(expected: getAnyCodable(expectedStateStoreJSON)!,
+                            actual: getAnyCodable(stateStoreEvent),
+                            typeMatchPaths: ["payload[0].maxAge"])
+            
+            resetTestExpectations()
+            networkService.reset()
+        }
+    }
+    
 
+    // MARK: 2nd event tests
+    func testSendEventx2_receivesExpectedNetworkResponse() {
+        // Setup
+        // These expectations are used as a barrier for the event processing to complete
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT)
+
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                              data: ["data": ["test": "data"]])
+        
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Extract location hint from Edge Network location hint response event
+        guard let locationHintResult = getLastLocationHintResultValue() else {
+            XCTFail("Unable to extract valid location hint from location hint result event handle.")
+            return
+        }
+        
+        // Wait on all expectations to finish processing before clearing expectations
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        
+        // Reset all test expectations
+        networkService.reset()
+        resetTestExpectations()
+        
+        // Set actual testing expectations
+        // If test suite level location hint is not set, uses the value extracted from location hint result
+        let locationHintNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint?.rawValue ?? locationHintResult), httpMethod: .post)!
+        networkService.setExpectationForNetworkRequest(networkRequest: locationHintNetworkRequest, expectedCount: 1)
+        
+        // Test
+        // 2nd event
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
         // Verify
-        // MARK: Network response assertions
+        // Network response assertions
         let matchingResponses = networkService.getResponsesFor(networkRequest: locationHintNetworkRequest, timeout: 5)
         
         XCTAssertEqual(1, matchingResponses.count)
         XCTAssertEqual(200, matchingResponses.first?.responseCode)
 
-        // MARK: Response Event assertions
-        // Only validate for the location hint relevant to Edge Network extension
+    }
+    
+    func testSendEventx2_receivesExpectedEventHandles() {
+        sendEventAndResetExpectations()
+        
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 1)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 1)
+
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                              data: ["data": ["test": "data"]])
+        
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+    }
+    
+    func testSendEventx2_doesNotReceivesErrorEvent() {
+        // Setup
+        sendEventAndResetExpectations()
+        
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 1)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 1)
+        
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
+
+        // Test
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Verify
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        
+        let errorEvents = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
+        XCTAssertEqual(0, errorEvents.count)
+    }
+    
+    func testSendEventx2_receivesExpectedLocationHintEventHandle() {
+        // Setup
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT)
+
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                              data: ["data": ["test": "data"]])
+        
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Extract location hint from Edge Network location hint response event
+        guard let locationHintResult = getLastLocationHintResultValue() else {
+            XCTFail("Unable to extract valid location hint from location hint result event handle.")
+            return
+        }
+        
+        // Reset all test expectations
+        networkService.reset()
+        resetTestExpectations()
+        
+        // Set actual testing expectations
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 1)
+        
+        // Test
+        // 2nd event
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Verify
+        // Verify location hint consistency between 1st and 2nd event handles
         let expectedLocationHintJSON = #"""
         {
           "payload": [
             {
-              "ttlSeconds" : 1800,
+              "ttlSeconds" : 123,
               "scope" : "EdgeNetwork",
-              "hint" : "\#(locationHint)"
+              "hint" : "\#(edgeLocationHint?.rawValue ?? locationHintResult)"
             }
           ]
         }
         """#
-
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedHandle: expectedLocationHintJSON, exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
-
-        let expectedStateStore1stJSON = #"""
-        {
-          "payload": [
-            {
-              "maxAge": 1,
-              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
-              "value": "stringType"
-            },
-            {
-              "maxAge": 1,
-              "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_identity",
-              "value": "stringType"
-            }
-          ]
-        }
-        """#
-
-        assertEdgeResponseHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedHandle: expectedStateStore1stJSON, exactMatchPaths: ["payload[0].key", "payload[1].key"])
+        
+        let locationHintResultEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
+        
+        assertTypeMatch(expected: getAnyCodable(expectedLocationHintJSON)!,
+                         actual: getAnyCodable(locationHintResultEvent),
+                         exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
     }
+
 
     // MARK: - Error scenarios
 
@@ -377,21 +488,24 @@ class UpstreamIntegrationTests: TestBase {
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
 
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
 
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
-        // Test
+        
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
+        
+        // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        // MARK: Network response assertions
+        // Network response assertions
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
         
         XCTAssertEqual(1, matchingResponses.count)
         XCTAssertEqual(400, matchingResponses.first?.responseCode)
 
-        // MARK: Event assertions
+        // Event assertions
         let expectedErrorJSON = #"""
         {
             "status": 400,
@@ -406,29 +520,41 @@ class UpstreamIntegrationTests: TestBase {
           }
         """#
 
-        assertEdgeResponseError(expectedErrorDetails: expectedErrorJSON, exactMatchPaths: ["status", "title", "type"])
+        let errorEvents = getEdgeResponseErrors()
+        
+        XCTAssertEqual(1, errorEvents.count)
+        
+        guard let errorEvent = errorEvents.first else { return }
+        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
+                        actual: getAnyCodable(errorEvent),
+                        exactMatchPaths: ["status", "title", "type"])
     }
 
     // Tests that an invalid location hint returns the expected error with 0 byte data body
     func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
         // Setup
         let invalidNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: "invalid"), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: invalidNetworkRequest, expectedCount: 1)
 
+        networkService.setExpectationForNetworkRequest(networkRequest: invalidNetworkRequest, expectedCount: 1)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
+        
         Edge.setLocationHint("invalid")
 
-        // Test
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
+        // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        // MARK: Network response assertions
+        // Network response assertions
         let matchingResponses = networkService.getResponsesFor(networkRequest: invalidNetworkRequest, timeout: 5)
         
         XCTAssertEqual(1, matchingResponses.count)
         XCTAssertEqual(404, matchingResponses.first?.responseCode)
         XCTAssertEqual(0, matchingResponses.first?.data?.count)
+        
+        // Error event assertions
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
     }
 
     // MARK: - Test helper methods
@@ -459,37 +585,56 @@ class UpstreamIntegrationTests: TestBase {
     /// - Parameters:
     ///    - locationHint: The location hint String to use in the URL
     /// - Returns: The interact URL with location hint applied
-    private func createURLWith(locationHint: String) -> String {
+    private func createURLWith(locationHint: String?) -> String {
+        guard let locationHint = locationHint else {
+            return "https://obumobile5.data.adobedc.net/ee/v1/interact"
+        }
         return "https://obumobile5.data.adobedc.net/ee/\(locationHint)/v1/interact"
     }
     
-    private func assertEdgeResponseHandle(expectedHandleType: String, expectedHandle: String, expectedCount: Int = 1, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
-        guard let expected = getAnyCodable(expectedHandle) else {
-            XCTFail("Unable to decode JSON string. Test case unable to proceed.", file: file, line: line)
-            return
-        }
-        
-        let responseHandleEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
-        
-        XCTAssertEqual(expectedCount, responseHandleEvents.count, file: file, line: line)
-        
-        for event in responseHandleEvents {
-            assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: event), exactMatchPaths: exactMatchPaths, file: file, line: line)
-        }
+    private func expectEdgeEventHandle(expectedHandleType: String, expectedCount: Int32 = 1) {
+        setExpectationEvent(type: TestConstants.EventType.EDGE, source: expectedHandleType, expectedCount: expectedCount)
     }
     
-    private func assertEdgeResponseError(expectedErrorDetails: String, expectedCount: Int = 1, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
-        guard let expected = getAnyCodable(expectedErrorDetails) else {
-            XCTFail("Unable to decode JSON string. Test case unable to proceed.", file: file, line: line)
-            return
+    private func getEdgeEventHandles(expectedHandleType: String) -> [Event] {
+        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
+    }
+    
+    private func getEdgeResponseErrors() -> [Event] {
+        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
+    }
+    
+    /// Extracts the Edge location hint from the location hint result
+    private func getLastLocationHintResultValue() -> String? {
+        let locationHintResultEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).last
+        guard let payload = locationHintResultEvent?.data?["payload"] as? [[String: Any]] else {
+            return nil
         }
-        
-        let responseHandleEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
-        
-        XCTAssertEqual(expectedCount, responseHandleEvents.count, file: file, line: line)
-        
-        for event in responseHandleEvents {
-            assertTypeMatch(expected: expected, actual: getAnyCodableFromEventPayload(event: event), exactMatchPaths: exactMatchPaths, file: file, line: line)
+        guard payload.indices.contains(2) else {
+            return nil
         }
+        return payload[2]["hint"] as? String
+    }
+    
+    private func sendEventAndResetExpectations() {
+        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
+        
+        // These expectations are used as a barrier for the event processing to complete
+        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE)
+
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
+                                              data: ["data": ["test": "data"]])
+        
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Wait on all expectations to finish processing before clearing expectations
+        networkService.assertAllNetworkRequestExpectations()
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        
+        // Reset all test expectations
+        networkService.reset()
+        resetTestExpectations()
     }
 }

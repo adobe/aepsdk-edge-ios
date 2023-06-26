@@ -27,8 +27,15 @@ enum PayloadType: String {
 
 extension XCTestCase {
     // MARK: - AnyCodable helpers
+    
+    /// Gets the `AnyCodable` representation of a JSON string
     func getAnyCodable(_ jsonString: String) -> AnyCodable? {
         return try? JSONDecoder().decode(AnyCodable.self, from: jsonString.data(using: .utf8)!)
+    }
+    
+    /// Gets an event's data payload converted into `AnyCodable` format
+    func getAnyCodable(_ event: Event) -> AnyCodable? {
+        return AnyCodable(AnyCodable.from(dictionary: event.data))
     }
     
     func getAnyCodableAndPayload(_ jsonString: String, type: PayloadType) -> (anyCodable: AnyCodable, payload: [String: Any])? {
