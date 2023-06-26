@@ -164,7 +164,7 @@ class NetworkResponseHandler {
             guard let eventHandleAsDictionary = eventHandle.asDictionary() else { continue }
             dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary,
                                   requestId: requestId,
-                                  requestParentEvent: requestEvent,
+                                  parentRequestEvent: requestEvent,
                                   eventSource: eventHandle.type)
             CompletionHandlersManager.shared.eventHandleReceived(forRequestEventId: requestEvent?.id.uuidString, eventHandle)
         }
@@ -193,14 +193,14 @@ class NetworkResponseHandler {
     /// - Parameters:
     ///   - handleAsDictionary: represents an `EdgeEventHandle` parsed as [String:Any]
     ///   - requestId: the edge request identifier associated with this response
-    ///   - requestParentEvent: the request event for which this response event handle was received
+    ///   - parentRequestEvent: the parent request event for which this response event handle was received
     ///   - eventSource type of the `EdgeEventHandle`
-    private func dispatchResponseEvent(handleAsDictionary: [String: Any], requestId: String, requestParentEvent: Event?, eventSource: String?) {
+    private func dispatchResponseEvent(handleAsDictionary: [String: Any], requestId: String, parentRequestEvent: Event?, eventSource: String?) {
         guard !handleAsDictionary.isEmpty else { return }
 
-        // set eventRequestId and edge requestId on the response event and dispatch data
-        let eventData = addEventAndRequestIdToDictionary(handleAsDictionary, requestId: requestId, requestEventId: requestParentEvent?.id.uuidString)
-        dispatchResponseEventWithData(eventData, parentRequestEvent: requestParentEvent, isErrorResponseEvent: false, eventSource: eventSource)
+        // set eventRequestId and edge parent request ID on the response event and dispatch data
+        let eventData = addEventAndRequestIdToDictionary(handleAsDictionary, requestId: requestId, requestEventId: parentRequestEvent?.id.uuidString)
+        dispatchResponseEventWithData(eventData, parentRequestEvent: parentRequestEvent, isErrorResponseEvent: false, eventSource: eventSource)
     }
 
     /// Iterates over the provided `errorsArray` and dispatches a new error event to the Event Hub.
@@ -264,7 +264,7 @@ class NetworkResponseHandler {
     /// Dispatched a new event with the provided `eventData` as responseContent or as errorResponseContent based on the `isErrorResponseEvent` setting
     /// - Parameters:
     ///   - eventData: Event data to be dispatched, should not be empty
-    ///   - requestParentEvent: The request parent event associated with this response event
+    ///   - parentRequestEvent: The request parent event associated with this response event
     ///   - isErrorResponseEvent: indicates if this should be dispatched as an error or regular response content event
     ///   - eventSource: an optional `String` to be used as the event source.
     ///   If `eventSource` is nil either Constants.EventSource.ERROR_RESPONSE_CONTENT or Constants.EventSource.RESPONSE_CONTENT will be used for the event source depending on `isErrorResponseEvent`
@@ -278,8 +278,8 @@ class NetworkResponseHandler {
         let eventName = isErrorResponseEvent ? EdgeConstants.EventName.ERROR_RESPONSE_CONTENT : EdgeConstants.EventName.RESPONSE_CONTENT
         let responseEvent: Event
 
-        if let requestParentEvent = parentRequestEvent {
-            responseEvent = requestParentEvent.createChainedEvent(name: eventName,
+        if let parentRequestEvent = parentRequestEvent {
+            responseEvent = parentRequestEvent.createChainedEvent(name: eventName,
                                                                   type: EventType.edge,
                                                                   source: source,
                                                                   data: eventData)
