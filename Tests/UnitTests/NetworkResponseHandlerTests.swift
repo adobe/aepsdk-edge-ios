@@ -36,8 +36,8 @@ class NetworkResponseHandlerTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(event1.id.uuidString, result[0])
-        XCTAssertEqual(event2.id.uuidString, result[1])
+        XCTAssertEqual(event1.id.uuidString, result[0].id.uuidString)
+        XCTAssertEqual(event2.id.uuidString, result[1].id.uuidString)
     }
 
     func testAddWaitingEvents_skips_whenEmptyRequestId() {
@@ -68,7 +68,7 @@ class NetworkResponseHandlerTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(event3.id.uuidString, result[0])
+        XCTAssertEqual(event3.id.uuidString, result[0].id.uuidString)
     }
 
     func testRemoveWaitingEvents_removesByRequestId() {
