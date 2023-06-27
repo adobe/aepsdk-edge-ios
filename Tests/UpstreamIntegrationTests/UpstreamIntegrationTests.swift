@@ -17,7 +17,7 @@ import AEPServices
 import Foundation
 import XCTest
 
-/// Performs validation on intergration with the Edge Network upstream service
+/// Performs validation on integration with the Edge Network upstream service
 class UpstreamIntegrationTests: TestBase {
     private var edgeEnvironment: EdgeEnvironment = .prod
     private var edgeLocationHint: EdgeLocationHint?
@@ -54,7 +54,6 @@ class UpstreamIntegrationTests: TestBase {
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
 
         // Set Edge location hint value if one is set for the test target
-        edgeLocationHint = .ind1
         if edgeLocationHint != nil {
             print("Setting Edge location hint to: \(String(describing: edgeLocationHint?.rawValue))")
             Edge.setLocationHint(edgeLocationHint?.rawValue)
@@ -374,6 +373,11 @@ class UpstreamIntegrationTests: TestBase {
             return
         }
         
+        // If there is an initial location hint value, check consistency
+        if (edgeLocationHint != nil) {
+            XCTAssertEqual(edgeLocationHint?.rawValue, locationHintResult)
+        }
+        
         // Wait on all expectations to finish processing before clearing expectations
         assertExpectedEvents(ignoreUnexpectedEvents: true)
         
@@ -383,7 +387,7 @@ class UpstreamIntegrationTests: TestBase {
         
         // Set actual testing expectations
         // If test suite level location hint is not set, uses the value extracted from location hint result
-        let locationHintNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint?.rawValue ?? locationHintResult), httpMethod: .post)!
+        let locationHintNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: locationHintResult), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: locationHintNetworkRequest, expectedCount: 1)
         
         // Test
@@ -400,17 +404,16 @@ class UpstreamIntegrationTests: TestBase {
     }
     
     func testSendEventx2_receivesExpectedEventHandles() {
-        sendEventAndResetExpectations()
-        
-        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 1)
-        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 1)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 2)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 2)
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
         
         Edge.sendEvent(experienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent)
         
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
     }
     
     func testSendEventx2_doesNotReceivesErrorEvent() {
@@ -459,6 +462,12 @@ class UpstreamIntegrationTests: TestBase {
         Edge.sendEvent(experienceEvent: experienceEvent)
         
         // Verify
+        
+        // If there is an initial location hint value, check consistency
+        if (edgeLocationHint != nil) {
+            XCTAssertEqual(edgeLocationHint?.rawValue, locationHintResult)
+        }
+        
         // Verify location hint consistency between 1st and 2nd event handles
         let expectedLocationHintJSON = #"""
         {
@@ -466,7 +475,7 @@ class UpstreamIntegrationTests: TestBase {
             {
               "ttlSeconds" : 123,
               "scope" : "EdgeNetwork",
-              "hint" : "\#(edgeLocationHint?.rawValue ?? locationHintResult)"
+              "hint" : "\#(locationHintResult)"
             }
           ]
         }
@@ -631,7 +640,7 @@ class UpstreamIntegrationTests: TestBase {
         
         // Wait on all expectations to finish processing before clearing expectations
         networkService.assertAllNetworkRequestExpectations()
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
         
         // Reset all test expectations
         networkService.reset()
