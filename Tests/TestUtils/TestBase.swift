@@ -112,7 +112,7 @@ class TestBase: XCTestCase {
     /// - See also:
     ///   - setExpectationEvent(type: source: count:)
     ///   - assertUnexpectedEvents()
-    func assertExpectedEvents(ignoreUnexpectedEvents: Bool = false, file: StaticString = #file, line: UInt = #line) {
+    func assertExpectedEvents(ignoreUnexpectedEvents: Bool = false, timeout: TimeInterval = TestConstants.Defaults.WAIT_EVENT_TIMEOUT, file: StaticString = #file, line: UInt = #line) {
         guard InstrumentedExtension.expectedEvents.count > 0 else { // swiftlint:disable:this empty_count
             assertionFailure("There are no event expectations set, use this API after calling setExpectationEvent", file: file, line: line)
             return
@@ -120,7 +120,7 @@ class TestBase: XCTestCase {
 
         let currentExpectedEvents = InstrumentedExtension.expectedEvents.shallowCopy
         for expectedEvent in currentExpectedEvents {
-            let waitResult = expectedEvent.value.await(timeout: TestConstants.Defaults.WAIT_EVENT_TIMEOUT)
+            let waitResult = expectedEvent.value.await(timeout: timeout)
             let expectedCount: Int32 = expectedEvent.value.getInitialCount()
             let receivedCount: Int32 = expectedEvent.value.getInitialCount() - expectedEvent.value.getCurrentCount()
             XCTAssertFalse(waitResult == DispatchTimeoutResult.timedOut, "Timed out waiting for event type \(expectedEvent.key.type) and source \(expectedEvent.key.source), expected \(expectedCount), but received \(receivedCount)", file: (file), line: line)
