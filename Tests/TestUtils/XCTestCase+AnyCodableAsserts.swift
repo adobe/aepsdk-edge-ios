@@ -89,7 +89,7 @@ extension XCTestCase {
     ///    - exactMatchPaths: the key paths in the expected JSON that should use exact matching mode, where values require the same type and literal value.
     ///    - file: the file to show test assertion failures in
     ///    - line: the line to show test assertion failures on
-    func assertTypeMatch(expected: AnyCodable?, actual: AnyCodable?, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+    func assertTypeMatch(expected: AnyCodable, actual: AnyCodable?, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
         let pathTree = generatePathTree(paths: exactMatchPaths, file: file, line: line)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: false, file: file, line: line)
     }
@@ -119,7 +119,7 @@ extension XCTestCase {
     ///    - typeMatchPaths: Optionally, the key paths in the expected JSON that should use type matching mode, where values require only the same type (and non-nil, given the expected value is not `nil` itself)
     ///    - file: the file to show test assertion failures in
     ///    - line: the line to show test assertion failures on
-    func assertExactMatch(expected: AnyCodable?, actual: AnyCodable?, typeMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
+    func assertExactMatch(expected: AnyCodable, actual: AnyCodable?, typeMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
         let pathTree = generatePathTree(paths: typeMatchPaths, file: file, line: line)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: true, file: file, line: line)
     }
