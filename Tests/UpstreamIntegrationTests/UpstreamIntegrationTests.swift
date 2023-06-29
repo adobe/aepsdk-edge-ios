@@ -624,26 +624,4 @@ class UpstreamIntegrationTests: TestBase {
         }
         return payload[2]["hint"] as? String
     }
-    
-    private func sendEventAndResetExpectations() {
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        
-        // These expectations are used as a barrier for the event processing to complete
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest)
-        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT)
-        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE)
-
-        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
-                                              data: ["data": ["test": "data"]])
-        
-        Edge.sendEvent(experienceEvent: experienceEvent)
-        
-        // Wait on all expectations to finish processing before clearing expectations
-        networkService.assertAllNetworkRequestExpectations()
-        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
-        
-        // Reset all test expectations
-        networkService.reset()
-        resetTestExpectations()
-    }
 }
