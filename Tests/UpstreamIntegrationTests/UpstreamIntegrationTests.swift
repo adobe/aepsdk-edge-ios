@@ -228,8 +228,6 @@ class UpstreamIntegrationTests: TestBase {
         // See testSendEvent_receivesExpectedEventHandles for existence validation
         let locationHintResult = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
         
-        // Even though assertTypeMatch can accept a nil AnyCodable, expected uses ! because expectation is
-        // a test construct that should not be nil, and will be able to catch a nil actual
         assertTypeMatch(expected: getAnyCodable(expectedLocationHintJSON)!,
                         actual: getAnyCodable(locationHintResult),
                         exactMatchPaths: ["payload[*].scope"])
@@ -404,28 +402,30 @@ class UpstreamIntegrationTests: TestBase {
     }
     
     func testSendEventx2_receivesExpectedEventHandles() {
+        // Setup
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 2)
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 2)
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                               data: ["data": ["test": "data"]])
         
+        // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
         Edge.sendEvent(experienceEvent: experienceEvent)
         
+        // Verify
         assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
     }
     
     func testSendEventx2_doesNotReceivesErrorEvent() {
         // Setup
-        sendEventAndResetExpectations()
-        
-        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 1)
-        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 1)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 2)
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 2)
         
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
 
         // Test
+        Edge.sendEvent(experienceEvent: experienceEvent)
         Edge.sendEvent(experienceEvent: experienceEvent)
         
         // Verify
