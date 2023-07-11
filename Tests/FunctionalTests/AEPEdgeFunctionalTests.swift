@@ -65,6 +65,12 @@ class AEPEdgeFunctionalTests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
     }
+    
+    override func tearDown() {
+        super.tearDown()
+        
+        mockNetworkService.reset()
+    }
 
     func testUnregistered() {
         let waitForUnregistration = CountDownLatch(1)
