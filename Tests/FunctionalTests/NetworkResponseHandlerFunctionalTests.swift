@@ -884,11 +884,11 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
     }
     
     func testProcessResponseOnSuccess_WhenEventHandleAndErrorAndWarning_dispatchesThreeEvents() {
-        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
-                            source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
+        setExpectationEvent(type: TestConstants.EventType.EDGE,
+                            source: TestConstants.EventSource.RESPONSE_CONTENT,
                             expectedCount: 1)
-        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
-                            source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT,
+        setExpectationEvent(type: TestConstants.EventType.EDGE,
+                            source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT,
                             expectedCount: 2)
         let requestId = "123"
         let jsonResponse = "{\n" +
@@ -928,7 +928,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
 
-        let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: "state:store")
+        let dispatchEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: "state:store")
         XCTAssertEqual(1, dispatchEvents.count)
         guard let receivedData1 = dispatchEvents[0].data else {
             XCTFail("Invalid event data for dispatched handle")
@@ -944,7 +944,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
         XCTAssertEqual(event1.id.uuidString, flattenReceivedData1["requestEventId"] as? String)
         XCTAssertEqual(event1.id, dispatchEvents[0].parentID) // Event chained to event1 as event index defaults to 0
         
-        let dispatchErrorEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
+        let dispatchErrorEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(2, dispatchErrorEvents.count)
         guard let receivedData2 = dispatchErrorEvents[0].data else {
             XCTFail("Invalid event data for dispatched error")
