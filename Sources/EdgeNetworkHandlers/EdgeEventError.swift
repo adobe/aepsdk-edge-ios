@@ -26,18 +26,14 @@ struct EdgeEventError: Codable, Equatable {
     /// Namespaced error code
     let type: String?
 
-    /// Encodes the event to which this error is attached as the index in the events array in EdgeRequest
-    let eventIndex: Int?
-
     /// A report for the error containing additional information
     let report: EdgeErrorReport?
 
-    init(title: String?, detail: String?, status: Int?, type: String?, eventIndex: Int?, report: EdgeErrorReport?) {
+    init(title: String?, detail: String?, status: Int?, type: String?, report: EdgeErrorReport?) {
         self.title = title
         self.detail = detail
         self.status = status
         self.type = type
-        self.eventIndex = eventIndex
         self.report = report
     }
 
@@ -46,7 +42,6 @@ struct EdgeEventError: Codable, Equatable {
         self.detail = detail
         self.status = nil
         self.type = nil
-        self.eventIndex = nil
         self.report = nil
     }
 
@@ -57,12 +52,10 @@ struct EdgeEventError: Codable, Equatable {
         case status
         case type
         case report
-        case eventIndex
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        // skip eventIndex when encoding
         if let unwrapped = title { try container.encodeIfPresent(unwrapped, forKey: .title) }
         if let unwrapped = detail { try container.encodeIfPresent(unwrapped, forKey: .detail) }
         if let unwrapped = status { try container.encodeIfPresent(unwrapped, forKey: .status) }
@@ -73,6 +66,10 @@ struct EdgeEventError: Codable, Equatable {
 
 // MARK: - EdgeErrorReport
 struct EdgeErrorReport: Codable, Equatable {
+
+    /// Encodes the event to which this error is attached as the index in the events array in EdgeRequest
+    let eventIndex: Int?
+
     // An array of errors represented as strings
     let errors: [String]?
 
@@ -81,4 +78,11 @@ struct EdgeErrorReport: Codable, Equatable {
 
     /// The organization ID
     let orgId: String?
+
+    init(eventIndex: Int?, errors: [String]?, requestId: String?, orgId: String?) {
+        self.eventIndex = eventIndex
+        self.errors = errors
+        self.requestId = requestId
+        self.orgId = orgId
+    }
 }

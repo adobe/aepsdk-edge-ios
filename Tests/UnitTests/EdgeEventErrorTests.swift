@@ -24,10 +24,12 @@ class EdgeEventErrorTests: XCTestCase {
         // setup
         let jsonData = """
                         {
-                          "eventIndex": 1,
                           "type": "https://ns.adobe.com/aep/errors/EXEG-0201-503",
                           "status": 503,
-                          "title": "test title"
+                          "title": "test title",
+                          "report": {
+                            "eventIndex": 1
+                          }
                         }
                       """.data(using: .utf8)
 
@@ -35,7 +37,7 @@ class EdgeEventErrorTests: XCTestCase {
         let error = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData ?? Data())
 
         // verify
-        XCTAssertEqual(1, error?.eventIndex)
+        XCTAssertEqual(1, error?.report?.eventIndex)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0201-503", error?.type)
         XCTAssertEqual(503, error?.status)
         XCTAssertEqual("test title", error?.title)
@@ -46,16 +48,20 @@ class EdgeEventErrorTests: XCTestCase {
         let jsonData = """
                         [
                             {
-                              "eventIndex": 1,
                               "type": "https://ns.adobe.com/aep/errors/EXEG-0201-503",
                               "status": 503,
-                              "title": "test title"
+                              "title": "test title",
+                              "report": {
+                                "eventIndex": 1
+                              }
                             },
                             {
-                              "eventIndex": 2,
                               "type": "https://ns.adobe.com/aep/errors/EXEG-0201-504",
                               "status": 504,
-                              "title": "test title 2"
+                              "title": "test title 2",
+                              "report": {
+                                "eventIndex": 2
+                              }
                             }
                         ]
                       """.data(using: .utf8)
@@ -64,12 +70,12 @@ class EdgeEventErrorTests: XCTestCase {
         let errors = try? JSONDecoder().decode([EdgeEventError].self, from: jsonData ?? Data())
 
         // verify
-        XCTAssertEqual(1, errors?.first?.eventIndex)
+        XCTAssertEqual(1, errors?.first?.report?.eventIndex)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0201-503", errors?.first?.type)
         XCTAssertEqual(503, errors?.first?.status)
         XCTAssertEqual("test title", errors?.first?.title)
 
-        XCTAssertEqual(2, errors?.last?.eventIndex)
+        XCTAssertEqual(2, errors?.last?.report?.eventIndex)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0201-504", errors?.last?.type)
         XCTAssertEqual(504, errors?.last?.status)
         XCTAssertEqual("test title 2", errors?.last?.title)

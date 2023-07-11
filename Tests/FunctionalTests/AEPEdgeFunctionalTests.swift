@@ -692,7 +692,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT,
                             expectedCount: 1)
-        let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [],\"warnings\": [{\"eventIndex\": 0,\"status\": 0,\"title\": \"Failed due to unrecoverable system error\"}]}\n"
+        let responseBody = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a26\",\"handle\": [],\"warnings\": [{\"status\": 0,\"title\": \"Failed due to unrecoverable system error\",\"report\":{\"eventIndex\":0}}]}\n"
         let httpConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
                                                             response: HTTPURLResponse(url: exEdgeInteractProdUrl,
                                                                                       statusCode: 200,
@@ -720,17 +720,18 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             return
         }
         let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(4, eventData.count)
+        XCTAssertEqual(5, eventData.count)
         XCTAssertEqual(0, eventData["status"] as? Int)
         XCTAssertEqual("Failed due to unrecoverable system error", eventData["title"] as? String)
         XCTAssertEqual(requestId, eventData["requestId"] as? String)
         XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
+        XCTAssertEqual(0, eventData["report.eventIndex"] as? Int)
     }
 
     // MARK: test persisted hits
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersisting() {
-        let error = EdgeEventError(title: nil, detail: "X service is temporarily unable to serve this request. Please try again later.", status: 503, type: "test-type", eventIndex: nil, report: nil)
+        let error = EdgeEventError(title: nil, detail: "X service is temporarily unable to serve this request. Please try again later.", status: 503, type: "test-type", report: nil)
         let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
         let responseData = try? JSONEncoder().encode(edgeResponse)
 
@@ -768,7 +769,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
     }
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
-        let error = EdgeEventError(title: nil, detail: "X service is temporarily unable to serve this request. Please try again later.", status: 503, type: nil, eventIndex: nil, report: nil)
+        let error = EdgeEventError(title: nil, detail: "X service is temporarily unable to serve this request. Please try again later.", status: 503, type: nil, report: nil)
         let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
         let responseData = try? JSONEncoder().encode(edgeResponse)
 
@@ -810,7 +811,7 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
         setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         // swiftlint:disable line_length
         let response = """
-                            {"requestId":"72eaa048-207e-4dde-bf16-0cb2b21336d5","handle":[],"errors":[{"type":"https://ns.adobe.com/aep/errors/EXEG-0201-504","status":504,"title":"The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.","eventIndex":0}],"warnings":[{"type":"https://ns.adobe.com/aep/errors/EXEG-0204-200","status":200,"title":"A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.","eventIndex":0,"report":{"cause":{"message":"Cannot read related customer for device id: ...","code":202}}}]}
+                            {"requestId":"72eaa048-207e-4dde-bf16-0cb2b21336d5","handle":[],"errors":[{"type":"https://ns.adobe.com/aep/errors/EXEG-0201-504","status":504,"title":"The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.","report":{"eventIndex":0}}],"warnings":[{"type":"https://ns.adobe.com/aep/errors/EXEG-0204-200","status":200,"title":"A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.","report":{"eventIndex":0,"cause":{"message":"Cannot read related customer for device id: ...","code":202}}}]}
                            """
         // swiftlint:enable line_length
         let responseConnection: HttpConnection = HttpConnection(data: response.data(using: .utf8),
@@ -838,22 +839,24 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             return
         }
         let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(5, eventData.count)
+        XCTAssertEqual(6, eventData.count)
         XCTAssertEqual(eventData["status"] as? Int, 504)
         XCTAssertEqual(eventData["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0201-504")
         XCTAssertEqual(eventData["title"] as? String, "The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.")
+        XCTAssertEqual(0, eventData["report.eventIndex"] as? Int)
 
         guard let eventDataDict1 = resultEvents[1].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
         }
         let eventData1 = flattenDictionary(dict: eventDataDict1)
-        XCTAssertEqual(7, eventData1.count)
+        XCTAssertEqual(8, eventData1.count)
         XCTAssertEqual(eventData1["status"] as? Int, 200)
         XCTAssertEqual(eventData1["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0204-200")
         XCTAssertEqual(eventData1["title"] as? String, "A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.")
         XCTAssertEqual(eventData1["report.cause.message"] as? String, "Cannot read related customer for device id: ...")
         XCTAssertEqual(eventData1["report.cause.code"] as? Int, 202)
+        XCTAssertEqual(0, eventData1["report.eventIndex"] as? Int)
     }
 
     func testSendEvent_fatalError() {
