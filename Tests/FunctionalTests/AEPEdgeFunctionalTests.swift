@@ -61,7 +61,7 @@ class AEPEdgeFunctionalTests: TestBase {
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 5))
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
-        assertExpectedEvents(ignoreUnexpectedEvents: false)
+        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: 5)
         resetTestExpectations()
         mockNetworkService.reset()
     }
