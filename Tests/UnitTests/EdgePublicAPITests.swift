@@ -161,7 +161,6 @@ class EdgePublicAPITests: XCTestCase {
                                                           data: [:])
             MobileCore.dispatch(event: responseEvent)
         }
-        sleep(1)
         Edge.getLocationHint({ hint, error in
             XCTAssertNil(hint)
             XCTAssertNil(error)
