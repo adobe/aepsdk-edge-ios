@@ -60,7 +60,7 @@ struct EdgeEventError: Codable, Equatable {
         if let unwrapped = detail { try container.encodeIfPresent(unwrapped, forKey: .detail) }
         if let unwrapped = status { try container.encodeIfPresent(unwrapped, forKey: .status) }
         if let unwrapped = type { try container.encodeIfPresent(unwrapped, forKey: .type) }
-        if let unwrapped = report { try container.encodeIfPresent(unwrapped, forKey: .report) }
+        if let unwrapped = report, unwrapped.shouldEncode() { try container.encodeIfPresent(unwrapped, forKey: .report) }
     }
 }
 
@@ -84,5 +84,28 @@ struct EdgeErrorReport: Codable, Equatable {
         self.errors = errors
         self.requestId = requestId
         self.orgId = orgId
+    }
+
+    // Encode this report if it contains `errors`, `requestId`, or `orgId`.
+    public func shouldEncode() -> Bool {
+        return errors != nil
+            || requestId != nil
+            || orgId != nil
+    }
+
+    // MARK: - Codable
+    enum CodingKeys: String, CodingKey {
+        case eventIndex
+        case errors
+        case requestId
+        case orgId
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        // skip eventIndex when encoding
+        if let unwrapped = errors { try container.encodeIfPresent(unwrapped, forKey: .errors)}
+        if let unwrapped = requestId { try container.encodeIfPresent(unwrapped, forKey: .requestId)}
+        if let unwrapped = orgId { try container.encodeIfPresent(unwrapped, forKey: .orgId)}
     }
 }

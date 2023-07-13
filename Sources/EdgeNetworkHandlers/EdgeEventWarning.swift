@@ -42,7 +42,7 @@ struct EdgeEventWarning: Codable {
         if let unwrapped = title { try container.encodeIfPresent(unwrapped, forKey: .title) }
         if let unwrapped = status { try container.encodeIfPresent(unwrapped, forKey: .status) }
         if let unwrapped = type { try container.encodeIfPresent(unwrapped, forKey: .type) }
-        if let unwrapped = report { try container.encodeIfPresent(unwrapped, forKey: .report) }
+        if let unwrapped = report, unwrapped.cause != nil { try container.encodeIfPresent(unwrapped, forKey: .report) }
     }
 }
 
@@ -56,6 +56,18 @@ struct EdgeEventWarningReport: Codable {
 
     /// The cause for the `EdgeEventWarning`
     let cause: EdgeEventWarningCause?
+
+    // MARK: - Codable
+    enum CodingKeys: String, CodingKey {
+        case eventIndex
+        case cause
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        // skip eventIndex when encoding
+        if let unwrapped = cause { try container.encodeIfPresent(unwrapped, forKey: .cause)}
+    }
 }
 
 // MARK: - EdgeEventWarningCause

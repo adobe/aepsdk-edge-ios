@@ -194,4 +194,42 @@ class EdgeEventWarningTests: XCTestCase {
         XCTAssertEqual("test title 2", warnings?.last?.title)
     }
 
+    func testCanEncode_eventWarning_allParams() {
+        let cause = EdgeEventWarningCause(message: "message", code: 5)
+        let report = EdgeEventWarningReport(eventIndex: 1, cause: cause)
+        let warning = EdgeEventWarning(type: "warning", status: 200, title: "test", report: report)
+
+        let encoded = warning.asDictionary()
+
+        XCTAssertNotNil(encoded)
+        XCTAssertEqual(4, encoded?.count)
+        XCTAssertEqual("warning", encoded?["type"] as? String)
+        XCTAssertEqual(200, encoded?["status"] as? Int)
+        XCTAssertEqual("test", encoded?["title"] as? String)
+
+        let encodedReport = encoded?["report"] as? [String: Any]
+        XCTAssertNotNil(encodedReport)
+        XCTAssertEqual(1, encodedReport?.count) // eventIndex is not encoded
+
+        let encodedCause = encodedReport?["cause"] as? [String: Any]
+        XCTAssertNotNil(encodedCause)
+        XCTAssertEqual(2, encodedCause?.count)
+        XCTAssertEqual("message", encodedCause?["message"] as? String)
+        XCTAssertEqual(5, encodedCause?["code"] as? Int)
+    }
+
+    func testCanEncode_eventWarning_doesNotEncodeEmptyReport() {
+        let report = EdgeEventWarningReport(eventIndex: 1, cause: nil)
+        let warning = EdgeEventWarning(type: "warning", status: 200, title: "test", report: report)
+
+        let encoded = warning.asDictionary()
+
+        XCTAssertNotNil(encoded)
+        XCTAssertEqual(3, encoded?.count)
+        XCTAssertEqual("warning", encoded?["type"] as? String)
+        XCTAssertEqual(200, encoded?["status"] as? Int)
+        XCTAssertEqual("test", encoded?["title"] as? String)
+        XCTAssertNil(encoded?["report"]) // EdgeEventWarningReport is not encoded if it doesn't contain a "cause"
+    }
+
 }

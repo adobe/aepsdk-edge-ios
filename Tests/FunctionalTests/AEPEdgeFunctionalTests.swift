@@ -720,12 +720,11 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             return
         }
         let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(5, eventData.count)
+        XCTAssertEqual(4, eventData.count)
         XCTAssertEqual(0, eventData["status"] as? Int)
         XCTAssertEqual("Failed due to unrecoverable system error", eventData["title"] as? String)
         XCTAssertEqual(requestId, eventData["requestId"] as? String)
         XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
-        XCTAssertEqual(0, eventData["report.eventIndex"] as? Int)
     }
 
     // MARK: test persisted hits
@@ -839,24 +838,22 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
             return
         }
         let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(6, eventData.count)
+        XCTAssertEqual(5, eventData.count)
         XCTAssertEqual(eventData["status"] as? Int, 504)
         XCTAssertEqual(eventData["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0201-504")
         XCTAssertEqual(eventData["title"] as? String, "The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.")
-        XCTAssertEqual(0, eventData["report.eventIndex"] as? Int)
 
         guard let eventDataDict1 = resultEvents[1].data else {
             XCTFail("Failed to convert event data to [String: Any]")
             return
         }
         let eventData1 = flattenDictionary(dict: eventDataDict1)
-        XCTAssertEqual(8, eventData1.count)
+        XCTAssertEqual(7, eventData1.count)
         XCTAssertEqual(eventData1["status"] as? Int, 200)
         XCTAssertEqual(eventData1["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0204-200")
         XCTAssertEqual(eventData1["title"] as? String, "A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.")
         XCTAssertEqual(eventData1["report.cause.message"] as? String, "Cannot read related customer for device id: ...")
         XCTAssertEqual(eventData1["report.cause.code"] as? Int, 202)
-        XCTAssertEqual(0, eventData1["report.eventIndex"] as? Int)
     }
 
     func testSendEvent_fatalError() {
