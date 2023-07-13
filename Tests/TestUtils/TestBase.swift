@@ -60,8 +60,7 @@ class TestBase: XCTestCase {
         super.tearDown()
 
         // Wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
-//        usleep(200000)
-        sleep(1)
+        usleep(200000)
         resetTestExpectations()
         TestBase.isFirstRun = false
         EventHub.reset()
