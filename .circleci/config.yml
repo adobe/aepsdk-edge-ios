@@ -170,14 +170,14 @@ jobs:
       - run:
           name: Build XCFramework
           command: |
-            if [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            if [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "dev" ]; then
               make archive
             fi
       # verify test app builds
       - run:
           name: Build Test App
           command: |
-            if [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            if [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "dev" ]; then
               make build-app
             fi
         
