@@ -61,9 +61,9 @@ class TestBase: XCTestCase {
 
         // Wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
         usleep(200000)
+        EventHub.reset()
         resetTestExpectations()
         TestBase.isFirstRun = false
-        EventHub.reset()
         UserDefaults.clearAll()
         FileManager.default.clearCache()
     }
