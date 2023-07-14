@@ -23,10 +23,12 @@ clean:
 	rm -rf build
 
 clean-ios-test-files:
-	rm -rf iosresults.xcresult
+	rm -rf iosFunctionalResults.xcresult; \
+	rm -rf iosUnitResults.xcresult
 
 clean-tvos-test-files:
-	rm -rf tvosresults.xcresult
+	rm -rf tvosFunctionalResults.xcresult; \
+	rm -rf tvosUnitResults.xcresult
 
 pod-install:
 	pod install --repo-update
@@ -98,34 +100,16 @@ test-ios: clean-ios-test-files
 	@echo "### Testing iOS"
 	@echo "######################################################################"
 	@echo "List of available shared Schemes in xcworkspace"
-	xcodebuild -workspace $(PROJECT_NAME).xcworkspace -list
-	final_scheme=""; \
-	if xcodebuild -workspace $(PROJECT_NAME).xcworkspace -list | grep -q "($(PROJECT_NAME) project)"; \
-	then \
-	   final_scheme="$(EXTENSION_NAME) ($(PROJECT_NAME) project)" ; \
-	   echo $$final_scheme ; \
-	else \
-	   final_scheme="$(EXTENSION_NAME)" ; \
-	   echo $$final_scheme ; \
-	fi; \
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath build/out -resultBundlePath iosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "FunctionalTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath iosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES; \
+	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "UnitTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath iosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 test-tvos: clean-tvos-test-files
 	@echo "######################################################################"
 	@echo "### Testing tvOS"
 	@echo "######################################################################"
 	@echo "List of available shared Schemes in xcworkspace"
-	xcodebuild -workspace $(PROJECT_NAME).xcworkspace -list
-	final_scheme=""; \
-	if xcodebuild -workspace $(PROJECT_NAME).xcworkspace -list | grep -q "($(PROJECT_NAME) project)"; \
-	then \
-		 final_scheme="$(EXTENSION_NAME) ($(PROJECT_NAME) project)" ; \
-		 echo $$final_scheme ; \
-	else \
-		 final_scheme="$(EXTENSION_NAME)" ; \
-		 echo $$final_scheme ; \
-	fi; \
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "FunctionalTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES; \
+	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "UnitTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 install-githook:
 	git config core.hooksPath .githooks
