@@ -81,6 +81,13 @@ class EdgeConsentTests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
     }
+    
+    // Runs after each test case
+    override func tearDown() {
+        super.tearDown()
+        
+        mockNetworkService.reset()
+    }
 
     // MARK: test experience events handling based on collect consent value
     func testCollectConsent_whenNo_thenHits_hitsCleared() {

@@ -58,14 +58,15 @@ class AEPEdgeFunctionalTests: TestBase {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 10))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
-        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: 10)
+        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: 2)
         resetTestExpectations()
         mockNetworkService.reset()
     }
     
+    // Runs after each test case
     override func tearDown() {
         super.tearDown()
         

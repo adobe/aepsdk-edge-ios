@@ -53,6 +53,13 @@ class CompletionHandlerFunctionalTests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
     }
+    
+    // Runs after each test case
+    override func tearDown() {
+        super.tearDown()
+        
+        mockNetworkService.reset()
+    }
 
     func testSendEvent_withCompletionHandler_callsCompletionCorrectly() {
         let httpConnection: HttpConnection = HttpConnection(data: responseBodyWithHandle.data(using: .utf8),

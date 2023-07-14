@@ -58,11 +58,11 @@ class TestBase: XCTestCase {
 
     public override func tearDown() {
         super.tearDown()
-        unregisterInstrumentedExtension()
+//        unregisterInstrumentedExtension()
         // Wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
         usleep(200000)
-        EventHub.reset()
         resetTestExpectations()
+        EventHub.reset()
         TestBase.isFirstRun = false
         UserDefaults.clearAll()
         FileManager.default.clearCache()

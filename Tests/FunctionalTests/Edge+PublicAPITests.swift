@@ -28,7 +28,7 @@ class EdgePublicAPITests: TestBase {
 
         super.setUp()
 
-        continueAfterFailure = true
+        continueAfterFailure = false
         TestBase.debugEnabled = true
         FileManager.default.clearCache()
 
@@ -50,6 +50,13 @@ class EdgePublicAPITests: TestBase {
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
+        mockNetworkService.reset()
+    }
+    
+    // Runs after each test case
+    override func tearDown() {
+        super.tearDown()
+        
         mockNetworkService.reset()
     }
 

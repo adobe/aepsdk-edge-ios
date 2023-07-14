@@ -62,6 +62,13 @@ class AEPEdgePathOverwriteTests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
     }
+    
+    // Runs after each test case
+    override func tearDown() {
+        super.tearDown()
+        
+        mockNetworkService.reset()
+    }
 
     // MARK: test network request with custom path
     func testSendEvent_withXDMData_withPathOverwrite_withProductionConfigEndpoint_sendsExEdgeNetworkRequestToCustomPath() {
