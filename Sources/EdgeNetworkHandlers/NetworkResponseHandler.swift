@@ -221,7 +221,7 @@ class NetworkResponseHandler {
             if let errorAsDictionary = error.asDictionary() {
                 logErrorMessage(errorAsDictionary, isError: true, requestId: requestId)
 
-                let requestEvent = extractRequestEvent(forEventIndex: error.eventIndex, requestId: requestId)
+                let requestEvent = extractRequestEvent(forEventIndex: error.report?.eventIndex, requestId: requestId)
                 // set eventRequestId and Edge requestId on the response event and dispatch data
                 let eventData = addEventAndRequestIdToDictionary(errorAsDictionary,
                                                                  requestId: requestId,
@@ -250,7 +250,7 @@ class NetworkResponseHandler {
             if let warningsAsDictionary = warning.asDictionary() {
                 logErrorMessage(warningsAsDictionary, isError: false, requestId: requestId)
 
-                let requestEvent = extractRequestEvent(forEventIndex: warning.eventIndex, requestId: requestId)
+                let requestEvent = extractRequestEvent(forEventIndex: warning.report?.eventIndex, requestId: requestId)
                 // set eventRequestId and Edge requestId on the response event and dispatch data
                 let eventData = addEventAndRequestIdToDictionary(warningsAsDictionary,
                                                                  requestId: requestId,

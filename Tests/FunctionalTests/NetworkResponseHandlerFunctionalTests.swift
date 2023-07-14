@@ -111,7 +111,9 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "          \"status\": 100,\n" +
             "          \"type\": \"personalization\",\n" +
             "          \"title\": \"Button color not found\",\n" +
-            "           \"eventIndex\": 1\n" +
+            "          \"report\": {\n" +
+            "            \"eventIndex\": 1\n" +
+            "           }\n" +
             "        }\n" +
             "      ]\n" +
             "    }"
@@ -146,7 +148,9 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "          \"status\": 100,\n" +
             "          \"type\": \"personalization\",\n" +
             "          \"title\": \"Button color not found\",\n" +
+            "          \"report\": {\n" +
             "           \"eventIndex\": 10\n" +
+            "           }\n" +
             "        }\n" +
             "      ]\n" +
             "    }"
@@ -166,7 +170,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(100, flattenReceivedData["status"] as? Int)
         XCTAssertEqual("Button color not found", flattenReceivedData["title"] as? String)
         XCTAssertEqual(requestId, flattenReceivedData["requestId"] as? String)
-        
+
         XCTAssertNil(dispatchEvents[0].parentID) // Parent ID not chained as no event at index 10
     }
     func testProcessResponseOnError_WhenUnknownRequestId_doesNotCrash() {
@@ -180,7 +184,9 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "          \"status\": 100,\n" +
             "          \"type\": \"personalization\",\n" +
             "          \"title\": \"Button color not found\",\n" +
+            "          \"report\": {\n" +
             "           \"eventIndex\": 0\n" +
+            "           }\n" +
             "        }\n" +
             "      ]\n" +
             "    }"
@@ -200,7 +206,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(100, flattenReceivedData["status"] as? Int)
         XCTAssertEqual("Button color not found", flattenReceivedData["title"] as? String)
         XCTAssertEqual("567", flattenReceivedData["requestId"] as? String)
-        
+
         XCTAssertNil(dispatchEvents[0].parentID) // Parent ID not chained as request ID is unknown (does not match any waiting event list)
     }
     func testProcessResponseOnError_WhenTwoEventJsonError_dispatchesTwoEvents() {
@@ -223,7 +229,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "        }\n" +
             "      ]\n" +
             "    }"
-        
+
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
         let dispatchEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
@@ -579,7 +585,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "        }],\n" +
             "      \"errors\": []\n" +
             "    }"
-        
+
         networkResponseHandler.addWaitingEvents(requestId: "d81c93e5-7558-4996-a93c-489d550748b8", batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: "d81c93e5-7558-4996-a93c-489d550748b8")
 
@@ -600,7 +606,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(15552000, flattenReceivedData1["payload[0].maxAge"] as? Int)
         XCTAssertEqual(event1.id.uuidString, flattenReceivedData1["requestEventId"] as? String)
         XCTAssertEqual(event1.id, dispatchEvents[0].parentID) // Event chained to event1 as default event index is 0
-        
+
         // verify event 2
         guard let receivedData2 = dispatchEvents[1].data else {
             XCTFail("Invalid event data for event 2")
@@ -780,7 +786,9 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "          \"status\": 2003,\n" +
             "          \"type\": \"personalization\",\n" +
             "          \"title\": \"Failed to process personalization event\",\n" +
-            "          \"eventIndex\": 1 \n" +
+            "          \"report\": {\n" +
+            "            \"eventIndex\": 1 \n" +
+            "           }\n" +
             "        }\n" +
             "       ]\n" +
             "    }"
@@ -831,7 +839,9 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "        {\n" +
             "          \"status\": 2003,\n" +
             "          \"title\": \"Failed to process personalization event\",\n" +
-            "          \"eventIndex\": 1 \n" +
+            "          \"report\": {\n" +
+            "            \"eventIndex\": 1 \n" +
+            "           }\n" +
             "        }\n" +
             "       ],\n" +
             "      \"warnings\": [" +
@@ -839,8 +849,8 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
             "          \"type\": \"https://ns.adobe.com/aep/errors/EXEG-0204-200\",\n" +
             "          \"status\": 98,\n" +
             "          \"title\": \"Some Informative stuff here\",\n" +
-            "          \"eventIndex\": 0, \n" +
             "          \"report\": {" +
+            "             \"eventIndex\": 0, \n" +
             "             \"cause\": {" +
             "                \"message\": \"Some Informative stuff here\",\n" +
             "                \"code\": 202\n" +
@@ -866,7 +876,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("123", flattenReceivedData1["requestId"] as? String)
         XCTAssertEqual(event2.id.uuidString, flattenReceivedData1["requestEventId"] as? String)
         XCTAssertEqual(event2.id, dispatchEvents[0].parentID) // Event chained to event2 as event index is 1
-        
+
         guard let receivedData2 = dispatchEvents[1].data else {
             XCTFail("Invalid event data for event 2")
             return
@@ -882,7 +892,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(event1.id.uuidString, flattenReceivedData2["requestEventId"] as? String)
         XCTAssertEqual(event1.id, dispatchEvents[1].parentID) // Event chained to event1 as event index is 0
     }
-    
+
     func testProcessResponseOnSuccess_WhenEventHandleAndErrorAndWarning_dispatchesThreeEvents() {
         setExpectationEvent(type: FunctionalTestConst.EventType.EDGE,
                             source: FunctionalTestConst.EventSource.RESPONSE_CONTENT,
@@ -943,7 +953,7 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual(15552000, flattenReceivedData1["payload[0].maxAge"] as? Int)
         XCTAssertEqual(event1.id.uuidString, flattenReceivedData1["requestEventId"] as? String)
         XCTAssertEqual(event1.id, dispatchEvents[0].parentID) // Event chained to event1 as event index defaults to 0
-        
+
         let dispatchErrorEvents = getDispatchedEventsWith(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(2, dispatchErrorEvents.count)
         guard let receivedData2 = dispatchErrorEvents[0].data else {
@@ -959,12 +969,12 @@ class NetworkResponseHandlerFunctionalTests: FunctionalTestBase {
         XCTAssertEqual("123", flattenReceivedData2["requestId"] as? String)
         XCTAssertEqual(event1.id.uuidString, flattenReceivedData1["requestEventId"] as? String)
         XCTAssertEqual(event1.id, dispatchErrorEvents[0].parentID) // Event chained to event1 as event index defaults to 0
-        
+
         guard let receivedData3 = dispatchErrorEvents[1].data else {
             XCTFail("Invalid event data for dispatched warning")
             return
         }
-        
+
         let flattenReceivedData3: [String: Any] = flattenDictionary(dict: receivedData3)
         XCTAssertEqual(7, flattenReceivedData3.count)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0204-200", flattenReceivedData3["type"] as? String)
