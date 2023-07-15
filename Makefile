@@ -100,16 +100,16 @@ test-ios: clean-ios-test-files
 	@echo "### Testing iOS"
 	@echo "######################################################################"
 	@echo "List of available shared Schemes in xcworkspace"
-	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "FunctionalTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath iosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES; \
-	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "UnitTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath iosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "UnitTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath iosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES; \
+	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "FunctionalTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath iosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 test-tvos: clean-tvos-test-files
 	@echo "######################################################################"
 	@echo "### Testing tvOS"
 	@echo "######################################################################"
 	@echo "List of available shared Schemes in xcworkspace"
-	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "FunctionalTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES; \
-	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "UnitTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "UnitTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES; \
+	xcodebuild test -workspace AEPEdge.xcworkspace -scheme "FunctionalTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 install-githook:
 	git config core.hooksPath .githooks

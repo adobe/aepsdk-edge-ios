@@ -112,12 +112,12 @@ jobs:
       # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
       - codecov/upload:
           flags: ios-tests
-          upload_name: Coverage report for iOS functional tests
-          xtra_args: -c -v --xc --xp iosFunctionalResults.xcresult
-      - codecov/upload:
-          flags: ios-tests
           upload_name: Coverage report for iOS unit tests
           xtra_args: -c -v --xc --xp iosUnitResults.xcresult
+      - codecov/upload:
+          flags: ios-tests
+          upload_name: Coverage report for iOS functional tests
+          xtra_args: -c -v --xc --xp iosFunctionalResults.xcresult
   
   test-tvos:
     macos:
@@ -138,13 +138,13 @@ jobs:
       # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
       - codecov/upload:
           flags: tvos-tests
-          upload_name: Coverage report for tvOS functional tests
-          xtra_args: -c -v --xc --xp tvosFunctionalResults.xcresult
-      - codecov/upload:
-          flags: tvos-tests
           upload_name: Coverage report for tvOS unit tests
           xtra_args: -c -v --xc --xp tvosUnitResults.xcresult
-
+      - codecov/upload:
+          flags: tvos-tests
+          upload_name: Coverage report for tvOS functional tests
+          xtra_args: -c -v --xc --xp tvosFunctionalResults.xcresult
+      
   build_xcframework_and_app:  
     macos:
       xcode: 14.1.0 # Specify the Xcode version to use
