@@ -23,12 +23,12 @@ clean:
 	rm -rf build
 
 clean-ios-test-files:
-	rm -rf iosFunctionalResults.xcresult; \
-	rm -rf iosUnitResults.xcresult
+	rm -rf iosUnitResults.xcresult; \
+	rm -rf iosFunctionalResults.xcresult
 
 clean-tvos-test-files:
-	rm -rf tvosFunctionalResults.xcresult; \
-	rm -rf tvosUnitResults.xcresult
+	rm -rf tvosUnitResults.xcresult; \
+	rm -rf tvosFunctionalResults.xcresult
 
 pod-install:
 	pod install --repo-update
