@@ -118,6 +118,7 @@ jobs:
       - run:
           name: Run iOS Functional Tests
           command: make functional-test-ios
+          when: always # run even if unit tests fail
 
       - codecov/upload:
           flags: ios-functional-tests
@@ -149,6 +150,7 @@ jobs:
       - run:
           name: Run tvOS Functional Tests
           command: make functional-test-tvos
+          when: always # run even if unit tests fail
 
       - codecov/upload:
           flags: tvos-functional-tests
