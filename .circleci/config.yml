@@ -105,17 +105,22 @@ jobs:
       - prestart_ios_simulator
 
       - run:
-          name: Run iOS Tests
-          command: make test-ios
+          name: Run iOS Unit Tests
+          command: make unit-test-ios
 
       # Code coverage upload using Codecov
       # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
       - codecov/upload:
-          flags: ios-tests
+          flags: ios-unit-tests
           upload_name: Coverage report for iOS unit tests
           xtra_args: -c -v --xc --xp iosUnitResults.xcresult
+
+      - run:
+          name: Run iOS Functional Tests
+          command: make functional-test-ios
+
       - codecov/upload:
-          flags: ios-tests
+          flags: ios-functional-tests
           upload_name: Coverage report for iOS functional tests
           xtra_args: -c -v --xc --xp iosFunctionalResults.xcresult
   
@@ -131,17 +136,22 @@ jobs:
       - prestart_tvos_simulator
       
       - run:
-          name: Run tvOS Tests
-          command: make test-tvos
+          name: Run tvOS Unit Tests
+          command: make unit-test-tvos
 
       # Code coverage upload using Codecov
       # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
       - codecov/upload:
-          flags: tvos-tests
+          flags: tvos-unit-tests
           upload_name: Coverage report for tvOS unit tests
           xtra_args: -c -v --xc --xp tvosUnitResults.xcresult
+
+      - run:
+          name: Run tvOS Functional Tests
+          command: make functional-test-tvos
+
       - codecov/upload:
-          flags: tvos-tests
+          flags: tvos-functional-tests
           upload_name: Coverage report for tvOS functional tests
           xtra_args: -c -v --xc --xp tvosFunctionalResults.xcresult
       
