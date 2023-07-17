@@ -113,7 +113,7 @@ jobs:
       - codecov/upload:
           flags: ios-unit-tests
           upload_name: Coverage report for iOS unit tests
-          xtra_args: -c -v --xc --xp iosUnitResults.xcresult
+          xtra_args: -c -v --xc --xp build/reports/iosUnitResults.xcresult
 
       - run:
           name: Run iOS Functional Tests
@@ -123,7 +123,7 @@ jobs:
       - codecov/upload:
           flags: ios-functional-tests
           upload_name: Coverage report for iOS functional tests
-          xtra_args: -c -v --xc --xp iosFunctionalResults.xcresult
+          xtra_args: -c -v --xc --xp build/reports/iosFunctionalResults.xcresult
   
   test-tvos:
     macos:
@@ -145,7 +145,7 @@ jobs:
       - codecov/upload:
           flags: tvos-unit-tests
           upload_name: Coverage report for tvOS unit tests
-          xtra_args: -c -v --xc --xp tvosUnitResults.xcresult
+          xtra_args: -c -v --xc --xp build/reports/tvosUnitResults.xcresult
 
       - run:
           name: Run tvOS Functional Tests
@@ -155,7 +155,7 @@ jobs:
       - codecov/upload:
           flags: tvos-functional-tests
           upload_name: Coverage report for tvOS functional tests
-          xtra_args: -c -v --xc --xp tvosFunctionalResults.xcresult
+          xtra_args: -c -v --xc --xp build/reports/tvosFunctionalResults.xcresult
       
   build_xcframework_and_app:  
     macos:

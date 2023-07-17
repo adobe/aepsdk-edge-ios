@@ -22,14 +22,6 @@ setup:
 clean:
 	rm -rf build
 
-clean-ios-test-files:
-	rm -rf iosUnitResults.xcresult; \
-	rm -rf iosFunctionalResults.xcresult
-
-clean-tvos-test-files:
-	rm -rf tvosUnitResults.xcresult; \
-	rm -rf tvosFunctionalResults.xcresult
-
 pod-install:
 	pod install --repo-update
 
@@ -99,29 +91,29 @@ unit-test-ios:
 	@echo "######################################################################"
 	@echo "### Unit Testing iOS"
 	@echo "######################################################################"
-	rm -rf iosUnitResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath iosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	rm -rf build/reports/iosUnitResults.xcresult
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath build/reports/iosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 functional-test-ios:
 	@echo "######################################################################"
 	@echo "### Functional Testing iOS"
 	@echo "######################################################################"
-	rm -rf iosFunctionalResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath iosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	rm -rf build/reports/iosFunctionalResults.xcresult
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath build/reports/iosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 unit-test-tvos:
 	@echo "######################################################################"
-	@echo "### Unit Testing iOS"
+	@echo "### Unit Testing tvOS"
 	@echo "######################################################################"
-	rm -rf tvosUnitResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	rm -rf build/reports/tvosUnitResults.xcresult
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath build/reports/tvosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 functional-test-tvos:
 	@echo "######################################################################"
-	@echo "### Functional Testing iOS"
+	@echo "### Functional Testing tvOS"
 	@echo "######################################################################"
-	rm -rf tvosFunctionalResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	rm -rf build/reports/tvosFunctionalResults.xcresult
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath build/reports/tvosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 install-githook:
 	git config core.hooksPath .githooks
