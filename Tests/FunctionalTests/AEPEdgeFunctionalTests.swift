@@ -1120,8 +1120,13 @@ class AEPEdgeFunctionalTests: FunctionalTestBase {
 
         // Send two requests
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"])
-        Edge.sendEvent(experienceEvent: experienceEvent)
-        sleep(2)
+        let expectation = XCTestExpectation(description: "Send Event completion closure")
+        Edge.sendEvent(experienceEvent: experienceEvent) {_ in
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 2)
+
+        usleep(1500000) // sleep test thread to expire received location hint
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
