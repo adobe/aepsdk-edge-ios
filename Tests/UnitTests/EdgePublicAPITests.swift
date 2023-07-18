@@ -19,7 +19,7 @@ class EdgePublicAPITests: XCTestCase {
     override func setUp() {
         continueAfterFailure = false
         EventHub.shared.start()
-        sleep(1)
+        usleep(250000) // sleep 0.25 seconds to allow EventHub to start
     }
 
     override func tearDown() {
