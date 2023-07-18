@@ -163,7 +163,7 @@ jobs:
     
     steps:
       - checkout
-      # verify XCFramework archive builds
+      # Verify XCFramework archive builds
       - run:
           name: Build XCFramework
           command: |
