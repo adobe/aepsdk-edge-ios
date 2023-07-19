@@ -58,7 +58,6 @@ class TestBase: XCTestCase {
 
     public override func tearDown() {
         super.tearDown()
-
         // Wait .2 seconds in case there are unexpected events that were in the dispatch process during cleanup
         usleep(200000)
         resetTestExpectations()

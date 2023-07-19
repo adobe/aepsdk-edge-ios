@@ -49,6 +49,13 @@ class IdentityStateFunctionalTests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
     }
+    
+    // Runs after each test case
+    override func tearDown() {
+        super.tearDown()
+        
+        mockNetworkService.reset()
+    }
 
     func testSendEvent_withPendingIdentityState_noRequestSent() {
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))

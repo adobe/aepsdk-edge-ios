@@ -29,25 +29,20 @@ struct EdgeEventWarning: Codable {
     /// The warning report
     let report: EdgeEventWarningReport?
 
-    /// Encodes the event to which this warning is attached as the index in the events array in EdgeRequest
-    let eventIndex: Int?
-
     // MARK: - Codable
     enum CodingKeys: String, CodingKey {
         case type
         case status
         case title
         case report
-        case eventIndex
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        // skip eventIndex when encoding
         if let unwrapped = title { try container.encodeIfPresent(unwrapped, forKey: .title) }
         if let unwrapped = status { try container.encodeIfPresent(unwrapped, forKey: .status) }
         if let unwrapped = type { try container.encodeIfPresent(unwrapped, forKey: .type) }
-        if let unwrapped = report { try container.encodeIfPresent(unwrapped, forKey: .report) }
+        if let unwrapped = report, unwrapped.cause != nil { try container.encodeIfPresent(unwrapped, forKey: .report) }
     }
 }
 
@@ -56,8 +51,23 @@ struct EdgeEventWarning: Codable {
 /// A map of additional properties that aid in debugging such as the request ID or the org ID. In some cases, it might contain data specific to the error at hand, such as a list of validation errors.
 struct EdgeEventWarningReport: Codable {
 
+    /// Encodes the event to which this warning is attached as the index in the events array in EdgeRequest
+    let eventIndex: Int?
+
     /// The cause for the `EdgeEventWarning`
     let cause: EdgeEventWarningCause?
+
+    // MARK: - Codable
+    enum CodingKeys: String, CodingKey {
+        case eventIndex
+        case cause
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        // skip eventIndex when encoding
+        if let unwrapped = cause { try container.encodeIfPresent(unwrapped, forKey: .cause)}
+    }
 }
 
 // MARK: - EdgeEventWarningCause

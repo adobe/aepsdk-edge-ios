@@ -15,7 +15,6 @@ opt_in_rules: # some rules are opt-in only
 - sorted_imports
 - toggle_bool
 - unneeded_parentheses_in_closure_argument
-- unused_import
 - vertical_parameter_alignment_on_call
 excluded: # paths to ignore during linting
 - Carthage
@@ -23,6 +22,9 @@ excluded: # paths to ignore during linting
 - TestApps/*/libs
 - Pods
 - Documentation
+
+analyzer_rules:
+- unused_import
 
 empty_count: 
     severity: warning
