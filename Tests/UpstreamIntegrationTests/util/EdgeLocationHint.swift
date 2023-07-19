@@ -14,7 +14,7 @@
 import Foundation
 
 /// All location hint values available for the Edge Network extension
-enum EdgeLocationHint: String {
+enum EdgeLocationHint: String, CaseIterable {
     /// Oregon, USA
     case or2
     /// Virginia, USA

@@ -90,7 +90,7 @@ class EdgeHitProcessorTests: XCTestCase {
     override func setUp() {
         ServiceProvider.shared.networkService = MockNetworking()
         networkService = EdgeNetworkService()
-        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_ :String?, _ :TimeInterval?) -> Void in  })
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  })
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: resolveSharedState(extensionName:event:),
@@ -243,7 +243,7 @@ class EdgeHitProcessorTests: XCTestCase {
         let retryValues = [("60", 60.0), ("InvalidHeader", 5.0), ("", 5.0), ("1", 1.0)]
 
         for (code, retryValueTuple) in zip(recoverableNetworkErrorCodes, retryValues) {
-            let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", eventIndex: 0, report: nil)
+            let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
 

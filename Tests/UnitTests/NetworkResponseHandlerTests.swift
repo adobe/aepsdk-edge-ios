@@ -15,14 +15,14 @@ import AEPCore
 import XCTest
 
 class NetworkResponseHandlerTests: XCTestCase {
-    private var networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_ :String?, _ :TimeInterval?) -> Void in  })
+    private var networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  })
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let event3 = Event(name: "e3", type: "eventType", source: "eventSource", data: nil)
 
     override func setUp() {
         continueAfterFailure = false // fail so nil checks stop execution
-        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_ :String?, _ :TimeInterval?) -> Void in  })
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  })
     }
 
     // MARK: addWaitingEvents, getWaitingEvents, removeWaitingEvents
@@ -36,8 +36,8 @@ class NetworkResponseHandlerTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(event1.id.uuidString, result[0])
-        XCTAssertEqual(event2.id.uuidString, result[1])
+        XCTAssertEqual(event1.id.uuidString, result[0].id.uuidString)
+        XCTAssertEqual(event2.id.uuidString, result[1].id.uuidString)
     }
 
     func testAddWaitingEvents_skips_whenEmptyRequestId() {
@@ -68,7 +68,7 @@ class NetworkResponseHandlerTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(event3.id.uuidString, result[0])
+        XCTAssertEqual(event3.id.uuidString, result[0].id.uuidString)
     }
 
     func testRemoveWaitingEvents_removesByRequestId() {

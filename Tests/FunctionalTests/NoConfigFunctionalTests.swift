@@ -36,6 +36,13 @@ class NoConfigFunctionalTests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
     }
+    
+    // Runs after each test case
+    override func tearDown() {
+        super.tearDown()
+        
+        mockNetworkService.reset()
+    }
 
     func testHandleExperienceEventRequest_withPendingConfigurationState_expectEventsQueueIsBlocked() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid

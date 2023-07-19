@@ -34,6 +34,8 @@ enum TestConstants {
         static let RESPONSE_IDENTITY = "com.adobe.eventSource.responseIdentity"
         static let REQUEST_IDENTITY = "com.adobe.eventSource.requestIdentity"
         static let BOOTED = "com.adobe.eventSource.booted"
+        static let LOCATION_HINT_RESULT = "locationHint:result"
+        static let STATE_STORE = "state:store"
     }
 
     enum EventDataKey {

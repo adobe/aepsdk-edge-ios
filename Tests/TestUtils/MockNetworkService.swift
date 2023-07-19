@@ -14,7 +14,7 @@
 import Foundation
 import XCTest
 
-/// Overriding NetworkService used for functional tests when extending the TestBase
+/// `Networking` adhering network service utility used for tests that require mocked network requests and mocked responses
 class MockNetworkService: Networking {
     private let helper: NetworkRequestHelper = NetworkRequestHelper()
     private var responseDelay: UInt32 = 0
@@ -71,8 +71,18 @@ class MockNetworkService: Networking {
     }
 
     // MARK: - Passthrough for shared helper APIs
+
+    /// Set the expected number of times a `NetworkRequest` should be seen.
+    ///
+    /// - Parameters:
+    ///   - url: the URL string of the `NetworkRequest` to set the expectation for
+    ///   - httpMethod: the `HttpMethod` of the `NetworkRequest` to set the expectation for
+    ///   - expectedCount: how many times a request with this url and httpMethod is expected to be sent, by default it is set to 1
     func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
-        helper.setExpectationForNetworkRequest(url: url, httpMethod: httpMethod, expectedCount: expectedCount, file: file, line: line)
+        guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
+            return
+        }
+        helper.setExpectationForNetworkRequest(networkRequest: networkRequest, expectedCount: expectedCount, file: file, line: line)
     }
 
     func assertAllNetworkRequestExpectations(file: StaticString = #file, line: UInt = #line) {
