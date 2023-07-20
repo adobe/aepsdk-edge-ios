@@ -139,7 +139,6 @@ jobs:
             or:
               - equal: [ staging, << pipeline.git.branch >> ]
               - equal: [ dev, << pipeline.git.branch >> ]
-              - equal: [ pull/349, << pipeline.git.branch >> ]
           steps:
             - install_dependencies
 
