@@ -18,12 +18,23 @@ workflows:
       - test-ios-integration:
           requires:
             - validate-code
+          # Job should only run when merged into the following branches
+          filters:
+            branches:
+              only:
+                - main
+                - staging
       - test-tvos:
           requires:
             - validate-code
       - build_xcframework_and_app:
           requires:
             - validate-code
+          filters:
+            branches:
+              only:
+                - main
+                - staging
 
 commands: 
   install_dependencies:
@@ -134,20 +145,15 @@ jobs:
 
     steps:
       - checkout
-      - when:
-          condition:
-            or:
-              - equal: [ staging, << pipeline.git.branch >> ]
-              - equal: [ dev, << pipeline.git.branch >> ]
-          steps:
-            - install_dependencies
 
-            - prestart_ios_simulator
+      - install_dependencies
 
-            - run:
-                name: Run iOS integration tests
-                command: make test-integration-upstream
-  
+      - prestart_ios_simulator
+
+      - run:
+          name: Run iOS integration tests
+          command: make test-integration-upstream
+
   test-tvos:
     macos:
       xcode: 14.1.0 # Specify the Xcode version to use
@@ -189,15 +195,9 @@ jobs:
       # Verify XCFramework archive builds
       - run:
           name: Build XCFramework
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "dev" ]; then
-              make archive
-            fi
+          command: make archive
       # verify test app builds
       - run:
           name: Build Test App
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "dev" ]; then
-              make build-app
-            fi
+          command: make build-app
         
