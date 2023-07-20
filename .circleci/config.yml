@@ -139,6 +139,7 @@ jobs:
             or:
               - equal: [ staging, << pipeline.git.branch >> ]
               - equal: [ dev, << pipeline.git.branch >> ]
+              - equal: [ it-workflow-rebase2, << pipeline.git.branch >> ]
           steps:
             - install_dependencies
 
