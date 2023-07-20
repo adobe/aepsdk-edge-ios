@@ -121,6 +121,7 @@ functional-test-tvos:
 # If EDGE_ENVIRONMENT is not specified, test target will use its default value.
 .SILENT: test-integration-upstream # Silences Makefile's automatic echo of commands
 test-integration-upstream: pod-install; \
+	rm -rf build/reports/iosIntegrationUpstreamResults.xcresult; \
 	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
 		echo ''; \
 		echo '-------------------------- WARNING -------------------------------'; \
@@ -134,7 +135,7 @@ test-integration-upstream: pod-install; \
 	-scheme UpstreamIntegrationTests \
 	-destination 'platform=iOS Simulator,name=iPhone 14' \
 	-derivedDataPath build/out \
-	-resultBundlePath coverage/upstreamIntegrationTest/iosresults.xcresult \
+	-resultBundlePath build/reports/iosIntegrationUpstreamResults.xcresult \
 	-enableCodeCoverage YES \
 	ADB_SKIP_LINT=YES \
 	EDGE_ENVIRONMENT=$(EDGE_ENVIRONMENT) \
