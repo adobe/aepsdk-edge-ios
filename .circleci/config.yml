@@ -96,6 +96,7 @@ jobs:
   test-ios:
     macos:
       xcode: 14.1.0 # Specify the Xcode version to use
+    resource_class: macos.m1.large.gen1 # Use large resource for iOS tests
 
     steps:
       - checkout
@@ -128,6 +129,7 @@ jobs:
   test-tvos:
     macos:
       xcode: 14.1.0 # Specify the Xcode version to use
+    resource_class: macos.m1.large.gen1 # Use large resource for tvOS tests
 
     steps:
       - checkout
