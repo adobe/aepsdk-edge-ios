@@ -130,7 +130,7 @@ jobs:
   
   test-ios-integration:
     macos:
-      xcode: 13.4.0 # Specify the Xcode version to use
+      xcode: 14.1.0 # Specify the Xcode version to use
 
     steps:
       - when:
