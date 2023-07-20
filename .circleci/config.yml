@@ -134,9 +134,10 @@ jobs:
 
     steps:
       - when:
-          or:
-            - equal: [ staging, << pipeline.git.branch >> ]
-            - equal: [ dev, << pipeline.git.branch >> ]
+          condition:
+            or:
+              - equal: [ staging, << pipeline.git.branch >> ]
+              - equal: [ dev, << pipeline.git.branch >> ]
           steps:
             - checkout
 
