@@ -7,7 +7,7 @@ orbs:
   codecov: codecov/codecov@3.2.5
   macos: circleci/macos@2
   
-# Workflows orchestrate a set of jobs to be run;
+# Workflows orchestrate a set of jobs to be run
 workflows:
   build-test:
     jobs:
@@ -15,18 +15,18 @@ workflows:
       - test-ios:
           requires:
             - validate-code
+      - test-tvos:
+          requires:
+            - validate-code
+      # The following jobs are conditional on branch name
       - test-ios-integration:
           requires:
             - validate-code
-          # Job should only run when merged into the following branches
           filters:
             branches:
               only:
                 - main
                 - staging
-      - test-tvos:
-          requires:
-            - validate-code
       - build_xcframework_and_app:
           requires:
             - validate-code
