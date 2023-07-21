@@ -24,6 +24,8 @@ workflows:
               only:
                 - main
                 - staging
+                # TEST: job filter on current branch
+                - pull\/349
       - test-tvos:
           requires:
             - validate-code
