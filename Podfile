@@ -17,6 +17,13 @@ target 'UnitTests' do
   pod 'AEPCore'
 end
 
+target 'UpstreamIntegrationTests' do
+  pod 'AEPCore'
+  pod 'AEPEdgeIdentity'
+  pod 'AEPEdgeConsent'
+  pod 'AEPEdge', :path => './AEPEdge.podspec'
+end
+
 target 'FunctionalTests' do
   pod 'AEPCore'
   pod 'AEPEdgeIdentity'
