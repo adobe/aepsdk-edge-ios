@@ -79,6 +79,15 @@ commands:
           version: "16.1"
           device: "Apple TV"
 
+  install_rosetta_for_m1:
+    steps:
+      - run:
+          name: Install Rosetta for M1
+          command: |
+            if [ "${CIRCLE_JOB}" == "test-ios" ] || [ "${CIRCLE_JOB}" == "test-tvos" ]; then
+              softwareupdate --install-rosetta --agree-to-license
+            fi
+
 jobs:
   validate-code:
     macos:
@@ -96,8 +105,11 @@ jobs:
   test-ios:
     macos:
       xcode: 14.1.0 # Specify the Xcode version to use
+    resource_class: macos.m1.large.gen1 # Use large resource for iOS tests
 
     steps:
+      - install_rosetta_for_m1 # needed for CodeCov uploader
+
       - checkout
 
       - install_dependencies
@@ -105,21 +117,34 @@ jobs:
       - prestart_ios_simulator
 
       - run:
-          name: Run iOS Tests
-          command: make test-ios
+          name: Run iOS Unit Tests
+          command: make unit-test-ios
 
       # Code coverage upload using Codecov
       # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
       - codecov/upload:
-          flags: ios-tests
-          upload_name: Coverage Report for iOS Tests
-          xtra_args: -c -v --xc --xp iosresults.xcresult
+          flags: ios-unit-tests
+          upload_name: Coverage report for iOS unit tests
+          xtra_args: -c -v --xc --xp build/reports/iosUnitResults.xcresult
+
+      - run:
+          name: Run iOS Functional Tests
+          command: make functional-test-ios
+          when: always # run even if unit tests fail
+
+      - codecov/upload:
+          flags: ios-functional-tests
+          upload_name: Coverage report for iOS functional tests
+          xtra_args: -c -v --xc --xp build/reports/iosFunctionalResults.xcresult
   
   test-tvos:
     macos:
       xcode: 14.1.0 # Specify the Xcode version to use
+    resource_class: macos.m1.large.gen1 # Use large resource for tvOS tests
 
     steps:
+      - install_rosetta_for_m1 # needed for CodeCov uploader
+
       - checkout
 
       - install_dependencies
@@ -127,16 +152,26 @@ jobs:
       - prestart_tvos_simulator
       
       - run:
-          name: Run tvOS Tests
-          command: make test-tvos
+          name: Run tvOS Unit Tests
+          command: make unit-test-tvos
 
       # Code coverage upload using Codecov
       # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
       - codecov/upload:
-          flags: tvos-tests
-          upload_name: Coverage Report for tvOS Tests
-          xtra_args: -c -v --xc --xp tvosresults.xcresult
+          flags: tvos-unit-tests
+          upload_name: Coverage report for tvOS unit tests
+          xtra_args: -c -v --xc --xp build/reports/tvosUnitResults.xcresult
 
+      - run:
+          name: Run tvOS Functional Tests
+          command: make functional-test-tvos
+          when: always # run even if unit tests fail
+
+      - codecov/upload:
+          flags: tvos-functional-tests
+          upload_name: Coverage report for tvOS functional tests
+          xtra_args: -c -v --xc --xp build/reports/tvosFunctionalResults.xcresult
+      
   build_xcframework_and_app:  
     macos:
       xcode: 14.1.0 # Specify the Xcode version to use

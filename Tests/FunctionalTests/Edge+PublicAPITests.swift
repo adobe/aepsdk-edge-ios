@@ -137,4 +137,60 @@ class EdgePublicAPITests: FunctionalTestBase {
         // verify
         wait(for: [expectation], timeout: 1)
     }
+    
+    func testGetLocationHint_responseEventChainedToParentId() {
+        Edge.setLocationHint(FunctionalTestConst.OR2_LOC)
+        let expectation = XCTestExpectation(description: "Request Location Hint")
+        expectation.assertForOverFulfill = true
+        Edge.getLocationHint({ _, _ in
+            expectation.fulfill()
+        })
+
+        // verify
+        wait(for: [expectation], timeout: 1)
+        
+        let dispatchedRequests = getDispatchedEventsWith(type: EventType.edge, source: EventSource.requestIdentity)
+        XCTAssertEqual(1, dispatchedRequests.count)
+        
+        let dispatchedResponses = getDispatchedEventsWith(type: EventType.edge, source: EventSource.responseIdentity)
+        XCTAssertEqual(1, dispatchedResponses.count)
+        
+        XCTAssertEqual(dispatchedRequests[0].id, dispatchedResponses[0].parentID)
+    }
+    
+    func testSendEvent_responseEventsChainedToParentId() {
+
+        // Response data with 1 handle, 1 error, and 1 warning response, all at event index 0
+        let responseData: Data? = "\u{0000}{\"handle\":[{\"type\":\"state:store\",\"payload\":[{\"key\":\"s_ecid\",\"value\":\"MCMID|29068398647607325310376254630528178721\",\"maxAge\":15552000}]}],\"errors\":[{\"status\":2003,\"type\":\"personalization\",\"title\":\"Failed to process personalization event\"}],\"warnings\":[{\"type\":\"https://ns.adobe.com/aep/errors/EXEG-0204-200\",\"status\":98,\"title\":\"Some Informative stuff here\",\"report\":{\"cause\":{\"message\":\"Some Informative stuff here\",\"code\":202}}}]}\n".data(using: .utf8)
+        let responseConnection: HttpConnection = HttpConnection(data: responseData,
+                                                                response: HTTPURLResponse(url: URL(string: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR)!,
+                                                                                          statusCode: 200,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        
+        setNetworkResponseFor(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseHttpConnection: responseConnection)
+        
+        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"])
+
+        setExpectationNetworkRequest(url: FunctionalTestConst.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        setExpectationEvent(type: FunctionalTestConst.EventType.EDGE, source: FunctionalTestConst.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 2)
+        
+        Edge.sendEvent(experienceEvent: experienceEvent)
+        assertNetworkRequestsCount()
+        
+        let dispatchedRequests = getDispatchedEventsWith(type: EventType.edge, source: EventSource.requestContent)
+        XCTAssertEqual(1, dispatchedRequests.count)
+        
+        let dispatchedHandleResponses = getDispatchedEventsWith(type: EventType.edge, source: "state:store")
+        XCTAssertEqual(1, dispatchedHandleResponses.count)
+        
+        let dispatchedErrorResponses = getDispatchedEventsWith(type: EventType.edge, source: EventSource.errorResponseContent)
+        XCTAssertEqual(2, dispatchedErrorResponses.count)
+        
+        XCTAssertEqual(dispatchedRequests[0].id, dispatchedHandleResponses[0].parentID)
+        XCTAssertEqual(dispatchedRequests[0].id, dispatchedErrorResponses[0].parentID)
+        XCTAssertEqual(dispatchedRequests[0].id, dispatchedErrorResponses[1].parentID)
+    }
 }

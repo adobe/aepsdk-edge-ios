@@ -16,14 +16,11 @@ TVOS_ARCHIVE_DSYM_PATH = $(CURR_DIR)/build/tvos.xcarchive/dSYMs/
 
 setup-tools: install-githook
 
+setup:
+	pod install
+
 clean:
 	rm -rf build
-
-clean-ios-test-files:
-	rm -rf iosresults.xcresult
-
-clean-tvos-test-files:
-	rm -rf tvosresults.xcresult
 
 pod-install:
 	pod install --repo-update
@@ -88,41 +85,35 @@ build-app: setup
 	@echo "######################################################################"
 	xcodebuild clean build -workspace $(PROJECT_NAME).xcworkspace -scheme $(TEST_APP_TVOS_SCHEME) -destination 'generic/platform=tvOS Simulator'
 
-test: test-ios test-tvos
+test: unit-test-ios functional-test-ios unit-test-tvos functional-test-tvos
 
-test-ios: clean-ios-test-files
+unit-test-ios:
 	@echo "######################################################################"
-	@echo "### Testing iOS"
+	@echo "### Unit Testing iOS"
 	@echo "######################################################################"
-	@echo "List of available shared Schemes in xcworkspace"
-	xcodebuild -workspace $(PROJECT_NAME).xcworkspace -list
-	final_scheme=""; \
-	if xcodebuild -workspace $(PROJECT_NAME).xcworkspace -list | grep -q "($(PROJECT_NAME) project)"; \
-	then \
-	   final_scheme="$(EXTENSION_NAME) ($(PROJECT_NAME) project)" ; \
-	   echo $$final_scheme ; \
-	else \
-	   final_scheme="$(EXTENSION_NAME)" ; \
-	   echo $$final_scheme ; \
-	fi; \
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath build/out -resultBundlePath iosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	rm -rf build/reports/iosUnitResults.xcresult
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath build/reports/iosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
-test-tvos: clean-tvos-test-files
+functional-test-ios:
 	@echo "######################################################################"
-	@echo "### Testing tvOS"
+	@echo "### Functional Testing iOS"
 	@echo "######################################################################"
-	@echo "List of available shared Schemes in xcworkspace"
-	xcodebuild -workspace $(PROJECT_NAME).xcworkspace -list
-	final_scheme=""; \
-	if xcodebuild -workspace $(PROJECT_NAME).xcworkspace -list | grep -q "($(PROJECT_NAME) project)"; \
-	then \
-		 final_scheme="$(EXTENSION_NAME) ($(PROJECT_NAME) project)" ; \
-		 echo $$final_scheme ; \
-	else \
-		 final_scheme="$(EXTENSION_NAME)" ; \
-		 echo $$final_scheme ; \
-	fi; \
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "$$final_scheme" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath tvosresults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	rm -rf build/reports/iosFunctionalResults.xcresult
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath build/reports/iosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+
+unit-test-tvos:
+	@echo "######################################################################"
+	@echo "### Unit Testing tvOS"
+	@echo "######################################################################"
+	rm -rf build/reports/tvosUnitResults.xcresult
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath build/reports/tvosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+
+functional-test-tvos:
+	@echo "######################################################################"
+	@echo "### Functional Testing tvOS"
+	@echo "######################################################################"
+	rm -rf build/reports/tvosFunctionalResults.xcresult
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath build/reports/tvosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 install-githook:
 	git config core.hooksPath .githooks

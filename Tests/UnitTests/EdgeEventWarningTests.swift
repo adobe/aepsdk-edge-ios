@@ -24,11 +24,11 @@ class EdgeEventWarningTests: XCTestCase {
         // setup
         let jsonData = """
                         {
-                          "eventIndex": 1,
                           "type": "https://ns.adobe.com/aep/errors/EXEG-0204-200",
                           "status": 200,
                           "title": "test title",
                           "report": {
+                            "eventIndex": 1,
                             "cause": {
                               "message": "Cannot read related customer for device id: ...",
                               "code": 202
@@ -41,7 +41,7 @@ class EdgeEventWarningTests: XCTestCase {
         let warning = try? JSONDecoder().decode(EdgeEventWarning.self, from: jsonData ?? Data())
 
         // verify
-        XCTAssertEqual(1, warning?.eventIndex)
+        XCTAssertEqual(1, warning?.report?.eventIndex)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0204-200", warning?.type)
         XCTAssertEqual(200, warning?.status)
         XCTAssertEqual("test title", warning?.title)
@@ -53,12 +53,12 @@ class EdgeEventWarningTests: XCTestCase {
         // setup
         let jsonData = """
                         {
-                          "eventIndex": 1,
                           "type": "https://ns.adobe.com/aep/errors/EXEG-0204-200",
                           "status": 200,
                           "title": "test title",
                           "extraKey": "extraValue",
                           "report": {
+                            "eventIndex": 1,
                             "cause": {
                               "message": "Cannot read related customer for device id: ...",
                               "code": 202,
@@ -72,7 +72,7 @@ class EdgeEventWarningTests: XCTestCase {
         let warning = try? JSONDecoder().decode(EdgeEventWarning.self, from: jsonData ?? Data())
 
         // verify
-        XCTAssertEqual(1, warning?.eventIndex)
+        XCTAssertEqual(1, warning?.report?.eventIndex)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0204-200", warning?.type)
         XCTAssertEqual(200, warning?.status)
         XCTAssertEqual("test title", warning?.title)
@@ -85,11 +85,11 @@ class EdgeEventWarningTests: XCTestCase {
         let jsonData = """
                         [
                             {
-                              "eventIndex": 1,
                               "type": "https://ns.adobe.com/aep/errors/EXEG-0204-200",
                               "status": 200,
                               "title": "test title",
                               "report": {
+                                "eventIndex": 1,
                                 "cause": {
                                   "message": "Cannot read related customer for device id: ...",
                                   "code": 202
@@ -97,11 +97,11 @@ class EdgeEventWarningTests: XCTestCase {
                               }
                             },
                             {
-                              "eventIndex": 2,
                               "type": "https://ns.adobe.com/aep/errors/EXEG-0204-202",
                               "status": 202,
                               "title": "test title 2",
                               "report": {
+                                "eventIndex": 2,
                                 "cause": {
                                   "message": "Cannot read related customer for device id: ...",
                                   "code": 202
@@ -115,14 +115,14 @@ class EdgeEventWarningTests: XCTestCase {
         let warnings = try? JSONDecoder().decode([EdgeEventWarning].self, from: jsonData ?? Data())
 
         // verify
-        XCTAssertEqual(1, warnings?.first?.eventIndex)
+        XCTAssertEqual(1, warnings?.first?.report?.eventIndex)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0204-200", warnings?.first?.type)
         XCTAssertEqual(200, warnings?.first?.status)
         XCTAssertEqual("test title", warnings?.first?.title)
         XCTAssertEqual("Cannot read related customer for device id: ...", warnings?.first?.report?.cause?.message)
         XCTAssertEqual(202, warnings?.first?.report?.cause?.code)
 
-        XCTAssertEqual(2, warnings?.last?.eventIndex)
+        XCTAssertEqual(2, warnings?.last?.report?.eventIndex)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0204-202", warnings?.last?.type)
         XCTAssertEqual(202, warnings?.last?.status)
         XCTAssertEqual("test title 2", warnings?.last?.title)
@@ -134,10 +134,12 @@ class EdgeEventWarningTests: XCTestCase {
         // setup
         let jsonData = """
                         {
-                          "eventIndex": 1,
                           "type": "https://ns.adobe.com/aep/errors/EXEG-0204-200",
                           "status": 200,
-                          "title": "test title"
+                          "title": "test title",
+                          "report": {
+                            "eventIndex": 1
+                          }
                         }
                       """.data(using: .utf8)
 
@@ -145,11 +147,11 @@ class EdgeEventWarningTests: XCTestCase {
         let warning = try? JSONDecoder().decode(EdgeEventWarning.self, from: jsonData ?? Data())
 
         // verify
-        XCTAssertEqual(1, warning?.eventIndex)
+        XCTAssertNotNil(warning?.report)
+        XCTAssertEqual(1, warning?.report?.eventIndex)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0204-200", warning?.type)
         XCTAssertEqual(200, warning?.status)
         XCTAssertEqual("test title", warning?.title)
-        XCTAssertNil(warning?.report)
     }
 
     func testCanDecode_eventWarning_missingParams_multipleWarnings() {
@@ -157,16 +159,20 @@ class EdgeEventWarningTests: XCTestCase {
         let jsonData = """
                         [
                             {
-                              "eventIndex": 1,
                               "type": "https://ns.adobe.com/aep/errors/EXEG-0204-200",
                               "status": 200,
-                              "title": "test title"
+                              "title": "test title",
+                              "report": {
+                                "eventIndex": 1
+                              }
                             },
                             {
-                              "eventIndex": 2,
                               "type": "https://ns.adobe.com/aep/errors/EXEG-0204-202",
                               "status": 202,
-                              "title": "test title 2"
+                              "title": "test title 2",
+                              "report": {
+                                "eventIndex": 2
+                              }
                             }
                         ]
                       """.data(using: .utf8)
@@ -175,17 +181,55 @@ class EdgeEventWarningTests: XCTestCase {
         let warnings = try? JSONDecoder().decode([EdgeEventWarning].self, from: jsonData ?? Data())
 
         // verify
-        XCTAssertEqual(1, warnings?.first?.eventIndex)
+        XCTAssertNotNil(warnings?.first?.report)
+        XCTAssertEqual(1, warnings?.first?.report?.eventIndex)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0204-200", warnings?.first?.type)
         XCTAssertEqual(200, warnings?.first?.status)
         XCTAssertEqual("test title", warnings?.first?.title)
-        XCTAssertNil(warnings?.first?.report)
 
-        XCTAssertEqual(2, warnings?.last?.eventIndex)
+        XCTAssertNotNil(warnings?.last?.report)
+        XCTAssertEqual(2, warnings?.last?.report?.eventIndex)
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0204-202", warnings?.last?.type)
         XCTAssertEqual(202, warnings?.last?.status)
         XCTAssertEqual("test title 2", warnings?.last?.title)
-        XCTAssertNil(warnings?.last?.report)
+    }
+
+    func testCanEncode_eventWarning_allParams() {
+        let cause = EdgeEventWarningCause(message: "message", code: 5)
+        let report = EdgeEventWarningReport(eventIndex: 1, cause: cause)
+        let warning = EdgeEventWarning(type: "warning", status: 200, title: "test", report: report)
+
+        let encoded = warning.asDictionary()
+
+        XCTAssertNotNil(encoded)
+        XCTAssertEqual(4, encoded?.count)
+        XCTAssertEqual("warning", encoded?["type"] as? String)
+        XCTAssertEqual(200, encoded?["status"] as? Int)
+        XCTAssertEqual("test", encoded?["title"] as? String)
+
+        let encodedReport = encoded?["report"] as? [String: Any]
+        XCTAssertNotNil(encodedReport)
+        XCTAssertEqual(1, encodedReport?.count) // eventIndex is not encoded
+
+        let encodedCause = encodedReport?["cause"] as? [String: Any]
+        XCTAssertNotNil(encodedCause)
+        XCTAssertEqual(2, encodedCause?.count)
+        XCTAssertEqual("message", encodedCause?["message"] as? String)
+        XCTAssertEqual(5, encodedCause?["code"] as? Int)
+    }
+
+    func testCanEncode_eventWarning_doesNotEncodeEmptyReport() {
+        let report = EdgeEventWarningReport(eventIndex: 1, cause: nil)
+        let warning = EdgeEventWarning(type: "warning", status: 200, title: "test", report: report)
+
+        let encoded = warning.asDictionary()
+
+        XCTAssertNotNil(encoded)
+        XCTAssertEqual(3, encoded?.count)
+        XCTAssertEqual("warning", encoded?["type"] as? String)
+        XCTAssertEqual(200, encoded?["status"] as? Int)
+        XCTAssertEqual("test", encoded?["title"] as? String)
+        XCTAssertNil(encoded?["report"]) // EdgeEventWarningReport is not encoded if it doesn't contain a "cause"
     }
 
 }
