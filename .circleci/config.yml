@@ -7,7 +7,7 @@ orbs:
   codecov: codecov/codecov@3.2.5
   macos: circleci/macos@2
   
-# Workflows orchestrate a set of jobs to be run;
+# Workflows orchestrate a set of jobs to be run
 workflows:
   build-test:
     jobs:
@@ -18,9 +18,23 @@ workflows:
       - test-tvos:
           requires:
             - validate-code
+      # The following jobs are conditional on branch name
+      - test-ios-integration:
+          requires:
+            - validate-code
+          filters:
+            branches:
+              only:
+                - main
+                - staging
       - build_xcframework_and_app:
           requires:
             - validate-code
+          filters:
+            branches:
+              only:
+                - main
+                - staging
 
 commands: 
   install_dependencies:
@@ -125,6 +139,21 @@ jobs:
           upload_name: Coverage report for iOS functional tests
           xtra_args: -c -v --xc --xp build/reports/iosFunctionalResults.xcresult
   
+  test-ios-integration:
+    macos:
+      xcode: 14.1.0 # Specify the Xcode version to use
+
+    steps:
+      - checkout
+
+      - install_dependencies
+
+      - prestart_ios_simulator
+
+      - run:
+          name: Run iOS integration tests
+          command: make test-integration-upstream
+
   test-tvos:
     macos:
       xcode: 14.1.0 # Specify the Xcode version to use
@@ -166,15 +195,9 @@ jobs:
       # Verify XCFramework archive builds
       - run:
           name: Build XCFramework
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              make archive
-            fi
+          command: make archive
       # verify test app builds
       - run:
           name: Build Test App
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              make build-app
-            fi
+          command: make build-app
         
