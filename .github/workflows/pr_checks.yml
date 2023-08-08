@@ -19,13 +19,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: "${{ github.event.pull_request.merge_commit_sha }}"
+          ref: "${{ github.event.pull_request.head.ref }}"
       - name: CircleCI trigger for pull requests checks
         id: trigger-circleci
         uses: CircleCI-Public/trigger-circleci-pipeline-action@v1.1.0
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
-          TARGET_BRANCH: ${{ github.event.pull_request.merge_commit_sha }}
+          TARGET_BRANCH: ${{ github.event.pull_request.head.ref }}
 
       - name: Wait longer for CircleCI pipeline status
         id: wait-circleci
