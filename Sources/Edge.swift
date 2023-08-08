@@ -193,7 +193,6 @@ public class Edge: NSObject, Extension {
                                                       source: EventSource.responseIdentity,
                                                       data: data)
         //dispatch(event: responseEvent)
-    }
 
     func handleUpdateLocationHint(_ event: Event) {
         guard let data = event.data, !data.isEmpty else {
