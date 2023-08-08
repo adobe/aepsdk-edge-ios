@@ -16,6 +16,10 @@ jobs:
   pr-checks-circleci:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: "${{ github.event.pull_request.merge_commit_sha }}"
       - name: CircleCI trigger for pull requests checks
         id: trigger-circleci
         uses: CircleCI-Public/trigger-circleci-pipeline-action@v1.1.0
