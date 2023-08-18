@@ -32,9 +32,15 @@ class AEPEdgeFunctionalTests: TestBase {
     #elseif os(tvOS)
     private let EXPECTED_BASE_PATH = "https://ns.adobe.com/experience/mobilesdk/tvos"
     #endif
-
+    private var expectedRecordSeparatorString: String {
+       if #available(iOS 17, tvOS 17, *) {
+           return ""
+       } else {
+           return "\u{0000}"
+       }
+    }
     private let mockNetworkService: MockNetworkService = MockNetworkService()
-
+    
     // Runs before each test case
     override func setUp() {
         ServiceProvider.shared.networkService = mockNetworkService
@@ -280,11 +286,7 @@ class AEPEdgeFunctionalTests: TestBase {
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(19, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        if #available(iOS 17, tvOS 17, *) {
-          XCTAssertEqual("", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
-        } else {
-          XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
-        }
+        XCTAssertEqual(expectedRecordSeparatorString, requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticatedState"] as? String)
@@ -333,12 +335,7 @@ class AEPEdgeFunctionalTests: TestBase {
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(20, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        if #available(iOS 17, tvOS 17, *) {
-          XCTAssertEqual("", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
-        } else {
-          XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
-        }
-        XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
+        XCTAssertEqual(expectedRecordSeparatorString, requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].primary"] as? Bool)
@@ -391,11 +388,7 @@ class AEPEdgeFunctionalTests: TestBase {
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(17, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        if #available(iOS 17, tvOS 17, *) {
-          XCTAssertEqual("", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
-        } else {
-          XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
-        }
+        XCTAssertEqual(expectedRecordSeparatorString, requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticatedState"] as? String)
