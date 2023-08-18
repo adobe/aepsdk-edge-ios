@@ -226,7 +226,7 @@ class EdgeConsentTests: TestBase {
         XCTAssertEqual("n", requestBody["consent[0].value.collect.val"] as? String)
         XCTAssertNotNil(requestBody["consent[0].value.metadata.time"] as? String)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        if #available(iOS 17, *) {
+        if #available(iOS 17, tvOS 17, *) {
           XCTAssertEqual("", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         } else {
           XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
@@ -258,7 +258,7 @@ class EdgeConsentTests: TestBase {
         XCTAssertEqual("y", requestBody["consent[0].value.collect.val"] as? String)
         XCTAssertNotNil(requestBody["consent[0].value.metadata.time"] as? String)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        if #available(iOS 17, *) {
+        if #available(iOS 17, tvOS 17, *) {
           XCTAssertEqual("", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         } else {
           XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)

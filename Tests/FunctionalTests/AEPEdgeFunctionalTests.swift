@@ -280,7 +280,7 @@ class AEPEdgeFunctionalTests: TestBase {
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(19, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        if #available(iOS 17, *) {
+        if #available(iOS 17, tvOS 17, *) {
           XCTAssertEqual("", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         } else {
           XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
@@ -333,7 +333,7 @@ class AEPEdgeFunctionalTests: TestBase {
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(20, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        if #available(iOS 17, *) {
+        if #available(iOS 17, tvOS 17, *) {
           XCTAssertEqual("", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         } else {
           XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
@@ -391,7 +391,7 @@ class AEPEdgeFunctionalTests: TestBase {
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(17, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        if #available(iOS 17, *) {
+        if #available(iOS 17, tvOS 17, *) {
           XCTAssertEqual("", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         } else {
           XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
