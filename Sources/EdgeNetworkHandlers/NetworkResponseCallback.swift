@@ -39,11 +39,6 @@ class NetworkResponseCallback: ResponseCallback {
 
     /// Removes waiting events for current `requestId` and unregisters their corresponding completion handlers
     func onComplete() {
-        guard let removedWaitingEvents: [String] = self.networkResponseHandler.removeWaitingEvents(requestId: requestId) else { return }
-
-        // unregister currently known completion handlers
-        for eventId in removedWaitingEvents {
-            CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: eventId)
-        }
+        networkResponseHandler.processResponseOnComplete(requestId: requestId)
     }
 }
