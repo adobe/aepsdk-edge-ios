@@ -2,22 +2,73 @@
 
 ## Table of Contents<!-- omit in toc -->
 - [Events handled by Edge](#events-handled-by-edge)
+  - [Edge consent response content](#edge-consent-response-content)
+  - [Edge identity reset complete](#edge-identity-reset-complete)
   - [Edge request content](#edge-request-content)
   - [Edge request identity](#edge-request-identity)
   - [Edge update consent](#edge-update-consent)
   - [Edge update identity](#edge-update-identity)
-  - [Edge consent response content](#edge-consent-response-content)
-  - [Edge identity reset complete](#edge-identity-reset-complete)
+- [Event flags handled by Edge](#event-flags-handled-by-edge)
+  - [Request send completion](#request-send-completion)
 - [Events dispatched by Edge](#events-dispatched-by-edge)
-  - [Edge identity response](#edge-identity-response)
+  - [Edge content complete](#edge-content-complete)
   - [Edge error response content](#edge-error-response-content)
+  - [Edge identity response](#edge-identity-response)
+  - [Edge location hint result](#edge-location-hint-result)
   - [Edge response content](#edge-response-content)
   - [Edge state store](#edge-state-store)
-  - [Edge location hint result](#edge-location-hint-result)
 
 ## Events handled by Edge
 
 The following events are handled by the Edge extension client-side.
+
+### Edge consent response content
+
+This event contains the latest consent preferences synced with the SDK. The Edge Network extension reads the current data collection consent settings stored in the `collect` property and adjusts its internal queueing behavior based on the value as follows:
+
+| Value | Description | Behavior |
+| ----- | ----------- | -------- |
+| `y` | Yes | Hits are sent |
+| `n` | No | Hits are dropped and not sent |
+| `p` | Pending | Hits are queued until `y`/`n` is set; when set, queued events follow the value's behavior |
+
+#### Event dispatched by<!-- omit in toc -->
+* [`Consent.update(with:)`](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/api-reference/#updateconsents)
+
+#### Event details<!-- omit in toc -->
+
+| Event type | Event source |
+| ---------- | ------------ |
+| com.adobe.eventType.edgeConsent | com.adobe.eventSource.responseContent |
+
+#### Event data payload definition<!-- omit in toc -->
+
+| Key | Value type | Required | Description |
+| --- | ---------- | -------- | ----------- |
+| consents | <code>[String:&nbsp;Any]</code> | No | XDM formatted consent preferences containing current collect consent settings. If not specified, defaults to `p` (pending) until the value is updated. |
+
+----- 
+
+### Edge identity reset complete
+
+This event signals that [Identity for Edge Network](https://github.com/adobe/aepsdk-edgeidentity-ios) has completed [resetting all identities](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network/api-reference/#resetidentities) usually following a call to [`MobileCore.resetIdentities()`](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference/#resetidentities). 
+
+When this event is received, the Edge extension queues it up and removes the cached internal `state:store` settings. If other events are queued before this event, those events will be processed first in the order they were received.
+
+#### Event dispatched by<!-- omit in toc -->
+* [`MobileCore.resetIdentities()`](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference/#resetidentities)
+
+#### Event details<!-- omit in toc -->
+
+| Event type | Event source |
+| ---------- | ------------ |
+| com.adobe.eventType.edgeIdentity | com.adobe.eventSource.resetComplete |
+
+#### Event data payload definition<!-- omit in toc -->
+
+This event has no data payload.
+
+-----
 
 ### Edge request content
 
@@ -113,73 +164,41 @@ This event is a request to set the Edge Network location hint used by the Edge N
 
 -----
 
-### Edge consent response content
+## Event flags handled by Edge
 
-This event contains the latest consent preferences synced with the SDK. The Edge Network extension reads the current data collection consent settings stored in the `collect` property and adjusts its internal queueing behavior based on the value as follows:
+The following event flags are handled by the Edge extension client-side.
 
-| Value | Description | Behavior |
-| ----- | ----------- | -------- |
-| `y` | Yes | Hits are sent |
-| `n` | No | Hits are dropped and not sent |
-| `p` | Pending | Hits are queued until `y`/`n` is set; when set, queued events follow the value's behavior |
+### Request send completion
 
-#### Event dispatched by<!-- omit in toc -->
-* [`Consent.update(with:)`](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/api-reference/#updateconsents)
+The `sendCompletion` flag is used within the Edge request to indicate whether a "complete" event should be dispatched once the streaming connection is closed. This flag is part of the `request` object, which is at the same hierarchical level as the `data` and `xdm` objects in the Edge Experience Event.
 
-#### Event details<!-- omit in toc -->
+```json
+{
+   "xdm": { ... },
+   "request": { "sendCompletion" : true }
+}
+```
 
-| Event type | Event source |
-| ---------- | ------------ |
-| com.adobe.eventType.edgeConsent | com.adobe.eventSource.responseContent |
-
-#### Event data payload definition<!-- omit in toc -->
-
-| Key | Value type | Required | Description |
-| --- | ---------- | -------- | ----------- |
-| consents | <code>[String:&nbsp;Any]</code> | No | XDM formatted consent preferences containing current collect consent settings. If not specified, defaults to `p` (pending) until the value is updated. |
-
------ 
-
-### Edge identity reset complete
-
-This event signals that [Identity for Edge Network](https://github.com/adobe/aepsdk-edgeidentity-ios) has completed [resetting all identities](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network/api-reference/#resetidentities) usually following a call to [`MobileCore.resetIdentities()`](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference/#resetidentities). 
-
-When this event is received, the Edge extension queues it up and removes the cached internal `state:store` settings. If other events are queued before this event, those events will be processed first in the order they were received.
-
-#### Event dispatched by<!-- omit in toc -->
-* [`MobileCore.resetIdentities()`](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference/#resetidentities)
-
-#### Event details<!-- omit in toc -->
-
-| Event type | Event source |
-| ---------- | ------------ |
-| com.adobe.eventType.edgeIdentity | com.adobe.eventSource.resetComplete |
-
-#### Event data payload definition<!-- omit in toc -->
-
-This event has no data payload.
-
------
+When the `sendCompletion` flag in the request is set to `true`, the Edge extension will dispatch a *paired* response event. This event notifies the caller that the connection has been closed and that no further streaming response handles will be dispatched. The [response event](#edge-content-complete) includes only the `requestId` in its data, for debugging purposes. The `parentID` of this event corresponds to the UUID of the originating request event.
 
 ## Events dispatched by Edge
 
 The following events are dispatched by the Edge extension client-side.
 
-### Edge identity response
-
-This event is a response to the [Edge request identity event](#edge-request-identity) with data payload containing `locationHint = true` and provides the location hint being used by the Edge Network extension in requests to the Edge Network. The Edge Network location hint may be used when building the URL for Edge Network requests to hint at the server cluster to use.
+### Edge content complete
+This event indicates the streaming connection is closed, [when requested using the `sendCompletion` flag](#request-send-completion). This event may be used by extensions who are not using the public API `sendEvent` but wish to know when all response handles are received for a given request event. The `parentID` of the event will match the UUID of the originating request event.
 
 #### Event details<!-- omit in toc -->
 
 | Event type | Event source |
 | ---------- | ------------ |
-| com.adobe.eventType.edge | com.adobe.eventSource.responseIdentity |
+| com.adobe.eventType.edge | com.adobe.eventSource.contentComplete |
 
 #### Event data payload definition<!-- omit in toc -->
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
-| locationHint | `String` | Yes | The Edge Network location hint currently set for use when connecting to Edge Network. |
+| requestId | `String` | Yes | The ID (`UUID`) of the batched Edge Network request tied to the event that requested the "complete" event. |
 
 ----- 
 
@@ -202,9 +221,47 @@ This event is an error response to an originating event. If there are multiple e
 
 ----- 
 
+### Edge identity response
+
+This event is a response to the [Edge request identity event](#edge-request-identity) with data payload containing `locationHint = true` and provides the location hint being used by the Edge Network extension in requests to the Edge Network. The Edge Network location hint may be used when building the URL for Edge Network requests to hint at the server cluster to use.
+
+#### Event details<!-- omit in toc -->
+
+| Event type | Event source |
+| ---------- | ------------ |
+| com.adobe.eventType.edge | com.adobe.eventSource.responseIdentity |
+
+#### Event data payload definition<!-- omit in toc -->
+
+| Key | Value type | Required | Description |
+| --- | ---------- | -------- | ----------- |
+| locationHint | `String` | Yes | The Edge Network location hint currently set for use when connecting to Edge Network. |
+
+----- 
+
+### Edge location hint result
+
+This event tells the Edge Network extension to persist the location hint to the data store. This event is constructed using the response fragment from the Edge Network service for a sent XDM Experience Event; Edge Network extension does not modify any values received and constructs a response event with the event source and data payload as-is.
+
+#### Event details<!-- omit in toc -->
+
+| Event type | Event source |
+| ---------- | ------------ |
+| com.adobe.eventType.edge | locationHint:result |
+
+#### Event data payload definition<!-- omit in toc -->
+
+| Key | Value type | Required | Description |
+| --- | ---------- | -------- | ----------- |
+| scope | `String` | No | The scope that the location hint applies to, for example `EdgeNetwork`. |
+| hint | `String` | No | The location hint string. |
+| ttlSeconds | `Int` | No | The time period the location hint should be valid for. |
+
+-----
+
 ### Edge response content
 
-This event is a response to an [Edge request content](#edge-request-content) event.
+This event is a fallback to an [Edge error response content](#edge-error-response-content) event.
 
 #### Event details<!-- omit in toc -->
 
@@ -231,23 +288,3 @@ This event tells the Edge Network extension to persist the event payload to the 
 #### Event data payload definition<!-- omit in toc -->
 
 This event does not have standard keys.
-
------ 
-
-### Edge location hint result
-
-This event tells the Edge Network extension to persist the location hint to the data store. This event is constructed using the response fragment from the Edge Network service for a sent XDM Experience Event; Edge Network extension does not modify any values received and constructs a response event with the event source and data payload as-is.
-
-#### Event details<!-- omit in toc -->
-
-| Event type | Event source |
-| ---------- | ------------ |
-| com.adobe.eventType.edge | locationHint:result |
-
-#### Event data payload definition<!-- omit in toc -->
-
-| Key | Value type | Required | Description |
-| --- | ---------- | -------- | ----------- |
-| scope | `String` | No | The scope that the location hint applies to, for example `EdgeNetwork`. |
-| hint | `String` | No | The location hint string. |
-| ttlSeconds | `Int` | No | The time period the location hint should be valid for. |
