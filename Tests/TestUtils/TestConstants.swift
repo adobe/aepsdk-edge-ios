@@ -13,7 +13,7 @@
 import Foundation
 
 enum TestConstants {
-    
+
     enum EventName {
         static let CONTENT_COMPLETE = "AEP Response Complete"
     }

@@ -46,7 +46,7 @@ struct ContentView: View {
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                     .frame(maxHeight: 150)
-                    
+
                     VStack {
                         // Gradient at the top
                         LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.2), Color.gray.opacity(0)]), startPoint: .top, endPoint: .bottom)
@@ -58,7 +58,7 @@ struct ContentView: View {
                     }
                     .frame(maxHeight: 150)
                 }
-                
+
                 Divider().background(Color.white)
                 Spacer()
                 ScrollView {
@@ -127,10 +127,10 @@ struct ContentView: View {
                         }
                     }
                 }
-                
+
                 Button("Dispach Event & Send Complete", action: {
                     let event = Event(name: "Edge Event Send Completion Request", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["testString": "xdm"], "request": [ "sendCompletion": true ]])
-                    
+
                     MobileCore.dispatch(event: event) { responseEvent in
                         guard let responseEvent = responseEvent else {
                             DispatchQueue.main.async {
@@ -138,7 +138,7 @@ struct ContentView: View {
                             }
                             return
                         }
-                        
+
                         DispatchQueue.main.async {
                             self.dataContent = "Completion Event received: \(String(describing: responseEvent.data))"
                         }

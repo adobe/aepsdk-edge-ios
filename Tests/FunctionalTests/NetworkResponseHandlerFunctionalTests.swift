@@ -26,12 +26,12 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
 
     override func setUp() {
         super.setUp()
-        
+
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 1)
-        
+
         MobileCore.registerExtensions([InstrumentedExtension.self]) // start MobileCore
         continueAfterFailure = false
-        
+
         assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: 2)
         resetTestExpectations()
     }
@@ -961,7 +961,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
         XCTAssertEqual(15552000, flattenReceivedData1["payload[0].maxAge"] as? Int)
         XCTAssertEqual(event1.id.uuidString, flattenReceivedData1["requestEventId"] as? String)
         XCTAssertEqual(event1.id, dispatchEvents[0].parentID) // Event chained to event1 as event index defaults to 0
-        
+
         let dispatchErrorEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(2, dispatchErrorEvents.count)
         guard let receivedData2 = dispatchErrorEvents[0].data else {
@@ -1417,97 +1417,97 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
         XCTAssertNil(locationHintResultHint)
         XCTAssertNil(locationHintResultTtlSeconds)
     }
-    
+
     // MARK: processResponseOnComplete
     func testProcessResponseOnComplete_ifCompletionEventNotRequested_doesNotDispatchEvent() {
         networkResponseHandler.addWaitingEvent(requestId: "123", event: event1)
         networkResponseHandler.processResponseOnComplete(requestId: "123")
-        
+
         assertUnexpectedEvents()
     }
-    
+
     func testProcessResponseOnComplete_whenNoEventRequestsCompletion_thenNoEventDispatched() {
         networkResponseHandler.addWaitingEvents(requestId: "123", batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnComplete(requestId: "123")
-        
+
         assertUnexpectedEvents()
     }
-    
+
     func testProcessResponseOnComplete_whenEventRequestsCompletion_thenDispatchCompleteEvent() {
         let requestID = "123"
         let requestEvent1 = Event(name: "test1", type: "testType", source: "testSource", data: requestSendCompletionTrueEventData)
         networkResponseHandler.addWaitingEvent(requestId: requestID, event: requestEvent1)
         networkResponseHandler.processResponseOnComplete(requestId: requestID)
         let dispatchedEvents = getDispatchedEventsWith(type: EventType.edge, source: TestConstants.EventSource.CONTENT_COMPLETE)
-        
+
         XCTAssertEqual(1, dispatchedEvents.count)
-        
+
         let flattenedData = flattenDictionary(dict: dispatchedEvents.first?.data ?? [:])
         XCTAssertEqual(1, flattenedData.count)
         XCTAssertEqual(requestID, flattenedData["requestId"] as? String)
     }
-    
+
     func testProcessResponseOnComplete_ifCompletionEventRequested_dispatchesEvent() {
         let requestID = "123"
         let requestEvent1 = Event(name: "test1", type: "testType", source: "testSource", data: requestSendCompletionTrueEventData)
         let requestEvent2 = Event(name: "test2", type: "testType", source: "testSource", data: nil)
         networkResponseHandler.addWaitingEvents(requestId: requestID, batchedEvents: [requestEvent1, requestEvent2])
         networkResponseHandler.processResponseOnComplete(requestId: requestID)
-        
+
         let expectedEventData = """
         {
             "requestId": "\(requestID)"
         }
         """
-        
+
         assertResponseCompleteEventWithData(expectedEventData: expectedEventData, parentEventIDs: [requestEvent1.id])
     }
-    
+
     func testProcessResponseOnComplete_ifMultipleCompletionEventRequested_dispatchesMultipleEvents() {
         let requestID = "123"
         let requestEvent1 = Event(name: "test1", type: "testType", source: "testSource", data: requestSendCompletionTrueEventData)
         let requestEvent2 = Event(name: "test2", type: "testType", source: "testSource", data: requestSendCompletionTrueEventData)
-        
+
         networkResponseHandler.addWaitingEvents(requestId: requestID, batchedEvents: [requestEvent1, requestEvent2])
         networkResponseHandler.processResponseOnComplete(requestId: requestID)
-        
+
         let expectedEventData = """
         {
             "requestId": "\(requestID)"
         }
         """
-        
+
         assertResponseCompleteEventWithData(expectedEventData: expectedEventData, parentEventIDs: [requestEvent1.id, requestEvent2.id])
     }
-    
+
     func testProcessResponseOnComplete_ifCompletionEventRequestFalse_doesNotDispatchEvent() {
         let requestID = "123"
         let requestEvent1 = Event(name: "test1", type: "testType", source: "testSource", data: requestSendCompletionFalseEventData)
         let requestEvent2 = Event(name: "test2", type: "testType", source: "testSource", data: requestSendCompletionTrueEventData)
-        
+
         networkResponseHandler.addWaitingEvents(requestId: requestID, batchedEvents: [requestEvent1, requestEvent2])
         networkResponseHandler.processResponseOnComplete(requestId: requestID)
-        
+
         let expectedEventData = """
         {
             "requestId": "\(requestID)"
         }
         """
-        
+
         assertResponseCompleteEventWithData(expectedEventData: expectedEventData, parentEventIDs: [requestEvent2.id])
     }
-    
+
     private func assertResponseCompleteEventWithData(expectedEventData: String, parentEventIDs: [UUID]) {
         let dispatchedCompleteEvents = getDispatchedEventsWith(type: EventType.edge, source: TestConstants.EventSource.CONTENT_COMPLETE)
         XCTAssertEqual(parentEventIDs.count, dispatchedCompleteEvents.count)
-        
+
         for (id, completeEvent) in zip(parentEventIDs, dispatchedCompleteEvents) {
             XCTAssertEqual(TestConstants.EventName.CONTENT_COMPLETE, completeEvent.name)
             XCTAssertEqual(TestConstants.EventType.EDGE, completeEvent.type)
             XCTAssertEqual(TestConstants.EventSource.CONTENT_COMPLETE, completeEvent.source)
             XCTAssertEqual(id, completeEvent.responseID)
             XCTAssertEqual(id, completeEvent.parentID)
-            
+
             assertEqual(expected: getAnyCodable(expectedEventData), actual: getAnyCodable(completeEvent))
         }
     }
