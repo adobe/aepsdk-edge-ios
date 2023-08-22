@@ -23,7 +23,7 @@ import AEPAssurance
 
 struct ContentView: View {
     @State private var ecid: String = ""
-    @State private var dataContent: String = "data is displayed here"
+    @State private var dataContent: String = "Data is displayed here (scrollable)"
     @State private var selectedRegion: RegionId = .nil_value
     @State private var version: String = ""
 
@@ -37,24 +37,47 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
+            VStack {
                 edgeDetailsView
-                Divider().background(Color.white)
-                VStack {
-                    #if os(iOS)
-                    NavigationLink(destination: AssuranceView()) {
-                        Text("Connect Assurance")
+                ZStack {
+                    ScrollView {
+                        Text(dataContent)
+                            .fixedSize(horizontal: false, vertical: false)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    #endif
-                    edgeView.background(secondaryBackgroundColor)
-                    Divider().background(dividerColor)
-                    consentSection
-                    Divider().background(dividerColor)
-                    edgeIdentitySection.background(secondaryBackgroundColor)
-                    Divider().background(dividerColor)
-                    coreView
-                    Divider().background(dividerColor)
-                    identityDirectView.background(secondaryBackgroundColor)
+                    .frame(maxHeight: 150)
+                    
+                    VStack {
+                        // Gradient at the top
+                        LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.2), Color.gray.opacity(0)]), startPoint: .top, endPoint: .bottom)
+                                        .frame(height: 15)
+                        Spacer()
+                        // Gradient at the bottom
+                        LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0), Color.gray.opacity(0.2)]), startPoint: .top, endPoint: .bottom)
+                            .frame(height: 15)
+                    }
+                    .frame(maxHeight: 150)
+                }
+                
+                Divider().background(Color.white)
+                Spacer()
+                ScrollView {
+                    VStack {
+                        #if os(iOS)
+                        NavigationLink(destination: AssuranceView()) {
+                            Text("Connect Assurance")
+                        }
+                        #endif
+                        edgeView.background(secondaryBackgroundColor)
+                        Divider().background(dividerColor)
+                        consentSection
+                        Divider().background(dividerColor)
+                        edgeIdentitySection.background(secondaryBackgroundColor)
+                        Divider().background(dividerColor)
+                        coreView
+                        Divider().background(dividerColor)
+                        identityDirectView.background(secondaryBackgroundColor)
+                    }
                 }
             }
         }
@@ -104,6 +127,23 @@ struct ContentView: View {
                         }
                     }
                 }
+                
+                Button("Dispach Event & Send Complete", action: {
+                    let event = Event(name: "Edge Event Send Completion Request", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["testString": "xdm"], "request": [ "sendCompletion": true ]])
+                    
+                    MobileCore.dispatch(event: event) { responseEvent in
+                        guard let responseEvent = responseEvent else {
+                            DispatchQueue.main.async {
+                                self.dataContent = "Dispatch Event Failed"
+                            }
+                            return
+                        }
+                        
+                        DispatchQueue.main.async {
+                            self.dataContent = "Completion Event received: \(String(describing: responseEvent.data))"
+                        }
+                    }
+                }).padding()
             }
         }
     }
@@ -180,9 +220,6 @@ struct ContentView: View {
         VStack {
             Text("ECID:").bold().frame(maxWidth: .infinity, alignment: .leading).padding(10)
             Text(ecid)
-            ScrollView {
-                Text(dataContent).frame(maxWidth: .infinity, maxHeight: .infinity)
-            }.background(Color.secondary)
         }
         .onAppear {
             self.getECID()
