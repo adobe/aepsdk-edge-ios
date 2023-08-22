@@ -506,9 +506,9 @@ class AEPEdgeFunctionalTests: TestBase {
                 XCTFail("Dispatch with responseCallback returned nil event")
                 return
             }
-            XCTAssertEqual("AEP Response Complete", responseEvent.name)
-            XCTAssertEqual(EventType.edge, responseEvent.type)
-            XCTAssertEqual("com.adobe.eventSource.contentComplete", responseEvent.source)
+            XCTAssertEqual(TestConstants.EventName.CONTENT_COMPLETE, responseEvent.name)
+            XCTAssertEqual(TestConstants.EventType.EDGE, responseEvent.type)
+            XCTAssertEqual(TestConstants.EventSource.CONTENT_COMPLETE, responseEvent.source)
             XCTAssertEqual(edgeEvent.id, responseEvent.responseID)
             XCTAssertEqual(edgeEvent.id, responseEvent.parentID)
             XCTAssertNotNil(responseEvent.data)

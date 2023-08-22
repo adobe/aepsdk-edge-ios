@@ -24,9 +24,9 @@ enum EdgeConstants {
     }
 
     enum EventName {
+        static let CONTENT_COMPLETE = "AEP Response Complete"
         static let REQUEST_CONTENT = "AEP Request Event"
         static let RESPONSE_CONTENT = "AEP Response Event Handle"
-        static let RESPONSE_COMPLETE = "AEP Response Complete"
         static let ERROR_RESPONSE_CONTENT = "AEP Error Response"
     }
 
