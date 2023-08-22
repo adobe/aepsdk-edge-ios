@@ -47,6 +47,13 @@ class EdgeConsentTests: TestBase {
         "      ]" +
         "    }\n"
 
+    private var expectedRecordSeparatorString: String {
+       if #available(iOS 17, tvOS 17, *) {
+           return ""
+       } else {
+           return "\u{0000}"
+       }
+    }
     private let mockNetworkService: MockNetworkService = MockNetworkService()
 
     // Runs before each test case
@@ -81,11 +88,11 @@ class EdgeConsentTests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
     }
-    
+
     // Runs after each test case
     override func tearDown() {
         super.tearDown()
-        
+
         mockNetworkService.reset()
     }
 
@@ -226,7 +233,7 @@ class EdgeConsentTests: TestBase {
         XCTAssertEqual("n", requestBody["consent[0].value.collect.val"] as? String)
         XCTAssertNotNil(requestBody["consent[0].value.metadata.time"] as? String)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
+        XCTAssertEqual(expectedRecordSeparatorString, requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
     }
 
@@ -254,7 +261,7 @@ class EdgeConsentTests: TestBase {
         XCTAssertEqual("y", requestBody["consent[0].value.collect.val"] as? String)
         XCTAssertNotNil(requestBody["consent[0].value.metadata.time"] as? String)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
+        XCTAssertEqual(expectedRecordSeparatorString, requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
     }
 
