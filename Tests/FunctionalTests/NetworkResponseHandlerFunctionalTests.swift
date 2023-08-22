@@ -19,8 +19,8 @@ import XCTest
 class NetworkResponseHandlerFunctionalTests: TestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
-    private let requestSendCompletionTrueEventData = ["xdm": ["testString": "xdm"], "request": [ "sendCompletion": true ]]
-    private let requestSendCompletionFalseEventData = ["xdm": ["testString": "xdm"], "request": [ "sendCompletion": false ]]
+    private let requestSendCompletionTrueEventData: [String: Any] = ["xdm": ["testString": "xdm"], "request": [ "sendCompletion": true ]]
+    private let requestSendCompletionFalseEventData: [String: Any] = ["xdm": ["testString": "xdm"], "request": [ "sendCompletion": false ]]
     private var networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  })
     private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
 
