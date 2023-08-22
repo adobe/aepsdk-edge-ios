@@ -129,7 +129,11 @@ struct ContentView: View {
                 }
 
                 Button("Dispach Event & Send Complete", action: {
-                    let event = Event(name: "Edge Event Send Completion Request", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["testString": "xdm"], "request": [ "sendCompletion": true ]])
+                    let event = Event(
+                        name: "Edge Event Send Completion Request",
+                        type: EventType.edge,
+                        source: EventSource.requestContent,
+                        data: ["xdm": ["testString": "xdm"], "request": [ "sendCompletion": true ]])
 
                     MobileCore.dispatch(event: event) { responseEvent in
                         guard let responseEvent = responseEvent else {
