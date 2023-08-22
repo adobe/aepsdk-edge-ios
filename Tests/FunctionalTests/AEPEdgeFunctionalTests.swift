@@ -492,13 +492,12 @@ class AEPEdgeFunctionalTests: TestBase {
     }
     
     func testDispatchEvent_sendCompleteEvent_sendsPairedCompleteEvent() {
-        let data: [String: Any] = ["xdm": ["testString": "xdm"],
-                                   "request": [ "sendCompletion": true ]]
         let edgeEvent = Event(
             name: "Edge Event Completion Request",
             type: EventType.edge,
             source: EventSource.requestContent,
-            data: data)
+            data: ["xdm": ["testString": "xdm"],
+                   "request": [ "sendCompletion": true ]])
         
         let countDownLatch = CountDownLatch(1)
         

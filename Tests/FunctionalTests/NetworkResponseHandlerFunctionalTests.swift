@@ -19,6 +19,7 @@ import XCTest
 class NetworkResponseHandlerFunctionalTests: TestBase {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
+    private let eventSendComplete = Event(name: "ec", type: "eventType", source: "eventSource", data: ["xdm": ["testString": "xdm"], "request": [ "sendCompletion": true ]])
     private var networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  })
     private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
 
@@ -1408,5 +1409,25 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
         // verify saved location hint
         XCTAssertNil(locationHintResultHint)
         XCTAssertNil(locationHintResultTtlSeconds)
+    }
+    
+    // MARK: processResponseOnComplete
+    func testProcessResponseOnComplete_whenNoEventRequestsCompletion_thenNoEventDispatched() {
+        networkResponseHandler.addWaitingEvent(requestId: "123", event: event1)
+        networkResponseHandler.processResponseOnComplete(requestId: "123")
+        let dispatchedEvents = getDispatchedEventsWith(type: EventType.edge, source: "com.adobe.eventSource.contentComplete")
+        XCTAssertEqual(0, dispatchedEvents.count)
+    }
+    
+    func testProcessResponseOnComplete_whenEventRequestsCompletion_thenDispatchCompleteEvent() {
+        networkResponseHandler.addWaitingEvent(requestId: "123", event: eventSendComplete)
+        networkResponseHandler.processResponseOnComplete(requestId: "123")
+        let dispatchedEvents = getDispatchedEventsWith(type: EventType.edge, source: "com.adobe.eventSource.contentComplete")
+        
+        XCTAssertEqual(1, dispatchedEvents.count)
+        
+        let flattenedData = flattenDictionary(dict: dispatchedEvents.first?.data ?? [:])
+        XCTAssertEqual(1, flattenedData.count)
+        XCTAssertEqual("123", flattenedData["requestId"] as? String)
     }
 }
