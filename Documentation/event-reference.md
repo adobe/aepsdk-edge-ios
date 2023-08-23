@@ -8,8 +8,6 @@
   - [Edge request identity](#edge-request-identity)
   - [Edge update consent](#edge-update-consent)
   - [Edge update identity](#edge-update-identity)
-- [Event flags handled by Edge](#event-flags-handled-by-edge)
-  - [Request send completion](#request-send-completion)
 - [Events dispatched by Edge](#events-dispatched-by-edge)
   - [Edge content complete](#edge-content-complete)
   - [Edge error response content](#edge-error-response-content)
@@ -92,6 +90,7 @@ If the required `xdm` key is not present in the event data payload, the event is
 | xdm | <code>[String:&nbsp;Any]</code> | Yes | XDM formatted data; use an `XDMSchema` implementation for better XDM data ingestion and data format control. |
 | data | <code>[String:&nbsp;Any]</code> | No | Optional free-form data associated with this event. |
 | datasetId | `String` | No | Optional custom dataset ID. If not set, the event uses the default Experience dataset ID set in the datastream configuration. |
+| request | <code>[String:&nbsp;Any]</code> | No | Optional request parameters. |
 
 > **Note**  
 > Events of this type and source are only processed if the data collection consent status stored in the `collect` property is **not** `n` (no); that is, either `y` (yes) or `p` (pending).
@@ -162,31 +161,12 @@ This event is a request to set the Edge Network location hint used by the Edge N
 | --- | ---------- | -------- | ----------- |
 | locationHint | `String` | Yes | Location hint value. Passing `nil` or an empty string (`""`) clears the existing location hint. See the [list of valid location hints for the `EdgeNetwork` scope](https://experienceleague.adobe.com/docs/experience-platform/edge-network-server-api/location-hints.html). |
 
------
-
-## Event flags handled by Edge
-
-The following event flags are handled by the Edge extension client-side.
-
-### Request send completion
-
-The `sendCompletion` flag is used within the Edge request to indicate whether a "complete" event should be dispatched once the streaming connection is closed. This flag is part of the `request` object, which is at the same hierarchical level as the `data` and `xdm` objects in the Edge Experience Event.
-
-```json
-{
-   "xdm": { ... },
-   "request": { "sendCompletion" : true }
-}
-```
-
-When the `sendCompletion` flag in the request is set to `true`, the Edge extension will dispatch a *paired* response event. This event notifies the caller that the connection has been closed and that no further streaming response handles will be dispatched. The [response event](#edge-content-complete) includes only the `requestId` in its data, for debugging purposes. The `parentID` of this event corresponds to the UUID of the originating request event.
-
 ## Events dispatched by Edge
 
 The following events are dispatched by the Edge extension client-side.
 
 ### Edge content complete
-This event indicates the streaming connection is closed, [when requested using the `sendCompletion` flag](#request-send-completion). This event may be used by extensions who are not using the public API `sendEvent` but wish to know when all response handles are received for a given request event. The `parentID` of the event will match the UUID of the originating request event.
+This event is a response to an [Edge request content](#edge-request-content) event and is sent when the Edge Network request is complete. This event is only dispatched when requested by the request content event when the `request` payload object contains the property `sendCompletion` with boolean value `true`.
 
 #### Event details<!-- omit in toc -->
 
@@ -198,7 +178,7 @@ This event indicates the streaming connection is closed, [when requested using t
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
-| requestId | `String` | Yes | The ID (`UUID`) of the batched Edge Network request tied to the event that requested the "complete" event. |
+| requestId | `String` | Yes | The ID (`UUID`) of the batched Edge Network request tied to the event that requested the completion response. |
 
 ----- 
 
@@ -261,13 +241,15 @@ This event tells the Edge Network extension to persist the location hint to the 
 
 ### Edge response content
 
-This event is a fallback to an [Edge error response content](#edge-error-response-content) event.
+This event is a response to an [Edge request content](#edge-request-content) event. The data payload of this event contains a response handle from the Edge Network. If there are multiple response handles, separate response event instances are dispatched for each.
 
 #### Event details<!-- omit in toc -->
 
+The Edge Network response handle type is used as the event source for this event. If the handle does not define a type, then `com.adobe.eventSource.responseContent` is used as a fallback.
+
 | Event type | Event source |
 | ---------- | ------------ |
-| com.adobe.eventType.edge | com.adobe.eventSource.responseContent |
+| com.adobe.eventType.edge | Defined by response handle type, or com.adobe.eventSource.responseContent |
 
 #### Event data payload definition<!-- omit in toc -->
 
