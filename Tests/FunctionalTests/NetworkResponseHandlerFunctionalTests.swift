@@ -1442,9 +1442,13 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
 
         XCTAssertEqual(1, dispatchedEvents.count)
 
-        let flattenedData = flattenDictionary(dict: dispatchedEvents.first?.data ?? [:])
-        XCTAssertEqual(1, flattenedData.count)
-        XCTAssertEqual(requestID, flattenedData["requestId"] as? String)
+        
+        let expectedEventData = """
+        {
+            "requestId": "\(requestID)"
+        }
+        """
+        assertResponseCompleteEventWithData(expectedEventData: expectedEventData, parentEventIDs: [requestEvent1.id])
     }
 
     func testProcessResponseOnComplete_ifCompletionEventRequested_dispatchesEvent() {
