@@ -63,7 +63,7 @@ class NetworkResponseHandler {
 
     /// Remove the requestId in the internal `sentEventsWaitingResponse` along with the associated list of events.
     /// - Parameter requestId: batch request id
-    /// - Returns: the list of unique event ids associated with the requestId that were removed
+    /// - Returns: the list of unique `Event`s associated with the `requestId` that were removed
     func removeWaitingEvents(requestId: String) -> [Event]? {
         guard !requestId.isEmpty else { return nil }
 
