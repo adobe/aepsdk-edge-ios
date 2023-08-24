@@ -15,7 +15,7 @@ import Foundation
 enum EdgeConstants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
-    static let EXTENSION_VERSION = "4.1.0"
+    static let EXTENSION_VERSION = "4.2.0"
     static let FRIENDLY_NAME = "AEPEdge"
     static let LOG_TAG = FRIENDLY_NAME
 
@@ -24,6 +24,7 @@ enum EdgeConstants {
     }
 
     enum EventName {
+        static let CONTENT_COMPLETE = "AEP Response Complete"
         static let REQUEST_CONTENT = "AEP Request Event"
         static let RESPONSE_CONTENT = "AEP Response Event Handle"
         static let ERROR_RESPONSE_CONTENT = "AEP Error Response"
@@ -48,6 +49,8 @@ enum EdgeConstants {
         enum Request {
             static let KEY = "request"
             static let PATH = "path"
+            // sendCompletion - boolean flag to determine if a "complete" event is requested
+            static let SEND_COMPLETION = "sendCompletion"
         }
     }
 

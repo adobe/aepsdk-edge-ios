@@ -32,7 +32,13 @@ class AEPEdgeFunctionalTests: TestBase {
     #elseif os(tvOS)
     private let EXPECTED_BASE_PATH = "https://ns.adobe.com/experience/mobilesdk/tvos"
     #endif
-
+    private var expectedRecordSeparatorString: String {
+       if #available(iOS 17, tvOS 17, *) {
+           return ""
+       } else {
+           return "\u{0000}"
+       }
+    }
     private let mockNetworkService: MockNetworkService = MockNetworkService()
 
     // Runs before each test case
@@ -65,11 +71,11 @@ class AEPEdgeFunctionalTests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
     }
-    
+
     // Runs after each test case
     override func tearDown() {
         super.tearDown()
-        
+
         mockNetworkService.reset()
     }
 
@@ -280,7 +286,7 @@ class AEPEdgeFunctionalTests: TestBase {
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(19, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
+        XCTAssertEqual(expectedRecordSeparatorString, requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticatedState"] as? String)
@@ -329,8 +335,7 @@ class AEPEdgeFunctionalTests: TestBase {
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(20, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
-        XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
+        XCTAssertEqual(expectedRecordSeparatorString, requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticatedState"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].primary"] as? Bool)
@@ -383,7 +388,7 @@ class AEPEdgeFunctionalTests: TestBase {
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(17, requestBody.count)
         XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        XCTAssertEqual("\u{0000}", requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
+        XCTAssertEqual(expectedRecordSeparatorString, requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
         XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].id"] as? String)
         XCTAssertNotNil(requestBody["xdm.identityMap.ECID[0].authenticatedState"] as? String)
@@ -489,6 +494,36 @@ class AEPEdgeFunctionalTests: TestBase {
         XCTAssertEqual(2, requestBody["events[0].query.testArray[1]"] as? Int)
         XCTAssertEqual(true, requestBody["events[0].query.testArray[2]"] as? Bool)
         XCTAssertEqual("val", requestBody["events[0].query.testDictionary.key"] as? String)
+    }
+
+    func testDispatchEvent_sendCompleteEvent_sendsPairedCompleteEvent() {
+        let edgeEvent = Event(
+            name: "Edge Event Completion Request",
+            type: EventType.edge,
+            source: EventSource.requestContent,
+            data: ["xdm": ["testString": "xdm"],
+                   "request": [ "sendCompletion": true ]])
+
+        let countDownLatch = CountDownLatch(1)
+
+        MobileCore.dispatch(event: edgeEvent, timeout: 2) { responseEvent in
+            guard let responseEvent = responseEvent else {
+                XCTFail("Dispatch with responseCallback returned nil event")
+                return
+            }
+            XCTAssertEqual(TestConstants.EventName.CONTENT_COMPLETE, responseEvent.name)
+            XCTAssertEqual(TestConstants.EventType.EDGE, responseEvent.type)
+            XCTAssertEqual(TestConstants.EventSource.CONTENT_COMPLETE, responseEvent.source)
+            XCTAssertEqual(edgeEvent.id, responseEvent.responseID)
+            XCTAssertEqual(edgeEvent.id, responseEvent.parentID)
+            XCTAssertNotNil(responseEvent.data)
+
+            let flattenedData = flattenDictionary(dict: responseEvent.data ?? [:])
+            XCTAssertEqual(1, flattenedData.count)
+            XCTAssertNotNil(flattenedData["requestId"] as? String)
+            countDownLatch.countDown()
+        }
+        XCTAssertEqual(DispatchTimeoutResult.success, countDownLatch.await(timeout: 3))
     }
 
     // MARK: Client-side store

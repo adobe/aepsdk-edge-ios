@@ -82,7 +82,7 @@ class NetworkResponseHandlerTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(event3.id.uuidString, result[0])
+        XCTAssertEqual(event3.id.uuidString, result[0].id.uuidString)
         XCTAssertNil(networkResponseHandler.getWaitingEvents(requestId: requestId2))
         guard let result2 = networkResponseHandler.getWaitingEvents(requestId: requestId1), result2.count == 2 else {
             XCTFail("Waiting events list was empty, should contain two events - e1, e2")
