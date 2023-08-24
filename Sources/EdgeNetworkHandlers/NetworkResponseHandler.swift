@@ -63,11 +63,11 @@ class NetworkResponseHandler {
 
     /// Remove the requestId in the internal `sentEventsWaitingResponse` along with the associated list of events.
     /// - Parameter requestId: batch request id
-    /// - Returns: the list of unique event ids associated with the requestId that were removed
-    func removeWaitingEvents(requestId: String) -> [String]? {
+    /// - Returns: the list of unique `Event`s associated with the `requestId` that were removed
+    func removeWaitingEvents(requestId: String) -> [Event]? {
         guard !requestId.isEmpty else { return nil }
 
-        return sentEventsWaitingResponse.removeValue(forKey: requestId)?.map({$0.id.uuidString})
+        return sentEventsWaitingResponse.removeValue(forKey: requestId)
     }
 
     /// Returns the list of unique event ids associated with the provided requestId or empty if not found.
@@ -130,6 +130,38 @@ class NetworkResponseHandler {
                         "processResponseOnError - The conversion to JSON failed for generic error response: \(jsonError), " +
                             "request id \(requestId)")
         }
+    }
+
+    /// Processes the "on complete" response from the network layer by:
+    /// 1. Unregistering request callbacks for each event and
+    /// 2. Dispatching completion events for events that have specifically requested one.
+    /// - Parameter requestId: The network request ID used to fetch the associated request events.
+    func processResponseOnComplete(requestId: String) {
+        guard let removedWaitingEvents = removeWaitingEvents(requestId: requestId) else { return }
+
+        for event in removedWaitingEvents {
+            // Unregister currently known completion handlers
+            CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: event.id.uuidString)
+
+            if sendCompletionRequested(event: event) {
+                let eventData = addEventAndRequestIdToDictionary([:], requestId: requestId, requestEventId: nil)
+
+                let responseEvent = event.createResponseEvent(
+                    name: EdgeConstants.EventName.CONTENT_COMPLETE,
+                    type: EventType.edge,
+                    source: "com.adobe.eventSource.contentComplete", // TODO replace with EventSource constant
+                    data: eventData
+                )
+                MobileCore.dispatch(event: responseEvent)
+            }
+        }
+    }
+
+    /// Determines whether a completion event has been requested based on the boolean value of `request.sendCompletion` in the provided `event`.
+    /// - Parameter event: The `Event` whose data is checked for a completion event request.
+    /// - Returns: `true` if the `event` is requesting a completion event; `false` otherwise.
+    func sendCompletionRequested(event: Event) -> Bool {
+        return (event.data?[EdgeConstants.EventDataKeys.Request.KEY] as? [String: Any])?[EdgeConstants.EventDataKeys.Request.SEND_COMPLETION] as? Bool ?? false
     }
 
     /// Dispatches each event handle in the provided `handlesArray` as a separate event through the Event Hub, processes

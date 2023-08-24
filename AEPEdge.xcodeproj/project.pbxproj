@@ -70,6 +70,8 @@
 		4CBEE6212A1577660084BC50 /* NetworkResponseHandlerFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6202A1577660084BC50 /* NetworkResponseHandlerFunctionalTests.swift */; };
 		4CBEE6232A1577E40084BC50 /* NoConfigFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6222A1577E40084BC50 /* NoConfigFunctionalTests.swift */; };
 		4CBEE6252A157CB40084BC50 /* SampleFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6242A157CB40084BC50 /* SampleFunctionalTests.swift */; };
+		4CC583192A955886004B1169 /* XCTestCase+AnyCodableAsserts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */; };
+		4CC5831A2A9559BB004B1169 /* AnyCodable+Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE5F929FB19600084BC50 /* AnyCodable+Array.swift */; };
 		783A5F4E903F9B6EABA50D23 /* Pods_UnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */; };
 		BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
 		BF0C09482465E42100892B5D /* TestableEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableEdge.swift */; };
@@ -492,7 +494,6 @@
 			isa = PBXGroup;
 			children = (
 				4CBEE5EA29D63B180084BC50 /* EnumUtils.swift */,
-				4CBEE5F929FB19600084BC50 /* AnyCodable+Array.swift */,
 				4CBEE5F029DB953C0084BC50 /* EdgeEnvironment.swift */,
 				4CBEE5EE29DB952E0084BC50 /* EdgeLocationHint.swift */,
 			);
@@ -555,6 +556,7 @@
 			isa = PBXGroup;
 			children = (
 				4CBEE5FF2A02E2A90084BC50 /* XCTestCase+AnyCodableAsserts.swift */,
+				4CBEE5F929FB19600084BC50 /* AnyCodable+Array.swift */,
 				D44BBB74248DC54F00775DAC /* CountDownLatch.swift */,
 				21888AF22555F9FC005677ED /* FileManager+Testable.swift */,
 				D4655401246CD0B000A150E2 /* InstrumentedExtension.swift */,
@@ -1407,6 +1409,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CC5831A2A9559BB004B1169 /* AnyCodable+Array.swift in Sources */,
+				4CC583192A955886004B1169 /* XCTestCase+AnyCodableAsserts.swift in Sources */,
 				D45F2E7825EDE0D6000AC350 /* MockHitProcessor.swift in Sources */,
 				D44BBB75248DC54F00775DAC /* CountDownLatch.swift in Sources */,
 				D4A473CB2485A8F300D31710 /* TestUtils.swift in Sources */,

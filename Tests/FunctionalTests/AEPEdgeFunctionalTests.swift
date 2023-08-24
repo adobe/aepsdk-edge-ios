@@ -40,7 +40,7 @@ class AEPEdgeFunctionalTests: TestBase {
        }
     }
     private let mockNetworkService: MockNetworkService = MockNetworkService()
-    
+
     // Runs before each test case
     override func setUp() {
         ServiceProvider.shared.networkService = mockNetworkService
@@ -494,6 +494,36 @@ class AEPEdgeFunctionalTests: TestBase {
         XCTAssertEqual(2, requestBody["events[0].query.testArray[1]"] as? Int)
         XCTAssertEqual(true, requestBody["events[0].query.testArray[2]"] as? Bool)
         XCTAssertEqual("val", requestBody["events[0].query.testDictionary.key"] as? String)
+    }
+
+    func testDispatchEvent_sendCompleteEvent_sendsPairedCompleteEvent() {
+        let edgeEvent = Event(
+            name: "Edge Event Completion Request",
+            type: EventType.edge,
+            source: EventSource.requestContent,
+            data: ["xdm": ["testString": "xdm"],
+                   "request": [ "sendCompletion": true ]])
+
+        let countDownLatch = CountDownLatch(1)
+
+        MobileCore.dispatch(event: edgeEvent, timeout: 2) { responseEvent in
+            guard let responseEvent = responseEvent else {
+                XCTFail("Dispatch with responseCallback returned nil event")
+                return
+            }
+            XCTAssertEqual(TestConstants.EventName.CONTENT_COMPLETE, responseEvent.name)
+            XCTAssertEqual(TestConstants.EventType.EDGE, responseEvent.type)
+            XCTAssertEqual(TestConstants.EventSource.CONTENT_COMPLETE, responseEvent.source)
+            XCTAssertEqual(edgeEvent.id, responseEvent.responseID)
+            XCTAssertEqual(edgeEvent.id, responseEvent.parentID)
+            XCTAssertNotNil(responseEvent.data)
+
+            let flattenedData = flattenDictionary(dict: responseEvent.data ?? [:])
+            XCTAssertEqual(1, flattenedData.count)
+            XCTAssertNotNil(flattenedData["requestId"] as? String)
+            countDownLatch.countDown()
+        }
+        XCTAssertEqual(DispatchTimeoutResult.success, countDownLatch.await(timeout: 3))
     }
 
     // MARK: Client-side store
