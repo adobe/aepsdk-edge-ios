@@ -65,7 +65,7 @@ Alternatively, if your project has a `Package.swift` file, you can add AEPEdge d
 
 ```
 dependencies: [
-	.package(url: "https://github.com/adobe/aepsdk-edge-ios.git", .upToNextMajor(from: "4.0.0"))
+	.package(url: "https://github.com/adobe/aepsdk-edge-ios.git", .upToNextMajor(from: "4.2.0"))
 ],
 targets: [
    	.target(name: "YourTarget",
