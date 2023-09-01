@@ -149,7 +149,7 @@ class NetworkResponseHandler {
                 let responseEvent = event.createResponseEvent(
                     name: EdgeConstants.EventName.CONTENT_COMPLETE,
                     type: EventType.edge,
-                    source: "com.adobe.eventSource.contentComplete", // TODO replace with EventSource constant
+                    source: EventSource.contentComplete,
                     data: eventData
                 )
                 MobileCore.dispatch(event: responseEvent)
