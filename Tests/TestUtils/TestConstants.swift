@@ -14,6 +14,10 @@ import Foundation
 
 enum TestConstants {
 
+    enum EventName {
+        static let CONTENT_COMPLETE = "AEP Response Complete"
+    }
+
     enum EventType {
         static let EDGE = "com.adobe.eventType.edge"
         static let INSTRUMENTED_EXTENSION = "com.adobe.eventType.instrumentedExtension"
@@ -24,6 +28,7 @@ enum TestConstants {
     }
 
     enum EventSource {
+        static let CONTENT_COMPLETE = "com.adobe.eventSource.contentComplete"
         static let REQUEST_CONTENT = "com.adobe.eventSource.requestContent"
         static let RESPONSE_CONTENT = "com.adobe.eventSource.responseContent"
         static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"

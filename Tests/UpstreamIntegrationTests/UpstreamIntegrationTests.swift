@@ -312,9 +312,14 @@ class UpstreamIntegrationTests: TestBase {
     /// Tests that a standard sendEvent with prior state receives the expected state store event handle.
     func testSendEvent_withPriorState_receivesExpectedStateStoreEventHandle() {
         // Setup
+        expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 1)
+        
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
 
         Edge.sendEvent(experienceEvent: experienceEvent)
+        
+        // Allows waiting for expected responses before clearing expectations
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 5)
         
         resetTestExpectations()
         networkService.reset()
