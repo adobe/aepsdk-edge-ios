@@ -95,12 +95,14 @@ class UpstreamIntegrationTests: TestBase {
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
         
-        let eventPayloadJSON = #"""
+        let xdmJSON = #"""
         {
-          "xdm": {
             "testString": "xdm"
-          },
-          "data": {
+        }
+        """#
+        
+        let dataJSON = #"""
+          {
             "testDataString": "stringValue",
             "testDataInt": 101,
             "testDataBool": true,
@@ -110,13 +112,12 @@ class UpstreamIntegrationTests: TestBase {
               "key": "val"
             }
           }
-        }
         """#
 
-        let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
-        let data = getAnyCodableAndPayload(eventPayloadJSON, type: .data)!
+        let xdm = getAnyCodable(xdmJSON)!.dictionaryValue!
+        let data = getAnyCodable(dataJSON)!.dictionaryValue!
 
-        let experienceEvent = ExperienceEvent(xdm: xdm.payload, data: data.payload)
+        let experienceEvent = ExperienceEvent(xdm: xdm, data: data)
 
         // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
@@ -135,9 +136,8 @@ class UpstreamIntegrationTests: TestBase {
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
         
-        let eventPayloadJSON = #"""
-        {
-          "xdm": {
+        let xdmJSON = #"""
+          {
             "testString": "xdm",
             "testInt": 10,
             "testBool": false,
@@ -147,12 +147,11 @@ class UpstreamIntegrationTests: TestBase {
               "key": "val"
             }
           }
-        }
         """#
 
-        let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
+        let xdm = getAnyCodable(xdmJSON)!.dictionaryValue!
 
-        let experienceEvent = ExperienceEvent(xdm: xdm.payload)
+        let experienceEvent = ExperienceEvent(xdm: xdm)
 
         // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
