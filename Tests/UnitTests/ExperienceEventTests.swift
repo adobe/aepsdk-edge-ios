@@ -18,6 +18,7 @@ class ExperienceEventTests: XCTestCase {
     private let xdm = "xdm"
     private let data = "data"
     private let query = "query"
+    private let config = "config"
 
     func generateXdm() -> [String: Any] {
         var xdm = [String: Any]()
@@ -31,6 +32,13 @@ class ExperienceEventTests: XCTestCase {
         data["testDataKey1"] = "testDataValue1"
         data["testDataKey2"] = "testDataValue2"
         return data
+    }
+
+    func generateConfig() -> [String: Any] {
+        var config = [String: Any]()
+        config["datastreamIdOverride"] = "testDatastreamId"
+        config["datastreamConfigOverride"] = ["key": "value"]
+        return config
     }
 
     struct MobileSDKSchema: XDMSchema {
@@ -172,4 +180,65 @@ class ExperienceEventTests: XCTestCase {
         }
         XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
     }
+
+    func testAsDictionary_withXdmAndDatastreamIdOverride() {
+
+        let expectedXdm = generateXdm()
+        var expectedConfig = generateConfig()
+        expectedConfig.removeValue(forKey: "datastreamConfigOverride")
+
+        let expectedDatastreamId = expectedConfig["datastreamIdOverride"] as? String ?? ""
+
+        var expectedEventData: [String: Any] = [:]
+        expectedEventData[xdm] = expectedXdm
+        expectedEventData[config] = expectedConfig
+
+        let experienceEvent = ExperienceEvent(xdm: expectedXdm, datastreamIdOverride: expectedDatastreamId)
+        guard let actualEventData = experienceEvent.asDictionary() else {
+            XCTFail("Failed to retrieve experience event asDictionary")
+            return
+        }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+    }
+
+    func testAsDictionary_withXdmAndDatastreamConfigOverride() {
+
+        let expectedXdm = generateXdm()
+        var expectedConfig = generateConfig()
+        expectedConfig.removeValue(forKey: "datastreamIdOverride")
+
+        let expectedDatastreamConfig = expectedConfig["datastreamConfigOverride"] as? [String: Any] ?? [:]
+
+        var expectedEventData: [String: Any] = [:]
+        expectedEventData[xdm] = expectedXdm
+        expectedEventData[config] = expectedConfig
+
+        let experienceEvent = ExperienceEvent(xdm: expectedXdm, datastreamConfigOverride: expectedDatastreamConfig)
+        guard let actualEventData = experienceEvent.asDictionary() else {
+            XCTFail("Failed to retrieve experience event asDictionary")
+            return
+        }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+    }
+
+    func testAsDictionary_withXdmAndDatastreamIdOverrideAndDatastreamConfigOverride() {
+
+        let expectedXdm = generateXdm()
+        var expectedConfig = generateConfig()
+
+        let expectedDatastreamId = expectedConfig["datastreamIdOverride"] as? String ?? ""
+        let expectedDatastreamConfig = expectedConfig["datastreamConfigOverride"] as? [String: Any] ?? [:]
+
+        var expectedEventData: [String: Any] = [:]
+        expectedEventData[xdm] = expectedXdm
+        expectedEventData[config] = expectedConfig
+
+        let experienceEvent = ExperienceEvent(xdm: expectedXdm, datastreamIdOverride: expectedDatastreamId, datastreamConfigOverride: expectedDatastreamConfig)
+        guard let actualEventData = experienceEvent.asDictionary() else {
+            XCTFail("Failed to retrieve experience event asDictionary")
+            return
+        }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+    }
+
 }
