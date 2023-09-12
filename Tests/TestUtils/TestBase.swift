@@ -166,7 +166,7 @@ class TestBase: XCTestCase {
             sleep(timeout)
         }
     }
-    
+
     /// Returns the `ACPExtensionEvent`(s) dispatched through the Event Hub, or empty if none was found.
     /// Use this API after calling `setExpectationEvent(type:source:count:)` to wait for the right amount of time
     /// - Parameters:

@@ -38,7 +38,7 @@ class RealNetworkService: NetworkService {
     func assertAllNetworkRequestExpectations() {
         helper.assertAllNetworkRequestExpectations()
     }
-    
+
     func reset() {
         helper.reset()
     }

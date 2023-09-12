@@ -27,17 +27,17 @@ enum PayloadType: String {
 
 extension XCTestCase {
     // MARK: - AnyCodable helpers
-    
+
     /// Gets the `AnyCodable` representation of a JSON string
     func getAnyCodable(_ jsonString: String) -> AnyCodable? {
         return try? JSONDecoder().decode(AnyCodable.self, from: jsonString.data(using: .utf8)!)
     }
-    
+
     /// Gets an event's data payload converted into `AnyCodable` format
     func getAnyCodable(_ event: Event) -> AnyCodable? {
         return AnyCodable(AnyCodable.from(dictionary: event.data))
     }
-    
+
     func getAnyCodableAndPayload(_ jsonString: String, type: PayloadType) -> (anyCodable: AnyCodable, payload: [String: Any])? {
         guard let anyCodable = getAnyCodable(jsonString) else {
             return nil
@@ -47,11 +47,11 @@ extension XCTestCase {
         }
         return (anyCodable: anyCodable, payload: payload)
     }
-    
+
     func getAnyCodableFromEventPayload(event: Event) -> AnyCodable? {
         return AnyCodable(AnyCodable.from(dictionary: event.data))
     }
-    
+
     // MARK: - AnyCodable exact equivalence test assertion methods
 
     /// Performs exact equality testing assertions between two `AnyCodable` instances, using a similar logic path as the `AnyCodable ==` implementation.
@@ -123,7 +123,7 @@ extension XCTestCase {
         let pathTree = generatePathTree(paths: typeMatchPaths, file: file, line: line)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: true, file: file, line: line)
     }
-    
+
     // MARK: - AnyCodable exact equivalence helpers
     /// Performs equality testing assertions between two `AnyCodable` instances.
     private func assertEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any] = [], file: StaticString = #file, line: UInt = #line) {
@@ -664,21 +664,21 @@ extension XCTestCase {
     }
     /// Applies the provided regex pattern to the text and returns all the capture groups from the regex pattern
     private func getCapturedRegexGroups(text: String, regexPattern: String, file: StaticString = #file, line: UInt = #line) -> [String] {
-        
+
         guard let captureGroups = extractRegexCaptureGroups(text: text, regexPattern: regexPattern, file: file, line: line)?.flatMap({ $0.captureGroups }) else {
             return []
         }
-        
+
         return captureGroups
     }
-    
+
     /// Extracts all key path components from a given key path string
     private func getKeyPathComponents(text: String, file: StaticString = #file, line: UInt = #line) -> [String] {
         // The empty string is a special case that the regex doesn't handle
         guard !text.isEmpty else {
             return [""]
         }
-        
+
         // Capture groups:
         // 1. Any characters, or empty string before a `.` NOT preceded by a `\`
         // OR
@@ -687,13 +687,13 @@ extension XCTestCase {
         // Matches key path access in the style of: "key0\.key1.key2[1][2].key3". Captures each of the groups separated by `.` character and ignores `\.` as nesting.
         // the path example would result in: ["key0\.key1", "key2[1][2]", "key3"]
         let jsonNestingRegex = #"(.*?)(?<!\\)(?:\.)|(.+?)(?:$)"#
-        
+
         guard let matchResult = extractRegexCaptureGroups(text: text, regexPattern: jsonNestingRegex, file: file, line: line) else {
             return []
         }
-        
+
         var captureGroups = matchResult.flatMap({ $0.captureGroups })
-        
+
         if matchResult.last?.matchString.last == "." {
             captureGroups.append("")
         }
@@ -733,7 +733,7 @@ extension XCTestCase {
             result = [first: pathString]
             return result
         } else {
-            
+
             return [first: construct(path: path, pathString: pathString)]
         }
     }
@@ -800,11 +800,9 @@ extension XCTestCase {
                 }
                 if item.contains(".") {
                     result += item.replacingOccurrences(of: ".", with: "\\.")
-                }
-                else if item.isEmpty {
+                } else if item.isEmpty {
                     result += "\"\""
-                }
-                else {
+                } else {
                     result += item
                 }
             case let item as Int:
