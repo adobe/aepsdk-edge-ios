@@ -179,6 +179,27 @@ class ExperienceEventTests: XCTestCase {
         XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
     }
 
+    func testAsDictionary_withXdmSchemaAndEmptyDatasetIdAndDataAndDatastreamIdOverrideAndDatastreamConfigOverride() {
+
+        let expectedData = generateData()
+        let xdmSchemaWithEmptyDatasetId = MobileSDKSchema(schemaVersion: "1.4", schemaIdentifier: "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", datasetIdentifier: "")
+        let expectedXdmSchema = ["schemaVersion": "1.4", "schemaIdentifier": "https://ns.adobe.com/acopprod1/schemas/e1af53c26439f963fbfebe50330323ae", "datasetIdentifier": ""]
+
+        let expectedConfig: [String: Any] = ["datastreamIdOverride": "testDatastreamId", "datastreamConfigOverride": ["key": "value"]]
+        var expectedEventData: [String: Any] = [:]
+        expectedEventData[xdm] = expectedXdmSchema
+        expectedEventData[datasetId] = ""
+        expectedEventData[data] = expectedData
+        expectedEventData[config] = expectedConfig
+
+        let experienceEvent = ExperienceEvent(xdm: xdmSchemaWithEmptyDatasetId, data: expectedData, datastreamIdOverride: "testDatastreamId", datastreamConfigOverride: ["key": "value"])
+        guard let actualEventData = experienceEvent.asDictionary() else {
+            XCTFail("Failed to retrieve experience event asDictionary")
+            return
+        }
+        XCTAssertTrue(NSDictionary(dictionary: actualEventData).isEqual(to: expectedEventData))
+    }
+
     func testAsDictionary_withXdmSchemaAndNilData() {
 
         var expectedEventData: [String: Any] = [:]
