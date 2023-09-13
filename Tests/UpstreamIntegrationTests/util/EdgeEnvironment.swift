@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 /// Edge Network environment levels that correspond to actual deployment environment levels
@@ -21,7 +20,7 @@ enum EdgeEnvironment: String {
     case preProd = "pre-prod"
     /// Integration - aka: development
     case int
-    
+
     /// Initializer that gets the value from the environment variable `EDGE_ENVIRONMENT` and creates an `EdgeEnvironment` instance.
     init() {
         guard let edgeEnvironment = extractEnvironmentVariable(keyName: "EDGE_ENVIRONMENT", enum: EdgeEnvironment.self) else {

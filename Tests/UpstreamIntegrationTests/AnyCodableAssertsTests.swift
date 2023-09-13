@@ -23,7 +23,7 @@ class AnyCodableAssertsTests: XCTestCase {
           }
         }
         """#
-        
+
         let actualJSON = #"""
         {
           "": {
@@ -35,12 +35,12 @@ class AnyCodableAssertsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         // Matches top level empty string key: ""
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [""])
         // Matches nested empty string key: "" -> ""
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [#"."#])
-        
+
         XCTExpectFailure("The following should fail") {
             assertExactMatch(expected: expected, actual: actual)
             assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [#"\\\\"#]) // double backslash
@@ -50,7 +50,7 @@ class AnyCodableAssertsTests: XCTestCase {
             assertEqual(expected: expected, actual: actual)
         }
     }
-    
+
     func testPathExtraction_specialCharacters() {
         let expectedJSON = #"""
         {
@@ -59,7 +59,7 @@ class AnyCodableAssertsTests: XCTestCase {
           }
         }
         """#
-        
+
         let actualJSON = #"""
         {
           "\\": {
@@ -71,10 +71,10 @@ class AnyCodableAssertsTests: XCTestCase {
             XCTFail("Unable to decode JSON string. Test case unable to proceed.")
             return
         }
-        
+
         // Matches backslash literal key: "\"
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["\\"])
-        
+
         XCTExpectFailure("The following should fail") {
             assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [#""#])
             assertExactMatch(expected: expected, actual: actual)
@@ -208,7 +208,7 @@ class AnyCodableAssertsTests: XCTestCase {
 
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     func testArray_whenNestedRequiresSpecificIndex_isEqual() {
         let expectedJSON = #"""
         [
