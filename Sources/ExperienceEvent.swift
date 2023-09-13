@@ -24,10 +24,10 @@ public class ExperienceEvent: NSObject {
     /// Optional free-form query data associated with this event
     @objc public var query: [String: Any]?
 
-    /// Adobe Experience Platform datastream identifier used to override the default datastream identifier set in the Edge configuration for this event
+    /// Datastream identifier used to override the default datastream identifier set in the Edge configuration for this event
     @objc public private(set) var datastreamIdOverride: String?
 
-    /// Adobe Experience Platform datastream configuration used to override individual settings from the default datastream configuration for this event
+    /// Datastream configuration used to override individual settings from the default datastream configuration for this event
     @objc public private(set) var datastreamConfigOverride: [String: Any]?
 
     /// Adobe Experience Platform dataset identifier, if not set the default dataset identifier set in the Edge Configuration is used
