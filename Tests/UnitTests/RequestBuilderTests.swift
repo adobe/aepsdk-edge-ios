@@ -379,30 +379,30 @@ class RequestBuilderTests: XCTestCase {
         let request = RequestBuilder(dataStoreName: testDataStoreName)
 
         let configOverrides: [String: Any] = [
-        "com_adobe_experience_platform": [
-          "datasets": [
-            "event": [
-              "datasetId": "eventDatasetIdOverride"
+            "com_adobe_experience_platform": [
+              "datasets": [
+                "event": [
+                  "datasetId": "eventDatasetIdOverride"
+                ],
+                "profile": [
+                  "datasetId": "profileDatasetIdOverride"
+                ]
+              ]
             ],
-            "profile": [
-              "datasetId": "profileDatasetIdOverride"
+            "com_adobe_analytics": [
+              "reportSuites": [
+                "rsid1",
+                "rsid2",
+                "rsid3"
+                ]
+            ],
+            "com_adobe_identity": [
+              "idSyncContainerId": "1234567"
+            ],
+            "com_adobe_target": [
+              "propertyToken": "63a46bbc-26cb-7cc3-def0-9ae1b51b6c62"
             ]
-          ]
-        ],
-        "com_adobe_analytics": [
-          "reportSuites": [
-            "rsid1",
-            "rsid2",
-            "rsid3"
-            ]
-        ],
-        "com_adobe_identity": [
-          "idSyncContainerId": "1234567"
-        ],
-        "com_adobe_target": [
-          "propertyToken": "63a46bbc-26cb-7cc3-def0-9ae1b51b6c62"
         ]
-      ]
 
         let event = Event(name: "Request Test",
                           type: "type",
