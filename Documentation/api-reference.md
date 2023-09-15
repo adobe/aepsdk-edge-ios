@@ -100,7 +100,7 @@ See [MobileCore.resetIdentities](https://developer.adobe.com/client-sdks/documen
 
 Sends an Experience event to Edge Network.
 
-The sendEvent API has been improved to support Datastream overrides. This allows you to adjust your datastreams without the need for new ones or modifications to existing settings. The process involves two steps:
+Starting with 4.3.0 the sentEvent API supports optional Datastream overrides. This allows you to adjust your datastreams without the need for new ones or modifications to existing settings. The process involves two steps:
 
 1. Define your Datastream configuration overrides on the [datastream configuration page](https://experienceleague.adobe.com/docs/experience-platform/datastreams/configure.html?lang=en).
 2. Send these overrides to the Edge Network using the sendEvent API.
@@ -132,7 +132,7 @@ Edge.sendEvent(experienceEvent: experienceEvent) { (handles: [EdgeEventHandle]) 
 }
 ```
 
-##### Example with DatastreamIdOverride
+##### Example with Datastream ID override
 ```swift
 // Create Experience event from dictionary
 var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
@@ -150,7 +150,7 @@ Edge.sendEvent(experienceEvent: experienceEvent) { (handles: [EdgeEventHandle]) 
 }
 ```
 
-##### Example with DatastreamConfigOverride
+##### Example with Datastream config override
 ```swift
 // Create Experience event from dictionary
 var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
@@ -160,10 +160,10 @@ var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
                                         "com_adobe_experience_platform": [
                                           "datasets": [
                                             "event": [
-                                              "datasetId": "eventDatasetIdOverride"
+                                              "datasetId": "SampleEventDatasetIdOverride"
                                             ],
                                             "profile": [
-                                              "datasetId": "profileDatasetIdOverride"
+                                              "datasetId": "SampleProfileDatasetIdOverride"
                                             ]
                                           ]
                                         ],
@@ -178,7 +178,7 @@ var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
                                           "idSyncContainerId": "1234567"
                                         ],
                                         "com_adobe_target": [
-                                          "propertyToken": "63a46bbc-26cb-7cc3-def0-9ae1b51b6c62"
+                                          "propertyToken": "SamplePropertyToken"
                                         ]
                                       ]
 
@@ -207,6 +207,68 @@ Edge.sendEvent(experienceEvent: experienceEvent) { (handles: [EdgeEventHandle]) 
 // Create Experience event from dictionary:
 NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
 NSDictionary *data = @{ @"sample" : @"data"};
+AEPExperienceEvent* event = [[AEPExperienceEvent alloc]initWithXdm:xdmData data:data];
+```
+```objectivec
+// Example 1 - send the Experience event without handling the Edge Network response
+[AEPMobileEdge sendExperienceEvent:event completion:nil];
+```
+```objectivec
+// Example 2 - send the Experience event and handle the Edge Network response onComplete
+[AEPMobileEdge sendExperienceEvent:event completion:^(NSArray<AEPEdgeEventHandle *> * _Nonnull handles) {
+  // Handle the Edge Network response
+}];
+```
+
+##### Example with Datastream ID override
+```objectivec
+// Create Experience event from dictionary:
+NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
+NSDictionary *data = @{ @"sample" : @"data"};
+AEPExperienceEvent* event = [[AEPExperienceEvent alloc]initWithXdm:xdmData data:data datastreamIdOverride: @"SampleDatastreamIdOverride"];
+```
+```objectivec
+// Example 1 - send the Experience event without handling the Edge Network response
+[AEPMobileEdge sendExperienceEvent:event completion:nil];
+```
+```objectivec
+// Example 2 - send the Experience event and handle the Edge Network response onComplete
+[AEPMobileEdge sendExperienceEvent:event completion:^(NSArray<AEPEdgeEventHandle *> * _Nonnull handles) {
+  // Handle the Edge Network response
+}];
+```
+
+
+##### Example with Datastream config override
+```objectivec
+// Create Experience event from dictionary:
+NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
+NSDictionary *data = @{ @"sample" : @"data"};
+NSDictionary *configOverrides = @{ @"com_adobe_experience_platform" : @{
+                                                                @"datasets" : @{
+                                                                    @"event" : @{
+                                                                        @"datasetId": @"SampleEventDatasetIdOverride"
+                                                                    },
+                                                                    @"profile" : @{
+                                                                        @"datasetId": @"SampleProfileDatasetIdOverride"
+                                                                    }
+                                                                }
+                                                            },
+                                       @"com_adobe_analytics" : @{
+                                           @"reportSuites" : @[
+                                               @"rsid1",
+                                               @"rsid2",
+                                               @"rsid3",
+                                           ]
+                                       },
+                                       @"com_adobe_identity" : @{
+                                           @"idSyncContainerId": @"1234567"
+                                       },
+                                       @"com_adobe_target" : @{
+                                           @"propertyToken": @"SamplePropertyToken"
+                                       }
+
+AEPExperienceEvent* event = [[AEPExperienceEvent alloc]initWithXdm:xdmData data:data datastreamConfigOverride: configOverrides];
 ```
 ```objectivec
 // Example 1 - send the Experience event without handling the Edge Network response
