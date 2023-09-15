@@ -245,28 +245,29 @@ AEPExperienceEvent* event = [[AEPExperienceEvent alloc]initWithXdm:xdmData data:
 NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
 NSDictionary *data = @{ @"sample" : @"data"};
 NSDictionary *configOverrides = @{ @"com_adobe_experience_platform" : @{
-                                                                @"datasets" : @{
-                                                                    @"event" : @{
-                                                                        @"datasetId": @"SampleEventDatasetIdOverride"
-                                                                    },
-                                                                    @"profile" : @{
-                                                                        @"datasetId": @"SampleProfileDatasetIdOverride"
-                                                                    }
-                                                                }
-                                                            },
-                                       @"com_adobe_analytics" : @{
-                                           @"reportSuites" : @[
-                                               @"rsid1",
-                                               @"rsid2",
-                                               @"rsid3",
-                                           ]
-                                       },
-                                       @"com_adobe_identity" : @{
-                                           @"idSyncContainerId": @"1234567"
-                                       },
-                                       @"com_adobe_target" : @{
-                                           @"propertyToken": @"SamplePropertyToken"
-                                       }
+                                    @"datasets" : @{
+                                        @"event" : @{
+                                          @"datasetId": @"SampleEventDatasetIdOverride"
+                                        },
+                                        @"profile" : @{
+                                          @"datasetId": @"SampleProfileDatasetIdOverride"
+                                        }
+                                      }
+                                    },
+                                    @"com_adobe_analytics" : @{
+                                      @"reportSuites" : @[
+                                        @"rsid1",
+                                        @"rsid2",
+                                        @"rsid3",
+                                      ]
+                                    },
+                                    @"com_adobe_identity" : @{
+                                      @"idSyncContainerId": @"1234567"
+                                    },
+                                    @"com_adobe_target" : @{
+                                      @"propertyToken": @"SamplePropertyToken"
+                                    }
+                                  }
 
 AEPExperienceEvent* event = [[AEPExperienceEvent alloc]initWithXdm:xdmData data:data datastreamConfigOverride: configOverrides];
 ```
