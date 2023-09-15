@@ -45,11 +45,11 @@ This event contains the latest consent preferences synced with the SDK. The Edge
 | --- | ---------- | -------- | ----------- |
 | consents | <code>[String:&nbsp;Any]</code> | No | XDM formatted consent preferences containing current collect consent settings. If not specified, defaults to `p` (pending) until the value is updated. |
 
------ 
+-----
 
 ### Edge identity reset complete
 
-This event signals that [Identity for Edge Network](https://github.com/adobe/aepsdk-edgeidentity-ios) has completed [resetting all identities](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network/api-reference/#resetidentities) usually following a call to [`MobileCore.resetIdentities()`](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference/#resetidentities). 
+This event signals that [Identity for Edge Network](https://github.com/adobe/aepsdk-edgeidentity-ios) has completed [resetting all identities](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network/api-reference/#resetidentities) usually following a call to [`MobileCore.resetIdentities()`](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference/#resetidentities).
 
 When this event is received, the Edge extension queues it up and removes the cached internal `state:store` settings. If other events are queued before this event, those events will be processed first in the order they were received.
 
@@ -89,10 +89,12 @@ If the required `xdm` key is not present in the event data payload, the event is
 | --- | ---------- | -------- | ----------- |
 | xdm | <code>[String:&nbsp;Any]</code> | Yes | XDM formatted data; use an `XDMSchema` implementation for better XDM data ingestion and data format control. |
 | data | <code>[String:&nbsp;Any]</code> | No | Optional free-form data associated with this event. |
+| datastreamIdOverride | `String` | No | Optional Datastream identifier used to override the default datastream identifier set in the Edge configuration. |
+| datastreamConfigOverride | <code>[String:&nbsp;Any]</code> | No | Optional Datastream configuration used to override individual settings from the default datastream configuration. |
 | datasetId | `String` | No | Optional custom dataset ID. If not set, the event uses the default Experience dataset ID set in the datastream configuration. |
 | request | <code>[String:&nbsp;Any]</code> | No | Optional request parameters. |
 
-> **Note**  
+> **Note**
 > Events of this type and source are only processed if the data collection consent status stored in the `collect` property is **not** `n` (no); that is, either `y` (yes) or `p` (pending).
 
 -----
@@ -143,7 +145,7 @@ This event is a request to process and deliver a Consent update event to Edge Ne
 
 This event is a request to set the Edge Network location hint used by the Edge Network extension in requests to Edge Network.
 
-> **Warning**  
+> **Warning**
 > Use caution when setting the location hint. Only use valid [location hints defined within the `EdgeNetwork` scope](https://experienceleague.adobe.com/docs/experience-platform/edge-network-server-api/location-hints.html). An invalid location hint value will cause all Edge Network requests to fail with a `404` response code.
 
 #### Event dispatched by<!-- omit in toc -->
@@ -180,7 +182,7 @@ This event is a response to an [Edge request content](#edge-request-content) eve
 | --- | ---------- | -------- | ----------- |
 | requestId | `String` | Yes | The ID (`UUID`) of the batched Edge Network request tied to the event that requested the completion response. |
 
------ 
+-----
 
 ### Edge error response content
 
@@ -199,7 +201,7 @@ This event is an error response to an originating event. If there are multiple e
 | requestId | `String` | Yes | The ID (`UUID`) of the batched Edge Network request tied to the event that triggered the error response. |
 | requestEventId | `String` | Yes | The ID (`UUID`) of the event that triggered the error response. |
 
------ 
+-----
 
 ### Edge identity response
 
@@ -217,7 +219,7 @@ This event is a response to the [Edge request identity event](#edge-request-iden
 | --- | ---------- | -------- | ----------- |
 | locationHint | `String` | Yes | The Edge Network location hint currently set for use when connecting to Edge Network. |
 
------ 
+-----
 
 ### Edge location hint result
 
