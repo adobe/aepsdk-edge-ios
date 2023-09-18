@@ -21,20 +21,20 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             (expected: 5.0, actual: 5.0),
             (expected: true, actual: true),
             (expected: "a", actual: "a"),
-            (expected: "안녕하세요", actual: "안녕하세요"),
+            (expected: "안녕하세요", actual: "안녕하세요")
         ]
         let testCases = rawCases.map { tuple in
             return (expected: AnyCodable(tuple.expected), actual: AnyCodable(tuple.actual))
         }
         for (index, (expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should match basic values: [\(index)]: test with expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should match basic values: [\(index)]: test with expected=\(expected), actual=\(actual)") { _ in
                 assertEqual(expected: expected, actual: actual)
                 assertExactMatch(expected: expected, actual: actual)
                 assertTypeMatch(expected: expected, actual: actual)
             }
         }
     }
-    
+
     func testCollectionValueMatching() {
         let rawCases: [(expected: String, actual: String)] = [
             (expected: "[]", actual: "[]"), // Empty array
@@ -42,33 +42,33 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             (expected: "{}", actual: "{}"), // Empty dictionary
             (expected: #"{ "key1": 1 }"#, actual: #"{ "key1": 1 }"#), // Key value pair
             (expected: #"{ "key1": { "key2": {} } }"#, actual: #"{ "key1": { "key2": {} } }"#), // Nested objects
-            (expected: #"{ "key1": null }"#, actual: #"{ "key1": null }"#), // `null` as value
+            (expected: #"{ "key1": null }"#, actual: #"{ "key1": null }"#) // `null` as value
         ]
         let testCases = rawCases.map { tuple in
             return (expected: getAnyCodable(tuple.expected)!, actual: getAnyCodable(tuple.actual))
         }
         for (index, (expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should match basic collection values: [\(index)]: test with expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should match basic collection values: [\(index)]: test with expected=\(expected), actual=\(actual)") { _ in
                 assertEqual(expected: expected, actual: actual)
                 assertExactMatch(expected: expected, actual: actual)
                 assertTypeMatch(expected: expected, actual: actual)
             }
         }
     }
-    
+
     func testTypeMatching() {
         let rawCases: [(expected: Any, actual: Any)] = [
             (expected: 5, actual: 10), // Int
             (expected: 5.0, actual: 10.0), // Double
             (expected: true, actual: false), // Bool
             (expected: "a", actual: "b"), // String
-            (expected: "안", actual: "안녕하세요"), // Non-Latin String
+            (expected: "안", actual: "안녕하세요") // Non-Latin String
         ]
         let testCases = rawCases.map { tuple in
             return (expected: AnyCodable(tuple.expected), actual: AnyCodable(tuple.actual))
         }
         for (index, (expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should match only by type for values of the same type: [\(index)]: test with expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should match only by type for values of the same type: [\(index)]: test with expected=\(expected), actual=\(actual)") { _ in
                 XCTExpectFailure("Validation should fail when asserting exact equality for different values of the same type") {
                     assertExactMatch(expected: expected, actual: actual)
                 }
@@ -79,17 +79,17 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             }
         }
     }
-    
+
     func testCollectionTypeMatching() {
         let rawCases: [(expected: String, actual: String)] = [
             (expected: #"{ "key1": 1 }"#, actual: #"{ "key1": 2 }"#),
-            (expected: #"{ "key1": { "key2": "a" } }"#, actual: #"{ "key1": { "key2": "b", "key3": 3 } }"#),
+            (expected: #"{ "key1": { "key2": "a" } }"#, actual: #"{ "key1": { "key2": "b", "key3": 3 } }"#)
         ]
         let testCases = rawCases.map { tuple in
             return (expected: getAnyCodable(tuple.expected)!, actual: getAnyCodable(tuple.actual))
         }
         for (index, (expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should match only by type for values of the same type: [\(index)]: test with expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should match only by type for values of the same type: [\(index)]: test with expected=\(expected), actual=\(actual)") { _ in
                 XCTExpectFailure("Validation should fail when asserting exact equality for collections with different values or structures") {
                     assertEqual(expected: expected, actual: actual)
                 }
@@ -102,20 +102,20 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             }
         }
     }
-    
+
     func testFlexibleCollectionTypeMatching() {
         let rawCases: [(expected: String, actual: String)] = [
             (expected: #"[]"#, actual: #"[1]"#),
             (expected: #"[1,2,3]"#, actual: #"[1,2,3,4]"#),
             (expected: #"{}"#, actual: #"{ "k": "v" }"#),
             (expected: #"{ "key1": 1, "key2": "a", "key3": 1.0, "key4": true }"#,
-             actual: #"{ "key1": 1, "key2": "a", "key3": 1.0, "key4": true, "key5": "extra" }"#),
+             actual: #"{ "key1": 1, "key2": "a", "key3": 1.0, "key4": true, "key5": "extra" }"#)
         ]
         let testCases = rawCases.map { tuple in
             return (expected: getAnyCodable(tuple.expected)!, actual: getAnyCodable(tuple.actual))
         }
         for (index, (expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should pass flexible matching when expected is a subset: [\(index)]: test with expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should pass flexible matching when expected is a subset: [\(index)]: test with expected=\(expected), actual=\(actual)") { _ in
                 XCTExpectFailure("Validation should fail when asserting exact equality for collections where the actual has extra elements or keys") {
                     assertEqual(expected: expected, actual: actual)
                 }
@@ -124,7 +124,7 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             }
         }
     }
-    
+
     func testFailure() {
         let rawCases: [(expected: Any?, actual: Any?)] = [
             (expected: 1, actual: 2.0), // [0]
@@ -163,13 +163,13 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             (expected: [] as [Any], actual: "a"),
             (expected: [] as [Any], actual: true),
             (expected: [] as [Any], actual: [:] as [String: Any]), // [35]
-            (expected: [] as [Any], actual: nil),
+            (expected: [] as [Any], actual: nil)
         ]
         let testCases = rawCases.map { tuple in
             return (expected: AnyCodable(tuple.expected), actual: AnyCodable(tuple.actual))
         }
         for (index, (expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should error when not matching: [\(index)]: test with expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should error when not matching: [\(index)]: test with expected=\(expected), actual=\(actual)") { _ in
                 XCTExpectFailure("Validation should fail when expected and actual have different types") {
                     assertEqual(expected: expected, actual: actual)
                 }
@@ -182,7 +182,7 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             }
         }
     }
-    
+
     func testSpecialKey() {
         let rawCases: [(expected: String, actual: String)] = [
             (expected: #"{ "": 1 }"#, actual: #"{ "": 1 }"#), // Empty string
@@ -197,7 +197,7 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             (expected: #"{ "key with space": 1 }"#, actual: #"{ "key with space": 1 }"#), // Space in key
             (expected: #"{ "\n": 1 }"#, actual: #"{ "\n": 1 }"#), // Control character
             (expected: #"{ "key \t \n newline": 1 }"#, actual: #"{ "key \t \n newline": 1 }"#), // Control characters in key
-            (expected: #"{ "안녕하세요": 1 }"#, actual: #"{ "안녕하세요": 1 }"#), // Non-Latin characters
+            (expected: #"{ "안녕하세요": 1 }"#, actual: #"{ "안녕하세요": 1 }"#) // Non-Latin characters
         ]
         let testCases = rawCases.map { tuple in
             print(tuple)
@@ -206,14 +206,14 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
         }
         print("translated testCases: \(testCases)")
         for (index, (expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should match special key JSONs: [\(index)]: test with expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should match special key JSONs: [\(index)]: test with expected=\(expected), actual=\(actual)") { _ in
                 assertEqual(expected: expected, actual: actual)
                 assertExactMatch(expected: expected, actual: actual)
                 assertTypeMatch(expected: expected, actual: actual)
             }
         }
     }
-    
+
     func testAlternatePathValueDictionary() {
         let rawCases: [(path: String, expected: Any?, actual: Any?, format: (Any?) -> String)] = [
             (path: "key1", expected: 1, actual: 1, format: { #"{ "key1": \#($0!) }"# }),
@@ -222,20 +222,20 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             (path: "key1", expected: true, actual: true, format: { #"{ "key1": \#($0!) }"# }),
             (path: "key1", expected: "{}", actual: "{}", format: { #"{ "key1": \#($0!) }"# }),
             (path: "key1", expected: "[]", actual: "[]", format: { #"{ "key1": \#($0!) }"# }),
-            (path: "key1", expected: nil, actual: nil, format: { #"{ "key1": \#($0 ?? "null") }"# }),
+            (path: "key1", expected: nil, actual: nil, format: { #"{ "key1": \#($0 ?? "null") }"# })
         ]
         let testCases = rawCases.map { tuple in
             let expectedAnyCodable: AnyCodable? = getAnyCodable(tuple.format(tuple.expected))
             return (path: tuple.path, expected: expectedAnyCodable!, actual: getAnyCodable(tuple.format(tuple.actual)))
         }
         for (index, (path, expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should not fail because of alternate path: [\(index)]: test with path=\(path), expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should not fail because of alternate path: [\(index)]: test with path=\(path), expected=\(expected), actual=\(actual)") { _ in
                 assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [path])
                 assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: [path])
             }
         }
     }
-    
+
     func testAlternatePathValueArray() {
         let rawCases: [(path: String, expected: Any?, actual: Any?, format: (Any?) -> String)] = [
             // Validating array format with specific index alternate mode path
@@ -253,33 +253,33 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             (path: "[*]", expected: true, actual: true, format: { #"[\#($0!)]"# }),
             (path: "[*]", expected: "{}", actual: "{}", format: { #"[\#($0!)]"# }),
             (path: "[*]", expected: "[]", actual: "[]", format: { #"[\#($0!)]"# }),
-            (path: "[*]", expected: nil, actual: nil, format: { #"[\#($0 ?? "null")]"# }),
+            (path: "[*]", expected: nil, actual: nil, format: { #"[\#($0 ?? "null")]"# })
         ]
         let testCases = rawCases.map { tuple in
             let expectedAnyCodable: AnyCodable? = getAnyCodable(tuple.format(tuple.expected))
             return (path: tuple.path, expected: expectedAnyCodable!, actual: getAnyCodable(tuple.format(tuple.actual)))
         }
         for (index, (path, expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should not fail because of alternate path: [\(index)]: test with path=\(path), expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should not fail because of alternate path: [\(index)]: test with path=\(path), expected=\(expected), actual=\(actual)") { _ in
                 assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [path])
                 assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: [path])
             }
         }
     }
-    
+
     func testAlternatePathTypeDictionary() {
         let rawCases: [(path: String, expected: Any?, actual: Any?, format: (Any?) -> String)] = [
             (path: "key1", expected: 1, actual: 2, format: { #"{ "key1": \#($0!) }"# }),
             (path: "key1", expected: 1.0, actual: 2.0, format: { #"{ "key1": \#($0!) }"# }),
             (path: "key1", expected: "a", actual: "b", format: { #"{ "key1": "\#($0!)" }"# }),
-            (path: "key1", expected: true, actual: false, format: { #"{ "key1": \#($0!) }"# }),
+            (path: "key1", expected: true, actual: false, format: { #"{ "key1": \#($0!) }"# })
         ]
         let testCases = rawCases.map { tuple in
             let expectedAnyCodable: AnyCodable? = getAnyCodable(tuple.format(tuple.expected))
             return (path: tuple.path, expected: expectedAnyCodable!, actual: getAnyCodable(tuple.format(tuple.actual)))
         }
         for (index, (path, expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should apply alternate path to matching logic: [\(index)]: test with path=\(path), expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should apply alternate path to matching logic: [\(index)]: test with path=\(path), expected=\(expected), actual=\(actual)") { _ in
                 assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [path])
                 XCTExpectFailure("Validation should fail when using a path without a match") {
                     assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: [path])
@@ -287,7 +287,7 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             }
         }
     }
-    
+
     func testAlternatePathTypeArray() {
         let rawCases: [(path: String, expected: Any, actual: Any, format: (Any) -> String)] = [
             // Validating array format with specific index alternate mode path
@@ -299,14 +299,14 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             (path: "[*]", expected: 1, actual: 2, format: { #"[\#($0)]"# }),
             (path: "[*]", expected: 1.0, actual: 2.0, format: { #"[\#($0)]"# }),
             (path: "[*]", expected: "a", actual: "b", format: { #"["\#($0)"]"# }),
-            (path: "[*]", expected: true, actual: false, format: { #"[\#($0)]"# }),
+            (path: "[*]", expected: true, actual: false, format: { #"[\#($0)]"# })
         ]
         let testCases = rawCases.map { tuple in
             let expectedAnyCodable: AnyCodable? = getAnyCodable(tuple.format(tuple.expected))
             return (path: tuple.path, expected: expectedAnyCodable!, actual: getAnyCodable(tuple.format(tuple.actual)))
         }
         for (index, (path, expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should apply alternate path to matching logic: [\(index)]: test with path=\(path), expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should apply alternate path to matching logic: [\(index)]: test with path=\(path), expected=\(expected), actual=\(actual)") { _ in
                 assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [path])
                 XCTExpectFailure("Validation should fail when using a path without a match") {
                     assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: [path])
@@ -314,7 +314,7 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             }
         }
     }
-    
+
     func testSpecialKeyAlternatePath() {
         let rawCases: [(path: String, expected: Any, actual: Any, format: (Any) -> String)] = [
             (path: "key1.", expected: 1, actual: 2, format: { #"{ "key1": { "": \#($0) } }"# }), // Nested empty string
@@ -341,14 +341,14 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             (path: "a[1]b", expected: 1, actual: 2, format: { #"{ "a[1]b": \#($0) }"# }), // Array style access in key
             (path: "key1\\[0\\]", expected: 1, actual: 2, format: { #"{ "key1[0]": \#($0) }"# }), // Array style access at the end of key
             (path: "\\[1\\][0]", expected: 1, actual: 2, format: { #"{ "[1]": [\#($0)] }"# }), // Array style key then actual array style access
-            (path: "\\[1\\\\][0]", expected: 1, actual: 2, format: { #"{ "[1\\]": [\#($0)] }"# }), // Incomplete array style access then actual array style access
+            (path: "\\[1\\\\][0]", expected: 1, actual: 2, format: { #"{ "[1\\]": [\#($0)] }"# }) // Incomplete array style access then actual array style access
         ]
         let testCases = rawCases.map { tuple in
             let expectedAnyCodable: AnyCodable? = getAnyCodable(tuple.format(tuple.expected))
             return (path: tuple.path, expected: expectedAnyCodable!, actual: getAnyCodable(tuple.format(tuple.actual)))
         }
         for (index, (path, expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should handle special keys in alternate paths: [\(index)]: test with path=\(path), expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should handle special keys in alternate paths: [\(index)]: test with path=\(path), expected=\(expected), actual=\(actual)") { _ in
                 assertExactMatch(expected: expected, actual: actual, typeMatchPaths: [path])
                 XCTExpectFailure("Validation should fail when using a path without a match") {
                     assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: [path])
@@ -356,7 +356,7 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             }
         }
     }
-    
+
     func testExpectedArrayLarger() {
         let rawCases: [[String]] = [
             ["[0]"],
@@ -364,13 +364,13 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             ["[0]", "[1]"],
             ["[*0]"],
             ["[*1]"],
-            ["[*]"],
+            ["[*]"]
         ]
         let testCases = rawCases.map { paths in
             return (paths: paths, expected: getAnyCodable("[1,2]")!, actual: getAnyCodable("[1]"))
         }
         for (index, (paths, expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should error on larger expected arrays: [\(index)]: test with paths=\(paths), expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should error on larger expected arrays: [\(index)]: test with paths=\(paths), expected=\(expected), actual=\(actual)") { _ in
                 XCTExpectFailure("Validation should fail when expected array size is larger") {
                     assertEqual(expected: expected, actual: actual)
                 }
@@ -383,12 +383,12 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             }
         }
     }
-    
+
     func testExpectedDictionaryLarger() {
         let rawCases: [[String]] = [
             ["key1"],
             ["key2"],
-            ["key1", "key2"],
+            ["key1", "key2"]
         ]
         let testCases = rawCases.map { paths in
             return (paths: paths,
@@ -396,7 +396,7 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
                     actual: getAnyCodable(#"{ "key1": 1}"#))
         }
         for (index, (paths, expected, actual)) in testCases.enumerated() {
-            XCTContext.runActivity(named: "should error on larger expected maps: [\(index)]: test with paths=\(paths), expected=\(expected), actual=\(actual)") { activity in
+            XCTContext.runActivity(named: "should error on larger expected maps: [\(index)]: test with paths=\(paths), expected=\(expected), actual=\(actual)") { _ in
                 XCTExpectFailure("Validation should fail when expected dictionary size is larger") {
                     assertEqual(expected: expected, actual: actual)
                 }
