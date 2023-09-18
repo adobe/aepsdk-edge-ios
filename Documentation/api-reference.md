@@ -100,9 +100,9 @@ See [MobileCore.resetIdentities](https://developer.adobe.com/client-sdks/documen
 
 Sends an Experience event to Edge Network.
 
-Starting with 4.3.0 the sentEvent API supports optional Datastream overrides. This allows you to adjust your datastreams without the need for new ones or modifications to existing settings. The process involves two steps:
+Starting with `AEPEdge` extension version **4.3.0** onwards, the `sendEvent` API supports optional Datastream overrides. This allows you to adjust your datastreams without the need for new ones or modifications to existing settings. The process involves two steps:
 
-1. Define your Datastream configuration overrides on the [datastream configuration page](https://experienceleague.adobe.com/docs/experience-platform/datastreams/configure.html?lang=en).
+1. Define your Datastream configuration overrides on the [datastream configuration page](https://experienceleague.adobe.com/docs/experience-platform/datastreams/configure.html).
 2. Send these overrides to the Edge Network using the sendEvent API.
 
 #### Swift

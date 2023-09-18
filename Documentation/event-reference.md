@@ -89,23 +89,23 @@ If the required `xdm` key is not present in the event data payload, the event is
 | --- | ---------- | -------- | ----------- |
 | xdm | <code>[String:&nbsp;Any]</code> | Yes | XDM formatted data; use an `XDMSchema` implementation for better XDM data ingestion and data format control. |
 | data | <code>[String:&nbsp;Any]</code> | No | Optional free-form data associated with this event. |
-| config | <code>[String:&nbsp;Any]</code> | No | Optional config overrides. |
+| config | <code>[String:&nbsp;Any]</code> | No | Optional config settings. Find the available keys for `config` below.|
 | datasetId | `String` | No | Optional custom dataset ID. If not set, the event uses the default Experience dataset ID set in the datastream configuration. |
-| request | <code>[String:&nbsp;Any]</code> | No | Optional request parameters. |
+| request | <code>[String:&nbsp;Any]</code> | No | Optional request parameters. Find the available keys for `request` below. |
 
 config
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
-| config.datastreamIdOverride | `String` | No | Optional Datastream identifier used to override the default datastream identifier set in the Edge configuration. |
-| config.datastreamConfigOverride | <code>[String:&nbsp;Any]</code> | No | Optional Datastream configuration used to override individual settings from the default datastream configuration. |
+| datastreamIdOverride | `String` | No | Optional Datastream identifier used to override the default datastream identifier set in the Edge configuration. |
+| datastreamConfigOverride | <code>[String:&nbsp;Any]</code> | No | Optional Datastream configuration used to override individual settings from the default datastream configuration. |
 
 request
 
 | Key | Value type | Required | Description |
 | --- | ---------- | -------- | ----------- |
-| request.path | `String` | No | Optional path to be used for the Edge request. |
-| request.sendCompletion | `Boolean` | No | Optional flag to determine if a "complete" event is requested. |
+| path | `String` | No | Optional path to be used for the Edge request. |
+| sendCompletion | `Boolean` | No | Optional flag to determine if a "complete" event is requested. |
 
 > **Note**
 > Events of this type and source are only processed if the data collection consent status stored in the `collect` property is **not** `n` (no); that is, either `y` (yes) or `p` (pending).
