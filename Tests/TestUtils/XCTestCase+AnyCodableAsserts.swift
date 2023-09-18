@@ -17,19 +17,19 @@ import XCTest
 
 extension XCTestCase {
     // MARK: - AnyCodable helpers
-
+    
     /// Gets the `AnyCodable` representation of a JSON string
     func getAnyCodable(_ jsonString: String) -> AnyCodable? {
         return try? JSONDecoder().decode(AnyCodable.self, from: jsonString.data(using: .utf8)!)
     }
-
+    
     /// Gets an event's data payload converted into `AnyCodable` format
     func getAnyCodable(_ event: Event) -> AnyCodable? {
         return AnyCodable(AnyCodable.from(dictionary: event.data))
     }
-
+    
     // MARK: - AnyCodable exact equivalence test assertion methods
-
+    
     /// Asserts exact equality between two `AnyCodable` instances.
     ///
     /// In the event of an assertion failure, this function provides a trace of the key path, which includes dictionary keys and array indexes,
@@ -43,7 +43,7 @@ extension XCTestCase {
     func assertEqual(expected: AnyCodable?, actual: AnyCodable?, file: StaticString = #file, line: UInt = #line) {
         assertEqual(expected: expected, actual: actual, keyPath: [], file: file, line: line)
     }
-
+    
     // MARK: - AnyCodable flexible validation test assertion methods
     /// Performs a flexible JSON comparison where only the key-value pairs from the expected JSON are required.
     /// By default, the function validates that both values are of the same type.
@@ -92,7 +92,7 @@ extension XCTestCase {
         let pathTree = generatePathTree(paths: exactMatchPaths, file: file, line: line)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: false, file: file, line: line)
     }
-
+    
     /// Performs a flexible JSON comparison where only the key-value pairs from the expected JSON are required.
     /// By default, the function uses exact match mode, validating that both values are of the same type
     /// and have the same literal value.
@@ -141,7 +141,7 @@ extension XCTestCase {
         let pathTree = generatePathTree(paths: typeMatchPaths, file: file, line: line)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: true, file: file, line: line)
     }
-
+    
     // MARK: - AnyCodable exact equivalence helpers
     /// Compares the given `expected` and `actual` values for exact equality. If they are not equal and an assertion fails,
     /// a test failure occurs.
@@ -159,16 +159,16 @@ extension XCTestCase {
         guard let expected = expected, let actual = actual else {
             XCTFail(#"""
                 \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
-
+            
                 Expected: \#(String(describing: expected))
-
+            
                 Actual: \#(String(describing: actual))
-
+            
                 Key path: \#(keyPathAsString(keyPath))
             """#, file: file, line: line)
             return
         }
-
+        
         switch (expected.value, actual.value) {
         case let (expected as String, actual as String):
             XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
@@ -189,16 +189,16 @@ extension XCTestCase {
         default:
             XCTFail(#"""
                 Expected and Actual types do not match.
-
+            
                 Expected: \#(expected)
-
+            
                 Actual: \#(actual)
-
+            
                 Key path: \#(keyPathAsString(keyPath))
             """#, file: file, line: line)
         }
     }
-
+    
     /// Compares two `AnyCodable` arrays for exact equality. If they are not equal, a test failure occurs.
     ///
     /// - Parameters:
@@ -214,11 +214,11 @@ extension XCTestCase {
         guard let expected = expected, let actual = actual else {
             XCTFail(#"""
                 \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
-
+            
                 Expected: \#(String(describing: expected))
-
+            
                 Actual: \#(String(describing: actual))
-
+            
                 Key path: \#(keyPathAsString(keyPath))
             """#, file: file, line: line)
             return
@@ -226,14 +226,14 @@ extension XCTestCase {
         if expected.count != actual.count {
             XCTFail(#"""
                 Expected and Actual counts do not match (exact equality).
-
+            
                 Expected count: \#(expected.count)
                 Actual count: \#(actual.count)
-
+            
                 Expected: \#(expected)
-
+            
                 Actual: \#(actual)
-
+            
                 Key path: \#(keyPathAsString(keyPath))
             """#, file: file, line: line)
             return
@@ -246,7 +246,7 @@ extension XCTestCase {
                 file: file, line: line)
         }
     }
-
+    
     /// Compares two dictionaries (`[String: AnyCodable]`) for exact equality. If they are not equal, a test failure occurs.
     ///
     /// - Parameters:
@@ -262,11 +262,11 @@ extension XCTestCase {
         guard let expected = expected, let actual = actual else {
             XCTFail(#"""
                 \#(expected == nil ? "Expected is nil" : "Actual is nil") and \#(expected == nil ? "Actual" : "Expected") is non-nil.
-
+            
                 Expected: \#(String(describing: expected))
-
+            
                 Actual: \#(String(describing: actual))
-
+            
                 Key path: \#(keyPathAsString(keyPath))
             """#, file: file, line: line)
             return
@@ -274,14 +274,14 @@ extension XCTestCase {
         if expected.count != actual.count {
             XCTFail(#"""
                 Expected and Actual counts do not match (exact equality).
-
+            
                 Expected count: \#(expected.count)
                 Actual count: \#(actual.count)
-
+            
                 Expected: \#(expected)
-
+            
                 Actual: \#(actual)
-
+            
                 Key path: \#(keyPathAsString(keyPath))
             """#, file: file, line: line)
             return
@@ -294,7 +294,7 @@ extension XCTestCase {
                 file: file, line: line)
         }
     }
-
+    
     // MARK: - AnyCodable flexible validation helpers
     /// Performs a flexible comparison between the given `expected` and `actual` values, optionally using exact match
     /// or value type match modes. In case of a mismatch and if `shouldAssert` is `true`, a test failure occurs.
@@ -329,17 +329,17 @@ extension XCTestCase {
                 if shouldAssert {
                     XCTFail(#"""
                     Expected JSON is non-nil but Actual JSON is nil.
-
+                
                     Expected: \#(String(describing: expected))
-
+                
                     Actual: \#(String(describing: actual))
-
+                
                     Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
                 }
                 return false
             }
-
+            
             switch (expected, actual) {
             case let (expected, actual) where (expected.value is String && actual.value is String):
                 fallthrough
@@ -353,7 +353,8 @@ extension XCTestCase {
                         XCTAssertEqual(expected, actual, "Key path: \(keyPathAsString(keyPath))", file: file, line: line)
                     }
                     return expected == actual
-                } else {
+                }
+                else {
                     // Value type matching already passed by virtue of passing the where condition in the switch case
                     return true
                 }
@@ -401,18 +402,18 @@ extension XCTestCase {
                 if shouldAssert {
                     XCTFail(#"""
                     Expected and Actual types do not match.
-
+                
                     Expected: \#(expected)
-
+                
                     Actual: \#(actual)
-
+                
                     Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
                 }
                 return false
             }
         }
-
+    
     /// Performs a flexible comparison between the given `expected` and `actual` arrays of `AnyCodable`, optionally using exact match
     /// or value type match modes. In case of a mismatch and if `shouldAssert` is `true`, a test failure occurs.
     ///
@@ -445,11 +446,11 @@ extension XCTestCase {
                 if shouldAssert {
                     XCTFail(#"""
                     Expected JSON is non-nil but Actual JSON is nil.
-
+                
                     Expected: \#(String(describing: expected))
-
+                
                     Actual: \#(String(describing: actual))
-
+                
                     Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
                 }
@@ -459,14 +460,14 @@ extension XCTestCase {
                 if shouldAssert {
                     XCTFail(#"""
                     Expected JSON has more elements than Actual JSON. Impossible for Actual to fulfill Expected requirements.
-
+                
                     Expected count: \#(expected.count)
                     Actual count: \#(actual.count)
-
+                
                     Expected: \#(expected)
-
+                
                     Actual: \#(actual)
-
+                
                     Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
                 }
@@ -475,14 +476,14 @@ extension XCTestCase {
             var actualIndexes = Set(0..<actual.count)
             var expectedIndexes = Set(0..<expected.count)
             var wildcardIndexes: Set<Int>
-
+            
             // Collect all the keys from `pathTree` that either:
             // 1. Mark the path end (where the value is a `String`), or
             // 2. Contain the asterisk (*) character.
-            let pathEndKeys = pathTree?.filter { key, value in
+            let pathEndKeys = pathTree?.filter { (key, value) in
                 value is String || key.contains("*")
             }.keys.map({$0}) ?? []
-
+            
             // If general wildcard is present, it supersedes other paths
             if pathEndKeys.contains("[*]") {
                 wildcardIndexes = Set(0..<expected.count)
@@ -493,7 +494,8 @@ extension XCTestCase {
                 let arrayIndexValueRegex = #"^\[(.*?)\]$"#
                 let indexValues = Set(pathEndKeys
                     .flatMap { getCapturedRegexGroups(text: $0, regexPattern: arrayIndexValueRegex) })
-
+                
+                
                 func filterConvertAndIntersect(condition: (String) -> Bool, replacement: @escaping (String) -> String = { $0 }) -> Set<Int> {
                     var result = Set(indexValues.filter(condition).compactMap { Int(replacement($0)) })
                     let intersection = expectedIndexes.intersection(result)
@@ -501,16 +503,16 @@ extension XCTestCase {
                     expectedIndexes.subtract(intersection)
                     return result
                 }
-
+                
                 wildcardIndexes = filterConvertAndIntersect(condition: { $0.contains("*") }, replacement: { $0.replacingOccurrences(of: "*", with: "") })
             }
-
+            
             var finalResult = true
-
+            
             for index in expectedIndexes {
                 let pathTreeValue = pathTree?["[\(index)]"]
                 let isPathEnd = pathTreeValue is String
-
+                
                 finalResult = assertFlexibleEqual(
                     expected: expected[index],
                     actual: actual[index],
@@ -521,14 +523,14 @@ extension XCTestCase {
                     file: file, line: line) && finalResult
                 actualIndexes.remove(index)
             }
-
+            
             for index in wildcardIndexes {
                 let pathTreeValue = pathTree?["[*]"]
                 ?? pathTree?["[*\(index)]"]
                 ?? pathTree?["[\(index)*]"]
-
+                
                 let isPathEnd = pathTreeValue is String
-
+                
                 guard let actualIndex = actualIndexes.first(where: {
                     assertFlexibleEqual(
                         expected: expected[index],
@@ -541,13 +543,13 @@ extension XCTestCase {
                     if shouldAssert {
                         XCTFail(#"""
                         Wildcard \#((isPathEnd ? !exactMatchMode : exactMatchMode) ? "exact" : "type") match found no matches on Actual side satisfying the Expected requirement.
-
+                        
                         Requirement: \#(String(describing: pathTreeValue))
-
+                        
                         Expected: \#(expected[index])
-
+                        
                         Actual (remaining unmatched elements): \#(actualIndexes.map({ actual[$0] }))
-
+                        
                         Key path: \#(keyPathAsString(keyPath))
                         """#, file: file, line: line)
                     }
@@ -558,7 +560,7 @@ extension XCTestCase {
             }
             return finalResult
         }
-
+    
     /// Performs a flexible comparison between the given `expected` and `actual` dictionaries, optionally using exact match
     /// or value type match modes. In case of a mismatch and if `shouldAssert` is `true`, a test failure occurs.
     ///
@@ -591,11 +593,11 @@ extension XCTestCase {
                 if shouldAssert {
                     XCTFail(#"""
                     Expected JSON is non-nil but Actual JSON is nil.
-
+                
                     Expected: \#(String(describing: expected))
-
+                
                     Actual: \#(String(describing: actual))
-
+                
                     Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
                 }
@@ -605,14 +607,14 @@ extension XCTestCase {
                 if shouldAssert {
                     XCTFail(#"""
                     Expected JSON has more elements than Actual JSON.
-
+                
                     Expected count: \#(expected.count)
                     Actual count: \#(actual.count)
-
+                
                     Expected: \#(expected)
-
+                
                     Actual: \#(actual)
-
+                
                     Key path: \#(keyPathAsString(keyPath))
                 """#, file: file, line: line)
                 }
@@ -622,7 +624,7 @@ extension XCTestCase {
             for (key, value) in expected {
                 let pathTreeValue = pathTree?[key]
                 let isPathEnd = pathTreeValue is String
-
+                
                 finalResult = assertFlexibleEqual(
                     expected: value,
                     actual: actual[key],
@@ -636,7 +638,7 @@ extension XCTestCase {
             }
             return finalResult
         }
-
+    
     // MARK: - Test setup and output helpers
     /// Performs regex match on the provided String, returning the original match and non-nil capture group results
     private func extractRegexCaptureGroups(text: String, regexPattern: String, file: StaticString = #file, line: UInt = #line) -> [(matchString: String, captureGroups: [String])]? {
@@ -667,30 +669,30 @@ extension XCTestCase {
             return nil
         }
     }
-
+    
     /// Applies the provided regex pattern to the text and returns all the capture groups from the regex pattern
     private func getCapturedRegexGroups(text: String, regexPattern: String, file: StaticString = #file, line: UInt = #line) -> [String] {
-
+        
         guard let captureGroups = extractRegexCaptureGroups(text: text, regexPattern: regexPattern, file: file, line: line)?.flatMap({ $0.captureGroups }) else {
             return []
         }
-
+        
         return captureGroups
     }
-
+    
     /// Extracts all key path components from a given key path string
     func getKeyPathComponents(text: String) -> [String] {
         // Handle edge case where input is empty
         if text.isEmpty { return [""] }
-
+        
         var segments: [String] = []
         var startIndex = text.startIndex
         var inEscapeSequence = false
-
+        
         // Iterate over each character in the input string with its index
         for (index, char) in text.enumerated() {
             let currentIndex = text.index(text.startIndex, offsetBy: index)
-
+            
             // If current character is a backslash and we're not already in an escape sequence
             if char == "\\" {
                 inEscapeSequence = true
@@ -699,7 +701,7 @@ extension XCTestCase {
             else if char == "." && !inEscapeSequence {
                 // Add the segment from the start index to current index (excluding the dot)
                 segments.append(String(text[startIndex..<currentIndex]))
-
+                
                 // Update the start index for the next segment
                 startIndex = text.index(after: currentIndex)
             }
@@ -708,18 +710,18 @@ extension XCTestCase {
                 inEscapeSequence = false
             }
         }
-
+        
         // Add the remaining segment after the last dot (if any)
         segments.append(String(text[startIndex...]))
-
+        
         // Handle edge case where input ends with a dot (but not an escaped dot)
         if text.hasSuffix(".") && !text.hasSuffix("\\.") && segments.last != "" {
             segments.append("")
         }
-
+        
         return segments
     }
-
+    
     /// Merges two constructed key path dictionaries, replacing `current` values with `new` ones, with the exception
     /// of existing values that are String types, which mean that it is a final key path from a different path string
     /// Merge order doesn't matter, the final result should always be the same
@@ -739,7 +741,7 @@ extension XCTestCase {
         }
         return current
     }
-
+    
     /// Constructs a key path dictionary from a given key path component array, and the final value is
     /// assigned the original path string used to construct the path
     private func construct(path: [String], pathString: String) -> [String: Any] {
@@ -753,32 +755,32 @@ extension XCTestCase {
             result = [first: pathString]
             return result
         } else {
-
+            
             return [first: construct(path: path, pathString: pathString)]
         }
     }
-
+    
     func extractArrayStyleComponents(str: String) -> [String] {
         // Handle edge case where input is empty
         if str.isEmpty { return [""] }
-
+        
         var components: [String] = []
         var bracketCount = 0
         var componentBuilder = ""
         var nextCharIsBackslash = false
         var lastArrayAccessEnd = str.endIndex // to track the end of the last valid array-style access
-
+        
         func isNextCharBackslash(i: String.Index) -> Bool {
             if i == str.startIndex {
                 // There is no character before the startIndex.
                 return false
             }
-
+            
             // Since we're iterating in reverse, the "next" character is before i
             let previousIndex = str.index(before: i)
             return str[previousIndex] == "\\"
         }
-
+        
     outerLoop: for i in str.indices.reversed() {
         switch str[i] {
         case "]" where !isNextCharBackslash(i: i):
@@ -807,7 +809,7 @@ extension XCTestCase {
             componentBuilder.append(str[i])
         }
     }
-
+        
         // Add any remaining component that's not yet added
         if !componentBuilder.isEmpty {
             components.insert(String(componentBuilder.reversed()), at: 0)
@@ -817,29 +819,29 @@ extension XCTestCase {
         }
         return components
     }
-
+    
     private func generatePathTree(paths: [String], file: StaticString = #file, line: UInt = #line) -> [String: Any]? {
         var tree: [String: Any] = [:]
-
+        
         for path in paths {
             var allPathComponents: [String] = []
-
+            
             // Break the path string into its component parts
             let keyPathComponents = getKeyPathComponents(text: path)
             for pathComponent in keyPathComponents {
                 let pathComponent = pathComponent.replacingOccurrences(of: "\\.", with: ".")
-
+                
                 let components = extractArrayStyleComponents(str: pathComponent)
                 allPathComponents.append(contentsOf: components)
             }
-
+            
             let constructedTree = construct(path: allPathComponents, pathString: path)
             tree = merge(current: tree, new: constructedTree)
-
+            
         }
         return tree.isEmpty ? nil : tree
     }
-
+    
     /// Convenience function that outputs a given key path as a pretty string
     private func keyPathAsString(_ keyPath: [Any]) -> String {
         var result = ""
@@ -851,9 +853,11 @@ extension XCTestCase {
                 }
                 if item.contains(".") {
                     result += item.replacingOccurrences(of: ".", with: "\\.")
-                } else if item.isEmpty {
+                }
+                else if item.isEmpty {
                     result += "\"\""
-                } else {
+                }
+                else {
                     result += item
                 }
             case let item as Int:
