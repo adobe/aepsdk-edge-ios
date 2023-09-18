@@ -130,13 +130,6 @@ enum EdgeConstants {
             static let DATASET_ID = "datasetId"
         }
 
-        enum ConfigMetadata {
-            static let SDK_CONFIG = "sdkConfig"
-            static let DATASTREAM = "datastream"
-            static let ORGIGINAL = "original"
-            static let CONFIG_OVERRIDES = "configOverrides"
-        }
-
         enum ImplementationDetails {
             static let VERSION = "version"
             static let NAME = "name"

@@ -35,6 +35,7 @@
 		21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */; };
 		240E3C9924EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
 		240E3C9A24EF357100D44993 /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240E3C9824EF357100D44993 /* MockDataStore.swift */; };
+		2EC056EE2AB4F57100023BDE /* SDKConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC056ED2AB4F57100023BDE /* SDKConfig.swift */; };
 		2ECFB7522AB391F400653128 /* EdgeDatastreamConfigOverrideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ECFB7512AB391F400653128 /* EdgeDatastreamConfigOverrideTests.swift */; };
 		2EDD05C1286EAA7000229CB2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B57C2432977F00CAB6E4 /* AppDelegate.swift */; };
 		2EDD05C2286EAA7000229CB2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B57E2432977F00CAB6E4 /* SceneDelegate.swift */; };
@@ -256,6 +257,7 @@
 		21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarningTests.swift; sourceTree = "<group>"; };
 		21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventErrorTests.swift; sourceTree = "<group>"; };
 		240E3C9824EF357100D44993 /* MockDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDataStore.swift; sourceTree = "<group>"; };
+		2EC056ED2AB4F57100023BDE /* SDKConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKConfig.swift; sourceTree = "<group>"; };
 		2ECFB7512AB391F400653128 /* EdgeDatastreamConfigOverrideTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeDatastreamConfigOverrideTests.swift; sourceTree = "<group>"; };
 		2EDD05D2286EAA7000229CB2 /* TestApptvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApptvOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		316EF062B0B622235F6BB384 /* Pods_TestAppiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestAppiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -537,6 +539,7 @@
 				BF947F79243BE3C00057A6CC /* RequestMetadata.swift */,
 				D42FB8D124610A0000E9321C /* ResponseCallback.swift */,
 				D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */,
+				2EC056ED2AB4F57100023BDE /* SDKConfig.swift */,
 				BF947F8E2440F0940057A6CC /* StateMetadata.swift */,
 				BF947F85243F24570057A6CC /* StoreResponsePayload.swift */,
 				BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */,
@@ -1338,6 +1341,7 @@
 				D4C6B43C251A76CB0038F4F9 /* EdgeEventError.swift in Sources */,
 				D447C82725C3EF0500FE12E5 /* EdgeConsentPayload.swift in Sources */,
 				D4145FB525D5D0430019EA4C /* Event+Edge.swift in Sources */,
+				2EC056EE2AB4F57100023BDE /* SDKConfig.swift in Sources */,
 				D4C6B43D251A76CB0038F4F9 /* EdgeEventHandle.swift in Sources */,
 				D4C6B43E251A76CB0038F4F9 /* EdgeRequest.swift in Sources */,
 				BF74550D28BB18CD00FF3AEC /* EdgeProperties.swift in Sources */,

@@ -97,12 +97,12 @@ class EdgeHitProcessor: HitProcessing {
     ///   - requestBuilder: the `RequestBuilder` object to build the request payload.
     ///   - completion: completion handler to notify the caller about the hit response.
     private func processExperienceEvent(entityId: String, event: Event, requestBuilder: RequestBuilder, completion: @escaping (Bool) -> Void) {
-        guard let edgeConfig = getEdgeConfig(event: event), let configId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID] else {
+        guard let edgeConfig = getEdgeConfig(event: event), var datastreamId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID] else {
             completion(true)
             return // drop the current event
         }
 
-        guard let eventData = event.data, !eventData.isEmpty else {
+        guard var eventData = event.data, !eventData.isEmpty else {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to process Experience event, data was nil or empty")
             completion(true)
             return
@@ -118,29 +118,34 @@ class EdgeHitProcessor: HitProcessing {
         // Build and send the network request to Experience Edge
         let listOfEvents: [Event] = [event]
 
-        guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(events: listOfEvents, config: edgeConfig) else {
+        // Check if datastream ID override is present
+        if let datastreamIdOverride = event.config?[EdgeConstants.EventDataKeys.Config.DATASTREAM_ID_OVERRIDE] as? String, !datastreamIdOverride.isEmpty {
+            // Attach original datastream ID to the outgoing request
+            requestBuilder.setSDKConfigMetadata(sdkConfig: SDKConfig(datastream: Datastream(original: datastreamId)))
+
+            // Update datastream ID for request since valid override ID is present
+            datastreamId = datastreamIdOverride
+        }
+
+        // Check if datastream config override is present
+        if let datastreamConfigOverride = event.config?[EdgeConstants.EventDataKeys.Config.DATASTREAM_CONFIG_OVERRIDE] as? [String: Any], !datastreamConfigOverride.isEmpty {
+            requestBuilder.setDatastreamConfigOverrides(datastreamConfigOverride)
+        }
+
+        guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents) else {
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Failed to build the request payload, dropping event '\(event.id.uuidString)'.")
             completion(true)
             return
         }
 
-        var datastreamId = configId
         let requestProperties = getRequestProperties(from: event)
         let endpoint = buildEdgeEndpoint(config: edgeConfig,
                                          requestType: EdgeRequestType.interact,
                                          requestProperties: requestProperties,
                                          locationHint: locationHint)
 
-        let eventConfig = getEventConfig(from: event)
-        let datastreamIdOverride = eventConfig?[EdgeConstants.EventDataKeys.Config.DATASTREAM_ID_OVERRIDE] as? String ?? ""
-
-        // check and udpate datastream id if datastream id override is set
-        if !datastreamIdOverride.isEmpty {
-            datastreamId = datastreamIdOverride
-        }
-
-        let edgeHit = ExperienceEventsEdgeHit(endpoint: endpoint, configId: datastreamId, request: requestPayload)
+        let edgeHit = ExperienceEventsEdgeHit(endpoint: endpoint, datastreamId: datastreamId, request: requestPayload)
         // NOTE: the order of these events needs to be maintained as they were sent in the network request
         // otherwise the response callback cannot be matched
         networkResponseHandler.addWaitingEvents(requestId: edgeHit.requestId,
@@ -155,7 +160,7 @@ class EdgeHitProcessor: HitProcessing {
     ///   - requestBuilder: the `RequestBuilder` object to build the request payload.
     ///   - completion: completion handler to notify the caller about the hit response.
     private func processConsentEvents(entityId: String, event: Event, requestBuilder: RequestBuilder, completion: @escaping (Bool) -> Void) {
-        guard let edgeConfig = getEdgeConfig(event: event), let configId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID] else {
+        guard let edgeConfig = getEdgeConfig(event: event), let datastreamId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID] else {
             completion(true)
             return // drop current event
         }
@@ -181,7 +186,7 @@ class EdgeHitProcessor: HitProcessing {
                                          requestType: EdgeRequestType.consent,
                                          requestProperties: nil,
                                          locationHint: locationHint)
-        let edgeHit = ConsentEdgeHit(endpoint: endpoint, configId: configId, consents: consentPayload)
+        let edgeHit = ConsentEdgeHit(endpoint: endpoint, datastreamId: datastreamId, consents: consentPayload)
         networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
         sendHit(entityId: entityId, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
     }
@@ -220,7 +225,7 @@ class EdgeHitProcessor: HitProcessing {
     ///   - completion: completion handler for the hit processor
     private func sendHit(entityId: String, edgeHit: EdgeHit, headers: [String: String], completion: @escaping (Bool) -> Void) {
         guard let url = networkService.buildUrl(endpoint: edgeHit.endpoint,
-                                                configId: edgeHit.configId,
+                                                datastreamId: edgeHit.datastreamId,
                                                 requestId: edgeHit.requestId) else {
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Failed to build the URL, dropping request with id '\(edgeHit.requestId)'.")
@@ -281,18 +286,6 @@ class EdgeHitProcessor: HitProcessing {
         }
 
         return requestHeaders
-    }
-
-    /// Extracts the config the event data which contains datastreamIdOverride and datastreamConfigOverride details.
-    /// - Parameter event: current event for which the config is to be extracted
-    /// - Returns: the dictionary of extracted config details
-    private func getEventConfig(from event: Event) -> [String: Any]? {
-        var eventConfig: [String: Any]?
-
-        if let eventData = event.data {
-            eventConfig = eventData[EdgeConstants.EventDataKeys.Config.KEY] as? [String: Any]
-        }
-        return eventConfig
     }
 
     // Extracts all the custom request properties to overwrite the default values

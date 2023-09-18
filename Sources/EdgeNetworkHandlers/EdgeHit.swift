@@ -20,7 +20,7 @@ protocol EdgeHit {
     var endpoint: EdgeEndpoint { get }
 
     /// The Edge configuration identifier
-    var configId: String { get }
+    var datastreamId: String { get }
 
     /// Unique identifier for the Edge request
     var requestId: String { get }

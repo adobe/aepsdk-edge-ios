@@ -60,7 +60,7 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
           "idSyncContainerId": "1234567"
         ],
         "com_adobe_target": [
-          "propertyToken": "63a46bbc-26cb-7cc3-def0-9ae1b51b6c62"
+          "propertyToken": "samplePropertyToken"
         ]
     ]
 
@@ -141,7 +141,7 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         XCTAssertEqual("rsid2", eventData["config.datastreamConfigOverride.com_adobe_analytics.reportSuites[1]"] as? String)
         XCTAssertEqual("rsid3", eventData["config.datastreamConfigOverride.com_adobe_analytics.reportSuites[2]"] as? String)
         XCTAssertEqual("1234567", eventData["config.datastreamConfigOverride.com_adobe_identity.idSyncContainerId"] as? String)
-        XCTAssertEqual("63a46bbc-26cb-7cc3-def0-9ae1b51b6c62", eventData["config.datastreamConfigOverride.com_adobe_target.propertyToken"] as? String)
+        XCTAssertEqual("samplePropertyToken", eventData["config.datastreamConfigOverride.com_adobe_target.propertyToken"] as? String)
     }
 
     // MARK: test network request format
@@ -164,7 +164,7 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(21, requestBody.count)
-        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
+
         XCTAssertEqual("value", requestBody["events[0].xdm.test.key"] as? String)
         XCTAssertEqual("value", requestBody["events[0].data.key"] as? String)
         XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
@@ -177,15 +177,16 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
 
         XCTAssertEqual("testDatastreamIdOverride", requestUrl.queryParam("configId"))
 
-        XCTAssertEqual("originalDatastreamId", requestBody["events[0].meta.sdkConfig.datastream.original"] as? String)
-
-        XCTAssertEqual("eventDatasetIdOverride", requestBody["events[0].meta.configOverrides.com_adobe_experience_platform.datasets.event.datasetId"] as? String)
-        XCTAssertEqual("profileDatasetIdOverride", requestBody["events[0].meta.configOverrides.com_adobe_experience_platform.datasets.profile.datasetId"] as? String)
-        XCTAssertEqual("rsid1", requestBody["events[0].meta.configOverrides.com_adobe_analytics.reportSuites[0]"] as? String)
-        XCTAssertEqual("rsid2", requestBody["events[0].meta.configOverrides.com_adobe_analytics.reportSuites[1]"] as? String)
-        XCTAssertEqual("rsid3", requestBody["events[0].meta.configOverrides.com_adobe_analytics.reportSuites[2]"] as? String)
-        XCTAssertEqual("1234567", requestBody["events[0].meta.configOverrides.com_adobe_identity.idSyncContainerId"] as? String)
-        XCTAssertEqual("63a46bbc-26cb-7cc3-def0-9ae1b51b6c62", requestBody["events[0].meta.configOverrides.com_adobe_target.propertyToken"] as? String)
+        // Verify top level metadata
+        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
+        XCTAssertEqual("originalDatastreamId", requestBody["meta.sdkConfig.datastream.original"] as? String)
+        XCTAssertEqual("eventDatasetIdOverride", requestBody["meta.configOverrides.com_adobe_experience_platform.datasets.event.datasetId"] as? String)
+        XCTAssertEqual("profileDatasetIdOverride", requestBody["meta.configOverrides.com_adobe_experience_platform.datasets.profile.datasetId"] as? String)
+        XCTAssertEqual("rsid1", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[0]"] as? String)
+        XCTAssertEqual("rsid2", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[1]"] as? String)
+        XCTAssertEqual("rsid3", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[2]"] as? String)
+        XCTAssertEqual("1234567", requestBody["meta.configOverrides.com_adobe_identity.idSyncContainerId"] as? String)
+        XCTAssertEqual("samplePropertyToken", requestBody["meta.configOverrides.com_adobe_target.propertyToken"] as? String)
     }
 
     func testSendEvent_withXDMDataAndCustomData_withDatastreamIdOverride_sendsExEdgeNetworkRequestWithOverridenDatastreamId() {
@@ -219,7 +220,7 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
 
         XCTAssertEqual("testDatastreamIdOverride", requestUrl.queryParam("configId"))
 
-        XCTAssertEqual("originalDatastreamId", requestBody["events[0].meta.sdkConfig.datastream.original"] as? String)
+        XCTAssertEqual("originalDatastreamId", requestBody["meta.sdkConfig.datastream.original"] as? String)
     }
 
     func testSendEvent_withXDMDataAndCustomData_withDatastreamConfigOverride_sendsExEdgeNetworkRequestWithOverridenDatastreamConfig() {
@@ -240,7 +241,6 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         let requestBody = resultNetworkRequests[0].getFlattenedBody()
         XCTAssertEqual(20, requestBody.count)
-        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
         XCTAssertEqual("value", requestBody["events[0].xdm.test.key"] as? String)
         XCTAssertEqual("value", requestBody["events[0].data.key"] as? String)
         XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
@@ -253,14 +253,14 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
 
         XCTAssertEqual("originalDatastreamId", requestUrl.queryParam("configId"))
 
-        XCTAssertNil(requestBody["events[0].meta.sdkConfig.datastream.original"] as? String)
-
-        XCTAssertEqual("eventDatasetIdOverride", requestBody["events[0].meta.configOverrides.com_adobe_experience_platform.datasets.event.datasetId"] as? String)
-        XCTAssertEqual("profileDatasetIdOverride", requestBody["events[0].meta.configOverrides.com_adobe_experience_platform.datasets.profile.datasetId"] as? String)
-        XCTAssertEqual("rsid1", requestBody["events[0].meta.configOverrides.com_adobe_analytics.reportSuites[0]"] as? String)
-        XCTAssertEqual("rsid2", requestBody["events[0].meta.configOverrides.com_adobe_analytics.reportSuites[1]"] as? String)
-        XCTAssertEqual("rsid3", requestBody["events[0].meta.configOverrides.com_adobe_analytics.reportSuites[2]"] as? String)
-        XCTAssertEqual("1234567", requestBody["events[0].meta.configOverrides.com_adobe_identity.idSyncContainerId"] as? String)
-        XCTAssertEqual("63a46bbc-26cb-7cc3-def0-9ae1b51b6c62", requestBody["events[0].meta.configOverrides.com_adobe_target.propertyToken"] as? String)
+        // Verify top level metadata
+        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
+        XCTAssertEqual("eventDatasetIdOverride", requestBody["meta.configOverrides.com_adobe_experience_platform.datasets.event.datasetId"] as? String)
+        XCTAssertEqual("profileDatasetIdOverride", requestBody["meta.configOverrides.com_adobe_experience_platform.datasets.profile.datasetId"] as? String)
+        XCTAssertEqual("rsid1", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[0]"] as? String)
+        XCTAssertEqual("rsid2", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[1]"] as? String)
+        XCTAssertEqual("rsid3", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[2]"] as? String)
+        XCTAssertEqual("1234567", requestBody["meta.configOverrides.com_adobe_identity.idSyncContainerId"] as? String)
+        XCTAssertEqual("samplePropertyToken", requestBody["meta.configOverrides.com_adobe_target.propertyToken"] as? String)
     }
 }

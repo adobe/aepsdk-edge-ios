@@ -26,6 +26,9 @@ class RequestBuilder {
     /// XDM payloads to be attached to the request
     var xdmPayloads: [String: AnyCodable] = [:]
 
+    private var sdkConfig: SDKConfig?
+    private var configOverrides: [String: Any]?
+
     /// Data store manager for retrieving store response payloads for `StateMetadata`
     private let storeResponsePayloadManager: StoreResponsePayloadManager
 
@@ -46,23 +49,34 @@ class RequestBuilder {
         self.lineFeed = lineFeed
     }
 
+    func setSDKConfigMetadata(sdkConfig: SDKConfig) {
+        self.sdkConfig = sdkConfig
+    }
+
+    func setDatastreamConfigOverrides(_ configOverrides: [String: Any]) {
+        self.configOverrides = configOverrides
+    }
+
     /// Builds the request payload with all the provided parameters and events.
     /// - Parameters:
     ///   - events:  List of `Event` objects. Each event is expected to contain a serialized `ExperienceEvent`.
     ///   - config: Edge configuration to extract the datastream Identifier from.
     /// encoded in the `Event.data` property.
     /// - Returns: A `EdgeRequest` object or nil if the events list is empty
-    func getPayloadWithExperienceEvents(events: [Event], config: [String: String]) -> EdgeRequest? {
+    func getPayloadWithExperienceEvents(_ events: [Event]) -> EdgeRequest? {
         guard !events.isEmpty else { return nil }
 
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
         let konductorConfig = KonductorConfig(streaming: streamingMetadata)
 
         let storedPayloads = storeResponsePayloadManager.getActivePayloadList()
+        let datastreamConfigOverride = AnyCodable.from(dictionary: configOverrides)
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig,
-                                              state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads))
+                                              state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads),
+                                              sdkConfig: self.sdkConfig,
+                                              configOverrides: datastreamConfigOverride)
 
-        let experienceEvents = extractExperienceEvents(events: events, config: config)
+        let experienceEvents = extractExperienceEvents(events)
 
         return EdgeRequest(meta: requestMetadata, xdm: xdmPayloads, events: experienceEvents)
     }
@@ -89,7 +103,7 @@ class RequestBuilder {
         // set streaming metadata
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
         let konductorConfig = KonductorConfig(streaming: streamingMetadata)
-        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
+        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil, sdkConfig: nil, configOverrides: nil)
 
         return EdgeConsentUpdate(meta: requestMetadata,
                                  query: query,
@@ -105,9 +119,8 @@ class RequestBuilder {
     ///
     /// - Parameters:
     ///  - events: A list of `Event`s which contain an `ExperienceEvent` as event data.
-    ///  - config: Edge configuration to extract the datastream Identifier from.
     /// - Returns: A list of `ExperienceEvent`s as maps
-    private func extractExperienceEvents(events: [Event], config: [String: String]) -> [ [String: AnyCodable] ] {
+    private func extractExperienceEvents(_ events: [Event]) -> [ [String: AnyCodable] ] {
         var experienceEvents: [[String: AnyCodable]] = []
 
         for event in events {
@@ -127,30 +140,6 @@ class RequestBuilder {
             eventData[EdgeConstants.JsonKeys.XDM] = xdm
 
             var metadata = [String: Any]()
-            // check if config overrides are set
-            if let eventConfigData = eventData[EdgeConstants.EventDataKeys.Config.KEY] as? [String: Any] {
-                // send original datastreamId in meta if override is set
-                if let datastreamIdOverride =
-                    eventConfigData[EdgeConstants.EventDataKeys.Config.DATASTREAM_ID_OVERRIDE] as? String {
-                    let trimmedDatastreamIdOverride = datastreamIdOverride.trimmingCharacters(in: CharacterSet.whitespaces)
-
-                    let originalDatastream = config[EdgeConstants.SharedState.Configuration.CONFIG_ID]
-
-                    if !trimmedDatastreamIdOverride.isEmpty && trimmedDatastreamIdOverride != originalDatastream {
-                        metadata[EdgeConstants.JsonKeys.ConfigMetadata.SDK_CONFIG] = [EdgeConstants.JsonKeys.ConfigMetadata.DATASTREAM:
-                                    [EdgeConstants.JsonKeys.ConfigMetadata.ORGIGINAL: originalDatastream]]
-                    }
-                }
-
-                // enable datastream config override if set
-                if let datastreamConfigOverrides = eventConfigData[EdgeConstants.EventDataKeys.Config.DATASTREAM_CONFIG_OVERRIDE] as? [String: Any] {
-                    if !datastreamConfigOverrides.isEmpty {
-                        metadata[EdgeConstants.JsonKeys.ConfigMetadata.CONFIG_OVERRIDES] = datastreamConfigOverrides
-                    }
-                }
-            }
-            // remove the config object as it is internal to the SDK
-            eventData.removeValue(forKey: EdgeConstants.EventDataKeys.Config.KEY)
 
             // enable collect override if a valid dataset is provided
             if let datasetId = eventData[EdgeConstants.EventDataKeys.DATASET_ID] as? String {
@@ -164,6 +153,9 @@ class RequestBuilder {
             if !metadata.isEmpty {
                 eventData[EdgeConstants.JsonKeys.META] = metadata
             }
+
+            // Remove config object containing overrides from the event payload
+            eventData.removeValue(forKey: EdgeConstants.EventDataKeys.Config.KEY)
 
             if eventData[EdgeConstants.EventDataKeys.Request.KEY] is [String: Any] {
                 // Remove this request object as it is internal to the SDK

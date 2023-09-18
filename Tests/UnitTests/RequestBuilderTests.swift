@@ -32,17 +32,29 @@ class RequestBuilderTests: XCTestCase {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
-
+        request.setSDKConfigMetadata(sdkConfig: SDKConfig(datastream: Datastream(original: "datastreamID")))
+        request.setDatastreamConfigOverrides(["test" : ["key" : "val"]])
+        
         let event = Event(name: "Request Test",
                           type: "type",
                           source: "source",
                           data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         XCTAssertEqual("A", requestPayload?.meta?.konductorConfig?.streaming?.recordSeparator)
         XCTAssertEqual("B", requestPayload?.meta?.konductorConfig?.streaming?.lineFeed)
         XCTAssertTrue(requestPayload?.meta?.konductorConfig?.streaming?.enabled ?? false)
+        XCTAssertEqual("datastreamID", requestPayload?.meta?.sdkConfig?.datastream?.original)
+        
+        guard let requestConfigOverrideMap = requestPayload?.meta?.configOverrides,
+              let test = requestConfigOverrideMap["test"]?.dictionaryValue as? [String: Any],
+              let value = test["key"] as? String else {
+            XCTFail("Invalid config overrides payload.")
+            return
+        }
+        XCTAssertEqual("val", value)
+              
 
         guard let requestIdentityMap = requestPayload?.xdm?["identityMap"]?.dictionaryValue,
               let ecidArr = requestIdentityMap["ECID"] as? [Any],
@@ -71,7 +83,7 @@ class RequestBuilderTests: XCTestCase {
                             source: "source",
                             data: ["xdm": ["environment": ["type": "widget"]]]))
 
-        let requestPayload = request.getPayloadWithExperienceEvents(events: events, config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents(events)
 
         let flattenEvent0: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
         let flattenEvent1: [String: Any] = flattenDictionary(dict: requestPayload?.events?[1]["xdm"]?.dictionaryValue ?? [:])
@@ -97,7 +109,7 @@ class RequestBuilderTests: XCTestCase {
                           source: "source",
                           data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         XCTAssertEqual("key", requestPayload?.meta?.state?.entries?[0].key)
         XCTAssertEqual(3600.0, requestPayload?.meta?.state?.entries?[0].maxAge)
@@ -114,7 +126,7 @@ class RequestBuilderTests: XCTestCase {
                           source: "source",
                           data: ["data": ["key": "value"]])
 
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         XCTAssertNil(requestPayload?.meta?.state)
     }
@@ -129,7 +141,7 @@ class RequestBuilderTests: XCTestCase {
                                  "xdm": ["application": ["name": "myapp"]],
                                  "datasetId": "customDatasetId"])
 
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         let flattenEventMeta: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["meta"]?.dictionaryValue ?? [:])
         XCTAssertEqual(1, flattenEventMeta.count)
@@ -150,7 +162,7 @@ class RequestBuilderTests: XCTestCase {
                           data: ["data": ["key": "value"],
                                  "xdm": ["application": ["name": "myapp"]]])
 
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         XCTAssertNil(requestPayload?.events?[0]["meta"])
         XCTAssertNotNil(requestPayload?.events?[0]["xdm"])
@@ -181,7 +193,7 @@ class RequestBuilderTests: XCTestCase {
                            source: "source",
                            data: eventData)
 
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event1, event2, event3], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event1, event2, event3])
 
         XCTAssertEqual(3, requestPayload?.events?.count)
         XCTAssertNil(requestPayload?.events?[0]["meta"])
@@ -208,7 +220,7 @@ class RequestBuilderTests: XCTestCase {
                           source: "source",
                           data: ["query": ["key": "value"]])
 
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
         XCTAssertNotNil(requestPayload?.events?[0]["query"])
         XCTAssertEqual(requestPayload?.events?[0]["query"]?.dictionaryValue?["key"] as? String, "value" )
     }
@@ -225,7 +237,7 @@ class RequestBuilderTests: XCTestCase {
                                  "xdm": ["application": ["name": "myapp"], "timestamp": testTimestamp]])
 
         // test
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         // verify
         XCTAssertNotNil(requestPayload)
@@ -246,7 +258,7 @@ class RequestBuilderTests: XCTestCase {
                                  "xdm": ["application": ["name": "myapp"], "timestamp": testTimestamp]])
 
         // test
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         // verify
         XCTAssertNotNil(requestPayload)
@@ -267,7 +279,7 @@ class RequestBuilderTests: XCTestCase {
                                  "xdm": ["application": ["name": "myapp"], "timestamp": testTimestamp]])
 
         // test
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         // verify
         XCTAssertNotNil(requestPayload)
@@ -287,149 +299,13 @@ class RequestBuilderTests: XCTestCase {
                                  "xdm": ["application": ["name": "myapp"]]])
 
         // test
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: [:])
+        let requestPayload = request.getPayloadWithExperienceEvents([event])
 
         // verify
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
         let flattenEvent = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
         XCTAssertEqual(timestampToISO8601(event.timestamp), flattenEvent["timestamp"] as? String)
-    }
-
-    func testGetPayloadWithExperienceEventsWithDatastreamIdOverride_verifyMetadataContainsOriginalDatastreamId() {
-        // setup
-        let request = RequestBuilder(dataStoreName: testDataStoreName)
-
-        let event = Event(name: "Request Test",
-                          type: "type",
-                          source: "source",
-                          data: ["data": ["key": "value"],
-                                 "xdm": ["k": "v"], "config": ["datastreamIdOverride": "testDataStreamIdOverrideString"]])
-
-        // test
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: ["edge.configId": "originalDatastreamId"])
-
-        // verify
-        XCTAssertNotNil(requestPayload)
-        XCTAssertEqual(1, requestPayload?.events?.count)
-        XCTAssertNotNil(requestPayload?.events?[0]["meta"])
-        let flattenEventMeta: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["meta"]?.dictionaryValue ?? [:])
-        XCTAssertEqual(1, flattenEventMeta.count)
-        XCTAssertEqual("originalDatastreamId", flattenEventMeta["sdkConfig.datastream.original"] as? String)
-    }
-
-    func testGetPayloadWithExperienceEventsWithDatastreamConfigOverride_verifyMetadataContainsConfigOverridesPayload() {
-        // setup
-        let request = RequestBuilder(dataStoreName: testDataStoreName)
-
-        let configOverrides: [String: Any] = [
-        "com_adobe_experience_platform": [
-          "datasets": [
-            "event": [
-              "datasetId": "eventDatasetIdOverride"
-            ],
-            "profile": [
-              "datasetId": "profileDatasetIdOverride"
-            ]
-          ]
-        ],
-        "com_adobe_analytics": [
-          "reportSuites": [
-            "rsid1",
-            "rsid2",
-            "rsid3"
-            ]
-        ],
-        "com_adobe_identity": [
-          "idSyncContainerId": "1234567"
-        ],
-        "com_adobe_target": [
-          "propertyToken": "63a46bbc-26cb-7cc3-def0-9ae1b51b6c62"
-        ]
-      ]
-
-        let event = Event(name: "Request Test",
-                          type: "type",
-                          source: "source",
-                          data: ["data": ["key": "value"],
-                                 "xdm": ["k": "v"], "config": ["datastreamConfigOverride": configOverrides]])
-
-        // test
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: ["edge.configId": "originalDatastreamId"])
-
-        // verify
-        XCTAssertNotNil(requestPayload)
-        XCTAssertEqual(1, requestPayload?.events?.count)
-        XCTAssertNotNil(requestPayload?.events?[0]["meta"])
-
-        let flattenEventMeta: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["meta"]?.dictionaryValue ?? [:])
-
-        XCTAssertEqual(7, flattenEventMeta.count)
-        XCTAssertEqual("eventDatasetIdOverride", flattenEventMeta["configOverrides.com_adobe_experience_platform.datasets.event.datasetId"] as? String)
-        XCTAssertEqual("profileDatasetIdOverride", flattenEventMeta["configOverrides.com_adobe_experience_platform.datasets.profile.datasetId"] as? String)
-        XCTAssertEqual("rsid1", flattenEventMeta["configOverrides.com_adobe_analytics.reportSuites[0]"] as? String)
-        XCTAssertEqual("rsid2", flattenEventMeta["configOverrides.com_adobe_analytics.reportSuites[1]"] as? String)
-        XCTAssertEqual("rsid3", flattenEventMeta["configOverrides.com_adobe_analytics.reportSuites[2]"] as? String)
-        XCTAssertEqual("1234567", flattenEventMeta["configOverrides.com_adobe_identity.idSyncContainerId"] as? String)
-        XCTAssertEqual("63a46bbc-26cb-7cc3-def0-9ae1b51b6c62", flattenEventMeta["configOverrides.com_adobe_target.propertyToken"] as? String)
-    }
-
-    func testGetPayloadWithExperienceEventsWithDatastreamIdOverrideAndDatastreamConfigOverride_verifyMetadataContainsOrginalDatastreamIdAndConfigOverridesPayload() {
-        // setup
-        let request = RequestBuilder(dataStoreName: testDataStoreName)
-
-        let configOverrides: [String: Any] = [
-            "com_adobe_experience_platform": [
-              "datasets": [
-                "event": [
-                  "datasetId": "eventDatasetIdOverride"
-                ],
-                "profile": [
-                  "datasetId": "profileDatasetIdOverride"
-                ]
-              ]
-            ],
-            "com_adobe_analytics": [
-              "reportSuites": [
-                "rsid1",
-                "rsid2",
-                "rsid3"
-                ]
-            ],
-            "com_adobe_identity": [
-              "idSyncContainerId": "1234567"
-            ],
-            "com_adobe_target": [
-              "propertyToken": "63a46bbc-26cb-7cc3-def0-9ae1b51b6c62"
-            ]
-        ]
-
-        let event = Event(name: "Request Test",
-                          type: "type",
-                          source: "source",
-                          data: ["data": ["key": "value"],
-                                 "xdm": ["k": "v"], "config": ["datastreamIdOverride": "testDataStreamIdOverrideString", "datastreamConfigOverride": configOverrides]])
-
-        // test
-        let requestPayload = request.getPayloadWithExperienceEvents(events: [event], config: ["edge.configId": "originalDatastreamId"])
-
-        // verify
-        XCTAssertNotNil(requestPayload)
-        XCTAssertEqual(1, requestPayload?.events?.count)
-        XCTAssertNotNil(requestPayload?.events?[0]["meta"])
-
-        let flattenEventMeta: [String: Any] = flattenDictionary(dict: requestPayload?.events?[0]["meta"]?.dictionaryValue ?? [:])
-        XCTAssertEqual(8, flattenEventMeta.count)
-
-        XCTAssertEqual("originalDatastreamId", flattenEventMeta["sdkConfig.datastream.original"] as? String)
-
-        XCTAssertEqual("eventDatasetIdOverride", flattenEventMeta["configOverrides.com_adobe_experience_platform.datasets.event.datasetId"] as? String)
-        XCTAssertEqual("profileDatasetIdOverride", flattenEventMeta["configOverrides.com_adobe_experience_platform.datasets.profile.datasetId"] as? String)
-        XCTAssertEqual("rsid1", flattenEventMeta["configOverrides.com_adobe_analytics.reportSuites[0]"] as? String)
-        XCTAssertEqual("rsid2", flattenEventMeta["configOverrides.com_adobe_analytics.reportSuites[1]"] as? String)
-        XCTAssertEqual("rsid3", flattenEventMeta["configOverrides.com_adobe_analytics.reportSuites[2]"] as? String)
-        XCTAssertEqual("1234567", flattenEventMeta["configOverrides.com_adobe_identity.idSyncContainerId"] as? String)
-        XCTAssertEqual("63a46bbc-26cb-7cc3-def0-9ae1b51b6c62", flattenEventMeta["configOverrides.com_adobe_target.propertyToken"] as? String)
     }
 
     private func buildIdentityMap() -> [String: Any]? {
