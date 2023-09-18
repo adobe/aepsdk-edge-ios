@@ -134,7 +134,7 @@ extension XCTestCase {
     /// - Parameters:
     ///   - expected: The expected `AnyCodable` to compare.
     ///   - actual: The actual `AnyCodable` to compare.
-    ///   - typeMatchPaths: The key paths in the expected JSON that should use type matching mode, where values require only the same type (and are non-null if the expected value is not null).
+    ///   - typeMatchPaths: The key paths in the expected JSON that should use type matching mode, where values require only the same type (and are non-nil if the expected value is not nil).
     ///   - file: The file where the failure occurs.
     ///   - line: The line number where the failure occurs.
     func assertExactMatch(expected: AnyCodable, actual: AnyCodable?, typeMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
