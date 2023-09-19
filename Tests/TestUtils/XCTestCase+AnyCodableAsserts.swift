@@ -38,8 +38,8 @@ extension XCTestCase {
     /// - Parameters:
     ///   - expected: The expected `AnyCodable` to compare.
     ///   - actual: The actual `AnyCodable` to compare.
-    ///   - file: The file where the failure occurs.
-    ///   - line: The line number where the failure occurs.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
     func assertEqual(expected: AnyCodable?, actual: AnyCodable?, file: StaticString = #file, line: UInt = #line) {
         assertEqual(expected: expected, actual: actual, keyPath: [], file: file, line: line)
     }
@@ -86,8 +86,8 @@ extension XCTestCase {
     ///   - expected: The expected `AnyCodable` to compare.
     ///   - actual: The actual `AnyCodable` to compare.
     ///   - exactMatchPaths: The key paths in the expected JSON that should use exact matching mode, where values require both the same type and literal value.
-    ///   - file: The file where the failure occurs.
-    ///   - line: The line number where the failure occurs.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
     func assertTypeMatch(expected: AnyCodable, actual: AnyCodable?, exactMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
         let pathTree = generatePathTree(paths: exactMatchPaths, file: file, line: line)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: false, file: file, line: line)
@@ -135,8 +135,8 @@ extension XCTestCase {
     ///   - expected: The expected `AnyCodable` to compare.
     ///   - actual: The actual `AnyCodable` to compare.
     ///   - typeMatchPaths: The key paths in the expected JSON that should use type matching mode, where values require only the same type (and are non-nil if the expected value is not nil).
-    ///   - file: The file where the failure occurs.
-    ///   - line: The line number where the failure occurs.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
     func assertExactMatch(expected: AnyCodable, actual: AnyCodable?, typeMatchPaths: [String] = [], file: StaticString = #file, line: UInt = #line) {
         let pathTree = generatePathTree(paths: typeMatchPaths, file: file, line: line)
         assertFlexibleEqual(expected: expected, actual: actual, pathTree: pathTree, exactMatchMode: true, file: file, line: line)
@@ -150,8 +150,8 @@ extension XCTestCase {
     ///   - expected: The expected value to compare.
     ///   - actual: The actual value to compare.
     ///   - keyPath: A list of keys indicating the path to the current value being compared. Defaults to an empty list.
-    ///   - file: The file where the failure occurs.
-    ///   - line: The line number where the failure occurs.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
     private func assertEqual(expected: AnyCodable?, actual: AnyCodable?, keyPath: [Any] = [], file: StaticString = #file, line: UInt = #line) {
         if expected?.value == nil, actual?.value == nil {
             return
@@ -205,8 +205,8 @@ extension XCTestCase {
     ///   - expected: The expected array of `AnyCodable` to compare.
     ///   - actual: The actual array of `AnyCodable` to compare.
     ///   - keyPath: A list of keys or array indexes representing the path to the current value being compared.
-    ///   - file: The file where the failure occurs.
-    ///   - line: The line number where the failure occurs.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
     private func assertEqual(expected: [AnyCodable]?, actual: [AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line) {
         if expected == nil, actual == nil {
             return
@@ -253,8 +253,8 @@ extension XCTestCase {
     ///   - expected: The expected dictionary of `AnyCodable` to compare.
     ///   - actual: The actual dictionary of `AnyCodable` to compare.
     ///   - keyPath: A list of keys or array indexes representing the path to the current value being compared.
-    ///   - file: The file where the failure occurs.
-    ///   - line: The line number where the failure occurs.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
     private func assertEqual(expected: [String: AnyCodable]?, actual: [String: AnyCodable]?, keyPath: [Any], file: StaticString = #file, line: UInt = #line) {
         if expected == nil, actual == nil {
             return
@@ -308,8 +308,8 @@ extension XCTestCase {
     ///   - pathTree: A map representing specific paths within the JSON structure that should be compared using the alternate mode.
     ///   - exactMatchMode: If `true`, performs an exact match comparison; otherwise, uses value type matching.
     ///   - shouldAssert: Indicates if an assertion error should be thrown if `expected` and `actual` are not equal. Defaults to `true`.
-    ///   - file: The file where the failure occurs.
-    ///   - line: The line number where the failure occurs.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
     ///
     /// - Returns: `true` if `expected` and `actual` are equal based on the matching mode and the `pathTree`, otherwise returns `false`.
     @discardableResult
@@ -425,8 +425,8 @@ extension XCTestCase {
     ///   - pathTree: A map representing specific paths within the JSON structure that should be compared using the alternate mode.
     ///   - exactMatchMode: If `true`, performs an exact match comparison; otherwise, uses value type matching.
     ///   - shouldAssert: Indicates if an assertion error should be thrown if `expected` and `actual` are not equal.
-    ///   - file: The file where the failure occurs.
-    ///   - line: The line number where the failure occurs.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
     ///
     /// - Returns: `true` if `expected` and `actual` are equal based on the matching mode and the `pathTree`, otherwise returns `false`.
     private func assertFlexibleEqual(
@@ -571,8 +571,8 @@ extension XCTestCase {
     ///   - pathTree: A map representing specific paths within the JSON structure that should be compared using the alternate mode.
     ///   - exactMatchMode: If `true`, performs an exact match comparison; otherwise, uses value type matching.
     ///   - shouldAssert: Indicates if an assertion error should be thrown if `expected` and `actual` are not equal.
-    ///   - file: The file where the failure occurs.
-    ///   - line: The line number where the failure occurs.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
     ///
     /// - Returns: `true` if `expected` and `actual` are equal based on the matching mode and the `pathTree`, otherwise returns `false`.
     private func assertFlexibleEqual(
