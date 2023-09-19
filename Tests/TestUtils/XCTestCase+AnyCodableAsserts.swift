@@ -638,7 +638,15 @@ extension XCTestCase {
         }
 
     // MARK: - Test setup and output helpers
-    /// Performs regex match on the provided String, returning the original match and non-nil capture group results
+    
+    /// Finds all matches of the `regexPattern` in the `text` and for each match, returns the original matched `String`
+    /// and its corresponding non-null capture groups.
+    ///
+    /// - Parameters:
+    ///   - text: The input `String` on which the regex matching is to be performed.
+    ///   - regexPattern: The regex pattern to be used for matching against the `text`.
+    ///
+    /// - Returns: An array of tuples, where each tuple consists of the original matched `String` and an array of its non-null capture groups. Returns `nil` if an invalid regex pattern is provided.
     private func extractRegexCaptureGroups(text: String, regexPattern: String, file: StaticString = #file, line: UInt = #line) -> [(matchString: String, captureGroups: [String])]? {
         do {
             let regex = try NSRegularExpression(pattern: regexPattern)
@@ -678,7 +686,18 @@ extension XCTestCase {
         return captureGroups
     }
 
-    /// Extracts all key path components from a given key path string
+    /// Extracts and returns the components of a given key path string.
+    ///
+    /// The method is designed to handle key paths in a specific style such as "key0\.key1.key2[1][2].key3", which represents
+    /// a nested structure in JSON objects. The method captures each group separated by the `.` character and treats
+    /// the sequence "\." as a part of the key itself (that is, it ignores "\." as a nesting indicator).
+    ///
+    /// For example, the input "key0\.key1.key2[1][2].key3" would result in the output: ["key0\.key1", "key2[1][2]", "key3"].
+    ///
+    /// - Parameter text: The input key path string that needs to be split into its components.
+    ///
+    /// - Returns: An array of strings representing the individual components of the key path. If the input `text` is empty,
+    /// a list containing an empty string is returned. If no components are found, an empty list is returned.
     func getKeyPathComponents(text: String) -> [String] {
         // Handle edge case where input is empty
         if text.isEmpty { return [""] }
@@ -723,6 +742,19 @@ extension XCTestCase {
     /// Merges two constructed key path dictionaries, replacing `current` values with `new` ones, with the exception
     /// of existing values that are String types, which mean that it is a final key path from a different path string
     /// Merge order doesn't matter, the final result should always be the same
+    ///
+    /// Merges two given dictionaries, with the values from the `new` map overwriting those from the `current` map,
+    /// unless the value in the `current` map is a `String`, which means it is the end of an existing path.
+    ///
+    /// If both the `current` and `new` dictionary have a value which is itself a dictionary for the same key,
+    /// the function will recursively merge these nested dictionaries.
+    ///
+    /// - Parameters:
+    ///   - current: The original dictionary that will be merged into.
+    ///   - new: The dictionary containing new values that will overwrite or be added to the `current` dictionary.
+    ///
+    /// - Returns: The merged dictionary, which is the result of the `current` map after merging.
+
     private func merge(current: [String: Any], new: [String: Any]) -> [String: Any] {
         var current = current
         for (key, newValue) in new {
@@ -740,8 +772,16 @@ extension XCTestCase {
         return current
     }
 
-    /// Constructs a key path dictionary from a given key path component array, and the final value is
-    /// assigned the original path string used to construct the path
+    /// Constructs a nested dictionary structure based on the provided path, with the deepest nested key pointing to the given `pathString`.
+    ///
+    /// For instance, given a path of `["a", "b", "c"]` and a `pathString` of `"a.b.c"`, the resulting dictionary would be:
+    /// `{"a": {"b": {"c": "a.b.c"}}}`.
+    ///
+    /// - Parameters:
+    ///   - path: An array of strings representing the sequence of nested keys for the dictionary structure.
+    ///   - pathString: The `String` value that will be associated with the deepest nested key in the constructed dictionary.
+    ///
+    /// - Returns: A dictionary representing the nested structure constructed from the `path`, with the deepest nested key having the value `pathString`.
     private func construct(path: [String], pathString: String) -> [String: Any] {
         guard !path.isEmpty else {
             return [:]
@@ -758,29 +798,38 @@ extension XCTestCase {
         }
     }
 
-    func extractArrayStyleComponents(str: String) -> [String] {
+    /// Processes an individual path component element and extracts any valid array style access into separate components.
+    ///
+    /// For example, `"key1[0][1]"` is split into `["key1", "[0]", "[1]"]`
+    /// Array style access can be escaped using a preceding backslash character. For instance:
+    /// `"key1\[0\]"` is interpreted as the single component `"key1[0]"`.
+    /// - Parameter pathComponent: The individual path component to be split into array style access components
+    ///
+    /// - Returns: An array of strings representing the individual array style components of the path. If
+    ///  there are no arary style components, returns a list with the original path component.
+    func extractArrayStyleComponents(pathComponent: String) -> [String] {
         // Handle edge case where input is empty
-        if str.isEmpty { return [""] }
+        if pathComponent.isEmpty { return [""] }
 
         var components: [String] = []
         var bracketCount = 0
         var componentBuilder = ""
         var nextCharIsBackslash = false
-        var lastArrayAccessEnd = str.endIndex // to track the end of the last valid array-style access
+        var lastArrayAccessEnd = pathComponent.endIndex // to track the end of the last valid array-style access
 
         func isNextCharBackslash(i: String.Index) -> Bool {
-            if i == str.startIndex {
+            if i == pathComponent.startIndex {
                 // There is no character before the startIndex.
                 return false
             }
 
             // Since we're iterating in reverse, the "next" character is before i
-            let previousIndex = str.index(before: i)
-            return str[previousIndex] == "\\"
+            let previousIndex = pathComponent.index(before: i)
+            return pathComponent[previousIndex] == "\\"
         }
 
-    outerLoop: for i in str.indices.reversed() {
-        switch str[i] {
+    outerLoop: for i in pathComponent.indices.reversed() {
+        switch pathComponent[i] {
         case "]" where !isNextCharBackslash(i: i):
             bracketCount += 1
             componentBuilder.append("]")
@@ -801,10 +850,10 @@ extension XCTestCase {
             }
         default:
             if bracketCount == 0 && i < lastArrayAccessEnd {
-                components.insert(String(str[str.startIndex...i]), at: 0)
+                components.insert(String(pathComponent[pathComponent.startIndex...i]), at: 0)
                 break outerLoop
             }
-            componentBuilder.append(str[i])
+            componentBuilder.append(pathComponent[i])
         }
     }
 
@@ -818,6 +867,17 @@ extension XCTestCase {
         return components
     }
 
+    /// Generates a tree structure from an array of path `String`s.
+    ///
+    /// This function processes each path in `paths`, extracts its individual components using `processPathComponents`, and
+    /// constructs a nested dictionary structure. The constructed dictionary is then merged into the main tree. If the resulting tree
+    /// is empty after processing all paths, this function returns `nil`.
+    ///
+    /// - Parameter paths: An array of path `String`s to be processed. Each path represents a nested structure to be transformed
+    /// into a tree-like dictionary.
+    ///
+    /// - Returns: A tree-like dictionary structure representing the nested structure of the provided paths. Returns `nil` if the
+    /// resulting tree is empty.
     private func generatePathTree(paths: [String], file: StaticString = #file, line: UInt = #line) -> [String: Any]? {
         var tree: [String: Any] = [:]
 
@@ -829,7 +889,7 @@ extension XCTestCase {
             for pathComponent in keyPathComponents {
                 let pathComponent = pathComponent.replacingOccurrences(of: "\\.", with: ".")
 
-                let components = extractArrayStyleComponents(str: pathComponent)
+                let components = extractArrayStyleComponents(pathComponent: pathComponent)
                 allPathComponents.append(contentsOf: components)
             }
 
@@ -840,7 +900,20 @@ extension XCTestCase {
         return tree.isEmpty ? nil : tree
     }
 
-    /// Convenience function that outputs a given key path as a pretty string
+    /// Converts a key path represented by an array of JSON object keys and array indexes into a human-readable `String` format.
+    ///
+    /// The key path is used to trace the recursive traversal of a nested JSON structure.
+    /// For instance, the key path for the value "Hello" in the JSON `{ "a": { "b": [ "World", "Hello" ] } }`
+    /// would be `["a", "b", 1]`.
+    /// This method would convert it to the `String`: `"a.b[1]"`.
+    ///
+    /// Special considerations:
+    /// 1. If a key in the JSON object contains a dot (`.`), it will be escaped with a backslash in the resulting `String`.
+    /// 2. Empty keys in the JSON object will be represented as `""` in the resulting `String`.
+    ///
+    /// - Parameter keyPath: An array of keys or array indexes representing the path to a value in a nested JSON structure.
+    ///
+    /// - Returns: A human-readable `String` representation of the key path.
     private func keyPathAsString(_ keyPath: [Any]) -> String {
         var result = ""
         for item in keyPath {
