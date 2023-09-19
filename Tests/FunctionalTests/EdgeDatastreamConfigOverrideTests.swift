@@ -20,23 +20,14 @@ import XCTest
 // swiftlint:disable type_body_length
 /// Functional tests for the sendEvent API with datastreamIdOverride and datastreamConfigOverride features
 class AEPEdgeDatastreamOverrideTests: TestBase {
-    private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
-    private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let exEdgeInteractProdUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
-    private let exEdgeInteractIntegrationUrl = URL(string: TestConstants.EX_EDGE_INTERACT_INTEGRATION_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
 #if os(iOS)
     private let EXPECTED_BASE_PATH = "https://ns.adobe.com/experience/mobilesdk/ios"
 #elseif os(tvOS)
     private let EXPECTED_BASE_PATH = "https://ns.adobe.com/experience/mobilesdk/tvos"
 #endif
-    private var expectedRecordSeparatorString: String {
-        if #available(iOS 17, tvOS 17, *) {
-            return ""
-        } else {
-            return "\u{0000}"
-        }
-    }
+
     private let mockNetworkService: MockNetworkService = MockNetworkService()
     private let configOverrides: [String: Any] = [
         "com_adobe_experience_platform": [
@@ -100,15 +91,6 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         super.tearDown()
 
         mockNetworkService.reset()
-    }
-
-    func testUnregistered() {
-        let waitForUnregistration = CountDownLatch(1)
-        MobileCore.unregisterExtension(Edge.self, {
-            print("Extension unregistration is complete")
-            waitForUnregistration.countDown()
-        })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForUnregistration.await(timeout: 2))
     }
 
     // MARK: test request event format

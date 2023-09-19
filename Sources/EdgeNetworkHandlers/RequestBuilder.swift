@@ -26,8 +26,8 @@ class RequestBuilder {
     /// XDM payloads to be attached to the request
     var xdmPayloads: [String: AnyCodable] = [:]
 
-    private var sdkConfig: SDKConfig?
-    private var configOverrides: [String: Any]?
+    var sdkConfig: SDKConfig?
+    var configOverrides: [String: AnyCodable]?
 
     /// Data store manager for retrieving store response payloads for `StateMetadata`
     private let storeResponsePayloadManager: StoreResponsePayloadManager
@@ -49,19 +49,8 @@ class RequestBuilder {
         self.lineFeed = lineFeed
     }
 
-    func setSDKConfigMetadata(sdkConfig: SDKConfig) {
-        self.sdkConfig = sdkConfig
-    }
-
-    func setDatastreamConfigOverrides(_ configOverrides: [String: Any]) {
-        self.configOverrides = configOverrides
-    }
-
     /// Builds the request payload with all the provided parameters and events.
-    /// - Parameters:
-    ///   - events:  List of `Event` objects. Each event is expected to contain a serialized `ExperienceEvent`.
-    ///   - config: Edge configuration to extract the datastream Identifier from.
-    /// encoded in the `Event.data` property.
+    /// - Parameter events:  List of `Event` objects. Each event is expected to contain a serialized `ExperienceEvent` encoded in the `Event.data` property.
     /// - Returns: A `EdgeRequest` object or nil if the events list is empty
     func getPayloadWithExperienceEvents(_ events: [Event]) -> EdgeRequest? {
         guard !events.isEmpty else { return nil }
@@ -70,11 +59,10 @@ class RequestBuilder {
         let konductorConfig = KonductorConfig(streaming: streamingMetadata)
 
         let storedPayloads = storeResponsePayloadManager.getActivePayloadList()
-        let datastreamConfigOverride = AnyCodable.from(dictionary: configOverrides)
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig,
                                               state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads),
-                                              sdkConfig: self.sdkConfig,
-                                              configOverrides: datastreamConfigOverride)
+                                              sdkConfig: sdkConfig,
+                                              configOverrides: configOverrides)
 
         let experienceEvents = extractExperienceEvents(events)
 
@@ -117,8 +105,7 @@ class RequestBuilder {
     /// The timestamp for each `Event` is set as the timestamp for its contained `ExperienceEvent`.
     /// The unique identifier for each `Event` is set as the event ID for its contained `ExperienceEvent`.
     ///
-    /// - Parameters:
-    ///  - events: A list of `Event`s which contain an `ExperienceEvent` as event data.
+    /// - Parameter events: A list of `Event`s which contain an `ExperienceEvent` as event data.
     /// - Returns: A list of `ExperienceEvent`s as maps
     private func extractExperienceEvents(_ events: [Event]) -> [ [String: AnyCodable] ] {
         var experienceEvents: [[String: AnyCodable]] = []
@@ -139,19 +126,15 @@ class RequestBuilder {
             xdm[EdgeConstants.JsonKeys.EVENT_ID] = event.id.uuidString
             eventData[EdgeConstants.JsonKeys.XDM] = xdm
 
-            var metadata = [String: Any]()
-
             // enable collect override if a valid dataset is provided
             if let datasetId = eventData[EdgeConstants.EventDataKeys.DATASET_ID] as? String {
                 let trimmedDatasetId = datasetId.trimmingCharacters(in: CharacterSet.whitespaces)
                 if !trimmedDatasetId.isEmpty {
-                    metadata[EdgeConstants.JsonKeys.CollectMetadata.COLLECT] = [EdgeConstants.JsonKeys.CollectMetadata.DATASET_ID: trimmedDatasetId]
+                    eventData[EdgeConstants.JsonKeys.META] =
+                                            [EdgeConstants.JsonKeys.CollectMetadata.COLLECT:
+                                                [EdgeConstants.JsonKeys.CollectMetadata.DATASET_ID: trimmedDatasetId]]
                 }
                 eventData.removeValue(forKey: EdgeConstants.EventDataKeys.DATASET_ID)
-            }
-
-            if !metadata.isEmpty {
-                eventData[EdgeConstants.JsonKeys.META] = metadata
             }
 
             // Remove config object containing overrides from the event payload

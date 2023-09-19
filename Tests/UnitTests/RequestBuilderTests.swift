@@ -32,9 +32,9 @@ class RequestBuilderTests: XCTestCase {
         let request = RequestBuilder()
         request.enableResponseStreaming(recordSeparator: "A", lineFeed: "B")
         request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
-        request.setSDKConfigMetadata(sdkConfig: SDKConfig(datastream: Datastream(original: "datastreamID")))
-        request.setDatastreamConfigOverrides(["test" : ["key" : "val"]])
-        
+        request.sdkConfig = SDKConfig(datastream: Datastream(original: "datastreamID"))
+        request.configOverrides = AnyCodable.from(dictionary: ["test": ["key": "val"]])
+
         let event = Event(name: "Request Test",
                           type: "type",
                           source: "source",
@@ -46,7 +46,7 @@ class RequestBuilderTests: XCTestCase {
         XCTAssertEqual("B", requestPayload?.meta?.konductorConfig?.streaming?.lineFeed)
         XCTAssertTrue(requestPayload?.meta?.konductorConfig?.streaming?.enabled ?? false)
         XCTAssertEqual("datastreamID", requestPayload?.meta?.sdkConfig?.datastream?.original)
-        
+
         guard let requestConfigOverrideMap = requestPayload?.meta?.configOverrides,
               let test = requestConfigOverrideMap["test"]?.dictionaryValue as? [String: Any],
               let value = test["key"] as? String else {
@@ -54,7 +54,6 @@ class RequestBuilderTests: XCTestCase {
             return
         }
         XCTAssertEqual("val", value)
-              
 
         guard let requestIdentityMap = requestPayload?.xdm?["identityMap"]?.dictionaryValue,
               let ecidArr = requestIdentityMap["ECID"] as? [Any],

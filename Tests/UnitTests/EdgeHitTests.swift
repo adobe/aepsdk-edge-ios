@@ -138,37 +138,37 @@ class EdgeHitTests: XCTestCase {
           ]
 
         let json = """
-                {"meta" :
-                    {"konductorConfig" :
-                        {"streaming" :
-                            {"enabled" : true,"recordSeparator" : "A","lineFeed" : "B"}
+                {"meta" : {
+                    "konductorConfig" : {
+                        "streaming" : {
+                            "enabled" : true,"recordSeparator" : "A","lineFeed" : "B"}
                         },
-                        "configOverrides" : {
-                            "com_adobe_experience_platform": {
-                              "datasets": {
+                    "configOverrides" : {
+                        "com_adobe_experience_platform": {
+                            "datasets": {
                                 "event": {
-                                  "datasetId": "testEventDatasetIdOverride"
+                                    "datasetId": "testEventDatasetIdOverride"
                                 },
                                 "profile": {
-                                  "datasetId": "testProfileDatasetIdOverride"
+                                    "datasetId": "testProfileDatasetIdOverride"
                                 }
-                              }
-                            },
-                            "com_adobe_analytics": {
-                              "reportSuites": [
+                            }
+                        },
+                        "com_adobe_analytics": {
+                            "reportSuites": [
                                 "rsid1",
                                 "rsid2",
                                 "rsid3"
-                                ]
-                            },
-                            "com_adobe_identity": {
-                              "idSyncContainerId": "1234567"
-                            },
-                            "com_adobe_target": {
-                              "propertyToken": "testPropertyToken"
-                            }
-                          }
-                    },
+                            ]
+                        },
+                        "com_adobe_identity": {
+                            "idSyncContainerId": "1234567"
+                        },
+                        "com_adobe_target": {
+                            "propertyToken": "testPropertyToken"
+                        }
+                    }
+                },
                 "events" : [{  "test" : "data"}]}
                 """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
         let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]

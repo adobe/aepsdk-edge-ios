@@ -115,13 +115,10 @@ class EdgeHitProcessor: HitProcessing {
             requestBuilder.xdmPayloads[EdgeConstants.JsonKeys.IMPLEMENTATION_DETAILS] = AnyCodable(implementationDetails)
         }
 
-        // Build and send the network request to Experience Edge
-        let listOfEvents: [Event] = [event]
-
         // Check if datastream ID override is present
         if let datastreamIdOverride = event.config?[EdgeConstants.EventDataKeys.Config.DATASTREAM_ID_OVERRIDE] as? String, !datastreamIdOverride.isEmpty {
             // Attach original datastream ID to the outgoing request
-            requestBuilder.setSDKConfigMetadata(sdkConfig: SDKConfig(datastream: Datastream(original: datastreamId)))
+            requestBuilder.sdkConfig = SDKConfig(datastream: Datastream(original: datastreamId))
 
             // Update datastream ID for request since valid override ID is present
             datastreamId = datastreamIdOverride
@@ -129,8 +126,11 @@ class EdgeHitProcessor: HitProcessing {
 
         // Check if datastream config override is present
         if let datastreamConfigOverride = event.config?[EdgeConstants.EventDataKeys.Config.DATASTREAM_CONFIG_OVERRIDE] as? [String: Any], !datastreamConfigOverride.isEmpty {
-            requestBuilder.setDatastreamConfigOverrides(datastreamConfigOverride)
+            requestBuilder.configOverrides = AnyCodable.from(dictionary: datastreamConfigOverride)
         }
+
+        // Build and send the network request to Experience Edge
+        let listOfEvents: [Event] = [event]
 
         guard let requestPayload = requestBuilder.getPayloadWithExperienceEvents(listOfEvents) else {
             Log.debug(label: EdgeConstants.LOG_TAG,
