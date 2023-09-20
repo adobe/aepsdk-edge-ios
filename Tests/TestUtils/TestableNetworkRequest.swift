@@ -18,6 +18,30 @@ import AEPServices
 /// a custom dictionary key.
 class TestableNetworkRequest: Equatable, Hashable {
     private let networkRequest: NetworkRequest
+    // MARK: - Read-only properties of wrapped NetworkRequest instance
+    var url: URL {
+        return networkRequest.url
+    }
+    
+    var httpMethod: HttpMethod {
+        return networkRequest.httpMethod
+    }
+    
+    var connectPayload: Data {
+        return networkRequest.connectPayload
+    }
+    
+    var httpHeaders: [String: String] {
+        return networkRequest.httpHeaders
+    }
+    
+    var connectTimeout: TimeInterval {
+        return networkRequest.connectTimeout
+    }
+    
+    var readTimeout: TimeInterval {
+        return networkRequest.readTimeout
+    }
     
     init(networkRequest: NetworkRequest) {
         self.networkRequest = networkRequest
