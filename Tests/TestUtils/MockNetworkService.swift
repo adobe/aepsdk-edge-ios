@@ -17,6 +17,12 @@ import XCTest
 /// `Networking` adhering network service utility used for tests that require mocked network requests and mocked responses
 class MockNetworkService: Networking {
     private let helper: NetworkRequestHelper = NetworkRequestHelper()
+    private let defaultMockResponse: (URL) -> HttpConnection = {
+        HttpConnection(
+        data: "".data(using: .utf8),
+        response: HTTPURLResponse(url: $0, statusCode: 200, httpVersion: nil, headerFields: nil),
+        error: nil)
+    }
     private var responseDelay: UInt32 = 0
 
     func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
@@ -28,19 +34,11 @@ class MockNetworkService: Networking {
             sleep(self.responseDelay)
         }
 
-        if let response = self.getMockResponsesFor(networkRequest: networkRequest).first {
+        if let response = self.getMockResponsesFor(networkRequest: networkRequest)?.first {
             unwrappedCompletionHandler(response)
         } else {
             // Default mock response
-            unwrappedCompletionHandler(
-                HttpConnection(
-                    data: "".data(using: .utf8),
-                    response: HTTPURLResponse(url: networkRequest.url,
-                                              statusCode: 200,
-                                              httpVersion: nil,
-                                              headerFields: nil),
-                    error: nil)
-            )
+            unwrappedCompletionHandler(defaultMockResponse(networkRequest.url))
         }
     }
 
@@ -58,7 +56,7 @@ class MockNetworkService: Networking {
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
     /// when in mock mode.
     func setMockResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
-        helper.setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
+        helper.addResponseFor(networkRequest: networkRequest, responseConnection: responseConnection ?? defaultMockResponse(networkRequest.url))
     }
 
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
@@ -67,7 +65,7 @@ class MockNetworkService: Networking {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
         }
-        helper.setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
+        helper.addResponseFor(networkRequest: networkRequest, responseConnection: responseConnection ?? defaultMockResponse(networkRequest.url))
     }
 
     // MARK: - Passthrough for shared helper APIs
@@ -95,7 +93,7 @@ class MockNetworkService: Networking {
 
     // MARK: - Private helpers
     // MARK: Network request response helpers
-    private func getMockResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {
+    private func getMockResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection]? {
         return helper.getResponsesFor(networkRequest: networkRequest)
     }
 }
