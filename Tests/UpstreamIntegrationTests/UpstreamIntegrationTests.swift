@@ -85,8 +85,8 @@ class UpstreamIntegrationTests: TestBase {
         // Network response assertions
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
     
     /// Tests that a standard sendEvent receives a single network response with HTTP code 200
@@ -125,8 +125,8 @@ class UpstreamIntegrationTests: TestBase {
         // Network response assertions
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
     
     /// Tests that a standard sendEvent () receives a single network response with HTTP code 200
@@ -161,8 +161,8 @@ class UpstreamIntegrationTests: TestBase {
         // Network response assertions
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
     
     /// Tests that a standard sendEvent receives the expected event handles
@@ -401,8 +401,8 @@ class UpstreamIntegrationTests: TestBase {
         // Network response assertions
         let matchingResponses = networkService.getResponsesFor(networkRequest: locationHintNetworkRequest, timeout: 5)
         
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
 
     }
     
@@ -516,8 +516,8 @@ class UpstreamIntegrationTests: TestBase {
         // Network response assertions
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
         
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(400, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(400, matchingResponses?.first?.responseCode)
 
         // Event assertions
         let expectedErrorJSON = #"""
@@ -563,9 +563,9 @@ class UpstreamIntegrationTests: TestBase {
         // Network response assertions
         let matchingResponses = networkService.getResponsesFor(networkRequest: invalidNetworkRequest, timeout: 5)
         
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(404, matchingResponses.first?.responseCode)
-        XCTAssertEqual(0, matchingResponses.first?.data?.count)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(404, matchingResponses?.first?.responseCode)
+        XCTAssertEqual(0, matchingResponses?.first?.data?.count)
         
         // Error event assertions
         assertExpectedEvents(ignoreUnexpectedEvents: true)
