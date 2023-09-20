@@ -91,9 +91,7 @@ class NetworkRequestHelper {
         }
     }
 
-    /// Gets all network responses for `NetworkRequest`s matching the given `NetworkRequest`
-    ///
-    /// See:
+    /// Gets all network responses for the given `NetworkRequest`
     func getResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection]? {
         return networkResponses[TestableNetworkRequest(from: networkRequest)]
     }
@@ -115,11 +113,11 @@ class NetworkRequestHelper {
     }
 
     /// For all previously set expections, asserts that the correct number of network requests were sent.
-    /// - See also:
-    ///     - `setExpectationNetworkRequest(url:httpMethod:)`
+    /// - SeeAlso:
+    ///     - ``setExpectationForNetworkRequest(url:httpMethod:)``
     func assertAllNetworkRequestExpectations(file: StaticString = #file, line: UInt = #line) {
         guard !expectedNetworkRequests.isEmpty else {
-            assertionFailure("There are no network request expectations set, use this API after calling setExpectationNetworkRequest")
+            assertionFailure("There are no network request expectations set, use this API after calling setExpectationForNetworkRequest")
             return
         }
 
@@ -133,14 +131,14 @@ class NetworkRequestHelper {
     }
 
     /// Returns the `NetworkRequest`(s) sent through the Core NetworkService, or empty if none was found.
-    /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
+    /// Use this API after calling `setExpectationForNetworkRequest(networkRequest:expectedCount:file:line:)` to wait for expectations.
     /// - Parameters:
     ///   - url: The URL for which to retrieved the network requests sent, should be a valid URL
     ///   - httpMethod: the `HttpMethod` for which to retrieve the network requests, along with the `url`
     ///   - timeout: how long should this method wait for the expected network requests, in seconds; by default it waits up to 1 second
     /// - Returns: list of network requests with the provided `url` and `httpMethod`, or empty if none was dispatched
-    /// - See also:
-    ///     - setExpectationNetworkRequest(url:httpMethod:)
+    /// - SeeAlso:
+    ///     - ``setExpectationForNetworkRequest(networkRequest:expectedCount:file:line:)``
     func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return []
