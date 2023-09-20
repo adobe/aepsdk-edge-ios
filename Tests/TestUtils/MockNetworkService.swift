@@ -26,20 +26,20 @@ class MockNetworkService: Networking {
     private var responseDelay: UInt32 = 0
 
     func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
-        helper.recordSentNetworkRequest(networkRequest)
-        self.helper.countDownExpected(networkRequest: networkRequest)
-        guard let unwrappedCompletionHandler = completionHandler else { return }
-
         if self.responseDelay > 0 {
             sleep(self.responseDelay)
         }
 
         if let response = self.getMockResponsesFor(networkRequest: networkRequest)?.first {
-            unwrappedCompletionHandler(response)
+            completionHandler?(response)
         } else {
             // Default mock response
-            unwrappedCompletionHandler(defaultMockResponse(networkRequest.url))
+            completionHandler?(defaultMockResponse(networkRequest.url))
         }
+        // Do these countdown after notifying completion handler to avoid prematurely ungating awaits
+        // before required network logic finishes
+        helper.recordSentNetworkRequest(networkRequest)
+        helper.countDownExpected(networkRequest: networkRequest)
     }
 
     func reset() {
