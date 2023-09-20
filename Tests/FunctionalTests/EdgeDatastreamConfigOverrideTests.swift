@@ -248,5 +248,9 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         XCTAssertEqual("rsid3", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[2]"] as? String)
         XCTAssertEqual("1234567", requestBody["meta.configOverrides.com_adobe_identity.idSyncContainerId"] as? String)
         XCTAssertEqual("samplePropertyToken", requestBody["meta.configOverrides.com_adobe_target.propertyToken"] as? String)
+        
+        let requestPayload = try? JSONSerialization.jsonObject(with: resultNetworkRequests[0].connectPayload, options: []) as? [String: Any]
+        let metaPayload = requestPayload?["meta"] as? [String: Any]
+        XCTAssertNil(metaPayload?["sdkConfig"])
     }
 }
