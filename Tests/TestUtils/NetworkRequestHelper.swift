@@ -185,14 +185,6 @@ extension NetworkRequest {
         self.init(url: url, httpMethod: httpMethod)
     }
 
-    /// Custom equals compare based on host, scheme and URL path. Query params are not taken into consideration.
-    func isCustomEqual(_ other: NetworkRequest) -> Bool { // Maybe isCustomEqual?
-        return self.url.host?.lowercased() == other.url.host?.lowercased()
-            && self.url.scheme?.lowercased() == other.url.scheme?.lowercased()
-            && self.url.path.lowercased() == other.url.path.lowercased()
-            && self.httpMethod.rawValue == other.httpMethod.rawValue
-    }
-
     /// Converts the `connectPayload` into a flattened dictionary containing its data.
     /// This API fails the assertion if the request body cannot be parsed as JSON.
     /// - Returns: The JSON request body represented as a flattened dictionary
