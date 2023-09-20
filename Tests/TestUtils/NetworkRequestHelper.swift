@@ -28,7 +28,7 @@ class NetworkRequestHelper {
 
     func recordSentNetworkRequest(_ networkRequest: NetworkRequest) {
         TestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
-        let testableNetworkRequest = TestableNetworkRequest(networkRequest: networkRequest)
+        let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
         if let equalNetworkRequest = sentNetworkRequests.first(where: { key, _ in
             key == testableNetworkRequest
         }) {
@@ -46,7 +46,7 @@ class NetworkRequestHelper {
 
     func countDownExpected(networkRequest: NetworkRequest) {
         for expectedNetworkRequest in expectedNetworkRequests {
-            if expectedNetworkRequest.key == TestableNetworkRequest(networkRequest: networkRequest) {
+            if expectedNetworkRequest.key == TestableNetworkRequest(from: networkRequest) {
                 expectedNetworkRequest.value.countDown()
             }
         }
@@ -60,7 +60,7 @@ class NetworkRequestHelper {
     /// 2. Order of the deadline timer application is important
     private func awaitFor(networkRequest: NetworkRequest, timeout: TimeInterval) -> DispatchTimeoutResult? {
         for expectedNetworkRequest in expectedNetworkRequests {
-            if expectedNetworkRequest.key == TestableNetworkRequest(networkRequest: networkRequest) {
+            if expectedNetworkRequest.key == TestableNetworkRequest(from: networkRequest) {
                 return expectedNetworkRequest.value.await(timeout: timeout)
             }
         }
@@ -71,7 +71,7 @@ class NetworkRequestHelper {
     /// Returns all of the original outgoing `NetworkRequest`s satisfying `NetworkRequest.isCustomEqual(_:)`.
     func getSentNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
         for request in sentNetworkRequests {
-            if request.key == TestableNetworkRequest(networkRequest: networkRequest) {
+            if request.key == TestableNetworkRequest(from: networkRequest) {
                 return request.value
             }
         }
@@ -82,7 +82,7 @@ class NetworkRequestHelper {
     // MARK: - Network response helpers
     /// Sets the `HttpConnection` response connection for a given `NetworkRequest`
     func addResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection) {
-        let testableNetworkRequest = TestableNetworkRequest(networkRequest: networkRequest)
+        let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
         if networkResponses[testableNetworkRequest] != nil {
             networkResponses[testableNetworkRequest]?.append(responseConnection)
         }
@@ -95,7 +95,7 @@ class NetworkRequestHelper {
     ///
     /// See:
     func getResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection]? {
-        return networkResponses[TestableNetworkRequest(networkRequest: networkRequest)]
+        return networkResponses[TestableNetworkRequest(from: networkRequest)]
     }
 
     // MARK: Assertion helpers
@@ -111,7 +111,7 @@ class NetworkRequestHelper {
             return
         }
 
-        expectedNetworkRequests[TestableNetworkRequest(networkRequest: networkRequest)] = CountDownLatch(expectedCount)
+        expectedNetworkRequests[TestableNetworkRequest(from: networkRequest)] = CountDownLatch(expectedCount)
     }
 
     /// For all previously set expections, asserts that the correct number of network requests were sent.

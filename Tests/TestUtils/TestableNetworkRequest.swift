@@ -15,6 +15,15 @@ import Foundation
 @testable import AEPServices
 
 class TestableNetworkRequest: NetworkRequest {
+    /// Construct from existing `NetworkRequest` instance
+    convenience init(from networkRequest: NetworkRequest) {
+        self.init(url: networkRequest.url,
+                  httpMethod: networkRequest.httpMethod,
+                  connectPayloadData: networkRequest.connectPayload,
+                  httpHeaders: networkRequest.httpHeaders,
+                  connectTimeout: networkRequest.connectTimeout,
+                  readTimeout: networkRequest.readTimeout)
+    }
     // MARK: - Equatable (ObjC) conformance
     override func isEqual(_ object: Any?) -> Bool {
         guard let other = object as? NetworkRequest else {
