@@ -36,45 +36,23 @@ class TestableNetworkRequest: NetworkRequest {
             return false
         }
         
-        // Compare hosts
-        if let lhsHost = url.host, let rhsHost = other.url.host {
-            if lhsHost.lowercased() != rhsHost.lowercased() {
-                return false
-            }
-        } else if url.host != nil || other.url.host != nil {
-            return false
-        }
-        
-        // Compare schemes
-        if let lhsScheme = url.scheme, let rhsScheme = other.url.scheme {
-            if lhsScheme.lowercased() != rhsScheme.lowercased() {
-                return false
-            }
-        } else if url.scheme != nil || other.url.scheme != nil {
-            return false
-        }
-        
-        // Compare paths (case-sensitive)
-        if url.path != other.url.path {
-            return false
-        }
-        
-        // Compare HTTP methods
-        return httpMethod.rawValue == other.httpMethod.rawValue
+        return url.host?.lowercased() == other.url.host?.lowercased()
+                && url.scheme?.lowercased() == other.url.scheme?.lowercased()
+                && url.path == other.url.path
+                && httpMethod.rawValue == other.httpMethod.rawValue
     }
     
     // MARK: - Hashable (ObjC) conformance
     public override var hash: Int {
         var hasher = Hasher()
-        if let scheme = url.scheme, let host = url.host {
+        if let scheme = url.scheme {
             hasher.combine(scheme.lowercased())
-            hasher.combine(host.lowercased())
-            hasher.combine(url.path)
-            hasher.combine(httpMethod.rawValue)
-        } else {
-            hasher.combine(url)
-            hasher.combine(httpMethod.rawValue)
         }
+        if let host = url.host {
+            hasher.combine(host.lowercased())
+        }
+        hasher.combine(url.path)
+        hasher.combine(httpMethod.rawValue)
         return hasher.finalize()
     }
 }
