@@ -128,41 +128,49 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
     func testFailure() {
         let rawCases: [(expected: Any?, actual: Any?)] = [
             (expected: 1, actual: 2.0), // [0]
+            (expected: 1, actual: 1.0), // Tests Int vs Double type detection
             (expected: 1, actual: "a"),
             (expected: 1, actual: true),
             (expected: 1, actual: [:] as [String: Any]),
-            (expected: 1, actual: [] as [Any]),
-            (expected: 1, actual: nil), // [5]
+            (expected: 1, actual: [] as [Any]), // [5]
+            (expected: 1, actual: nil),
             (expected: 2.0, actual: 1),
+            (expected: 2.0, actual: 2), // Tests Double vs Int type detection
             (expected: 2.0, actual: "a"),
-            (expected: 2.0, actual: true),
+            (expected: 2.0, actual: true), // [10]
             (expected: 2.0, actual: [:] as [String: Any]),
-            (expected: 2.0, actual: [] as [Any]), // [10]
+            (expected: 2.0, actual: [] as [Any]),
             (expected: 2.0, actual: nil),
             (expected: "a", actual: 1),
-            (expected: "a", actual: 2.0),
+            (expected: "a", actual: 2.0), // [15]
             (expected: "a", actual: true),
-            (expected: "a", actual: [:] as [String: Any]), // [15]
+            (expected: "a", actual: [:] as [String: Any]),
             (expected: "a", actual: [] as [Any]),
             (expected: "a", actual: nil),
-            (expected: true, actual: 1),
+            (expected: true, actual: 1), // [20]
             (expected: true, actual: 2.0),
-            (expected: true, actual: "a"), // [20]
+            (expected: true, actual: "a"),
             (expected: true, actual: [:] as [String: Any]),
             (expected: true, actual: [] as [Any]),
             (expected: true, actual: nil),
+            (expected: false, actual: 1), // [25]
+            (expected: false, actual: 2.0),
+            (expected: false, actual: "a"),
+            (expected: false, actual: [:] as [String: Any]),
+            (expected: false, actual: [] as [Any]),
+            (expected: false, actual: nil), // [30]
             (expected: [:] as [String: Any], actual: 1),
-            (expected: [:] as [String: Any], actual: 2.0), // [25]
+            (expected: [:] as [String: Any], actual: 2.0),
             (expected: [:] as [String: Any], actual: "a"),
             (expected: [:] as [String: Any], actual: true),
-            (expected: [:] as [String: Any], actual: [] as [Any]),
+            (expected: [:] as [String: Any], actual: [] as [Any]), // [35]
             (expected: [:] as [String: Any], actual: nil),
-            (expected: ["key1": 1] as [String: Any], actual: ["key2": 1] as [String: Any]), // [30]
+            (expected: ["key1": 1] as [String: Any], actual: ["key2": 1] as [String: Any]),
             (expected: [] as [Any], actual: 1),
             (expected: [] as [Any], actual: 2.0),
-            (expected: [] as [Any], actual: "a"),
+            (expected: [] as [Any], actual: "a"), // [40]
             (expected: [] as [Any], actual: true),
-            (expected: [] as [Any], actual: [:] as [String: Any]), // [35]
+            (expected: [] as [Any], actual: [:] as [String: Any]),
             (expected: [] as [Any], actual: nil),
         ]
         let testCases = rawCases.map { tuple in
