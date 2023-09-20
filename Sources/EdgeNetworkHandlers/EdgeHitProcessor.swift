@@ -49,7 +49,7 @@ class EdgeHitProcessor: HitProcessing {
         return entityRetryIntervalMapping[entity.uniqueIdentifier] ?? EdgeConstants.Defaults.RETRY_INTERVAL
     }
 
-    /// Process the Edge Experience Events and Consent Events
+    /// Processes DataEntity events in the order they were retrieved from the database. Upon decoding sends the necessary events to the corresponding endpoint (e.g. Experience or Consent events).
     /// - Parameters:
     ///   - entity: the `DataEntity` to be processed
     ///   - completion: completion handler to notify the caller about the hit response
@@ -92,7 +92,7 @@ class EdgeHitProcessor: HitProcessing {
 
     /// Processes events of type ExperienceEvent
     /// - Parameters:
-    ///   - entityId: unique id of the `DataEntity`.
+    ///   - entityId: unique id of the `DataEntity` used when the hit needs to be retried.
     ///   - event: event to be processed.
     ///   - requestBuilder: the `RequestBuilder` object to build the request payload.
     ///   - completion: completion handler to notify the caller about the hit response.
@@ -102,7 +102,7 @@ class EdgeHitProcessor: HitProcessing {
             return // drop the current event
         }
 
-        guard var eventData = event.data, !eventData.isEmpty else {
+        guard let eventData = event.data, !eventData.isEmpty else {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to process Experience event, data was nil or empty")
             completion(true)
             return

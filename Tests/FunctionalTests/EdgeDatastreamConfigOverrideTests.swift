@@ -203,6 +203,10 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         XCTAssertEqual("testDatastreamIdOverride", requestUrl.queryParam("configId"))
 
         XCTAssertEqual("originalDatastreamId", requestBody["meta.sdkConfig.datastream.original"] as? String)
+
+        let requestPayload = try? JSONSerialization.jsonObject(with: resultNetworkRequests[0].connectPayload, options: []) as? [String: Any]
+        let metaPayload = requestPayload?["meta"] as? [String: Any]
+        XCTAssertNil(metaPayload?["configOverrides"])
     }
 
     func testSendEvent_withXDMDataAndCustomData_withDatastreamConfigOverride_sendsExEdgeNetworkRequestWithOverridenDatastreamConfig() {

@@ -47,7 +47,7 @@ class EdgeHitTests: XCTestCase {
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit2 = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                                datastreamId: CONFIG_ID,
-                                               request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil, sdkConfig: nil, configOverrides: nil),
+                                               request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), sdkConfig: nil, configOverrides: nil, state: nil),
                                                                     xdm: nil, events: [["test": "data"]]))
         XCTAssertNotNil(edgeHit2.getStreamingSettings())
     }
@@ -81,7 +81,7 @@ class EdgeHitTests: XCTestCase {
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
-                                              request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil, sdkConfig: nil, configOverrides: nil), xdm: nil, events: [["test": "data"]]))
+                                              request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), sdkConfig: nil, configOverrides: nil, state: nil), xdm: nil, events: [["test": "data"]]))
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
@@ -105,38 +105,12 @@ class EdgeHitTests: XCTestCase {
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
-                                              request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil, sdkConfig: SDKConfig(datastream: Datastream(original: "OriginalDatastreamID")), configOverrides: nil), xdm: nil, events: [["test": "data"]]))
+                                              request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), sdkConfig: SDKConfig(datastream: Datastream(original: "OriginalDatastreamID")), configOverrides: nil, state: nil), xdm: nil, events: [["test": "data"]]))
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
 
     func testExperienceEventsEdgeHit_getPayload_withDatastreamConfigOverride() {
-        let configOverrides: [String: Any] = [
-            "com_adobe_experience_platform": [
-              "datasets": [
-                "event": [
-                  "datasetId": "testEventDatasetIdOverride"
-                ],
-                "profile": [
-                  "datasetId": "testProfileDatasetIdOverride"
-                ]
-              ]
-            ],
-            "com_adobe_analytics": [
-              "reportSuites": [
-                "rsid1",
-                "rsid2",
-                "rsid3"
-                ]
-            ],
-            "com_adobe_identity": [
-              "idSyncContainerId": "1234567"
-            ],
-            "com_adobe_target": [
-              "propertyToken": "testPropertyToken"
-            ]
-          ]
-
         let json = """
                 {"meta" : {
                     "konductorConfig" : {
@@ -144,28 +118,8 @@ class EdgeHitTests: XCTestCase {
                             "enabled" : true,"recordSeparator" : "A","lineFeed" : "B"}
                         },
                     "configOverrides" : {
-                        "com_adobe_experience_platform": {
-                            "datasets": {
-                                "event": {
-                                    "datasetId": "testEventDatasetIdOverride"
-                                },
-                                "profile": {
-                                    "datasetId": "testProfileDatasetIdOverride"
-                                }
-                            }
-                        },
-                        "com_adobe_analytics": {
-                            "reportSuites": [
-                                "rsid1",
-                                "rsid2",
-                                "rsid3"
-                            ]
-                        },
-                        "com_adobe_identity": {
-                            "idSyncContainerId": "1234567"
-                        },
-                        "com_adobe_target": {
-                            "propertyToken": "testPropertyToken"
+                        "test": {
+                            "key" : "value"
                         }
                     }
                 },
@@ -175,7 +129,7 @@ class EdgeHitTests: XCTestCase {
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
-                                              request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil, sdkConfig: nil, configOverrides: AnyCodable.from(dictionary: configOverrides)), xdm: nil, events: [["test": "data"]]))
+                                              request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), sdkConfig: nil, configOverrides: ["test": ["key": "value"]], state: nil), xdm: nil, events: [["test": "data"]]))
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
@@ -232,7 +186,7 @@ class EdgeHitTests: XCTestCase {
             """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
         let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
-        let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil, sdkConfig: nil, configOverrides: nil),
+        let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), sdkConfig: nil, configOverrides: nil, state: nil),
                                               query: nil,
                                               identityMap: nil,
                                               consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
@@ -248,7 +202,7 @@ class EdgeHitTests: XCTestCase {
 
     func testConsentEdgeHit_getStreamingSettings_streamingEnabled() {
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
-        let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), state: nil, sdkConfig: nil, configOverrides: nil),
+        let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), sdkConfig: nil, configOverrides: nil, state: nil),
                                               query: nil,
                                               identityMap: nil,
                                               consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])

@@ -16,7 +16,7 @@ import Foundation
 /// Is contained within the `EdgeRequest` request property.
 struct RequestMetadata: Encodable {
     let konductorConfig: KonductorConfig?
-    let state: StateMetadata?
     let sdkConfig: SDKConfig?
     let configOverrides: [String: AnyCodable]?
+    let state: StateMetadata?
 }

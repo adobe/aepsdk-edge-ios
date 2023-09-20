@@ -24,7 +24,7 @@ class RequestMetadataTests: XCTestCase {
     // MARK: encoder tests
 
     func testEncode_noParameters() {
-        let metadata = RequestMetadata(konductorConfig: nil, state: nil, sdkConfig: nil, configOverrides: nil)
+        let metadata = RequestMetadata(konductorConfig: nil, sdkConfig: nil, configOverrides: nil, state: nil)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
@@ -37,8 +37,7 @@ class RequestMetadataTests: XCTestCase {
     }
 
     func testEncode_paramKonductorConfig() {
-        let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil),
-                                       state: nil, sdkConfig: nil, configOverrides: nil)
+        let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil), sdkConfig: nil, configOverrides: nil, state: nil)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
@@ -52,7 +51,7 @@ class RequestMetadataTests: XCTestCase {
 
     func testEncode_paramStateMetadata() {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
-        let metadata = RequestMetadata(konductorConfig: nil, state: StateMetadata(payload: [payload]), sdkConfig: nil, configOverrides: nil)
+        let metadata = RequestMetadata(konductorConfig: nil, sdkConfig: nil, configOverrides: nil, state: StateMetadata(payload: [payload]))
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
@@ -69,8 +68,8 @@ class RequestMetadataTests: XCTestCase {
 
     func testEncode_paramKonductorConfig_paramStateMetadata() {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
-        let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil),
-                                       state: StateMetadata(payload: [payload]), sdkConfig: nil, configOverrides: nil)
+        let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil), sdkConfig: nil, configOverrides: nil,
+                                       state: StateMetadata(payload: [payload]))
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
@@ -86,10 +85,9 @@ class RequestMetadataTests: XCTestCase {
         assertEqual(expectedResult, actualResult)
     }
 
-    func testEncode_paramKonductorConfig_originalDatastreamIdMetadata() {
+    func testEncode_paramSDKConfig_originalDatastreamIdMetadata() {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
-        let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil),
-                                       state: nil, sdkConfig: SDKConfig(datastream: Datastream(original: "OriginalDatastreamID")), configOverrides: nil)
+        let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil), sdkConfig: SDKConfig(datastream: Datastream(original: "OriginalDatastreamID")), configOverrides: nil, state: nil)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
@@ -103,7 +101,7 @@ class RequestMetadataTests: XCTestCase {
         assertEqual(expectedResult, actualResult)
     }
 
-    func testEncode_paramKonductorConfig_originalDatastreamConfigOverrideMetadata() {
+    func testEncode_paramConfigOverrides_originalDatastreamConfigOverrideMetadata() {
         let configOverrides: [String: Any] = [
             "com_adobe_experience_platform": [
               "datasets": [
@@ -131,7 +129,7 @@ class RequestMetadataTests: XCTestCase {
         ]
 
         let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil),
-                                       state: nil, sdkConfig: nil, configOverrides: AnyCodable.from(dictionary: configOverrides))
+                                       sdkConfig: nil, configOverrides: AnyCodable.from(dictionary: configOverrides), state: nil)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]

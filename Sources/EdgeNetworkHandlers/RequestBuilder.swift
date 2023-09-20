@@ -60,9 +60,9 @@ class RequestBuilder {
 
         let storedPayloads = storeResponsePayloadManager.getActivePayloadList()
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig,
-                                              state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads),
                                               sdkConfig: sdkConfig,
-                                              configOverrides: configOverrides)
+                                              configOverrides: configOverrides,
+                                              state: storedPayloads.isEmpty ? nil : StateMetadata(payload: storedPayloads))
 
         let experienceEvents = extractExperienceEvents(events)
 
@@ -91,7 +91,7 @@ class RequestBuilder {
         // set streaming metadata
         let streamingMetadata = Streaming(recordSeparator: recordSeparator, lineFeed: lineFeed)
         let konductorConfig = KonductorConfig(streaming: streamingMetadata)
-        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil, sdkConfig: nil, configOverrides: nil)
+        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, sdkConfig: nil, configOverrides: nil, state: nil)
 
         return EdgeConsentUpdate(meta: requestMetadata,
                                  query: query,
