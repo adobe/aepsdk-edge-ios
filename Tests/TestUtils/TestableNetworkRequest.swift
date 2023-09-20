@@ -24,14 +24,21 @@ class TestableNetworkRequest: NetworkRequest {
                   connectTimeout: networkRequest.connectTimeout,
                   readTimeout: networkRequest.readTimeout)
     }
+    // Note that the Equatable and Hashable conformance logic needs to align exactly for it to work as expected
+    // in the case of dictionary keys. Lowercased is used because across current test cases it has the same
+    // properties as case insensitive compare, and is straightforward to implement for isEqual and hash. However,
+    // if there are new cases where lowercased does not satisfy the property of case insensitive compare, this logic
+    // will need to be updated accordingly to handle that case.
+    
     // MARK: - Equatable (ObjC) conformance
     override func isEqual(_ object: Any?) -> Bool {
         guard let other = object as? NetworkRequest else {
             return false
         }
+        
         // Compare hosts
         if let lhsHost = url.host, let rhsHost = other.url.host {
-            if lhsHost.caseInsensitiveCompare(rhsHost) != .orderedSame {
+            if lhsHost.lowercased() != rhsHost.lowercased() {
                 return false
             }
         } else if url.host != nil || other.url.host != nil {
@@ -40,7 +47,7 @@ class TestableNetworkRequest: NetworkRequest {
         
         // Compare schemes
         if let lhsScheme = url.scheme, let rhsScheme = other.url.scheme {
-            if lhsScheme.caseInsensitiveCompare(rhsScheme) != .orderedSame {
+            if lhsScheme.lowercased() != rhsScheme.lowercased() {
                 return false
             }
         } else if url.scheme != nil || other.url.scheme != nil {
@@ -59,10 +66,9 @@ class TestableNetworkRequest: NetworkRequest {
     // MARK: - Hashable (ObjC) conformance
     public override var hash: Int {
         var hasher = Hasher()
-        if let scheme = url.scheme,
-           let host = url.host {
-            hasher.combine(scheme)
-            hasher.combine(host)
+        if let scheme = url.scheme, let host = url.host {
+            hasher.combine(scheme.lowercased())
+            hasher.combine(host.lowercased())
             hasher.combine(url.path)
             hasher.combine(httpMethod.rawValue)
         } else {
