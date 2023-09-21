@@ -23,7 +23,7 @@ import XCTest
 class NetworkRequestHelper {
     private var sentNetworkRequests: [TestableNetworkRequest: [NetworkRequest]] = [:]
     /// Matches sent `NetworkRequest`s with their corresponding `HttpConnection` response.
-    private(set) var networkResponses: [TestableNetworkRequest: [HttpConnection]] = [:]
+    private(set) var networkResponses: [TestableNetworkRequest: HttpConnection] = [:]
     private var expectedNetworkRequests: [TestableNetworkRequest: CountDownLatch] = [:]
 
     func recordSentNetworkRequest(_ networkRequest: NetworkRequest) {
@@ -81,18 +81,13 @@ class NetworkRequestHelper {
 
     // MARK: - Network response helpers
     /// Sets the `HttpConnection` response connection for a given `NetworkRequest`
-    func addResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection) {
+    func setResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
         let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
-        if networkResponses[testableNetworkRequest] != nil {
-            networkResponses[testableNetworkRequest]?.append(responseConnection)
-        }
-        else {
-            networkResponses[testableNetworkRequest] = [responseConnection]
-        }
+        networkResponses[testableNetworkRequest] = responseConnection
     }
 
     /// Gets all network responses for the given `NetworkRequest`
-    func getResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection]? {
+    func getResponseFor(networkRequest: NetworkRequest) -> HttpConnection? {
         return networkResponses[TestableNetworkRequest(from: networkRequest)]
     }
 

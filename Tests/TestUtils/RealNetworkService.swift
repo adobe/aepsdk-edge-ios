@@ -21,7 +21,7 @@ class RealNetworkService: NetworkService {
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         helper.recordSentNetworkRequest(networkRequest)
         super.connectAsync(networkRequest: networkRequest, completionHandler: { (connection: HttpConnection) in
-            self.helper.addResponseFor(networkRequest: networkRequest, responseConnection: connection)
+            self.helper.setResponseFor(networkRequest: networkRequest, responseConnection: connection)
             self.helper.countDownExpected(networkRequest: networkRequest)
 
             // Finally call the original completion handler
@@ -29,9 +29,9 @@ class RealNetworkService: NetworkService {
         })
     }
 
-    func getResponsesFor(networkRequest: NetworkRequest, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [HttpConnection]? {
+    func getResponseFor(networkRequest: NetworkRequest, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> HttpConnection? {
         helper.awaitRequest(networkRequest, timeout: timeout, file: file, line: line)
-        return helper.getResponsesFor(networkRequest: networkRequest)
+        return helper.getResponseFor(networkRequest: networkRequest)
     }
 
     // MARK: - Passthrough for shared helper APIs

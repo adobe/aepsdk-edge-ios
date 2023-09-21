@@ -30,7 +30,7 @@ class MockNetworkService: Networking {
             sleep(self.responseDelay)
         }
 
-        if let response = self.getMockResponsesFor(networkRequest: networkRequest)?.first {
+        if let response = self.getMockResponseFor(networkRequest: networkRequest) {
             completionHandler?(response)
         } else {
             // Default mock response
@@ -56,7 +56,7 @@ class MockNetworkService: Networking {
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
     /// when in mock mode.
     func setMockResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
-        helper.addResponseFor(networkRequest: networkRequest, responseConnection: responseConnection ?? defaultMockResponse(networkRequest.url))
+        helper.setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
     }
 
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
@@ -65,7 +65,7 @@ class MockNetworkService: Networking {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
         }
-        helper.addResponseFor(networkRequest: networkRequest, responseConnection: responseConnection ?? defaultMockResponse(networkRequest.url))
+        setMockResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
     }
 
     // MARK: - Passthrough for shared helper APIs
@@ -93,7 +93,7 @@ class MockNetworkService: Networking {
 
     // MARK: - Private helpers
     // MARK: Network request response helpers
-    private func getMockResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection]? {
-        return helper.getResponsesFor(networkRequest: networkRequest)
+    private func getMockResponseFor(networkRequest: NetworkRequest) -> HttpConnection? {
+        return helper.getResponseFor(networkRequest: networkRequest)
     }
 }

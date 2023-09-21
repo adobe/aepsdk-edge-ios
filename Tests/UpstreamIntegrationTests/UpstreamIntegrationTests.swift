@@ -83,10 +83,10 @@ class UpstreamIntegrationTests: TestBase {
         
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        let matchingResponse = networkService.getResponseFor(networkRequest: interactNetworkRequest, timeout: 5)
 
-        XCTAssertEqual(1, matchingResponses?.count)
-        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
+        XCTAssertNotNil(matchingResponse)
+        XCTAssertEqual(200, matchingResponse?.responseCode)
     }
     
     /// Tests that a standard sendEvent receives a single network response with HTTP code 200
@@ -123,10 +123,10 @@ class UpstreamIntegrationTests: TestBase {
         
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        let matchingResponse = networkService.getResponseFor(networkRequest: interactNetworkRequest, timeout: 5)
 
-        XCTAssertEqual(1, matchingResponses?.count)
-        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
+        XCTAssertNotNil(matchingResponse)
+        XCTAssertEqual(200, matchingResponse?.responseCode)
     }
     
     /// Tests that a standard sendEvent () receives a single network response with HTTP code 200
@@ -159,10 +159,10 @@ class UpstreamIntegrationTests: TestBase {
         
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        let matchingResponse = networkService.getResponseFor(networkRequest: interactNetworkRequest, timeout: 5)
 
-        XCTAssertEqual(1, matchingResponses?.count)
-        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
+        XCTAssertNotNil(matchingResponse)
+        XCTAssertEqual(200, matchingResponse?.responseCode)
     }
     
     /// Tests that a standard sendEvent receives the expected event handles
@@ -399,10 +399,10 @@ class UpstreamIntegrationTests: TestBase {
         
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: locationHintNetworkRequest, timeout: 5)
+        let matchingResponse = networkService.getResponseFor(networkRequest: locationHintNetworkRequest, timeout: 5)
         
-        XCTAssertEqual(1, matchingResponses?.count)
-        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
+        XCTAssertNotNil(matchingResponse)
+        XCTAssertEqual(200, matchingResponse?.responseCode)
 
     }
     
@@ -514,10 +514,10 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        let matchingResponse = networkService.getResponseFor(networkRequest: interactNetworkRequest, timeout: 5)
         
-        XCTAssertEqual(1, matchingResponses?.count)
-        XCTAssertEqual(400, matchingResponses?.first?.responseCode)
+        XCTAssertNotNil(matchingResponse)
+        XCTAssertEqual(400, matchingResponse?.responseCode)
 
         // Event assertions
         let expectedErrorJSON = #"""
@@ -561,11 +561,11 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: invalidNetworkRequest, timeout: 5)
+        let matchingResponse = networkService.getResponseFor(networkRequest: invalidNetworkRequest, timeout: 5)
         
-        XCTAssertEqual(1, matchingResponses?.count)
-        XCTAssertEqual(404, matchingResponses?.first?.responseCode)
-        XCTAssertEqual(0, matchingResponses?.first?.data?.count)
+        XCTAssertNotNil(matchingResponse)
+        XCTAssertEqual(404, matchingResponse?.responseCode)
+        XCTAssertEqual(0, matchingResponse?.data?.count)
         
         // Error event assertions
         assertExpectedEvents(ignoreUnexpectedEvents: true)
