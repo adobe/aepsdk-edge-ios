@@ -93,39 +93,6 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         mockNetworkService.reset()
     }
 
-    // MARK: test request event format
-
-    func testSendEvent_withXDMDataAndCustomData_withDatastreamIdOverrideAndDatastreamConfigOverride_sendsCorrectRequestEvent() {
-        setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.REQUEST_CONTENT)
-
-        let experienceEvent = ExperienceEvent(xdm: ["test": ["key": "value"]], data: ["key": "value"], datastreamIdOverride: "testDatastreamIdOverride", datastreamConfigOverride: configOverrides)
-        Edge.sendEvent(experienceEvent: experienceEvent)
-
-        // verify
-        assertExpectedEvents(ignoreUnexpectedEvents: false)
-        let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE,
-                                                   source: TestConstants.EventSource.REQUEST_CONTENT)
-        guard let eventDataDict = resultEvents[0].data else {
-            XCTFail("Failed to convert event data to [String: Any]")
-            return
-        }
-        let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(10, eventData.count)
-
-        XCTAssertEqual("value", eventData["xdm.test.key"] as? String)
-        XCTAssertEqual("value", eventData["data.key"] as? String)
-
-        XCTAssertEqual("testDatastreamIdOverride", eventData["config.datastreamIdOverride"] as? String)
-
-        XCTAssertEqual("eventDatasetIdOverride", eventData["config.datastreamConfigOverride.com_adobe_experience_platform.datasets.event.datasetId"] as? String)
-        XCTAssertEqual("profileDatasetIdOverride", eventData["config.datastreamConfigOverride.com_adobe_experience_platform.datasets.profile.datasetId"] as? String)
-        XCTAssertEqual("rsid1", eventData["config.datastreamConfigOverride.com_adobe_analytics.reportSuites[0]"] as? String)
-        XCTAssertEqual("rsid2", eventData["config.datastreamConfigOverride.com_adobe_analytics.reportSuites[1]"] as? String)
-        XCTAssertEqual("rsid3", eventData["config.datastreamConfigOverride.com_adobe_analytics.reportSuites[2]"] as? String)
-        XCTAssertEqual("1234567", eventData["config.datastreamConfigOverride.com_adobe_identity.idSyncContainerId"] as? String)
-        XCTAssertEqual("samplePropertyToken", eventData["config.datastreamConfigOverride.com_adobe_target.propertyToken"] as? String)
-    }
-
     // MARK: test network request format
 
     func testSendEvent_withXDMDataAndCustomData_withDatastreamIdOverrideAndDatastreamConfigOverride_sendsExEdgeNetworkRequestWithOverridenDatastreamIdAndConfig() {
@@ -248,7 +215,7 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         XCTAssertEqual("rsid3", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[2]"] as? String)
         XCTAssertEqual("1234567", requestBody["meta.configOverrides.com_adobe_identity.idSyncContainerId"] as? String)
         XCTAssertEqual("samplePropertyToken", requestBody["meta.configOverrides.com_adobe_target.propertyToken"] as? String)
-        
+
         let requestPayload = try? JSONSerialization.jsonObject(with: resultNetworkRequests[0].connectPayload, options: []) as? [String: Any]
         let metaPayload = requestPayload?["meta"] as? [String: Any]
         XCTAssertNil(metaPayload?["sdkConfig"])

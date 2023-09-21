@@ -81,7 +81,14 @@ class EdgeHitTests: XCTestCase {
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
-                                              request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), sdkConfig: nil, configOverrides: nil, state: nil), xdm: nil, events: [["test": "data"]]))
+                                              request: EdgeRequest(
+                                                            meta: RequestMetadata(
+                                                                konductorConfig: KonductorConfig(streaming: streamingSettings),
+                                                                sdkConfig: nil,
+                                                                configOverrides: nil,
+                                                                state: nil),
+                                                            xdm: nil,
+                                                            events: [["test": "data"]]))
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
@@ -105,7 +112,14 @@ class EdgeHitTests: XCTestCase {
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
-                                              request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), sdkConfig: SDKConfig(datastream: Datastream(original: "OriginalDatastreamID")), configOverrides: nil, state: nil), xdm: nil, events: [["test": "data"]]))
+                                              request: EdgeRequest(
+                                                            meta: RequestMetadata(
+                                                                konductorConfig: KonductorConfig(streaming: streamingSettings),
+                                                                sdkConfig: SDKConfig(datastream: Datastream(original: "OriginalDatastreamID")),
+                                                                configOverrides: nil,
+                                                                state: nil),
+                                                            xdm: nil,
+                                                            events: [["test": "data"]]))
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }
@@ -129,7 +143,14 @@ class EdgeHitTests: XCTestCase {
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
-                                              request: EdgeRequest(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), sdkConfig: nil, configOverrides: ["test": ["key": "value"]], state: nil), xdm: nil, events: [["test": "data"]]))
+                                              request: EdgeRequest(
+                                                            meta: RequestMetadata(
+                                                                konductorConfig: KonductorConfig(streaming: streamingSettings),
+                                                                sdkConfig: nil,
+                                                                configOverrides: ["test": ["key": "value"]],
+                                                                state: nil),
+                                                            xdm: nil,
+                                                            events: [["test": "data"]]))
 
         XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
     }

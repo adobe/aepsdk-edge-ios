@@ -50,7 +50,7 @@ class RequestBuilderTests: XCTestCase {
         guard let requestConfigOverrideMap = requestPayload?.meta?.configOverrides,
               let test = requestConfigOverrideMap["test"]?.dictionaryValue as? [String: Any],
               let value = test["key"] as? String else {
-            XCTFail("Invalid config overrides payload.")
+            XCTFail("Invalid config overrides payload: \(String(describing: requestPayload))")
             return
         }
         XCTAssertEqual("val", value)

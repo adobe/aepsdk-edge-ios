@@ -26,7 +26,10 @@ class RequestBuilder {
     /// XDM payloads to be attached to the request
     var xdmPayloads: [String: AnyCodable] = [:]
 
+    /// SDK configuration metadata containing original datastream ID if overridden
     var sdkConfig: SDKConfig?
+
+    /// Configuration override metadata for Edge Network services
     var configOverrides: [String: AnyCodable]?
 
     /// Data store manager for retrieving store response payloads for `StateMetadata`
