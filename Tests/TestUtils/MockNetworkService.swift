@@ -66,7 +66,7 @@ class MockNetworkService: Networking {
 
     /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
     /// when in mock mode.
-    func setMockResponseFor(url: String, httpMethod: HttpMethod, responseConnection: HttpConnection?) {
+    func addMockResponseFor(url: String, httpMethod: HttpMethod, responseConnection: HttpConnection?) {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
         }
@@ -85,7 +85,7 @@ class MockNetworkService: Networking {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
         }
-        helper.setExpectationForNetworkRequest(networkRequest: networkRequest, expectedCount: expectedCount, file: file, line: line)
+        helper.setExpectation(for: networkRequest, expectedCount: expectedCount, file: file, line: line)
     }
 
     func assertAllNetworkRequestExpectations(file: StaticString = #file, line: UInt = #line) {
@@ -98,7 +98,7 @@ class MockNetworkService: Networking {
 
     // MARK: - Private helpers
     // MARK: Network request response helpers
-    private func getMockResponseFor(networkRequest: NetworkRequest) -> HttpConnection? {
-        return helper.getResponseFor(networkRequest: networkRequest)
+    private func getMockResponses(for networkRequest: NetworkRequest) -> [HttpConnection]? {
+        return helper.getResponses(for: networkRequest)
     }
 }

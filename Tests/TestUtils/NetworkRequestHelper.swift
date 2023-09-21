@@ -101,7 +101,7 @@ class NetworkRequestHelper {
     /// - Parameters:
     ///   - networkRequest: the `NetworkRequest` to set the expectation for
     ///   - expectedCount: how many times a request with this url and httpMethod is expected to be sent, by default it is set to 1
-    func setExpectationForNetworkRequest(networkRequest: NetworkRequest, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
+    func setExpectation(for networkRequest: NetworkRequest, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
         guard expectedCount > 0 else {
             assertionFailure("Expected event count should be greater than 0")
             return

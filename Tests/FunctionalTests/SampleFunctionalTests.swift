@@ -111,7 +111,7 @@ class SampleFunctionalTests: TestBase {
                                                                                       headerFields: nil),
                                                             error: nil)
         mockNetworkService.setExpectationForNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
-        mockNetworkService.setMockResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseConnection: httpConnection)
+        mockNetworkService.addMockResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test2": "xdm"], data: nil))
@@ -131,7 +131,7 @@ class SampleFunctionalTests: TestBase {
                                                                                       headerFields: nil),
                                                             error: nil)
         mockNetworkService.setExpectationForNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
-        mockNetworkService.setMockResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseConnection: httpConnection)
+        mockNetworkService.addMockResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
 
