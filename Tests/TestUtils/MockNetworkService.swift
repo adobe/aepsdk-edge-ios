@@ -68,13 +68,13 @@ class MockNetworkService: Networking {
         helper.setResponse(for: networkRequest, responseConnection: responseConnection)
     }
 
-    /// Adds a custom mock network response to a network request.
+    /// Sets a mock network response to be associated with a given network request.
     ///
     /// - Parameters:
     ///   - url: The URL `String` of the `NetworkRequest` to which the mock response should be associated.
     ///   - httpMethod: The HTTP method of the `NetworkRequest` to which the mock response should be associated.
     ///   - responseConnection: The `HttpConnection` to add as a response. If `nil` is provided, a default HTTP status code `200` response is used.
-    func addMockResponseFor(url: String, httpMethod: HttpMethod, responseConnection: HttpConnection?) {
+    func setMockResponse(url: String, httpMethod: HttpMethod, responseConnection: HttpConnection?) {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
         }
