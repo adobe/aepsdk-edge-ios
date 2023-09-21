@@ -73,13 +73,13 @@ class NetworkRequestHelper {
         return nil
     }
 
-    ///  Returns all outgoing network requests that match the provided network request using the
+    ///  Returns all sent network requests that match the provided network request using the
     ///  `TestableNetworkRequest.isEqual(_:)` method.
     ///
     /// - Parameter networkRequest: The `NetworkRequest` for which to get matching requests.
     ///
     /// - Returns: An array of `NetworkRequest`s that match the specified `networkRequest` based on ``TestableNetworkRequest.isEqual(_:)``. If no matches are found, an empty array is returned.
-    func getSentNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
+    func getSentRequests(matching networkRequest: NetworkRequest) -> [NetworkRequest] {
         for request in sentNetworkRequests {
             if request.key == TestableNetworkRequest(from: networkRequest) {
                 return request.value
@@ -90,12 +90,12 @@ class NetworkRequestHelper {
     }
 
     // MARK: - Network response helpers
-    /// Adds a network response corresponding to a given network request.
+    /// Sets a network response to be associated with a given network request.
     ///
     /// - Parameters:
-    ///   - networkRequest: The `NetworkRequest` to which the response should be added.
+    ///   - networkRequest: The `NetworkRequest`to which the response should be associated.
     ///   - responseConnection: The `HttpConnection` to add as a response.
-    func setResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
+    func setResponse(for networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
         let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
         networkResponses[testableNetworkRequest] = responseConnection
     }
@@ -104,7 +104,7 @@ class NetworkRequestHelper {
     ///
     /// - Parameter networkRequest: The `NetworkRequest` for which the response should be retrieved.
     /// - Returns: The `HttpConnection` response associated with the provided `NetworkRequest`, or `nil` if no response was found.
-    func getResponseFor(networkRequest: NetworkRequest) -> HttpConnection? {
+    func getResponse(for networkRequest: NetworkRequest) -> HttpConnection? {
         return networkResponses[TestableNetworkRequest(from: networkRequest)]
     }
 
@@ -113,7 +113,7 @@ class NetworkRequestHelper {
     /// Set the expected number of times a network request should be seen.
     ///
     /// - Parameters:
-    ///   - networkRequest: The `NetworkRequest` to set the expectation for.
+    ///   - networkRequest: The `NetworkRequest` for which the expectation is set.
     ///   - expectedCount: The number of times the `NetworkRequest` is expected to be seen. The default value is 1.
     ///   - file: The file from which the method is called, used for localized assertion failures.
     ///   - line: The line from which the method is called, used for localized assertion failures.
@@ -168,7 +168,7 @@ class NetworkRequestHelper {
 
         awaitRequest(networkRequest, expectationTimeout: expectationTimeout)
 
-        return getSentNetworkRequestsMatching(networkRequest: networkRequest)
+        return getSentRequests(matching: networkRequest)
     }
 
     /// Waits for a specific network request expectation to be fulfilled within the provided timeout interval.

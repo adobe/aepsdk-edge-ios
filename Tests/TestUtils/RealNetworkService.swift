@@ -21,7 +21,7 @@ class RealNetworkService: NetworkService {
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         helper.recordSentNetworkRequest(networkRequest)
         super.connectAsync(networkRequest: networkRequest, completionHandler: { (connection: HttpConnection) in
-            self.helper.setResponseFor(networkRequest: networkRequest, responseConnection: connection)
+            self.helper.setResponse(for: networkRequest, responseConnection: connection)
             self.helper.countDownExpected(networkRequest: networkRequest)
 
             // Finally call the original completion handler
@@ -29,17 +29,17 @@ class RealNetworkService: NetworkService {
         })
     }
 
-    /// Immediately returns the associated `HttpConnection` responses (if any) for a given `NetworkRequest`
+    /// Immediately returns the associated network responses (if any) for a given network request
     /// **without awaiting** a response.
     ///
     /// Note: To properly await network responses for a given `NetworkRequest`, make sure to set an expectation
-    /// using `setExpectation(for:)` then await the expectation using `assertAllNetworkRequestExpectations`.
+    /// using `setExpectation(for:)` then await the expectation using `assertAllNetworkRequestExpectations()`.
     ///
     /// - Parameter networkRequest: The `NetworkRequest` for which the `HttpConnecting` responses should be returned.
     /// - Returns: The array of `HttpConnection` responses for the given request or `nil` if not found.
     /// - seeAlso: ``assertAllNetworkRequestExpectations``
-    func getResponses(for networkRequest: NetworkRequest) -> [HttpConnection]? {
-        return helper.getResponses(for: networkRequest)
+    func getResponse(for networkRequest: NetworkRequest) -> HttpConnection? {
+        return helper.getResponse(for: networkRequest)
     }
 
     // MARK: - Passthrough for shared helper APIs
