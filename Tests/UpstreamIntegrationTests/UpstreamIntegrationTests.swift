@@ -83,7 +83,8 @@ class UpstreamIntegrationTests: TestBase {
         
         // Verify
         // Network response assertions
-        let matchingResponse = networkService.getResponseFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertNotNil(matchingResponse)
         XCTAssertEqual(200, matchingResponse?.responseCode)
@@ -123,7 +124,8 @@ class UpstreamIntegrationTests: TestBase {
         
         // Verify
         // Network response assertions
-        let matchingResponse = networkService.getResponseFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertNotNil(matchingResponse)
         XCTAssertEqual(200, matchingResponse?.responseCode)
@@ -159,7 +161,8 @@ class UpstreamIntegrationTests: TestBase {
         
         // Verify
         // Network response assertions
-        let matchingResponse = networkService.getResponseFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertNotNil(matchingResponse)
         XCTAssertEqual(200, matchingResponse?.responseCode)
@@ -399,7 +402,8 @@ class UpstreamIntegrationTests: TestBase {
         
         // Verify
         // Network response assertions
-        let matchingResponse = networkService.getResponseFor(networkRequest: locationHintNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: locationHintNetworkRequest)
         
         XCTAssertNotNil(matchingResponse)
         XCTAssertEqual(200, matchingResponse?.responseCode)
@@ -514,7 +518,8 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponse = networkService.getResponseFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
         
         XCTAssertNotNil(matchingResponse)
         XCTAssertEqual(400, matchingResponse?.responseCode)
@@ -561,7 +566,8 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponse = networkService.getResponseFor(networkRequest: invalidNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: invalidNetworkRequest)
         
         XCTAssertNotNil(matchingResponse)
         XCTAssertEqual(404, matchingResponse?.responseCode)

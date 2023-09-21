@@ -58,14 +58,21 @@ class MockNetworkService: Networking {
         responseDelay = timeInSeconds
     }
 
-    /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
-    /// when in mock mode.
+    /// Adds a custom mock network response to a network request.
+    ///
+    /// - Parameters:
+    ///   - networkRequest: The `NetworkRequest`for which the response should be returned.
+    ///   - responseConnection: The network response to be returned when a request matching the `NetworkRequest` is received. If `nil` is provided, a default HTTP status code `200` response is used.
     func setMockResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
         helper.setResponseFor(networkRequest: networkRequest, responseConnection: responseConnection)
     }
 
-    /// Sets the mock `HttpConnection` response connection for a given `NetworkRequest`. Should only be used
-    /// when in mock mode.
+    /// Adds a custom mock network response to a network request.
+    ///
+    /// - Parameters:
+    ///   - url: The `String` URL for which to return the response.
+    ///   - httpMethod: The HTTP method for which to return the response.
+    ///   - responseConnection: The network response to be returned when a request matching the `url` and `httpMethod` is received. If a valid `NetworkResponse` cannot be created, a default HTTP status code `200` response is used.
     func addMockResponseFor(url: String, httpMethod: HttpMethod, responseConnection: HttpConnection?) {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
@@ -75,12 +82,14 @@ class MockNetworkService: Networking {
 
     // MARK: - Passthrough for shared helper APIs
 
-    /// Set the expected number of times a `NetworkRequest` should be seen.
+    /// Sets the expected number of times a network request should be seen.
     ///
     /// - Parameters:
-    ///   - url: the URL string of the `NetworkRequest` to set the expectation for
-    ///   - httpMethod: the `HttpMethod` of the `NetworkRequest` to set the expectation for
-    ///   - expectedCount: how many times a request with this url and httpMethod is expected to be sent, by default it is set to 1
+    ///   - url: The URL string of the `NetworkRequest` for which the expectation is set.
+    ///   - httpMethod: The HTTP method of the `NetworkRequest` for which the expectation is set.
+    ///   - expectedCount: The number of times the specified `NetworkRequest` is expected to be seen. The default value is 1.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
     func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
@@ -88,12 +97,32 @@ class MockNetworkService: Networking {
         helper.setExpectation(for: networkRequest, expectedCount: expectedCount, file: file, line: line)
     }
 
+    /// Asserts that the correct number of network requests were seen for all previously set network request expectations.
+    /// - Parameters:
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
+    /// - SeeAlso:
+    ///     - ``setExpectationForNetworkRequest(url:httpMethod:expectedCount:file:line:)``
     func assertAllNetworkRequestExpectations(file: StaticString = #file, line: UInt = #line) {
         helper.assertAllNetworkRequestExpectations(file: file, line: line)
     }
 
-    func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
-        helper.getNetworkRequestsWith(url: url, httpMethod: httpMethod, timeout: timeout, file: file, line: line)
+    /// Returns the network request(s) sent through the Core NetworkService, or empty if none was found.
+    ///
+    /// Use this method after calling `setExpectationForNetworkRequest(networkRequest:expectedCount:file:line:)` to wait for expected requests.
+    ///
+    /// - Parameters:
+    ///   - url: The URL string of the `NetworkRequest` to get.
+    ///   - httpMethod: The HTTP method of the `NetworkRequest` to get.
+    ///   - expectationTimeout: The duration (in seconds) to wait for **expected network requests** before failing, with a default of ``WAIT_NETWORK_REQUEST_TIMEOUT``. Otherwise waits for ``WAIT_TIMEOUT`` without failing.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
+    /// - Returns: An array of `NetworkRequest`s that match the provided `url` and `httpMethod`. Returns an empty array if no matching requests were dispatched.
+    ///
+    /// - SeeAlso:
+    ///     - ``setExpectationForNetworkRequest(networkRequest:expectedCount:file:line:)``
+    func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, expectationTimeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
+        helper.getNetworkRequestsWith(url: url, httpMethod: httpMethod, expectationTimeout: expectationTimeout, file: file, line: line)
     }
 
     // MARK: - Private helpers
