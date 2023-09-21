@@ -21,19 +21,20 @@ import XCTest
 ///    - ``MockNetworkService``
 ///    - ``RealNetworkService``
 class NetworkRequestHelper {
-    private var sentNetworkRequests: [NetworkRequest: [NetworkRequest]] = [:]
+    private var sentNetworkRequests: [TestableNetworkRequest: [NetworkRequest]] = [:]
     /// Matches sent `NetworkRequest`s with their corresponding `HttpConnection` response.
-    private(set) var networkResponses: [NetworkRequest: HttpConnection] = [:]
-    private var expectedNetworkRequests: [NetworkRequest: CountDownLatch] = [:]
+    private(set) var networkResponses: [TestableNetworkRequest: HttpConnection] = [:]
+    private var expectedNetworkRequests: [TestableNetworkRequest: CountDownLatch] = [:]
 
     func recordSentNetworkRequest(_ networkRequest: NetworkRequest) {
         TestBase.log("Received connectAsync to URL \(networkRequest.url.absoluteString) and HTTPMethod \(networkRequest.httpMethod.toString())")
+        let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
         if let equalNetworkRequest = sentNetworkRequests.first(where: { key, _ in
-            networkRequest.isCustomEqual(key)
+            key == testableNetworkRequest
         }) {
-            sentNetworkRequests[equalNetworkRequest.key]!.append(networkRequest)
+            sentNetworkRequests[equalNetworkRequest.key]?.append(networkRequest)
         } else {
-            sentNetworkRequests[networkRequest] = [networkRequest]
+            sentNetworkRequests[testableNetworkRequest] = [networkRequest]
         }
     }
 
@@ -45,7 +46,7 @@ class NetworkRequestHelper {
 
     func countDownExpected(networkRequest: NetworkRequest) {
         for expectedNetworkRequest in expectedNetworkRequests {
-            if networkRequest.isCustomEqual(expectedNetworkRequest.key) {
+            if expectedNetworkRequest.key == TestableNetworkRequest(from: networkRequest) {
                 expectedNetworkRequest.value.countDown()
             }
         }
@@ -59,7 +60,7 @@ class NetworkRequestHelper {
     /// 2. Order of the deadline timer application is important
     private func awaitFor(networkRequest: NetworkRequest, timeout: TimeInterval) -> DispatchTimeoutResult? {
         for expectedNetworkRequest in expectedNetworkRequests {
-            if networkRequest.isCustomEqual(expectedNetworkRequest.key) {
+            if expectedNetworkRequest.key == TestableNetworkRequest(from: networkRequest) {
                 return expectedNetworkRequest.value.await(timeout: timeout)
             }
         }
@@ -70,7 +71,7 @@ class NetworkRequestHelper {
     /// Returns all of the original outgoing `NetworkRequest`s satisfying `NetworkRequest.isCustomEqual(_:)`.
     func getSentNetworkRequestsMatching(networkRequest: NetworkRequest) -> [NetworkRequest] {
         for request in sentNetworkRequests {
-            if networkRequest.isCustomEqual(request.key) {
+            if request.key == TestableNetworkRequest(from: networkRequest) {
                 return request.value
             }
         }
@@ -81,16 +82,16 @@ class NetworkRequestHelper {
     // MARK: - Network response helpers
     /// Sets the `HttpConnection` response connection for a given `NetworkRequest`
     func setResponseFor(networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
-        networkResponses[networkRequest] = responseConnection
+        let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
+        networkResponses[testableNetworkRequest] = responseConnection
     }
 
-    /// Gets all network responses for `NetworkRequest`s matching the given `NetworkRequest`
+    /// Returns the network response associated with the given network request.
     ///
-    /// See:
-    func getResponsesFor(networkRequest: NetworkRequest) -> [HttpConnection] {
-        return networkResponses
-            .filter { networkRequest.isCustomEqual($0.key) }
-            .map { $0.value }
+    /// - Parameter networkRequest: The `NetworkRequest` for which the response should be retrieved.
+    /// - Returns: The `HttpConnection` response associated with the provided `NetworkRequest`, or `nil` if no response was found.
+    func getResponseFor(networkRequest: NetworkRequest) -> HttpConnection? {
+        return networkResponses[TestableNetworkRequest(from: networkRequest)]
     }
 
     // MARK: Assertion helpers
@@ -106,15 +107,15 @@ class NetworkRequestHelper {
             return
         }
 
-        expectedNetworkRequests[networkRequest] = CountDownLatch(expectedCount)
+        expectedNetworkRequests[TestableNetworkRequest(from: networkRequest)] = CountDownLatch(expectedCount)
     }
 
     /// For all previously set expections, asserts that the correct number of network requests were sent.
-    /// - See also:
-    ///     - `setExpectationNetworkRequest(url:httpMethod:)`
+    /// - SeeAlso:
+    ///     - ``setExpectationForNetworkRequest(url:httpMethod:)``
     func assertAllNetworkRequestExpectations(file: StaticString = #file, line: UInt = #line) {
         guard !expectedNetworkRequests.isEmpty else {
-            assertionFailure("There are no network request expectations set, use this API after calling setExpectationNetworkRequest")
+            assertionFailure("There are no network request expectations set, use this API after calling setExpectationForNetworkRequest")
             return
         }
 
@@ -128,14 +129,14 @@ class NetworkRequestHelper {
     }
 
     /// Returns the `NetworkRequest`(s) sent through the Core NetworkService, or empty if none was found.
-    /// Use this API after calling `setExpectationNetworkRequest(url:httpMethod:count:)` to wait for the right amount of time
+    /// Use this API after calling `setExpectationForNetworkRequest(networkRequest:expectedCount:file:line:)` to wait for expectations.
     /// - Parameters:
     ///   - url: The URL for which to retrieved the network requests sent, should be a valid URL
     ///   - httpMethod: the `HttpMethod` for which to retrieve the network requests, along with the `url`
     ///   - timeout: how long should this method wait for the expected network requests, in seconds; by default it waits up to 1 second
     /// - Returns: list of network requests with the provided `url` and `httpMethod`, or empty if none was dispatched
-    /// - See also:
-    ///     - setExpectationNetworkRequest(url:httpMethod:)
+    /// - SeeAlso:
+    ///     - ``setExpectationForNetworkRequest(networkRequest:expectedCount:file:line:)``
     func getNetworkRequestsWith(url: String, httpMethod: HttpMethod, timeout: TimeInterval = TestConstants.Defaults.WAIT_NETWORK_REQUEST_TIMEOUT, file: StaticString = #file, line: UInt = #line) -> [NetworkRequest] {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return []
@@ -178,14 +179,6 @@ extension NetworkRequest {
             return nil
         }
         self.init(url: url, httpMethod: httpMethod)
-    }
-
-    /// Custom equals compare based on host, scheme and URL path. Query params are not taken into consideration.
-    func isCustomEqual(_ other: NetworkRequest) -> Bool { // Maybe isCustomEqual?
-        return self.url.host?.lowercased() == other.url.host?.lowercased()
-            && self.url.scheme?.lowercased() == other.url.scheme?.lowercased()
-            && self.url.path.lowercased() == other.url.path.lowercased()
-            && self.httpMethod.rawValue == other.httpMethod.rawValue
     }
 
     /// Converts the `connectPayload` into a flattened dictionary containing its data.
