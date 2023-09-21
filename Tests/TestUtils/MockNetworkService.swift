@@ -17,12 +17,6 @@ import XCTest
 /// `Networking` adhering network service utility used for tests that require mocked network requests and mocked responses
 class MockNetworkService: Networking {
     private let helper: NetworkRequestHelper = NetworkRequestHelper()
-    private let defaultMockResponse: (URL) -> HttpConnection = {
-        HttpConnection(
-        data: "".data(using: .utf8),
-        response: HTTPURLResponse(url: $0, statusCode: 200, httpVersion: nil, headerFields: nil),
-        error: nil)
-    }
     private var responseDelay: UInt32 = 0
 
     func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
@@ -34,7 +28,18 @@ class MockNetworkService: Networking {
             completionHandler?(response)
         } else {
             // Default mock response
-            completionHandler?(defaultMockResponse(networkRequest.url))
+            completionHandler?(
+                HttpConnection(
+                    data: "".data(using: .utf8),
+                    response: HTTPURLResponse(
+                        url: networkRequest.url,
+                        statusCode: 200,
+                        httpVersion: nil,
+                        headerFields: nil
+                    ),
+                    error: nil
+                )
+            )
         }
         // Do these countdown after notifying completion handler to avoid prematurely ungating awaits
         // before required network logic finishes
