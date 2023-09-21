@@ -1,5 +1,5 @@
 //
-// Copyright 2020 Adobe. All rights reserved.
+// Copyright 2023 Adobe. All rights reserved.
 // This file is licensed to you under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy
 // of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,24 +10,15 @@
 // governing permissions and limitations under the License.
 //
 
-import AEPCore
 import Foundation
 
-/// Protocol used for defining hits to Experience Edge service
-protocol EdgeHit {
+/// SDK configuration metadata.
+/// Is contained within the `RequestMetadata` request property.
+struct SDKConfig: Encodable {
+    /// Configuration for datastream
+    let datastream: Datastream?
+}
 
-    /// The Edge endpoint
-    var endpoint: EdgeEndpoint { get }
-
-    /// The Edge configuration identifier
-    var datastreamId: String { get }
-
-    /// Unique identifier for the Edge request
-    var requestId: String { get }
-
-    /// The network request payload for this `EdgeHit`
-    func getPayload() -> String?
-
-    /// Retrieves the `Streaming` settings for this `EdgeHit` or nil if not enabled
-    func getStreamingSettings() -> Streaming?
+struct Datastream: Codable {
+    let original: String?
 }
