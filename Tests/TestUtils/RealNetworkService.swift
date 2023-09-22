@@ -35,8 +35,8 @@ class RealNetworkService: NetworkService {
     /// Note: To properly await network responses for a given `NetworkRequest`, make sure to set an expectation
     /// using `setExpectation(for:)` then await the expectation using `assertAllNetworkRequestExpectations()`.
     ///
-    /// - Parameter networkRequest: The `NetworkRequest` for which the `HttpConnecting` responses should be returned.
-    /// - Returns: The array of `HttpConnection` responses for the given request or `nil` if not found.
+    /// - Parameter networkRequest: The `NetworkRequest` for which the associated response should be returned.
+    /// - Returns: The `HttpConnection` response for the given request or `nil` if not found.
     /// - seeAlso: ``assertAllNetworkRequestExpectations``
     func getResponse(for networkRequest: NetworkRequest) -> HttpConnection? {
         return helper.getResponse(for: networkRequest)
@@ -56,11 +56,11 @@ class RealNetworkService: NetworkService {
         helper.reset()
     }
 
-    /// Set the expected number of times a network request should be seen.
+    /// Sets the expected number of times a network request should be sent.
     ///
     /// - Parameters:
     ///   - networkRequest: The `NetworkRequest` to set the expectation for.
-    ///   - expectedCount: The number of times the `NetworkRequest` is expected to be seen. The default value is 1.
+    ///   - expectedCount: The number of times the request is expected to be sent. The default value is 1.
     ///   - file: The file from which the method is called, used for localized assertion failures.
     ///   - line: The line from which the method is called, used for localized assertion failures.
     func setExpectation(for networkRequest: NetworkRequest, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {

@@ -83,12 +83,12 @@ class MockNetworkService: Networking {
 
     // MARK: - Passthrough for shared helper APIs
 
-    /// Sets the expected number of times a network request should be seen.
+    /// Sets the expected number of times a network request should be sent.
     ///
     /// - Parameters:
     ///   - url: The URL `String` of the `NetworkRequest` for which the expectation is set.
     ///   - httpMethod: The HTTP method of the `NetworkRequest` for which the expectation is set.
-    ///   - expectedCount: The number of times the `NetworkRequest` is expected to be seen. The default value is 1.
+    ///   - expectedCount: The number of times the request is expected to be sent. The default value is 1.
     ///   - file: The file from which the method is called, used for localized assertion failures.
     ///   - line: The line from which the method is called, used for localized assertion failures.
     func setExpectationForNetworkRequest(url: String, httpMethod: HttpMethod, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {

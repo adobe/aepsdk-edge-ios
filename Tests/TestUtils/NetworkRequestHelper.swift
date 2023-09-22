@@ -55,7 +55,7 @@ class NetworkRequestHelper {
         }
     }
 
-    /// Starts the expectation timer for the given network request, validating all expected responses are received within
+    /// Starts the expectation timer for the given network request, validating that all expected responses are received within
     /// the provided `timeout` duration.
     ///
     /// - Parameters:
@@ -78,7 +78,7 @@ class NetworkRequestHelper {
     ///
     /// - Parameter networkRequest: The `NetworkRequest` for which to get matching requests.
     ///
-    /// - Returns: An array of `NetworkRequest`s that match the specified `networkRequest` based on ``TestableNetworkRequest.isEqual(_:)``. If no matches are found, an empty array is returned.
+    /// - Returns: An array of `NetworkRequest`s that match the specified `networkRequest`. If no matches are found, an empty array is returned.
     func getSentRequests(matching networkRequest: NetworkRequest) -> [NetworkRequest] {
         for request in sentNetworkRequests {
             if request.key == TestableNetworkRequest(from: networkRequest) {
@@ -110,11 +110,11 @@ class NetworkRequestHelper {
 
     // MARK: Assertion helpers
 
-    /// Set the expected number of times a network request should be seen.
+    /// Sets the expected number of times a network request should be sent.
     ///
     /// - Parameters:
     ///   - networkRequest: The `NetworkRequest` for which the expectation is set.
-    ///   - expectedCount: The number of times the `NetworkRequest` is expected to be seen. The default value is 1.
+    ///   - expectedCount: The number of times the request is expected to be sent. The default value is 1.
     ///   - file: The file from which the method is called, used for localized assertion failures.
     ///   - line: The line from which the method is called, used for localized assertion failures.
     func setExpectation(for networkRequest: NetworkRequest, expectedCount: Int32 = 1, file: StaticString = #file, line: UInt = #line) {
@@ -152,7 +152,7 @@ class NetworkRequestHelper {
     /// Use this method after calling `setExpectationForNetworkRequest(networkRequest:expectedCount:file:line:)` to wait for expected requests.
     ///
     /// - Parameters:
-    ///   - url: The URL string of the `NetworkRequest` to get.
+    ///   - url: The URL `String` of the `NetworkRequest` to get.
     ///   - httpMethod: The HTTP method of the `NetworkRequest` to get.
     ///   - expectationTimeout: The duration (in seconds) to wait for **expected network requests** before failing, with a default of ``WAIT_NETWORK_REQUEST_TIMEOUT``. Otherwise waits for ``WAIT_TIMEOUT`` without failing.
     ///   - file: The file from which the method is called, used for localized assertion failures.
