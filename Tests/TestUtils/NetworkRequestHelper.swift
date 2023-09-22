@@ -90,11 +90,11 @@ class NetworkRequestHelper {
     }
 
     // MARK: - Network response helpers
-    /// Sets a network response to be associated with a given network request.
+    /// Sets a network response for the provided network request.
     ///
     /// - Parameters:
-    ///   - networkRequest: The `NetworkRequest`to which the response should be associated.
-    ///   - responseConnection: The `HttpConnection` to add as a response.
+    ///   - networkRequest: The `NetworkRequest`for which the response is being set.
+    ///   - responseConnection: The `HttpConnection` to set as a response.
     func setResponse(for networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
         let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
         networkResponses[testableNetworkRequest] = responseConnection

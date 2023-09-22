@@ -59,21 +59,21 @@ class MockNetworkService: Networking {
         responseDelay = timeInSeconds
     }
 
-    /// Sets a mock network response to be associated with a given network request.
+    /// Sets a mock network response for the provided network request.
     ///
     /// - Parameters:
-    ///   - networkRequest: The `NetworkRequest`to which the mock response should be associated.
-    ///   - responseConnection: The `HttpConnection` to add as a response. If `nil` is provided, a default HTTP status code `200` response is used.
+    ///   - networkRequest: The `NetworkRequest`for which the mock response is being set.
+    ///   - responseConnection: The `HttpConnection` to set as a response. If `nil` is provided, a default HTTP status code `200` response is used.
     func setMockResponse(for networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
         helper.setResponse(for: networkRequest, responseConnection: responseConnection)
     }
 
-    /// Sets a mock network response to be associated with a given network request.
+    /// Sets a mock network response for the provided network request.
     ///
     /// - Parameters:
-    ///   - url: The URL `String` of the `NetworkRequest` to which the mock response should be associated.
-    ///   - httpMethod: The HTTP method of the `NetworkRequest` to which the mock response should be associated.
-    ///   - responseConnection: The `HttpConnection` to add as a response. If `nil` is provided, a default HTTP status code `200` response is used.
+    ///   - url: The URL `String` of the `NetworkRequest` for which the mock response is being set.
+    ///   - httpMethod: The HTTP method of the `NetworkRequest` for which the mock response is being set.
+    ///   - responseConnection: The `HttpConnection` to set as a response. If `nil` is provided, a default HTTP status code `200` response is used.
     func setMockResponse(url: String, httpMethod: HttpMethod, responseConnection: HttpConnection?) {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return

@@ -29,13 +29,12 @@ class RealNetworkService: NetworkService {
         })
     }
 
-    /// Immediately returns the associated network responses (if any) for a given network request
-    /// **without awaiting** a response.
+    /// Immediately returns the associated response (if any) for the provided network request **without awaiting**.
     ///
-    /// Note: To properly await network responses for a given `NetworkRequest`, make sure to set an expectation
+    /// Note: To properly await network responses for a given request, make sure to set an expectation
     /// using `setExpectation(for:)` then await the expectation using `assertAllNetworkRequestExpectations()`.
     ///
-    /// - Parameter networkRequest: The `NetworkRequest` for which the associated response should be returned.
+    /// - Parameter networkRequest: The `NetworkRequest` for which the response should be returned.
     /// - Returns: The `HttpConnection` response for the given request or `nil` if not found.
     /// - seeAlso: ``assertAllNetworkRequestExpectations``
     func getResponse(for networkRequest: NetworkRequest) -> HttpConnection? {
