@@ -179,7 +179,7 @@ class EdgePublicAPITests: TestBase {
                                                                                           headerFields: nil),
                                                                 error: nil)
         
-        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
         
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"])
 
