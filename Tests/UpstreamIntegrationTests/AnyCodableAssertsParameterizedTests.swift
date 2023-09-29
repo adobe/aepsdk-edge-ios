@@ -203,7 +203,7 @@ class AnyCodableAssertsParameterizedTests: XCTestCase {
             (expected: #"{ "\\": 1 }"#, actual: #"{ "\\": 1 }"#), // Backslash
             (expected: #"{ "\\\\": 1 }"#, actual: #"{ "\\\\": 1 }"#), // Double backslash
             (expected: #"{ ".": 1 }"#, actual: #"{ ".": 1 }"#), // Dot
-            (expected: #"{ "k.1.2.3": 1 }"#, actual: #"{ "k.1.2.3": 1 }"#), // Dat in key
+            (expected: #"{ "k.1.2.3": 1 }"#, actual: #"{ "k.1.2.3": 1 }"#), // Dot in key
             (expected: #"{ "k.": 1 }"#, actual: #"{ "k.": 1 }"#), // Dot at the end of key
             (expected: #"{ "\"": 1 }"#, actual: #"{ "\"": 1 }"#), // Escaped double quote
             (expected: #"{ "'": 1 }"#, actual: #"{ "'": 1 }"#), // Single quote
