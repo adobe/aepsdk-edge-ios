@@ -21,7 +21,7 @@ class RealNetworkService: NetworkService {
     override func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)? = nil) {
         helper.recordSentNetworkRequest(networkRequest)
         super.connectAsync(networkRequest: networkRequest, completionHandler: { (connection: HttpConnection) in
-            self.helper.setResponse(for: networkRequest, responseConnection: connection)
+            self.helper.addResponse(for: networkRequest, responseConnection: connection)
             self.helper.countDownExpected(networkRequest: networkRequest)
 
             // Finally call the original completion handler
