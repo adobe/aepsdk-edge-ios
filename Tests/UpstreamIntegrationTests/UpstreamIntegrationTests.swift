@@ -609,7 +609,7 @@ class UpstreamIntegrationTests: TestBase {
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
 
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-        
+
         let expectedErrorJSON = #"""
         {
             "status": 400,
@@ -617,7 +617,7 @@ class UpstreamIntegrationTests: TestBase {
             "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
         }
         """#
-        
+
         let configOverrides = ["test": ["key": "value"]]
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamConfigOverride: configOverrides)
@@ -633,7 +633,7 @@ class UpstreamIntegrationTests: TestBase {
         assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
                         actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
                         exactMatchPaths: ["status", "title", "type"])
-        
+
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
         XCTAssertEqual(1, errorEvents.count)
@@ -652,7 +652,7 @@ class UpstreamIntegrationTests: TestBase {
             "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
         }
         """#
-        
+
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
@@ -679,7 +679,7 @@ class UpstreamIntegrationTests: TestBase {
         assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
                         actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
                         exactMatchPaths: ["status", "title", "type"])
-        
+
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
         XCTAssertEqual(1, errorEvents.count)
@@ -697,7 +697,7 @@ class UpstreamIntegrationTests: TestBase {
             "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
         }
         """#
-        
+
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
@@ -725,7 +725,7 @@ class UpstreamIntegrationTests: TestBase {
         assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
                         actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
                         exactMatchPaths: ["status", "title", "type"])
-        
+
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
         XCTAssertEqual(1, errorEvents.count)
@@ -736,7 +736,7 @@ class UpstreamIntegrationTests: TestBase {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-        
+
         let expectedErrorJSON = #"""
         {
             "status": 400,
@@ -744,7 +744,7 @@ class UpstreamIntegrationTests: TestBase {
             "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
         }
         """#
-        
+
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
@@ -772,7 +772,7 @@ class UpstreamIntegrationTests: TestBase {
         assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
                         actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
                         exactMatchPaths: ["status", "title", "type"])
-        
+
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
         XCTAssertEqual(1, errorEvents.count)
@@ -802,7 +802,7 @@ class UpstreamIntegrationTests: TestBase {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-        
+
         let expectedErrorJSON = #"""
         {
             "status": 400,
@@ -824,7 +824,7 @@ class UpstreamIntegrationTests: TestBase {
         assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
                         actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
                         exactMatchPaths: ["status", "title", "type"])
-        
+
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
         XCTAssertEqual(1, errorEvents.count)
