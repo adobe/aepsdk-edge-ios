@@ -64,8 +64,9 @@ class MockNetworkService: Networking {
     /// - Parameters:
     ///   - networkRequest: The `NetworkRequest`for which the mock response is being set.
     ///   - responseConnection: The `HttpConnection` to set as a response. If `nil` is provided, a default HTTP status code `200` response is used.
-    func setMockResponse(for networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
-        helper.setResponse(for: networkRequest, responseConnection: responseConnection)
+    func setMockResponse(for networkRequest: NetworkRequest, responseConnection: HttpConnection) {
+        helper.removeAllResponses(for: networkRequest)
+        helper.addResponse(for: networkRequest, responseConnection: responseConnection)
     }
 
     /// Sets a mock network response for the provided network request.
@@ -74,7 +75,7 @@ class MockNetworkService: Networking {
     ///   - url: The URL `String` of the `NetworkRequest` for which the mock response is being set.
     ///   - httpMethod: The HTTP method of the `NetworkRequest` for which the mock response is being set.
     ///   - responseConnection: The `HttpConnection` to set as a response. If `nil` is provided, a default HTTP status code `200` response is used.
-    func setMockResponse(url: String, httpMethod: HttpMethod, responseConnection: HttpConnection?) {
+    func setMockResponse(url: String, httpMethod: HttpMethod, responseConnection: HttpConnection) {
         guard let networkRequest = NetworkRequest(urlString: url, httpMethod: httpMethod) else {
             return
         }
@@ -129,6 +130,6 @@ class MockNetworkService: Networking {
     // MARK: - Private helpers
     // MARK: Network request response helpers
     private func getMockResponse(for networkRequest: NetworkRequest) -> HttpConnection? {
-        return helper.getResponse(for: networkRequest)
+        return helper.getResponses(for: networkRequest)?.first
     }
 }
