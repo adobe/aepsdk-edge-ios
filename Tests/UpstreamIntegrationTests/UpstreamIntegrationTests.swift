@@ -609,7 +609,15 @@ class UpstreamIntegrationTests: TestBase {
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
 
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
+        
+        let expectedErrorJSON = #"""
+        {
+            "status": 400,
+            "title": "Invalid request",
+            "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
+        }
+        """#
+        
         let configOverrides = ["test": ["key": "value"]]
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamConfigOverride: configOverrides)
@@ -622,7 +630,13 @@ class UpstreamIntegrationTests: TestBase {
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
         XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(400, matchingResponses.first?.responseCode)
+        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
+                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
+                        exactMatchPaths: ["status", "title", "type"])
+        
+        // Event assertions
+        let errorEvents = getEdgeResponseErrors()
+        XCTAssertEqual(1, errorEvents.count)
     }
 
     // Tests ConfigOverrides with dataset not added in the datastream config and RSID not added to override setting in the Analytics upstream config
@@ -631,6 +645,14 @@ class UpstreamIntegrationTests: TestBase {
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
+        let expectedErrorJSON = #"""
+        {
+            "status": 400,
+            "title": "Invalid request",
+            "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
+        }
+        """#
+        
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
@@ -654,14 +676,28 @@ class UpstreamIntegrationTests: TestBase {
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
         XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(400, matchingResponses.first?.responseCode)
+        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
+                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
+                        exactMatchPaths: ["status", "title", "type"])
+        
+        // Event assertions
+        let errorEvents = getEdgeResponseErrors()
+        XCTAssertEqual(1, errorEvents.count)
     }
 
-    func testSendEvent_withInvalidConfigOverrides_invalidDummyValues_receivesExpectedNetworkResponseError() {
+    func testSendEvent_withInvalidConfigOverrides_dummyValues_receivesExpectedNetworkResponseError() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
+        let expectedErrorJSON = #"""
+        {
+            "status": 400,
+            "title": "Invalid request",
+            "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
+        }
+        """#
+        
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
@@ -686,15 +722,29 @@ class UpstreamIntegrationTests: TestBase {
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
         XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(400, matchingResponses.first?.responseCode)
+        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
+                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
+                        exactMatchPaths: ["status", "title", "type"])
+        
+        // Event assertions
+        let errorEvents = getEdgeResponseErrors()
+        XCTAssertEqual(1, errorEvents.count)
     }
 
     // test configOverrides with valid dataset ID, one valid and one dummy value for RSIDs
-    func testSendEvent_withInvalidConfigOverrides_ValidAndInvalidDummyValues_receivesExpectedNetworkResponseError() {
+    func testSendEvent_withInvalidConfigOverrides_containingValidAndDummyValues_receivesExpectedNetworkResponseError() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
+        
+        let expectedErrorJSON = #"""
+        {
+            "status": 400,
+            "title": "Invalid request",
+            "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
+        }
+        """#
+        
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
@@ -719,7 +769,13 @@ class UpstreamIntegrationTests: TestBase {
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
         XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(400, matchingResponses.first?.responseCode)
+        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
+                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
+                        exactMatchPaths: ["status", "title", "type"])
+        
+        // Event assertions
+        let errorEvents = getEdgeResponseErrors()
+        XCTAssertEqual(1, errorEvents.count)
     }
 
     // Test datastream ID override with valid ID string
@@ -746,6 +802,14 @@ class UpstreamIntegrationTests: TestBase {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        
+        let expectedErrorJSON = #"""
+        {
+            "status": 400,
+            "title": "Invalid datastream ID",
+            "type": "https://ns.adobe.com/aep/errors/EXEG-0003-400"
+        }
+        """#
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamIdOverride: "DummyDatastreamID")
 
@@ -757,7 +821,13 @@ class UpstreamIntegrationTests: TestBase {
         let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
 
         XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(400, matchingResponses.first?.responseCode)
+        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
+                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
+                        exactMatchPaths: ["status", "title", "type"])
+        
+        // Event assertions
+        let errorEvents = getEdgeResponseErrors()
+        XCTAssertEqual(1, errorEvents.count)
     }
 
     // MARK: - Test helper methods
