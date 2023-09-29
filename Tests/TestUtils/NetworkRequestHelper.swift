@@ -104,6 +104,15 @@ class NetworkRequestHelper {
             networkResponses[testableNetworkRequest] = [responseConnection]
         }
     }
+    
+    /// Removes all network responses for the provided network request.
+    ///
+    /// - Parameters:
+    ///   - networkRequest: The `NetworkRequest` for which to remove all responses.
+    func removeAllResponses(for networkRequest: NetworkRequest) {
+        let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
+        networkResponses[testableNetworkRequest] = nil
+    }
 
     /// Returns the network responses associated with the given network request.
     ///
