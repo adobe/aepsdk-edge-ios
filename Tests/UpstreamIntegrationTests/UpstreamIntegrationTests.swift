@@ -569,19 +569,18 @@ class UpstreamIntegrationTests: TestBase {
         assertExpectedEvents(ignoreUnexpectedEvents: true)
     }
 
-    // Tests datastream config overrides
+    // MARK: datastream config overrides test
+
+    // Test configOverrides with valid data
     func testSendEvent_withValidConfigOverrides_receivesExpectedNetworkResponse() {
         // Setup
-        // Note: test constructs should always be valid
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        // Setting expectation allows for both:
-        // 1. Validation that the network request was sent out
-        // 2. Waiting on a response for the specific network request (with timeout)
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
-                                            "datasetId": "do_not_delete_dataset2_e2e_testing_edge_konductor_configoverride"
+                                            "datasetId": "6515e1dbfeb3b128d19bb1e4"
                                         ]
 
                                     ]
@@ -604,15 +603,15 @@ class UpstreamIntegrationTests: TestBase {
         XCTAssertEqual(200, matchingResponses.first?.responseCode)
     }
 
-    func testSendEvent_withInvalidConfigOverrides_invalidData_receivesExpectedNetworkResponseError() {
+    // Test configOverrides with dummy data
+    func testSendEvent_withInvalidConfigOverrides_receivesExpectedNetworkResponseError() {
         // Setup
-        // Note: test constructs should always be valid
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        // Setting expectation allows for both:
-        // 1. Validation that the network request was sent out
-        // 2. Waiting on a response for the specific network request (with timeout)
+
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+
         let configOverrides = ["test": ["key": "value"]]
+
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamConfigOverride: configOverrides)
 
         // Test
@@ -626,21 +625,16 @@ class UpstreamIntegrationTests: TestBase {
         XCTAssertEqual(400, matchingResponses.first?.responseCode)
     }
 
-    // Tests datastream config overrides
-    func testSendEvent_withInvalidConfigOverrides_invalidConfigValues_receivesExpectedNetworkResponseError() {
+    // Tests ConfigOverrides with dataset not added in the datastream config and RSID not added to override setting in the Analytics upstream config
+    func testSendEvent_withInvalidConfigOverrides_notConfiguredValues_receivesExpectedNetworkResponseError() {
         // Setup
-        // Note: test constructs should always be valid
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        // Setting expectation allows for both:
-        // 1. Validation that the network request was sent out
-        // 2. Waiting on a response for the specific network request (with timeout)
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-        // Overriding with dataset not added in the datastream config
-        // And Overriding with RSID not added to override setting in the Analytics upstream config
+
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
-                                            "datasetId": "do_not_delete_dataset3_e2e_testing_edge_konductor"
+                                            "datasetId": "6515e1f6296d1e28d3209b9f"
                                         ]
 
                                     ]
@@ -665,14 +659,9 @@ class UpstreamIntegrationTests: TestBase {
 
     func testSendEvent_withInvalidConfigOverrides_invalidDummyValues_receivesExpectedNetworkResponseError() {
         // Setup
-        // Note: test constructs should always be valid
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        // Setting expectation allows for both:
-        // 1. Validation that the network request was sent out
-        // 2. Waiting on a response for the specific network request (with timeout)
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-        // Overriding with dataset not added in the datastream config
-        // And Overriding with RSID not added to override setting in the Analytics upstream config
+
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
@@ -700,20 +689,16 @@ class UpstreamIntegrationTests: TestBase {
         XCTAssertEqual(400, matchingResponses.first?.responseCode)
     }
 
+    // test configOverrides with valid dataset ID, one valid and one dummy value for RSIDs
     func testSendEvent_withInvalidConfigOverrides_ValidAndInvalidDummyValues_receivesExpectedNetworkResponseError() {
         // Setup
-        // Note: test constructs should always be valid
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        // Setting expectation allows for both:
-        // 1. Validation that the network request was sent out
-        // 2. Waiting on a response for the specific network request (with timeout)
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-        // Overriding with dataset not added in the datastream config
-        // And Overriding with RSID not added to override setting in the Analytics upstream config
+
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
-                                            "datasetId": "do_not_delete_dataset2_e2e_testing_edge_konductor_configoverride"
+                                            "datasetId": "6515e1dbfeb3b128d19bb1e4"
                                         ]
 
                                     ]
@@ -737,14 +722,10 @@ class UpstreamIntegrationTests: TestBase {
         XCTAssertEqual(400, matchingResponses.first?.responseCode)
     }
 
-    // test datastream ID override
-    func testSendEvent_withValidDatastreamID_receivesExpectedNetworkResponse() {
+    // Test datastream ID override with valid ID string
+    func testSendEvent_withValidDatastreamIDOverride_receivesExpectedNetworkResponse() {
         // Setup
-        // Note: test constructs should always be valid
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        // Setting expectation allows for both:
-        // 1. Validation that the network request was sent out
-        // 2. Waiting on a response for the specific network request (with timeout)
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamIdOverride: "15d7bce0-3e2c-447b-bbda-129c57c60820")
@@ -760,14 +741,10 @@ class UpstreamIntegrationTests: TestBase {
         XCTAssertEqual(200, matchingResponses.first?.responseCode)
     }
 
-    // test datastream ID override
-    func testSendEvent_withInvalidValidDatastreamID_dummyDatastreamIDValue_receivesExpectedNetworkResponseError() {
+    // Test datastream ID override with dummy string
+    func testSendEvent_withDummyDatastreamIDOverride_receivesExpectedNetworkResponseError() {
         // Setup
-        // Note: test constructs should always be valid
         let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        // Setting expectation allows for both:
-        // 1. Validation that the network request was sent out
-        // 2. Waiting on a response for the specific network request (with timeout)
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamIdOverride: "DummyDatastreamID")
