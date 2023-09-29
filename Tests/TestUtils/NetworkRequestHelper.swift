@@ -109,7 +109,7 @@ class NetworkRequestHelper {
     ///
     /// - Parameter networkRequest: The `NetworkRequest` for which the response should be retrieved.
     /// - Returns: The array of `HttpConnection` responses associated with the provided `NetworkRequest`, or `nil` if no response was found.
-    func getResponse(for networkRequest: NetworkRequest) -> [HttpConnection]? {
+    func getResponses(for networkRequest: NetworkRequest) -> [HttpConnection]? {
         return networkResponses[TestableNetworkRequest(from: networkRequest)]
     }
 
