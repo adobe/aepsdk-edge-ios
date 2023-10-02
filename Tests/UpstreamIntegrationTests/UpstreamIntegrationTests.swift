@@ -84,10 +84,10 @@ class UpstreamIntegrationTests: TestBase {
         // Verify
         // Network response assertions
         networkService.assertAllNetworkRequestExpectations()
-        let matchingResponse = networkService.getResponse(for: interactNetworkRequest)
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertNotNil(matchingResponse)
-        XCTAssertEqual(200, matchingResponse?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
     
     /// Tests that a standard sendEvent receives a single network response with HTTP code 200
@@ -125,10 +125,10 @@ class UpstreamIntegrationTests: TestBase {
         // Verify
         // Network response assertions
         networkService.assertAllNetworkRequestExpectations()
-        let matchingResponse = networkService.getResponse(for: interactNetworkRequest)
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertNotNil(matchingResponse)
-        XCTAssertEqual(200, matchingResponse?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
     
     /// Tests that a standard sendEvent () receives a single network response with HTTP code 200
@@ -162,10 +162,10 @@ class UpstreamIntegrationTests: TestBase {
         // Verify
         // Network response assertions
         networkService.assertAllNetworkRequestExpectations()
-        let matchingResponse = networkService.getResponse(for: interactNetworkRequest)
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertNotNil(matchingResponse)
-        XCTAssertEqual(200, matchingResponse?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
     
     /// Tests that a standard sendEvent receives the expected event handles
@@ -403,11 +403,10 @@ class UpstreamIntegrationTests: TestBase {
         // Verify
         // Network response assertions
         networkService.assertAllNetworkRequestExpectations()
-        let matchingResponse = networkService.getResponse(for: locationHintNetworkRequest)
+        let matchingResponses = networkService.getResponses(for: locationHintNetworkRequest)
         
-        XCTAssertNotNil(matchingResponse)
-        XCTAssertEqual(200, matchingResponse?.responseCode)
-
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
     
     func testSendEventx2_receivesExpectedEventHandles() {
@@ -519,10 +518,10 @@ class UpstreamIntegrationTests: TestBase {
         // Verify
         // Network response assertions
         networkService.assertAllNetworkRequestExpectations()
-        let matchingResponse = networkService.getResponse(for: interactNetworkRequest)
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
         
-        XCTAssertNotNil(matchingResponse)
-        XCTAssertEqual(400, matchingResponse?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(400, matchingResponses?.first?.responseCode)
 
         // Event assertions
         let expectedErrorJSON = #"""
@@ -567,11 +566,11 @@ class UpstreamIntegrationTests: TestBase {
         // Verify
         // Network response assertions
         networkService.assertAllNetworkRequestExpectations()
-        let matchingResponse = networkService.getResponse(for: invalidNetworkRequest)
-        
-        XCTAssertNotNil(matchingResponse)
-        XCTAssertEqual(404, matchingResponse?.responseCode)
-        XCTAssertEqual(0, matchingResponse?.data?.count)
+        let matchingResponses = networkService.getResponses(for: invalidNetworkRequest)
+
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(404, matchingResponses?.first?.responseCode)
+        XCTAssertEqual(0, matchingResponses?.first?.data?.count)
         
         // Error event assertions
         assertExpectedEvents(ignoreUnexpectedEvents: true)
