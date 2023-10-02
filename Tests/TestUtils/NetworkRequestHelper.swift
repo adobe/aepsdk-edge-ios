@@ -22,8 +22,8 @@ import XCTest
 ///    - ``RealNetworkService``
 class NetworkRequestHelper {
     private var sentNetworkRequests: [TestableNetworkRequest: [NetworkRequest]] = [:]
-    /// Matches sent `NetworkRequest`s with their corresponding `HttpConnection` response.
-    private(set) var networkResponses: [TestableNetworkRequest: HttpConnection] = [:]
+    /// Matches sent `NetworkRequest`s with their corresponding `HttpConnection` responses.
+    private(set) var networkResponses: [TestableNetworkRequest: [HttpConnection]] = [:]
     private var expectedNetworkRequests: [TestableNetworkRequest: CountDownLatch] = [:]
 
     func recordSentNetworkRequest(_ networkRequest: NetworkRequest) {
@@ -90,21 +90,35 @@ class NetworkRequestHelper {
     }
 
     // MARK: - Network response helpers
-    /// Sets a network response for the provided network request.
+    /// Adds a network response for the provided network request.
     ///
     /// - Parameters:
     ///   - networkRequest: The `NetworkRequest`for which the response is being set.
     ///   - responseConnection: The `HttpConnection` to set as a response.
-    func setResponse(for networkRequest: NetworkRequest, responseConnection: HttpConnection?) {
+    func addResponse(for networkRequest: NetworkRequest, responseConnection: HttpConnection) {
         let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
-        networkResponses[testableNetworkRequest] = responseConnection
+        if networkResponses[testableNetworkRequest] != nil {
+            networkResponses[testableNetworkRequest]?.append(responseConnection)
+        }
+        else {
+            networkResponses[testableNetworkRequest] = [responseConnection]
+        }
+    }
+    
+    /// Removes all network responses for the provided network request.
+    ///
+    /// - Parameters:
+    ///   - networkRequest: The `NetworkRequest` for which to remove all responses.
+    func removeAllResponses(for networkRequest: NetworkRequest) {
+        let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
+        networkResponses[testableNetworkRequest] = nil
     }
 
-    /// Returns the network response associated with the given network request.
+    /// Returns the network responses associated with the given network request.
     ///
     /// - Parameter networkRequest: The `NetworkRequest` for which the response should be retrieved.
-    /// - Returns: The `HttpConnection` response associated with the provided `NetworkRequest`, or `nil` if no response was found.
-    func getResponse(for networkRequest: NetworkRequest) -> HttpConnection? {
+    /// - Returns: The array of `HttpConnection` responses associated with the provided `NetworkRequest`, or `nil` if no response was found.
+    func getResponses(for networkRequest: NetworkRequest) -> [HttpConnection]? {
         return networkResponses[TestableNetworkRequest(from: networkRequest)]
     }
 
