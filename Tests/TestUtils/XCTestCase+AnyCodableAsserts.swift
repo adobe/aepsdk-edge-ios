@@ -488,21 +488,29 @@ extension XCTestCase {
                 wildcardIndexes = Set(0..<expected.count)
                 expectedIndexes.removeAll()
             } else {
-                // TODO: update this to be flat? since there's only 1 operation now instead of 3
-                // Strongly validates index notation: "[123]"
+                // Find wildcard indexes and extract their indexes
+                
+                // Strongly validates array style access format: "[123]"
+                // However, doesn't care about what characters are between the brackets (this will be santized later)
                 let arrayIndexValueRegex = #"^\[(.*?)\]$"#
+                
+                // Filters all the path end keys that have valid array style access format, and returns only the string between the brackets
+                // Ex: "[123]" -> "123", "[ab12]" -> "ab12"
                 let indexValues = Set(pathEndKeys
                     .flatMap { getCapturedRegexGroups(text: $0, regexPattern: arrayIndexValueRegex) })
-
-                func filterConvertAndIntersect(condition: (String) -> Bool, replacement: @escaping (String) -> String = { $0 }) -> Set<Int> {
-                    var result = Set(indexValues.filter(condition).compactMap { Int(replacement($0)) })
-                    let intersection = expectedIndexes.intersection(result)
-                    result = intersection
-                    expectedIndexes.subtract(intersection)
-                    return result
-                }
-
-                wildcardIndexes = filterConvertAndIntersect(condition: { $0.contains("*") }, replacement: { $0.replacingOccurrences(of: "*", with: "") })
+                
+                // 1. Filters the index values to the ones that have the wildcard marker `"*"`
+                // 2. Removes all asterisk characters from the index string
+                // 3. Casts the end result to an Int, discarding index if it is not a valid Int (sanitizes invalid strings)
+                // 4. Creates a unique set of the final values that pass all the above steps
+                var result = Set(indexValues
+                    .filter { $0.contains("*") }
+                    .compactMap { Int($0.replacingOccurrences(of: "*", with: "")) })
+                // Discard wildcard indexes that are out of bounds of the available expected indexes
+                let intersection = expectedIndexes.intersection(result)
+                wildcardIndexes = intersection
+                // Remove all wildcard indexes from the valid expected indexes, so validation is not performed twice
+                expectedIndexes.subtract(wildcardIndexes)
             }
 
             var finalResult = true
