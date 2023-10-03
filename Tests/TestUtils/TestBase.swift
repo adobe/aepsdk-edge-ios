@@ -223,4 +223,25 @@ class TestBase: XCTestCase {
         guard !message.isEmpty && TestBase.debugEnabled else { return }
         print("TestBase - \(message)")
     }
+
+    // MARK: Specialized Helpers
+    func getEdgeEventHandles(expectedHandleType: String) -> [Event] {
+        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
+    }
+
+    func getEdgeResponseErrors() -> [Event] {
+        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
+    }
+
+    /// Extracts the Edge location hint from the location hint result
+    func getLastLocationHintResultValue() -> String? {
+        let locationHintResultEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).last
+        guard let payload = locationHintResultEvent?.data?["payload"] as? [[String: Any]] else {
+            return nil
+        }
+        guard payload.indices.contains(2) else {
+            return nil
+        }
+        return payload[2]["hint"] as? String
+    }
 }

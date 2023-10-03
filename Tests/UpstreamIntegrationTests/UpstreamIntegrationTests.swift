@@ -45,8 +45,10 @@ class UpstreamIntegrationTests: TestBase {
 
         let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
+
         // Set environment file ID for specific Edge Network environment
-        setMobileCoreEnvironmentFileID(for: edgeEnvironment)
+        MobileCore.configureWith(appId: getTagsEnvironmentFileId(for: edgeEnvironment))
+
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
@@ -70,7 +72,7 @@ class UpstreamIntegrationTests: TestBase {
     func testSendEvent_receivesExpectedNetworkResponse() {
         // Setup
         // Note: test constructs should always be valid
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
@@ -92,7 +94,7 @@ class UpstreamIntegrationTests: TestBase {
     /// Tests that a standard sendEvent receives a single network response with HTTP code 200
     func testSendEvent_whenComplexEvent_receivesExpectedNetworkResponse() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let eventPayloadJSON = #"""
@@ -132,7 +134,7 @@ class UpstreamIntegrationTests: TestBase {
     /// Tests that a standard sendEvent () receives a single network response with HTTP code 200
     func testSendEvent_whenComplexXDMEvent_receivesExpectedNetworkResponse() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let eventPayloadJSON = #"""
@@ -389,7 +391,7 @@ class UpstreamIntegrationTests: TestBase {
 
         // Set actual testing expectations
         // If test suite level location hint is not set, uses the value extracted from location hint result
-        let locationHintNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: locationHintResult), httpMethod: .post)!
+        let locationHintNetworkRequest = NetworkRequest(urlString: createUrl(with: locationHintResult), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: locationHintNetworkRequest, expectedCount: 1)
 
         // Test
@@ -497,7 +499,7 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid datastream ID returns the expected error
     func testSendEvent_withInvalidDatastreamID_receivesExpectedError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
 
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
@@ -545,7 +547,7 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid location hint returns the expected error with 0 byte data body
     func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
         // Setup
-        let invalidNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: "invalid"), httpMethod: .post)!
+        let invalidNetworkRequest = NetworkRequest(urlString: createUrl(with: "invalid"), httpMethod: .post)!
 
         networkService.setExpectationForNetworkRequest(networkRequest: invalidNetworkRequest, expectedCount: 1)
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
@@ -569,323 +571,8 @@ class UpstreamIntegrationTests: TestBase {
         assertExpectedEvents(ignoreUnexpectedEvents: true)
     }
 
-    // MARK: datastream config overrides test
-
-    // Test configOverrides with valid data
-    func testSendEvent_withValidConfigOverrides_receivesExpectedNetworkResponse() {
-        // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
-        let configOverrides = ["com_adobe_experience_platform": [
-                                    "datasets": [
-                                        "event": [
-                                            "datasetId": "6515e1dbfeb3b128d19bb1e4"
-                                        ]
-
-                                    ]
-                                ],
-                                "com_adobe_analytics": [
-                                    "reportSuites": [
-                                        "mobile5.e2e.rsid2"
-                                    ]
-                                ]]
-        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamConfigOverride: configOverrides)
-
-        // Test
-        Edge.sendEvent(experienceEvent: experienceEvent)
-
-        // Verify
-        // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
-
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
-    }
-
-    // Test configOverrides with dummy data
-    func testSendEvent_withInvalidConfigOverrides_receivesExpectedNetworkResponseError() {
-        // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
-        let expectedErrorJSON = #"""
-        {
-            "status": 400,
-            "title": "Invalid request",
-            "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
-        }
-        """#
-
-        let configOverrides = ["test": ["key": "value"]]
-
-        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamConfigOverride: configOverrides)
-
-        // Test
-        Edge.sendEvent(experienceEvent: experienceEvent)
-
-        // Verify
-        // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
-
-        XCTAssertEqual(1, matchingResponses.count)
-        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
-                        exactMatchPaths: ["status", "title", "type"])
-
-        // Event assertions
-        let errorEvents = getEdgeResponseErrors()
-        XCTAssertEqual(1, errorEvents.count)
-    }
-
-    // Tests ConfigOverrides with dataset not added in the datastream config and RSID not added to override setting in the Analytics upstream config
-    func testSendEvent_withInvalidConfigOverrides_notConfiguredValues_receivesExpectedNetworkResponseError() {
-        // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
-        let expectedErrorJSON = #"""
-        {
-            "status": 400,
-            "title": "Invalid request",
-            "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
-        }
-        """#
-
-        let configOverrides = ["com_adobe_experience_platform": [
-                                    "datasets": [
-                                        "event": [
-                                            "datasetId": "6515e1f6296d1e28d3209b9f"
-                                        ]
-
-                                    ]
-                                ],
-                                "com_adobe_analytics": [
-                                    "reportSuites": [
-                                        "mobile5e2e.rsid3"
-                                    ]
-                                ]]
-        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamConfigOverride: configOverrides)
-
-        // Test
-        Edge.sendEvent(experienceEvent: experienceEvent)
-
-        // Verify
-        // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
-
-        XCTAssertEqual(1, matchingResponses.count)
-        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
-                        exactMatchPaths: ["status", "title", "type"])
-
-        // Event assertions
-        let errorEvents = getEdgeResponseErrors()
-        XCTAssertEqual(1, errorEvents.count)
-    }
-
-    func testSendEvent_withInvalidConfigOverrides_dummyValues_receivesExpectedNetworkResponseError() {
-        // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
-        let expectedErrorJSON = #"""
-        {
-            "status": 400,
-            "title": "Invalid request",
-            "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
-        }
-        """#
-
-        let configOverrides = ["com_adobe_experience_platform": [
-                                    "datasets": [
-                                        "event": [
-                                            "datasetId": "DummyDataset"
-                                        ]
-
-                                    ]
-                                ],
-                                "com_adobe_analytics": [
-                                    "reportSuites": [
-                                        "DummyRSID1",
-                                        "DummyRSID2"
-                                    ]
-                                ]]
-        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamConfigOverride: configOverrides)
-
-        // Test
-        Edge.sendEvent(experienceEvent: experienceEvent)
-
-        // Verify
-        // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
-
-        XCTAssertEqual(1, matchingResponses.count)
-        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
-                        exactMatchPaths: ["status", "title", "type"])
-
-        // Event assertions
-        let errorEvents = getEdgeResponseErrors()
-        XCTAssertEqual(1, errorEvents.count)
-    }
-
-    // test configOverrides with valid dataset ID, one valid and one dummy value for RSIDs
-    func testSendEvent_withInvalidConfigOverrides_containingValidAndDummyValues_receivesExpectedNetworkResponseError() {
-        // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
-        let expectedErrorJSON = #"""
-        {
-            "status": 400,
-            "title": "Invalid request",
-            "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
-        }
-        """#
-
-        let configOverrides = ["com_adobe_experience_platform": [
-                                    "datasets": [
-                                        "event": [
-                                            "datasetId": "6515e1dbfeb3b128d19bb1e4"
-                                        ]
-
-                                    ]
-                                ],
-                                "com_adobe_analytics": [
-                                    "reportSuites": [
-                                        "mobile5.e2e.rsid2",
-                                        "DummyRSID2"
-                                    ]
-                                ]]
-        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamConfigOverride: configOverrides)
-
-        // Test
-        Edge.sendEvent(experienceEvent: experienceEvent)
-
-        // Verify
-        // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
-
-        XCTAssertEqual(1, matchingResponses.count)
-        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
-                        exactMatchPaths: ["status", "title", "type"])
-
-        // Event assertions
-        let errorEvents = getEdgeResponseErrors()
-        XCTAssertEqual(1, errorEvents.count)
-    }
-
-    // Test datastream ID override with valid ID string
-    func testSendEvent_withValidDatastreamIDOverride_receivesExpectedNetworkResponse() {
-        // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
-        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamIdOverride: "15d7bce0-3e2c-447b-bbda-129c57c60820")
-
-        // Test
-        Edge.sendEvent(experienceEvent: experienceEvent)
-
-        // Verify
-        // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
-
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
-    }
-
-    // Test datastream ID override with dummy string
-    func testSendEvent_withDummyDatastreamIDOverride_receivesExpectedNetworkResponseError() {
-        // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
-
-        let expectedErrorJSON = #"""
-        {
-            "status": 400,
-            "title": "Invalid datastream ID",
-            "type": "https://ns.adobe.com/aep/errors/EXEG-0003-400"
-        }
-        """#
-
-        let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamIdOverride: "DummyDatastreamID")
-
-        // Test
-        Edge.sendEvent(experienceEvent: experienceEvent)
-
-        // Verify
-        // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
-
-        XCTAssertEqual(1, matchingResponses.count)
-        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""),
-                        exactMatchPaths: ["status", "title", "type"])
-
-        // Event assertions
-        let errorEvents = getEdgeResponseErrors()
-        XCTAssertEqual(1, errorEvents.count)
-    }
-
     // MARK: - Test helper methods
-    private func setMobileCoreEnvironmentFileID(for edgeEnvironment: EdgeEnvironment) {
-        switch edgeEnvironment {
-        case .prod:
-            MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
-        case .preProd:
-            MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
-        case .int:
-            // TODO: create integration environment environment file ID
-            MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
-        }
-    }
-
-    /// Creates a valid interact URL using the provided location hint. If location hint is invalid, returns default URL with no location hint.
-    /// - Parameters:
-    ///    - locationHint: The `EdgeLocationHint`'s raw value to use in the URL
-    /// - Returns: The interact URL with location hint applied, default URL if location hint is invalid
-    private func createURLWith(locationHint: EdgeLocationHint?) -> String {
-        guard let locationHint = locationHint else {
-            return "https://obumobile5.data.adobedc.net/ee/v1/interact"
-        }
-        return createURLWith(locationHint: locationHint.rawValue)
-    }
-
-    /// Creates a valid interact URL using the provided location hint.
-    /// - Parameters:
-    ///    - locationHint: The location hint String to use in the URL
-    /// - Returns: The interact URL with location hint applied
-    private func createURLWith(locationHint: String?) -> String {
-        guard let locationHint = locationHint else {
-            return "https://obumobile5.data.adobedc.net/ee/v1/interact"
-        }
-        return "https://obumobile5.data.adobedc.net/ee/\(locationHint)/v1/interact"
-    }
-
     private func expectEdgeEventHandle(expectedHandleType: String, expectedCount: Int32 = 1) {
         setExpectationEvent(type: TestConstants.EventType.EDGE, source: expectedHandleType, expectedCount: expectedCount)
-    }
-
-    private func getEdgeEventHandles(expectedHandleType: String) -> [Event] {
-        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
-    }
-
-    private func getEdgeResponseErrors() -> [Event] {
-        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
-    }
-
-    /// Extracts the Edge location hint from the location hint result
-    private func getLastLocationHintResultValue() -> String? {
-        let locationHintResultEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).last
-        guard let payload = locationHintResultEvent?.data?["payload"] as? [[String: Any]] else {
-            return nil
-        }
-        guard payload.indices.contains(2) else {
-            return nil
-        }
-        return payload[2]["hint"] as? String
     }
 }
