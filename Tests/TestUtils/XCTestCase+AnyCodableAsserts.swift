@@ -504,16 +504,15 @@ extension XCTestCase {
                 // Then remove all wildcard indexes from the valid expected indexes, so validation is not performed twice
                 
                 let arrayIndexValueRegex = #"^\[(.*?)\]$"#
-                let indexValues = Set(pathEndKeys
+                let potentialWildcardIndexes = Set(pathEndKeys
                     .flatMap { getCapturedRegexGroups(text: $0, regexPattern: arrayIndexValueRegex) })
                 
-                
-                var result = Set(indexValues
+                var sanitizedWildcardIndexes = Set(potentialWildcardIndexes
                     .filter { $0.contains("*") }
                     .compactMap { Int($0.replacingOccurrences(of: "*", with: "")) })
                 
-                let intersection = expectedIndexes.intersection(result)
-                wildcardIndexes = intersection
+                let wilcardIndexesInExpectedArrayBounds = expectedIndexes.intersection(sanitizedWildcardIndexes)
+                wildcardIndexes = wilcardIndexesInExpectedArrayBounds
                 
                 expectedIndexes.subtract(wildcardIndexes)
             }
