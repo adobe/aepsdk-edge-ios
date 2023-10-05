@@ -46,11 +46,8 @@ class AnyCodableAssertsTests: XCTestCase {
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*1]", "[*0]"])
     }
     
-    /// Validates that wildcard character can be placed in front or behind the index.
-    ///
-    /// - Note: Tests can use a standard format for asterisk placement, without
-    /// having to test all variations.
-    func testShouldValidateWildcardPlacementBeforeAndAfterIndex() {
+    /// Validates that the wildcard character `*` can only be placed to the left of the index value.
+    func testShouldValidateWildcardIndexFormats() {
         let expectedJSONString = """
         [1]
         """
@@ -62,10 +59,26 @@ class AnyCodableAssertsTests: XCTestCase {
         let actual = getAnyCodable(actualJSONString)!
 
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*0]"])
-        assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0*]"])
-
+        XCTExpectFailure("Validation should fail when using an invalid wildcard format") {
+            assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[**0]"])
+        }
+        XCTExpectFailure("Validation should fail when using an invalid wildcard format") {
+            assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0*]"])
+        }
+        XCTExpectFailure("Validation should fail when using an invalid wildcard format") {
+            assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0*0]"])
+        }
+        
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]"])
-        assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0*]"])
+        XCTExpectFailure("Validation should fail when using an invalid wildcard format") {
+            assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[**0]"])
+        }
+        XCTExpectFailure("Validation should fail when using an invalid wildcard format") {
+            assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0*]"])
+        }
+        XCTExpectFailure("Validation should fail when using an invalid wildcard format") {
+            assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0*0]"])
+        }
     }
     
     /// Validates:
