@@ -75,8 +75,8 @@ extension XCTestCase {
     /// - Keys with array brackets: Escape the brackets, e.g., `key\[123\]`.
     ///
     /// For wildcard array matching, where position doesn't matter:
-    /// 1. Specific index with wildcard: `[*<INT>]` or `[<INT>*]` (ex: `[*1]`, `[28*]`). The element
-    /// at the given index in `expected` will use wildcard matching in `actual`.
+    /// 1. Specific index with wildcard: `[*<INT>]` (ex: `[*0]`, `[*28]`). Only a single wildcard character `*` MUST be placed to the
+    /// left of the index value. The element at the given index in `expected` will use wildcard matching in `actual`.
     /// 2. Universal wildcard: `[*]`. All elements in `expected` will use wildcard matching in `actual`.
     ///
     /// In array comparisons, elements are compared in order, up to the last element of the expected array.
@@ -124,8 +124,8 @@ extension XCTestCase {
     /// - Keys with array brackets: Escape the brackets, e.g., `key\[123\]`.
     ///
     /// For wildcard array matching, where position doesn't matter:
-    /// 1. Specific index with wildcard: `[*<INT>]` or `[<INT>*]` (ex: `[*1]`, `[28*]`). The element
-    /// at the given index in `expected` will use wildcard matching in `actual`.
+    /// 1. Specific index with wildcard: `[*<INT>]` (ex: `[*0]`, `[*28]`). Only a single wildcard character `*` MUST be placed to the
+    /// left of the index value. The element at the given index in `expected` will use wildcard matching in `actual`.
     /// 2. Universal wildcard: `[*]`. All elements in `expected` will use wildcard matching in `actual`.
     ///
     /// In array comparisons, elements are compared in order, up to the last element of the expected array.
@@ -488,21 +488,12 @@ extension XCTestCase {
                 wildcardIndexes = Set(0..<expected.count)
                 expectedIndexes.removeAll()
             } else {
-                // TODO: update this to be flat? since there's only 1 operation now instead of 3
-                // Strongly validates index notation: "[123]"
-                let arrayIndexValueRegex = #"^\[(.*?)\]$"#
-                let indexValues = Set(pathEndKeys
-                    .flatMap { getCapturedRegexGroups(text: $0, regexPattern: arrayIndexValueRegex) })
-
-                func filterConvertAndIntersect(condition: (String) -> Bool, replacement: @escaping (String) -> String = { $0 }) -> Set<Int> {
-                    var result = Set(indexValues.filter(condition).compactMap { Int(replacement($0)) })
-                    let intersection = expectedIndexes.intersection(result)
-                    result = intersection
-                    expectedIndexes.subtract(intersection)
-                    return result
-                }
-
-                wildcardIndexes = filterConvertAndIntersect(condition: { $0.contains("*") }, replacement: { $0.replacingOccurrences(of: "*", with: "") })
+                let validWildcards = extractValidWildcardIndexes(pathEndKeys: pathEndKeys, file: file, line: line)
+                // Discard wildcard indexes that are out of bounds of the available expected indexes
+                let inBoundWildcards = expectedIndexes.intersection(validWildcards)
+                wildcardIndexes = inBoundWildcards
+                // Remove all wildcard indexes from the valid expected indexes, so assertions are not performed twice
+                expectedIndexes.subtract(wildcardIndexes)
             }
 
             var finalResult = true
@@ -638,6 +629,51 @@ extension XCTestCase {
         }
 
     // MARK: - Test setup and output helpers
+    
+    /// Extracts and returns a set of valid wildcard indexes.
+    ///
+    /// This method only considers keys that match the array access format (ex: `[*123]`).
+    /// It identifies wildcard indexes by:
+    /// 1. Filtering out index values that don't have the wildcard marker `*`.
+    /// 2. Strictly validating the following, and emitting a test failure if any check fails:
+    ///   i. Wildcard character must be placed on the left of the index value (that is, as the leftmost character in the array brackets).
+    ///   ii. The index value must be parsable as a valid `Int` once the wildcard character is removed.
+    ///
+    /// - Parameters:
+    ///   - pathEndKeys: An array of end keys which may contain potential wildcard indexes.
+    ///   - file: The file from which the method is called, used for localized assertion failures.
+    ///   - line: The line from which the method is called, used for localized assertion failures.
+    ///
+    /// - Returns: A set of valid wildcard `Int` indexes.
+    ///
+    /// - Note:
+    ///   Examples of conversions:
+    ///   - `[*123]` -> `123`
+    ///   - `[*ab12]` causes a test failure since "ab12" is not a valid integer.
+    ///   - `[0*]` causes a test failure since the wildcard character `*` is not the leftmost character.
+    private func extractValidWildcardIndexes(pathEndKeys: [String], file: StaticString = #file, line: UInt = #line) -> Set<Int> {
+        let arrayIndexValueRegex = #"^\[(.*?)\]$"#
+        let arrayIndexValues = Set(pathEndKeys
+            .flatMap { getCapturedRegexGroups(text: $0, regexPattern: arrayIndexValueRegex) })
+        
+        let potentialWildcardIndexes = arrayIndexValues
+            .filter { $0.contains("*") }
+        
+        var result: Set<Int> = []
+        for potentialWildcardIndex in potentialWildcardIndexes {
+            if potentialWildcardIndex.first != "*" {
+                XCTFail("TEST ERROR: wildcard indexes must have a single `*` character to the left of the index (ex: [*0])", file: file, line: line)
+                continue
+            }
+            let wildcardIndexString = potentialWildcardIndex.dropFirst()
+            guard let validWildcardIndex = Int(wildcardIndexString) else {
+                XCTFail("TEST ERROR: wildcard index is not a valid Int: \(wildcardIndexString)", file: file, line: line)
+                continue
+            }
+            result.insert(validWildcardIndex)
+        }
+        return result
+    }
     
     /// Finds all matches of the `regexPattern` in the `text` and for each match, returns the original matched `String`
     /// and its corresponding non-null capture groups.
