@@ -19,8 +19,8 @@ import XCTest
 
 /// Performs validation on integration with the Edge Network upstream service
 class UpstreamIntegrationTests: TestBase {
-    private var edgeEnvironment: EdgeEnvironment = .prod
-    private var edgeLocationHint: EdgeLocationHint?
+    private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
+    private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
 
     private var networkService: RealNetworkService = RealNetworkService()
 
@@ -36,16 +36,11 @@ class UpstreamIntegrationTests: TestBase {
 
         continueAfterFailure = true
         TestBase.debugEnabled = true
-        // Extract Edge Network environment level from shell environment; see init for default value
-        self.edgeEnvironment = EdgeEnvironment()
-        print("Using Edge Network environment: \(edgeEnvironment.rawValue)")
-
-        // Extract Edge location hint from shell environment; see init for default value
-        self.edgeLocationHint = EdgeLocationHint()
 
         let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
 
+        print("Using Edge Network environment: \(edgeEnvironment)")
         // Set environment file ID for specific Edge Network environment
         MobileCore.configureWith(appId: getTagsEnvironmentFileId(for: edgeEnvironment))
 
@@ -62,6 +57,7 @@ class UpstreamIntegrationTests: TestBase {
         } else {
             print("No preset Edge location hint is being used for this test.")
         }
+
         resetTestExpectations()
         networkService.reset()
     }
@@ -72,7 +68,7 @@ class UpstreamIntegrationTests: TestBase {
     func testSendEvent_receivesExpectedNetworkResponse() {
         // Setup
         // Note: test constructs should always be valid
-        let interactNetworkRequest = NetworkRequest(urlString: createUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
@@ -94,7 +90,7 @@ class UpstreamIntegrationTests: TestBase {
     /// Tests that a standard sendEvent receives a single network response with HTTP code 200
     func testSendEvent_whenComplexEvent_receivesExpectedNetworkResponse() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let eventPayloadJSON = #"""
@@ -134,7 +130,7 @@ class UpstreamIntegrationTests: TestBase {
     /// Tests that a standard sendEvent () receives a single network response with HTTP code 200
     func testSendEvent_whenComplexXDMEvent_receivesExpectedNetworkResponse() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
 
         let eventPayloadJSON = #"""
@@ -391,7 +387,7 @@ class UpstreamIntegrationTests: TestBase {
 
         // Set actual testing expectations
         // If test suite level location hint is not set, uses the value extracted from location hint result
-        let locationHintNetworkRequest = NetworkRequest(urlString: createUrl(with: locationHintResult), httpMethod: .post)!
+        let locationHintNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: locationHintResult), httpMethod: .post)!
         networkService.setExpectationForNetworkRequest(networkRequest: locationHintNetworkRequest, expectedCount: 1)
 
         // Test
@@ -499,7 +495,7 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid datastream ID returns the expected error
     func testSendEvent_withInvalidDatastreamID_receivesExpectedError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
 
         networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
@@ -547,7 +543,7 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid location hint returns the expected error with 0 byte data body
     func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
         // Setup
-        let invalidNetworkRequest = NetworkRequest(urlString: createUrl(with: "invalid"), httpMethod: .post)!
+        let invalidNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: "invalid"), httpMethod: .post)!
 
         networkService.setExpectationForNetworkRequest(networkRequest: invalidNetworkRequest, expectedCount: 1)
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
@@ -569,10 +565,5 @@ class UpstreamIntegrationTests: TestBase {
 
         // Error event assertions
         assertExpectedEvents(ignoreUnexpectedEvents: true)
-    }
-
-    // MARK: - Test helper methods
-    private func expectEdgeEventHandle(expectedHandleType: String, expectedCount: Int32 = 1) {
-        setExpectationEvent(type: TestConstants.EventType.EDGE, source: expectedHandleType, expectedCount: expectedCount)
     }
 }

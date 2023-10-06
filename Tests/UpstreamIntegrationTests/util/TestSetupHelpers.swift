@@ -12,11 +12,25 @@
 
 import Foundation
 
+/// Extracts Edge location hint from shell environment. If nothing is set the default value `nil` is returned
+ func getLocationHint() -> EdgeLocationHint? {
+    let edgeLocationHint = EdgeLocationHint()
+    return edgeLocationHint
+}
+
+/// Extracts Edge enviroment from shell environment. If nothing is set the default value `prod` is returned
+func getEdgeEnvironment() -> EdgeEnvironment {
+    let edgeEnvironment = EdgeEnvironment()
+    print("Using Edge Network environment: \(edgeEnvironment.rawValue)")
+
+    return edgeEnvironment
+}
+
 /// Creates a valid interact URL using the provided location hint.
 /// - Parameters:
 ///    - locationHint: The location hint String to use in the URL
 /// - Returns: The interact URL with location hint applied
-public func createUrl(with locationHint: String?) -> String {
+public func createInteractUrl(with locationHint: String?) -> String {
     guard let locationHint = locationHint else {
         return "https://obumobile5.data.adobedc.net/ee/v1/interact"
     }

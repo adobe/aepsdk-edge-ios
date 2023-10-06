@@ -14,6 +14,7 @@ import AEPCore
 import Foundation
 
 extension TestBase {
+
     func getEdgeEventHandles(expectedHandleType: String) -> [Event] {
         return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
     }
@@ -32,5 +33,9 @@ extension TestBase {
             return nil
         }
         return payload[2]["hint"] as? String
+    }
+
+    func expectEdgeEventHandle(expectedHandleType: String, expectedCount: Int32 = 1) {
+        setExpectationEvent(type: TestConstants.EventType.EDGE, source: expectedHandleType, expectedCount: expectedCount)
     }
 }
