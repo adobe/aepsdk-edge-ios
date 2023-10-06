@@ -834,7 +834,7 @@ extension XCTestCase {
         }
     }
     
-    /// Extracts valid array format access components from an individual path component and returns the separated components.
+    /// Extracts valid array format access components from a given path component and returns the separated components.
     ///
     /// Given `"key1[0][1]"`, the result is `["key1", "[0]", "[1]"]`.
     /// Array format access can be escaped using a backslash character preceding an array bracket.
