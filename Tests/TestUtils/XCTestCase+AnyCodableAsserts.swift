@@ -840,7 +840,7 @@ extension XCTestCase {
     /// Array format access can be escaped using a backslash character preceding an array bracket.
     /// For example: `"key1\[0\]"` is treated as the single component `"key1[0]"`.
     ///
-    /// - Parameter pathComponent: The individual path component undergoing extraction into array format access components.
+    /// - Parameter pathComponent: The path component to be split into separate components given valid array formatted components.
     ///
     /// - Returns: An array of `String` path components, where the original path component is divided into individual elements. Valid array format
     ///  components in the original path are extracted as distinct elements, in order. If there are no array format components, the array contains only
