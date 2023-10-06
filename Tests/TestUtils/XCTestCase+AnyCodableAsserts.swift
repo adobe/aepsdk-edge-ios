@@ -662,7 +662,7 @@ extension XCTestCase {
         var result: Set<Int> = []
         for potentialWildcardIndex in potentialWildcardIndexes {
             if potentialWildcardIndex.first != "*" {
-                XCTFail("TEST ERROR: wildcard indexes must have a single `*` character to the left of the index.", file: file, line: line)
+                XCTFail("TEST ERROR: wildcard indexes must have a single `*` character to the left of the index (ex: [*0])", file: file, line: line)
                 continue
             }
             let wildcardIndexString = potentialWildcardIndex.dropFirst()
