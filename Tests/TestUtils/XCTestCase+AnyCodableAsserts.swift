@@ -833,17 +833,20 @@ extension XCTestCase {
             return [first: construct(path: path, pathString: pathString)]
         }
     }
-
-    /// Processes an individual path component element and extracts any valid array style access into separate components.
+    
+    /// Extracts valid array format access components from a given path component and returns the separated components.
     ///
-    /// For example, `"key1[0][1]"` is split into `["key1", "[0]", "[1]"]`
-    /// Array style access can be escaped using a preceding backslash character. For instance:
-    /// `"key1\[0\]"` is interpreted as the single component `"key1[0]"`.
-    /// - Parameter pathComponent: The individual path component to be split into array style access components
+    /// Given `"key1[0][1]"`, the result is `["key1", "[0]", "[1]"]`.
+    /// Array format access can be escaped using a backslash character preceding an array bracket. Valid bracket escape sequences are cleaned so
+    /// that the final path component does not have the escape character.
+    /// For example: `"key1\[0\]"` results in the single path component `"key1[0]"`.
     ///
-    /// - Returns: An array of strings representing the individual array style components of the path. If
-    ///  there are no arary style components, returns a list with the original path component.
-    func extractArrayStyleComponents(pathComponent: String) -> [String] {
+    /// - Parameter pathComponent: The path component to be split into separate components given valid array formatted components.
+    ///
+    /// - Returns: An array of `String` path components, where the original path component is divided into individual elements. Valid array format
+    ///  components in the original path are extracted as distinct elements, in order. If there are no array format components, the array contains only
+    ///  the original path component.
+    func extractArrayFormattedComponents(pathComponent: String) -> [String] {
         // Handle edge case where input is empty
         if pathComponent.isEmpty { return [""] }
 
@@ -925,7 +928,7 @@ extension XCTestCase {
             for pathComponent in keyPathComponents {
                 let pathComponent = pathComponent.replacingOccurrences(of: "\\.", with: ".")
 
-                let components = extractArrayStyleComponents(pathComponent: pathComponent)
+                let components = extractArrayFormattedComponents(pathComponent: pathComponent)
                 allPathComponents.append(contentsOf: components)
             }
 
