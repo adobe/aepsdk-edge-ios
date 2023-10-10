@@ -40,7 +40,6 @@ class UpstreamIntegrationTests: TestBase {
         let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
 
-        print("Using Edge Network environment: \(edgeEnvironment)")
         // Set environment file ID for specific Edge Network environment
         MobileCore.configureWith(appId: getTagsEnvironmentFileId(for: edgeEnvironment))
 

@@ -26,17 +26,6 @@ func getEdgeEnvironment() -> EdgeEnvironment {
     return edgeEnvironment
 }
 
-/// Creates a valid interact URL using the provided location hint.
-/// - Parameters:
-///    - locationHint: The location hint String to use in the URL
-/// - Returns: The interact URL with location hint applied
-public func createInteractUrl(with locationHint: String?) -> String {
-    guard let locationHint = locationHint else {
-        return "https://obumobile5.data.adobedc.net/ee/v1/interact"
-    }
-    return "https://obumobile5.data.adobedc.net/ee/\(locationHint)/v1/interact"
-}
-
 /// Returns Tags environment file ID based on the environment
 /// - Parameter edgeEnvironment:Edge Network environment levels that correspond to actual deployment environment levels
 /// - Returns: A environment file ID string

@@ -14,11 +14,27 @@ import AEPCore
 import Foundation
 
 extension TestBase {
+    /// Creates a valid interact URL using the provided location hint.
+    /// - Parameters:
+    ///    - locationHint: The location hint String to use in the URL
+    /// - Returns: The interact URL with location hint applied
+    public func createInteractUrl(with locationHint: String?) -> String {
+        guard let locationHint = locationHint else {
+            return "https://obumobile5.data.adobedc.net/ee/v1/interact"
+        }
+        return "https://obumobile5.data.adobedc.net/ee/\(locationHint)/v1/interact"
+    }
 
+    /// Gets all the dispatched events of type `com.adobe.eventType.edge` and source passed.
+    /// - Parameters:
+    ///    - expectedHandleType: `String` denoting the edge handle type
+    /// - Returns: List of events of the passed handle type
     func getEdgeEventHandles(expectedHandleType: String) -> [Event] {
         return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
     }
 
+    /// Gets all the dispatched `Edge` error response `Event`s
+    /// - Returns: List of `Edge` error response `Event`s
     func getEdgeResponseErrors() -> [Event] {
         return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
     }
@@ -35,6 +51,10 @@ extension TestBase {
         return payload[2]["hint"] as? String
     }
 
+    /// Sets the test expectation for the event of type `com.adobe.eventType.edge` and source passed, with count matching the passed expected counts.
+    /// - Parameters:
+    ///    - expectedHandleType: `String` denoting expected handle type
+    ///    - expectedCount: `Int32` denoting number of events expected
     func expectEdgeEventHandle(expectedHandleType: String, expectedCount: Int32 = 1) {
         setExpectationEvent(type: TestConstants.EventType.EDGE, source: expectedHandleType, expectedCount: expectedCount)
     }
