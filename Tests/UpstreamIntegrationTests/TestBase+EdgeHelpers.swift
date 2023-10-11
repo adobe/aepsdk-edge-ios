@@ -11,9 +11,22 @@
 //
 
 import AEPCore
+import AEPEdge
 import Foundation
 
 extension TestBase {
+
+    /// Sets the location hint with the provided value.
+    ///  - Parameter edgelocationHint: `String` denoting the location hint
+    func setInitialLocationHint(_ edgeLocationHint: String?) {
+        if edgeLocationHint != nil {
+            print("Setting Edge location hint to: \(String(describing: edgeLocationHint))")
+            Edge.setLocationHint(edgeLocationHint)
+        } else {
+            print("No preset Edge location hint is being used for this test.")
+        }
+    }
+
     /// Creates a valid interact URL using the provided location hint.
     /// - Parameters:
     ///    - locationHint: The location hint String to use in the URL

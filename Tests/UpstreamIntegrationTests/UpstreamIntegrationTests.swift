@@ -26,8 +26,6 @@ class UpstreamIntegrationTests: TestBase {
 
     let LOG_SOURCE = "UpstreamIntegrationTests"
 
-    let asyncTimeout: TimeInterval = 10
-
     // Run before each test case
     override func setUp() {
         ServiceProvider.shared.networkService = networkService
@@ -50,12 +48,7 @@ class UpstreamIntegrationTests: TestBase {
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
 
         // Set Edge location hint value if one is set for the test target
-        if edgeLocationHint != nil {
-            print("Setting Edge location hint to: \(String(describing: edgeLocationHint?.rawValue))")
-            Edge.setLocationHint(edgeLocationHint?.rawValue)
-        } else {
-            print("No preset Edge location hint is being used for this test.")
-        }
+        setInitialLocationHint(edgeLocationHint?.rawValue)
 
         resetTestExpectations()
         networkService.reset()

@@ -21,14 +21,9 @@ import XCTest
 class ConfigOverrideTests: TestBase {
     private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
     private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
-
     private var networkService: RealNetworkService = RealNetworkService()
 
     let LOG_SOURCE = "ConfigOverrideTests"
-
-    let asyncTimeout: TimeInterval = 10
-
-    let url = "https://obumobile5.data.adobedc.net/ee/v1/interact"
 
     // Run before each test case
     override func setUp() {
@@ -52,12 +47,7 @@ class ConfigOverrideTests: TestBase {
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
 
         // Set Edge location hint value if one is set for the test target
-        if edgeLocationHint != nil {
-            print("Setting Edge location hint to: \(String(describing: edgeLocationHint?.rawValue))")
-            Edge.setLocationHint(edgeLocationHint?.rawValue)
-        } else {
-            print("No preset Edge location hint is being used for this test.")
-        }
+        setInitialLocationHint(edgeLocationHint?.rawValue)
 
         resetTestExpectations()
         networkService.reset()
