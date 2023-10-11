@@ -58,6 +58,20 @@
                BlueprintName = "UpstreamIntegrationTests"
                ReferencedContainer = "container:AEPEdge.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "ConfigOverrideTests/testSendEvent_withInvalidConfigOverrides_containingValidAndDummyValues_receivesExpectedNetworkResponseError()">
+               </Test>
+               <Test
+                  Identifier = "ConfigOverrideTests/testSendEvent_withInvalidConfigOverrides_dummyValues_receivesExpectedNetworkResponseError()">
+               </Test>
+               <Test
+                  Identifier = "ConfigOverrideTests/testSendEvent_withInvalidConfigOverrides_notConfiguredValues_receivesExpectedNetworkResponseError()">
+               </Test>
+               <Test
+                  Identifier = "ConfigOverrideTests/testSendEvent_withInvalidConfigOverrides_receivesExpectedNetworkResponseError()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

@@ -87,6 +87,7 @@ class ConfigOverrideTests: TestBase {
         XCTAssertEqual(200, matchingResponses.first?.responseCode)
     }
 
+    // TODO: Enable after PDCL-11131 issue is fixed
     // Test configOverrides with dummy data
     func testSendEvent_withInvalidConfigOverrides_receivesExpectedNetworkResponseError() {
         // Setup
@@ -122,6 +123,7 @@ class ConfigOverrideTests: TestBase {
         XCTAssertEqual(1, errorEvents.count)
     }
 
+    // TODO: Enable after PDCL-11131 issue is fixed
     // Tests ConfigOverrides with dataset not added in the datastream config and RSID not added to override setting in the Analytics upstream config
     func testSendEvent_withInvalidConfigOverrides_notConfiguredValues_receivesExpectedNetworkResponseError() {
         // Setup
@@ -167,6 +169,7 @@ class ConfigOverrideTests: TestBase {
         XCTAssertEqual(1, errorEvents.count)
     }
 
+    // TODO: Enable after PDCL-11131 issue is fixed
     func testSendEvent_withInvalidConfigOverrides_dummyValues_receivesExpectedNetworkResponseError() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
@@ -212,6 +215,7 @@ class ConfigOverrideTests: TestBase {
         XCTAssertEqual(1, errorEvents.count)
     }
 
+    // TODO: Enable after PDCL-11131 issue is fixed
     // test configOverrides with valid dataset ID, one valid and one dummy value for RSIDs
     func testSendEvent_withInvalidConfigOverrides_containingValidAndDummyValues_receivesExpectedNetworkResponseError() {
         // Setup
