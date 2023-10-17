@@ -4,14 +4,12 @@ name: Integration Tests
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
 on:
-  # * is a special character in YAML so you have to quote this string
+  # `*` is a special character in YAML so you have to quote this string
   # Avoiding start of hour and other common times to avoid conflicts with peak times
   schedule:
     # Run every weekday at 12:16 PM PDT (Daylight saving time) -> 7:16 PM UTC
+    # Add +1 hour when back in PST
     - cron:  '16 19 * * 1-5'
-
-    # Run every weekday at 12:16 PM PST (Standard time) -> 8:16 PM UTC
-    # - cron:  '16 20 * * 1-5'
 
   workflow_dispatch:
     inputs:
