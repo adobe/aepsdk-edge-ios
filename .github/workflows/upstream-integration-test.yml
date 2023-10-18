@@ -123,7 +123,7 @@ jobs:
 
         echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_OUTPUT
 
-    - name: "exit code: ${{ steps.on-failure.outputs.EXIT_CODE }}"
+    - name: "${{ toJson(steps.on-failure.outputs) }}"
       id: failure-data
       if: ${{ failure() }}
       run: |
