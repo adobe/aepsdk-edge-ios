@@ -126,7 +126,7 @@ jobs:
       id: failure-data
       if: ${{ failure() }}
       run: |
-        echo 'Job used branch: ' ${{ github.event.inputs.branch }}. Please make sure this is the branch to run off of.
+        echo 'exit code in the body: ${{ steps.on-failure.outputs.EXIT_CODE }}'
         
     
 
