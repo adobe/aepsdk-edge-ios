@@ -66,7 +66,7 @@ jobs:
     - name: Simulate workflow failure
       id: simulate-failure
       run: exit 2
-      
+
     - name: Checkout
       id: checkout
       uses: actions/checkout@v3
@@ -122,7 +122,7 @@ jobs:
         : # Echo the exit code to the GITHUB_ENV file, making it available to subsequent steps
         echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_ENV
 
-    - name: "${{ toJson(steps.on-failure.outputs.EXIT_CODE) }}"
+    - name: "${{ steps.on-failure.outputs.EXIT_CODE }}"
       id: failure-data
       if: ${{ failure() }}
       run: |
