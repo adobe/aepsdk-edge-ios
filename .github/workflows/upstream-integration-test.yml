@@ -121,7 +121,7 @@ jobs:
           echo "Job failed: Failure cause not identified."
         fi
 
-        echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_ENV
+        echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_OUTPUT
 
     - name: "exit code: ${{ steps.on-failure.outputs.EXIT_CODE }}"
       id: failure-data
