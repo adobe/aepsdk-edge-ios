@@ -90,13 +90,16 @@ jobs:
     # Potential workflow solutions on job failure
     # All workflow setup step failures give exit code 2, with 3 as fallback
     # Actual integration test failures give exit code 1
+
+    # Initialize default exit code
+    # : # EXIT_CODE remains as the default value 3
+    # : # Echo the exit code to the GITHUB_ENV file, making it available to subsequent steps
     - name: On failure
       id: on-failure
       if: ${{ failure() }}
       run: |
-        echo 'Job used branch:  ${{ github.event.inputs.branch }}. Please make sure this is the branch to run off of.'
+        echo 'Job used branch: ${{ github.event.inputs.branch }}. Please make sure this is the branch to run off of.'
         
-        : # Initialize default exit code
         EXIT_CODE=3
 
         if [[ "${{ steps.job-run-identifier.conclusion }}" == "failure" ]]; then
@@ -116,10 +119,8 @@ jobs:
           EXIT_CODE=1
         else
           echo "Job failed: Failure cause not identified."
-          : # EXIT_CODE remains as the default value 3
         fi
 
-        : # Echo the exit code to the GITHUB_ENV file, making it available to subsequent steps
         echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_ENV
 
     - name: "exit code: ${{ steps.on-failure.outputs.EXIT_CODE }}"
