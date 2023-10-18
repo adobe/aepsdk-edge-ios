@@ -62,6 +62,11 @@ jobs:
           echo 'Job run identifier is:' ${{ inputs.id }}
         fi;
 
+    # TEST ONLY - DELETE BEFORE MERGING
+    - name: Simulate workflow failure
+      id: simulate-failure
+      run: exit 2
+      
     - name: Checkout
       id: checkout
       uses: actions/checkout@v3
@@ -81,11 +86,6 @@ jobs:
     - name: Execute Edge Network integration tests
       id: execute-integration-tests
       run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
-
-    # TEST ONLY - DELETE BEFORE MERGING
-    - name: Simulate workflow failure
-      id: simulate-failure
-      run: exit 2
 
     # Potential workflow solutions on job failure
     # All workflow setup step failures give exit code 2, with 3 as fallback
