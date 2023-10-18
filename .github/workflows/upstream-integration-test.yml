@@ -128,7 +128,7 @@ jobs:
       if: ${{ failure() }}
       run: |
         echo 'exit code in the body: ${{ steps.on-failure.outputs.EXIT_CODE }}'
-        echo 'on-failure outputs: ${{ steps.on-failure.outputs }}'
+        echo 'on-failure outputs: ${{ toJson(steps.on-failure.outputs) }}'
         
     
 
