@@ -97,8 +97,10 @@ jobs:
     - name: On failure
       id: on-failure
       if: ${{ failure() }}
+      env:
+        BRANCH: ${{ github.event.inputs.branch }}
       run: |
-        echo 'Job used branch: ${{ github.event.inputs.branch }}. Please make sure this is the branch to run off of.'
+        echo "Job used branch: $BRANCH. Please make sure this is the branch to run off of."
         
         EXIT_CODE=3
 
