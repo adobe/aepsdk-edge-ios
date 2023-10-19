@@ -64,11 +64,6 @@ jobs:
           echo 'Job run identifier is:' ${{ inputs.id }}
         fi;
 
-    # TEST ONLY - DELETE BEFORE MERGING
-    - name: Simulate workflow success
-      id: simulate-failure
-      run: exit 0
-
     - name: Checkout
       id: checkout
       uses: actions/checkout@v3
@@ -85,9 +80,9 @@ jobs:
           ${{ runner.os }}-pods-
 
     # Runs a single command using the runners shell
-    # - name: Execute Edge Network integration tests
-    #   id: execute-integration-tests
-    #   run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+    - name: Execute Edge Network integration tests
+      id: execute-integration-tests
+      run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
 
     # Potential workflow solutions on job failure
     # All workflow setup step failures give exit code 2, with 3 as fallback
@@ -110,9 +105,6 @@ jobs:
           EXIT_CODE=2
         elif [[ "${{ steps.cache-cocoapods.conclusion }}" == "failure" ]]; then
           echo "Job step failed: Cache Cocoapods."
-          EXIT_CODE=2
-        elif [[ "${{ steps.simulate-failure.conclusion }}" == "failure" ]]; then
-          echo "Job step failed: Simulate failure."
           EXIT_CODE=2
         elif [[ "${{ steps.execute-integration-tests.conclusion }}" == "failure" ]]; then
           echo "Job step failed: Execute Edge Network integration tests."
