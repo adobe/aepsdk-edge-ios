@@ -59,10 +59,10 @@ class SampleFunctionalTests: TestBase {
     // Runs after each test case
     override func tearDown() {
         super.tearDown()
-        
+
         mockNetworkService.reset()
     }
-    
+
     // MARK: sample tests for the FunctionalTest framework usage
 
     func testSample_AssertUnexpectedEvents() {

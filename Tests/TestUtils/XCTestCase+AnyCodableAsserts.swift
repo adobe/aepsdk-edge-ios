@@ -629,7 +629,7 @@ extension XCTestCase {
         }
 
     // MARK: - Test setup and output helpers
-    
+
     /// Extracts and returns a set of valid wildcard indexes.
     ///
     /// This method only considers keys that match the array access format (ex: `[*123]`).
@@ -655,10 +655,10 @@ extension XCTestCase {
         let arrayIndexValueRegex = #"^\[(.*?)\]$"#
         let arrayIndexValues = Set(pathEndKeys
             .flatMap { getCapturedRegexGroups(text: $0, regexPattern: arrayIndexValueRegex) })
-        
+
         let potentialWildcardIndexes = arrayIndexValues
             .filter { $0.contains("*") }
-        
+
         var result: Set<Int> = []
         for potentialWildcardIndex in potentialWildcardIndexes {
             if potentialWildcardIndex.first != "*" {
@@ -674,7 +674,7 @@ extension XCTestCase {
         }
         return result
     }
-    
+
     /// Finds all matches of the `regexPattern` in the `text` and for each match, returns the original matched `String`
     /// and its corresponding non-null capture groups.
     ///
@@ -833,7 +833,7 @@ extension XCTestCase {
             return [first: construct(path: path, pathString: pathString)]
         }
     }
-    
+
     /// Extracts valid array format access components from a given path component and returns the separated components.
     ///
     /// Given `"key1[0][1]"`, the result is `["key1", "[0]", "[1]"]`.

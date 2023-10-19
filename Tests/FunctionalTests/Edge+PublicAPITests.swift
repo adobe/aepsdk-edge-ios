@@ -52,11 +52,11 @@ class EdgePublicAPITests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
     }
-    
+
     // Runs after each test case
     override func tearDown() {
         super.tearDown()
-        
+
         mockNetworkService.reset()
     }
 
@@ -147,7 +147,7 @@ class EdgePublicAPITests: TestBase {
         // verify
         wait(for: [expectation], timeout: 1)
     }
-    
+
     func testGetLocationHint_responseEventChainedToParentId() {
         Edge.setLocationHint(TestConstants.OR2_LOC)
         let expectation = XCTestExpectation(description: "Request Location Hint")
@@ -158,16 +158,16 @@ class EdgePublicAPITests: TestBase {
 
         // verify
         wait(for: [expectation], timeout: 1)
-        
+
         let dispatchedRequests = getDispatchedEventsWith(type: EventType.edge, source: EventSource.requestIdentity)
         XCTAssertEqual(1, dispatchedRequests.count)
-        
+
         let dispatchedResponses = getDispatchedEventsWith(type: EventType.edge, source: EventSource.responseIdentity)
         XCTAssertEqual(1, dispatchedResponses.count)
-        
+
         XCTAssertEqual(dispatchedRequests[0].id, dispatchedResponses[0].parentID)
     }
-    
+
     func testSendEvent_responseEventsChainedToParentId() {
 
         // Response data with 1 handle, 1 error, and 1 warning response, all at event index 0
@@ -178,27 +178,27 @@ class EdgePublicAPITests: TestBase {
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        
+
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
-        
+
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"])
 
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.RESPONSE_CONTENT, expectedCount: 1)
         setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 2)
-        
+
         Edge.sendEvent(experienceEvent: experienceEvent)
         mockNetworkService.assertAllNetworkRequestExpectations()
-        
+
         let dispatchedRequests = getDispatchedEventsWith(type: EventType.edge, source: EventSource.requestContent)
         XCTAssertEqual(1, dispatchedRequests.count)
-        
+
         let dispatchedHandleResponses = getDispatchedEventsWith(type: EventType.edge, source: "state:store")
         XCTAssertEqual(1, dispatchedHandleResponses.count)
-        
+
         let dispatchedErrorResponses = getDispatchedEventsWith(type: EventType.edge, source: EventSource.errorResponseContent)
         XCTAssertEqual(2, dispatchedErrorResponses.count)
-        
+
         XCTAssertEqual(dispatchedRequests[0].id, dispatchedHandleResponses[0].parentID)
         XCTAssertEqual(dispatchedRequests[0].id, dispatchedErrorResponses[0].parentID)
         XCTAssertEqual(dispatchedRequests[0].id, dispatchedErrorResponses[1].parentID)
