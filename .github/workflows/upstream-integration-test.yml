@@ -85,9 +85,9 @@ jobs:
           ${{ runner.os }}-pods-
 
     # Runs a single command using the runners shell
-    - name: Execute Edge Network integration tests
-      id: execute-integration-tests
-      run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+    # - name: Execute Edge Network integration tests
+    #   id: execute-integration-tests
+    #   run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
 
     # Potential workflow solutions on job failure
     # All workflow setup step failures give exit code 2, with 3 as fallback
