@@ -65,9 +65,9 @@ jobs:
         fi;
 
     # TEST ONLY - DELETE BEFORE MERGING
-    - name: Simulate workflow failure
+    - name: Simulate workflow success
       id: simulate-failure
-      run: exit 2
+      run: exit 0
 
     - name: Checkout
       id: checkout
@@ -92,10 +92,6 @@ jobs:
     # Potential workflow solutions on job failure
     # All workflow setup step failures give exit code 2, with 3 as fallback
     # Actual integration test failures give exit code 1
-
-    # Initialize default exit code
-    # : # EXIT_CODE remains as the default value 3
-    # : # Echo the exit code to the GITHUB_ENV file, making it available to subsequent steps
     - name: On failure
       id: on-failure
       if: ${{ failure() }}
