@@ -124,7 +124,7 @@ jobs:
         echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_OUTPUT
 
     #
-    - name: "{\"exitCode\":${{ steps.on-failure.outputs.EXIT_CODE }}}"
+    - name: "{\"exitCode\":${{ steps.on-failure.outputs.EXIT_CODE || 0 }}}"
       id: failure-data
       if: ${{ failure() }}
       run: |
