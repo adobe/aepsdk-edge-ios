@@ -64,7 +64,7 @@ class UpstreamIntegrationTests: TestBase {
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]])
 
@@ -73,24 +73,27 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
 
     /// Tests that a standard sendEvent receives a single network response with HTTP code 200
     func testSendEvent_whenComplexEvent_receivesExpectedNetworkResponse() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
-        let eventPayloadJSON = #"""
+        let xdmJSON = #"""
         {
-          "xdm": {
             "testString": "xdm"
-          },
-          "data": {
+        }
+        """#
+
+        let dataJSON = #"""
+          {
             "testDataString": "stringValue",
             "testDataInt": 101,
             "testDataBool": true,
@@ -100,34 +103,33 @@ class UpstreamIntegrationTests: TestBase {
               "key": "val"
             }
           }
-        }
         """#
 
-        let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
-        let data = getAnyCodableAndPayload(eventPayloadJSON, type: .data)!
+        let xdm = getAnyCodable(xdmJSON)!.dictionaryValue!
+        let data = getAnyCodable(dataJSON)!.dictionaryValue!
 
-        let experienceEvent = ExperienceEvent(xdm: xdm.payload, data: data.payload)
+        let experienceEvent = ExperienceEvent(xdm: xdm, data: data)
 
         // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
 
     /// Tests that a standard sendEvent () receives a single network response with HTTP code 200
     func testSendEvent_whenComplexXDMEvent_receivesExpectedNetworkResponse() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
-        let eventPayloadJSON = #"""
-        {
-          "xdm": {
+        let xdmJSON = #"""
+          {
             "testString": "xdm",
             "testInt": 10,
             "testBool": false,
@@ -137,22 +139,22 @@ class UpstreamIntegrationTests: TestBase {
               "key": "val"
             }
           }
-        }
         """#
 
-        let xdm = getAnyCodableAndPayload(eventPayloadJSON, type: .xdm)!
+        let xdm = getAnyCodable(xdmJSON)!.dictionaryValue!
 
-        let experienceEvent = ExperienceEvent(xdm: xdm.payload)
+        let experienceEvent = ExperienceEvent(xdm: xdm)
 
         // Test
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
 
     /// Tests that a standard sendEvent receives the expected event handles
@@ -380,7 +382,7 @@ class UpstreamIntegrationTests: TestBase {
         // Set actual testing expectations
         // If test suite level location hint is not set, uses the value extracted from location hint result
         let locationHintNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: locationHintResult), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: locationHintNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: locationHintNetworkRequest, expectedCount: 1)
 
         // Test
         // 2nd event
@@ -388,11 +390,11 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: locationHintNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: locationHintNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
-
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
 
     func testSendEventx2_receivesExpectedEventHandles() {
@@ -489,7 +491,7 @@ class UpstreamIntegrationTests: TestBase {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
 
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
 
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
@@ -502,10 +504,11 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(400, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(400, matchingResponses?.first?.responseCode)
 
         // Event assertions
         let expectedErrorJSON = #"""
@@ -537,7 +540,7 @@ class UpstreamIntegrationTests: TestBase {
         // Setup
         let invalidNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: "invalid"), httpMethod: .post)!
 
-        networkService.setExpectationForNetworkRequest(networkRequest: invalidNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: invalidNetworkRequest, expectedCount: 1)
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
 
         Edge.setLocationHint("invalid")
@@ -549,11 +552,12 @@ class UpstreamIntegrationTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: invalidNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: invalidNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(404, matchingResponses.first?.responseCode)
-        XCTAssertEqual(0, matchingResponses.first?.data?.count)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(404, matchingResponses?.first?.responseCode)
+        XCTAssertEqual(0, matchingResponses?.first?.data?.count)
 
         // Error event assertions
         assertExpectedEvents(ignoreUnexpectedEvents: true)
