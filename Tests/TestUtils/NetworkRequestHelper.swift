@@ -43,7 +43,7 @@ class NetworkRequestHelper {
         sentNetworkRequests.removeAll()
         networkResponses.removeAll()
     }
-    
+
     /// Decrements the expectation count for a given network request.
     ///
     /// - Parameter networkRequest: The `NetworkRequest` for which the expectation count should be decremented.
@@ -99,12 +99,11 @@ class NetworkRequestHelper {
         let testableNetworkRequest = TestableNetworkRequest(from: networkRequest)
         if networkResponses[testableNetworkRequest] != nil {
             networkResponses[testableNetworkRequest]?.append(responseConnection)
-        }
-        else {
+        } else {
             networkResponses[testableNetworkRequest] = [responseConnection]
         }
     }
-    
+
     /// Removes all network responses for the provided network request.
     ///
     /// - Parameters:

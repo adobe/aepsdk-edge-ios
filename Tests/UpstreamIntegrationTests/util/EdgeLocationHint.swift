@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 /// All location hint values available for the Edge Network extension
@@ -29,7 +28,7 @@ enum EdgeLocationHint: String, CaseIterable {
     case sgp3
     /// Australia
     case aus3
-    
+
     /// Initializer that gets the value from the environment variable `EDGE_LOCATION_HINT` and creates an `EdgeLocationHint` instance.
     init?() {
         guard let edgeLocationHint = extractEnvironmentVariable(keyName: "EDGE_LOCATION_HINT", enum: EdgeLocationHint.self) else {
