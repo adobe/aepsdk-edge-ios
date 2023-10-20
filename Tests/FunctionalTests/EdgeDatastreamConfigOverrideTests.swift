@@ -102,7 +102,7 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["test": ["key": "value"]], data: ["key": "value"], datastreamIdOverride: "testDatastreamIdOverride", datastreamConfigOverride: configOverrides)
@@ -145,7 +145,7 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["test": ["key": "value"]], data: ["key": "value"], datastreamIdOverride: "testDatastreamIdOverride")
@@ -183,7 +183,8 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
                                                                                           httpVersion: nil,
                                                                                           headerFields: nil),
                                                                 error: nil)
-        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["test": ["key": "value"]], data: ["key": "value"], datastreamConfigOverride: configOverrides)

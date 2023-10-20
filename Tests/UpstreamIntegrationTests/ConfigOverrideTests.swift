@@ -59,7 +59,7 @@ class ConfigOverrideTests: TestBase {
     func testSendEvent_withValidConfigOverrides_receivesExpectedNetworkResponse() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: nil), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
@@ -81,10 +81,11 @@ class ConfigOverrideTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
 
     // TODO: Enable after PDCL-11131 issue is fixed
@@ -93,7 +94,7 @@ class ConfigOverrideTests: TestBase {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
 
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let expectedErrorJSON = #"""
         {
@@ -112,11 +113,12 @@ class ConfigOverrideTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(1, matchingResponses?.count)
         assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""))
+                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -128,7 +130,7 @@ class ConfigOverrideTests: TestBase {
     func testSendEvent_withInvalidConfigOverrides_notConfiguredValues_receivesExpectedNetworkResponseError() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let expectedErrorJSON = #"""
         {
@@ -158,11 +160,12 @@ class ConfigOverrideTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(1, matchingResponses?.count)
         assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""))
+                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -173,7 +176,7 @@ class ConfigOverrideTests: TestBase {
     func testSendEvent_withInvalidConfigOverrides_dummyValues_receivesExpectedNetworkResponseError() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let expectedErrorJSON = #"""
         {
@@ -204,11 +207,12 @@ class ConfigOverrideTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(1, matchingResponses?.count)
         assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""))
+                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -220,7 +224,7 @@ class ConfigOverrideTests: TestBase {
     func testSendEvent_withInvalidConfigOverrides_containingValidAndDummyValues_receivesExpectedNetworkResponseError() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let expectedErrorJSON = #"""
         {
@@ -251,11 +255,12 @@ class ConfigOverrideTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(1, matchingResponses?.count)
         assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""))
+                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -266,7 +271,7 @@ class ConfigOverrideTests: TestBase {
     func testSendEvent_withValidDatastreamIDOverride_receivesExpectedNetworkResponse() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamIdOverride: "15d7bce0-3e2c-447b-bbda-129c57c60820")
 
@@ -275,17 +280,18 @@ class ConfigOverrideTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
-        XCTAssertEqual(200, matchingResponses.first?.responseCode)
+        XCTAssertEqual(1, matchingResponses?.count)
+        XCTAssertEqual(200, matchingResponses?.first?.responseCode)
     }
 
     // Test datastream ID override with dummy string
     func testSendEvent_withDummyDatastreamIDOverride_receivesExpectedNetworkResponseError() {
         // Setup
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: nil), httpMethod: .post)!
-        networkService.setExpectationForNetworkRequest(networkRequest: interactNetworkRequest, expectedCount: 1)
+        networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let expectedErrorJSON = #"""
         {
@@ -302,11 +308,12 @@ class ConfigOverrideTests: TestBase {
 
         // Verify
         // Network response assertions
-        let matchingResponses = networkService.getResponsesFor(networkRequest: interactNetworkRequest, timeout: 5)
+        networkService.assertAllNetworkRequestExpectations()
+        let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
-        XCTAssertEqual(1, matchingResponses.count)
+        XCTAssertEqual(1, matchingResponses?.count)
         assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses.first?.responseString ?? ""))
+                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()

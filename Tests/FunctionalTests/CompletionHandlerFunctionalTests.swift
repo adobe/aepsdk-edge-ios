@@ -68,7 +68,7 @@ class CompletionHandlerFunctionalTests: TestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
 
@@ -104,7 +104,7 @@ class CompletionHandlerFunctionalTests: TestBase {
                                                                                       httpVersion: nil,
                                                                                       headerFields: nil),
                                                             error: nil)
-        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 2)
 
         let expectation1 = self.expectation(description: "Completion handler 1 called")
@@ -143,7 +143,7 @@ class CompletionHandlerFunctionalTests: TestBase {
         let expectation1 = self.expectation(description: "Completion handler 1 called")
         let expectation2 = self.expectation(description: "Completion handler 2 called")
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
-        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection1)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection1)
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
                                                         data: nil), { (handles: [EdgeEventHandle]) in
                                                             XCTAssertEqual(1, handles.count)
@@ -155,7 +155,7 @@ class CompletionHandlerFunctionalTests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
-        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection2)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection2)
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
                                                         data: nil), { (handles: [EdgeEventHandle]) in
                                                             // 0 handles, received errors but still called completion
@@ -182,7 +182,7 @@ class CompletionHandlerFunctionalTests: TestBase {
 
         // set expectations & send two events
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
-        mockNetworkService.setMockResponseFor(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
                                                         data: nil), { (handles: [EdgeEventHandle]) in
                                                             XCTAssertEqual(1, handles.count)
