@@ -19,14 +19,12 @@ import XCTest
 
 /// Performs validation on integration with the Edge Network upstream service
 class UpstreamIntegrationTests: TestBase {
-    private var edgeEnvironment: EdgeEnvironment = .prod
-    private var edgeLocationHint: EdgeLocationHint?
+    private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
+    private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
 
     private var networkService: RealNetworkService = RealNetworkService()
 
     let LOG_SOURCE = "UpstreamIntegrationTests"
-
-    let asyncTimeout: TimeInterval = 10
 
     // Run before each test case
     override func setUp() {
@@ -36,17 +34,13 @@ class UpstreamIntegrationTests: TestBase {
 
         continueAfterFailure = true
         TestBase.debugEnabled = true
-        // Extract Edge Network environment level from shell environment; see init for default value
-        self.edgeEnvironment = EdgeEnvironment()
-        print("Using Edge Network environment: \(edgeEnvironment.rawValue)")
-
-        // Extract Edge location hint from shell environment; see init for default value
-        self.edgeLocationHint = EdgeLocationHint()
 
         let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
+
         // Set environment file ID for specific Edge Network environment
-        setMobileCoreEnvironmentFileID(for: edgeEnvironment)
+        MobileCore.configureWith(appId: getTagsEnvironmentFileId(for: edgeEnvironment))
+
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
@@ -54,12 +48,8 @@ class UpstreamIntegrationTests: TestBase {
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
 
         // Set Edge location hint value if one is set for the test target
-        if edgeLocationHint != nil {
-            print("Setting Edge location hint to: \(String(describing: edgeLocationHint?.rawValue))")
-            Edge.setLocationHint(edgeLocationHint?.rawValue)
-        } else {
-            print("No preset Edge location hint is being used for this test.")
-        }
+        setInitialLocationHint(edgeLocationHint?.rawValue)
+
         resetTestExpectations()
         networkService.reset()
     }
@@ -70,7 +60,7 @@ class UpstreamIntegrationTests: TestBase {
     func testSendEvent_receivesExpectedNetworkResponse() {
         // Setup
         // Note: test constructs should always be valid
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
@@ -93,7 +83,7 @@ class UpstreamIntegrationTests: TestBase {
     /// Tests that a standard sendEvent receives a single network response with HTTP code 200
     func testSendEvent_whenComplexEvent_receivesExpectedNetworkResponse() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let xdmJSON = #"""
@@ -135,7 +125,7 @@ class UpstreamIntegrationTests: TestBase {
     /// Tests that a standard sendEvent () receives a single network response with HTTP code 200
     func testSendEvent_whenComplexXDMEvent_receivesExpectedNetworkResponse() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let xdmJSON = #"""
@@ -391,7 +381,7 @@ class UpstreamIntegrationTests: TestBase {
 
         // Set actual testing expectations
         // If test suite level location hint is not set, uses the value extracted from location hint result
-        let locationHintNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: locationHintResult), httpMethod: .post)!
+        let locationHintNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: locationHintResult), httpMethod: .post)!
         networkService.setExpectation(for: locationHintNetworkRequest, expectedCount: 1)
 
         // Test
@@ -499,7 +489,7 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid datastream ID returns the expected error
     func testSendEvent_withInvalidDatastreamID_receivesExpectedError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: edgeLocationHint), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
 
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
@@ -548,7 +538,7 @@ class UpstreamIntegrationTests: TestBase {
     // Tests that an invalid location hint returns the expected error with 0 byte data body
     func testSendEvent_withInvalidLocationHint_receivesExpectedError() {
         // Setup
-        let invalidNetworkRequest = NetworkRequest(urlString: createURLWith(locationHint: "invalid"), httpMethod: .post)!
+        let invalidNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: "invalid"), httpMethod: .post)!
 
         networkService.setExpectation(for: invalidNetworkRequest, expectedCount: 1)
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
@@ -571,64 +561,5 @@ class UpstreamIntegrationTests: TestBase {
 
         // Error event assertions
         assertExpectedEvents(ignoreUnexpectedEvents: true)
-    }
-
-    // MARK: - Test helper methods
-    private func setMobileCoreEnvironmentFileID(for edgeEnvironment: EdgeEnvironment) {
-        switch edgeEnvironment {
-        case .prod:
-            MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
-        case .preProd:
-            MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
-        case .int:
-            // TODO: create integration environment environment file ID
-            MobileCore.configureWith(appId: "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development")
-        }
-    }
-
-    /// Creates a valid interact URL using the provided location hint. If location hint is invalid, returns default URL with no location hint.
-    /// - Parameters:
-    ///    - locationHint: The `EdgeLocationHint`'s raw value to use in the URL
-    /// - Returns: The interact URL with location hint applied, default URL if location hint is invalid
-    private func createURLWith(locationHint: EdgeLocationHint?) -> String {
-        guard let locationHint = locationHint else {
-            return "https://obumobile5.data.adobedc.net/ee/v1/interact"
-        }
-        return createURLWith(locationHint: locationHint.rawValue)
-    }
-
-    /// Creates a valid interact URL using the provided location hint.
-    /// - Parameters:
-    ///    - locationHint: The location hint String to use in the URL
-    /// - Returns: The interact URL with location hint applied
-    private func createURLWith(locationHint: String?) -> String {
-        guard let locationHint = locationHint else {
-            return "https://obumobile5.data.adobedc.net/ee/v1/interact"
-        }
-        return "https://obumobile5.data.adobedc.net/ee/\(locationHint)/v1/interact"
-    }
-
-    private func expectEdgeEventHandle(expectedHandleType: String, expectedCount: Int32 = 1) {
-        setExpectationEvent(type: TestConstants.EventType.EDGE, source: expectedHandleType, expectedCount: expectedCount)
-    }
-
-    private func getEdgeEventHandles(expectedHandleType: String) -> [Event] {
-        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
-    }
-
-    private func getEdgeResponseErrors() -> [Event] {
-        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
-    }
-
-    /// Extracts the Edge location hint from the location hint result
-    private func getLastLocationHintResultValue() -> String? {
-        let locationHintResultEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).last
-        guard let payload = locationHintResultEvent?.data?["payload"] as? [[String: Any]] else {
-            return nil
-        }
-        guard payload.indices.contains(2) else {
-            return nil
-        }
-        return payload[2]["hint"] as? String
     }
 }

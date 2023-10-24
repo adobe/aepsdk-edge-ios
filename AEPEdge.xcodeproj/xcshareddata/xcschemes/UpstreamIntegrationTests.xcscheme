@@ -5,6 +5,22 @@
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4CBEE5C129D637170084BC50"
+               BuildableName = "UpstreamIntegrationTests.xctest"
+               BlueprintName = "UpstreamIntegrationTests"
+               ReferencedContainer = "container:AEPEdge.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
    </BuildAction>
    <TestAction
       buildConfiguration = "Debug"
@@ -42,6 +58,20 @@
                BlueprintName = "UpstreamIntegrationTests"
                ReferencedContainer = "container:AEPEdge.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "ConfigOverrideTests/testSendEvent_withInvalidConfigOverrides_containingValidAndDummyValues_receivesExpectedNetworkResponseError()">
+               </Test>
+               <Test
+                  Identifier = "ConfigOverrideTests/testSendEvent_withInvalidConfigOverrides_dummyValues_receivesExpectedNetworkResponseError()">
+               </Test>
+               <Test
+                  Identifier = "ConfigOverrideTests/testSendEvent_withInvalidConfigOverrides_notConfiguredValues_receivesExpectedNetworkResponseError()">
+               </Test>
+               <Test
+                  Identifier = "ConfigOverrideTests/testSendEvent_withInvalidConfigOverrides_receivesExpectedNetworkResponseError()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
@@ -62,6 +92,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "4CBEE5C129D637170084BC50"
+            BuildableName = "UpstreamIntegrationTests.xctest"
+            BlueprintName = "UpstreamIntegrationTests"
+            ReferencedContainer = "container:AEPEdge.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

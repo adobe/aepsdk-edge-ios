@@ -30,4 +30,10 @@ extension Event {
     var isResetIdentitiesEvent: Bool {
         return type == EventType.genericIdentity && source == EventSource.requestReset
     }
+
+    /// Returns the dictionary of extracted config from event data which contains datastreamIdOverride and datastreamConfigOverride details.
+    var config: [String: Any]? {
+        return data?[EdgeConstants.EventDataKeys.Config.KEY] as? [String: Any]
+    }
+
 }

@@ -15,7 +15,7 @@ import Foundation
 /// Implementation of `EdgeHit` for ExperienceEvents requests
 struct ExperienceEventsEdgeHit: EdgeHit {
     let endpoint: EdgeEndpoint
-    let configId: String
+    let datastreamId: String
     let requestId: String = UUID().uuidString
 
     /// The `EdgeRequest` for the corresponding hit
