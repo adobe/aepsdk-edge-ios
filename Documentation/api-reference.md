@@ -81,7 +81,7 @@ Edge.getLocationHint { (hint, error) in
 
 ##### Example
 ```objectivec
-[AEPMobileEdge getLocationHint:^(NSString *hint, NSError *error) {   
+[AEPMobileEdge getLocationHint:^(NSString *hint, NSError *error) {
     // Handle the error and the hint here
 }];
 ```
@@ -100,13 +100,17 @@ See [MobileCore.resetIdentities](https://developer.adobe.com/client-sdks/documen
 
 Sends an Experience event to Edge Network.
 
+Starting with `AEPEdge` extension version **4.3.0** onwards, the `sendEvent` API supports optional Datastream overrides. This allows you to adjust your datastreams without the need for new ones or modifications to existing settings. The process involves two steps:
+
+1. Define your Datastream configuration overrides on the [datastream configuration page](https://experienceleague.adobe.com/docs/experience-platform/datastreams/configure.html).
+2. Send these overrides to the Edge Network using the sendEvent API.
+
 #### Swift
 
 ##### Syntax
 ```swift
 static func sendEvent(experienceEvent: ExperienceEvent, _ completion: (([EdgeEventHandle]) -> Void)? = nil)
 ```
-
 * `experienceEvent` is the XDM [Experience Event](#experienceevent) sent to Edge Network.
 * `completion` is an optional callback invoked when the request is complete and returns the associated [EdgeEventHandle](#edgeeventhandle)(s) received from  Edge Network. It may be invoked on a different thread.
 
@@ -116,6 +120,69 @@ static func sendEvent(experienceEvent: ExperienceEvent, _ completion: (([EdgeEve
 var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
                               "sample": "data"]
 let experienceEvent = ExperienceEvent(xdm: xdmData)
+```
+```swift
+// Example 1 - send the Experience event without handling the Edge Network response
+Edge.sendEvent(experienceEvent: experienceEvent)
+```
+```swift
+// Example 2 - send the Experience event and handle the Edge Network response onComplete
+Edge.sendEvent(experienceEvent: experienceEvent) { (handles: [EdgeEventHandle]) in
+  // Handle the Edge Network response
+}
+```
+
+##### Example with Datastream ID override
+```swift
+// Create Experience event from dictionary
+var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
+                              "sample": "data"]
+let experienceEvent = ExperienceEvent(xdm: xdmData, datastreamIdOverride: "SampleDatastreamId")
+```
+```swift
+// Example 1 - send the Experience event without handling the Edge Network response
+Edge.sendEvent(experienceEvent: experienceEvent)
+```
+```swift
+// Example 2 - send the Experience event and handle the Edge Network response onComplete
+Edge.sendEvent(experienceEvent: experienceEvent) { (handles: [EdgeEventHandle]) in
+  // Handle the Edge Network response
+}
+```
+
+##### Example with Datastream config override
+```swift
+// Create Experience event from dictionary
+var xdmData : [String: Any] = ["eventType" : "SampleXDMEvent",
+                              "sample": "data"]
+
+ let configOverrides: [String: Any] = [
+                                        "com_adobe_experience_platform": [
+                                          "datasets": [
+                                            "event": [
+                                              "datasetId": "SampleEventDatasetIdOverride"
+                                            ],
+                                            "profile": [
+                                              "datasetId": "SampleProfileDatasetIdOverride"
+                                            ]
+                                          ]
+                                        ],
+                                        "com_adobe_analytics": [
+                                          "reportSuites": [
+                                            "rsid1",
+                                            "rsid2",
+                                            "rsid3"
+                                            ]
+                                        ],
+                                        "com_adobe_identity": [
+                                          "idSyncContainerId": "1234567"
+                                        ],
+                                        "com_adobe_target": [
+                                          "propertyToken": "SamplePropertyToken"
+                                        ]
+                                      ]
+
+let experienceEvent = ExperienceEvent(xdm: xdmData, datastreamConfigOverride: configOverrides)
 ```
 ```swift
 // Example 1 - send the Experience event without handling the Edge Network response
@@ -140,6 +207,69 @@ Edge.sendEvent(experienceEvent: experienceEvent) { (handles: [EdgeEventHandle]) 
 // Create Experience event from dictionary:
 NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
 NSDictionary *data = @{ @"sample" : @"data"};
+AEPExperienceEvent* event = [[AEPExperienceEvent alloc]initWithXdm:xdmData data:data];
+```
+```objectivec
+// Example 1 - send the Experience event without handling the Edge Network response
+[AEPMobileEdge sendExperienceEvent:event completion:nil];
+```
+```objectivec
+// Example 2 - send the Experience event and handle the Edge Network response onComplete
+[AEPMobileEdge sendExperienceEvent:event completion:^(NSArray<AEPEdgeEventHandle *> * _Nonnull handles) {
+  // Handle the Edge Network response
+}];
+```
+
+##### Example with Datastream ID override
+```objectivec
+// Create Experience event from dictionary:
+NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
+NSDictionary *data = @{ @"sample" : @"data"};
+AEPExperienceEvent* event = [[AEPExperienceEvent alloc]initWithXdm:xdmData data:data datastreamIdOverride: @"SampleDatastreamIdOverride"];
+```
+```objectivec
+// Example 1 - send the Experience event without handling the Edge Network response
+[AEPMobileEdge sendExperienceEvent:event completion:nil];
+```
+```objectivec
+// Example 2 - send the Experience event and handle the Edge Network response onComplete
+[AEPMobileEdge sendExperienceEvent:event completion:^(NSArray<AEPEdgeEventHandle *> * _Nonnull handles) {
+  // Handle the Edge Network response
+}];
+```
+
+
+##### Example with Datastream config override
+```objectivec
+// Create Experience event from dictionary:
+NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
+NSDictionary *data = @{ @"sample" : @"data"};
+NSDictionary *configOverrides = @{ @"com_adobe_experience_platform" : @{
+                                    @"datasets" : @{
+                                        @"event" : @{
+                                          @"datasetId": @"SampleEventDatasetIdOverride"
+                                        },
+                                        @"profile" : @{
+                                          @"datasetId": @"SampleProfileDatasetIdOverride"
+                                        }
+                                      }
+                                    },
+                                    @"com_adobe_analytics" : @{
+                                      @"reportSuites" : @[
+                                        @"rsid1",
+                                        @"rsid2",
+                                        @"rsid3",
+                                      ]
+                                    },
+                                    @"com_adobe_identity" : @{
+                                      @"idSyncContainerId": @"1234567"
+                                    },
+                                    @"com_adobe_target" : @{
+                                      @"propertyToken": @"SamplePropertyToken"
+                                    }
+                                  }
+
+AEPExperienceEvent* event = [[AEPExperienceEvent alloc]initWithXdm:xdmData data:data datastreamConfigOverride: configOverrides];
 ```
 ```objectivec
 // Example 1 - send the Experience event without handling the Edge Network response
@@ -157,7 +287,7 @@ NSDictionary *data = @{ @"sample" : @"data"};
 
 Sets the Edge Network location hint used in requests to Edge Network. Passing `nil` or an empty string (`""`) clears the existing location hint. Edge Network responses may overwrite the location hint to a new value when necessary to manage network traffic.
 
-> **Warning**  
+> **Warning**
 > Use caution when setting the location hint. Only use valid [location hints for the `EdgeNetwork` scope](https://experienceleague.adobe.com/docs/experience-platform/edge-network-server-api/location-hints.html). An invalid location hint value will cause all Edge Network requests to fail with a `404` response code.
 
 #### Swift
@@ -246,21 +376,49 @@ public class ExperienceEvent: NSObject {
     /// Optional free-form data associated with this event
     @objc public let data: [String: Any]?
 
+    /// Datastream identifier used to override the default datastream identifier set in the Edge configuration for this event
+    @objc public private(set) var datastreamIdOverride: String?
+
+    /// Datastream configuration used to override individual settings from the default datastream configuration for this event
+    @objc public private(set) var datastreamConfigOverride: [String: Any]?
+
     /// Adobe Experience Platform dataset identifier, if not set the default dataset identifier set in the Edge Configuration is used
-    @objc public let datasetIdentifier: String?
+    @objc public private(set) var datasetIdentifier: String?
+
+    /// Initialize an Experience Event with the provided event data
+    /// - Parameters:
+    ///   - xdm:  XDM formatted data for this event, passed as a raw XDM Schema data dictionary.
+    ///   - data: Any free form data in a [String : Any] dictionary structure.
+    @objc public init(xdm: [String: Any], data: [String: Any]? = nil) {...}
 
     /// Initialize an Experience Event with the provided event data
     /// - Parameters:
     ///   - xdm:  XDM formatted data for this event, passed as a raw XDM Schema data dictionary.
     ///   - data: Any free form data in a [String : Any] dictionary structure.
     ///   - datasetIdentifier: The Experience Platform dataset identifier where this event should be sent to; if not provided, the default dataset identifier set in the Edge configuration is used
-    @objc public init(xdm: [String: Any], data: [String: Any]? = nil, datasetIdentifier: String? = nil) {...}
+    @objc public convenience init(xdm: [String: Any], data: [String: Any]? = nil, datasetIdentifier: String? = nil) {...}
+
+    /// Initialize an Experience Event with the provided event data
+    /// - Parameters:
+    ///   - xdm:  XDM formatted data for this event, passed as a raw XDM Schema data dictionary.
+    ///   - data: Any free form data in a [String : Any] dictionary structure.
+    ///   - datastreamIdOverride: Datastream identifier used to override the default datastream identifier set in the Edge configuration for this event.
+    ///   - datastreamConfigOverride: Datastream configuration used to override individual settings from the default datastream configuration for this event.
+    @objc public convenience init(xdm: [String: Any], data: [String: Any]? = nil, datastreamIdOverride: String? = nil, datastreamConfigOverride: [String: Any]? = nil) {...}
 
     /// Initialize an Experience Event with the provided event data
     /// - Parameters:
     ///   - xdm: XDM formatted event data passed as an XDMSchema
     ///   - data: Any free form data in a [String : Any] dictionary structure.
     public init(xdm: XDMSchema, data: [String: Any]? = nil) {...}
+
+    /// Initialize an Experience Event with the provided event data
+    /// - Parameters:
+    ///   - xdm: XDM formatted event data passed as an XDMSchema
+    ///   - data: Any free form data in a [String : Any] dictionary structure.
+    ///   - datastreamIdOverride: Datastream identifier used to override the default datastream identifier set in the Edge configuration for this event.
+    ///   - datastreamConfigOverride: Datastream configuration used to override individual settings from the default datastream configuration for this event.
+    public convenience init(xdm: XDMSchema, data: [String: Any]? = nil, datastreamIdOverride: String? = nil, datastreamConfigOverride: [String: Any]? = nil) {...}
 }
 ```
 
@@ -293,7 +451,7 @@ public struct XDMSchemaExample : XDMSchema {
     enum CodingKeys: String, CodingKey {
     case eventType = "eventType"
     case otherField = "otherField"
-    }       
+    }
 }
 
 extension XDMSchemaExample {
@@ -329,13 +487,13 @@ Example 1: Set both the XDM and freeform data of an `ExperienceEvent`.
 // Set the freeform data of the Experience event
 NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
 NSDictionary *data = @{ @"sample" : @"data"};
-    
+
 AEPExperienceEvent *event = [[AEPExperienceEvent alloc] initWithXdm:xdmData data:data datasetIdentifier:nil];
 ```
 Example 3: Set a custom destination Dataset ID when creating an `ExperienceEvent` instance.
 ```objectivec
 // Set the destination Dataset identifier of the Experience Event
 NSDictionary *xdmData = @{ @"eventType" : @"SampleXDMEvent"};
-   
+
 AEPExperienceEvent *event = [[AEPExperienceEvent alloc] initWithXdm:xdmData data:nil datasetIdentifier:@"datasetIdExample"];
 ```
