@@ -12,21 +12,13 @@
 
 import Foundation
 
-/// Edge Network environment levels that correspond to actual deployment environment levels
-enum EdgeEnvironment: String {
-    /// Production
-    case prod
-    /// Pre-production - aka: staging
-    case preProd = "pre-prod"
-    /// Integration - aka: development
-    case int
+/// SDK configuration metadata.
+/// Is contained within the `RequestMetadata` request property.
+struct SDKConfig: Encodable {
+    /// Configuration for datastream
+    let datastream: Datastream?
+}
 
-    /// Initializer that gets the value from the environment variable `EDGE_ENVIRONMENT` and creates an `EdgeEnvironment` instance.
-    init() {
-        guard let edgeEnvironment = extractEnvironmentVariable(keyName: "EDGE_ENVIRONMENT", enum: EdgeEnvironment.self) else {
-            self = .prod
-            return
-        }
-        self = edgeEnvironment
-    }
+struct Datastream: Codable {
+    let original: String?
 }

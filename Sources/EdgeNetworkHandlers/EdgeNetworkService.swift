@@ -51,15 +51,15 @@ class EdgeNetworkService {
     /// Builds the URL required for connections to Experience Edge
     /// - Parameters:
     ///   - endpoint: the endpoint for this URL
-    ///   - configId: Edge configuration identifier
+    ///   - datastreamId: Edge datastream identifier
     ///   - requestId: batch request identifier
     /// - Returns: built URL or nil on error
-    func buildUrl(endpoint: EdgeEndpoint, configId: String, requestId: String) -> URL? {
+    func buildUrl(endpoint: EdgeEndpoint, datastreamId: String, requestId: String) -> URL? {
         guard let url = endpoint.url else { return nil }
         guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         urlComponents.queryItems = [
             URLQueryItem(name: EdgeConstants.NetworkKeys.REQUEST_PARAM_CONFIG_ID,
-                         value: configId),
+                         value: datastreamId),
             URLQueryItem(name: EdgeConstants.NetworkKeys.REQUEST_PARAM_REQUEST_ID,
                          value: requestId)
         ]
@@ -202,13 +202,14 @@ class EdgeNetworkService {
             completion(true, nil) // non-fatal error, don't retry
         default:
             if self.recoverableNetworkErrorCodes.contains(responseCode) {
-                Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge returned recoverable error code \(responseCode)")
                 let retryHeader = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER)
                 var retryInterval = EdgeConstants.Defaults.RETRY_INTERVAL
                 // Do not currently support HTTP-date only parsing Ints for now. Konductor will only send back Retry-After as Ints.
                 if let retryHeader = retryHeader, let retryAfterInterval = TimeInterval(retryHeader) {
                     retryInterval = retryAfterInterval
                 }
+                Log.debug(label: EdgeConstants.LOG_TAG,
+                          "\(SELF_TAG) - Connection to Experience Edge returned recoverable error code \(responseCode). Will retry request in \(retryInterval) seconds.")
                 completion(false, retryInterval) // failed, but recoverable so retry
             } else {
                 Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge returned unrecoverable error code \(responseCode)")

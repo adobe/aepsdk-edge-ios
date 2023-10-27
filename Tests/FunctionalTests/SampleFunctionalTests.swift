@@ -59,10 +59,10 @@ class SampleFunctionalTests: TestBase {
     // Runs after each test case
     override func tearDown() {
         super.tearDown()
-        
+
         mockNetworkService.reset()
     }
-    
+
     // MARK: sample tests for the FunctionalTest framework usage
 
     func testSample_AssertUnexpectedEvents() {
@@ -111,7 +111,7 @@ class SampleFunctionalTests: TestBase {
                                                                                       headerFields: nil),
                                                             error: nil)
         mockNetworkService.setExpectationForNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 2)
-        mockNetworkService.setMockResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseConnection: httpConnection)
+        mockNetworkService.setMockResponse(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test2": "xdm"], data: nil))
@@ -131,7 +131,7 @@ class SampleFunctionalTests: TestBase {
                                                                                       headerFields: nil),
                                                             error: nil)
         mockNetworkService.setExpectationForNetworkRequest(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, expectedCount: 1)
-        mockNetworkService.setMockResponseFor(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseConnection: httpConnection)
+        mockNetworkService.setMockResponse(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
 

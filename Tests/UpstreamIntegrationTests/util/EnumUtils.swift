@@ -10,7 +10,6 @@
 // governing permissions and limitations under the License.
 //
 
-
 import Foundation
 
 public func extractEnvironmentVariable<T: RawRepresentable>(keyName: String, enum: T.Type) -> T? where T.RawValue == String {
@@ -18,15 +17,11 @@ public func extractEnvironmentVariable<T: RawRepresentable>(keyName: String, enu
         print("Unable to find valid \(keyName) value (raw value: \(String(describing: ProcessInfo.processInfo.environment[keyName]))).")
         return nil
     }
-    
+
     guard let enumCase = T(rawValue: environmentString) else {
         print("Unable to create valid enum case of type \(T.Type.self) from environment variable value: \(environmentString)")
         return nil
     }
-    
+
     return enumCase
 }
-
-
-
-
