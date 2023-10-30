@@ -23,7 +23,7 @@ class EdgeRequestTests: XCTestCase {
 
     func testEncode_allProperties() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
-        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
+        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, sdkConfig: nil, configOverrides: nil, state: nil)
         guard let identityMapData = """
         {
           "identityMap" : {
@@ -73,7 +73,7 @@ class EdgeRequestTests: XCTestCase {
 
     func testEncode_onlyRequestMetadata() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
-        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, state: nil)
+        let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, sdkConfig: nil, configOverrides: nil, state: nil)
         let edgeRequest = EdgeRequest(meta: requestMetadata,
                                       xdm: nil,
                                       events: nil)

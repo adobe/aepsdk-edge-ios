@@ -1,11 +1,11 @@
 PODS:
-  - AEPAssurance (4.0.0):
+  - AEPAssurance (4.1.0):
     - AEPCore (>= 4.0.0)
     - AEPServices (>= 4.0.0)
   - AEPCore (4.1.0):
     - AEPRulesEngine (>= 4.0.0)
     - AEPServices (>= 4.1.0)
-  - AEPEdge (4.2.0):
+  - AEPEdge (4.3.0):
     - AEPCore (>= 4.1.0)
     - AEPEdgeIdentity (>= 4.0.0)
   - AEPEdgeConsent (4.0.0):
@@ -41,9 +41,9 @@ EXTERNAL SOURCES:
     :path: "./AEPEdge.podspec"
 
 SPEC CHECKSUMS:
-  AEPAssurance: 4fa3138ddd7308c1f9923570f4d2b0b8526a916f
+  AEPAssurance: ee78c45752b29696f280854cfc4d4f8d11babad8
   AEPCore: 20fb832a7467b25ca4aca186c0a5a1e3c0c6abc3
-  AEPEdge: c31a1c31d8466f964efeb9a4f94eebc52a0b55a5
+  AEPEdge: 301fb849383fca513c1046fe90bac0bcd1f8e404
   AEPEdgeConsent: 54c1b6a30a3d646e3d4bc4bae1713755422b471e
   AEPEdgeIdentity: c2396b9119abd6eb530ea11efc58ec019b163bd4
   AEPRulesEngine: 458450a34922823286ead045a0c2bd8c27e224c6
@@ -52,4 +52,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 5ec62860669adff6d3ffed90f13fc2a5ad5a4fff
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.13.0

@@ -1442,7 +1442,6 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
 
         XCTAssertEqual(1, dispatchedEvents.count)
 
-        
         let expectedEventData = """
         {
             "requestId": "\(requestID)"

@@ -53,11 +53,11 @@ class CompletionHandlerFunctionalTests: TestBase {
         resetTestExpectations()
         mockNetworkService.reset()
     }
-    
+
     // Runs after each test case
     override func tearDown() {
         super.tearDown()
-        
+
         mockNetworkService.reset()
     }
 

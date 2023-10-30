@@ -24,18 +24,44 @@ public class ExperienceEvent: NSObject {
     /// Optional free-form query data associated with this event
     @objc public var query: [String: Any]?
 
+    /// Datastream identifier used to override the default datastream identifier set in the Edge configuration for this event
+    @objc public private(set) var datastreamIdOverride: String?
+
+    /// Datastream configuration used to override individual settings from the default datastream configuration for this event
+    @objc public private(set) var datastreamConfigOverride: [String: Any]?
+
     /// Adobe Experience Platform dataset identifier, if not set the default dataset identifier set in the Edge Configuration is used
-    @objc public let datasetIdentifier: String?
+    @objc public private(set) var datasetIdentifier: String?
+
+    /// Initialize an Experience Event with the provided event data
+    /// - Parameters:
+    ///   - xdm:  XDM formatted data for this event, passed as a raw XDM Schema data dictionary.
+    ///   - data: Any free form data in a [String : Any] dictionary structure.
+    @objc public init(xdm: [String: Any], data: [String: Any]? = nil) {
+        self.xdm = xdm
+        self.data = data
+    }
 
     /// Initialize an Experience Event with the provided event data
     /// - Parameters:
     ///   - xdm:  XDM formatted data for this event, passed as a raw XDM Schema data dictionary.
     ///   - data: Any free form data in a [String : Any] dictionary structure.
     ///   - datasetIdentifier: The Experience Platform dataset identifier where this event should be sent to; if not provided, the default dataset identifier set in the Edge configuration is used
-    @objc public init(xdm: [String: Any], data: [String: Any]? = nil, datasetIdentifier: String? = nil) {
-        self.xdm = xdm
-        self.data = data
+    @objc public convenience init(xdm: [String: Any], data: [String: Any]? = nil, datasetIdentifier: String? = nil) {
+        self.init(xdm: xdm, data: data)
         self.datasetIdentifier = datasetIdentifier
+        }
+
+    /// Initialize an Experience Event with the provided event data
+    /// - Parameters:
+    ///   - xdm:  XDM formatted data for this event, passed as a raw XDM Schema data dictionary.
+    ///   - data: Any free form data in a [String : Any] dictionary structure.
+    ///   - datastreamIdOverride: Datastream identifier used to override the default datastream identifier set in the Edge configuration for this event.
+    ///   - datastreamConfigOverride: Datastream configuration used to override individual settings from the default datastream configuration for this event.
+    @objc public convenience init(xdm: [String: Any], data: [String: Any]? = nil, datastreamIdOverride: String? = nil, datastreamConfigOverride: [String: Any]? = nil) {
+        self.init(xdm: xdm, data: data)
+        self.datastreamIdOverride = datastreamIdOverride
+        self.datastreamConfigOverride = datastreamConfigOverride
     }
 
     /// Initialize an Experience Event with the provided event data
@@ -52,6 +78,18 @@ public class ExperienceEvent: NSObject {
         self.datasetIdentifier = xdm.datasetIdentifier
     }
 
+    /// Initialize an Experience Event with the provided event data
+    /// - Parameters:
+    ///   - xdm: XDM formatted event data passed as an XDMSchema
+    ///   - data: Any free form data in a [String : Any] dictionary structure.
+    ///   - datastreamIdOverride: Datastream identifier used to override the default datastream identifier set in the Edge configuration for this event.
+    ///   - datastreamConfigOverride: Datastream configuration used to override individual settings from the default datastream configuration for this event.
+    public convenience init(xdm: XDMSchema, data: [String: Any]? = nil, datastreamIdOverride: String? = nil, datastreamConfigOverride: [String: Any]? = nil) {
+        self.init(xdm: xdm, data: data)
+        self.datastreamIdOverride = datastreamIdOverride
+        self.datastreamConfigOverride = datastreamConfigOverride
+    }
+
     internal func asDictionary() -> [String: Any]? {
         var dataDict: [String: Any] = [:]
         if let unwrappedXdm = xdm {
@@ -63,6 +101,20 @@ public class ExperienceEvent: NSObject {
 
         if let query = query, !query.isEmpty {
             dataDict[EdgeConstants.JsonKeys.QUERY] = query
+        }
+
+        var configDict: [String: Any] = [:]
+
+        if let unwrappedDatastreamIdOverride = datastreamIdOverride {
+            configDict[EdgeConstants.EventDataKeys.Config.DATASTREAM_ID_OVERRIDE] = unwrappedDatastreamIdOverride
+        }
+
+        if let unwrappedDatastreamConfigOverride = datastreamConfigOverride {
+            configDict[EdgeConstants.EventDataKeys.Config.DATASTREAM_CONFIG_OVERRIDE] = unwrappedDatastreamConfigOverride
+        }
+
+        if !configDict.isEmpty {
+            dataDict[EdgeConstants.EventDataKeys.Config.KEY] = configDict
         }
 
         if let unwrappedDatasetId = datasetIdentifier {

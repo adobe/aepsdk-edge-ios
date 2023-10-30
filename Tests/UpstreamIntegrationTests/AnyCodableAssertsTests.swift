@@ -21,9 +21,9 @@ class AnyCodableAssertsTests: XCTestCase {
         let actual: AnyCodable? = nil
         assertEqual(expected: expected, actual: actual)
     }
-    
+
     // MARK: - Alternate path tests - assertEqual does not handle alternate paths and is not tested here
-    
+
     /// Validates alternate path wildcards function independently of order.
     ///
     /// - Note: Tests can rely on unique sets of wildcard index values without the need to test
@@ -32,7 +32,7 @@ class AnyCodableAssertsTests: XCTestCase {
         let expectedJSONString = """
         [1, 2]
         """
-        
+
         let actualJSONString = """
         ["a", "b", 1, 2]
         """
@@ -45,13 +45,13 @@ class AnyCodableAssertsTests: XCTestCase {
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]", "[*1]"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*1]", "[*0]"])
     }
-    
+
     /// Validates that the wildcard character `*` can only be placed to the left of the index value.
     func testShouldValidateWildcardIndexFormats() {
         let expectedJSONString = """
         [1]
         """
-        
+
         let actualJSONString = """
         ["a", 1]
         """
@@ -68,7 +68,7 @@ class AnyCodableAssertsTests: XCTestCase {
         XCTExpectFailure("Validation should fail when using an invalid wildcard format") {
             assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0*0]"])
         }
-        
+
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]"])
         XCTExpectFailure("Validation should fail when using an invalid wildcard format") {
             assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[**0]"])
@@ -80,7 +80,7 @@ class AnyCodableAssertsTests: XCTestCase {
             assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0*0]"])
         }
     }
-    
+
     /// Validates:
     /// 1. Specific index alternate path checks only against its paired index, as expected.
     /// 2. Wildcard index allows for matching other positions.
@@ -88,18 +88,18 @@ class AnyCodableAssertsTests: XCTestCase {
         let expectedJSONString = """
         [1]
         """
-        
+
         let actualJSONString = """
         ["a", 1]
         """
         let expected = getAnyCodable(expectedJSONString)!
         let actual = getAnyCodable(actualJSONString)!
-        
+
         XCTExpectFailure("Validation should fail when matching using a specific index path without a match") {
             assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[0]"])
         }
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*]"])
-        
+
         XCTExpectFailure("Validation should fail when matching using a specific index path without a match") {
             assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[0]"])
         }
@@ -114,7 +114,7 @@ class AnyCodableAssertsTests: XCTestCase {
         let expectedJSONString = """
         [1, 1]
         """
-        
+
         let actualJSONString = """
         ["a", 1, 1]
         """
@@ -124,7 +124,7 @@ class AnyCodableAssertsTests: XCTestCase {
         assertExactMatch(expected: expected, actual: actual, typeMatchPaths: ["[*0]"])
         assertTypeMatch(expected: expected, actual: actual, exactMatchPaths: ["[*0]"])
     }
-    
+
     /// Validates:
     /// 1. Specific index alternate paths should correctly match their corresponding indexes.
     /// 2. Wildcard matching should correctly match with any appropriate index.
@@ -132,7 +132,7 @@ class AnyCodableAssertsTests: XCTestCase {
         let expectedJSONString = """
         [1, 2]
         """
-        
+
         let actualJSONString = """
         [4, 3, 2, 1]
         """
@@ -153,7 +153,7 @@ class AnyCodableAssertsTests: XCTestCase {
         let expectedJSONString = """
         [1, 2]
         """
-        
+
         let actualJSONString = """
         [1, 3, 2, 1]
         """
@@ -176,7 +176,7 @@ class AnyCodableAssertsTests: XCTestCase {
             }
         ]
         """
-        
+
         let actualJSONString = """
         [
             {
@@ -186,7 +186,7 @@ class AnyCodableAssertsTests: XCTestCase {
             }
         ]
         """
-        
+
         let expected = getAnyCodable(expectedJSONString)!
         let actual = getAnyCodable(actualJSONString)!
 
@@ -204,13 +204,13 @@ class AnyCodableAssertsTests: XCTestCase {
             [1]
         ]
         """
-        
+
         let actualJSONString = """
         [
             [2]
         ]
         """
-        
+
         let expected = getAnyCodable(expectedJSONString)!
         let actual = getAnyCodable(actualJSONString)!
 
@@ -226,11 +226,11 @@ class AnyCodableAssertsTests: XCTestCase {
         let expectedJSONString = """
         [[[[1]]]]
         """
-        
+
         let actualJSONString = """
         [[[[2]]]]
         """
-        
+
         let expected = getAnyCodable(expectedJSONString)!
         let actual = getAnyCodable(actualJSONString)!
 
@@ -255,7 +255,7 @@ class AnyCodableAssertsTests: XCTestCase {
             "key1": [2]
         }
         """
-        
+
         let expected = getAnyCodable(expectedJSONString)!
         let actual = getAnyCodable(actualJSONString)!
 

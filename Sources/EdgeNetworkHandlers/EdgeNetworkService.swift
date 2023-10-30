@@ -51,15 +51,15 @@ class EdgeNetworkService {
     /// Builds the URL required for connections to Experience Edge
     /// - Parameters:
     ///   - endpoint: the endpoint for this URL
-    ///   - configId: Edge configuration identifier
+    ///   - datastreamId: Edge datastream identifier
     ///   - requestId: batch request identifier
     /// - Returns: built URL or nil on error
-    func buildUrl(endpoint: EdgeEndpoint, configId: String, requestId: String) -> URL? {
+    func buildUrl(endpoint: EdgeEndpoint, datastreamId: String, requestId: String) -> URL? {
         guard let url = endpoint.url else { return nil }
         guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         urlComponents.queryItems = [
             URLQueryItem(name: EdgeConstants.NetworkKeys.REQUEST_PARAM_CONFIG_ID,
-                         value: configId),
+                         value: datastreamId),
             URLQueryItem(name: EdgeConstants.NetworkKeys.REQUEST_PARAM_REQUEST_ID,
                          value: requestId)
         ]

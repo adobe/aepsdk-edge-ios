@@ -15,7 +15,7 @@ import Foundation
 enum EdgeConstants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
-    static let EXTENSION_VERSION = "4.2.0"
+    static let EXTENSION_VERSION = "4.3.0"
     static let FRIENDLY_NAME = "AEPEdge"
     static let LOG_TAG = FRIENDLY_NAME
 
@@ -45,6 +45,12 @@ enum EdgeConstants {
         static let DATASET_ID = "datasetId"
         static let CONSENTS = "consents"
         static let LOCATION_HINT = "locationHint"
+
+        enum Config {
+            static let KEY = "config"
+            static let DATASTREAM_ID_OVERRIDE = "datastreamIdOverride"
+            static let DATASTREAM_CONFIG_OVERRIDE = "datastreamConfigOverride"
+        }
 
         enum Request {
             static let KEY = "request"

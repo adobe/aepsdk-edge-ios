@@ -15,7 +15,7 @@ import Foundation
 /// Implementation of `EdgeHit` for Consent update requests
 struct ConsentEdgeHit: EdgeHit {
     let endpoint: EdgeEndpoint
-    let configId: String
+    let datastreamId: String
     let requestId: String = UUID().uuidString
 
     /// The `EdgeConsentUpdate` for the corresponding hit

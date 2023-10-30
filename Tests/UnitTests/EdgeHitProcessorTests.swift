@@ -66,6 +66,7 @@ class EdgeHitProcessorTests: XCTestCase {
     let expectedHeaders = ["X-Adobe-AEP-Validation-Token": "test-int-id"]
     let experienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
     let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "/va/v1/sessionstart"]])
+    let experienceEventWithDatastreamIdOverride = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "config": ["datastreamIdOverride": "test-datastream-id-override"]])
 
     let invalidPaths = [
         "/va/v1/sessionstart?query=value",
@@ -226,6 +227,22 @@ class EdgeHitProcessorTests: XCTestCase {
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
+    }
+
+    /// Tests that when a good hit is processed that a network request is made and the request returns 200
+    func testProcessHit_experienceEvent_withDatastreamOverrideSet_sendsNetworkRequest_returnsTrue() {
+        // setup
+        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+
+        let edgeEntity = EdgeDataEntity(event: experienceEventWithDatastreamIdOverride, identityMap: [:])
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        // test
+        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
+        let requestString = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? ""
+        XCTAssertFalse(requestString.contains("test-config-id"))
+        XCTAssertTrue(requestString.contains("test-datastream-id-override"))
+
     }
 
     /// Tests that when the network request fails but has a recoverable error that we will retry the hit and do not invoke the response handler for that hit
