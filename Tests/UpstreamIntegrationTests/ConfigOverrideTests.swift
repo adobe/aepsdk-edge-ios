@@ -19,7 +19,7 @@ import Foundation
 import XCTest
 
 /// Performs validation on integration with the Edge Network upstream service
-class ConfigOverrideTests: TestBase {
+class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
     private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
     private var networkService: RealNetworkService = RealNetworkService()
