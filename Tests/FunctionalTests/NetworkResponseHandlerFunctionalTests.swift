@@ -13,6 +13,7 @@
 import AEPCore
 @testable import AEPEdge
 @testable import AEPServices
+import AEPTestUtils
 import XCTest
 
 // swiftlint:disable type_body_length

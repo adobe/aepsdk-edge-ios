@@ -14,6 +14,7 @@ import AEPCore
 @testable import AEPEdge
 import AEPEdgeIdentity
 import AEPServices
+import AEPTestUtils
 import XCTest
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.

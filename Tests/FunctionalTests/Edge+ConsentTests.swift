@@ -15,6 +15,7 @@ import AEPCore
 import AEPEdgeConsent
 import AEPEdgeIdentity
 import AEPServices
+import AEPTestUtils
 import Foundation
 import XCTest
 
