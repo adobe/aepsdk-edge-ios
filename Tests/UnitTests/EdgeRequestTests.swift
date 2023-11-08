@@ -69,7 +69,7 @@ class EdgeRequestTests: XCTestCase {
               "meta.konductorConfig.streaming.recordSeparator": "A",
               "meta.konductorConfig.streaming.lineFeed": "B",
               "xdm.identityMap.email[0].id": "example@adobe.com"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testEncode_onlyRequestMetadata() {
@@ -89,7 +89,7 @@ class EdgeRequestTests: XCTestCase {
             ["meta.konductorConfig.streaming.enabled": true,
              "meta.konductorConfig.streaming.recordSeparator": "A",
              "meta.konductorConfig.streaming.lineFeed": "B"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testEncode_onlyRequestContext() {
@@ -120,7 +120,7 @@ class EdgeRequestTests: XCTestCase {
 
         let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] = ["xdm.identityMap.email[0].id": "example@adobe.com"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testEncode_onlyEvents() {
@@ -164,6 +164,6 @@ class EdgeRequestTests: XCTestCase {
               "events[1].xdm.test.true": true,
               "events[1].xdm.test.one": 1,
               "events[1].xdm.test.zero": 0]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 }

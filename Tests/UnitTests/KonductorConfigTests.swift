@@ -35,7 +35,7 @@ class KonductorConfigTests: XCTestCase {
             [ "enabled": true,
               "lineFeed": "B",
               "recordSeparator": "A"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testStreamingEncodeWithNilRecordSeparator() {
@@ -49,7 +49,7 @@ class KonductorConfigTests: XCTestCase {
         let expectedResult: [String: Any] =
             [ "enabled": false,
               "lineFeed": "B"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testStreamingEncodeWithNilLineFeed() {
@@ -63,7 +63,7 @@ class KonductorConfigTests: XCTestCase {
         let expectedResult: [String: Any] =
             [ "enabled": false,
               "recordSeparator": "A"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testStreamingEncodeWithNilLineFeedAndRecordSeparator() {
@@ -76,7 +76,7 @@ class KonductorConfigTests: XCTestCase {
         let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             [ "enabled": false]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     // MARK: KonductorConfig encoder tests
@@ -94,7 +94,7 @@ class KonductorConfigTests: XCTestCase {
             [ "streaming.enabled": true,
               "streaming.lineFeed": "B",
               "streaming.recordSeparator": "A"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testKonductorConfigEncodeEmptyParameters() {
@@ -106,7 +106,7 @@ class KonductorConfigTests: XCTestCase {
         let data = try? encoder.encode(config)
         let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] = [:]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
 }

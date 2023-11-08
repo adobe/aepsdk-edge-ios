@@ -34,7 +34,7 @@ class RequestMetadataTests: XCTestCase {
         let data = try? encoder.encode(metadata)
         let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] = [:]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testEncode_paramKonductorConfig() {
@@ -47,7 +47,7 @@ class RequestMetadataTests: XCTestCase {
         let data = try? encoder.encode(metadata)
         let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] = ["konductorConfig": "isEmpty"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testEncode_paramStateMetadata() {
@@ -64,7 +64,7 @@ class RequestMetadataTests: XCTestCase {
             ["state.entries[0].key": "key",
              "state.entries[0].maxAge": 3600,
              "state.entries[0].value": "value"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testEncode_paramKonductorConfig_paramStateMetadata() {
@@ -83,7 +83,7 @@ class RequestMetadataTests: XCTestCase {
              "state.entries[0].maxAge": 3600,
              "state.entries[0].value": "value",
              "konductorConfig": "isEmpty"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testEncode_paramSDKConfig_originalDatastreamIdMetadata() {
@@ -99,7 +99,7 @@ class RequestMetadataTests: XCTestCase {
         let expectedResult: [String: Any] =
             ["sdkConfig.datastream.original": "OriginalDatastreamID",
              "konductorConfig": "isEmpty"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     func testEncode_paramConfigOverrides_originalDatastreamConfigOverrideMetadata() {
@@ -148,6 +148,6 @@ class RequestMetadataTests: XCTestCase {
              "configOverrides.com_adobe_target.propertyToken": "testPropertyToken",
 
              "konductorConfig": "isEmpty"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 }

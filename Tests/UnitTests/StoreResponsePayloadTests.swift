@@ -37,7 +37,7 @@ class StoreResponsePayloadTests: XCTestCase {
               "payload.key": "key",
               "payload.maxAge": 3600,
               "payload.value": "value"]
-        UnitTests.assertEqual(expectedResult, actualResult)
+        assertEqual(expectedResult, actualResult)
     }
 
     // MARK: decoder tests

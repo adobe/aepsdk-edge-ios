@@ -164,6 +164,6 @@ class ImplementationDetailsTests: XCTestCase {
             "environment": "app",
             "version": "\(outputVersion)"
         ]
-        UnitTests.assertEqual(expectedResult, actualResult, file: (file), line: line)
+        assertEqual(expectedResult, actualResult, file: (file), line: line)
     }
 }
