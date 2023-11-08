@@ -15,7 +15,7 @@ end
 
 target 'UnitTests' do
   pod 'AEPCore'
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :branch => 'update-access-levels'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :branch => 'json-comparison-custom-protocol'
 end
 
 target 'UpstreamIntegrationTests' do
@@ -23,7 +23,7 @@ target 'UpstreamIntegrationTests' do
   pod 'AEPEdgeIdentity'
   pod 'AEPEdgeConsent'
   pod 'AEPEdge', :path => './AEPEdge.podspec'
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :branch => 'update-access-levels'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :branch => 'json-comparison-custom-protocol'
 end
 
 target 'FunctionalTests' do
@@ -31,7 +31,7 @@ target 'FunctionalTests' do
   pod 'AEPEdgeIdentity'
   pod 'AEPEdgeConsent'
   pod 'AEPEdge', :path => './AEPEdge.podspec'
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :branch => 'update-access-levels'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :branch => 'json-comparison-custom-protocol'
 end
 
 target 'TestAppiOS' do
