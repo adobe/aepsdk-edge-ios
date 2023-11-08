@@ -251,12 +251,13 @@ class EdgeStateTests: XCTestCase {
     /// Helper to read `EdgeProperties` from `MockDataStore`.
     /// - Returns: EdgeProperties from MockDataStore under key "edge.properties", or nil if no value found or an error occurred while reading properties.
     private func getPropertiesFromMockDataStore() -> EdgeProperties? {
-        guard let data = mockDataStore.dict["edge.properties"] as? Data else {
+        guard let jsonString = mockDataStore.dict["edge.properties"] as? String,
+              let jsonData = jsonString.data(using: .utf8) else {
             return nil
         }
 
         let decoder = JSONDecoder()
-        return try? decoder.decode(EdgeProperties.self, from: data)
+        return try? decoder.decode(EdgeProperties.self, from: jsonData)
     }
 
 }
