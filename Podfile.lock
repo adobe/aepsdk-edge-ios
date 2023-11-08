@@ -2,9 +2,9 @@ PODS:
   - AEPAssurance (4.1.0):
     - AEPCore (>= 4.0.0)
     - AEPServices (>= 4.0.0)
-  - AEPCore (4.1.0):
+  - AEPCore (4.2.0):
     - AEPRulesEngine (>= 4.0.0)
-    - AEPServices (>= 4.1.0)
+    - AEPServices (>= 4.2.0)
   - AEPEdge (4.3.0):
     - AEPCore (>= 4.1.0)
     - AEPEdgeIdentity (>= 4.0.0)
@@ -14,7 +14,10 @@ PODS:
   - AEPEdgeIdentity (4.0.0):
     - AEPCore (>= 4.0.0)
   - AEPRulesEngine (4.0.0)
-  - AEPServices (4.1.0)
+  - AEPServices (4.2.0)
+  - AEPTestUtils (1.0.0-beta):
+    - AEPCore (>= 4.0.0)
+    - AEPServices (>= 4.0.0)
   - SwiftLint (0.52.0)
 
 DEPENDENCIES:
@@ -24,6 +27,7 @@ DEPENDENCIES:
   - AEPEdgeConsent
   - AEPEdgeIdentity
   - AEPServices
+  - AEPTestUtils (from `https://github.com/adobe/aepsdk-testutils-ios.git`, branch `update-access-levels`)
   - SwiftLint (= 0.52.0)
 
 SPEC REPOS:
@@ -39,17 +43,26 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   AEPEdge:
     :path: "./AEPEdge.podspec"
+  AEPTestUtils:
+    :branch: update-access-levels
+    :git: https://github.com/adobe/aepsdk-testutils-ios.git
+
+CHECKOUT OPTIONS:
+  AEPTestUtils:
+    :commit: d9d614b7813e76879d2bb24f3605687e0bef6cf7
+    :git: https://github.com/adobe/aepsdk-testutils-ios.git
 
 SPEC CHECKSUMS:
   AEPAssurance: ee78c45752b29696f280854cfc4d4f8d11babad8
-  AEPCore: 20fb832a7467b25ca4aca186c0a5a1e3c0c6abc3
+  AEPCore: f80654e62b9cb776ae74df44dd24c82febc4d3fa
   AEPEdge: 301fb849383fca513c1046fe90bac0bcd1f8e404
   AEPEdgeConsent: 54c1b6a30a3d646e3d4bc4bae1713755422b471e
   AEPEdgeIdentity: c2396b9119abd6eb530ea11efc58ec019b163bd4
   AEPRulesEngine: 458450a34922823286ead045a0c2bd8c27e224c6
-  AEPServices: d94555679870311d2f1391c5d7a5de590fd1f3c0
+  AEPServices: 842c0f94e960754ce2ac50535d78349827c52c83
+  AEPTestUtils: 756e5997318be74584057d7628941c737d358640
   SwiftLint: 13280e21cdda6786ad908dc6e416afe5acd1fcb7
 
-PODFILE CHECKSUM: 5ec62860669adff6d3ffed90f13fc2a5ad5a4fff
+PODFILE CHECKSUM: 9aa70a127de06ce8bd96b349ae51d3d44ae2b7c4
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.12.0
