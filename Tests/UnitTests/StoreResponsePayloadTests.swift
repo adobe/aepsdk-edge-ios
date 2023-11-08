@@ -11,6 +11,7 @@
 //
 
 @testable import AEPEdge
+import AEPTestUtils
 import XCTest
 
 class StoreResponsePayloadTests: XCTestCase {
@@ -36,7 +37,7 @@ class StoreResponsePayloadTests: XCTestCase {
               "payload.key": "key",
               "payload.maxAge": 3600,
               "payload.value": "value"]
-        assertEqual(expectedResult, actualResult)
+        UnitTests.assertEqual(expectedResult, actualResult)
     }
 
     // MARK: decoder tests

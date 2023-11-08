@@ -11,6 +11,7 @@
 //
 
 @testable import AEPEdge
+import AEPTestUtils
 import XCTest
 
 class KonductorConfigTests: XCTestCase {
@@ -34,7 +35,7 @@ class KonductorConfigTests: XCTestCase {
             [ "enabled": true,
               "lineFeed": "B",
               "recordSeparator": "A"]
-        assertEqual(expectedResult, actualResult)
+        UnitTests.assertEqual(expectedResult, actualResult)
     }
 
     func testStreamingEncodeWithNilRecordSeparator() {
@@ -48,7 +49,7 @@ class KonductorConfigTests: XCTestCase {
         let expectedResult: [String: Any] =
             [ "enabled": false,
               "lineFeed": "B"]
-        assertEqual(expectedResult, actualResult)
+        UnitTests.assertEqual(expectedResult, actualResult)
     }
 
     func testStreamingEncodeWithNilLineFeed() {
@@ -62,7 +63,7 @@ class KonductorConfigTests: XCTestCase {
         let expectedResult: [String: Any] =
             [ "enabled": false,
               "recordSeparator": "A"]
-        assertEqual(expectedResult, actualResult)
+        UnitTests.assertEqual(expectedResult, actualResult)
     }
 
     func testStreamingEncodeWithNilLineFeedAndRecordSeparator() {
@@ -75,7 +76,7 @@ class KonductorConfigTests: XCTestCase {
         let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] =
             [ "enabled": false]
-        assertEqual(expectedResult, actualResult)
+        UnitTests.assertEqual(expectedResult, actualResult)
     }
 
     // MARK: KonductorConfig encoder tests
@@ -93,7 +94,7 @@ class KonductorConfigTests: XCTestCase {
             [ "streaming.enabled": true,
               "streaming.lineFeed": "B",
               "streaming.recordSeparator": "A"]
-        assertEqual(expectedResult, actualResult)
+        UnitTests.assertEqual(expectedResult, actualResult)
     }
 
     func testKonductorConfigEncodeEmptyParameters() {
@@ -105,7 +106,7 @@ class KonductorConfigTests: XCTestCase {
         let data = try? encoder.encode(config)
         let actualResult = asFlattenDictionary(data: data)
         let expectedResult: [String: Any] = [:]
-        assertEqual(expectedResult, actualResult)
+        UnitTests.assertEqual(expectedResult, actualResult)
     }
 
 }

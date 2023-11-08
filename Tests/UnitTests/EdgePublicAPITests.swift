@@ -12,6 +12,7 @@
 
 @testable import AEPCore
 @testable import AEPEdge
+import AEPTestUtils
 import XCTest
 
 class EdgePublicAPITests: XCTestCase {

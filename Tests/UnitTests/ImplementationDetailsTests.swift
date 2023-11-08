@@ -11,6 +11,7 @@
 //
 
 @testable import AEPEdge
+import AEPTestUtils
 import XCTest
 
 class ImplementationDetailsTests: XCTestCase {
@@ -163,6 +164,6 @@ class ImplementationDetailsTests: XCTestCase {
             "environment": "app",
             "version": "\(outputVersion)"
         ]
-        assertEqual(expectedResult, actualResult, file: (file), line: line)
+        UnitTests.assertEqual(expectedResult, actualResult, file: (file), line: line)
     }
 }
