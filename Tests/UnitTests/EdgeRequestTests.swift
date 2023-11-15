@@ -12,6 +12,7 @@
 
 @testable import AEPEdge
 import AEPServices
+import AEPTestUtils
 import XCTest
 
 class EdgeRequestTests: XCTestCase {

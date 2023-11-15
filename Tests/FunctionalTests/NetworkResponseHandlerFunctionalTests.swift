@@ -13,10 +13,11 @@
 import AEPCore
 @testable import AEPEdge
 @testable import AEPServices
+import AEPTestUtils
 import XCTest
 
 // swiftlint:disable type_body_length
-class NetworkResponseHandlerFunctionalTests: TestBase {
+class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let requestSendCompletionTrueEventData: [String: Any] = ["xdm": ["testString": "xdm"], "request": [ "sendCompletion": true ]]
@@ -1500,7 +1501,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
         assertResponseCompleteEventWithData(expectedEventData: expectedEventData, parentEventIDs: [requestEvent2.id])
     }
 
-    private func assertResponseCompleteEventWithData(expectedEventData: String, parentEventIDs: [UUID]) {
+    private func assertResponseCompleteEventWithData(expectedEventData: String, parentEventIDs: [UUID], file: StaticString = #file, line: UInt = #line) {
         let dispatchedCompleteEvents = getDispatchedEventsWith(type: EventType.edge, source: TestConstants.EventSource.CONTENT_COMPLETE)
         XCTAssertEqual(parentEventIDs.count, dispatchedCompleteEvents.count)
 
@@ -1511,7 +1512,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase {
             XCTAssertEqual(id, completeEvent.responseID)
             XCTAssertEqual(id, completeEvent.parentID)
 
-            assertEqual(expected: getAnyCodable(expectedEventData), actual: getAnyCodable(completeEvent))
+            assertEqual(expected: getAnyCodable(expectedEventData), actual: getAnyCodable(completeEvent), file: file, line: line)
         }
     }
 }

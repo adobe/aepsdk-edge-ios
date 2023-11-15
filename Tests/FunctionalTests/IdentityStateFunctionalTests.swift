@@ -13,6 +13,7 @@
 import AEPCore
 import AEPEdge
 import AEPServices
+import AEPTestUtils
 import XCTest
 
 /// Functional test suite for tests which require no Identity shared state at startup to simulate a missing or pending state.

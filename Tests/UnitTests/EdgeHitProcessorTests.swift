@@ -13,6 +13,7 @@
 @testable import AEPCore
 @testable import AEPEdge
 import AEPServices
+import AEPTestUtils
 import XCTest
 
 class EdgeHitProcessorTests: XCTestCase {

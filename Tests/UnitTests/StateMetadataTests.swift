@@ -11,6 +11,7 @@
 //
 
 @testable import AEPEdge
+import AEPTestUtils
 import XCTest
 
 class StateMetadataTests: XCTestCase {

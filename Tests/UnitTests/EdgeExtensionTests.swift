@@ -13,6 +13,7 @@
 @testable import AEPCore
 @testable import AEPEdge
 @testable import AEPServices
+import AEPTestUtils
 import XCTest
 
 class EdgeExtensionTests: XCTestCase {
