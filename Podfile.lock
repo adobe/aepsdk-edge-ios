@@ -27,7 +27,7 @@ DEPENDENCIES:
   - AEPEdgeConsent
   - AEPEdgeIdentity
   - AEPServices
-  - AEPTestUtils (from `https://github.com/adobe/aepsdk-testutils-ios.git`, branch `json-comparison-custom-protocol`)
+  - AEPTestUtils (from `https://github.com/adobe/aepsdk-testutils-ios.git`, branch `path-options-refactor2`)
   - SwiftLint (= 0.52.0)
 
 SPEC REPOS:
@@ -44,12 +44,12 @@ EXTERNAL SOURCES:
   AEPEdge:
     :path: "./AEPEdge.podspec"
   AEPTestUtils:
-    :branch: json-comparison-custom-protocol
+    :branch: path-options-refactor2
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
 
 CHECKOUT OPTIONS:
   AEPTestUtils:
-    :commit: f29e075d5cd21fd055c3b4f5ce47e7db6ec2db9f
+    :commit: a33449b9ad0e7faf405be1b4d1717047964c72e5
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
 
 SPEC CHECKSUMS:
@@ -63,6 +63,6 @@ SPEC CHECKSUMS:
   AEPTestUtils: 756e5997318be74584057d7628941c737d358640
   SwiftLint: 13280e21cdda6786ad908dc6e416afe5acd1fcb7
 
-PODFILE CHECKSUM: 0157e5638521654534729a686e8ece4f06f08e23
+PODFILE CHECKSUM: 304a1bdb110b9e19e52acca0c38e84bf42108634
 
 COCOAPODS: 1.12.0
