@@ -16,7 +16,7 @@
 import AEPTestUtils
 import XCTest
 
-class EdgeExtensionTests: XCTestCase {
+class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
     let experienceEvent = Event(name: "Experience event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["data": "example"]])
     var mockRuntime: TestableExtensionRuntime!
     var edge: Edge!
@@ -112,16 +112,18 @@ class EdgeExtensionTests: XCTestCase {
         _ = edge.readyForEvent(Event(name: "Dummy event", type: EventType.custom, source: EventSource.none, data: nil))
 
         // verify
-        let actualDetails = edge.state?.implementationDetails ?? [:]
-        XCTAssertTrue(!actualDetails.isEmpty)
-
-        let expectedDetails: [String: Any] = [
-            "version": "3.0.0+\(EdgeConstants.EXTENSION_VERSION)",
-            "environment": "app",
-            "name": "\(EXPECTED_BASE_PATH)/reactnative"
-        ]
-
-        XCTAssertTrue(expectedDetails == actualDetails)
+        let actualDetails = edge.state?.implementationDetails
+        
+        let expectedDetailsJSON = #"""
+        {
+          "version": "3.0.0+\#(EdgeConstants.EXTENSION_VERSION)",
+          "environment": "app",
+          "name": "\#(EXPECTED_BASE_PATH)/reactnative"
+        }
+        """#
+        
+        assertEqual(expected: getAnyCodable(expectedDetailsJSON)!,
+                    actual: AnyCodable(AnyCodable.from(dictionary: actualDetails)))
     }
 
     // MARK: Consent update request
