@@ -220,8 +220,6 @@ class EdgeHitProcessorTests: XCTestCase {
     /// Tests that when a good hit is processed that a network request is made and the request returns 200
     func testProcessHit_experienceEvent_happy_sendsNetworkRequest_returnsTrue() {
         // setup
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-
         let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
