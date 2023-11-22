@@ -226,13 +226,6 @@ class EdgeEventWarningTests: XCTestCase, AnyCodableAsserts {
         let warning = EdgeEventWarning(type: "warning", status: 200, title: "test", report: report)
 
         let encoded = warning.asDictionary()
-
-        XCTAssertNotNil(encoded)
-        XCTAssertEqual(3, encoded?.count)
-        XCTAssertEqual("warning", encoded?["type"] as? String)
-        XCTAssertEqual(200, encoded?["status"] as? Int)
-        XCTAssertEqual("test", encoded?["title"] as? String)
-        XCTAssertNil(encoded?["report"]) // EdgeEventWarningReport is not encoded if it doesn't contain a "cause"
         
         let expectedJSON = #"""
         {
