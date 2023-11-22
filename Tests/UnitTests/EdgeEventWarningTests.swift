@@ -11,9 +11,11 @@
 //
 
 @testable import AEPEdge
+import AEPServices
+import AEPTestUtils
 import XCTest
 
-class EdgeEventWarningTests: XCTestCase {
+class EdgeEventWarningTests: XCTestCase, AnyCodableAsserts {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -200,22 +202,23 @@ class EdgeEventWarningTests: XCTestCase {
         let warning = EdgeEventWarning(type: "warning", status: 200, title: "test", report: report)
 
         let encoded = warning.asDictionary()
-
-        XCTAssertNotNil(encoded)
-        XCTAssertEqual(4, encoded?.count)
-        XCTAssertEqual("warning", encoded?["type"] as? String)
-        XCTAssertEqual(200, encoded?["status"] as? Int)
-        XCTAssertEqual("test", encoded?["title"] as? String)
-
-        let encodedReport = encoded?["report"] as? [String: Any]
-        XCTAssertNotNil(encodedReport)
-        XCTAssertEqual(1, encodedReport?.count) // eventIndex is not encoded
-
-        let encodedCause = encodedReport?["cause"] as? [String: Any]
-        XCTAssertNotNil(encodedCause)
-        XCTAssertEqual(2, encodedCause?.count)
-        XCTAssertEqual("message", encodedCause?["message"] as? String)
-        XCTAssertEqual(5, encodedCause?["code"] as? Int)
+        
+        let expectedJSON = #"""
+        {
+          "report": {
+            "cause": {
+              "code": 5,
+              "message": "message"
+            }
+          },
+          "status": 200,
+          "title": "test",
+          "type": "warning"
+        }
+        """#
+        
+        assertEqual(expected: getAnyCodable(expectedJSON)!,
+                    actual: AnyCodable(AnyCodable.from(dictionary: encoded)))
     }
 
     func testCanEncode_eventWarning_doesNotEncodeEmptyReport() {
@@ -230,6 +233,17 @@ class EdgeEventWarningTests: XCTestCase {
         XCTAssertEqual(200, encoded?["status"] as? Int)
         XCTAssertEqual("test", encoded?["title"] as? String)
         XCTAssertNil(encoded?["report"]) // EdgeEventWarningReport is not encoded if it doesn't contain a "cause"
+        
+        let expectedJSON = #"""
+        {
+          "status": 200,
+          "title": "test",
+          "type": "warning"
+        }
+        """#
+        
+        assertEqual(expected: getAnyCodable(expectedJSON)!,
+                    actual: AnyCodable(AnyCodable.from(dictionary: encoded)))
     }
 
 }
