@@ -256,7 +256,7 @@ class EdgeHitProcessorTests: XCTestCase {
         // (headerValue, actualRetryValue)
         let retryValues = [("60", 60.0), ("InvalidHeader", 5.0), ("", 5.0), ("1", 1.0)]
 
-        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: 4)
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(recoverableNetworkErrorCodes.count))
         
         for (code, retryValueTuple) in zip(recoverableNetworkErrorCodes, retryValues) {
             let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
