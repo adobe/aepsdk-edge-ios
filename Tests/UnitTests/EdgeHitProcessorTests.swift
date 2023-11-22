@@ -61,9 +61,7 @@ class EdgeHitProcessorTests: XCTestCase {
     var hitProcessor: EdgeHitProcessor!
     var networkService: EdgeNetworkService!
     var networkResponseHandler: NetworkResponseHandler!
-    var mockNetworkService: MockNetworking? {
-        return ServiceProvider.shared.networkService as? MockNetworking
-    }
+    private let mockNetworkService: MockNetworkService = MockNetworkService()
     let expectedHeaders = ["X-Adobe-AEP-Validation-Token": "test-int-id"]
     let experienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
     let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "/va/v1/sessionstart"]])
@@ -90,7 +88,8 @@ class EdgeHitProcessorTests: XCTestCase {
     let url = URL(string: "adobe.com")! // swiftlint:disable:this force_unwrapping
 
     override func setUp() {
-        ServiceProvider.shared.networkService = MockNetworking()
+        ServiceProvider.shared.networkService = mockNetworkService
+        mockNetworkService.reset()
         networkService = EdgeNetworkService()
         networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  })
         hitProcessor = EdgeHitProcessor(networkService: networkService,
