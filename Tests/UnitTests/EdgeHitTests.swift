@@ -12,10 +12,11 @@
 
 @testable import AEPEdge
 import AEPServices
+import AEPTestUtils
 import Foundation
 import XCTest
 
-class EdgeHitTests: XCTestCase {
+class EdgeHitTests: XCTestCase, AnyCodableAsserts {
     private let CONFIG_ID = "testConfigId"
     private let EDGE_REQUEST = EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]])
     private let INTERACT_ENDPOINT_PROD = EdgeEndpoint(requestType: .interact, environmentType: .production)
@@ -53,31 +54,29 @@ class EdgeHitTests: XCTestCase {
     }
 
     func testExperienceEventsEdgeHit_getPayload_noStreaming() {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted]
-        let json = """
-                    {"events" : [{"test" : "data"}]}
-                    """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
-
-        let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
                                               request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]]))
+        
+        guard let edgeHitPayload = edgeHit.getPayload() else {
+            XCTFail("Unable to get valid Edge hit payload.")
+            return
+        }
 
-        XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
+        let expectedJSON = #"""
+        {
+          "events": [
+            {
+              "test": "data"
+            }
+          ]
+        }
+        """#
+        
+        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 
     func testExperienceEventsEdgeHit_getPayload_withStreaming() {
-        let json = """
-                {"meta" :
-                    {"konductorConfig" :
-                        {"streaming" :
-                            {"enabled" : true,"recordSeparator" : "A","lineFeed" : "B"}
-                        }
-                    },
-                "events" : [{  "test" : "data"}]}
-                """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
-        let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
@@ -89,26 +88,34 @@ class EdgeHitTests: XCTestCase {
                                                                 state: nil),
                                                             xdm: nil,
                                                             events: [["test": "data"]]))
-
-        XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
+        
+        guard let edgeHitPayload = edgeHit.getPayload() else {
+            XCTFail("Unable to get valid Edge hit payload.")
+            return
+        }
+        
+        let expectedJSON = #"""
+        {
+          "events": [
+            {
+              "test": "data"
+            }
+          ],
+          "meta": {
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "lineFeed": "B",
+                "recordSeparator": "A"
+              }
+            }
+          }
+        }
+        """#
+        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 
     func testExperienceEventsEdgeHit_getPayload_withOriginalDatastreamId() {
-        let json = """
-                {"meta" :
-                    {"konductorConfig" :
-                        {"streaming" :
-                            {"enabled" : true,"recordSeparator" : "A","lineFeed" : "B"}
-                        },
-                        "sdkConfig" : {
-                            "datastream" : {
-                                "original" : "OriginalDatastreamID"
-                            }
-                        }
-                    },
-                "events" : [{  "test" : "data"}]}
-                """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
-        let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
@@ -120,26 +127,40 @@ class EdgeHitTests: XCTestCase {
                                                                 state: nil),
                                                             xdm: nil,
                                                             events: [["test": "data"]]))
+        
+        guard let edgeHitPayload = edgeHit.getPayload() else {
+            XCTFail("Unable to get valid Edge hit payload.")
+            return
+        }
 
-        XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
+        let expectedJSON = #"""
+        {
+          "events": [
+            {
+              "test": "data"
+            }
+          ],
+          "meta": {
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "lineFeed": "B",
+                "recordSeparator": "A"
+              }
+            },
+            "sdkConfig": {
+              "datastream": {
+                "original": "OriginalDatastreamID"
+              }
+            }
+          }
+        }
+        """#
+        
+        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 
     func testExperienceEventsEdgeHit_getPayload_withDatastreamConfigOverride() {
-        let json = """
-                {"meta" : {
-                    "konductorConfig" : {
-                        "streaming" : {
-                            "enabled" : true,"recordSeparator" : "A","lineFeed" : "B"}
-                        },
-                    "configOverrides" : {
-                        "test": {
-                            "key" : "value"
-                        }
-                    }
-                },
-                "events" : [{  "test" : "data"}]}
-                """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
-        let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
@@ -151,69 +172,112 @@ class EdgeHitTests: XCTestCase {
                                                                 state: nil),
                                                             xdm: nil,
                                                             events: [["test": "data"]]))
+        
+        guard let edgeHitPayload = edgeHit.getPayload() else {
+            XCTFail("Unable to get valid Edge hit payload.")
+            return
+        }
 
-        XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
+        let expectedJSON = #"""
+        {
+          "events": [
+            {
+              "test": "data"
+            }
+          ],
+          "meta": {
+            "configOverrides": {
+              "test": {
+                "key": "value"
+              }
+            },
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "lineFeed": "B",
+                "recordSeparator": "A"
+              }
+            }
+          }
+        }
+        """#
+        
+        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 
     // MARK: ConsentEgeHit tests
 
     func testConsentEdgeHit_getPayload() {
-        let json =
-            """
-            {
-            "query": {
-                "consent": {
-                    "operation": "update"
-                }
-            },
-            "consent" :
-                [{
-                    "standard" : "Adobe",
-                    "version" : "2.0",
-                    "value" : {
-                        "consent" : {
-                            "collect" : "y"
-                        }
-                    }}
-                ]
-            }
-            """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
-        let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let edgeHit = ConsentEdgeHit(endpoint: CONSENT_ENDPOINT_PROD, datastreamId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
+        
+        guard let edgeHitPayload = edgeHit.getPayload() else {
+            XCTFail("Unable to get valid Edge hit payload.")
+            return
+        }
 
-        XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
+        let expectedJSON = #"""
+        {
+          "consent": [
+            {
+              "standard": "Adobe",
+              "value": {
+                "consent": {
+                  "collect": "y"
+                }
+              },
+              "version": "2.0"
+            }
+          ],
+          "query": {
+            "consent": {
+              "operation": "update"
+            }
+          }
+        }
+        """#
+        
+        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 
     func testConsentEdgeHit_getPayloadWithStreaming() {
-        let json =
-            """
-            {"meta" :
-                    {"konductorConfig" :
-                        {"streaming" :
-                            {"enabled" : true,"recordSeparator" : "A","lineFeed" : "B"}
-                        }
-                    },
-            "consent" :
-                [{
-                    "standard" : "Adobe",
-                    "version" : "2.0",
-                    "value" : {
-                        "consent" : {
-                            "collect" : "y"
-                        }
-                    }}
-                ]
-            }
-            """.data(using: .utf8)! // swiftlint:disable:this force_unwrapping
-        let expectedPayload = try! JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]
         let streamingSettings = Streaming(recordSeparator: "A", lineFeed: "B")
         let consentUpdate = EdgeConsentUpdate(meta: RequestMetadata(konductorConfig: KonductorConfig(streaming: streamingSettings), sdkConfig: nil, configOverrides: nil, state: nil),
                                               query: nil,
                                               identityMap: nil,
                                               consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
         let edgeHit = ConsentEdgeHit(endpoint: CONSENT_ENDPOINT_PROD, datastreamId: CONFIG_ID, consents: consentUpdate)
+        
+        guard let edgeHitPayload = edgeHit.getPayload() else {
+            XCTFail("Unable to get valid Edge hit payload.")
+            return
+        }
 
-        XCTAssertTrue(expectedPayload == payloadToDict(payload: edgeHit.getPayload()))
+        let expectedJSON = #"""
+        {
+          "consent": [
+            {
+              "standard": "Adobe",
+              "value": {
+                "consent": {
+                  "collect": "y"
+                }
+              },
+              "version": "2.0"
+            }
+          ],
+          "meta": {
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "lineFeed": "B",
+                "recordSeparator": "A"
+              }
+            }
+          }
+        }
+        """#
+        
+        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 
     func testConsentEdgeHit_getStreamingSettings_streamingNotEnabled() {
@@ -230,18 +294,4 @@ class EdgeHitTests: XCTestCase {
         let edgeHit = ConsentEdgeHit(endpoint: CONSENT_ENDPOINT_PROD, datastreamId: CONFIG_ID, consents: consentUpdate)
         XCTAssertNotNil(edgeHit.getStreamingSettings())
     }
-
-    private func payloadToDict(payload: String?) -> [String: Any] {
-        guard let payloadData = payload?.data(using: .utf8),
-              let payload = try! JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] else {
-            XCTFail("Failed to convert payload to data")
-            return [:]
-        }
-
-        return payload
-    }
-}
-
-func == (lhs: [String: Any], rhs: [String: Any]) -> Bool {
-    return NSDictionary(dictionary: lhs).isEqual(to: rhs)
 }
