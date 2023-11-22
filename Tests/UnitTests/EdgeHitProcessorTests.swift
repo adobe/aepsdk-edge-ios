@@ -16,7 +16,7 @@ import AEPServices
 import AEPTestUtils
 import XCTest
 
-class EdgeHitProcessorTests: XCTestCase {
+class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     private let ASSURANCE_SHARED_STATE = "com.adobe.assurance"
     private let CONFIGURATION_SHARED_STATE = "com.adobe.module.configuration"
     private let IDENTITY_SHARED_STATE = "com.adobe.edge.identity"
@@ -293,27 +293,49 @@ class EdgeHitProcessorTests: XCTestCase {
     /// Tests that when the network request fails and does not have a recoverable response code that we invoke the response handler and do not retry the hit
     func testProcessHit_experienceEvent_whenUnrecoverableNetworkError_sendsNetworkRequest_returnsTrue() {
         // setup
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: -1, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.setMockResponse(
+            url: INTERACT_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: -1,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
         let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-        XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: INTERACT_ENDPOINT_PROD))
+        let networkRequests = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        XCTAssertEqual(1, networkRequests.count)
     }
 
     /// Tests that when the configurable edge endpoint is empty in configuration shared state that we fallback to production endpoint
     func testProcessHit_experienceEvent_whenConfigEndpointEmpty() {
         // setup
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.setMockResponse(
+            url: INTERACT_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
         let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-        XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: INTERACT_ENDPOINT_PROD))
+        let networkRequests = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        XCTAssertEqual(1, networkRequests.count)
     }
 
     /// Tests that when the configurable edge endpoint is invalid in configuration shared state that we fallback to production endpoint
@@ -332,14 +354,26 @@ class EdgeHitProcessorTests: XCTestCase {
                                         readyForEvent: readyForEvent(_:),
                                         getImplementationDetails: { return nil },
                                         getLocationHint: { return nil })
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        
+        mockNetworkService.setMockResponse(
+            url: INTERACT_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
         let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-        XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: INTERACT_ENDPOINT_PROD))
+        let networkRequests = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        XCTAssertEqual(1, networkRequests.count)
     }
 
     func testProcessHit_mediaEdgeEvent_happy_withOverwritePath_whenConfigEndpointProduction_sendsNetworkRequestWithCustomPath() {
@@ -475,7 +509,18 @@ class EdgeHitProcessorTests: XCTestCase {
 
     func testProcessHit_experienceEvent_nilData_doesNotSendNetworkRequest_returnsTrue() {
         // setup
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.setMockResponse(
+            url: INTERACT_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
+        
         let event = Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: nil)
         let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
 
@@ -499,7 +544,17 @@ class EdgeHitProcessorTests: XCTestCase {
 
         let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
         // return recoverable error so the waiting event is not removed onComplete() before the assertion
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 408, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.setMockResponse(
+            url: INTERACT_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 408,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
         // test
         hitProcessor.processHit(entity: entity) { _ in
@@ -507,7 +562,8 @@ class EdgeHitProcessorTests: XCTestCase {
         }
 
         wait(for: [expectation], timeout: 1)
-        guard let requestUrl = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url else {
+        
+        guard let requestUrl = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).first?.url else {
             XCTFail("unexpected nil request url")
             return
         }
@@ -524,14 +580,25 @@ class EdgeHitProcessorTests: XCTestCase {
     // MARK: - Consent Update
     func testProcessHit_consentUpdateEvent_happy_sendsNetworkRequest_returnsTrue() {
         // setup
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.setMockResponse(
+            url: INTERACT_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
         let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-        XCTAssertTrue( (mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? "").starts(with: CONSENT_ENDPOINT))
+        assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: true, returns: true)
+        let networkRequests = mockNetworkService.getNetworkRequestsWith(url: CONSENT_ENDPOINT, httpMethod: .post)
+        XCTAssertEqual(1, networkRequests.count)
     }
 
     func testProcessHit_consentUpdateEvent_emptyData_doesNotSendNetworkRequest_returnsTrue() {
@@ -539,7 +606,7 @@ class EdgeHitProcessorTests: XCTestCase {
         let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
 
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-        assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
+        assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: false, returns: true)
     }
 
     func testProcessHit_consentUpdateEvent_emptyPayloadDueToInvalidData_doesNotSendNetworkRequest_returnsTrue() {
@@ -556,7 +623,17 @@ class EdgeHitProcessorTests: XCTestCase {
 
         let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
         // return recoverable error so the waiting event is not removed onComplete() before the assertion
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 408, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.setMockResponse(
+            url: CONSENT_ENDPOINT,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 408,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
         // test
         hitProcessor.processHit(entity: entity) { _ in
@@ -564,7 +641,7 @@ class EdgeHitProcessorTests: XCTestCase {
         }
 
         wait(for: [expectation], timeout: 1)
-        guard let requestUrl = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url else {
+        guard let requestUrl = mockNetworkService.getNetworkRequestsWith(url: CONSENT_ENDPOINT, httpMethod: .post).first?.url else {
             XCTFail("unexpected nil request url")
             return
         }
@@ -613,7 +690,17 @@ class EdgeHitProcessorTests: XCTestCase {
                                         },
                                         getLocationHint: { return nil })
 
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.setMockResponse(
+            url: INTERACT_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
         let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
@@ -621,16 +708,24 @@ class EdgeHitProcessorTests: XCTestCase {
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
 
-        guard let requestPayload = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.connectPayload else {
-            XCTFail("unexpected nil request connect payload")
+        guard let networkRequest = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).first else {
+            XCTFail("Unable to find valid network request.")
             return
         }
-
-        let payload = asFlattenDictionary(data: requestPayload)
-
-        XCTAssertEqual("https://ns.adobe.com/experience/mobilesdk/ios", payload["xdm.implementationDetails.name"] as? String)
-        XCTAssertEqual("3.3.1+1.0.0", payload["xdm.implementationDetails.version"] as? String)
-        XCTAssertEqual("app", payload["xdm.implementationDetails.environment"] as? String)
+        
+        let expectedJSON = #"""
+        {
+          "xdm": {
+            "implementationDetails": {
+              "environment": "app",
+              "name": "https://ns.adobe.com/experience/mobilesdk/ios",
+              "version": "3.3.1+1.0.0"
+            }
+          }
+        }
+        """#
+        
+        assertExactMatch(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(networkRequest))
     }
 
     // tests Implementation Details is not added to event when nil
@@ -643,7 +738,17 @@ class EdgeHitProcessorTests: XCTestCase {
                                         getImplementationDetails: { return nil },
                                         getLocationHint: { return nil })
 
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.setMockResponse(
+            url: INTERACT_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
         let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
@@ -651,16 +756,20 @@ class EdgeHitProcessorTests: XCTestCase {
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
 
-        guard let requestPayload = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.connectPayload else {
-            XCTFail("unexpected nil request connect payload")
+        guard let networkRequest = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).first else {
+            XCTFail("Unable to find valid network request.")
             return
         }
-
-        let payload = asFlattenDictionary(data: requestPayload)
-
-        XCTAssertNil(payload["xdm.implementationDetails.name"])
-        XCTAssertNil(payload["xdm.implementationDetails.version"])
-        XCTAssertNil(payload["xdm.implementationDetails.environment"])
+        
+        let expectedJSON = #"""
+        {
+          "xdm": {
+            "implementationDetails": null
+          }
+        }
+        """#
+        
+        assertExactMatch(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(networkRequest))
     }
 
     // tests Implementation Details is not added to Consent events
@@ -679,41 +788,64 @@ class EdgeHitProcessorTests: XCTestCase {
                                         },
                                         getLocationHint: { return nil })
 
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.setMockResponse(
+            url: CONSENT_ENDPOINT,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
         let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
+        assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: true, returns: true)
 
-        guard let requestPayload = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.connectPayload else {
-            XCTFail("unexpected nil request connect payload")
+        guard let networkRequest = mockNetworkService.getNetworkRequestsWith(url: CONSENT_ENDPOINT, httpMethod: .post).first else {
+            XCTFail("Unable to find valid network request.")
             return
         }
 
-        let payload = asFlattenDictionary(data: requestPayload)
+        let payload = asFlattenDictionary(data: networkRequest.connectPayload)
 
         // Implementation Details are not added to Consent events
         XCTAssertNil(payload["xdm.implementationDetails.name"])
         XCTAssertNil(payload["xdm.implementationDetails.version"])
         XCTAssertNil(payload["xdm.implementationDetails.environment"])
+        let expectedJSON = #"""
+        {
+          "xdm": null
+        }
+        """#
+        
+        assertExactMatch(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(networkRequest))
     }
 
-    func assertProcessHit(entity: DataEntity, sendsNetworkRequest: Bool, returns: Bool, line: UInt = #line) {
+    func assertProcessHit(entity: DataEntity, urlString: String? = nil, sendsNetworkRequest: Bool, returns: Bool, file: StaticString = #file, line: UInt = #line) {
         let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
 
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        if sendsNetworkRequest {
+            mockNetworkService.setExpectationForNetworkRequest(
+                url: urlString ?? INTERACT_ENDPOINT_PROD,
+                httpMethod: .post,
+                file: file,
+                line: line)
+        }
 
         // test
         hitProcessor.processHit(entity: entity) { success in
-            XCTAssertEqual(returns, success, "Expected callback to be called with \(returns), but it was \(success)", line: line)
+            XCTAssertEqual(returns, success, "Expected callback to be called with \(returns), but it was \(success)", file: file, line: line)
             expectation.fulfill()
         }
 
         // verify
         wait(for: [expectation], timeout: 1)
-        XCTAssertEqual(sendsNetworkRequest, mockNetworkService?.connectAsyncCalled, "Expected network request to be \(sendsNetworkRequest), but it was \(mockNetworkService?.connectAsyncCalled ?? false)", line: line)
+        mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false, file: file, line: line)
     }
 
     private func assertNetworkRequestUrl(event: Event, environment: String?, domain: String?, expectedEndpoint: String, getLocationHint: @escaping () -> String? = { return nil }) {
@@ -738,14 +870,24 @@ class EdgeHitProcessorTests: XCTestCase {
                                         readyForEvent: readyForEvent(_:),
                                         getImplementationDetails: { return nil },
                                         getLocationHint: getLocationHint)
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
+        mockNetworkService.setMockResponse(
+            url: expectedEndpoint,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
         let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         // test
-        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-        let actualUrl = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? ""
+        assertProcessHit(entity: entity, urlString: expectedEndpoint, sendsNetworkRequest: true, returns: true)
+        let actualUrl = mockNetworkService.getNetworkRequestsWith(url: expectedEndpoint, httpMethod: .post).first?.url.absoluteString ?? ""
         XCTAssertTrue( actualUrl.starts(with: expectedEndpoint))
     }
 }
