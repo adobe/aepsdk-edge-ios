@@ -233,14 +233,13 @@ class EdgeHitProcessorTests: XCTestCase {
     /// Tests that when a good hit is processed that a network request is made and the request returns 200
     func testProcessHit_experienceEvent_withDatastreamOverrideSet_sendsNetworkRequest_returnsTrue() {
         // setup
-        mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: "{}".data(using: .utf8), response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil), error: nil)
-
         let edgeEntity = EdgeDataEntity(event: experienceEventWithDatastreamIdOverride, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
-        let requestString = mockNetworkService?.connectAsyncCalledWithNetworkRequest?.url.absoluteString ?? ""
+        let requestString = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).first?.url.absoluteString ?? ""
+        
         XCTAssertFalse(requestString.contains("test-config-id"))
         XCTAssertTrue(requestString.contains("test-datastream-id-override"))
 
@@ -260,17 +259,23 @@ class EdgeHitProcessorTests: XCTestCase {
         // (headerValue, actualRetryValue)
         let retryValues = [("60", 60.0), ("InvalidHeader", 5.0), ("", 5.0), ("1", 1.0)]
 
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: 4)
+        
         for (code, retryValueTuple) in zip(recoverableNetworkErrorCodes, retryValues) {
             let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
 
-            mockNetworkService?.connectAsyncMockReturnConnection = HttpConnection(data: responseData,
-                                                                                  response: HTTPURLResponse(url: url,
-                                                                                                            statusCode: code,
-                                                                                                            httpVersion: nil,
-                                                                                                            headerFields: ["Retry-After": retryValueTuple.0]),
-                                                                                  error: nil)
+            mockNetworkService.setMockResponse(
+                url: INTERACT_ENDPOINT_PROD,
+                httpMethod: .post,
+                responseConnection: HttpConnection(
+                    data: responseData,
+                    response: HTTPURLResponse(url: url,
+                    statusCode: code,
+                    httpVersion: nil,
+                    headerFields: ["Retry-After": retryValueTuple.0]),
+                    error: nil))
 
             let edgeEntity = EdgeDataEntity(event: experienceEvent, identityMap: [:])
             let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
@@ -285,7 +290,7 @@ class EdgeHitProcessorTests: XCTestCase {
 
         // verify
         wait(for: [expectation], timeout: 1)
-        XCTAssertTrue(mockNetworkService?.connectAsyncCalled ?? false) // network request should have been made
+        mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
     }
 
     /// Tests that when the network request fails and does not have a recoverable response code that we invoke the response handler and do not retry the hit
