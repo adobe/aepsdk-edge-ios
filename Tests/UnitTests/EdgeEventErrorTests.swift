@@ -11,9 +11,11 @@
 //
 
 @testable import AEPEdge
+import AEPServices
+import AEPTestUtils
 import XCTest
 
-class EdgeEventErrorTests: XCTestCase {
+class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -141,21 +143,27 @@ class EdgeEventErrorTests: XCTestCase {
         let report = EdgeErrorReport(eventIndex: 1, errors: ["error1", "error2"], requestId: "1234", orgId: "abcd")
         let error = EdgeEventError(title: "Test Error", detail: "details", status: 200, type: "error", report: report)
 
-        let encoded = error.asDictionary()
-
-        XCTAssertNotNil(encoded)
-        XCTAssertEqual(5, encoded?.count)
-        XCTAssertEqual("Test Error", encoded?["title"] as? String)
-        XCTAssertEqual("details", encoded?["detail"] as? String)
-        XCTAssertEqual(200, encoded?["status"] as? Int)
-        XCTAssertEqual("error", encoded?["type"] as? String)
-
-        let encodedReport = encoded?["report"] as? [String: Any]
-        XCTAssertNotNil(encodedReport)
-        XCTAssertEqual(3, encodedReport?.count) // eventIndex is no encoded
-        XCTAssertEqual(["error1", "error2"], encodedReport?["errors"] as? [String])
-        XCTAssertEqual("1234", encodedReport?["requestId"] as? String)
-        XCTAssertEqual("abcd", encodedReport?["orgId"] as? String)
+        var encoded = error.asDictionary()
+        
+        let expectedJSON = #"""
+        {
+          "detail": "details",
+          "report": {
+            "errors": [
+              "error1",
+              "error2"
+            ],
+            "orgId": "abcd",
+            "requestId": "1234"
+          },
+          "status": 200,
+          "title": "Test Error",
+          "type": "error"
+        }
+        """#
+        
+        assertEqual(expected: getAnyCodable(expectedJSON)!,
+                    actual: AnyCodable(AnyCodable.from(dictionary: encoded)))
     }
 
     func testCanEncode_eventError_emptyReportNotEncoded() {
@@ -165,14 +173,18 @@ class EdgeEventErrorTests: XCTestCase {
         XCTAssertFalse(report.shouldEncode()) // EdgeErrorReport is not encoded if it only contains eventIndex
 
         let encoded = error.asDictionary()
-
-        XCTAssertNotNil(encoded)
-        XCTAssertEqual(4, encoded?.count)
-        XCTAssertEqual("Test Error", encoded?["title"] as? String)
-        XCTAssertEqual("details", encoded?["detail"] as? String)
-        XCTAssertEqual(200, encoded?["status"] as? Int)
-        XCTAssertEqual("error", encoded?["type"] as? String)
-        XCTAssertNil(encoded?["report"])
+        
+        let expectedJSON = #"""
+        {
+          "detail": "details",
+          "status": 200,
+          "title": "Test Error",
+          "type": "error"
+        }
+        """#
+        
+        assertEqual(expected: getAnyCodable(expectedJSON)!,
+                    actual: AnyCodable(AnyCodable.from(dictionary: encoded)))
     }
 
 }
