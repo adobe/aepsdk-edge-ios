@@ -63,7 +63,7 @@ class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Unable to encode/decode EdgeRequest: \(edgeRequest)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "events": [
@@ -117,7 +117,7 @@ class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Unable to encode/decode EdgeRequest: \(edgeRequest)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "meta": {
@@ -146,7 +146,7 @@ class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        
+
         let edgeRequest = EdgeRequest(meta: nil,
                                       xdm: getAsDictionaryAnyCodable(identityMapJSON)!,
                                       events: nil)
@@ -154,12 +154,12 @@ class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
-        
+
         guard let data = try? encoder.encode(edgeRequest), let edgeRequestString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode EdgeRequest: \(edgeRequest)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "xdm": {
@@ -206,12 +206,12 @@ class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
-        
+
         guard let data = try? encoder.encode(edgeRequest), let edgeRequestString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode EdgeRequest: \(edgeRequest)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "events": [
@@ -241,7 +241,7 @@ class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
         """#
         assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeRequestString))
     }
-    
+
     private func getAsDictionaryAnyCodable(_ jsonString: String, file: StaticString = #file, line: UInt = #line) -> [String: AnyCodable]? {
         guard let anyCodable = getAnyCodable(jsonString) else {
             XCTFail("Unable to get valid AnyCodable from provided JSON string: \(jsonString)", file: file, line: line)

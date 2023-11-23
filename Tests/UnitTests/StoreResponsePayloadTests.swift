@@ -29,12 +29,12 @@ class StoreResponsePayloadTests: XCTestCase, AnyCodableAsserts {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
-        
+
         guard let data = try? encoder.encode(payload), let storeString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode StoreResponsePayload: \(payload)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "expiryDate": "\#(ISO8601DateFormatter().string(from: payload.expiryDate))",

@@ -56,7 +56,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         }
         """#
         assertEqual(expected: getAnyCodable(expectedConfigOverrideJSON)!, actual: AnyCodable(requestPayload?.meta?.configOverrides))
-        
+
         let expectedRequestIdentityMapJSON = #"""
         {
           "ECID": [
@@ -88,7 +88,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
                             data: ["xdm": ["environment": ["type": "widget"]]]))
 
         let requestPayload = request.getPayloadWithExperienceEvents(events)
-        
+
         let expectedEvent0XDMJSON = #"""
         {
           "application": {
@@ -99,7 +99,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         }
         """#
         assertEqual(expected: getAnyCodable(expectedEvent0XDMJSON)!, actual: requestPayload?.events?[0]["xdm"])
-        
+
         let expectedEvent1XDMJSON = #"""
         {
           "environment": {
@@ -167,7 +167,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         }
         """#
         assertEqual(expected: getAnyCodable(expectedMetaJSON)!, actual: requestPayload?.events?[0]["meta"])
-        
+
         XCTAssertNil(requestPayload?.events?[0]["datasetId"])
         XCTAssertNotNil(requestPayload?.events?[0]["xdm"])
         XCTAssertNotNil(requestPayload?.events?[0]["data"])
@@ -243,7 +243,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
                           data: ["query": ["key": "value"]])
 
         let requestPayload = request.getPayloadWithExperienceEvents([event])
-        
+
         let expectedQueryJSON = #"""
         {
           "key": "value"
@@ -272,7 +272,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         XCTAssertEqual(1, requestPayload?.events?.count)
         let flattenEvent = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
         XCTAssertEqual(testTimestamp, flattenEvent["timestamp"] as? String)
-        
+
         let expectedXDMJSON = #"""
         {
           "timestamp": "\#(testTimestamp)"
@@ -298,7 +298,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         // verify
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
-        
+
         let expectedXDMJSON = #"""
         {
           "timestamp": "\#(testTimestamp)"
@@ -324,7 +324,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         // verify
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
-        
+
         let expectedXDMJSON = #"""
         {
           "timestamp": "\#(timestampToISO8601(event.timestamp))"
@@ -349,7 +349,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         // verify
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
-        
+
         let expectedXDMJSON = #"""
         {
           "timestamp": "\#(timestampToISO8601(event.timestamp))"
