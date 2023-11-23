@@ -57,7 +57,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
         let edgeHit = ExperienceEventsEdgeHit(endpoint: INTERACT_ENDPOINT_PROD,
                                               datastreamId: CONFIG_ID,
                                               request: EdgeRequest(meta: nil, xdm: nil, events: [["test": "data"]]))
-        
+
         guard let edgeHitPayload = edgeHit.getPayload() else {
             XCTFail("Unable to get valid Edge hit payload.")
             return
@@ -72,7 +72,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
           ]
         }
         """#
-        
+
         assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 
@@ -88,12 +88,12 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
                                                                 state: nil),
                                                             xdm: nil,
                                                             events: [["test": "data"]]))
-        
+
         guard let edgeHitPayload = edgeHit.getPayload() else {
             XCTFail("Unable to get valid Edge hit payload.")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "events": [
@@ -127,7 +127,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
                                                                 state: nil),
                                                             xdm: nil,
                                                             events: [["test": "data"]]))
-        
+
         guard let edgeHitPayload = edgeHit.getPayload() else {
             XCTFail("Unable to get valid Edge hit payload.")
             return
@@ -156,7 +156,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        
+
         assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 
@@ -172,7 +172,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
                                                                 state: nil),
                                                             xdm: nil,
                                                             events: [["test": "data"]]))
-        
+
         guard let edgeHitPayload = edgeHit.getPayload() else {
             XCTFail("Unable to get valid Edge hit payload.")
             return
@@ -201,7 +201,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        
+
         assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 
@@ -209,7 +209,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
 
     func testConsentEdgeHit_getPayload() {
         let edgeHit = ConsentEdgeHit(endpoint: CONSENT_ENDPOINT_PROD, datastreamId: CONFIG_ID, consents: CONSENT_UPDATE_REQUEST)
-        
+
         guard let edgeHitPayload = edgeHit.getPayload() else {
             XCTFail("Unable to get valid Edge hit payload.")
             return
@@ -235,7 +235,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        
+
         assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 
@@ -246,7 +246,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
                                               identityMap: nil,
                                               consent: [EdgeConsentPayload(standard: "Adobe", version: "2.0", value: ["consent": ["collect": "y"]])])
         let edgeHit = ConsentEdgeHit(endpoint: CONSENT_ENDPOINT_PROD, datastreamId: CONFIG_ID, consents: consentUpdate)
-        
+
         guard let edgeHitPayload = edgeHit.getPayload() else {
             XCTFail("Unable to get valid Edge hit payload.")
             return
@@ -276,7 +276,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        
+
         assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
     }
 

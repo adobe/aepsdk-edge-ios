@@ -236,7 +236,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         // test
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
         let requestString = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).first?.url.absoluteString ?? ""
-        
+
         XCTAssertFalse(requestString.contains("test-config-id"))
         XCTAssertTrue(requestString.contains("test-datastream-id-override"))
 
@@ -257,7 +257,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let retryValues = [("60", 60.0), ("InvalidHeader", 5.0), ("", 5.0), ("1", 1.0)]
 
         mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(recoverableNetworkErrorCodes.count))
-        
+
         for (code, retryValueTuple) in zip(recoverableNetworkErrorCodes, retryValues) {
             let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
@@ -354,7 +354,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
                                         readyForEvent: readyForEvent(_:),
                                         getImplementationDetails: { return nil },
                                         getLocationHint: { return nil })
-        
+
         mockNetworkService.setMockResponse(
             url: INTERACT_ENDPOINT_PROD,
             httpMethod: .post,
@@ -520,7 +520,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
                     httpVersion: nil,
                     headerFields: nil),
                 error: nil))
-        
+
         let event = Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: nil)
         let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
 
@@ -562,7 +562,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         }
 
         wait(for: [expectation], timeout: 1)
-        
+
         guard let requestUrl = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).first?.url else {
             XCTFail("unexpected nil request url")
             return
@@ -712,7 +712,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Unable to find valid network request.")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "xdm": {
@@ -724,7 +724,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        
+
         assertExactMatch(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(networkRequest))
     }
 
@@ -760,7 +760,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Unable to find valid network request.")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "xdm": {
@@ -768,7 +768,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        
+
         assertExactMatch(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(networkRequest))
     }
 
@@ -822,7 +822,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
           "xdm": null
         }
         """#
-        
+
         assertExactMatch(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(networkRequest))
     }
 

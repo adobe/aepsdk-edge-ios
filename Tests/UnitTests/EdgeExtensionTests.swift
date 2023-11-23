@@ -113,7 +113,7 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
 
         // verify
         let actualDetails = edge.state?.implementationDetails
-        
+
         let expectedDetailsJSON = #"""
         {
           "version": "3.0.0+\#(EdgeConstants.EXTENSION_VERSION)",
@@ -121,7 +121,7 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
           "name": "\#(EXPECTED_BASE_PATH)/reactnative"
         }
         """#
-        
+
         assertEqual(expected: getAnyCodable(expectedDetailsJSON)!,
                     actual: AnyCodable(AnyCodable.from(dictionary: actualDetails)))
     }
