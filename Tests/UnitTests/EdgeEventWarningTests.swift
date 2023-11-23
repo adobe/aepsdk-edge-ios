@@ -202,7 +202,7 @@ class EdgeEventWarningTests: XCTestCase, AnyCodableAsserts {
         let warning = EdgeEventWarning(type: "warning", status: 200, title: "test", report: report)
 
         let encoded = warning.asDictionary()
-        
+
         let expectedJSON = #"""
         {
           "report": {
@@ -216,7 +216,7 @@ class EdgeEventWarningTests: XCTestCase, AnyCodableAsserts {
           "type": "warning"
         }
         """#
-        
+
         assertEqual(expected: getAnyCodable(expectedJSON)!,
                     actual: AnyCodable(AnyCodable.from(dictionary: encoded)))
     }
@@ -226,7 +226,7 @@ class EdgeEventWarningTests: XCTestCase, AnyCodableAsserts {
         let warning = EdgeEventWarning(type: "warning", status: 200, title: "test", report: report)
 
         let encoded = warning.asDictionary()
-        
+
         let expectedJSON = #"""
         {
           "status": 200,
@@ -234,7 +234,7 @@ class EdgeEventWarningTests: XCTestCase, AnyCodableAsserts {
           "type": "warning"
         }
         """#
-        
+
         assertEqual(expected: getAnyCodable(expectedJSON)!,
                     actual: AnyCodable(AnyCodable.from(dictionary: encoded)))
     }

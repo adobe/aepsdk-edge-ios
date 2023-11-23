@@ -144,7 +144,7 @@ class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
         let error = EdgeEventError(title: "Test Error", detail: "details", status: 200, type: "error", report: report)
 
         var encoded = error.asDictionary()
-        
+
         let expectedJSON = #"""
         {
           "detail": "details",
@@ -161,7 +161,7 @@ class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
           "type": "error"
         }
         """#
-        
+
         assertEqual(expected: getAnyCodable(expectedJSON)!,
                     actual: AnyCodable(AnyCodable.from(dictionary: encoded)))
     }
@@ -173,7 +173,7 @@ class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
         XCTAssertFalse(report.shouldEncode()) // EdgeErrorReport is not encoded if it only contains eventIndex
 
         let encoded = error.asDictionary()
-        
+
         let expectedJSON = #"""
         {
           "detail": "details",
@@ -182,7 +182,7 @@ class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
           "type": "error"
         }
         """#
-        
+
         assertEqual(expected: getAnyCodable(expectedJSON)!,
                     actual: AnyCodable(AnyCodable.from(dictionary: encoded)))
     }

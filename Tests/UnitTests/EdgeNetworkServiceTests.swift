@@ -46,7 +46,7 @@ class EdgeNetworkServiceTests: XCTestCase {
             // Verify
             let networkRequests = self.mockNetworkService.getNetworkRequestsWith(url: self.url, httpMethod: .post)
             XCTAssertEqual(1, networkRequests.count)
-            
+
             guard let networkRequest = networkRequests.first else {
                 XCTFail("Unable to find valid network request.")
                 return
@@ -86,7 +86,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                 XCTFail("Unable to find valid network request.")
                 return
             }
-            
+
             XCTAssertTrue(success)
             XCTAssertNil(retryInterval)
             XCTAssertEqual(1, networkRequests.count)
@@ -94,7 +94,7 @@ class EdgeNetworkServiceTests: XCTestCase {
             for header in testHeaders {
                 XCTAssertNotNil(networkRequest.httpHeaders[header.key])
             }
-            
+
             for header in self.defaultNetworkingHeaders {
                 XCTAssertNotNil(networkRequest.httpHeaders[header])
             }
