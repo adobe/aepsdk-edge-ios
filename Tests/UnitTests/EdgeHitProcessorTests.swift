@@ -811,12 +811,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
             return
         }
 
-        let payload = asFlattenDictionary(data: networkRequest.connectPayload)
-
         // Implementation Details are not added to Consent events
-        XCTAssertNil(payload["xdm.implementationDetails.name"])
-        XCTAssertNil(payload["xdm.implementationDetails.version"])
-        XCTAssertNil(payload["xdm.implementationDetails.environment"])
         let expectedJSON = #"""
         {
           "xdm": null
