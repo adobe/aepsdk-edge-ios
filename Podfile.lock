@@ -27,7 +27,7 @@ DEPENDENCIES:
   - AEPEdgeConsent
   - AEPEdgeIdentity
   - AEPServices
-  - AEPTestUtils (from `https://github.com/adobe/aepsdk-testutils-ios.git`, branch `network-helper-feature2`)
+  - AEPTestUtils (from `https://github.com/adobe/aepsdk-testutils-ios.git`, branch `feature/latest`)
   - SwiftLint (= 0.52.0)
 
 SPEC REPOS:
@@ -44,12 +44,12 @@ EXTERNAL SOURCES:
   AEPEdge:
     :path: "./AEPEdge.podspec"
   AEPTestUtils:
-    :branch: network-helper-feature2
+    :branch: feature/latest
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
 
 CHECKOUT OPTIONS:
   AEPTestUtils:
-    :commit: fa9e4a0b603fbc20bf4d610d7bdee6144fe860bf
+    :commit: 23c6f0df33ec41b12320b3dfebbce1bef68b2cd6
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
 
 SPEC CHECKSUMS:
@@ -63,6 +63,6 @@ SPEC CHECKSUMS:
   AEPTestUtils: 756e5997318be74584057d7628941c737d358640
   SwiftLint: 13280e21cdda6786ad908dc6e416afe5acd1fcb7
 
-PODFILE CHECKSUM: bea34e4532407cfe4705eea77aaf333c669b0b50
+PODFILE CHECKSUM: 3a0161a5e905134e8be94474373633f8d12ff79f
 
 COCOAPODS: 1.12.0
