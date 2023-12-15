@@ -16,7 +16,7 @@ import XCTest
 
 class StateMetadataTests: XCTestCase, AnyCodableAsserts {
     private let encoder = JSONEncoder()
-    
+
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false // fail so nil checks stop execution
@@ -28,12 +28,12 @@ class StateMetadataTests: XCTestCase, AnyCodableAsserts {
 
     func testInit_withEmptyMap_doesNotEncodeEntries() {
         let state = StateMetadata(payload: [])
-        
+
         guard let data = try? encoder.encode(state), let stateString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode StateMetadata: \(state)")
             return
         }
-        
+
         let expectedJSON = "{}"
         assertEqual(expected: expectedJSON, actual: stateString)
     }
@@ -41,12 +41,12 @@ class StateMetadataTests: XCTestCase, AnyCodableAsserts {
     func testEncode_singlePayload() {
         let payload = [StorePayload(key: "key", value: "value", maxAge: 3600)]
         let state = StateMetadata(payload: payload)
-        
+
         guard let data = try? encoder.encode(state), let stateString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode StateMetadata: \(state)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "entries": [
@@ -65,12 +65,12 @@ class StateMetadataTests: XCTestCase, AnyCodableAsserts {
         let payload = [StorePayload(key: "key", value: "value", maxAge: 3600),
                        StorePayload(key: "key2", value: "value2", maxAge: 5)]
         let state = StateMetadata(payload: payload)
-        
+
         guard let data = try? encoder.encode(state), let stateString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode StateMetadata: \(state)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "entries": [

@@ -55,7 +55,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        
+
         assertExactMatch(expected: expectedConfigOverrideJSON, actual: AnyCodable(requestPayload?.meta?.configOverrides))
 
         let expectedRequestIdentityMapJSON = #"""
@@ -91,7 +91,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
                             data: ["xdm": ["environment": ["type": "widget"]]]))
 
         let requestPayload = request.getPayloadWithExperienceEvents(events)
-        
+
         let expectedEvent0_XDM = #"""
         {
           "application": {
@@ -265,7 +265,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
                           data: ["query": ["key": "value"]])
 
         let requestPayload = request.getPayloadWithExperienceEvents([event])
-        
+
         let expectedQueryJSON = #"""
         {
           "query": {
@@ -294,7 +294,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         // verify
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
-        
+
         let expectedJSON = #"""
         {
           "xdm": {
@@ -322,7 +322,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         // verify
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
-        
+
         let expectedJSON = #"""
         {
           "xdm": {
@@ -377,7 +377,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         // verify
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
-        
+
         let expectedJSON = #"""
         {
           "xdm": {

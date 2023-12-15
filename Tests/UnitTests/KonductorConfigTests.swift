@@ -27,12 +27,12 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
 
     func testStreamingEncodeFromInitAll() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: "B")
-        
+
         guard let data = try? encoder.encode(streaming), let actualResult = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode Streaming: \(streaming)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "enabled": true,
@@ -45,12 +45,12 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
 
     func testStreamingEncodeWithNilRecordSeparator() {
         let streaming = Streaming(recordSeparator: nil, lineFeed: "B")
-        
+
         guard let data = try? encoder.encode(streaming), let actualResult = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode Streaming: \(streaming)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "enabled": false,
@@ -62,12 +62,12 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
 
     func testStreamingEncodeWithNilLineFeed() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: nil)
-        
+
         guard let data = try? encoder.encode(streaming), let actualResult = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode Streaming: \(streaming)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "enabled": false,
@@ -79,12 +79,12 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
 
     func testStreamingEncodeWithNilLineFeedAndRecordSeparator() {
         let streaming = Streaming(recordSeparator: nil, lineFeed: nil)
-        
+
         guard let data = try? encoder.encode(streaming), let actualResult = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode Streaming: \(streaming)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "enabled": false
@@ -98,12 +98,12 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
     func testKonductorConfigEncodeFromInitAll() {
         let streaming = Streaming(recordSeparator: "A", lineFeed: "B")
         let config = KonductorConfig(streaming: streaming)
-        
+
         guard let data = try? encoder.encode(config), let actualResult = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode KonductorConfig: \(config)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "streaming": {
@@ -118,14 +118,14 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
 
     func testKonductorConfigEncodeEmptyParameters() {
         let config = KonductorConfig(streaming: nil)
-        
+
         guard let data = try? encoder.encode(config), let actualResult = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode KonductorConfig: \(config)")
             return
         }
-        
+
         let expectedJSON = "{}"
-        
+
         assertEqual(expected: expectedJSON, actual: actualResult)
     }
 }

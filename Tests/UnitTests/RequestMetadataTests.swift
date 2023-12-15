@@ -29,24 +29,24 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
 
     func testEncode_noParameters() {
         let metadata = RequestMetadata(konductorConfig: nil, sdkConfig: nil, configOverrides: nil, state: nil)
-        
+
         guard let data = try? encoder.encode(metadata), let metadataString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode RequestMetadata: \(metadata)")
             return
         }
-        
+
         let expectedJSON = "{}"
         assertEqual(expected: expectedJSON, actual: metadataString)
     }
 
     func testEncode_paramKonductorConfig() {
         let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil), sdkConfig: nil, configOverrides: nil, state: nil)
-        
+
         guard let data = try? encoder.encode(metadata), let metadataString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode RequestMetadata: \(metadata)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "konductorConfig": {}
@@ -58,12 +58,12 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
     func testEncode_paramStateMetadata() {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
         let metadata = RequestMetadata(konductorConfig: nil, sdkConfig: nil, configOverrides: nil, state: StateMetadata(payload: [payload]))
-        
+
         guard let data = try? encoder.encode(metadata), let metadataString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode RequestMetadata: \(metadata)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "state": {
@@ -84,12 +84,12 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
         let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil), sdkConfig: nil, configOverrides: nil,
                                        state: StateMetadata(payload: [payload]))
-        
+
         guard let data = try? encoder.encode(metadata), let metadataString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode RequestMetadata: \(metadata)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "konductorConfig": {},
@@ -110,12 +110,12 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
     func testEncode_paramSDKConfig_originalDatastreamIdMetadata() {
         let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
         let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil), sdkConfig: SDKConfig(datastream: Datastream(original: "OriginalDatastreamID")), configOverrides: nil, state: nil)
-        
+
         guard let data = try? encoder.encode(metadata), let metadataString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode RequestMetadata: \(metadata)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "konductorConfig": {},
@@ -158,12 +158,12 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
 
         let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil),
                                        sdkConfig: nil, configOverrides: AnyCodable.from(dictionary: configOverrides), state: nil)
-        
+
         guard let data = try? encoder.encode(metadata), let metadataString = String(data: data, encoding: .utf8) else {
             XCTFail("Unable to encode/decode RequestMetadata: \(metadata)")
             return
         }
-        
+
         let expectedJSON = #"""
         {
           "configOverrides": {
