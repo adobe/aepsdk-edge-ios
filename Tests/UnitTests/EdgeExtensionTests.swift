@@ -122,8 +122,7 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         }
         """#
 
-        assertEqual(expected: getAnyCodable(expectedDetailsJSON)!,
-                    actual: AnyCodable(AnyCodable.from(dictionary: actualDetails)))
+        assertEqual(expected: expectedDetailsJSON, actual: actualDetails)
     }
 
     // MARK: Consent update request

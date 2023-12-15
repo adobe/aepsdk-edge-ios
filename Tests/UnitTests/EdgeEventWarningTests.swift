@@ -217,8 +217,7 @@ class EdgeEventWarningTests: XCTestCase, AnyCodableAsserts {
         }
         """#
 
-        assertEqual(expected: getAnyCodable(expectedJSON)!,
-                    actual: AnyCodable(AnyCodable.from(dictionary: encoded)))
+        assertEqual(expected: expectedJSON, actual: encoded)
     }
 
     func testCanEncode_eventWarning_doesNotEncodeEmptyReport() {
@@ -235,8 +234,7 @@ class EdgeEventWarningTests: XCTestCase, AnyCodableAsserts {
         }
         """#
 
-        assertEqual(expected: getAnyCodable(expectedJSON)!,
-                    actual: AnyCodable(AnyCodable.from(dictionary: encoded)))
+        assertEqual(expected: expectedJSON, actual: encoded)
     }
 
 }

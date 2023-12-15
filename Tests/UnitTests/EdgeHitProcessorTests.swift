@@ -725,7 +725,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         }
         """#
 
-        assertExactMatch(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(networkRequest))
+        assertExactMatch(expected: expectedJSON, actual: networkRequest)
     }
 
     // tests Implementation Details is not added to event when nil
@@ -761,15 +761,14 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
             return
         }
 
-        let expectedJSON = #"""
-        {
-          "xdm": {
-            "implementationDetails": null
-          }
-        }
-        """#
+        let expectedJSON = "{}"
 
-        assertExactMatch(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(networkRequest))
+        assertExactMatch(
+            expected: expectedJSON,
+            actual: networkRequest,
+            pathOptions: KeyMustBeAbsent(
+                paths: "xdm.implementationDetails",
+                keyNames: "name", "version", "environment"))
     }
 
     // tests Implementation Details is not added to Consent events
@@ -812,13 +811,14 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         }
 
         // Implementation Details are not added to Consent events
-        let expectedJSON = #"""
-        {
-          "xdm": null
-        }
-        """#
+        let expectedJSON = "{}"
 
-        assertExactMatch(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(networkRequest))
+        assertExactMatch(
+            expected: expectedJSON,
+            actual: networkRequest,
+            pathOptions: KeyMustBeAbsent(
+                paths: "xdm.implementationDetails",
+                keyNames: "name", "version", "environment"))
     }
 
     func assertProcessHit(entity: DataEntity, urlString: String? = nil, sendsNetworkRequest: Bool, returns: Bool, file: StaticString = #file, line: UInt = #line) {
