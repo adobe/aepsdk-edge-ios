@@ -73,7 +73,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
         }
         """#
 
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
+        assertEqual(expected: expectedJSON, actual: edgeHitPayload)
     }
 
     func testExperienceEventsEdgeHit_getPayload_withStreaming() {
@@ -112,7 +112,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
+        assertEqual(expected: expectedJSON, actual: edgeHitPayload)
     }
 
     func testExperienceEventsEdgeHit_getPayload_withOriginalDatastreamId() {
@@ -157,7 +157,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
         }
         """#
 
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
+        assertEqual(expected: expectedJSON, actual: edgeHitPayload)
     }
 
     func testExperienceEventsEdgeHit_getPayload_withDatastreamConfigOverride() {
@@ -202,7 +202,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
         }
         """#
 
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
+        assertEqual(expected: expectedJSON, actual: edgeHitPayload)
     }
 
     // MARK: ConsentEgeHit tests
@@ -236,7 +236,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
         }
         """#
 
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
+        assertEqual(expected: expectedJSON, actual: edgeHitPayload)
     }
 
     func testConsentEdgeHit_getPayloadWithStreaming() {
@@ -277,7 +277,7 @@ class EdgeHitTests: XCTestCase, AnyCodableAsserts {
         }
         """#
 
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeHitPayload))
+        assertEqual(expected: expectedJSON, actual: edgeHitPayload)
     }
 
     func testConsentEdgeHit_getStreamingSettings_streamingNotEnabled() {
