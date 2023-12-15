@@ -55,19 +55,22 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedConfigOverrideJSON)!, actual: AnyCodable(requestPayload?.meta?.configOverrides))
         
+        assertExactMatch(expected: expectedConfigOverrideJSON, actual: AnyCodable(requestPayload?.meta?.configOverrides))
+
         let expectedRequestIdentityMapJSON = #"""
         {
-          "ECID": [
-            {
-              "id": "ecid"
-            }
-          ]
+          "identityMap": {
+            "ECID": [
+              {
+                "id": "ecid"
+              }
+            ]
+          }
         }
         """#
-        // Does NOT strictly validate collection counts
-        assertExactMatch(expected: getAnyCodable(expectedRequestIdentityMapJSON)!, actual: requestPayload?.xdm?["identityMap"])
+
+        assertExactMatch(expected: expectedRequestIdentityMapJSON, actual: requestPayload?.xdm)
     }
 
     func testGetPayloadWithExperienceEvents_withEventXdm_verifyEventId_verifyTimestamp() {
@@ -89,7 +92,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
 
         let requestPayload = request.getPayloadWithExperienceEvents(events)
         
-        let expectedEvent0XDMJSON = #"""
+        let expectedEvent0_XDM = #"""
         {
           "application": {
             "name": "myapp"
@@ -98,9 +101,9 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
           "timestamp": "\#(timestampToISO8601(events[0].timestamp))"
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedEvent0XDMJSON)!, actual: requestPayload?.events?[0]["xdm"])
-        
-        let expectedEvent1XDMJSON = #"""
+        assertExactMatch(expected: expectedEvent0_XDM, actual: requestPayload?.events?[0]["xdm"])
+
+        let expectedEvent1_XDM = #"""
         {
           "environment": {
             "type": "widget"
@@ -109,7 +112,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
           "timestamp": "\#(timestampToISO8601(events[1].timestamp))"
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedEvent1XDMJSON)!, actual: requestPayload?.events?[1]["xdm"])
+        assertExactMatch(expected: expectedEvent1_XDM, actual: requestPayload?.events?[1]["xdm"])
     }
 
     func testGetPayloadWithExperienceEvents_withStorePayload_responseContainsStateEntries() {
@@ -159,18 +162,22 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
 
         let requestPayload = request.getPayloadWithExperienceEvents([event])
 
-        let expectedMetaJSON = #"""
+        let expectedEventJSON = #"""
         {
-          "collect": {
-            "datasetId": "customDatasetId"
-          }
+          "data": {},
+          "meta": {
+            "collect": {
+              "datasetId": "customDatasetId"
+            }
+          },
+          "xdm": {}
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedMetaJSON)!, actual: requestPayload?.events?[0]["meta"])
-        
-        XCTAssertNil(requestPayload?.events?[0]["datasetId"])
-        XCTAssertNotNil(requestPayload?.events?[0]["xdm"])
-        XCTAssertNotNil(requestPayload?.events?[0]["data"])
+        // NOTE: Extensible collection validation interprets empty dictionary in `expected` as key + dictionary value type check
+        assertExactMatch(
+            expected: expectedEventJSON,
+            actual: requestPayload?.events?[0],
+            pathOptions: KeyMustBeAbsent(paths: nil, keyNames: "datasetId"))
 
         XCTAssertNil(requestPayload?.meta?.state)
     }
@@ -186,9 +193,17 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
 
         let requestPayload = request.getPayloadWithExperienceEvents([event])
 
-        XCTAssertNil(requestPayload?.events?[0]["meta"])
-        XCTAssertNotNil(requestPayload?.events?[0]["xdm"])
-        XCTAssertNotNil(requestPayload?.events?[0]["data"])
+        let expectedEventJSON = #"""
+        {
+          "data": {},
+          "xdm": {}
+        }
+        """#
+
+        assertExactMatch(
+            expected: expectedEventJSON,
+            actual: requestPayload?.events?[0],
+            pathOptions: KeyMustBeAbsent(paths: nil, keyNames: "meta"))
     }
 
     func testGetPayloadWithExperienceEvents_withNilOrEmptyDatasetId_responseDoesNotContainCollectMeta() {
@@ -218,20 +233,27 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         let requestPayload = request.getPayloadWithExperienceEvents([event1, event2, event3])
 
         XCTAssertEqual(3, requestPayload?.events?.count)
-        XCTAssertNil(requestPayload?.events?[0]["meta"])
-        XCTAssertNil(requestPayload?.events?[0]["datasetId"])
-        XCTAssertNotNil(requestPayload?.events?[0]["xdm"])
-        XCTAssertNil(requestPayload?.events?[0]["data"])
 
-        XCTAssertNil(requestPayload?.events?[1]["meta"])
-        XCTAssertNil(requestPayload?.events?[1]["datasetId"])
-        XCTAssertNotNil(requestPayload?.events?[1]["xdm"])
-        XCTAssertNotNil(requestPayload?.events?[1]["data"])
+        let expectedEventJSON = #"""
+        {
+          "xdm": {}
+        }
+        """#
 
-        XCTAssertNil(requestPayload?.events?[2]["meta"])
-        XCTAssertNil(requestPayload?.events?[2]["datasetId"])
-        XCTAssertNotNil(requestPayload?.events?[2]["xdm"])
-        XCTAssertNotNil(requestPayload?.events?[2]["data"])
+        assertExactMatch(
+            expected: expectedEventJSON,
+            actual: requestPayload?.events?[0],
+            pathOptions: KeyMustBeAbsent(paths: nil, keyNames: "data", "datasetId", "meta"))
+
+        assertExactMatch(
+            expected: expectedEventJSON,
+            actual: requestPayload?.events?[1],
+            pathOptions: KeyMustBeAbsent(paths: nil, keyNames: "datasetId", "meta"))
+
+        assertExactMatch(
+            expected: expectedEventJSON,
+            actual: requestPayload?.events?[2],
+            pathOptions: KeyMustBeAbsent(paths: nil, keyNames: "datasetId", "meta"))
     }
 
     func testGetPayloadWithExperienceEvents_withQuery_responseContainsQuery() {
@@ -246,11 +268,13 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         
         let expectedQueryJSON = #"""
         {
-          "key": "value"
+          "query": {
+            "key": "value"
+          }
         }
         """#
-        // Strictly validates query collection count
-        assertEqual(expected: getAnyCodable(expectedQueryJSON)!, actual: requestPayload?.events?[0]["query"])
+
+        assertExactMatch(expected: expectedQueryJSON, actual: requestPayload?.events?[0])
     }
 
     func testGetPayloadWithExperienceEventsDoesNotOverwriteTimestampWhenValidTimestampPresent() {
@@ -270,15 +294,15 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         // verify
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
-        let flattenEvent = flattenDictionary(dict: requestPayload?.events?[0]["xdm"]?.dictionaryValue ?? [:])
-        XCTAssertEqual(testTimestamp, flattenEvent["timestamp"] as? String)
         
-        let expectedXDMJSON = #"""
+        let expectedJSON = #"""
         {
-          "timestamp": "\#(testTimestamp)"
+          "xdm": {
+            "timestamp": "\#(testTimestamp)"
+          }
         }
         """#
-        assertExactMatch(expected: getAnyCodable(expectedXDMJSON)!, actual: requestPayload?.events?[0]["xdm"])
+        assertExactMatch(expected: expectedJSON, actual: requestPayload?.events?[0])
     }
 
     func testGetPayloadWithExperienceEventsDoesNotOverwriteTimestampWhenInvalidTimestampPresent() {
@@ -299,12 +323,14 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
         
-        let expectedXDMJSON = #"""
+        let expectedJSON = #"""
         {
-          "timestamp": "\#(testTimestamp)"
+          "xdm": {
+            "timestamp": "\#(testTimestamp)"
+          }
         }
         """#
-        assertExactMatch(expected: getAnyCodable(expectedXDMJSON)!, actual: requestPayload?.events?[0]["xdm"])
+        assertExactMatch(expected: expectedJSON, actual: requestPayload?.events?[0])
     }
 
     func testGetPayloadWithExperienceEventsSetsEventTimestampWhenProvidedTimestampIsEmpty() {
@@ -324,13 +350,15 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         // verify
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
-        
-        let expectedXDMJSON = #"""
+
+        let expectedJSON = #"""
         {
-          "timestamp": "\#(timestampToISO8601(event.timestamp))"
+          "xdm": {
+            "timestamp": "\#(timestampToISO8601(event.timestamp))"
+          }
         }
         """#
-        assertExactMatch(expected: getAnyCodable(expectedXDMJSON)!, actual: requestPayload?.events?[0]["xdm"])
+        assertExactMatch(expected: expectedJSON, actual: requestPayload?.events?[0])
     }
 
     func testGetPayloadWithExperienceEventsSetsEventTimestampWhenProvidedTimestampIsMissing() {
@@ -350,12 +378,14 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         XCTAssertNotNil(requestPayload)
         XCTAssertEqual(1, requestPayload?.events?.count)
         
-        let expectedXDMJSON = #"""
+        let expectedJSON = #"""
         {
-          "timestamp": "\#(timestampToISO8601(event.timestamp))"
+          "xdm": {
+            "timestamp": "\#(timestampToISO8601(event.timestamp))"
+          }
         }
         """#
-        assertExactMatch(expected: getAnyCodable(expectedXDMJSON)!, actual: requestPayload?.events?[0]["xdm"])
+        assertExactMatch(expected: expectedJSON, actual: requestPayload?.events?[0])
     }
 
     private func buildIdentityMap() -> [String: Any]? {

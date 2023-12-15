@@ -40,7 +40,7 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
           "recordSeparator": "A"
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(actualResult))
+        assertEqual(expected: expectedJSON, actual: actualResult)
     }
 
     func testStreamingEncodeWithNilRecordSeparator() {
@@ -57,7 +57,7 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
           "lineFeed": "B"
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(actualResult))
+        assertEqual(expected: expectedJSON, actual: actualResult)
     }
 
     func testStreamingEncodeWithNilLineFeed() {
@@ -74,7 +74,7 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
           "recordSeparator": "A"
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(actualResult))
+        assertEqual(expected: expectedJSON, actual: actualResult)
     }
 
     func testStreamingEncodeWithNilLineFeedAndRecordSeparator() {
@@ -90,7 +90,7 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
           "enabled": false
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(actualResult))
+        assertEqual(expected: expectedJSON, actual: actualResult)
     }
 
     // MARK: KonductorConfig encoder tests
@@ -113,7 +113,7 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(actualResult))
+        assertEqual(expected: expectedJSON, actual: actualResult)
     }
 
     func testKonductorConfigEncodeEmptyParameters() {
@@ -126,6 +126,6 @@ class KonductorConfigTests: XCTestCase, AnyCodableAsserts {
         
         let expectedJSON = "{}"
         
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(actualResult))
+        assertEqual(expected: expectedJSON, actual: actualResult)
     }
 }

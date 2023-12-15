@@ -99,7 +99,7 @@ class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeRequestString))
+        assertEqual(expected: expectedJSON, actual: edgeRequestString)
     }
 
     func testEncode_onlyRequestMetadata() {
@@ -131,7 +131,7 @@ class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeRequestString))
+        assertEqual(expected: expectedJSON, actual: edgeRequestString)
     }
 
     func testEncode_onlyRequestContext() {
@@ -173,7 +173,7 @@ class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeRequestString))
+        assertEqual(expected: expectedJSON, actual: edgeRequestString)
     }
 
     func testEncode_onlyEvents() {
@@ -239,11 +239,11 @@ class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
           ]
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(edgeRequestString))
+        assertEqual(expected: expectedJSON, actual: edgeRequestString)
     }
     
     private func getAsDictionaryAnyCodable(_ jsonString: String, file: StaticString = #file, line: UInt = #line) -> [String: AnyCodable]? {
-        guard let anyCodable = getAnyCodable(jsonString) else {
+        guard let anyCodable = jsonString.toAnyCodable() else {
             XCTFail("Unable to get valid AnyCodable from provided JSON string: \(jsonString)", file: file, line: line)
             return nil
         }

@@ -45,7 +45,7 @@ class StoreResponsePayloadTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(storeString))
+        assertEqual(expected: expectedJSON, actual: storeString)
     }
 
     // MARK: decoder tests

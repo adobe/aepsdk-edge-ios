@@ -39,7 +39,7 @@ class EdgePublicAPITests: XCTestCase, AnyCodableAsserts {
               }
             }
             """#
-            self.assertEqual(expected: self.getAnyCodable(expectedJSON)!, actual: self.getAnyCodable(event))
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test": "xdm"]))
@@ -62,7 +62,7 @@ class EdgePublicAPITests: XCTestCase, AnyCodableAsserts {
               }
             }
             """#
-            self.assertEqual(expected: self.getAnyCodable(expectedJSON)!, actual: self.getAnyCodable(event))
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test": "xdm"], data: ["rawdata": "example"]))
@@ -83,7 +83,7 @@ class EdgePublicAPITests: XCTestCase, AnyCodableAsserts {
               }
             }
             """#
-            self.assertEqual(expected: self.getAnyCodable(expectedJSON)!, actual: self.getAnyCodable(event))
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test": "xdm"], datasetIdentifier: "123"))
@@ -110,7 +110,7 @@ class EdgePublicAPITests: XCTestCase, AnyCodableAsserts {
               "locationHint": "or2"
             }
             """#
-            self.assertEqual(expected: self.getAnyCodable(expectedJSON)!, actual: self.getAnyCodable(event))
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.setLocationHint("or2")
@@ -128,7 +128,7 @@ class EdgePublicAPITests: XCTestCase, AnyCodableAsserts {
               "locationHint": ""
             }
             """#
-            self.assertEqual(expected: self.getAnyCodable(expectedJSON)!, actual: self.getAnyCodable(event))
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.setLocationHint(nil)
@@ -146,7 +146,7 @@ class EdgePublicAPITests: XCTestCase, AnyCodableAsserts {
               "locationHint": ""
             }
             """#
-            self.assertEqual(expected: self.getAnyCodable(expectedJSON)!, actual: self.getAnyCodable(event))
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.setLocationHint("")

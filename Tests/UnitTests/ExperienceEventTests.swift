@@ -58,7 +58,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withNilXdmAndNilData() {
@@ -74,7 +74,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmAndDatasetId() {
@@ -91,7 +91,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmAndEmptyDatasetId() {
@@ -108,7 +108,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmSchemaAndData() {
@@ -124,7 +124,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmSchemaAndDataAndDatastreamIdOverride() {
@@ -142,7 +142,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmSchemaAndDataAndDatastreamConfigOverride() {
@@ -160,7 +160,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmSchemaAndDataAndDatastreamIdOverrideAndDatastreamConfigOverride() {
@@ -178,7 +178,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmSchemaAndEmptyDatasetIdAndDataAndDatastreamIdOverrideAndDatastreamConfigOverride() {
@@ -199,7 +199,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmSchemaAndNilData() {
@@ -214,7 +214,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withQuery() {
@@ -232,7 +232,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withNilQuery() {
@@ -248,7 +248,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmAndDatastreamIdOverride() {
@@ -265,7 +265,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmAndDatastreamConfigOverride() {
@@ -282,7 +282,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
     func testAsDictionary_withXdmAndDatastreamIdOverrideAndDatastreamConfigOverride() {
@@ -299,7 +299,7 @@ class ExperienceEventTests: XCTestCase, AnyCodableAsserts {
             XCTFail("Failed to retrieve experience event asDictionary")
             return
         }
-        assertEqual(expected: AnyCodable(AnyCodable.from(dictionary: expectedEventData)), actual: AnyCodable(AnyCodable.from(dictionary: actualEventData)))
+        assertEqual(expected: expectedEventData, actual: actualEventData)
     }
 
 }

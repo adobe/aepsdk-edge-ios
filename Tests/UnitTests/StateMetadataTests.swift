@@ -35,7 +35,7 @@ class StateMetadataTests: XCTestCase, AnyCodableAsserts {
         }
         
         let expectedJSON = "{}"
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(stateString))
+        assertEqual(expected: expectedJSON, actual: stateString)
     }
 
     func testEncode_singlePayload() {
@@ -58,7 +58,7 @@ class StateMetadataTests: XCTestCase, AnyCodableAsserts {
           ]
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(stateString))
+        assertEqual(expected: expectedJSON, actual: stateString)
     }
 
     func testEncode_multiplePayloads() {
@@ -87,6 +87,6 @@ class StateMetadataTests: XCTestCase, AnyCodableAsserts {
           ]
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(stateString))
+        assertEqual(expected: expectedJSON, actual: stateString)
     }
 }

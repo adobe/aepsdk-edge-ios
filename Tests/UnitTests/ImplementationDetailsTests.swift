@@ -165,6 +165,6 @@ class ImplementationDetailsTests: XCTestCase, AnyCodableAsserts {
           "version": "\#(outputVersion)"
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: AnyCodable(AnyCodable.from(dictionary: details)), file: file, line: line)
+        assertEqual(expected: expectedJSON, actual: details, file: file, line: line)
     }
 }

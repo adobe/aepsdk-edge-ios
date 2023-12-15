@@ -36,7 +36,7 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
         }
         
         let expectedJSON = "{}"
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(metadataString))
+        assertEqual(expected: expectedJSON, actual: metadataString)
     }
 
     func testEncode_paramKonductorConfig() {
@@ -52,7 +52,7 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
           "konductorConfig": {}
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(metadataString))
+        assertEqual(expected: expectedJSON, actual: metadataString)
     }
 
     func testEncode_paramStateMetadata() {
@@ -77,7 +77,7 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(metadataString))
+        assertEqual(expected: expectedJSON, actual: metadataString)
     }
 
     func testEncode_paramKonductorConfig_paramStateMetadata() {
@@ -104,7 +104,7 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(metadataString))
+        assertEqual(expected: expectedJSON, actual: metadataString)
     }
 
     func testEncode_paramSDKConfig_originalDatastreamIdMetadata() {
@@ -126,7 +126,7 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
           }
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(metadataString))
+        assertEqual(expected: expectedJSON, actual: metadataString)
     }
 
     func testEncode_paramConfigOverrides_originalDatastreamConfigOverrideMetadata() {
@@ -194,6 +194,6 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
           "konductorConfig": {}
         }
         """#
-        assertEqual(expected: getAnyCodable(expectedJSON)!, actual: getAnyCodable(metadataString))
+        assertEqual(expected: expectedJSON, actual: metadataString)
     }
 }
