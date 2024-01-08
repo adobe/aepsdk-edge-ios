@@ -1512,7 +1512,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
             XCTAssertEqual(id, completeEvent.responseID)
             XCTAssertEqual(id, completeEvent.parentID)
 
-            assertEqual(expected: getAnyCodable(expectedEventData), actual: getAnyCodable(completeEvent), file: file, line: line)
+            assertEqual(expected: expectedEventData, actual: completeEvent, file: file, line: line)
         }
     }
 }
