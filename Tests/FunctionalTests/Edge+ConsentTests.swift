@@ -49,11 +49,14 @@ class EdgeConsentTests: TestBase {
         "    }\n"
 
     private var expectedRecordSeparatorString: String {
-       if #available(iOS 17, tvOS 17, *) {
-           return ""
-       } else {
-           return "\u{0000}"
-       }
+        if #available(iOS 17.2, tvOS 17.2, *) {
+            return "\0"
+        }
+        else if #available(iOS 17, tvOS 17, *) {
+            return ""
+        } else {
+            return "\u{0000}"
+        }
     }
     private let mockNetworkService: MockNetworkService = MockNetworkService()
 
