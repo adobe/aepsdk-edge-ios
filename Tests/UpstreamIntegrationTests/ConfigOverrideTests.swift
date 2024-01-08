@@ -118,8 +118,8 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
-        assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
+        assertExactMatch(expected: expectedErrorJSON,
+                        actual: matchingResponses?.first?.responseString)
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -165,8 +165,8 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
-        assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
+        assertExactMatch(expected: expectedErrorJSON,
+                        actual: matchingResponses?.first?.responseString)
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -212,8 +212,8 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
-        assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
+        assertExactMatch(expected: expectedErrorJSON,
+                        actual: matchingResponses?.first?.responseString)
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -260,8 +260,8 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
-        assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
+        assertExactMatch(expected: expectedErrorJSON,
+                        actual: matchingResponses?.first?.responseString)
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -313,8 +313,8 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
-        assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
+        assertExactMatch(expected: expectedErrorJSON,
+                        actual: matchingResponses?.first?.responseString)
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()

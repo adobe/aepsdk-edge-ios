@@ -106,8 +106,8 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
           }
         """#
 
-        let xdm = getAnyCodable(xdmJSON)!.dictionaryValue!
-        let data = getAnyCodable(dataJSON)!.dictionaryValue!
+        let xdm = xdmJSON.toAnyCodable()!.dictionaryValue!
+        let data = dataJSON.toAnyCodable()!.dictionaryValue!
 
         let experienceEvent = ExperienceEvent(xdm: xdm, data: data)
 
@@ -142,7 +142,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
           }
         """#
 
-        let xdm = getAnyCodable(xdmJSON)!.dictionaryValue!
+        let xdm = xdmJSON.toAnyCodable()!.dictionaryValue!
 
         let experienceEvent = ExperienceEvent(xdm: xdm)
 
@@ -221,8 +221,8 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         // See testSendEvent_receivesExpectedEventHandles for existence validation
         let locationHintResult = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
 
-        assertTypeMatch(expected: getAnyCodable(expectedLocationHintJSON)!,
-                        actual: getAnyCodable(locationHintResult),
+        assertTypeMatch(expected: expectedLocationHintJSON,
+                        actual: locationHintResult,
                         exactMatchPaths: ["payload[*].scope"])
     }
 
@@ -256,8 +256,8 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
             let locationHintResult = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
 
-            assertTypeMatch(expected: getAnyCodable(expectedLocationHintJSON)!,
-                            actual: getAnyCodable(locationHintResult),
+            assertTypeMatch(expected: expectedLocationHintJSON,
+                            actual: locationHintResult,
                             exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
 
             resetTestExpectations()
@@ -297,8 +297,8 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         let stateStoreEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.STATE_STORE).last!
 
         // Exact match used here to strictly validate `payload` array element count == 2
-        assertExactMatch(expected: getAnyCodable(expectedStateStoreJSON)!,
-                        actual: getAnyCodable(stateStoreEvent),
+        assertExactMatch(expected: expectedStateStoreJSON,
+                        actual: stateStoreEvent,
                         typeMatchPaths: ["payload[0].maxAge", "payload[0].value", "payload[1].maxAge", "payload[1].value"])
     }
 
@@ -342,8 +342,8 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
             let stateStoreEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.STATE_STORE).last!
 
             // Exact match used here to strictly validate `payload` array element count == 2
-            assertExactMatch(expected: getAnyCodable(expectedStateStoreJSON)!,
-                            actual: getAnyCodable(stateStoreEvent),
+            assertExactMatch(expected: expectedStateStoreJSON,
+                            actual: stateStoreEvent,
                             typeMatchPaths: ["payload[0].maxAge"])
 
             resetTestExpectations()
@@ -480,8 +480,8 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         let locationHintResultEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
 
-        assertTypeMatch(expected: getAnyCodable(expectedLocationHintJSON)!,
-                         actual: getAnyCodable(locationHintResultEvent),
+        assertTypeMatch(expected: expectedLocationHintJSON,
+                         actual: locationHintResultEvent,
                          exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
     }
 
@@ -531,8 +531,8 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual(1, errorEvents.count)
 
         guard let errorEvent = errorEvents.first else { return }
-        assertTypeMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(errorEvent),
+        assertTypeMatch(expected: expectedErrorJSON,
+                        actual: errorEvent,
                         exactMatchPaths: ["status", "title", "type"])
     }
 
