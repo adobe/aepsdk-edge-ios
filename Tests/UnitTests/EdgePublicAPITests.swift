@@ -15,7 +15,7 @@
 import AEPTestUtils
 import XCTest
 
-class EdgePublicAPITests: XCTestCase {
+class EdgePublicAPITests: XCTestCase, AnyCodableAsserts {
 
     override func setUp() {
         continueAfterFailure = false
@@ -32,9 +32,14 @@ class EdgePublicAPITests: XCTestCase {
         let expectation = XCTestExpectation(description: "edge requestContent event dispatched")
         expectation.assertForOverFulfill = true
         MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestContent) { event in
-            let data = flattenDictionary(dict: event.data ?? [:])
-            XCTAssertEqual(1, data.count)
-            XCTAssertEqual("xdm", data["xdm.test"] as? String)
+            let expectedJSON = #"""
+            {
+              "xdm": {
+                "test": "xdm"
+              }
+            }
+            """#
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test": "xdm"]))
@@ -47,10 +52,17 @@ class EdgePublicAPITests: XCTestCase {
         let expectation = XCTestExpectation(description: "edge requestContent event dispatched")
         expectation.assertForOverFulfill = true
         MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestContent) { event in
-            let data = flattenDictionary(dict: event.data ?? [:])
-            XCTAssertEqual(2, data.count)
-            XCTAssertEqual("xdm", data["xdm.test"] as? String)
-            XCTAssertEqual("example", data["data.rawdata"] as? String)
+            let expectedJSON = #"""
+            {
+              "data": {
+                "rawdata": "example"
+              },
+              "xdm": {
+                "test": "xdm"
+              }
+            }
+            """#
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test": "xdm"], data: ["rawdata": "example"]))
@@ -63,10 +75,15 @@ class EdgePublicAPITests: XCTestCase {
         let expectation = XCTestExpectation(description: "edge requestContent event dispatched")
         expectation.assertForOverFulfill = true
         MobileCore.registerEventListener(type: EventType.edge, source: EventSource.requestContent) { event in
-            let data = flattenDictionary(dict: event.data ?? [:])
-            XCTAssertEqual(2, data.count)
-            XCTAssertEqual("xdm", data["xdm.test"] as? String)
-            XCTAssertEqual("123", data["datasetId"] as? String)
+            let expectedJSON = #"""
+            {
+              "datasetId": "123",
+              "xdm": {
+                "test": "xdm"
+              }
+            }
+            """#
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test": "xdm"], datasetIdentifier: "123"))
@@ -88,9 +105,12 @@ class EdgePublicAPITests: XCTestCase {
         let expectation = XCTestExpectation(description: "Edge Update Identity Event Dispatched")
         expectation.assertForOverFulfill = true
         MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateIdentity) { event in
-            let data = event.data ?? [:]
-            XCTAssertEqual(1, data.count)
-            XCTAssertEqual("or2", data["locationHint"] as? String)
+            let expectedJSON = #"""
+            {
+              "locationHint": "or2"
+            }
+            """#
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.setLocationHint("or2")
@@ -103,9 +123,12 @@ class EdgePublicAPITests: XCTestCase {
         let expectation = XCTestExpectation(description: "Edge Update Identity Event Dispatched")
         expectation.assertForOverFulfill = true
         MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateIdentity) { event in
-            let data = event.data ?? [:]
-            XCTAssertEqual(1, data.count)
-            XCTAssertEqual("", data["locationHint"] as? String) // expect to convert nil to empty string
+            let expectedJSON = #"""
+            {
+              "locationHint": ""
+            }
+            """#
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.setLocationHint(nil)
@@ -118,9 +141,12 @@ class EdgePublicAPITests: XCTestCase {
         let expectation = XCTestExpectation(description: "Edge Update Identity Event Dispatched")
         expectation.assertForOverFulfill = true
         MobileCore.registerEventListener(type: EventType.edge, source: EventSource.updateIdentity) { event in
-            let data = event.data ?? [:]
-            XCTAssertEqual(1, data.count)
-            XCTAssertEqual("", data["locationHint"] as? String)
+            let expectedJSON = #"""
+            {
+              "locationHint": ""
+            }
+            """#
+            self.assertEqual(expected: expectedJSON, actual: event)
             expectation.fulfill()
         }
         Edge.setLocationHint("")
