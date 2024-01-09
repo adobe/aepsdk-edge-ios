@@ -36,8 +36,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
     private var expectedRecordSeparatorString: String {
         if #available(iOS 17.2, tvOS 17.2, *) {
             return "\0"
-        }
-        else if #available(iOS 17, tvOS 17, *) {
+        } else if #available(iOS 17, tvOS 17, *) {
             return ""
         } else {
             return "\u{0000}"
@@ -469,7 +468,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         assertExactMatch(
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
-            pathOptions: 
+            pathOptions:
                 CollectionEqualCount(paths: nil, scope: .subtree),
                 ValueTypeMatch(paths: "xdm.identityMap.ECID[0].id",
                            "xdm.identityMap.ECID[0].authenticatedState",
@@ -1190,7 +1189,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         assertExactMatch(
             expected: expectedJSON_firstError,
             actual: resultEvents[0],
-            pathOptions: 
+            pathOptions:
                 ValueTypeMatch(paths: "requestEventId", "requestId"),
                 CollectionEqualCount(scope: .subtree))
 

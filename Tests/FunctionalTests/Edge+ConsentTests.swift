@@ -51,8 +51,7 @@ class EdgeConsentTests: TestBase, AnyCodableAsserts {
     private var expectedRecordSeparatorString: String {
         if #available(iOS 17.2, tvOS 17.2, *) {
             return "\0"
-        }
-        else if #available(iOS 17, tvOS 17, *) {
+        } else if #available(iOS 17, tvOS 17, *) {
             return ""
         } else {
             return "\u{0000}"
@@ -272,7 +271,7 @@ class EdgeConsentTests: TestBase, AnyCodableAsserts {
         assertExactMatch(
             expected: expectedJSON,
             actual: consentRequests[0],
-            pathOptions: 
+            pathOptions:
                 ValueTypeMatch(paths: "identityMap.ECID[0].id", "consent[0].value.metadata.time"),
                 CollectionEqualCount(scope: .subtree))
     }

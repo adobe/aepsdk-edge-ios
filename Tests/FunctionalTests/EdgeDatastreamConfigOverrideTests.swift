@@ -120,7 +120,6 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
         XCTAssertEqual("testDatastreamIdOverride", requestUrl.queryParam("configId"))
 
-
         let expectedJSON = #"""
         {
           "events": [
