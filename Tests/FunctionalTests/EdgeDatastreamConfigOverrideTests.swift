@@ -20,7 +20,7 @@ import XCTest
 
 // swiftlint:disable type_body_length
 /// Functional tests for the sendEvent API with datastreamIdOverride and datastreamConfigOverride features
-class AEPEdgeDatastreamOverrideTests: TestBase {
+class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
     private let exEdgeInteractProdUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
 #if os(iOS)
@@ -65,6 +65,7 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         continueAfterFailure = false
         TestBase.debugEnabled = true
         FileManager.default.clearCache()
+        FileManager.default.removeAdobeCacheDirectory()
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)
@@ -112,31 +113,101 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
-        let requestBody = resultNetworkRequests[0].getFlattenedBody()
-        XCTAssertEqual(21, requestBody.count)
 
-        XCTAssertEqual("value", requestBody["events[0].xdm.test.key"] as? String)
-        XCTAssertEqual("value", requestBody["events[0].data.key"] as? String)
-        XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
-        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
-        XCTAssertEqual(EXPECTED_BASE_PATH, requestBody["xdm.implementationDetails.name"] as? String)
-
+        // Validate URL
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
-
         XCTAssertEqual("testDatastreamIdOverride", requestUrl.queryParam("configId"))
 
-        // Verify top level metadata
-        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        XCTAssertEqual("originalDatastreamId", requestBody["meta.sdkConfig.datastream.original"] as? String)
-        XCTAssertEqual("eventDatasetIdOverride", requestBody["meta.configOverrides.com_adobe_experience_platform.datasets.event.datasetId"] as? String)
-        XCTAssertEqual("profileDatasetIdOverride", requestBody["meta.configOverrides.com_adobe_experience_platform.datasets.profile.datasetId"] as? String)
-        XCTAssertEqual("rsid1", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[0]"] as? String)
-        XCTAssertEqual("rsid2", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[1]"] as? String)
-        XCTAssertEqual("rsid3", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[2]"] as? String)
-        XCTAssertEqual("1234567", requestBody["meta.configOverrides.com_adobe_identity.idSyncContainerId"] as? String)
-        XCTAssertEqual("samplePropertyToken", requestBody["meta.configOverrides.com_adobe_target.propertyToken"] as? String)
+
+        let expectedJSON = #"""
+        {
+          "events": [
+            {
+              "data": {
+                "key": "value"
+              },
+              "xdm": {
+                "_id": "STRING_TYPE",
+                "test": {
+                  "key": "value"
+                },
+                "timestamp": "STRING_TYPE"
+              }
+            }
+          ],
+          "meta": {
+            "configOverrides": {
+              "com_adobe_analytics": {
+                "reportSuites": [
+                  "rsid1",
+                  "rsid2",
+                  "rsid3"
+                ]
+              },
+              "com_adobe_experience_platform": {
+                "datasets": {
+                  "event": {
+                    "datasetId": "eventDatasetIdOverride"
+                  },
+                  "profile": {
+                    "datasetId": "profileDatasetIdOverride"
+                  }
+                }
+              },
+              "com_adobe_identity": {
+                "idSyncContainerId": "1234567"
+              },
+              "com_adobe_target": {
+                "propertyToken": "samplePropertyToken"
+              }
+            },
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "lineFeed": "STRING_TYPE",
+                "recordSeparator": "STRING_TYPE"
+              }
+            },
+            "sdkConfig": {
+              "datastream": {
+                "original": "originalDatastreamId"
+              }
+            }
+          },
+          "xdm": {
+            "identityMap": {
+              "ECID": [
+                {
+                  "authenticatedState": "STRING_TYPE",
+                  "id": "STRING_TYPE",
+                  "primary": false
+                }
+              ]
+            },
+            "implementationDetails": {
+              "environment": "app",
+              "name": "\#(EXPECTED_BASE_PATH)",
+              "version": "\#(MobileCore.extensionVersion)+\#(Edge.extensionVersion)"
+            }
+          }
+        }
+        """#
+
+        assertExactMatch(
+            expected: expectedJSON,
+            actual: resultNetworkRequests[0],
+            pathOptions:
+                ValueTypeMatch(paths:
+                   "events[0].xdm._id",
+                   "events[0].xdm.timestamp",
+                   "meta.konductorConfig.streaming.lineFeed",
+                   "meta.konductorConfig.streaming.recordSeparator",
+                   "xdm.identityMap.ECID[0].authenticatedState",
+                   "xdm.identityMap.ECID[0].id",
+                   "xdm.identityMap.ECID[0].primary"),
+                CollectionEqualCount(scope: .subtree))
     }
 
     func testSendEvent_withXDMDataAndCustomData_withDatastreamIdOverride_sendsExEdgeNetworkRequestWithOverridenDatastreamId() {
@@ -155,26 +226,75 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
-        let requestBody = resultNetworkRequests[0].getFlattenedBody()
-        XCTAssertEqual(14, requestBody.count)
-        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        XCTAssertEqual("value", requestBody["events[0].xdm.test.key"] as? String)
-        XCTAssertEqual("value", requestBody["events[0].data.key"] as? String)
-        XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
-        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
-        XCTAssertEqual(EXPECTED_BASE_PATH, requestBody["xdm.implementationDetails.name"] as? String)
 
+        // Validate URL
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
-
         XCTAssertEqual("testDatastreamIdOverride", requestUrl.queryParam("configId"))
 
-        XCTAssertEqual("originalDatastreamId", requestBody["meta.sdkConfig.datastream.original"] as? String)
+        let expectedJSON = #"""
+        {
+          "events": [
+            {
+              "data": {
+                "key": "value"
+              },
+              "xdm": {
+                "_id": "STRING_TYPE",
+                "test": {
+                  "key": "value"
+                },
+                "timestamp": "STRING_TYPE"
+              }
+            }
+          ],
+          "meta": {
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "lineFeed": "STRING_TYPE",
+                "recordSeparator": "STRING_TYPE"
+              }
+            },
+            "sdkConfig": {
+              "datastream": {
+                "original": "originalDatastreamId"
+              }
+            }
+          },
+          "xdm": {
+            "identityMap": {
+              "ECID": [
+                {
+                  "authenticatedState": "STRING_TYPE",
+                  "id": "STRING_TYPE",
+                  "primary": false
+                }
+              ]
+            },
+            "implementationDetails": {
+              "environment": "app",
+              "name": "\#(EXPECTED_BASE_PATH)",
+              "version": "\#(MobileCore.extensionVersion)+\#(Edge.extensionVersion)"
+            }
+          }
+        }
+        """#
 
-        let requestPayload = try? JSONSerialization.jsonObject(with: resultNetworkRequests[0].connectPayload, options: []) as? [String: Any]
-        let metaPayload = requestPayload?["meta"] as? [String: Any]
-        XCTAssertNil(metaPayload?["configOverrides"])
+        assertExactMatch(
+            expected: expectedJSON,
+            actual: resultNetworkRequests[0],
+            pathOptions:
+                ValueTypeMatch(paths:
+                   "events[0].xdm._id",
+                   "events[0].xdm.timestamp",
+                   "meta.konductorConfig.streaming.lineFeed",
+                   "meta.konductorConfig.streaming.recordSeparator",
+                   "xdm.identityMap.ECID[0].authenticatedState",
+                   "xdm.identityMap.ECID[0].id",
+                   "xdm.identityMap.ECID[0].primary"),
+                CollectionEqualCount(scope: .subtree))
     }
 
     func testSendEvent_withXDMDataAndCustomData_withDatastreamConfigOverride_sendsExEdgeNetworkRequestWithOverridenDatastreamConfig() {
@@ -194,32 +314,95 @@ class AEPEdgeDatastreamOverrideTests: TestBase {
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
-        let requestBody = resultNetworkRequests[0].getFlattenedBody()
-        XCTAssertEqual(20, requestBody.count)
-        XCTAssertEqual("value", requestBody["events[0].xdm.test.key"] as? String)
-        XCTAssertEqual("value", requestBody["events[0].data.key"] as? String)
-        XCTAssertEqual("app", requestBody["xdm.implementationDetails.environment"] as? String)
-        XCTAssertEqual("\(MobileCore.extensionVersion)+\(Edge.extensionVersion)", requestBody["xdm.implementationDetails.version"] as? String)
-        XCTAssertEqual(EXPECTED_BASE_PATH, requestBody["xdm.implementationDetails.name"] as? String)
 
+        // Valdiate URL
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
 
         XCTAssertEqual("originalDatastreamId", requestUrl.queryParam("configId"))
 
-        // Verify top level metadata
-        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        XCTAssertEqual("eventDatasetIdOverride", requestBody["meta.configOverrides.com_adobe_experience_platform.datasets.event.datasetId"] as? String)
-        XCTAssertEqual("profileDatasetIdOverride", requestBody["meta.configOverrides.com_adobe_experience_platform.datasets.profile.datasetId"] as? String)
-        XCTAssertEqual("rsid1", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[0]"] as? String)
-        XCTAssertEqual("rsid2", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[1]"] as? String)
-        XCTAssertEqual("rsid3", requestBody["meta.configOverrides.com_adobe_analytics.reportSuites[2]"] as? String)
-        XCTAssertEqual("1234567", requestBody["meta.configOverrides.com_adobe_identity.idSyncContainerId"] as? String)
-        XCTAssertEqual("samplePropertyToken", requestBody["meta.configOverrides.com_adobe_target.propertyToken"] as? String)
+        let expectedJSON = #"""
+        {
+          "events": [
+            {
+              "data": {
+                "key": "value"
+              },
+              "xdm": {
+                "_id": "STRING_TYPE",
+                "test": {
+                  "key": "value"
+                },
+                "timestamp": "STRING_TYPE"
+              }
+            }
+          ],
+          "meta": {
+            "configOverrides": {
+              "com_adobe_analytics": {
+                "reportSuites": [
+                  "rsid1",
+                  "rsid2",
+                  "rsid3"
+                ]
+              },
+              "com_adobe_experience_platform": {
+                "datasets": {
+                  "event": {
+                    "datasetId": "eventDatasetIdOverride"
+                  },
+                  "profile": {
+                    "datasetId": "profileDatasetIdOverride"
+                  }
+                }
+              },
+              "com_adobe_identity": {
+                "idSyncContainerId": "1234567"
+              },
+              "com_adobe_target": {
+                "propertyToken": "samplePropertyToken"
+              }
+            },
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "lineFeed": "STRING_TYPE",
+                "recordSeparator": "STRING_TYPE"
+              }
+            }
+          },
+          "xdm": {
+            "identityMap": {
+              "ECID": [
+                {
+                  "authenticatedState": "STRING_TYPE",
+                  "id": "STRING_TYPE",
+                  "primary": true
+                }
+              ]
+            },
+            "implementationDetails": {
+              "environment": "app",
+              "name": "\#(EXPECTED_BASE_PATH)",
+              "version": "\#(MobileCore.extensionVersion)+\#(Edge.extensionVersion)"
+            }
+          }
+        }
+        """#
 
-        let requestPayload = try? JSONSerialization.jsonObject(with: resultNetworkRequests[0].connectPayload, options: []) as? [String: Any]
-        let metaPayload = requestPayload?["meta"] as? [String: Any]
-        XCTAssertNil(metaPayload?["sdkConfig"])
+        assertExactMatch(
+            expected: expectedJSON,
+            actual: resultNetworkRequests[0],
+            pathOptions:
+                ValueTypeMatch(paths:
+                   "events[0].xdm._id",
+                   "events[0].xdm.timestamp",
+                   "meta.konductorConfig.streaming.lineFeed",
+                   "meta.konductorConfig.streaming.recordSeparator",
+                   "xdm.identityMap.ECID[0].authenticatedState",
+                   "xdm.identityMap.ECID[0].id",
+                   "xdm.identityMap.ECID[0].primary"),
+                CollectionEqualCount(scope: .subtree))
     }
 }
