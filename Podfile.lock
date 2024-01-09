@@ -49,7 +49,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AEPTestUtils:
-    :commit: 23c6f0df33ec41b12320b3dfebbce1bef68b2cd6
+    :commit: ca9390409699e9e5de0a4df8849511934880ed95
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
 
 SPEC CHECKSUMS:
