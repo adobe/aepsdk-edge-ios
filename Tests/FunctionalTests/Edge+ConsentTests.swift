@@ -19,7 +19,7 @@ import AEPTestUtils
 import Foundation
 import XCTest
 
-class EdgeConsentTests: TestBase {
+class EdgeConsentTests: TestBase, AnyCodableAsserts {
     private let EVENTS_COUNT: Int32 = 5
     private let experienceEvent = ExperienceEvent(xdm: ["test": "xdm"])
     private let responseBody = "\u{0000}{" +
@@ -69,6 +69,7 @@ class EdgeConsentTests: TestBase {
         continueAfterFailure = false
         TestBase.debugEnabled = true
         FileManager.default.clearCache()
+        FileManager.default.removeAdobeCacheDirectory()
 
         // hub shared state update for 5 extensions (InstrumentedExtension (registered in TestBase), Configuration, Edge, Consent, Edge Identity)
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 5)
@@ -225,20 +226,55 @@ class EdgeConsentTests: TestBase {
         XCTAssertEqual(0, interactRequests.count)
         let consentRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectationTimeout: 1)
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
-        let requestBody = consentRequests[0].getFlattenedBody()
-        print(requestBody)
-        XCTAssertEqual(11, requestBody.count)
-        XCTAssertEqual("update", requestBody["query.consent.operation"] as? String)
-        XCTAssertNotNil(requestBody["identityMap.ECID[0].id"] as? String)
-        XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticatedState"] as? String)
-        XCTAssertEqual(false, requestBody["identityMap.ECID[0].primary"] as? Bool)
-        XCTAssertEqual("Adobe", requestBody["consent[0].standard"] as? String)
-        XCTAssertEqual("2.0", requestBody["consent[0].version"] as? String)
-        XCTAssertEqual("n", requestBody["consent[0].value.collect.val"] as? String)
-        XCTAssertNotNil(requestBody["consent[0].value.metadata.time"] as? String)
-        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        XCTAssertEqual(expectedRecordSeparatorString, requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
-        XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
+
+        let expectedJSON = #"""
+        {
+          "query": {
+            "consent": {
+              "operation": "update"
+            }
+          },
+          "identityMap": {
+            "ECID": [
+              {
+                "id": "STRING_TYPE",
+                "authenticatedState": "ambiguous",
+                "primary": false
+              }
+            ]
+          },
+          "consent": [
+            {
+              "standard": "Adobe",
+              "version": "2.0",
+              "value": {
+                "collect": {
+                  "val": "n"
+                },
+                "metadata": {
+                  "time": "STRING_TYPE"
+                }
+              }
+            }
+          ],
+          "meta": {
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "recordSeparator": "\u0000",
+                "lineFeed": "\n"
+              }
+            }
+          }
+        }
+        """#
+
+        assertExactMatch(
+            expected: expectedJSON,
+            actual: consentRequests[0],
+            pathOptions: 
+                ValueTypeMatch(paths: "identityMap.ECID[0].id", "consent[0].value.metadata.time"),
+                CollectionEqualCount(scope: .subtree))
     }
 
     func testCollectConsentYes_sendsRequestToEdgeNetwork() {
@@ -253,20 +289,54 @@ class EdgeConsentTests: TestBase {
         XCTAssertEqual(0, interactRequests.count)
         let consentRequests = self.mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, expectationTimeout: 1)
         XCTAssertEqual(HttpMethod.post, consentRequests[0].httpMethod)
-        let requestBody = consentRequests[0].getFlattenedBody()
-        print(requestBody)
-        XCTAssertEqual(11, requestBody.count)
-        XCTAssertEqual("update", requestBody["query.consent.operation"] as? String)
-        XCTAssertNotNil(requestBody["identityMap.ECID[0].id"] as? String)
-        XCTAssertEqual("ambiguous", requestBody["identityMap.ECID[0].authenticatedState"] as? String)
-        XCTAssertEqual(false, requestBody["identityMap.ECID[0].primary"] as? Bool)
-        XCTAssertEqual("Adobe", requestBody["consent[0].standard"] as? String)
-        XCTAssertEqual("2.0", requestBody["consent[0].version"] as? String)
-        XCTAssertEqual("y", requestBody["consent[0].value.collect.val"] as? String)
-        XCTAssertNotNil(requestBody["consent[0].value.metadata.time"] as? String)
-        XCTAssertEqual(true, requestBody["meta.konductorConfig.streaming.enabled"] as? Bool)
-        XCTAssertEqual(expectedRecordSeparatorString, requestBody["meta.konductorConfig.streaming.recordSeparator"] as? String)
-        XCTAssertEqual("\n", requestBody["meta.konductorConfig.streaming.lineFeed"] as? String)
+
+        let expectedJSON = #"""
+        {
+          "query": {
+            "consent": {
+              "operation": "update"
+            }
+          },
+          "identityMap": {
+            "ECID": [
+              {
+                "id": "STRING_TYPE",
+                "authenticatedState": "ambiguous",
+                "primary": false
+              }
+            ]
+          },
+          "consent": [
+            {
+              "standard": "Adobe",
+              "version": "2.0",
+              "value": {
+                "collect": {
+                  "val": "y"
+                },
+                "metadata": {
+                  "time": "STRING_TYPE"
+                }
+              }
+            }
+          ],
+          "meta": {
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "recordSeparator": "\u0000",
+                "lineFeed": "\n"
+              }
+            }
+          }
+        }
+        """#
+        assertExactMatch(
+            expected: expectedJSON,
+            actual: consentRequests[0],
+            pathOptions:
+                ValueTypeMatch(paths: "identityMap.ECID[0].id", "consent[0].value.metadata.time"),
+                CollectionEqualCount(scope: .subtree))
     }
 
     func testCollectConsentOtherThanYesNo_doesNotSendRequestToEdgeNetwork() {
