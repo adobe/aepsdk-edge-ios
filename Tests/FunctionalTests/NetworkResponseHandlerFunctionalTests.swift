@@ -92,7 +92,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
         let dispatchEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(1, dispatchEvents.count)
-        
+
         // Parent ID chained to default event index 0
         XCTAssertEqual(event1.id, dispatchEvents[0].parentID)
 
@@ -218,30 +218,6 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         """
 
         assertEqual(expected: expected, actual: dispatchEvents[0])
-
-        func test() {
-            let expected = """
-
-            """
-
-            assertEqual(expected: expected, actual: dispatchEvents[0])
-
-            ///############################# EVENT 1 ############################################
-
-            let expected_event1 = """
-
-            """
-
-            assertEqual(expected: expected_event1, actual: dispatchEvents[0])
-
-            ///############################# EVENT 2 ############################################
-
-            let expected_event2 = """
-
-            """
-
-            assertEqual(expected: expected_event2, actual: dispatchEvents[1])
-        }
     }
     func testProcessResponseOnError_WhenTwoEventJsonError_dispatchesTwoEvents() {
         setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 2)
@@ -281,7 +257,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
           "type": "https://ns.adobe.com/aep/errors/EXEG-0201-503"
         }
         """
-        
+
         assertEqual(expected: expected_event1, actual: dispatchEvents[0])
 
         // Event chained to event1 as default event index is 0
@@ -793,7 +769,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual(1, dispatchEvents.count)
         // Parent ID nil as event index does not match any waiting event
         XCTAssertNil(dispatchEvents[0].parentID)
-        
+
         let expected = """
         {
           "payload": [
@@ -837,7 +813,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual(1, dispatchEvents.count)
         // Parent ID nil as request ID does not match any waiting events
         XCTAssertNil(dispatchEvents[0].parentID)
-        
+
         let expected = """
         {
           "payload": [
