@@ -469,12 +469,9 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
-                CollectionEqualCount(paths: nil, scope: .subtree),
-                ValueTypeMatch(paths: "xdm.identityMap.ECID[0].id",
-                           "xdm.identityMap.ECID[0].authenticatedState",
-                           "xdm.identityMap.ECID[0].primary",
-                           "events[0].xdm._id",
-                           "events[0].xdm.timestamp"))
+                CollectionEqualCount(scope: .subtree),
+                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
+                ValueTypeMatch(paths: "events[0].xdm._id", "events[0].xdm.timestamp"))
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -560,12 +557,9 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
-                CollectionEqualCount(paths: nil, scope: .subtree),
-                ValueTypeMatch(paths: "xdm.identityMap.ECID[0].id",
-                           "xdm.identityMap.ECID[0].authenticatedState",
-                           "xdm.identityMap.ECID[0].primary",
-                           "events[0].xdm._id",
-                           "events[0].xdm.timestamp"))
+                CollectionEqualCount(scope: .subtree),
+                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
+                ValueTypeMatch(paths: "events[0].xdm._id", "events[0].xdm.timestamp"))
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -652,12 +646,9 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
-                CollectionEqualCount(paths: nil, scope: .subtree),
-                ValueTypeMatch(paths: "xdm.identityMap.ECID[0].id",
-                           "xdm.identityMap.ECID[0].authenticatedState",
-                           "xdm.identityMap.ECID[0].primary",
-                           "events[0].xdm._id",
-                           "events[0].xdm.timestamp"))
+                CollectionEqualCount(scope: .subtree),
+                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
+                ValueTypeMatch(paths: "events[0].xdm._id", "events[0].xdm.timestamp"))
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))

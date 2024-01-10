@@ -198,15 +198,13 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
+                CollectionEqualCount(scope: .subtree),
+                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
                 ValueTypeMatch(paths:
                    "events[0].xdm._id",
                    "events[0].xdm.timestamp",
                    "meta.konductorConfig.streaming.lineFeed",
-                   "meta.konductorConfig.streaming.recordSeparator",
-                   "xdm.identityMap.ECID[0].authenticatedState",
-                   "xdm.identityMap.ECID[0].id",
-                   "xdm.identityMap.ECID[0].primary"),
-                CollectionEqualCount(scope: .subtree))
+                   "meta.konductorConfig.streaming.recordSeparator"))
     }
 
     func testSendEvent_withXDMDataAndCustomData_withDatastreamIdOverride_sendsExEdgeNetworkRequestWithOverridenDatastreamId() {
@@ -285,15 +283,13 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
+                CollectionEqualCount(scope: .subtree),
+                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
                 ValueTypeMatch(paths:
                    "events[0].xdm._id",
                    "events[0].xdm.timestamp",
                    "meta.konductorConfig.streaming.lineFeed",
-                   "meta.konductorConfig.streaming.recordSeparator",
-                   "xdm.identityMap.ECID[0].authenticatedState",
-                   "xdm.identityMap.ECID[0].id",
-                   "xdm.identityMap.ECID[0].primary"),
-                CollectionEqualCount(scope: .subtree))
+                   "meta.konductorConfig.streaming.recordSeparator"))
     }
 
     func testSendEvent_withXDMDataAndCustomData_withDatastreamConfigOverride_sendsExEdgeNetworkRequestWithOverridenDatastreamConfig() {
@@ -394,14 +390,12 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
+                CollectionEqualCount(scope: .subtree),
+                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
                 ValueTypeMatch(paths:
                    "events[0].xdm._id",
                    "events[0].xdm.timestamp",
                    "meta.konductorConfig.streaming.lineFeed",
-                   "meta.konductorConfig.streaming.recordSeparator",
-                   "xdm.identityMap.ECID[0].authenticatedState",
-                   "xdm.identityMap.ECID[0].id",
-                   "xdm.identityMap.ECID[0].primary"),
-                CollectionEqualCount(scope: .subtree))
+                   "meta.konductorConfig.streaming.recordSeparator"))
     }
 }
