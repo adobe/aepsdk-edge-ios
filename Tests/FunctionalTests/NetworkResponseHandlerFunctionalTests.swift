@@ -218,30 +218,6 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         """
 
         assertEqual(expected: expected, actual: dispatchEvents[0])
-
-        func test() {
-            let expected = """
-
-            """
-
-            assertEqual(expected: expected, actual: dispatchEvents[0])
-
-            ///############################# EVENT 1 ############################################
-
-            let expected_event1 = """
-
-            """
-
-            assertEqual(expected: expected_event1, actual: dispatchEvents[0])
-
-            ///############################# EVENT 2 ############################################
-
-            let expected_event2 = """
-
-            """
-
-            assertEqual(expected: expected_event2, actual: dispatchEvents[1])
-        }
     }
     func testProcessResponseOnError_WhenTwoEventJsonError_dispatchesTwoEvents() {
         setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 2)
