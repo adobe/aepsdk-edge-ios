@@ -218,6 +218,30 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         """
 
         assertEqual(expected: expected, actual: dispatchEvents[0])
+
+        func test() {
+            let expected = """
+
+            """
+
+            assertEqual(expected: expected, actual: dispatchEvents[0])
+
+            ///############################# EVENT 1 ############################################
+
+            let expected_event1 = """
+
+            """
+
+            assertEqual(expected: expected_event1, actual: dispatchEvents[0])
+
+            ///############################# EVENT 2 ############################################
+
+            let expected_event2 = """
+
+            """
+
+            assertEqual(expected: expected_event2, actual: dispatchEvents[1])
+        }
     }
     func testProcessResponseOnError_WhenTwoEventJsonError_dispatchesTwoEvents() {
         setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 2)
@@ -1112,21 +1136,27 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
 
         let dispatchEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: "locationHint:result")
         XCTAssertEqual(1, dispatchEvents.count)
-        guard let receivedData = dispatchEvents[0].data else {
-            XCTFail("Invalid event data")
-            return
-        }
 
-        let flattenReceivedData: [String: Any] = flattenDictionary(dict: receivedData)
-        XCTAssertEqual(8, flattenReceivedData.count)
-        XCTAssertEqual("locationHint:result", flattenReceivedData["type"] as? String)
-        XCTAssertEqual("123", flattenReceivedData["requestId"] as? String)
-        XCTAssertEqual("EdgeNetwork", flattenReceivedData["payload[0].scope"] as? String)
-        XCTAssertEqual("or2", flattenReceivedData["payload[0].hint"] as? String)
-        XCTAssertEqual(1800, flattenReceivedData["payload[0].ttlSeconds"] as? Int)
-        XCTAssertEqual("Target", flattenReceivedData["payload[1].scope"] as? String)
-        XCTAssertEqual("edge34", flattenReceivedData["payload[1].hint"] as? String)
-        XCTAssertEqual(600, flattenReceivedData["payload[1].ttlSeconds"] as? Int)
+        let expected = """
+        {
+          "payload": [
+            {
+              "hint": "or2",
+              "scope": "EdgeNetwork",
+              "ttlSeconds": 1800
+            },
+            {
+              "hint": "edge34",
+              "scope": "Target",
+              "ttlSeconds": 600
+            }
+          ],
+          "requestId": "123",
+          "type": "locationHint:result"
+        }
+        """
+
+        assertEqual(expected: expected, actual: dispatchEvents[0])
     }
 
     /// Tests that when an event is processed after a reset event that the location hint is updated
