@@ -1176,24 +1176,29 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE,
                                                    source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
 
-        let expectedJSON_firstError = #"""
+        // Get original requestId and requestEventId
+        guard let requestId = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: .post).first?.url.queryParam("requestId") else {
+            XCTFail("Unable to get valid requestId.")
+            return
+        }
+        guard let requestEventId = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.REQUEST_CONTENT).first?.id.uuidString else {
+            XCTFail("Unable to get valid requestEventId.")
+            return
+        }
+
+        let expectedJSON_firstError = """
         {
-          "requestEventId": "STRING_TYPE",
-          "requestId": "STRING_TYPE",
+          "requestEventId": "\(requestEventId)",
+          "requestId": "\(requestId)",
           "status": 504,
           "title": "The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.",
           "type": "https://ns.adobe.com/aep/errors/EXEG-0201-504"
         }
-        """#
+        """
 
-        assertExactMatch(
-            expected: expectedJSON_firstError,
-            actual: resultEvents[0],
-            pathOptions:
-                ValueTypeMatch(paths: "requestEventId", "requestId"),
-                CollectionEqualCount(scope: .subtree))
+        assertEqual(expected: expectedJSON_firstError, actual: resultEvents[0])
 
-        let expectedJSON_secondError = #"""
+        let expectedJSON_secondError = """
         {
           "report": {
             "cause": {
@@ -1201,20 +1206,15 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
               "message": "Cannot read related customer for device id: ..."
             }
           },
-          "requestEventId": "STRING_TYPE",
-          "requestId": "STRING_TYPE",
+          "requestEventId": "\(requestEventId)",
+          "requestId": "\(requestId)",
           "status": 200,
           "title": "A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.",
           "type": "https://ns.adobe.com/aep/errors/EXEG-0204-200"
         }
-        """#
+        """
 
-        assertExactMatch(
-            expected: expectedJSON_secondError,
-            actual: resultEvents[1],
-            pathOptions:
-                ValueTypeMatch(paths: "requestEventId", "requestId"),
-                CollectionEqualCount(scope: .subtree))
+        assertEqual(expected: expectedJSON_secondError, actual: resultEvents[1])
     }
 
     func testSendEvent_fatalError() {
