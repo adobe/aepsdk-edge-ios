@@ -542,9 +542,12 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual(1, errorEvents.count)
 
         guard let errorEvent = errorEvents.first else { return }
-        assertTypeMatch(expected: expectedErrorJSON,
-                        actual: errorEvent,
-                        exactMatchPaths: ["status", "title", "type"])
+        assertTypeMatch(
+            expected: expectedErrorJSON,
+            actual: errorEvent,
+            pathOptions:
+                ValueExactMatch(paths: "status", "title", "type"),
+                CollectionEqualCount(scope: .subtree))
     }
 
     // Tests that an invalid location hint returns the expected error with 0 byte data body
