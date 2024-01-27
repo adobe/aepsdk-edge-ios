@@ -36,8 +36,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
     private var expectedRecordSeparatorString: String {
         if #available(iOS 17.2, tvOS 17.2, *) {
             return "\0"
-        }
-        else if #available(iOS 17, tvOS 17, *) {
+        } else if #available(iOS 17, tvOS 17, *) {
             return ""
         } else {
             return "\u{0000}"
@@ -54,7 +53,6 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
 
         continueAfterFailure = true
         TestBase.debugEnabled = true
-        FileManager.default.clearCache()
         FileManager.default.removeAdobeCacheDirectory()
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
@@ -320,35 +318,10 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         // Note that `recordSeparator` is set in the format required by the JSON spec to be properly decoded,
-        // not Swift format
-        let expectedJSON = #"""
-        {
-          "meta": {
-            "konductorConfig": {
-              "streaming": {
-                "enabled": true,
-                "recordSeparator": "\u0000",
-                "lineFeed": "\n"
-              }
-            }
-          },
-          "xdm": {
-            "identityMap": {
-              "ECID": [
-                {
-                  "id": "STRING_TYPE",
-                  "authenticatedState": "STRING_TYPE",
-                  "primary": true
-                }
-              ]
-            },
-            "implementationDetails": {
-              "environment": "app",
-              "version": "\#(MobileCore.extensionVersion)+\#(Edge.extensionVersion)",
-              "name": "\#(EXPECTED_BASE_PATH)"
-            }
-          },
-          "events": [
+        // not the various Swift formats
+        let expectedJSON = createExpectedPayload(
+            eventsPayload:
+            #"""
             {
               "xdm": {
                 "_id": "STRING_TYPE",
@@ -367,13 +340,13 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
                 }
               }
             }
-          ]
-        }
-        """#
+            """#
+        )
+
         assertExactMatch(
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
-            pathOptions: 
+            pathOptions:
                 CollectionEqualCount(paths: nil, scope: .subtree),
                 ValueTypeMatch(paths: "xdm.identityMap.ECID[0].id",
                            "xdm.identityMap.ECID[0].authenticatedState",
@@ -409,58 +382,33 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
-        let expectedJSON = #"""
-        {
-          "meta": {
-            "konductorConfig": {
-              "streaming": {
-                "enabled": true,
-                "recordSeparator": "\u0000",
-                "lineFeed": "\n"
-              }
-            }
-          },
-          "xdm": {
-            "identityMap": {
-              "ECID": [
-                {
-                  "id": "STRING_TYPE",
-                  "authenticatedState": "STRING_TYPE",
-                  "primary": true
-                }
-              ]
-            },
-            "implementationDetails": {
-              "environment": "app",
-              "version": "\#(MobileCore.extensionVersion)+\#(Edge.extensionVersion)",
-              "name": "\#(EXPECTED_BASE_PATH)"
-            }
-          },
-          "events": [
+        let expectedJSON = createExpectedPayload(
+            eventsPayload:
+            #"""
             {
-              "xdm": {
-                "_id": "STRING_TYPE",
-                "timestamp": "STRING_TYPE",
-                "testString": "xdm"
-              },
               "data": {
-                "testDataString": "stringValue",
-                "testDataInt": 101,
-                "testDataBool": true,
-                "testDataDouble": 13.66,
                 "testDataArray": [
                   "arrayElem1",
                   2,
                   true
                 ],
+                "testDataBool": true,
                 "testDataDictionary": {
                   "key": "val"
-                }
+                },
+                "testDataDouble": 13.66,
+                "testDataInt": 101,
+                "testDataString": "stringValue"
+              },
+              "xdm": {
+                "_id": "STRING_TYPE",
+                "testString": "xdm",
+                "timestamp": "STRING_TYPE"
               }
             }
-          ]
-        }
-        """#
+            """#
+        )
+
         assertExactMatch(
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
@@ -504,34 +452,9 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
-        let expectedJSON = #"""
-        {
-          "meta": {
-            "konductorConfig": {
-              "streaming": {
-                "enabled": true,
-                "recordSeparator": "\u0000",
-                "lineFeed": "\n"
-              }
-            }
-          },
-          "xdm": {
-            "identityMap": {
-              "ECID": [
-                {
-                  "id": "STRING_TYPE",
-                  "authenticatedState": "STRING_TYPE",
-                  "primary": true
-                }
-              ]
-            },
-            "implementationDetails": {
-              "environment": "app",
-              "version": "\#(MobileCore.extensionVersion)+\#(Edge.extensionVersion)",
-              "name": "\#(EXPECTED_BASE_PATH)"
-            }
-          },
-          "events": [
+        let expectedJSON = createExpectedPayload(
+            eventsPayload:
+            #"""
             {
               "meta": {
                 "collect": {
@@ -550,9 +473,9 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
                 }
               }
             }
-          ]
-        }
-        """#
+            """#
+        )
+
         assertExactMatch(
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
@@ -699,7 +622,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             self.assertTypeMatch(
                 expected: expectedJSON,
                 actual: responseEvent,
-                pathOptions: CollectionEqualCount(paths: nil, scope: .subtree))
+                pathOptions: CollectionEqualCount(scope: .subtree))
             countDownLatch.countDown()
         }
         XCTAssertEqual(DispatchTimeoutResult.success, countDownLatch.await(timeout: 3))
@@ -725,52 +648,12 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        var requestBody = resultNetworkRequests[0].getFlattenedBody()
-        XCTAssertEqual(12, requestBody.count)
 
         // Validating element count
-        let expectedJSON = #"""
-        {
-          "events": [
-            {
-              "xdm": {
-                "_id": "STRING_TYPE",
-                "testString": "STRING_TYPE",
-                "timestamp": "STRING_TYPE"
-              }
-            }
-          ],
-          "meta": {
-            "konductorConfig": {
-              "streaming": {
-                "enabled": true,
-                "lineFeed": "STRING_TYPE",
-                "recordSeparator": "STRING_TYPE"
-              }
-            }
-          },
-          "xdm": {
-            "identityMap": {
-              "ECID": [
-                {
-                  "authenticatedState": "STRING_TYPE",
-                  "id": "STRING_TYPE",
-                  "primary": false
-                }
-              ]
-            },
-            "implementationDetails": {
-              "environment": "STRING_TYPE",
-              "name": "STRING_TYPE",
-              "version": "STRING_TYPE"
-            }
-          }
-        }
-        """#
         assertTypeMatch(
-            expected: expectedJSON,
+            expected: createExpectedPayload(),
             actual: resultNetworkRequests[0],
-            pathOptions: CollectionEqualCount(paths: nil, scope: .subtree))
+            pathOptions: CollectionEqualCount(scope: .subtree))
 
         resetTestExpectations()
         mockNetworkService.reset()
@@ -784,29 +667,9 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
 
         resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        requestBody = resultNetworkRequests[0].getFlattenedBody()
-        XCTAssertEqual(18, requestBody.count)
 
-        // NOTE: meta.state.entries can be in any order and can change between runs
-        let expectedJSON_afterEvent = #"""
-        {
-          "events": [
-            {
-              "xdm": {
-                "_id": "STRING_TYPE",
-                "testString": "STRING_TYPE",
-                "timestamp": "STRING_TYPE"
-              }
-            }
-          ],
-          "meta": {
-            "konductorConfig": {
-              "streaming": {
-                "enabled": true,
-                "lineFeed": "STRING_TYPE",
-                "recordSeparator": "STRING_TYPE"
-              }
-            },
+        let expectedJSON = createExpectedPayload(
+            metaPayload: """
             "state": {
               "entries": [
                 {
@@ -821,32 +684,17 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
                 }
               ]
             }
-          },
-          "xdm": {
-            "identityMap": {
-              "ECID": [
-                {
-                  "authenticatedState": "STRING_TYPE",
-                  "id": "STRING_TYPE",
-                  "primary": false
-                }
-              ]
-            },
-            "implementationDetails": {
-              "environment": "STRING_TYPE",
-              "name": "STRING_TYPE",
-              "version": "STRING_TYPE"
-            }
-          }
-        }
-        """#
+            """
+        )
+
+        // NOTE: meta.state.entries can be in any order and can change between runs
         assertTypeMatch(
-            expected: expectedJSON_afterEvent,
+            expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
                 ValueExactMatch(paths: "meta.state.entries", scope: .subtree),
                 WildcardMatch(paths: "meta.state.entries", scope: .subtree),
-                CollectionEqualCount(paths: nil, scope: .subtree))
+                CollectionEqualCount(scope: .subtree))
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -855,7 +703,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
     }
 
     func testSendEvent_twoConsecutiveCalls_resetBefore_appendsReceivedClientSideStore() {
-        // send the reset event before
+        // Send the reset event before
         let resetEvent = Event(name: "reset event", type: EventType.genericIdentity, source: EventSource.requestReset, data: nil)
         MobileCore.dispatch(event: resetEvent)
 
@@ -873,40 +721,59 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
-        // first network call, no stored data
+        // First network call, no stored data
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        // Validate
         var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        var requestBody = resultNetworkRequests[0].getFlattenedBody()
-        XCTAssertEqual(12, requestBody.count)
+
+        assertTypeMatch(
+            expected: createExpectedPayload(),
+            actual: resultNetworkRequests[0],
+            pathOptions: CollectionEqualCount(scope: .subtree))
+
         resetTestExpectations()
         mockNetworkService.reset()
 
         sleep(1)
 
-        // send a new event, should contain previously stored store data
+        // Send a new event, should contain previously stored store data
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
+        // Validate
         resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        requestBody = resultNetworkRequests[0].getFlattenedBody()
-        XCTAssertEqual(18, requestBody.count)
 
-        guard let firstStore = requestBody["meta.state.entries[0].key"] as? String,
-              let index = firstStore == "kndctr_testOrg_AdobeOrg_identity" ? false : true else {
-            XCTFail("Client-side store not found")
-            return
-        }
-        XCTAssertEqual("kndctr_testOrg_AdobeOrg_identity", requestBody["meta.state.entries[\(Int(index))].key"] as? String)
-        XCTAssertEqual("hashed_value",
-                       requestBody["meta.state.entries[\(Int(index))].value"] as? String)
-        XCTAssertEqual(34128000, requestBody["meta.state.entries[\(Int(index))].maxAge"] as? Int)
-        XCTAssertEqual("kndctr_testOrg_AdobeOrg_consent_check", requestBody["meta.state.entries[\(Int(!index))].key"] as? String)
-        XCTAssertEqual("1", requestBody["meta.state.entries[\(Int(!index))].value"] as? String)
-        XCTAssertEqual(7200, requestBody["meta.state.entries[\(Int(!index))].maxAge"] as? Int)
+        let expectedJSON = createExpectedPayload(
+            metaPayload: """
+            "state": {
+              "entries": [
+                {
+                  "key": "kndctr_testOrg_AdobeOrg_identity",
+                  "maxAge": 34128000,
+                  "value": "hashed_value"
+                },
+                {
+                  "key": "kndctr_testOrg_AdobeOrg_consent_check",
+                  "maxAge": 7200,
+                  "value": "1"
+                }
+              ]
+            }
+            """
+        )
+        assertTypeMatch(
+            expected: expectedJSON,
+            actual: resultNetworkRequests[0],
+            pathOptions:
+                ValueExactMatch(paths: "meta.state.entries", scope: .subtree),
+                WildcardMatch(paths: "meta.state.entries", scope: .subtree),
+                CollectionEqualCount(scope: .subtree))
 
+        // Validate URL
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
         XCTAssertEqual("12345-example", requestUrl.queryParam("configId"))
@@ -930,10 +797,16 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
 
         // first network call, no stored data
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        // Validate
         var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        var requestBody = resultNetworkRequests[0].getFlattenedBody()
-        XCTAssertEqual(12, requestBody.count)
+
+        assertTypeMatch(
+            expected: createExpectedPayload(),
+            actual: resultNetworkRequests[0],
+            pathOptions: CollectionEqualCount(scope: .subtree))
+
         resetTestExpectations()
         mockNetworkService.reset()
 
@@ -948,12 +821,14 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
+        // Validate
         resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
-        requestBody = resultNetworkRequests[0].getFlattenedBody()
-        XCTAssertEqual(12, requestBody.count)
 
-        XCTAssertNil(requestBody["meta.state"]) // no state should be appended
+        assertTypeMatch(
+            expected: createExpectedPayload(),
+            actual: resultNetworkRequests[0],
+            pathOptions: CollectionEqualCount(scope: .subtree))
     }
 
     // MARK: Paired request-response events
@@ -988,20 +863,31 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         let requestEventUUID = requestEvents[0].id.uuidString
         let responseEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE,
                                                      source: "personalization:decisions")
-        guard let eventDataDict = responseEvents[0].data else {
-            XCTFail("Failed to convert event data to [String: Any]")
-            return
+
+        let expectedJSON = #"""
+        {
+          "type": "personalization:decisions",
+          "payload": [
+            {
+              "id": "AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9",
+              "items": [
+                {
+                  "data": {
+                    "content": {
+                      "value": "#D41DBA"
+                    }
+                  },
+                  "schema": "https://ns.adobe.com/personalization/json-content-item"
+                }
+              ],
+              "scope": "buttonColor"
+            }
+          ],
+          "requestId": "\#(requestId ?? "")",
+          "requestEventId": "\#(requestEventUUID)"
         }
-        let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(7, eventData.count)
-        XCTAssertEqual("personalization:decisions", eventData["type"] as? String)
-        XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", eventData["payload[0].id"] as? String)
-        XCTAssertEqual("#D41DBA", eventData["payload[0].items[0].data.content.value"] as? String)
-        XCTAssertEqual("https://ns.adobe.com/personalization/json-content-item", eventData["payload[0].items[0].schema"] as? String)
-        XCTAssertEqual("buttonColor", eventData["payload[0].scope"] as? String)
-        XCTAssertEqual("buttonColor", eventData["payload[0].scope"] as? String)
-        XCTAssertEqual(requestId, eventData["requestId"] as? String)
-        XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
+        """#
+        assertEqual(expected: expectedJSON, actual: responseEvents[0])
     }
 
     func testSendEvent_receivesResponseEventWarning_sendsErrorResponseEvent_pairedWithTheRequestEventId() {
@@ -1034,16 +920,16 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         let requestEventUUID = requestEvents[0].id.uuidString
         let errorResponseEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE,
                                                           source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
-        guard let eventDataDict = errorResponseEvents[0].data else {
-            XCTFail("Failed to convert event data to [String: Any]")
-            return
+
+        let expectedJSON = #"""
+        {
+          "status": 0,
+          "title": "Failed due to unrecoverable system error",
+          "requestId": "\#(requestId ?? "")",
+          "requestEventId": "\#(requestEventUUID)"
         }
-        let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(4, eventData.count)
-        XCTAssertEqual(0, eventData["status"] as? Int)
-        XCTAssertEqual("Failed due to unrecoverable system error", eventData["title"] as? String)
-        XCTAssertEqual(requestId, eventData["requestId"] as? String)
-        XCTAssertEqual(requestEventUUID, eventData["requestEventId"] as? String)
+        """#
+        assertEqual(expected: expectedJSON, actual: errorResponseEvents[0])
     }
 
     // MARK: test persisted hits
@@ -1154,27 +1040,46 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
 
         let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE,
                                                    source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
-        guard let eventDataDict = resultEvents[0].data else {
-            XCTFail("Failed to convert event data to [String: Any]")
-            return
-        }
-        let eventData = flattenDictionary(dict: eventDataDict)
-        XCTAssertEqual(5, eventData.count)
-        XCTAssertEqual(eventData["status"] as? Int, 504)
-        XCTAssertEqual(eventData["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0201-504")
-        XCTAssertEqual(eventData["title"] as? String, "The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.")
 
-        guard let eventDataDict1 = resultEvents[1].data else {
-            XCTFail("Failed to convert event data to [String: Any]")
+        // Get original requestId and requestEventId
+        guard let requestId = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: .post).first?.url.queryParam("requestId") else {
+            XCTFail("Unable to get valid requestId.")
             return
         }
-        let eventData1 = flattenDictionary(dict: eventDataDict1)
-        XCTAssertEqual(7, eventData1.count)
-        XCTAssertEqual(eventData1["status"] as? Int, 200)
-        XCTAssertEqual(eventData1["type"] as? String, "https://ns.adobe.com/aep/errors/EXEG-0204-200")
-        XCTAssertEqual(eventData1["title"] as? String, "A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.")
-        XCTAssertEqual(eventData1["report.cause.message"] as? String, "Cannot read related customer for device id: ...")
-        XCTAssertEqual(eventData1["report.cause.code"] as? Int, 202)
+        guard let requestEventId = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.REQUEST_CONTENT).first?.id.uuidString else {
+            XCTFail("Unable to get valid requestEventId.")
+            return
+        }
+
+        let expectedJSON_firstError = """
+        {
+          "requestEventId": "\(requestEventId)",
+          "requestId": "\(requestId)",
+          "status": 504,
+          "title": "The 'com.adobe.experience.platform.ode' service is temporarily unable to serve this request. Please try again later.",
+          "type": "https://ns.adobe.com/aep/errors/EXEG-0201-504"
+        }
+        """
+
+        assertEqual(expected: expectedJSON_firstError, actual: resultEvents[0])
+
+        let expectedJSON_secondError = """
+        {
+          "report": {
+            "cause": {
+              "code": 202,
+              "message": "Cannot read related customer for device id: ..."
+            }
+          },
+          "requestEventId": "\(requestEventId)",
+          "requestId": "\(requestId)",
+          "status": 200,
+          "title": "A warning occurred while calling the 'com.adobe.audiencemanager' service for this request.",
+          "type": "https://ns.adobe.com/aep/errors/EXEG-0204-200"
+        }
+        """
+
+        assertEqual(expected: expectedJSON_secondError, actual: resultEvents[1])
     }
 
     func testSendEvent_fatalError() {
@@ -1480,6 +1385,61 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
          """.data(using: .utf8)
         let decoder = JSONDecoder()
         return try! decoder.decode(EdgeEventError.self, from: data!) // swiftlint:disable:this force_unwrapping
+    }
+
+    /// Generates a JSON string representing a network request payload. It
+    /// allows the injection of custom content for `events` and `meta` sections of the payload.
+    ///
+    /// - Parameters:
+    ///   - eventsPayload: An optional JSON string to be included in the `events` section of the payload.
+    ///                    If `nil`, a default JSON structure with placeholder values is used.
+    ///   - metaPayload: A JSON string to be included in the `meta` section of the payload. Defaults
+    ///                  to an empty string, which means no additional content will be added to the `meta` section.
+    /// - Returns: A JSON string representing the complete network request payload.
+    private func createExpectedPayload(eventsPayload: String? = nil, metaPayload: String = "") -> String {
+        let eventsPayload = eventsPayload ?? """
+        {
+          "xdm": {
+            "_id": "STRING_TYPE",
+            "testString": "STRING_TYPE",
+            "timestamp": "STRING_TYPE"
+          }
+        }
+        """
+
+        return #"""
+        {
+          "events": [
+            \#(eventsPayload)
+          ],
+          "meta": {
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "recordSeparator": "\u0000",
+                "lineFeed": "\n"
+              }
+            },
+            \#(metaPayload)
+          },
+          "xdm": {
+            "identityMap": {
+              "ECID": [
+                {
+                  "authenticatedState": "STRING_TYPE",
+                  "id": "STRING_TYPE",
+                  "primary": false
+                }
+              ]
+            },
+            "implementationDetails": {
+              "environment": "app",
+              "version": "\#(MobileCore.extensionVersion)+\#(Edge.extensionVersion)",
+              "name": "\#(EXPECTED_BASE_PATH)"
+            }
+          }
+        }
+        """#
     }
 }
 
