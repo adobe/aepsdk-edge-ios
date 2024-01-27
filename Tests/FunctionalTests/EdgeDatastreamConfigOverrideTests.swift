@@ -64,7 +64,6 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
 
         continueAfterFailure = false
         TestBase.debugEnabled = true
-        FileManager.default.clearCache()
         FileManager.default.removeAdobeCacheDirectory()
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
@@ -120,91 +119,55 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
         XCTAssertEqual("testDatastreamIdOverride", requestUrl.queryParam("configId"))
 
-        let expectedJSON = #"""
-        {
-          "events": [
-            {
-              "data": {
-                "key": "value"
-              },
-              "xdm": {
-                "_id": "STRING_TYPE",
-                "test": {
-                  "key": "value"
+        let expectedJSON = createExpectedPayload(
+            metaProperties:
+            """
+              "configOverrides": {
+                "com_adobe_analytics": {
+                  "reportSuites": [
+                    "rsid1",
+                    "rsid2",
+                    "rsid3"
+                  ]
                 },
-                "timestamp": "STRING_TYPE"
-              }
-            }
-          ],
-          "meta": {
-            "configOverrides": {
-              "com_adobe_analytics": {
-                "reportSuites": [
-                  "rsid1",
-                  "rsid2",
-                  "rsid3"
-                ]
-              },
-              "com_adobe_experience_platform": {
-                "datasets": {
-                  "event": {
-                    "datasetId": "eventDatasetIdOverride"
-                  },
-                  "profile": {
-                    "datasetId": "profileDatasetIdOverride"
+                "com_adobe_experience_platform": {
+                  "datasets": {
+                    "event": {
+                      "datasetId": "eventDatasetIdOverride"
+                    },
+                    "profile": {
+                      "datasetId": "profileDatasetIdOverride"
+                    }
                   }
+                },
+                "com_adobe_identity": {
+                  "idSyncContainerId": "1234567"
+                },
+                "com_adobe_target": {
+                  "propertyToken": "samplePropertyToken"
                 }
               },
-              "com_adobe_identity": {
-                "idSyncContainerId": "1234567"
-              },
-              "com_adobe_target": {
-                "propertyToken": "samplePropertyToken"
-              }
-            },
-            "konductorConfig": {
-              "streaming": {
-                "enabled": true,
-                "lineFeed": "STRING_TYPE",
-                "recordSeparator": "STRING_TYPE"
-              }
-            },
-            "sdkConfig": {
-              "datastream": {
-                "original": "originalDatastreamId"
-              }
-            }
-          },
-          "xdm": {
-            "identityMap": {
-              "ECID": [
-                {
-                  "authenticatedState": "STRING_TYPE",
-                  "id": "STRING_TYPE",
-                  "primary": false
+              "sdkConfig": {
+                "datastream": {
+                  "original": "originalDatastreamId"
                 }
-              ]
-            },
-            "implementationDetails": {
-              "environment": "app",
-              "name": "\#(EXPECTED_BASE_PATH)",
-              "version": "\#(MobileCore.extensionVersion)+\#(Edge.extensionVersion)"
-            }
-          }
-        }
-        """#
+              }
+            """
+        )
 
         assertExactMatch(
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
-                CollectionEqualCount(scope: .subtree),
-                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
                 ValueTypeMatch(paths:
                    "events[0].xdm._id",
                    "events[0].xdm.timestamp",
                    "meta.konductorConfig.streaming.lineFeed",
-                   "meta.konductorConfig.streaming.recordSeparator"))
+                   "meta.konductorConfig.streaming.recordSeparator",
+                   "xdm.identityMap.ECID[0].authenticatedState",
+                   "xdm.identityMap.ECID[0].id",
+                   "xdm.identityMap.ECID[0].primary"),
+                CollectionEqualCount(scope: .subtree))
     }
 
     func testSendEvent_withXDMDataAndCustomData_withDatastreamIdOverride_sendsExEdgeNetworkRequestWithOverridenDatastreamId() {
@@ -230,66 +193,30 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
         XCTAssertEqual("testDatastreamIdOverride", requestUrl.queryParam("configId"))
 
-        let expectedJSON = #"""
-        {
-          "events": [
-            {
-              "data": {
-                "key": "value"
-              },
-              "xdm": {
-                "_id": "STRING_TYPE",
-                "test": {
-                  "key": "value"
-                },
-                "timestamp": "STRING_TYPE"
-              }
-            }
-          ],
-          "meta": {
-            "konductorConfig": {
-              "streaming": {
-                "enabled": true,
-                "lineFeed": "STRING_TYPE",
-                "recordSeparator": "STRING_TYPE"
-              }
-            },
-            "sdkConfig": {
-              "datastream": {
-                "original": "originalDatastreamId"
-              }
-            }
-          },
-          "xdm": {
-            "identityMap": {
-              "ECID": [
-                {
-                  "authenticatedState": "STRING_TYPE",
-                  "id": "STRING_TYPE",
-                  "primary": false
-                }
-              ]
-            },
-            "implementationDetails": {
-              "environment": "app",
-              "name": "\#(EXPECTED_BASE_PATH)",
-              "version": "\#(MobileCore.extensionVersion)+\#(Edge.extensionVersion)"
-            }
-          }
-        }
-        """#
+        let expectedJSON = createExpectedPayload(
+            metaProperties:
+            """
+             "sdkConfig": {
+               "datastream": {
+                 "original": "originalDatastreamId"
+               }
+             }
+            """
+        )
 
         assertExactMatch(
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
-                CollectionEqualCount(scope: .subtree),
-                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
                 ValueTypeMatch(paths:
                    "events[0].xdm._id",
                    "events[0].xdm.timestamp",
                    "meta.konductorConfig.streaming.lineFeed",
-                   "meta.konductorConfig.streaming.recordSeparator"))
+                   "meta.konductorConfig.streaming.recordSeparator",
+                   "xdm.identityMap.ECID[0].authenticatedState",
+                   "xdm.identityMap.ECID[0].id",
+                   "xdm.identityMap.ECID[0].primary"),
+                CollectionEqualCount(scope: .subtree))
     }
 
     func testSendEvent_withXDMDataAndCustomData_withDatastreamConfigOverride_sendsExEdgeNetworkRequestWithOverridenDatastreamConfig() {
@@ -317,7 +244,61 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
 
         XCTAssertEqual("originalDatastreamId", requestUrl.queryParam("configId"))
 
-        let expectedJSON = #"""
+        let expectedJSON = createExpectedPayload(
+            metaProperties:
+            """
+              "configOverrides": {
+                "com_adobe_analytics": {
+                  "reportSuites": [
+                    "rsid1",
+                    "rsid2",
+                    "rsid3"
+                  ]
+                },
+                "com_adobe_experience_platform": {
+                  "datasets": {
+                    "event": {
+                      "datasetId": "eventDatasetIdOverride"
+                    },
+                    "profile": {
+                      "datasetId": "profileDatasetIdOverride"
+                    }
+                  }
+                },
+                "com_adobe_identity": {
+                  "idSyncContainerId": "1234567"
+                },
+                "com_adobe_target": {
+                  "propertyToken": "samplePropertyToken"
+                }
+              }
+            """
+        )
+
+        assertExactMatch(
+            expected: expectedJSON,
+            actual: resultNetworkRequests[0],
+            pathOptions:
+                ValueTypeMatch(paths:
+                   "events[0].xdm._id",
+                   "events[0].xdm.timestamp",
+                   "meta.konductorConfig.streaming.lineFeed",
+                   "meta.konductorConfig.streaming.recordSeparator",
+                   "xdm.identityMap.ECID[0].authenticatedState",
+                   "xdm.identityMap.ECID[0].id",
+                   "xdm.identityMap.ECID[0].primary"),
+                CollectionEqualCount(scope: .subtree))
+    }
+
+    /// Generates a JSON string representing a network request payload. It
+    /// allows the injection of custom content for the `meta` section of the payload.
+    ///
+    /// - Parameters:
+    ///   - metaPayload: A JSON string to be included in the `meta` section of the payload. Defaults
+    ///                  to an empty string, which means no additional content will be added to the `meta` section.
+    /// - Returns: A JSON string representing the complete network request payload.
+    private func createExpectedPayload(metaProperties: String = "") -> String {
+        return """
         {
           "events": [
             {
@@ -334,38 +315,14 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
             }
           ],
           "meta": {
-            "configOverrides": {
-              "com_adobe_analytics": {
-                "reportSuites": [
-                  "rsid1",
-                  "rsid2",
-                  "rsid3"
-                ]
-              },
-              "com_adobe_experience_platform": {
-                "datasets": {
-                  "event": {
-                    "datasetId": "eventDatasetIdOverride"
-                  },
-                  "profile": {
-                    "datasetId": "profileDatasetIdOverride"
-                  }
-                }
-              },
-              "com_adobe_identity": {
-                "idSyncContainerId": "1234567"
-              },
-              "com_adobe_target": {
-                "propertyToken": "samplePropertyToken"
-              }
-            },
             "konductorConfig": {
               "streaming": {
                 "enabled": true,
                 "lineFeed": "STRING_TYPE",
                 "recordSeparator": "STRING_TYPE"
               }
-            }
+            },
+            \(metaProperties)
           },
           "xdm": {
             "identityMap": {
@@ -373,29 +330,17 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
                 {
                   "authenticatedState": "STRING_TYPE",
                   "id": "STRING_TYPE",
-                  "primary": true
+                  "primary": false
                 }
               ]
             },
             "implementationDetails": {
               "environment": "app",
-              "name": "\#(EXPECTED_BASE_PATH)",
-              "version": "\#(MobileCore.extensionVersion)+\#(Edge.extensionVersion)"
+              "name": "\(self.EXPECTED_BASE_PATH)",
+              "version": "\(MobileCore.extensionVersion)+\(Edge.extensionVersion)"
             }
           }
         }
-        """#
-
-        assertExactMatch(
-            expected: expectedJSON,
-            actual: resultNetworkRequests[0],
-            pathOptions:
-                CollectionEqualCount(scope: .subtree),
-                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
-                ValueTypeMatch(paths:
-                   "events[0].xdm._id",
-                   "events[0].xdm.timestamp",
-                   "meta.konductorConfig.streaming.lineFeed",
-                   "meta.konductorConfig.streaming.recordSeparator"))
+        """
     }
 }
