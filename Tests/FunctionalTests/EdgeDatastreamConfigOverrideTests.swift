@@ -120,7 +120,7 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual("testDatastreamIdOverride", requestUrl.queryParam("configId"))
 
         let expectedJSON = createExpectedPayload(
-            metaProperties: 
+            metaProperties:
             """
               "configOverrides": {
                 "com_adobe_analytics": {
@@ -194,7 +194,7 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual("testDatastreamIdOverride", requestUrl.queryParam("configId"))
 
         let expectedJSON = createExpectedPayload(
-            metaProperties: 
+            metaProperties:
             """
              "sdkConfig": {
                "datastream": {
