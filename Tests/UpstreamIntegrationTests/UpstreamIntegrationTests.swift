@@ -304,14 +304,12 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         // See testSendEvent_receivesExpectedEventHandles for existence validation
         let stateStoreEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.STATE_STORE).last!
 
-        assertExactMatch(expected: expectedStateStoreJSON,
+        assertTypeMatch(expected: expectedStateStoreJSON,
                          actual: stateStoreEvent,
                          pathOptions:
-                            ValueTypeMatch(paths:
-                                            "payload[0].maxAge",
-                                            "payload[0].value",
-                                            "payload[1].maxAge",
-                                            "payload[1].value"),
+                            ValueExactMatch(paths:
+                                            "payload[0].key",
+                                            "payload[1].key"),
                          CollectionEqualCount(paths: "payload", scope: .subtree))
     }
 
