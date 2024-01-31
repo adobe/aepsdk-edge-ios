@@ -87,24 +87,28 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
-        let xdmJSON = #"""
+        let xdmJSON = """
         {
-            "testString": "xdm"
+          "testString": "xdm"
         }
-        """#
+        """
 
-        let dataJSON = #"""
-          {
-            "testDataString": "stringValue",
-            "testDataInt": 101,
-            "testDataBool": true,
-            "testDataDouble": 13.66,
-            "testDataArray": ["arrayElem1", 2, true],
-            "testDataDictionary": {
-              "key": "val"
-            }
-          }
-        """#
+        let dataJSON = """
+        {
+          "testDataArray": [
+            "arrayElem1",
+            2,
+            true
+          ],
+          "testDataBool": true,
+          "testDataDictionary": {
+            "key": "val"
+          },
+          "testDataDouble": 13.66,
+          "testDataInt": 101,
+          "testDataString": "stringValue"
+        }
+        """
 
         let xdm = xdmJSON.toAnyCodable()!.dictionaryValue!
         let data = dataJSON.toAnyCodable()!.dictionaryValue!
@@ -129,18 +133,22 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
-        let xdmJSON = #"""
-          {
-            "testString": "xdm",
-            "testInt": 10,
-            "testBool": false,
-            "testDouble": 12.89,
-            "testArray": ["arrayElem1", 2, true],
-            "testDictionary": {
-              "key": "val"
-            }
-          }
-        """#
+        let xdmJSON = """
+        {
+          "testArray": [
+            "arrayElem1",
+            2,
+            true
+          ],
+          "testBool": false,
+          "testDictionary": {
+            "key": "val"
+          },
+          "testDouble": 12.89,
+          "testInt": 10,
+          "testString": "xdm"
+        }
+        """
 
         let xdm = xdmJSON.toAnyCodable()!.dictionaryValue!
 
@@ -206,17 +214,17 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        let expectedLocationHintJSON = #"""
+        let expectedLocationHintJSON = """
         {
           "payload": [
             {
-              "ttlSeconds" : 123,
-              "scope" : "EdgeNetwork",
-              "hint" : "stringType"
+              "hint": "stringType",
+              "scope": "EdgeNetwork",
+              "ttlSeconds": 123
             }
           ]
         }
-        """#
+        """
 
         // See testSendEvent_receivesExpectedEventHandles for existence validation
         let locationHintResult = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
@@ -242,17 +250,17 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
             Edge.sendEvent(experienceEvent: experienceEvent)
 
             // Verify
-            let expectedLocationHintJSON = #"""
+            let expectedLocationHintJSON = """
             {
               "payload": [
                 {
-                  "ttlSeconds" : 123,
-                  "scope" : "EdgeNetwork",
-                  "hint" : "\#(locationHint)"
+                  "hint": "\(locationHint)",
+                  "scope": "EdgeNetwork",
+                  "ttlSeconds": 123
                 }
               ]
             }
-            """#
+            """
 
             let locationHintResult = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
 
@@ -276,30 +284,33 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        let expectedStateStoreJSON = #"""
+        let expectedStateStoreJSON = """
         {
           "payload": [
             {
-              "maxAge": 123,
               "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
+              "maxAge": 123,
               "value": "stringType"
             },
             {
-              "maxAge": 123,
               "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_identity",
+              "maxAge": 123,
               "value": "stringType"
             }
           ]
         }
-        """#
+        """
 
         // See testSendEvent_receivesExpectedEventHandles for existence validation
         let stateStoreEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.STATE_STORE).last!
 
-        // Exact match used here to strictly validate `payload` array element count == 2
-        assertExactMatch(expected: expectedStateStoreJSON,
-                        actual: stateStoreEvent,
-                        typeMatchPaths: ["payload[0].maxAge", "payload[0].value", "payload[1].maxAge", "payload[1].value"])
+        assertTypeMatch(expected: expectedStateStoreJSON,
+                         actual: stateStoreEvent,
+                         pathOptions:
+                            ValueExactMatch(paths:
+                                            "payload[0].key",
+                                            "payload[1].key"),
+                         CollectionEqualCount(paths: "payload", scope: .subtree))
     }
 
     /// Tests that a standard sendEvent with prior state receives the expected state store event handle.
@@ -326,17 +337,17 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
             Edge.sendEvent(experienceEvent: experienceEvent)
 
             // Verify
-            let expectedStateStoreJSON = #"""
+            let expectedStateStoreJSON = """
             {
               "payload": [
                 {
-                  "maxAge": 123,
                   "key": "kndctr_972C898555E9F7BC7F000101_AdobeOrg_cluster",
-                  "value": "\#(locationHint)"
+                  "maxAge": 123,
+                  "value": "\(locationHint)"
                 }
               ]
             }
-            """#
+            """
 
             // See testSendEvent_receivesExpectedEventHandles for existence validation
             let stateStoreEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.STATE_STORE).last!
@@ -466,17 +477,17 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         }
 
         // Verify location hint consistency between 1st and 2nd event handles
-        let expectedLocationHintJSON = #"""
+        let expectedLocationHintJSON = """
         {
           "payload": [
             {
-              "ttlSeconds" : 123,
-              "scope" : "EdgeNetwork",
-              "hint" : "\#(locationHintResult)"
+              "hint": "\(locationHintResult)",
+              "scope": "EdgeNetwork",
+              "ttlSeconds": 123
             }
           ]
         }
-        """#
+        """
 
         let locationHintResultEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
 
@@ -514,16 +525,16 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         // Event assertions
         let expectedErrorJSON = #"""
         {
-            "status": 400,
-            "detail": "stringType",
-            "report": {
-              "requestId": "stringType"
-            },
-            "requestEventId": "stringType",
-            "title": "Invalid datastream ID",
-            "type": "https://ns.adobe.com/aep/errors/EXEG-0003-400",
-            "requestId": "stringType"
-          }
+          "detail": "STRING_TYPE",
+          "report": {
+            "requestId": "STRING_TYPE"
+          },
+          "requestEventId": "STRING_TYPE",
+          "requestId": "STRING_TYPE",
+          "status": 400,
+          "title": "Invalid datastream ID",
+          "type": "https://ns.adobe.com/aep/errors/EXEG-0003-400"
+        }
         """#
 
         let errorEvents = getEdgeResponseErrors()
@@ -531,9 +542,12 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual(1, errorEvents.count)
 
         guard let errorEvent = errorEvents.first else { return }
-        assertTypeMatch(expected: expectedErrorJSON,
-                        actual: errorEvent,
-                        exactMatchPaths: ["status", "title", "type"])
+        assertTypeMatch(
+            expected: expectedErrorJSON,
+            actual: errorEvent,
+            pathOptions:
+                ValueExactMatch(paths: "status", "title", "type"),
+                CollectionEqualCount(scope: .subtree))
     }
 
     // Tests that an invalid location hint returns the expected error with 0 byte data body
