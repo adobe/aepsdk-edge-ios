@@ -172,7 +172,7 @@ class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
         assertExactMatch(
             expected: expectedJSON,
             actual: requests[0],
-            pathOptions: KeyMustBeAbsent(paths: "xdm.identityMap.ECID[0]", keyNames: "id"))
+            pathOptions: KeyMustBeAbsent(paths: "xdm.identityMap.ECID[0].id"))
     }
 
 }

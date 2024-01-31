@@ -177,7 +177,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         assertExactMatch(
             expected: expectedEventJSON,
             actual: requestPayload?.events?[0],
-            pathOptions: KeyMustBeAbsent(paths: nil, keyNames: "datasetId"))
+            pathOptions: KeyMustBeAbsent(paths: "datasetId"))
 
         XCTAssertNil(requestPayload?.meta?.state)
     }
@@ -203,7 +203,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         assertExactMatch(
             expected: expectedEventJSON,
             actual: requestPayload?.events?[0],
-            pathOptions: KeyMustBeAbsent(paths: nil, keyNames: "meta"))
+            pathOptions: KeyMustBeAbsent(paths: "meta"))
     }
 
     func testGetPayloadWithExperienceEvents_withNilOrEmptyDatasetId_responseDoesNotContainCollectMeta() {
@@ -243,17 +243,17 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         assertExactMatch(
             expected: expectedEventJSON,
             actual: requestPayload?.events?[0],
-            pathOptions: KeyMustBeAbsent(paths: nil, keyNames: "data", "datasetId", "meta"))
+            pathOptions: KeyMustBeAbsent(paths: "data", "datasetId", "meta"))
 
         assertExactMatch(
             expected: expectedEventJSON,
             actual: requestPayload?.events?[1],
-            pathOptions: KeyMustBeAbsent(paths: nil, keyNames: "datasetId", "meta"))
+            pathOptions: KeyMustBeAbsent(paths: "datasetId", "meta"))
 
         assertExactMatch(
             expected: expectedEventJSON,
             actual: requestPayload?.events?[2],
-            pathOptions: KeyMustBeAbsent(paths: nil, keyNames: "datasetId", "meta"))
+            pathOptions: KeyMustBeAbsent(paths: "datasetId", "meta"))
     }
 
     func testGetPayloadWithExperienceEvents_withQuery_responseContainsQuery() {
