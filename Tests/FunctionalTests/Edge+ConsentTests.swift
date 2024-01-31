@@ -67,7 +67,7 @@ class EdgeConsentTests: TestBase, AnyCodableAsserts {
 
         continueAfterFailure = false
         TestBase.debugEnabled = true
-        FileManager.default.removeAdobeCacheDirectory()
+        NamedCollectionDataStore.clear()
 
         // hub shared state update for 5 extensions (InstrumentedExtension (registered in TestBase), Configuration, Edge, Consent, Edge Identity)
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 5)
