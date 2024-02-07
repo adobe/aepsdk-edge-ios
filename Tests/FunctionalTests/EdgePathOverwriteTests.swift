@@ -19,7 +19,7 @@ import Foundation
 import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs
-class AEPEdgePathOverwriteTests: TestBase {
+class AEPEdgePathOverwriteTests: TestBase, AnyCodableAsserts {
     static let EDGE_MEDIA_PROD_PATH_STR = "/ee/va/v1/sessionstart"
     static let EDGE_MEDIA_PRE_PROD_PATH_STR = "/ee-pre-prd/va/v1/sessionstart"
     static let EDGE_MEDIA_INTEGRATION_PATH_STR = "/ee/va/v1/sessionstart"
@@ -41,7 +41,7 @@ class AEPEdgePathOverwriteTests: TestBase {
 
         continueAfterFailure = false
         TestBase.debugEnabled = true
-        FileManager.default.clearCache()
+        NamedCollectionDataStore.clear()
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM and Config shared state updates
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)
@@ -186,14 +186,11 @@ class AEPEdgePathOverwriteTests: TestBase {
         mockNetworkService.assertAllNetworkRequestExpectations()
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post)
 
-        let requestPayload = resultNetworkRequests[0].connectPayload
-
-        let payload = asFlattenDictionary(data: requestPayload)
-        for key in payload.keys {
-            if key.starts(with: "events") && key.contains("request.path") {
-                XCTFail("Request object should not be sent in the edge request payload")
-            }
-        }
+        let expectedJSON = "{}"
+        assertTypeMatch(
+            expected: expectedJSON,
+            actual: resultNetworkRequests[0],
+            pathOptions: KeyMustBeAbsent(paths: "events[0].request.path"))
     }
 
 }

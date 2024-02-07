@@ -766,9 +766,10 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         assertExactMatch(
             expected: expectedJSON,
             actual: networkRequest,
-            pathOptions: KeyMustBeAbsent(
-                paths: "xdm.implementationDetails",
-                keyNames: "name", "version", "environment"))
+            pathOptions: KeyMustBeAbsent(paths:
+                                            "xdm.implementationDetails.environment",
+                                            "xdm.implementationDetails.name",
+                                            "xdm.implementationDetails.version"))
     }
 
     // tests Implementation Details is not added to Consent events
@@ -816,9 +817,10 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         assertExactMatch(
             expected: expectedJSON,
             actual: networkRequest,
-            pathOptions: KeyMustBeAbsent(
-                paths: "xdm.implementationDetails",
-                keyNames: "name", "version", "environment"))
+            pathOptions: KeyMustBeAbsent(paths:
+                                            "xdm.implementationDetails.environment",
+                                            "xdm.implementationDetails.name",
+                                            "xdm.implementationDetails.version"))
     }
 
     func assertProcessHit(entity: DataEntity, urlString: String? = nil, sendsNetworkRequest: Bool, returns: Bool, file: StaticString = #file, line: UInt = #line) {

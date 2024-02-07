@@ -17,7 +17,7 @@ import AEPTestUtils
 import XCTest
 
 /// Functional test suite for tests which require no Identity shared state at startup to simulate a missing or pending state.
-class IdentityStateFunctionalTests: TestBase {
+class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
 
     private let exEdgeInteractUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
 
@@ -108,8 +108,22 @@ class IdentityStateFunctionalTests: TestBase {
 
         requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, requests.count)
-        let flattenRequestBody = requests[0].getFlattenedBody()
-        XCTAssertEqual("1234", flattenRequestBody["xdm.identityMap.ECID[0].id"] as? String)
+
+        let expectedJSON = """
+        {
+          "xdm": {
+            "identityMap": {
+              "ECID": [
+                {
+                  "id": "1234"
+                }
+              ]
+            }
+          }
+        }
+        """
+
+        assertExactMatch(expected: expectedJSON, actual: requests[0])
     }
 
     func testSendEvent_withNoECIDInIdentityState_requestSentWithoutECID() {
@@ -153,8 +167,12 @@ class IdentityStateFunctionalTests: TestBase {
         // Assert network request does not contain an ECID
         let requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, requests.count)
-        let flattenRequestBody = requests[0].getFlattenedBody()
-        XCTAssertNil(flattenRequestBody["xdm.identityMap.ECID[0].id"])
+
+        let expectedJSON = "{}"
+        assertExactMatch(
+            expected: expectedJSON,
+            actual: requests[0],
+            pathOptions: KeyMustBeAbsent(paths: "xdm.identityMap.ECID[0].id"))
     }
 
 }

@@ -40,7 +40,7 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
 
         continueAfterFailure = false
         TestBase.debugEnabled = true
-        FileManager.default.removeAdobeCacheDirectory()
+        NamedCollectionDataStore.clear()
 
         // wait for async registration because the EventHub is already started in TestBase
         let waitForRegistration = CountDownLatch(1)

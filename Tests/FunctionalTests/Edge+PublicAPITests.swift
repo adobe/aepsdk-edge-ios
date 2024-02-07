@@ -31,7 +31,7 @@ class EdgePublicAPITests: TestBase {
 
         continueAfterFailure = false
         TestBase.debugEnabled = true
-        FileManager.default.clearCache()
+        NamedCollectionDataStore.clear()
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)

@@ -53,7 +53,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
 
         continueAfterFailure = true
         TestBase.debugEnabled = true
-        FileManager.default.removeAdobeCacheDirectory()
+        NamedCollectionDataStore.clear()
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)
@@ -413,12 +413,9 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
-                CollectionEqualCount(paths: nil, scope: .subtree),
-                ValueTypeMatch(paths: "xdm.identityMap.ECID[0].id",
-                           "xdm.identityMap.ECID[0].authenticatedState",
-                           "xdm.identityMap.ECID[0].primary",
-                           "events[0].xdm._id",
-                           "events[0].xdm.timestamp"))
+                CollectionEqualCount(scope: .subtree),
+                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
+                ValueTypeMatch(paths: "events[0].xdm._id", "events[0].xdm.timestamp"))
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -480,12 +477,9 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
             pathOptions:
-                CollectionEqualCount(paths: nil, scope: .subtree),
-                ValueTypeMatch(paths: "xdm.identityMap.ECID[0].id",
-                           "xdm.identityMap.ECID[0].authenticatedState",
-                           "xdm.identityMap.ECID[0].primary",
-                           "events[0].xdm._id",
-                           "events[0].xdm.timestamp"))
+                CollectionEqualCount(scope: .subtree),
+                ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
+                ValueTypeMatch(paths: "events[0].xdm._id", "events[0].xdm.timestamp"))
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -693,7 +687,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             actual: resultNetworkRequests[0],
             pathOptions:
                 ValueExactMatch(paths: "meta.state.entries", scope: .subtree),
-                WildcardMatch(paths: "meta.state.entries", scope: .subtree),
+                AnyOrderMatch(paths: "meta.state.entries", scope: .subtree),
                 CollectionEqualCount(scope: .subtree))
 
         let requestUrl = resultNetworkRequests[0].url
@@ -770,7 +764,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             actual: resultNetworkRequests[0],
             pathOptions:
                 ValueExactMatch(paths: "meta.state.entries", scope: .subtree),
-                WildcardMatch(paths: "meta.state.entries", scope: .subtree),
+                AnyOrderMatch(paths: "meta.state.entries", scope: .subtree),
                 CollectionEqualCount(scope: .subtree))
 
         // Validate URL
