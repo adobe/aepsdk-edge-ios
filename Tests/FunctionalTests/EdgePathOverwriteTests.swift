@@ -190,7 +190,7 @@ class AEPEdgePathOverwriteTests: TestBase, AnyCodableAsserts {
         assertTypeMatch(
             expected: expectedJSON,
             actual: resultNetworkRequests[0],
-            pathOptions: KeyMustBeAbsent(paths: "events.request.path"))
+            pathOptions: KeyMustBeAbsent(paths: "events[0].request.path"))
     }
 
 }
