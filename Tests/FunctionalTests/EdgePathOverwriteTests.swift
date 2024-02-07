@@ -187,7 +187,10 @@ class AEPEdgePathOverwriteTests: TestBase, AnyCodableAsserts {
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let expectedJSON = "{}"
-        assertTypeMatch(expected: expectedJSON, actual: resultNetworkRequests[0], pathOptions: KeyMustBeAbsent(paths: "events.path"))
+        assertTypeMatch(
+            expected: expectedJSON,
+            actual: resultNetworkRequests[0],
+            pathOptions: KeyMustBeAbsent(paths: "events.request.path"))
     }
 
 }
