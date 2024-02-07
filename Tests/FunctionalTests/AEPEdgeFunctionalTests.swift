@@ -687,7 +687,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             actual: resultNetworkRequests[0],
             pathOptions:
                 ValueExactMatch(paths: "meta.state.entries", scope: .subtree),
-                WildcardMatch(paths: "meta.state.entries", scope: .subtree),
+                AnyOrderMatch(paths: "meta.state.entries", scope: .subtree),
                 CollectionEqualCount(scope: .subtree))
 
         let requestUrl = resultNetworkRequests[0].url
@@ -764,7 +764,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             actual: resultNetworkRequests[0],
             pathOptions:
                 ValueExactMatch(paths: "meta.state.entries", scope: .subtree),
-                WildcardMatch(paths: "meta.state.entries", scope: .subtree),
+                AnyOrderMatch(paths: "meta.state.entries", scope: .subtree),
                 CollectionEqualCount(scope: .subtree))
 
         // Validate URL
