@@ -15,7 +15,7 @@ end
 
 target 'UnitTests' do
   pod 'AEPCore'
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :branch => 'feature/latest'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :tag => 'v5.0.0-beta'
 end
 
 target 'UpstreamIntegrationTests' do
@@ -23,7 +23,7 @@ target 'UpstreamIntegrationTests' do
   pod 'AEPEdgeIdentity'
   pod 'AEPEdgeConsent'
   pod 'AEPEdge', :path => './AEPEdge.podspec'
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :branch => 'feature/latest'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :tag => 'v5.0.0-beta'
 end
 
 target 'FunctionalTests' do
@@ -31,7 +31,7 @@ target 'FunctionalTests' do
   pod 'AEPEdgeIdentity'
   pod 'AEPEdgeConsent'
   pod 'AEPEdge', :path => './AEPEdge.podspec'
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :branch => 'feature/latest'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :tag => 'v5.0.0-beta'
 end
 
 target 'TestAppiOS' do
