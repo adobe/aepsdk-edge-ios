@@ -150,7 +150,7 @@ lint-autocorrect:
 lint:
 	./Pods/SwiftLint/swiftlint lint Sources TestApps
 
-# make check-version VERSION=4.0.0
+# make check-version VERSION=5.0.0
 check-version:
 	sh ./Script/version.sh $(VERSION)
 
