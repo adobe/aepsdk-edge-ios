@@ -34,12 +34,12 @@ echo "
 platform :ios, '12.0'
 target '$PROJECT_NAME' do
   use_frameworks!
-  pod 'AEPCore', '~> 5'
-  pod 'AEPIdentity', '~> 5'
-  pod 'AEPLifecycle', '~> 5'
-  pod 'AEPServices', '~> 5'
-  pod 'AEPSignal', '~> 5'
-  pod 'AEPRulesEngine', '~> 5'
+  pod 'AEPCore', '~> 5.0'
+  pod 'AEPIdentity', '~> 5.0'
+  pod 'AEPLifecycle', '~> 5.0'
+  pod 'AEPServices', '~> 5.0'
+  pod 'AEPSignal', '~> 5.0'
+  pod 'AEPRulesEngine', '~> 5.0'
   pod 'AEPEdge', :path => '../AEPEdge.podspec'
 end
 " >>Podfile
@@ -94,11 +94,11 @@ echo "
 platform :tvos, '12.0'
 target '$PROJECT_NAME' do
   use_frameworks!
-  pod 'AEPCore', '~> 5'
-  pod 'AEPIdentity', '~> 5'
-  pod 'AEPLifecycle', '~> 5'
-  pod 'AEPServices', '~> 5'
-  pod 'AEPRulesEngine', '~> 5'
+  pod 'AEPCore', '~> 5.0'
+  pod 'AEPIdentity', '~> 5.0'
+  pod 'AEPLifecycle', '~> 5.0'
+  pod 'AEPServices', '~> 5.0'
+  pod 'AEPRulesEngine', '~> 5.0'
   pod 'AEPEdge', :path => '../AEPEdge.podspec'
 end
 " >>Podfile
