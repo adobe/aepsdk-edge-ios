@@ -14,7 +14,7 @@ The Edge Network mobile extension is an extension for the [Adobe Experience Plat
 To learn more about this extension, read the [Adobe Experience Platform Edge Network](https://developer.adobe.com/client-sdks/documentation/edge-network/) documentation.
 
 ## Requirements
-- Xcode 14.1 (or newer)
+- Xcode 15 (or newer)
 - Swift 5.1 (or newer)
 
 ## Installation
@@ -65,7 +65,7 @@ Alternatively, if your project has a `Package.swift` file, you can add AEPEdge d
 
 ```
 dependencies: [
-	.package(url: "https://github.com/adobe/aepsdk-edge-ios.git", .upToNextMajor(from: "4.0.0"))
+	.package(url: "https://github.com/adobe/aepsdk-edge-ios.git", .upToNextMajor(from: "5.0.0"))
 ],
 targets: [
    	.target(name: "YourTarget",
