@@ -119,7 +119,7 @@ jobs:
   test-ios:
     macos:
       xcode: 15.1.0 # Specify the Xcode version to use
-    resource_class: macos.m1.large.gen1 # Use large resource for iOS tests
+    resource_class: macos.m1.medium.gen1 # Use large resource for iOS tests
 
     steps:
       - install_rosetta_for_m1 # needed for CodeCov uploader
@@ -169,7 +169,7 @@ jobs:
   test-tvos:
     macos:
       xcode: 15.1.0 # Specify the Xcode version to use
-    resource_class: macos.m1.large.gen1 # Use large resource for tvOS tests
+    resource_class: macos.m1.medium.gen1 # Use large resource for tvOS tests
 
     steps:
       - install_rosetta_for_m1 # needed for CodeCov uploader
