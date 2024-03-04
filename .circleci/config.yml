@@ -83,14 +83,14 @@ commands:
     steps:
       - macos/preboot-simulator:
           platform: "iOS"
-          version: "17.2"
-          device: "iPhone 15"
+          version: "16.1"
+          device: "iPhone 14"
 
   prestart_tvos_simulator:
     steps:
       - macos/preboot-simulator:
           platform: "tvOS"
-          version: "17.2"
+          version: "16.1"
           device: "Apple TV"
 
   install_rosetta_for_m1:
@@ -105,7 +105,7 @@ commands:
 jobs:
   validate-code:
     macos:
-      xcode: 15.1.0 # Specify the Xcode version to use
+      xcode: 14.1.0 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -118,7 +118,7 @@ jobs:
 
   test-ios:
     macos:
-      xcode: 15.1.0 # Specify the Xcode version to use
+      xcode: 14.1.0 # Specify the Xcode version to use
     resource_class: macos.x86.medium.gen2
 
     steps:
@@ -151,7 +151,7 @@ jobs:
   
   test-ios-integration:
     macos:
-      xcode: 15.1.0 # Specify the Xcode version to use
+      xcode: 14.1.0 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -166,7 +166,7 @@ jobs:
 
   test-tvos:
     macos:
-      xcode: 15.1.0 # Specify the Xcode version to use
+      xcode: 14.1.0 # Specify the Xcode version to use
     resource_class: macos.x86.medium.gen2
 
     steps:
@@ -199,7 +199,7 @@ jobs:
       
   build_xcframework_and_app:  
     macos:
-      xcode: 15.1.0 # Specify the Xcode version to use
+      xcode: 14.1.0 # Specify the Xcode version to use
     
     steps:
       - checkout
