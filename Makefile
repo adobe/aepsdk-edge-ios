@@ -92,14 +92,14 @@ unit-test-ios:
 	@echo "### Unit Testing iOS"
 	@echo "######################################################################"
 	rm -rf build/reports/iosUnitResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath build/reports/iosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination "platform=iOS Simulator,name=iPhone 15" -derivedDataPath build/out -resultBundlePath build/reports/iosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 functional-test-ios:
 	@echo "######################################################################"
 	@echo "### Functional Testing iOS"
 	@echo "######################################################################"
 	rm -rf build/reports/iosFunctionalResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination "platform=iOS Simulator,name=iPhone 14" -derivedDataPath build/out -resultBundlePath build/reports/iosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination "platform=iOS Simulator,name=iPhone 15" -derivedDataPath build/out -resultBundlePath build/reports/iosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 unit-test-tvos:
 	@echo "######################################################################"
@@ -133,7 +133,7 @@ test-integration-upstream: pod-install; \
 	-quiet \
 	-workspace $(PROJECT_NAME).xcworkspace \
 	-scheme UpstreamIntegrationTests \
-	-destination 'platform=iOS Simulator,name=iPhone 14' \
+	-destination 'platform=iOS Simulator,name=iPhone 15' \
 	-derivedDataPath build/out \
 	-resultBundlePath build/reports/iosIntegrationUpstreamResults.xcresult \
 	-enableCodeCoverage YES \
@@ -150,7 +150,7 @@ lint-autocorrect:
 lint:
 	./Pods/SwiftLint/swiftlint lint Sources TestApps
 
-# make check-version VERSION=4.0.0
+# make check-version VERSION=5.0.0
 check-version:
 	sh ./Script/version.sh $(VERSION)
 

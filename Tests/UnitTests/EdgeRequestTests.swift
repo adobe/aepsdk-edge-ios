@@ -12,9 +12,10 @@
 
 @testable import AEPEdge
 import AEPServices
+import AEPTestUtils
 import XCTest
 
-class EdgeRequestTests: XCTestCase {
+class EdgeRequestTests: XCTestCase, AnyCodableAsserts {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -24,7 +25,7 @@ class EdgeRequestTests: XCTestCase {
     func testEncode_allProperties() {
         let konductorConfig = KonductorConfig(streaming: Streaming(recordSeparator: "A", lineFeed: "B"))
         let requestMetadata = RequestMetadata(konductorConfig: konductorConfig, sdkConfig: nil, configOverrides: nil, state: nil)
-        guard let identityMapData = """
+        let identityMapJSON = #"""
         {
           "identityMap" : {
             "email" : [
@@ -34,11 +35,7 @@ class EdgeRequestTests: XCTestCase {
             ]
           }
         }
-        """.data(using: .utf8) else {
-            XCTFail("Failed to convert json string to data")
-            return
-        }
-        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        """#
 
         let events: [[String: AnyCodable]] = [
             [
@@ -52,23 +49,57 @@ class EdgeRequestTests: XCTestCase {
                     ]
                 ]
             ]]
-        let edgeRequest = EdgeRequest(meta: requestMetadata, xdm: AnyCodable.from(dictionary: identityMap)!, events: events)
+
+        let edgeRequest = EdgeRequest(
+            meta: requestMetadata,
+            xdm: getAsDictionaryAnyCodable(identityMapJSON)!,
+            events: events)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
 
-        let data = try? encoder.encode(edgeRequest)
-        let actualResult = asFlattenDictionary(data: data)
-        let expectedResult: [String: Any] =
-            [ "events[0].data.key": "value",
-              "events[0].xdm.device.manufacturer": "Atari",
-              "events[0].xdm.device.type": "mobile",
-              "meta.konductorConfig.streaming.enabled": true,
-              "meta.konductorConfig.streaming.recordSeparator": "A",
-              "meta.konductorConfig.streaming.lineFeed": "B",
-              "xdm.identityMap.email[0].id": "example@adobe.com"]
-        assertEqual(expectedResult, actualResult)
+        guard let data = try? encoder.encode(edgeRequest), let edgeRequestString = String(data: data, encoding: .utf8) else {
+            XCTFail("Unable to encode/decode EdgeRequest: \(edgeRequest)")
+            return
+        }
+
+        let expectedJSON = #"""
+        {
+          "events": [
+            {
+              "data": {
+                "key": "value"
+              },
+              "xdm": {
+                "device": {
+                  "manufacturer": "Atari",
+                  "type": "mobile"
+                }
+              }
+            }
+          ],
+          "meta": {
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "lineFeed": "B",
+                "recordSeparator": "A"
+              }
+            }
+          },
+          "xdm": {
+            "identityMap": {
+              "email": [
+                {
+                  "id": "example@adobe.com"
+                }
+              ]
+            }
+          }
+        }
+        """#
+        assertEqual(expected: expectedJSON, actual: edgeRequestString)
     }
 
     func testEncode_onlyRequestMetadata() {
@@ -82,44 +113,67 @@ class EdgeRequestTests: XCTestCase {
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
 
-        let data = try? encoder.encode(edgeRequest)
-        let actualResult = asFlattenDictionary(data: data)
-        let expectedResult: [String: Any] =
-            ["meta.konductorConfig.streaming.enabled": true,
-             "meta.konductorConfig.streaming.recordSeparator": "A",
-             "meta.konductorConfig.streaming.lineFeed": "B"]
-        assertEqual(expectedResult, actualResult)
+        guard let data = try? encoder.encode(edgeRequest), let edgeRequestString = String(data: data, encoding: .utf8) else {
+            XCTFail("Unable to encode/decode EdgeRequest: \(edgeRequest)")
+            return
+        }
+
+        let expectedJSON = #"""
+        {
+          "meta": {
+            "konductorConfig": {
+              "streaming": {
+                "enabled": true,
+                "lineFeed": "B",
+                "recordSeparator": "A"
+              }
+            }
+          }
+        }
+        """#
+        assertEqual(expected: expectedJSON, actual: edgeRequestString)
     }
 
     func testEncode_onlyRequestContext() {
-        guard let identityMapData = """
+        let identityMapJSON = #"""
         {
-            "identityMap": {
-                "email" : [
-                  {
-                    "id" : "example@adobe.com"
-                  }
-                ]
-            }
+          "identityMap" : {
+            "email" : [
+              {
+                "id" : "example@adobe.com"
+              }
+            ]
+          }
         }
-        """.data(using: .utf8) else {
-            XCTFail("Failed to convert json string to data")
-            return
-        }
-        let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
+        """#
+
         let edgeRequest = EdgeRequest(meta: nil,
-                                      xdm: AnyCodable.from(dictionary: identityMap)!,
+                                      xdm: getAsDictionaryAnyCodable(identityMapJSON)!,
                                       events: nil)
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
 
-        let data = try? encoder.encode(edgeRequest)
+        guard let data = try? encoder.encode(edgeRequest), let edgeRequestString = String(data: data, encoding: .utf8) else {
+            XCTFail("Unable to encode/decode EdgeRequest: \(edgeRequest)")
+            return
+        }
 
-        let actualResult = asFlattenDictionary(data: data)
-        let expectedResult: [String: Any] = ["xdm.identityMap.email[0].id": "example@adobe.com"]
-        assertEqual(expectedResult, actualResult)
+        let expectedJSON = #"""
+        {
+          "xdm": {
+            "identityMap": {
+              "email": [
+                {
+                  "id": "example@adobe.com"
+                }
+              ]
+            }
+          }
+        }
+        """#
+        assertEqual(expected: expectedJSON, actual: edgeRequestString)
     }
 
     func testEncode_onlyEvents() {
@@ -153,16 +207,46 @@ class EdgeRequestTests: XCTestCase {
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
 
-        let data = try? encoder.encode(edgeRequest)
-        let actualResult = asFlattenDictionary(data: data)
-        let expectedResult: [String: Any] =
-            [ "events[0].data.key": "value",
-              "events[0].xdm.device.manufacturer": "Atari",
-              "events[0].xdm.device.type": "mobile",
-              "events[1].xdm.test.false": false,
-              "events[1].xdm.test.true": true,
-              "events[1].xdm.test.one": 1,
-              "events[1].xdm.test.zero": 0]
-        assertEqual(expectedResult, actualResult)
+        guard let data = try? encoder.encode(edgeRequest), let edgeRequestString = String(data: data, encoding: .utf8) else {
+            XCTFail("Unable to encode/decode EdgeRequest: \(edgeRequest)")
+            return
+        }
+
+        let expectedJSON = #"""
+        {
+          "events": [
+            {
+              "data": {
+                "key": "value"
+              },
+              "xdm": {
+                "device": {
+                  "manufacturer": "Atari",
+                  "type": "mobile"
+                }
+              }
+            },
+            {
+              "xdm": {
+                "test": {
+                  "false": false,
+                  "one": 1,
+                  "true": true,
+                  "zero": 0
+                }
+              }
+            }
+          ]
+        }
+        """#
+        assertEqual(expected: expectedJSON, actual: edgeRequestString)
+    }
+
+    private func getAsDictionaryAnyCodable(_ jsonString: String, file: StaticString = #file, line: UInt = #line) -> [String: AnyCodable]? {
+        guard let anyCodable = jsonString.toAnyCodable() else {
+            XCTFail("Unable to get valid AnyCodable from provided JSON string: \(jsonString)", file: file, line: line)
+            return nil
+        }
+        return AnyCodable.from(dictionary: anyCodable.dictionaryValue)
     }
 }

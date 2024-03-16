@@ -44,6 +44,8 @@ on:
           - 'sgp3'
           - 'aus3'
 
+run-name: ${{ inputs.id }}
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   test-integration-upstream:
@@ -54,6 +56,7 @@ jobs:
     steps:
 
     - name: Job run identifier ${{ github.event.inputs.id }}
+      id: job-run-identifier
       run: |
         if [ -z "${{ github.event.inputs.id }}" ]; then \
           echo No job run identifier was set.
@@ -62,11 +65,13 @@ jobs:
         fi;
 
     - name: Checkout
+      id: checkout
       uses: actions/checkout@v3
       with:
         ref: ${{ github.event.inputs.branch }}
 
     - name: Cache Cocoapods
+      id: cache-cocoapods
       uses: actions/cache@v3
       with:
         path: Pods
@@ -76,10 +81,47 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Execute Edge Network integration tests
+      id: execute-integration-tests
       run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
-    
+
     # Potential workflow solutions on job failure
+    # All workflow setup step failures give exit code 2, with 3 as fallback
+    # Actual integration test failures give exit code 1
     - name: On failure
+      id: on-failure
+      if: ${{ failure() }}
+      env:
+        BRANCH: ${{ github.event.inputs.branch }}
+      run: |
+        echo "Job used branch: $BRANCH. Please make sure this is the branch to run off of."
+        
+        EXIT_CODE=3
+
+        if [[ "${{ steps.job-run-identifier.conclusion }}" == "failure" ]]; then
+          echo "Job step failed: Job run identifier."
+          EXIT_CODE=2
+        elif [[ "${{ steps.checkout.conclusion }}" == "failure" ]]; then
+          echo "Job step failed: Checkout."
+          EXIT_CODE=2
+        elif [[ "${{ steps.cache-cocoapods.conclusion }}" == "failure" ]]; then
+          echo "Job step failed: Cache Cocoapods."
+          EXIT_CODE=2
+        elif [[ "${{ steps.execute-integration-tests.conclusion }}" == "failure" ]]; then
+          echo "Job step failed: Execute Edge Network integration tests."
+          EXIT_CODE=1
+        else
+          echo "Job failed: Failure cause not identified."
+        fi
+
+        echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_OUTPUT
+
+    #
+    - name: "{\"exitCode\":${{ steps.on-failure.outputs.EXIT_CODE || 0 }}}"
+      id: failure-data
       if: ${{ failure() }}
       run: |
-        echo 'Job used branch: ' ${{ github.event.inputs.branch }}. Please make sure this is the branch to run off of.
+        echo 'exit code in the body: ${{ steps.on-failure.outputs.EXIT_CODE }}'
+        echo 'on-failure outputs: ${{ toJson(steps.on-failure.outputs) }}'
+        
+    
+

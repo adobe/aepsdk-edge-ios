@@ -11,6 +11,7 @@
 //
 
 import AEPCore
+import AEPTestUtils
 import XCTest
 
 /// Extension used to 'fake' an Identity extension and allows tests to clear and set the Identity shared state. Use it along with `TestBase`

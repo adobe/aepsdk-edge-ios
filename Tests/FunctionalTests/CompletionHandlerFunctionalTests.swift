@@ -14,11 +14,12 @@
 @testable import AEPEdge
 import AEPEdgeIdentity
 import AEPServices
+import AEPTestUtils
 import Foundation
 import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs with completion handlers
-class CompletionHandlerFunctionalTests: TestBase {
+class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let responseBody = "{\"test\": \"json\"}"
@@ -39,7 +40,7 @@ class CompletionHandlerFunctionalTests: TestBase {
 
         continueAfterFailure = false
         TestBase.debugEnabled = true
-        FileManager.default.clearCache()
+        NamedCollectionDataStore.clear()
 
         // wait for async registration because the EventHub is already started in TestBase
         let waitForRegistration = CountDownLatch(1)
@@ -88,13 +89,25 @@ class CompletionHandlerFunctionalTests: TestBase {
         XCTAssertEqual(1, receivedHandles.count)
 
         XCTAssertEqual("personalization:decisions", receivedHandles[0].type)
-        XCTAssertEqual(1, receivedHandles[0].payload?.count)
-        let data = flattenDictionary(dict: receivedHandles[0].payload?[0] ?? [:])
-        XCTAssertEqual(4, data.count)
-        XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", data["id"] as? String)
-        XCTAssertEqual("#D41DBA", data["items[0].data.content.value"] as? String)
-        XCTAssertEqual("https://ns.adobe.com/personalization/json-content-item", data["items[0].schema"] as? String)
-        XCTAssertEqual("buttonColor", data["scope"] as? String)
+
+        let expectedJSON = #"""
+        {
+          "id": "AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9",
+          "items": [
+            {
+              "data": {
+                "content": {
+                  "value": "#D41DBA"
+                }
+              },
+              "schema": "https://ns.adobe.com/personalization/json-content-item"
+            }
+          ],
+          "scope": "buttonColor"
+        }
+        """#
+
+        assertEqual(expected: expectedJSON, actual: receivedHandles[0].payload?[0])
     }
 
     func testSendEventx2_withCompletionHandler_whenResponseHandle_callsCompletionCorrectly() {

@@ -14,11 +14,12 @@
 import AEPEdge
 import AEPEdgeIdentity
 import AEPServices
+import AEPTestUtils
 import Foundation
 import XCTest
 
 /// Performs validation on integration with the Edge Network upstream service
-class ConfigOverrideTests: TestBase {
+class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
     private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
     private var networkService: RealNetworkService = RealNetworkService()
@@ -117,8 +118,8 @@ class ConfigOverrideTests: TestBase {
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
-        assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
+        assertExactMatch(expected: expectedErrorJSON,
+                        actual: matchingResponses?.first?.responseString)
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -164,8 +165,8 @@ class ConfigOverrideTests: TestBase {
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
-        assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
+        assertExactMatch(expected: expectedErrorJSON,
+                        actual: matchingResponses?.first?.responseString)
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -211,8 +212,8 @@ class ConfigOverrideTests: TestBase {
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
-        assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
+        assertExactMatch(expected: expectedErrorJSON,
+                        actual: matchingResponses?.first?.responseString)
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -259,8 +260,8 @@ class ConfigOverrideTests: TestBase {
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
-        assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
+        assertExactMatch(expected: expectedErrorJSON,
+                        actual: matchingResponses?.first?.responseString)
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
@@ -312,8 +313,8 @@ class ConfigOverrideTests: TestBase {
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
-        assertExactMatch(expected: getAnyCodable(expectedErrorJSON)!,
-                        actual: getAnyCodable(matchingResponses?.first?.responseString ?? ""))
+        assertExactMatch(expected: expectedErrorJSON,
+                        actual: matchingResponses?.first?.responseString)
 
         // Event assertions
         let errorEvents = getEdgeResponseErrors()
