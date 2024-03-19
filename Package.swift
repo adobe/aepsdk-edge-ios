@@ -25,7 +25,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "AEPEdge",
-                dependencies: ["AEPCore"],
+                dependencies: ["AEPCore", "AEPEdgeIdentity"],
                 path: "Sources")
     ]
 )
