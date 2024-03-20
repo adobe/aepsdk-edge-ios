@@ -25,7 +25,7 @@ DEPENDENCIES:
   - AEPCore
   - AEPEdge (from `./AEPEdge.podspec`)
   - AEPEdgeConsent (from `https://github.com/adobe/aepsdk-edgeconsent-ios.git`, branch `staging`)
-  - AEPEdgeIdentity (from `https://github.com/adobe/aepsdk-edgeidentity-ios.git`, branch `staging`)
+  - AEPEdgeIdentity
   - AEPTestUtils (from `https://github.com/adobe/aepsdk-testutils-ios.git`, tag `5.0.0`)
   - SwiftLint (= 0.52.0)
 
@@ -33,6 +33,7 @@ SPEC REPOS:
   trunk:
     - AEPAssurance
     - AEPCore
+    - AEPEdgeIdentity
     - AEPRulesEngine
     - AEPServices
     - SwiftLint
@@ -43,9 +44,6 @@ EXTERNAL SOURCES:
   AEPEdgeConsent:
     :branch: staging
     :git: https://github.com/adobe/aepsdk-edgeconsent-ios.git
-  AEPEdgeIdentity:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-edgeidentity-ios.git
   AEPTestUtils:
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
     :tag: 5.0.0
@@ -54,9 +52,6 @@ CHECKOUT OPTIONS:
   AEPEdgeConsent:
     :commit: e5897846c716e8cbdfa43c8ea68d95223c7bd0fe
     :git: https://github.com/adobe/aepsdk-edgeconsent-ios.git
-  AEPEdgeIdentity:
-    :commit: d2ca4379681ddea2a9251bd85e1bd1db565565b5
-    :git: https://github.com/adobe/aepsdk-edgeidentity-ios.git
   AEPTestUtils:
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
     :tag: 5.0.0
@@ -72,6 +67,6 @@ SPEC CHECKSUMS:
   AEPTestUtils: 20495b368da57904ca2e9f241d1d8b114f9887b5
   SwiftLint: 13280e21cdda6786ad908dc6e416afe5acd1fcb7
 
-PODFILE CHECKSUM: e4a140c6113dca56ff87a5431f3204916f2615d0
+PODFILE CHECKSUM: d99001e08e7f2aa2fdc0a37b8004964ae6f37042
 
 COCOAPODS: 1.14.3
