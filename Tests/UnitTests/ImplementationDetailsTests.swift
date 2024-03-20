@@ -11,9 +11,11 @@
 //
 
 @testable import AEPEdge
+import AEPServices
+import AEPTestUtils
 import XCTest
 
-class ImplementationDetailsTests: XCTestCase {
+class ImplementationDetailsTests: XCTestCase, AnyCodableAsserts {
     private let WRAPPER_REACT_NATIVE = "reactnative"
     private let WRAPPER_CORDOVA = "cordova"
     private let WRAPPER_FLUTTER = "flutter"
@@ -156,13 +158,13 @@ class ImplementationDetailsTests: XCTestCase {
             return
         }
 
-        let actualResult = flattenDictionary(dict: details)
-
-        let expectedResult: [String: Any] = [
-            "name": "\(outputNamespace)",
-            "environment": "app",
-            "version": "\(outputVersion)"
-        ]
-        assertEqual(expectedResult, actualResult, file: (file), line: line)
+        let expectedJSON = #"""
+        {
+          "name": "\#(outputNamespace)",
+          "environment": "app",
+          "version": "\#(outputVersion)"
+        }
+        """#
+        assertEqual(expected: expectedJSON, actual: details, file: file, line: line)
     }
 }

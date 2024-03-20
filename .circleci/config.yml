@@ -4,7 +4,7 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@3.2.5
+  # codecov: codecov/codecov@3.2.5
   macos: circleci/macos@2
   
 # Workflows orchestrate a set of jobs to be run
@@ -83,29 +83,20 @@ commands:
     steps:
       - macos/preboot-simulator:
           platform: "iOS"
-          version: "16.1"
-          device: "iPhone 14"
+          version: "17.2"
+          device: "iPhone 15"
 
   prestart_tvos_simulator:
     steps:
       - macos/preboot-simulator:
           platform: "tvOS"
-          version: "16.1"
+          version: "17.2"
           device: "Apple TV"
-
-  install_rosetta_for_m1:
-    steps:
-      - run:
-          name: Install Rosetta for M1
-          command: |
-            if [ "${CIRCLE_JOB}" == "test-ios" ] || [ "${CIRCLE_JOB}" == "test-tvos" ]; then
-              softwareupdate --install-rosetta --agree-to-license
-            fi
 
 jobs:
   validate-code:
     macos:
-      xcode: 14.1.0 # Specify the Xcode version to use
+      xcode: 15.1.0 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -118,12 +109,10 @@ jobs:
 
   test-ios:
     macos:
-      xcode: 14.1.0 # Specify the Xcode version to use
-    resource_class: macos.m1.large.gen1 # Use large resource for iOS tests
+      xcode: 15.1.0 # Specify the Xcode version to use
+    resource_class: macos.x86.medium.gen2
 
     steps:
-      - install_rosetta_for_m1 # needed for CodeCov uploader
-
       - checkout
 
       - install_dependencies
@@ -136,24 +125,24 @@ jobs:
 
       # Code coverage upload using Codecov
       # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
-      - codecov/upload:
-          flags: ios-unit-tests
-          upload_name: Coverage report for iOS unit tests
-          xtra_args: -c -v --xc --xp build/reports/iosUnitResults.xcresult
+      # - codecov/upload:
+      #     flags: ios-unit-tests
+      #     upload_name: Coverage report for iOS unit tests
+      #     xtra_args: -c -v --xc --xp build/reports/iosUnitResults.xcresult
 
       - run:
           name: Run iOS Functional Tests
           command: make functional-test-ios
           when: always # run even if unit tests fail
 
-      - codecov/upload:
-          flags: ios-functional-tests
-          upload_name: Coverage report for iOS functional tests
-          xtra_args: -c -v --xc --xp build/reports/iosFunctionalResults.xcresult
+      # - codecov/upload:
+      #     flags: ios-functional-tests
+      #     upload_name: Coverage report for iOS functional tests
+      #     xtra_args: -c -v --xc --xp build/reports/iosFunctionalResults.xcresult
   
   test-ios-integration:
     macos:
-      xcode: 14.1.0 # Specify the Xcode version to use
+      xcode: 15.1.0 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -168,12 +157,10 @@ jobs:
 
   test-tvos:
     macos:
-      xcode: 14.1.0 # Specify the Xcode version to use
-    resource_class: macos.m1.large.gen1 # Use large resource for tvOS tests
+      xcode: 15.1.0 # Specify the Xcode version to use
+    resource_class: macos.x86.medium.gen2
 
     steps:
-      - install_rosetta_for_m1 # needed for CodeCov uploader
-
       - checkout
 
       - install_dependencies
@@ -186,24 +173,24 @@ jobs:
 
       # Code coverage upload using Codecov
       # See options explanation here: https://docs.codecov.com/docs/codecov-uploader
-      - codecov/upload:
-          flags: tvos-unit-tests
-          upload_name: Coverage report for tvOS unit tests
-          xtra_args: -c -v --xc --xp build/reports/tvosUnitResults.xcresult
+      # - codecov/upload:
+      #     flags: tvos-unit-tests
+      #     upload_name: Coverage report for tvOS unit tests
+      #     xtra_args: -c -v --xc --xp build/reports/tvosUnitResults.xcresult
 
       - run:
           name: Run tvOS Functional Tests
           command: make functional-test-tvos
           when: always # run even if unit tests fail
 
-      - codecov/upload:
-          flags: tvos-functional-tests
-          upload_name: Coverage report for tvOS functional tests
-          xtra_args: -c -v --xc --xp build/reports/tvosFunctionalResults.xcresult
+      # - codecov/upload:
+      #     flags: tvos-functional-tests
+      #     upload_name: Coverage report for tvOS functional tests
+      #     xtra_args: -c -v --xc --xp build/reports/tvosFunctionalResults.xcresult
       
   build_xcframework_and_app:  
     macos:
-      xcode: 14.1.0 # Specify the Xcode version to use
+      xcode: 15.1.0 # Specify the Xcode version to use
     
     steps:
       - checkout

@@ -14,11 +14,12 @@ import AEPCore
 import AEPEdge
 import AEPEdgeIdentity
 import AEPServices
+import AEPTestUtils
 import Foundation
 import XCTest
 
 /// This Test class is an example of usages of the TestBase APIs
-class SampleFunctionalTests: TestBase {
+class SampleFunctionalTests: TestBase, AnyCodableAsserts {
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let exEdgeInteractUrlString = "https://edge.adobedc.net/ee/v1/interact"
@@ -95,11 +96,14 @@ class SampleFunctionalTests: TestBase {
         let dispatchedEvents = getDispatchedEventsWith(type: "eventType", source: "eventSource")
 
         XCTAssertEqual(2, dispatchedEvents.count)
-        guard let event2data = dispatchedEvents[1].data else {
-            XCTFail("Invalid event data for event 2")
-            return
+
+        let expected = """
+        {
+          "test": "STRING_TYPE"
         }
-        XCTAssertEqual(1, flattenDictionary(dict: event2data).count)
+        """
+
+        assertTypeMatch(expected: expected, actual: dispatchedEvents[1], pathOptions: CollectionEqualCount(scope: .subtree))
     }
 
     func testSample_AssertNetworkRequestsCount() {
@@ -138,8 +142,20 @@ class SampleFunctionalTests: TestBase {
         let requests = mockNetworkService.getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
 
         XCTAssertEqual(1, requests.count)
-        let flattenRequestBody = requests[0].getFlattenedBody()
-        XCTAssertEqual("testType", flattenRequestBody["events[0].xdm.eventType"] as? String)
+
+        let expected = """
+        {
+          "events": [
+            {
+              "xdm": {
+                "eventType": "testType"
+              }
+            }
+          ]
+        }
+        """
+
+        assertExactMatch(expected: expected, actual: requests[0])
 
         assertExpectedEvents(ignoreUnexpectedEvents: true)
     }

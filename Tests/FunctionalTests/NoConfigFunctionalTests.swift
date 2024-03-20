@@ -14,10 +14,11 @@ import AEPCore
 @testable import AEPEdge
 import AEPEdgeIdentity
 import AEPServices
+import AEPTestUtils
 import XCTest
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
-class NoConfigFunctionalTests: TestBase {
+class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
     private let mockNetworkService: MockNetworkService = MockNetworkService()
 
     override func setUp() {
@@ -109,21 +110,41 @@ class NoConfigFunctionalTests: TestBase {
         XCTAssertEqual(2, receivedHandles.count)
         XCTAssertEqual("personalization:decisions", receivedHandles[0].type)
         XCTAssertEqual(1, receivedHandles[0].payload?.count)
-        let handle1 = flattenDictionary(dict: receivedHandles[0].payload?[0] ?? [:])
-        XCTAssertEqual(4, handle1.count)
-        XCTAssertEqual("AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9", handle1["id"] as? String)
-        XCTAssertEqual("buttonColor", handle1["scope"] as? String)
-        XCTAssertEqual("#D41DBA", handle1["items[0].data.content.value"] as? String)
-        XCTAssertEqual("https://ns.adobe.com/personalization/json-content-item", handle1["items[0].schema"] as? String)
+
+        let expected_handle1 = """
+        {
+          "id": "AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9",
+          "items": [
+            {
+              "data": {
+                "content": {
+                  "value": "#D41DBA"
+                }
+              },
+              "schema": "https://ns.adobe.com/personalization/json-content-item"
+            }
+          ],
+          "scope": "buttonColor"
+        }
+        """
+
+        assertEqual(expected: expected_handle1, actual: receivedHandles[0].payload?[0])
 
         XCTAssertEqual("identity:exchange", receivedHandles[1].type)
         XCTAssertEqual(1, receivedHandles[1].payload?.count)
-        let handle2 = flattenDictionary(dict: receivedHandles[1].payload?[0] ?? [:])
-        XCTAssertEqual(5, handle2.count)
-        XCTAssertEqual(411, handle2["id"] as? Int)
-        XCTAssertEqual("url", handle2["type"] as? String)
-        XCTAssertEqual("//example.url?d_uuid=9876", handle2["spec.url"] as? String)
-        XCTAssertEqual(false, handle2["spec.hideReferrer"] as? Bool)
-        XCTAssertEqual(10080, handle2["spec.ttlMinutes"] as? Int)
+
+        let expected_handle2 = """
+        {
+          "id": 411,
+          "type": "url",
+          "spec": {
+            "url": "//example.url?d_uuid=9876",
+            "hideReferrer": false,
+            "ttlMinutes": 10080
+          }
+        }
+        """
+
+        assertEqual(expected: expected_handle2, actual: receivedHandles[1].payload?[0])
     }
 }

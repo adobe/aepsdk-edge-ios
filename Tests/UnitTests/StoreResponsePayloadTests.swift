@@ -11,9 +11,10 @@
 //
 
 @testable import AEPEdge
+import AEPTestUtils
 import XCTest
 
-class StoreResponsePayloadTests: XCTestCase {
+class StoreResponsePayloadTests: XCTestCase, AnyCodableAsserts {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -29,14 +30,22 @@ class StoreResponsePayloadTests: XCTestCase {
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
 
-        let data = try? encoder.encode(payload)
-        let actualResult = asFlattenDictionary(data: data)
-        let expectedResult: [String: Any] =
-            [ "expiryDate": "\(ISO8601DateFormatter().string(from: payload.expiryDate))",
-              "payload.key": "key",
-              "payload.maxAge": 3600,
-              "payload.value": "value"]
-        assertEqual(expectedResult, actualResult)
+        guard let data = try? encoder.encode(payload), let storeString = String(data: data, encoding: .utf8) else {
+            XCTFail("Unable to encode/decode StoreResponsePayload: \(payload)")
+            return
+        }
+
+        let expectedJSON = #"""
+        {
+          "expiryDate": "\#(ISO8601DateFormatter().string(from: payload.expiryDate))",
+          "payload": {
+            "key": "key",
+            "maxAge": 3600,
+            "value": "value"
+          }
+        }
+        """#
+        assertEqual(expected: expectedJSON, actual: storeString)
     }
 
     // MARK: decoder tests

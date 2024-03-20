@@ -12,6 +12,7 @@
 
 import AEPCore
 import AEPEdge
+import AEPTestUtils
 import Foundation
 
 extension TestBase {
