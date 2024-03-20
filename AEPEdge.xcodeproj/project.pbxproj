@@ -828,7 +828,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1160;
+				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					D444995E2519506B0093B364 = {
 						CreatedOnToolsVersion = 12.0;
@@ -1528,7 +1528,7 @@
 			baseConfigurationReference = FF1FB9C01D5DF5AEB460E9C2 /* Pods-AEPEdge.debug.xcconfig */;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -1565,7 +1565,7 @@
 			baseConfigurationReference = 7D2276E22F20223193235527 /* Pods-AEPEdge.release.xcconfig */;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
