@@ -15,7 +15,7 @@ end
 
 def edge_pods
     pod 'AEPEdgeIdentity'
-    pod 'AEPEdgeConsent', :git => 'https://github.com/adobe/aepsdk-edgeconsent-ios.git', :branch => 'staging'
+    pod 'AEPEdgeConsent'
     pod 'AEPEdge', :path => './AEPEdge.podspec'
 end
 
