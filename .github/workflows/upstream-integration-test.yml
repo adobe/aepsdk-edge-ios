@@ -1,8 +1,6 @@
 # Action to execute upstream integration tests - Edge Network (Konductor)
 name: Integration Tests
 
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
   # `*` is a special character in YAML so you have to quote this string
   # Avoiding start of hour and other common times to avoid conflicts with peak times
@@ -46,15 +44,10 @@ on:
 
 run-name: ${{ inputs.id }}
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   test-integration-upstream:
-    # The type of runner that the job will run on
-    runs-on: macos-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    runs-on: macos-13
     steps:
-
     - name: Job run identifier ${{ github.event.inputs.id }}
       id: job-run-identifier
       run: |
@@ -70,6 +63,10 @@ jobs:
       with:
         ref: ${{ github.event.inputs.branch }}
 
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.0.1'
+
     - name: Cache Cocoapods
       id: cache-cocoapods
       uses: actions/cache@v3
@@ -79,7 +76,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pods-
 
-    # Runs a single command using the runners shell
     - name: Execute Edge Network integration tests
       id: execute-integration-tests
       run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
@@ -115,7 +111,6 @@ jobs:
 
         echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_OUTPUT
 
-    #
     - name: "{\"exitCode\":${{ steps.on-failure.outputs.EXIT_CODE || 0 }}}"
       id: failure-data
       if: ${{ failure() }}
