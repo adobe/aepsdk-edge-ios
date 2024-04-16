@@ -129,7 +129,7 @@ public class Edge: NSObject, Extension {
                 $0.key == EdgeConstants.SharedState.Configuration.EDGE_DOMAIN
         } as [String: Any]
 
-        if edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID] == nil || (edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID] as? String ?? "").isEmpty {
+        if (edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID] as? String ?? "").isEmpty {
             Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', Configuration is missing edge.configId.")
             return // drop current event
         }
