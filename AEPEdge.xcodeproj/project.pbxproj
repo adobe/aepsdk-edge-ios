@@ -75,6 +75,7 @@
 		BF947F9E244182B30057A6CC /* StoreResponsePayloadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */; };
 		BF947FA0244569190057A6CC /* EdgeRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F9F244569190057A6CC /* EdgeRequestTests.swift */; };
 		BF947FA4244613FB0057A6CC /* RequestMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */; };
+		BFDF25AB2BD02E58002114B6 /* EdgeQueuedEntityFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDF25AA2BD02E58002114B6 /* EdgeQueuedEntityFunctionalTests.swift */; };
 		BFEEB5AB28D4E35D00B668B8 /* EdgePublicAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2E8125EE1987000AC350 /* EdgePublicAPITests.swift */; };
 		D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */; };
 		D4145F4025D1D3200019EA4C /* EdgeHitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */; };
@@ -279,6 +280,7 @@
 		BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreResponsePayloadManagerTests.swift; sourceTree = "<group>"; };
 		BF947F9F244569190057A6CC /* EdgeRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeRequestTests.swift; sourceTree = "<group>"; };
 		BF947FA3244613FB0057A6CC /* RequestMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestMetadataTests.swift; sourceTree = "<group>"; };
+		BFDF25AA2BD02E58002114B6 /* EdgeQueuedEntityFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeQueuedEntityFunctionalTests.swift; sourceTree = "<group>"; };
 		C6F54D018682F0FF8E74A16F /* Pods-UnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.debug.xcconfig"; path = "Target Support Files/Pods-UnitTests/Pods-UnitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C71524CA05BF6E5102E01187 /* Pods-E2EFunctionalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-E2EFunctionalTests.debug.xcconfig"; path = "Target Support Files/Pods-E2EFunctionalTests/Pods-E2EFunctionalTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C9510E11CC3DB2C62D9D17C0 /* Pods-UpstreamIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UpstreamIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-UpstreamIntegrationTests/Pods-UpstreamIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -617,6 +619,7 @@
 				4CBEE6222A1577E40084BC50 /* NoConfigFunctionalTests.swift */,
 				4CBEE6242A157CB40084BC50 /* SampleFunctionalTests.swift */,
 				D4D5B53724325AB700CAB6E4 /* Info.plist */,
+				BFDF25AA2BD02E58002114B6 /* EdgeQueuedEntityFunctionalTests.swift */,
 			);
 			name = FunctionalTests;
 			path = Tests/FunctionalTests;
@@ -1351,6 +1354,7 @@
 				4CBEE61B2A1572E50084BC50 /* Edge+PublicAPITests.swift in Sources */,
 				4CBEE6192A1571DC0084BC50 /* Edge+ConsentTests.swift in Sources */,
 				D48CBD2224A17EEA00A24BD8 /* TestXDMSchema.swift in Sources */,
+				BFDF25AB2BD02E58002114B6 /* EdgeQueuedEntityFunctionalTests.swift in Sources */,
 				4CBEE6252A157CB40084BC50 /* SampleFunctionalTests.swift in Sources */,
 				2ECFB7522AB391F400653128 /* EdgeDatastreamConfigOverrideTests.swift in Sources */,
 				4CBEE61D2A1574CE0084BC50 /* EdgePathOverwriteTests.swift in Sources */,
