@@ -113,7 +113,7 @@ class EdgeHitProcessor: HitProcessing {
         guard var datastreamId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !datastreamId.isEmpty else {
             Log.warning(label: EdgeConstants.LOG_TAG,
                         "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)' " +
-                            "due to invalid edge.configId in configuration.")
+                            "due to missing or empty edge.configId in configuration.")
             completion(true)
             return // drop the current event
         }
@@ -180,7 +180,7 @@ class EdgeHitProcessor: HitProcessing {
         guard let datastreamId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !datastreamId.isEmpty else {
             Log.warning(label: EdgeConstants.LOG_TAG,
                         "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)' " +
-                            "due to invalid edge.configId in configuration.")
+                            "due to missing or empty edge.configId in configuration.")
             completion(true)
             return // drop current event
         }
