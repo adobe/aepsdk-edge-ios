@@ -96,27 +96,21 @@ public class Edge: NSObject, Extension {
     /// - Parameter event: an event containing ExperienceEvent data for processing
     func handleExperienceEventRequest(_ event: Event) {
         guard !shouldIgnore(event: event) else { return }
-
-        guard let data = event.data, !data.isEmpty else {
-            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Event with id \(event.id.uuidString) contained no data, ignoring.")
-            return
-        }
-
         processAndQueueEvent(event: event)
     }
 
     /// Handles the Consent Update event
     /// - Parameter event: current event to process
     func handleConsentUpdate(_ event: Event) {
-        guard let data = event.data, !data.isEmpty else {
-            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Consent update request event \(event.id.uuidString) contained no data, ignoring.")
-            return
-        }
-
         processAndQueueEvent(event: event)
     }
 
     private func processAndQueueEvent(event: Event) {
+        guard let data = event.data, !data.isEmpty else {
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Event with id \(event.id.uuidString) contains no data, ignoring.")
+            return
+        }
+
         // get Configuration shared state, this should be resolved based on readyForEvent check
         guard let edgeConfig = getEdgeConfig(event: event) else {
             Log.warning(label: EdgeConstants.LOG_TAG,
