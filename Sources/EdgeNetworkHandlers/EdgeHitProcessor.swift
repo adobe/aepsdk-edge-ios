@@ -64,7 +64,10 @@ class EdgeHitProcessor: HitProcessing {
         var edgeConfig: [String: String]
 
         // Check which workflow is used to obtain configuration
-        if edgeEntity.configuration.isEmpty {
+        if !edgeEntity.configuration.isEmpty {
+            // Current workflow includes needed configuration in EdgeDataEntity before queuing hit
+            edgeConfig = AnyCodable.toAnyDictionary(dictionary: edgeEntity.configuration) as? [String: String] ?? [:]
+        } else {
             // Older workflow is supported in cases where persisted hits were queued before upgrade, but processed after upgrade
             // These hits will not have configuration in EdgeDataEntity, so the Configuration shared state is queried
             guard readyForEvent(event) else {
@@ -74,9 +77,6 @@ class EdgeHitProcessor: HitProcessing {
             }
 
             edgeConfig = getEdgeConfig(event: event)
-        } else {
-            // Current workflow includes needed configuration in EdgeDataEntity before queuing hit
-            edgeConfig = AnyCodable.toAnyDictionary(dictionary: edgeEntity.configuration) as? [String: String] ?? [:]
         }
 
         // Build Request object
