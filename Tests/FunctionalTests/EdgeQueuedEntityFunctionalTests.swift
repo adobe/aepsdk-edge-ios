@@ -52,11 +52,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
             return
         }
 
-        let experienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
-        let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: [:], identityMap: [:])
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-
-        dataQueue.add(dataEntity: entity)
+        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: [:]) // Add DataEntity without configuration
 
         // Setup network response and expected network requests
         let responseConnection: HttpConnection = HttpConnection(data: "{\"test\": \"json\"}".data(using: .utf8),
@@ -93,16 +89,10 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
             return
         }
 
-        let experienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
-        var edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: [:], identityMap: [:])
-        var entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-
-        dataQueue.add(dataEntity: entity) // Add DataEntity without configuration
-
-        edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: ["edge.configId": "sample-configId"], identityMap: [:])
-        entity = DataEntity(uniqueIdentifier: "test-uuid2", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-
-        dataQueue.add(dataEntity: entity) // Add DataEntity with configuration
+        // Add DataEntity without configuration
+        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: [:], entityId: "entity-uuid")
+        // Add DataEntity with configuration
+        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: ["edge.configId": "sample-configId"], entityId: "entity-uuid-2")
 
         // Setup network response and expected network requests
         let responseConnection: HttpConnection = HttpConnection(data: "{\"test\": \"json\"}".data(using: .utf8),
@@ -129,6 +119,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual("sample-configId", resultNetworkRequests[1].url.queryParam("configId"))
     }
 
+    /// Register's the Mobile SDK with Edge and Identity extenions while setting Configuration shared state with `edge.configId = 12345-example`.
     private func startMobileSDK() {
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)
@@ -148,6 +139,21 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 2)
     }
 
+    /// Add a `DataEntity` into the given `DataQueue`.
+    /// - Parameters:
+    ///   - dataQueue: the `DataQueue` to add the new entity
+    ///   - edgeConfig: the Edge configuration to include with the `EdgeDataEntity`
+    ///   - entityId: the UUID to identify the `DataEntity`
+    private func mockQueuedEvent(dataQueue: DataQueue, edgeConfig: [String: AnyCodable], entityId: String = "entity-uuid") {
+        let experienceEvent = Event(name: "queued event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
+        var edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: edgeConfig, identityMap: [:])
+        var entity = DataEntity(uniqueIdentifier: entityId, timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        dataQueue.add(dataEntity: entity)
+    }
+
+    /// Get the `DataQueue` used by the `Edge` extension.
+    /// - Returns: <#description#>
     private func getDataQueue() -> DataQueue? {
         let serialQueue = DispatchQueue(label: "com.adobe.marketing.mobile.dataqueueservice")
         return SQLiteDataQueue(databaseName: EdgeConstants.EXTENSION_NAME, serialQueue: serialQueue)
