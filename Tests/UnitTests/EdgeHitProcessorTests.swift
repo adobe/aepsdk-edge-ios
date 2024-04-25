@@ -99,7 +99,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     }
 
     // Mock for `readyForEvent` closure in `EdgeHitProcessor`. Reassign variable in test to change behavior.
-    private var mockReadForEvent: (Event) -> Bool = {_ in
+    private var mockReadyForEvent: (Event) -> Bool = {_ in
         XCTFail("Test called 'readyForEvent' but was not expected.")
         return false
     }
@@ -110,8 +110,14 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     // Mock for `getLocationHint` closure in `EdgeHitProcessor`. Reassign variable in test to change behavior.
     private var mockGetLocationHint: () -> String? = { return nil }
 
+    // Mock for `getEdgeConfig` closure in `EdgeHitProcessor`. Reassign variable in test to change behavior.
+    private var mockGetEdgeConfig: (Event) -> [String: String] = { event in
+        XCTFail("Test called 'getEdgeConfig(\(event))' but was not expected.")
+        return [:]
+    }
+
     // Default value for edge configuration containing required config ID
-    private let defaultEdgeConfig: [String: Any] = ["edge.configId": "test-config-id"]
+    private let defaultEdgeConfig: [String: String] = ["edge.configId": "test-config-id"]
 
     // Default value for identity map containing sample ECID
     private let defaultIdentityMap: [String: Any] =
@@ -130,9 +136,10 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: {extensionName, event in self.mockGetSharedState(extensionName, event)},
                                         getXDMSharedState: {extensionName, event, barrier in self.mockGetXDMSharedState(extensionName, event, barrier)},
-                                        readyForEvent: {event in self.mockReadForEvent(event)},
-                                        getImplementationDetails: { self.mockGetImplementationDetails() },
-                                        getLocationHint: { self.mockGetLocationHint() })
+                                        readyForEvent: {event in self.mockReadyForEvent(event)},
+                                        getImplementationDetails: {self.mockGetImplementationDetails()},
+                                        getLocationHint: {self.mockGetLocationHint()},
+                                        getEdgeConfig: {event in self.mockGetEdgeConfig(event)})
     }
 
     // MARK: - Tests
@@ -827,10 +834,8 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         // Set EdgeDataEntity with empty configuration
         let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: [:], identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-        self.mockReadForEvent = {_ in return true }
-        self.mockGetSharedState = {_, _ in return
-            SharedStateResult(status: .set, value: self.defaultEdgeConfig)
-        }
+        self.mockReadyForEvent = {_ in return true }
+        self.mockGetEdgeConfig = {_ in return self.defaultEdgeConfig}
         self.mockGetXDMSharedState = {_, _, _ in
             return SharedStateResult(status: .set, value: self.defaultIdentityMap)
         }
@@ -843,27 +848,9 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         // Set EdgeDataEntity with empty configuration
         let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: [:], identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-        self.mockReadForEvent = {_ in return false }
+        self.mockReadyForEvent = {_ in return false }
 
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: false)
-    }
-
-    /// Tests that when an nil configuration is provided that the hit is dropped
-    func testProcessHit_readyForEventWorkflow_experienceEvent_nilConfiguration_thenDropHit() {
-        // setup
-        let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: [:], identityMap: [:])
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-
-        self.mockReadForEvent = {_ in return true}
-        self.mockGetSharedState = { _, _ in
-            // simulate shared state with no edge config
-            return SharedStateResult(status: .set, value: nil)
-        }
-        self.mockGetXDMSharedState = {_, _, _ in
-            return SharedStateResult(status: .set, value: self.defaultIdentityMap)
-        }
-
-        assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
 
     /// Tests that when no edge config id is in configuration shared state that we drop the hit
@@ -872,11 +859,8 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: [:], identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
-        self.mockReadForEvent = {_ in return true}
-        self.mockGetSharedState = { _, _ in
-            // simulate shared state with no edge config
-            return SharedStateResult(status: .set, value: [:])
-        }
+        self.mockReadyForEvent = {_ in return true}
+        self.mockGetEdgeConfig = {_ in return [:]}
         self.mockGetXDMSharedState = {_, _, _ in
             return SharedStateResult(status: .set, value: self.defaultIdentityMap)
         }
@@ -890,11 +874,8 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: [:], identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
-        self.mockReadForEvent = {_ in return true}
-        self.mockGetSharedState = { _, _ in
-            // simulate shared state with no edge config
-            return SharedStateResult(status: .set, value: ["edge.configId": ""])
-        }
+        self.mockReadyForEvent = {_ in return true}
+        self.mockGetEdgeConfig = {_ in return ["edge.configId": ""]}
         self.mockGetXDMSharedState = {_, _, _ in
             return SharedStateResult(status: .set, value: self.defaultIdentityMap)
         }
@@ -907,10 +888,8 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         // Set EdgeDataEntity with empty configuration
         let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, configuration: [:], identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-        self.mockReadForEvent = {_ in return true }
-        self.mockGetSharedState = {_, _ in
-            return SharedStateResult(status: .set, value: self.defaultEdgeConfig)
-        }
+        self.mockReadyForEvent = {_ in return true }
+        self.mockGetEdgeConfig = {_ in return self.defaultEdgeConfig}
         self.mockGetXDMSharedState = {_, _, _ in
             return SharedStateResult(status: .set, value: self.defaultIdentityMap)
         }
@@ -923,27 +902,9 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         // Set EdgeDataEntity with empty configuration
         let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, configuration: [:], identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-        self.mockReadForEvent = {_ in return false }
+        self.mockReadyForEvent = {_ in return false }
 
         assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: false, returns: false)
-    }
-
-    /// Tests that when an nil configuration is provided that the hit is dropped
-    func testProcessHit_readyForEventWorkflow_consentUpdateEvent_nilConfiguration_thenDropHit() {
-        // setup
-        let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, configuration: [:], identityMap: [:])
-        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-
-        self.mockReadForEvent = {_ in return true}
-        self.mockGetSharedState = { _, _ in
-            // simulate shared state with no edge config
-            return SharedStateResult(status: .set, value: nil)
-        }
-        self.mockGetXDMSharedState = { _, _, _ in
-            return SharedStateResult(status: .set, value: self.defaultIdentityMap)
-        }
-
-        assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: false, returns: true)
     }
 
     /// Tests that when no edge config id is in configuration shared state that we drop the hit
@@ -952,11 +913,8 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, configuration: [:], identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
-        self.mockReadForEvent = {_ in return true}
-        self.mockGetSharedState = { _, _ in
-            // simulate shared state with no edge config
-            return SharedStateResult(status: .set, value: [:])
-        }
+        self.mockReadyForEvent = {_ in return true}
+        self.mockGetEdgeConfig = {_ in return [:]}
         self.mockGetXDMSharedState = { _, _, _ in
             return SharedStateResult(status: .set, value: self.defaultIdentityMap)
         }
@@ -970,11 +928,8 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, configuration: [:], identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
-        self.mockReadForEvent = {_ in return true}
-        self.mockGetSharedState = { _, _ in
-            // simulate shared state with no edge config
-            return SharedStateResult(status: .set, value: ["edge.configId": ""])
-        }
+        self.mockReadyForEvent = {_ in return true}
+        self.mockGetEdgeConfig = {_ in return ["edge.configId": ""]}
         self.mockGetXDMSharedState = { _, _, _ in
             return SharedStateResult(status: .set, value: self.defaultIdentityMap)
         }

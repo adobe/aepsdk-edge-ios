@@ -112,9 +112,10 @@ public class Edge: NSObject, Extension {
         }
 
         // get Configuration shared state, this should be resolved based on readyForEvent check
-        guard let edgeConfig = getEdgeConfig(event: event) else {
+        let edgeConfig = getEdgeConfig(event: event)
+        guard let configId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !configId.isEmpty else {
             Log.warning(label: EdgeConstants.LOG_TAG,
-                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', either Configuration is not set or is missing 'edge.configId'.")
+                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', configuration 'edge.configId' is missing or empty.")
             return // drop current event
         }
 
@@ -239,7 +240,8 @@ public class Edge: NSObject, Extension {
                                             getXDMSharedState: getXDMSharedState(extensionName:event:barrier:),
                                             readyForEvent: readyForEvent(_:),
                                             getImplementationDetails: getImplementationDetails,
-                                            getLocationHint: getLocationHint)
+                                            getLocationHint: getLocationHint,
+                                            getEdgeConfig: getEdgeConfig)
         return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }
 
@@ -285,24 +287,19 @@ public class Edge: NSObject, Extension {
     /// Get the Edge configuration by quering the Configuration shared state and filtering out only the key needed for Edge requests.
     /// - Parameter event: the `Event` to get the configuration
     /// - Returns: A dictionary of Edge configuration values, or nil if the Configuration shared state could not be retrieved or if the `edge.configId` key is missing or empty.
-    private func getEdgeConfig(event: Event) -> [String: Any]? {
+    private func getEdgeConfig(event: Event) -> [String: String] {
         // get configuration needed for Edge hit, this should be resolved based on readForEvent check
         guard let configurationState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME, event: event)?.value else {
             Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Configuration shared state is nil for event '\(event.id.uuidString)'.")
-            return nil
+            return [:]
         }
 
         let edgeConfig = configurationState.filter {
             return $0.key == EdgeConstants.SharedState.Configuration.CONFIG_ID ||
                 $0.key == EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT ||
                 $0.key == EdgeConstants.SharedState.Configuration.EDGE_DOMAIN
-        } as [String: Any]
+        } as? [String: String]
 
-        if (edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID] as? String ?? "").isEmpty {
-            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Configuration is missing edge.configId for event '\(event.id.uuidString)'.")
-            return nil
-        }
-
-        return edgeConfig
+        return edgeConfig ?? [:]
     }
 }

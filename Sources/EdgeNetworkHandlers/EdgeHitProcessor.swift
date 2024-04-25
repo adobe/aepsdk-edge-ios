@@ -24,6 +24,7 @@ class EdgeHitProcessor: HitProcessing {
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
     private var getLocationHint: () -> String?
+    private var getEdgeConfig: (Event) -> [String: String]
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
     private let VALID_PATH_REGEX_PATTERN = "^\\/[/.a-zA-Z0-9-~_]+$"
 
@@ -33,7 +34,8 @@ class EdgeHitProcessor: HitProcessing {
          getXDMSharedState: @escaping (String, Event?, Bool) -> SharedStateResult?,
          readyForEvent: @escaping (Event) -> Bool,
          getImplementationDetails: @escaping () -> [String: Any]?,
-         getLocationHint: @escaping () -> String?) {
+         getLocationHint: @escaping () -> String?,
+         getEdgeConfig: @escaping (Event) -> [String: String]) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
         self.getSharedState = getSharedState
@@ -41,6 +43,7 @@ class EdgeHitProcessor: HitProcessing {
         self.readyForEvent = readyForEvent
         self.getImplementationDetails = getImplementationDetails
         self.getLocationHint = getLocationHint
+        self.getEdgeConfig = getEdgeConfig
     }
 
     // MARK: HitProcessing
@@ -76,7 +79,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            edgeConfig = getEdgeConfig(event: event)
+            edgeConfig = getEdgeConfig(event)
         }
 
         // Build Request object
@@ -263,26 +266,6 @@ class EdgeHitProcessor: HitProcessing {
             self?.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval
             completion(success)
         }
-    }
-
-    /// Extracts all the Edge configuration keys from the Configuration shared state
-    /// - Parameter event: current event for which the configuration is required
-    /// - Returns: the Edge configuration keys with values, empty dictionary if edge.configId was not found
-    private func getEdgeConfig(event: Event) -> [String: String] {
-        guard let configSharedState =
-                getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
-                               event)?.value else {
-            Log.warning(label: EdgeConstants.LOG_TAG,
-                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', Configuration is nil.")
-            return [:]
-        }
-
-        var config: [String: String] = [:]
-        config[EdgeConstants.SharedState.Configuration.CONFIG_ID] = configSharedState[EdgeConstants.SharedState.Configuration.CONFIG_ID] as? String
-        config[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT] as? String
-        config[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN] = configSharedState[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN] as? String
-
-        return config
     }
 
     /// Computes the request headers for provided `event`, including the `Assurance` integration identifier when `Assurance` is enabled
