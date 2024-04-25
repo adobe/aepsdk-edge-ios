@@ -92,12 +92,6 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         return nil
     }
 
-    // Mock for `getXDMSharedState` closure in `EdgeHitProcessor`. Reassign variable in test to change behavior.
-    private var mockGetXDMSharedState: (String, Event?, Bool) -> SharedStateResult? = {extensionName, _, _ in
-        XCTFail("Test called 'getXDMSharedState(\(extensionName))' but was not expected.")
-        return nil
-    }
-
     // Mock for `readyForEvent` closure in `EdgeHitProcessor`. Reassign variable in test to change behavior.
     private var mockReadyForEvent: (Event) -> Bool = {_ in
         XCTFail("Test called 'readyForEvent' but was not expected.")
@@ -135,7 +129,6 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
                                         getSharedState: {extensionName, event in self.mockGetSharedState(extensionName, event)},
-                                        getXDMSharedState: {extensionName, event, barrier in self.mockGetXDMSharedState(extensionName, event, barrier)},
                                         readyForEvent: {event in self.mockReadyForEvent(event)},
                                         getImplementationDetails: {self.mockGetImplementationDetails()},
                                         getLocationHint: {self.mockGetLocationHint()},
@@ -836,9 +829,6 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
         self.mockReadyForEvent = {_ in return true }
         self.mockGetEdgeConfig = {_ in return self.defaultEdgeConfig}
-        self.mockGetXDMSharedState = {_, _, _ in
-            return SharedStateResult(status: .set, value: self.defaultIdentityMap)
-        }
 
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
     }
@@ -861,9 +851,6 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
         self.mockReadyForEvent = {_ in return true}
         self.mockGetEdgeConfig = {_ in return [:]}
-        self.mockGetXDMSharedState = {_, _, _ in
-            return SharedStateResult(status: .set, value: self.defaultIdentityMap)
-        }
 
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
@@ -876,9 +863,6 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
         self.mockReadyForEvent = {_ in return true}
         self.mockGetEdgeConfig = {_ in return ["edge.configId": ""]}
-        self.mockGetXDMSharedState = {_, _, _ in
-            return SharedStateResult(status: .set, value: self.defaultIdentityMap)
-        }
 
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
@@ -890,9 +874,6 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
         self.mockReadyForEvent = {_ in return true }
         self.mockGetEdgeConfig = {_ in return self.defaultEdgeConfig}
-        self.mockGetXDMSharedState = {_, _, _ in
-            return SharedStateResult(status: .set, value: self.defaultIdentityMap)
-        }
 
         assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: true, returns: true)
     }
@@ -915,9 +896,6 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
         self.mockReadyForEvent = {_ in return true}
         self.mockGetEdgeConfig = {_ in return [:]}
-        self.mockGetXDMSharedState = { _, _, _ in
-            return SharedStateResult(status: .set, value: self.defaultIdentityMap)
-        }
 
         assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: false, returns: true)
     }
@@ -930,9 +908,6 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
         self.mockReadyForEvent = {_ in return true}
         self.mockGetEdgeConfig = {_ in return ["edge.configId": ""]}
-        self.mockGetXDMSharedState = { _, _, _ in
-            return SharedStateResult(status: .set, value: self.defaultIdentityMap)
-        }
 
         assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: false, returns: true)
     }

@@ -237,7 +237,6 @@ public class Edge: NSObject, Extension {
         let hitProcessor = EdgeHitProcessor(networkService: networkService,
                                             networkResponseHandler: networkResponseHandler,
                                             getSharedState: getSharedState(extensionName:event:),
-                                            getXDMSharedState: getXDMSharedState(extensionName:event:barrier:),
                                             readyForEvent: readyForEvent(_:),
                                             getImplementationDetails: getImplementationDetails,
                                             getLocationHint: getLocationHint,

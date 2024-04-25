@@ -20,7 +20,6 @@ class EdgeHitProcessor: HitProcessing {
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
     private var getSharedState: (String, Event?) -> SharedStateResult?
-    private var getXDMSharedState: (String, Event?, Bool) -> SharedStateResult?
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
     private var getLocationHint: () -> String?
@@ -31,7 +30,6 @@ class EdgeHitProcessor: HitProcessing {
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
          getSharedState: @escaping (String, Event?) -> SharedStateResult?,
-         getXDMSharedState: @escaping (String, Event?, Bool) -> SharedStateResult?,
          readyForEvent: @escaping (Event) -> Bool,
          getImplementationDetails: @escaping () -> [String: Any]?,
          getLocationHint: @escaping () -> String?,
@@ -39,7 +37,6 @@ class EdgeHitProcessor: HitProcessing {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
         self.getSharedState = getSharedState
-        self.getXDMSharedState = getXDMSharedState
         self.readyForEvent = readyForEvent
         self.getImplementationDetails = getImplementationDetails
         self.getLocationHint = getLocationHint
