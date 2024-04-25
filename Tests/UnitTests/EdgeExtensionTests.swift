@@ -197,10 +197,15 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         }
 
         // Verify EdgeDataEntity only contains config ID, domain, and environment
-        XCTAssertEqual(3, edgeDataEntity.configuration.count)
-        XCTAssertEqual("12345-example", edgeDataEntity.configuration[EdgeConstants.SharedState.Configuration.CONFIG_ID])
-        XCTAssertEqual("edge.com", edgeDataEntity.configuration[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN])
-        XCTAssertEqual("dev", edgeDataEntity.configuration[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT])
+        let expectedConfigJSON = """
+            {
+              "edge.configId": "12345-example",
+              "edge.domain": "edge.com",
+              "edge.environment": "dev"
+            }
+        """
+
+        assertEqual(expected: expectedConfigJSON, actual: edgeDataEntity.configuration)
     }
 
     func testHandleConsentUpdate_queuedDataEntityContainsIdentityMap() {
@@ -363,10 +368,15 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         }
 
         // Verify EdgeDataEntity only contains config ID, domain, and environment
-        XCTAssertEqual(3, edgeDataEntity.configuration.count)
-        XCTAssertEqual("12345-example", edgeDataEntity.configuration[EdgeConstants.SharedState.Configuration.CONFIG_ID])
-        XCTAssertEqual("edge.com", edgeDataEntity.configuration[EdgeConstants.SharedState.Configuration.EDGE_DOMAIN])
-        XCTAssertEqual("dev", edgeDataEntity.configuration[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT])
+        let expectedConfigJSON = """
+            {
+              "edge.configId": "12345-example",
+              "edge.domain": "edge.com",
+              "edge.environment": "dev"
+            }
+        """
+
+        assertEqual(expected: expectedConfigJSON, actual: edgeDataEntity.configuration)
     }
 
     func testHandleExperienceEventRequest_queuedDataEntityContainsIdentityMap() {
