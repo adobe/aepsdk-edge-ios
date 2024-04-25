@@ -104,12 +104,6 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     // Mock for `getLocationHint` closure in `EdgeHitProcessor`. Reassign variable in test to change behavior.
     private var mockGetLocationHint: () -> String? = { return nil }
 
-    // Mock for `getEdgeConfig` closure in `EdgeHitProcessor`. Reassign variable in test to change behavior.
-    private var mockGetEdgeConfig: (Event) -> [String: String] = { event in
-        XCTFail("Test called 'getEdgeConfig(\(event))' but was not expected.")
-        return [:]
-    }
-
     // Default value for edge configuration containing required config ID
     private let defaultEdgeConfig: [String: String] = ["edge.configId": "test-config-id"]
 
@@ -128,11 +122,10 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         networkResponseHandler = NetworkResponseHandler(updateLocationHint: { (_: String?, _: TimeInterval?) -> Void in  })
         hitProcessor = EdgeHitProcessor(networkService: networkService,
                                         networkResponseHandler: networkResponseHandler,
-                                        getSharedState: {extensionName, event in self.mockGetSharedState(extensionName, event)},
+                                        sharedStateReader: SharedStateReader(getSharedState: {extensionName, event, _ in self.mockGetSharedState(extensionName, event)}),
                                         readyForEvent: {event in self.mockReadyForEvent(event)},
                                         getImplementationDetails: {self.mockGetImplementationDetails()},
-                                        getLocationHint: {self.mockGetLocationHint()},
-                                        getEdgeConfig: {event in self.mockGetEdgeConfig(event)})
+                                        getLocationHint: {self.mockGetLocationHint()})
     }
 
     // MARK: - Tests
@@ -828,7 +821,12 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: [:], identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
         self.mockReadyForEvent = {_ in return true }
-        self.mockGetEdgeConfig = {_ in return self.defaultEdgeConfig}
+        self.mockGetSharedState = {extensionName, _ in
+            if extensionName == "com.adobe.module.configuration" {
+                return SharedStateResult(status: .set, value: self.defaultEdgeConfig)
+            }
+            return nil
+        }
 
         assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
     }
@@ -843,6 +841,23 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: false)
     }
 
+    /// Tests that when configuration shared state is nil that we drop the hit
+    func testProcessHit_readyForEventWorkflow_experienceEvent_nilConfiguration_thenDropHit() {
+        // setup
+        let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: [:], identityMap: [:])
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        self.mockReadyForEvent = {_ in return true}
+        self.mockGetSharedState = {extensionName, _ in
+            if extensionName == "com.adobe.module.configuration" {
+                return SharedStateResult(status: .set, value: nil)
+            }
+            return nil
+        }
+
+        assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
+    }
+
     /// Tests that when no edge config id is in configuration shared state that we drop the hit
     func testProcessHit_readyForEventWorkflow_experienceEvent_noEdgeConfigId_thenDropHit() {
         // setup
@@ -850,7 +865,12 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         self.mockReadyForEvent = {_ in return true}
-        self.mockGetEdgeConfig = {_ in return [:]}
+        self.mockGetSharedState = {extensionName, _ in
+            if extensionName == "com.adobe.module.configuration" {
+                return SharedStateResult(status: .set, value: [:])
+            }
+            return nil
+        }
 
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
@@ -862,7 +882,12 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         self.mockReadyForEvent = {_ in return true}
-        self.mockGetEdgeConfig = {_ in return ["edge.configId": ""]}
+        self.mockGetSharedState = {extensionName, _ in
+            if extensionName == "com.adobe.module.configuration" {
+                return SharedStateResult(status: .set, value: ["edge.configId": ""])
+            }
+            return nil
+        }
 
         assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
@@ -873,7 +898,12 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, configuration: [:], identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
         self.mockReadyForEvent = {_ in return true }
-        self.mockGetEdgeConfig = {_ in return self.defaultEdgeConfig}
+        self.mockGetSharedState = {extensionName, _ in
+            if extensionName == "com.adobe.module.configuration" {
+                return SharedStateResult(status: .set, value: self.defaultEdgeConfig)
+            }
+            return nil
+        }
 
         assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: true, returns: true)
     }
@@ -895,7 +925,29 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         self.mockReadyForEvent = {_ in return true}
-        self.mockGetEdgeConfig = {_ in return [:]}
+        self.mockGetSharedState = {extensionName, _ in
+            if extensionName == "com.adobe.module.configuration" {
+                return SharedStateResult(status: .set, value: [:])
+            }
+            return nil
+        }
+
+        assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: false, returns: true)
+    }
+
+    /// Tests that when configuration shared state is nil that we drop the hit
+    func testProcessHit_readyForEventWorkflow_consentUpdate_nilConfiguration_thenDropHit() {
+        // setup
+        let edgeEntity = EdgeDataEntity(event: consentUpdateEvent, configuration: [:], identityMap: [:])
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        self.mockReadyForEvent = {_ in return true}
+        self.mockGetSharedState = {extensionName, _ in
+            if extensionName == "com.adobe.module.configuration" {
+                return SharedStateResult(status: .set, value: nil)
+            }
+            return nil
+        }
 
         assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: false, returns: true)
     }
@@ -907,7 +959,12 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         self.mockReadyForEvent = {_ in return true}
-        self.mockGetEdgeConfig = {_ in return ["edge.configId": ""]}
+        self.mockGetSharedState = {extensionName, _ in
+            if extensionName == "com.adobe.module.configuration" {
+                return SharedStateResult(status: .set, value: ["edge.configId": ""])
+            }
+            return nil
+        }
 
         assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: false, returns: true)
     }

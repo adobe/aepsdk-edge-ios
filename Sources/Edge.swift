@@ -19,6 +19,7 @@ public class Edge: NSObject, Extension {
     private let SELF_TAG = "Edge"
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler?
+    private let sharedStateReader: SharedStateReader
     internal var state: EdgeState?
 
     // MARK: - Extension
@@ -30,6 +31,8 @@ public class Edge: NSObject, Extension {
 
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
+        self.sharedStateReader = SharedStateReader(getSharedState: runtime.getSharedState(extensionName:event:barrier:))
+
         super.init()
 
         // set default on init for register/unregister use-case
@@ -112,7 +115,7 @@ public class Edge: NSObject, Extension {
         }
 
         // get Configuration shared state, this should be resolved based on readyForEvent check
-        let edgeConfig = getEdgeConfig(event: event)
+        let edgeConfig = sharedStateReader.getEdgeConfig(event: event)
         guard let configId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !configId.isEmpty else {
             Log.warning(label: EdgeConstants.LOG_TAG,
                         "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', configuration 'edge.configId' is missing or empty.")
@@ -236,11 +239,10 @@ public class Edge: NSObject, Extension {
 
         let hitProcessor = EdgeHitProcessor(networkService: networkService,
                                             networkResponseHandler: networkResponseHandler,
-                                            getSharedState: getSharedState(extensionName:event:),
+                                            sharedStateReader: sharedStateReader,
                                             readyForEvent: readyForEvent(_:),
                                             getImplementationDetails: getImplementationDetails,
-                                            getLocationHint: getLocationHint,
-                                            getEdgeConfig: getEdgeConfig)
+                                            getLocationHint: getLocationHint)
         return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }
 
@@ -283,22 +285,4 @@ public class Edge: NSObject, Extension {
         return state?.getLocationHint()
     }
 
-    /// Get the Edge configuration by quering the Configuration shared state and filtering out only the key needed for Edge requests.
-    /// - Parameter event: the `Event` to get the configuration
-    /// - Returns: A dictionary of Edge configuration values, or nil if the Configuration shared state could not be retrieved or if the `edge.configId` key is missing or empty.
-    private func getEdgeConfig(event: Event) -> [String: String] {
-        // get configuration needed for Edge hit, this should be resolved based on readForEvent check
-        guard let configurationState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME, event: event)?.value else {
-            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Configuration shared state is nil for event '\(event.id.uuidString)'.")
-            return [:]
-        }
-
-        let edgeConfig = configurationState.filter {
-            return $0.key == EdgeConstants.SharedState.Configuration.CONFIG_ID ||
-                $0.key == EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT ||
-                $0.key == EdgeConstants.SharedState.Configuration.EDGE_DOMAIN
-        } as? [String: String]
-
-        return edgeConfig ?? [:]
-    }
 }

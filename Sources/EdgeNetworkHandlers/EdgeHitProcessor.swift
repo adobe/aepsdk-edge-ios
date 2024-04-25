@@ -19,28 +19,25 @@ class EdgeHitProcessor: HitProcessing {
     private let SELF_TAG = "EdgeHitProcessor"
     private var networkService: EdgeNetworkService
     private var networkResponseHandler: NetworkResponseHandler
-    private var getSharedState: (String, Event?) -> SharedStateResult?
+    private var sharedStateReader: SharedStateReader
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
     private var getLocationHint: () -> String?
-    private var getEdgeConfig: (Event) -> [String: String]
     private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
     private let VALID_PATH_REGEX_PATTERN = "^\\/[/.a-zA-Z0-9-~_]+$"
 
     init(networkService: EdgeNetworkService,
          networkResponseHandler: NetworkResponseHandler,
-         getSharedState: @escaping (String, Event?) -> SharedStateResult?,
+         sharedStateReader: SharedStateReader,
          readyForEvent: @escaping (Event) -> Bool,
          getImplementationDetails: @escaping () -> [String: Any]?,
-         getLocationHint: @escaping () -> String?,
-         getEdgeConfig: @escaping (Event) -> [String: String]) {
+         getLocationHint: @escaping () -> String?) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
-        self.getSharedState = getSharedState
+        self.sharedStateReader = sharedStateReader
         self.readyForEvent = readyForEvent
         self.getImplementationDetails = getImplementationDetails
         self.getLocationHint = getLocationHint
-        self.getEdgeConfig = getEdgeConfig
     }
 
     // MARK: HitProcessing
@@ -76,7 +73,7 @@ class EdgeHitProcessor: HitProcessing {
                 return
             }
 
-            edgeConfig = getEdgeConfig(event)
+            edgeConfig = sharedStateReader.getEdgeConfig(event: event)
         }
 
         // Build Request object
@@ -270,10 +267,8 @@ class EdgeHitProcessor: HitProcessing {
     private func getRequestHeaders(_ event: Event) -> [String: String] {
         // get Assurance integration id and include it in to the requestHeaders
         var requestHeaders: [String: String] = [:]
-        if let assuranceSharedState = getSharedState(EdgeConstants.SharedState.Assurance.STATE_OWNER_NAME, event)?.value {
-            if let assuranceIntegrationId = assuranceSharedState[EdgeConstants.SharedState.Assurance.INTEGRATION_ID] as? String {
-                requestHeaders[EdgeConstants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
-            }
+        if let assuranceIntegrationId = sharedStateReader.getAssuranceIntegrationId(event: event) {
+            requestHeaders[EdgeConstants.NetworkKeys.HEADER_KEY_AEP_VALIDATION_TOKEN] = assuranceIntegrationId
         }
 
         return requestHeaders
