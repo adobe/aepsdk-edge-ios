@@ -153,7 +153,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
     }
 
     /// Get the `DataQueue` used by the `Edge` extension.
-    /// - Returns: <#description#>
+    /// - Returns: the `SQLiteDataQueue` for the `Edge` extension
     private func getDataQueue() -> DataQueue? {
         let serialQueue = DispatchQueue(label: "com.adobe.marketing.mobile.dataqueueservice")
         return SQLiteDataQueue(databaseName: EdgeConstants.EXTENSION_NAME, serialQueue: serialQueue)
