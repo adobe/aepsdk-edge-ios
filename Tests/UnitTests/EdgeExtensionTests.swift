@@ -258,6 +258,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: ([EdgeConstants.SharedState.Configuration.CONFIG_ID: "12345-example"], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.yes)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.yes, edge.state?.currentCollectConsent)
+
         mockRuntime.simulateComingEvents(experienceEvent)
 
         XCTAssertEqual(0, mockDataQueue.count())
@@ -267,6 +270,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
                                            data: ([:], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.yes)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.yes, edge.state?.currentCollectConsent)
+
         mockRuntime.simulateComingEvents(experienceEvent)
 
         XCTAssertEqual(0, mockDataQueue.count())
@@ -278,6 +284,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: ([:], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.yes)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.yes, edge.state?.currentCollectConsent)
+
         mockRuntime.simulateComingEvents(experienceEvent)
 
         XCTAssertEqual(0, mockDataQueue.count())
@@ -289,6 +298,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: ([EdgeConstants.SharedState.Configuration.CONFIG_ID: "12345-example"], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.yes)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.yes, edge.state?.currentCollectConsent)
+
         mockRuntime.simulateComingEvents(experienceEvent)
 
         XCTAssertEqual(1, mockDataQueue.count())
@@ -300,6 +312,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: ([EdgeConstants.SharedState.Configuration.CONFIG_ID: "12345-example"], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.pending)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.pending, edge.state?.currentCollectConsent)
+
         mockRuntime.simulateComingEvents(experienceEvent)
 
         XCTAssertEqual(1, mockDataQueue.count())
@@ -307,6 +322,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
 
     func testHandleExperienceEventRequest_validData_consentNo_dropsEvent() {
         edge.state?.updateCurrentConsent(status: ConsentStatus.no)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.no, edge.state?.currentCollectConsent)
+
         mockRuntime.simulateComingEvents(experienceEvent)
 
         XCTAssertEqual(0, mockDataQueue.count())
@@ -323,6 +341,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
 
     func testHandleExperienceEventRequest_consentXDMSharedStateNo_dropsEvent() {
         edge.state?.updateCurrentConsent(status: ConsentStatus.yes)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.yes, edge.state?.currentCollectConsent)
+
         mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME, data: (["consents": ["collect": ["val": "n"]]], .set))
         mockRuntime.simulateComingEvents(experienceEvent)
 
@@ -335,6 +356,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: ([EdgeConstants.SharedState.Configuration.CONFIG_ID: "12345-example"], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.no)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.no, edge.state?.currentCollectConsent)
+
         mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME, data: (["consents": ["invalid": "data"]], .set))
         mockRuntime.simulateComingEvents(experienceEvent)
 
@@ -354,6 +378,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: (configuration, .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.yes)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.yes, edge.state?.currentCollectConsent)
+
         mockRuntime.simulateComingEvents(experienceEvent)
 
         XCTAssertEqual(1, mockDataQueue.count())
@@ -392,6 +419,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: ([EdgeConstants.SharedState.Configuration.CONFIG_ID: "12345-example"], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.yes)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.yes, edge.state?.currentCollectConsent)
+
         mockRuntime.simulateComingEvents(experienceEvent)
 
         XCTAssertEqual(1, mockDataQueue.count())
@@ -412,6 +442,9 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
 
     func testHandleExperienceEventRequest_consentXDMSharedStateInvalid_usesCurrentConsent() {
         edge.state?.updateCurrentConsent(status: ConsentStatus.no)
+        // updateCurrentConsent is async, so verify it completes before continuing
+        XCTAssertEqual(ConsentStatus.no, edge.state?.currentCollectConsent)
+
         // no consent shared state for current event
         mockRuntime.simulateComingEvents(experienceEvent)
 
