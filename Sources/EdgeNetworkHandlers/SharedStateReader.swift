@@ -23,7 +23,7 @@ struct SharedStateReader {
 
     /// Get the Edge configuration by quering the Configuration shared state and filtering out only the key needed for Edge requests.
     /// - Parameter event: the `Event` to get the configuration
-    /// - Returns: A dictionary of Edge configuration values, or nil if the Configuration shared state could not be retrieved or if the `edge.configId` key is missing or empty.
+    /// - Returns: A dictionary of Edge configuration values, or empty dictionary if the Configuration shared state could not be retrieved.
     func getEdgeConfig(event: Event) -> [String: String] {
         guard let configurationState = getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME, event, false)?.value else {
             Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Configuration shared state is nil for event '\(event.id.uuidString)'.")
