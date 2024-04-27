@@ -19,6 +19,7 @@ public class Edge: NSObject, Extension {
     private let SELF_TAG = "Edge"
     private var networkService: EdgeNetworkService = EdgeNetworkService()
     private var networkResponseHandler: NetworkResponseHandler?
+    private let sharedStateReader: SharedStateReader
     internal var state: EdgeState?
 
     // MARK: - Extension
@@ -30,6 +31,8 @@ public class Edge: NSObject, Extension {
 
     public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
+        self.sharedStateReader = SharedStateReader(getSharedState: runtime.getSharedState(extensionName:event:barrier:))
+
         super.init()
 
         // set default on init for register/unregister use-case
@@ -96,10 +99,27 @@ public class Edge: NSObject, Extension {
     /// - Parameter event: an event containing ExperienceEvent data for processing
     func handleExperienceEventRequest(_ event: Event) {
         guard !shouldIgnore(event: event) else { return }
+        processAndQueueEvent(event: event)
+    }
 
+    /// Handles the Consent Update event
+    /// - Parameter event: current event to process
+    func handleConsentUpdate(_ event: Event) {
+        processAndQueueEvent(event: event)
+    }
+
+    private func processAndQueueEvent(event: Event) {
         guard let data = event.data, !data.isEmpty else {
-            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Event with id \(event.id.uuidString) contained no data, ignoring.")
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Event with id \(event.id.uuidString) contains no data, ignoring.")
             return
+        }
+
+        // get Configuration shared state, this should be resolved based on readyForEvent check
+        let edgeConfig = sharedStateReader.getEdgeConfig(event: event)
+        guard let configId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !configId.isEmpty else {
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', configuration 'edge.configId' is missing or empty.")
+            return // drop current event
         }
 
         // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
@@ -113,6 +133,7 @@ public class Edge: NSObject, Extension {
         }
 
         let edgeEntity = EdgeDataEntity(event: event,
+                                        configuration: AnyCodable.from(dictionary: edgeConfig) ?? [:],
                                         identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
@@ -139,7 +160,7 @@ public class Edge: NSObject, Extension {
     /// Handles the generic identities reset event
     /// - Parameter event: an `Event`
     func handleIdentitiesReset(_ event: Event) {
-        let edgeEntity = EdgeDataEntity(event: event, identityMap: [:])
+        let edgeEntity = EdgeDataEntity(event: event, configuration: [:], identityMap: [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to encode EdgeDataEntity for event with id: '\(event.id.uuidString)'.")
@@ -148,36 +169,6 @@ public class Edge: NSObject, Extension {
 
         let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
         networkResponseHandler?.setLastReset(date: event.timestamp)
-        state?.hitQueue.queue(entity: entity)
-    }
-
-    /// Handles the Consent Update event
-    /// - Parameter event: current event to process
-    func handleConsentUpdate(_ event: Event) {
-        guard let data = event.data, !data.isEmpty else {
-            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Consent update request event \(event.id.uuidString) contained no data, ignoring.")
-            return
-        }
-
-        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
-        guard let identityState =
-                getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
-                                  event: event)?.value else {
-            Log.warning(label: EdgeConstants.LOG_TAG,
-                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', " +
-                            "Identity shared state is nil.")
-            return // drop current event
-        }
-
-        let edgeEntity = EdgeDataEntity(event: event,
-                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
-
-        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
-            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to encode EdgeDataEntity for event with id: '\(event.id.uuidString)'.")
-            return
-        }
-
-        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
         state?.hitQueue.queue(entity: entity)
     }
 
@@ -248,8 +239,7 @@ public class Edge: NSObject, Extension {
 
         let hitProcessor = EdgeHitProcessor(networkService: networkService,
                                             networkResponseHandler: networkResponseHandler,
-                                            getSharedState: getSharedState(extensionName:event:),
-                                            getXDMSharedState: getXDMSharedState(extensionName:event:barrier:),
+                                            sharedStateReader: sharedStateReader,
                                             readyForEvent: readyForEvent(_:),
                                             getImplementationDetails: getImplementationDetails,
                                             getLocationHint: getLocationHint)

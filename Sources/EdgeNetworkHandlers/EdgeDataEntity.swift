@@ -19,6 +19,9 @@ struct EdgeDataEntity: Codable {
     /// The `Event` responsible for the hit
     let event: Event
 
+    /// The current configuration shared state at the time `Event` was queued
+    let configuration: [String: AnyCodable]
+
     /// The current identity shared state at the time `Event` was queued
     let identityMap: [String: AnyCodable]
 }
