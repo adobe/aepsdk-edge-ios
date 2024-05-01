@@ -25,6 +25,7 @@ enum TestConstants {
         static let CONFIGURATION = "com.adobe.eventType.configuration"
         static let IDENTITY = "com.adobe.eventType.identity"
         static let CONSENT = "com.adobe.eventType.edgeConsent"
+        static let RULES_ENGINE = "com.adobe.eventType.rulesEngine"
     }
 
     enum EventSource {
@@ -33,6 +34,7 @@ enum TestConstants {
         static let RESPONSE_CONTENT = "com.adobe.eventSource.responseContent"
         static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
         static let SHARED_STATE_REQUEST = "com.adobe.eventSource.requestState"
+        static let REQUEST_RESET = "com.adobe.eventSource.requestReset"
         static let SHARED_STATE_RESPONSE = "com.adobe.eventSource.responseState"
         static let UNREGISTER_EXTENSION = "com.adobe.eventSource.unregisterExtension"
         static let SHARED_STATE = "com.adobe.eventSource.sharedState"
