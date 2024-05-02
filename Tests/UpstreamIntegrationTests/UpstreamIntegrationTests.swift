@@ -36,6 +36,12 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         continueAfterFailure = true
         TestBase.debugEnabled = true
 
+        // hub shared state update for 1) Event Hub, 2) Configuration, 3) Edge, 4) Edge Identity
+        setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)
+        setExpectationEvent(type: TestConstants.EventType.CONFIGURATION, source: TestConstants.EventSource.REQUEST_CONTENT, expectedCount: 1)
+        setExpectationEvent(type: TestConstants.EventType.CONFIGURATION, source: TestConstants.EventSource.RESPONSE_CONTENT, expectedCount: 1)
+        setExpectationEvent(type: TestConstants.EventType.RULES_ENGINE, source: TestConstants.EventSource.REQUEST_RESET, expectedCount: 1)
+
         let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
 
@@ -50,6 +56,8 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Set Edge location hint value if one is set for the test target
         setInitialLocationHint(edgeLocationHint?.rawValue)
+
+        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: 2)
 
         resetTestExpectations()
         networkService.reset()
@@ -231,7 +239,10 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         assertTypeMatch(expected: expectedLocationHintJSON,
                         actual: locationHintResult,
-                        exactMatchPaths: ["payload[*].scope"])
+                        pathOptions:
+                            CollectionEqualCount(paths: "payload[0]"),
+                        AnyOrderMatch(paths: "payload[0]"),
+                        ValueExactMatch(paths: "payload[0].scope"))
     }
 
     /// Tests that a standard sendEvent WITH prior location hint value set receives the expected location hint event handle.
@@ -266,7 +277,10 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
             assertTypeMatch(expected: expectedLocationHintJSON,
                             actual: locationHintResult,
-                            exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
+                            pathOptions:
+                                CollectionEqualCount(paths: "payload[0]"),
+                            AnyOrderMatch(paths: "payload[0]"),
+                            ValueExactMatch(paths: "payload[0].scope", "payload[0].hint"))
 
             resetTestExpectations()
             networkService.reset()
@@ -305,12 +319,10 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         let stateStoreEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.STATE_STORE).last!
 
         assertTypeMatch(expected: expectedStateStoreJSON,
-                         actual: stateStoreEvent,
-                         pathOptions:
-                            ValueExactMatch(paths:
-                                            "payload[0].key",
-                                            "payload[1].key"),
-                         CollectionEqualCount(paths: "payload", scope: .subtree))
+                        actual: stateStoreEvent,
+                        pathOptions:
+                            ValueExactMatch(paths: "payload[0].key", "payload[1].key"),
+                        CollectionEqualCount(paths: "payload", scope: .subtree))
     }
 
     /// Tests that a standard sendEvent with prior state receives the expected state store event handle.
@@ -354,8 +366,11 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
             // Exact match used here to strictly validate `payload` array element count == 2
             assertExactMatch(expected: expectedStateStoreJSON,
-                            actual: stateStoreEvent,
-                            typeMatchPaths: ["payload[0].maxAge"])
+                             actual: stateStoreEvent,
+                             pathOptions:
+                                CollectionEqualCount(paths: "payload[0]"),
+                             AnyOrderMatch(paths: "payload[0]"),
+                             ValueTypeMatch(paths: "payload[0].maxAge"))
 
             resetTestExpectations()
             networkService.reset()
@@ -492,8 +507,11 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         let locationHintResultEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).first!
 
         assertTypeMatch(expected: expectedLocationHintJSON,
-                         actual: locationHintResultEvent,
-                         exactMatchPaths: ["payload[*].scope", "payload[*].hint"])
+                        actual: locationHintResultEvent,
+                        pathOptions:
+                            CollectionEqualCount(paths: "payload[0]"),
+                        AnyOrderMatch(paths: "payload[0]"),
+                        ValueExactMatch(paths: "payload[0].scope", "payload[0].hint"))
     }
 
     // MARK: - Error scenarios
@@ -524,17 +542,17 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Event assertions
         let expectedErrorJSON = #"""
-        {
-          "detail": "STRING_TYPE",
-          "report": {
+            {
+            "detail": "STRING_TYPE",
+            "report": {
             "requestId": "STRING_TYPE"
-          },
-          "requestEventId": "STRING_TYPE",
-          "requestId": "STRING_TYPE",
-          "status": 400,
-          "title": "Invalid datastream ID",
-          "type": "https://ns.adobe.com/aep/errors/EXEG-0003-400"
-        }
+            },
+            "requestEventId": "STRING_TYPE",
+            "requestId": "STRING_TYPE",
+            "status": 400,
+            "title": "Invalid datastream ID",
+            "type": "https://ns.adobe.com/aep/errors/EXEG-0003-400"
+            }
         """#
 
         let errorEvents = getEdgeResponseErrors()
@@ -547,7 +565,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
             actual: errorEvent,
             pathOptions:
                 ValueExactMatch(paths: "status", "title", "type"),
-                CollectionEqualCount(scope: .subtree))
+            CollectionEqualCount(scope: .subtree))
     }
 
     // Tests that an invalid location hint returns the expected error with 0 byte data body
