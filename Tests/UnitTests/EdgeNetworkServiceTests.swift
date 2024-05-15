@@ -220,7 +220,33 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
 
-    func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithError_ReturnFormattedError() {
+    func testDoRequest_whenConnection_RecoverableTransportErrorCode_CallsCompletionFalse_AndNoResponseCallback() {
+        // setup
+        let error: NSError = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet, userInfo: nil)
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
+
+        // test
+        let mockHttpConnection = HttpConnection(data: nil, response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil), error: error)
+        mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
+                                    // verify
+                                    XCTAssertFalse(success)
+                                    XCTAssertEqual(5.0, retryInterval)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertEqual([], self.mockResponseCallback.onResponseJsonResponse)
+                                    expectation.fulfill()
+                                 })
+
+        wait(for: [expectation], timeout: 0.5)
+    }
+
+    func testDoRequest_whenConnection_UnrecoverableTransportErrorCode_WhenContentTypeJson_WithError_ReturnFormattedError() {
         // setup
         let error: NSError = NSError(domain: NSURLErrorDomain, code: NSURLErrorAppTransportSecurityRequiresSecureConnection, userInfo: nil)
         let expectation = XCTestExpectation(description: "Network callback is invoked")

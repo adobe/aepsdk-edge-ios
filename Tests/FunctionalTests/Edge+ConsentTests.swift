@@ -259,7 +259,7 @@ class EdgeConsentTests: TestBase, AnyCodableAsserts {
             "konductorConfig": {
               "streaming": {
                 "enabled": true,
-                "recordSeparator": "\u0000",
+                "recordSeparator": "\#(expectedRecordSeparatorString)",
                 "lineFeed": "\n"
               }
             }
@@ -322,7 +322,7 @@ class EdgeConsentTests: TestBase, AnyCodableAsserts {
             "konductorConfig": {
               "streaming": {
                 "enabled": true,
-                "recordSeparator": "\u0000",
+                "recordSeparator": "\#(expectedRecordSeparatorString)",
                 "lineFeed": "\n"
               }
             }
