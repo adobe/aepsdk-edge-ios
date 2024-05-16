@@ -100,12 +100,8 @@ class EdgeNetworkService {
 
         ServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest) { (connection: HttpConnection) in
             if connection.error != nil {
-                // handle network transport error
-                if let urlError = connection.error as? URLError {
-                   let urlErrorCode = urlError.code
-
-                   // retry for recoverable url error codes
-                   if NetworkServiceConstants.RECOVERABLE_URL_ERROR_CODES.contains(urlErrorCode) {
+                // retry for recoverable url error codes
+                if let urlError = connection.error as? URLError, urlError.isRecoverable {
                        let retryInterval = EdgeConstants.Defaults.RETRY_INTERVAL
                        let errorMessage = "failed with recoverable URL error:(\(urlError.localizedDescription)) code:(\(urlError.errorCode))."
 
@@ -114,7 +110,6 @@ class EdgeNetworkService {
 
                        completion(false, retryInterval) // failed, but recoverable so retry
                        return
-                   }
                 }
 
                 // handle non-recoverable URLErrors and other non URLErrors
@@ -309,5 +304,11 @@ extension String {
             return nil
         }
         return character
+    }
+}
+
+extension URLError {
+    var isRecoverable: Bool {
+        NetworkServiceConstants.RECOVERABLE_URL_ERROR_CODES.contains(self.code)
     }
 }
