@@ -259,7 +259,7 @@ class EdgeConsentTests: TestBase, AnyCodableAsserts {
             "konductorConfig": {
               "streaming": {
                 "enabled": true,
-                "recordSeparator": "\u0000",
+                "recordSeparator": "STRING_TYPE",
                 "lineFeed": "\n"
               }
             }
@@ -271,8 +271,8 @@ class EdgeConsentTests: TestBase, AnyCodableAsserts {
             expected: expectedJSON,
             actual: consentRequests[0],
             pathOptions:
-                ValueTypeMatch(paths: "identityMap.ECID[0].id", "consent[0].value.metadata.time"),
-                CollectionEqualCount(scope: .subtree))
+                CollectionEqualCount(scope: .subtree),
+                ValueTypeMatch(paths: "identityMap.ECID[0].id", "consent[0].value.metadata.time", "meta.konductorConfig.streaming.recordSeparator"))
     }
 
     func testCollectConsentYes_sendsRequestToEdgeNetwork() {
@@ -322,7 +322,7 @@ class EdgeConsentTests: TestBase, AnyCodableAsserts {
             "konductorConfig": {
               "streaming": {
                 "enabled": true,
-                "recordSeparator": "\u0000",
+                "recordSeparator": "STRING_TYPE",
                 "lineFeed": "\n"
               }
             }
@@ -333,8 +333,8 @@ class EdgeConsentTests: TestBase, AnyCodableAsserts {
             expected: expectedJSON,
             actual: consentRequests[0],
             pathOptions:
-                ValueTypeMatch(paths: "identityMap.ECID[0].id", "consent[0].value.metadata.time"),
-                CollectionEqualCount(scope: .subtree))
+                CollectionEqualCount(scope: .subtree),
+                ValueTypeMatch(paths: "identityMap.ECID[0].id", "consent[0].value.metadata.time", "meta.konductorConfig.streaming.recordSeparator"))
     }
 
     func testCollectConsentOtherThanYesNo_doesNotSendRequestToEdgeNetwork() {
