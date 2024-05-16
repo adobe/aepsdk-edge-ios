@@ -352,7 +352,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
                            "xdm.identityMap.ECID[0].authenticatedState",
                            "xdm.identityMap.ECID[0].primary",
                            "events[0].xdm._id",
-                           "events[0].xdm.timestamp"))
+                           "events[0].xdm.timestamp"),
+                ValueTypeMatch(paths: "meta.konductorConfig.streaming.recordSeparator", scope: .subtree))
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -415,7 +416,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             pathOptions:
                 CollectionEqualCount(scope: .subtree),
                 ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
-                ValueTypeMatch(paths: "events[0].xdm._id", "events[0].xdm.timestamp"))
+                ValueTypeMatch(paths: "events[0].xdm._id", "events[0].xdm.timestamp"),
+                ValueTypeMatch(paths: "meta.konductorConfig.streaming.recordSeparator", scope: .subtree))
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -479,7 +481,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             pathOptions:
                 CollectionEqualCount(scope: .subtree),
                 ValueTypeMatch(paths: "xdm.identityMap.ECID", scope: .subtree),
-                ValueTypeMatch(paths: "events[0].xdm._id", "events[0].xdm.timestamp"))
+                ValueTypeMatch(paths: "events[0].xdm._id", "events[0].xdm.timestamp"),
+                ValueTypeMatch(paths: "meta.konductorConfig.streaming.recordSeparator", scope: .subtree))
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertTrue(requestUrl.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -647,7 +650,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         assertTypeMatch(
             expected: createExpectedPayload(),
             actual: resultNetworkRequests[0],
-            pathOptions: CollectionEqualCount(scope: .subtree))
+            pathOptions: CollectionEqualCount(scope: .subtree),
+            ValueTypeMatch(paths: "meta.konductorConfig.streaming.recordSeparator", scope: .subtree))
 
         resetTestExpectations()
         mockNetworkService.reset()
@@ -725,7 +729,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         assertTypeMatch(
             expected: createExpectedPayload(),
             actual: resultNetworkRequests[0],
-            pathOptions: CollectionEqualCount(scope: .subtree))
+            pathOptions: CollectionEqualCount(scope: .subtree),
+            ValueTypeMatch(paths: "meta.konductorConfig.streaming.recordSeparator", scope: .subtree))
 
         resetTestExpectations()
         mockNetworkService.reset()
@@ -822,7 +827,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         assertTypeMatch(
             expected: createExpectedPayload(),
             actual: resultNetworkRequests[0],
-            pathOptions: CollectionEqualCount(scope: .subtree))
+            pathOptions: CollectionEqualCount(scope: .subtree),
+            ValueTypeMatch(paths: "meta.konductorConfig.streaming.recordSeparator", scope: .subtree))
     }
 
     // MARK: Paired request-response events
@@ -1482,7 +1488,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             "konductorConfig": {
               "streaming": {
                 "enabled": true,
-                "recordSeparator": "\#(expectedRecordSeparatorString)",
+                "recordSeparator": "STRING_TYPE",
                 "lineFeed": "\n"
               }
             },
