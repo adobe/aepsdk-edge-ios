@@ -219,7 +219,7 @@ class EdgeNetworkServiceTests: XCTestCase {
 
         wait(for: [expectation], timeout: 0.5)
     }
-    
+
     func testDoRequest_whenConnection_RecoverableTransportErrorCode_CallsCompletionFalse_AndNoResponseCallback() {
             // setup
             let error: NSError = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet, userInfo: nil)

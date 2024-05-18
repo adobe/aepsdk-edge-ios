@@ -1246,7 +1246,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
 
             XCTAssertEqual(expectedEdgeEventError, edgeEventError)
         }
-    
+
     // MARK: Test Send Event with Configurable Endpoint
     func testSendEvent_withConfigurableEndpoint_withEmptyConfigEndpoint_UsesProduction() {
         let responseConnection: HttpConnection = HttpConnection(data: responseBody.data(using: .utf8),
