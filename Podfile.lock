@@ -53,10 +53,10 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AEPCore:
-    :commit: 2097e4f22ee2a058ee77dc11970902c0981a43aa
+    :commit: 53a2af15cf53dac950ff072bff7f0acd3b7012a4
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPServices:
-    :commit: 2097e4f22ee2a058ee77dc11970902c0981a43aa
+    :commit: 53a2af15cf53dac950ff072bff7f0acd3b7012a4
     :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPTestUtils:
     :git: https://github.com/adobe/aepsdk-testutils-ios.git

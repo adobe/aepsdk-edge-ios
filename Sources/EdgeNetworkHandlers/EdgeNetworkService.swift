@@ -115,7 +115,7 @@ class EdgeNetworkService {
                 // handle non-recoverable URLErrors and other non URLErrors
                 let errorMessage = "failed with unrecoverable error:(\(connection.error?.localizedDescription ?? "Unknown Error")) code:(\(connection.responseCode ?? -1))"
                 Log.warning(label: EdgeConstants.LOG_TAG,
-                           "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) \(errorMessage). Dropping the request.")
+                            "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) \(errorMessage). Dropping the request.")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
                 completion(true, nil) // don't retry
@@ -304,11 +304,5 @@ extension String {
             return nil
         }
         return character
-    }
-}
-
-extension URLError {
-    var isRecoverable: Bool {
-        NetworkServiceConstants.RECOVERABLE_URL_ERROR_CODES.contains(self.code)
     }
 }
