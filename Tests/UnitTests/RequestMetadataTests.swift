@@ -108,7 +108,7 @@ class RequestMetadataTests: XCTestCase, AnyCodableAsserts {
     }
 
     func testEncode_paramSDKConfig_originalDatastreamIdMetadata() {
-        let payload = StorePayload(key: "key", value: "value", maxAge: 3600)
+
         let metadata = RequestMetadata(konductorConfig: KonductorConfig(streaming: nil), sdkConfig: SDKConfig(datastream: Datastream(original: "OriginalDatastreamID")), configOverrides: nil, state: nil)
 
         guard let data = try? encoder.encode(metadata), let metadataString = String(data: data, encoding: .utf8) else {

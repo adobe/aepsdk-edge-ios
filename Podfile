@@ -11,6 +11,7 @@ pod 'SwiftLint', '0.52.0'
 
 def core_pods
   pod 'AEPCore'
+  pod 'AEPServices'
 end
 
 def edge_pods

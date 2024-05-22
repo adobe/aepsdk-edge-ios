@@ -100,7 +100,22 @@ class EdgeNetworkService {
 
         ServiceProvider.shared.networkService.connectAsync(networkRequest: networkRequest) { (connection: HttpConnection) in
             if connection.error != nil {
-                // handle generic error
+                // retry for recoverable url error codes
+                if let urlError = connection.error as? URLError, urlError.isRecoverable {
+                       let retryInterval = EdgeConstants.Defaults.RETRY_INTERVAL
+                       let errorMessage = "failed with recoverable URL error:(\(urlError.localizedDescription)) code:(\(urlError.errorCode))."
+
+                       Log.debug(label: EdgeConstants.LOG_TAG,
+                                 "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) \(errorMessage)). Will retry request in \(retryInterval) seconds.")
+
+                       completion(false, retryInterval) // failed, but recoverable so retry
+                       return
+                }
+
+                // handle non-recoverable URLErrors and other non URLErrors
+                let errorMessage = "failed with unrecoverable error:(\(connection.error?.localizedDescription ?? "Unknown Error")) code:(\(connection.responseCode ?? -1))"
+                Log.warning(label: EdgeConstants.LOG_TAG,
+                            "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) \(errorMessage). Dropping the request.")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
                 completion(true, nil) // don't retry
@@ -108,7 +123,7 @@ class EdgeNetworkService {
             }
 
             guard let responseCode = connection.responseCode else {
-                Log.warning(label: EdgeConstants.LOG_TAG, "\(self.SELF_TAG) - Connection to Experience Edge returned unknown error")
+                Log.warning(label: EdgeConstants.LOG_TAG, "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) failed with unknown error. Dropping the request.")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
                 completion(true, nil) // failed, but unrecoverable, don't retry
