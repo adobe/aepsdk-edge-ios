@@ -2,19 +2,20 @@ PODS:
   - AEPAssurance (5.0.0):
     - AEPCore (< 6.0.0, >= 5.0.0)
     - AEPServices (< 6.0.0, >= 5.0.0)
-  - AEPCore (5.0.0):
+  - AEPCore (5.1.0):
     - AEPRulesEngine (< 6.0.0, >= 5.0.0)
-    - AEPServices (< 6.0.0, >= 5.0.0)
+    - AEPServices (< 6.0.0, >= 5.1.0)
   - AEPEdge (5.0.1):
     - AEPCore (< 6.0.0, >= 5.0.0)
     - AEPEdgeIdentity (< 6.0.0, >= 5.0.0)
+    - AEPServices (< 6.0.0, >= 5.1.0)
   - AEPEdgeConsent (5.0.0):
     - AEPCore (< 6.0.0, >= 5.0.0)
     - AEPEdge (< 6.0.0, >= 5.0.0)
   - AEPEdgeIdentity (5.0.0):
     - AEPCore (< 6.0.0, >= 5.0.0)
   - AEPRulesEngine (5.0.0)
-  - AEPServices (5.0.0)
+  - AEPServices (5.1.0)
   - AEPTestUtils (5.0.0):
     - AEPCore
     - AEPServices
@@ -22,57 +23,47 @@ PODS:
 
 DEPENDENCIES:
   - AEPAssurance
-  - AEPCore (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v5.1.0`)
+  - AEPCore
   - AEPEdge (from `./AEPEdge.podspec`)
   - AEPEdgeConsent
   - AEPEdgeIdentity
-  - AEPServices (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `dev-v5.1.0`)
+  - AEPServices
   - AEPTestUtils (from `https://github.com/adobe/aepsdk-testutils-ios.git`, tag `5.0.0`)
   - SwiftLint (= 0.52.0)
 
 SPEC REPOS:
   trunk:
     - AEPAssurance
+    - AEPCore
     - AEPEdgeConsent
     - AEPEdgeIdentity
     - AEPRulesEngine
+    - AEPServices
     - SwiftLint
 
 EXTERNAL SOURCES:
-  AEPCore:
-    :branch: dev-v5.1.0
-    :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPEdge:
     :path: "./AEPEdge.podspec"
-  AEPServices:
-    :branch: dev-v5.1.0
-    :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPTestUtils:
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
     :tag: 5.0.0
 
 CHECKOUT OPTIONS:
-  AEPCore:
-    :commit: 53a2af15cf53dac950ff072bff7f0acd3b7012a4
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPServices:
-    :commit: 53a2af15cf53dac950ff072bff7f0acd3b7012a4
-    :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPTestUtils:
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
     :tag: 5.0.0
 
 SPEC CHECKSUMS:
   AEPAssurance: 7f260ded4df38a70a06efebade8c33a3e3221984
-  AEPCore: f1c3e9238bb12e7e1103f4407c341ebc65aeab5b
-  AEPEdge: 0873041dfb29f3126260f2dc16d548a1fefbe0c4
+  AEPCore: 55489e1c4e48a88659055f8e96290f2cccce9747
+  AEPEdge: 013661d205b3d4a12432201c6f6c50ad707df18b
   AEPEdgeConsent: d7db1d19eb4c1e2146360ed3c8df315f671b26d5
   AEPEdgeIdentity: 3161ff33434586962946912d6b8e9e8fca1c4d23
   AEPRulesEngine: fe5800653a4bee07b1e41e61b4d5551f0dba557b
-  AEPServices: e42e5118128e81c0f797fdfb1dc9c4a714d644b8
+  AEPServices: c38b809c32336f10f773525e65c71a949abe54a7
   AEPTestUtils: 20495b368da57904ca2e9f241d1d8b114f9887b5
   SwiftLint: 13280e21cdda6786ad908dc6e416afe5acd1fcb7
 
-PODFILE CHECKSUM: efc47e4924bf6b5ae85e269cdc5db5b91020175c
+PODFILE CHECKSUM: 0beefce457cb2f47f1caa5a1f85d8e90e4fd47d4
 
 COCOAPODS: 1.13.0

@@ -10,9 +10,8 @@ project 'AEPEdge.xcodeproj'
 pod 'SwiftLint', '0.52.0'
 
 def core_pods
-      # TODO update to the production pods after release
-  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v5.1.0'
-  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v5.1.0'
+  pod 'AEPCore'
+  pod 'AEPServices'
 end
 
 def edge_pods
