@@ -23,7 +23,7 @@ class EdgeHitProcessor: HitProcessing {
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
     private var getLocationHint: () -> String?
-    private var entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
+    private let entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
     private let VALID_PATH_REGEX_PATTERN = "^\\/[/.a-zA-Z0-9-~_]+$"
 
     init(networkService: EdgeNetworkService,
@@ -257,7 +257,8 @@ class EdgeHitProcessor: HitProcessing {
                                  streaming: edgeHit.getStreamingSettings(),
                                  responseCallback: callback) { [weak self] success, retryInterval in
             // remove any retry interval if success, otherwise add to retry mapping
-            self?.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval
+            guard let self = self else { return }
+            self.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval
             completion(success)
         }
     }
