@@ -15,6 +15,7 @@ DEPENDENCIES=none
 # getRepo AEPCore
 
 declare "repos_AEPCore=https:\/\/github\.com\/adobe\/aepsdk-core-ios\.git"
+declare "repos_AEPEdgeIdentity=https:\/\/github\.com\/adobe\/aepsdk-edgeidentity-ios\.git"
 getRepo() {
     local extensionName=$1
     local url="repos_$extensionName"
@@ -37,7 +38,7 @@ do
    case "$opt" in
       n ) NAME="$OPTARG" ;;
       v ) NEW_VERSION="$OPTARG" ;;
-      d ) DEPENDENCIES="$OPTARG" ;;      
+      d ) DEPENDENCIES="$OPTARG" ;;
       ? ) help ;; # Print help in case parameter is non-existent
    esac
 done
@@ -65,7 +66,7 @@ sed -i '' -E "/^ *s.version/{s/$VERSION_REGEX/$NEW_VERSION/;}" $PODSPEC_FILE
 
 # Replace dependencies in podspec and Package.swift
 if [ "$DEPENDENCIES" != "none" ]; then
-    IFS="," 
+    IFS=","
     dependenciesArray=($(echo "$DEPENDENCIES"))
 
     IFS=" "
@@ -73,7 +74,7 @@ if [ "$DEPENDENCIES" != "none" ]; then
         dependencyArray=(${dependency// / })
         dependencyName=${dependencyArray[0]}
         dependencyVersion=${dependencyArray[1]}
-        
+
         if [ "$dependencyVersion" != "" ]; then
             echo "Changing value of 's.dependency' for '$dependencyName' to '>= $dependencyVersion' in '$PODSPEC_FILE'"
             sed -i '' -E "/^ *s.dependency +'$dependencyName'/{s/$VERSION_REGEX/$dependencyVersion/;}" $PODSPEC_FILE
