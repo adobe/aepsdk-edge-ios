@@ -17,7 +17,7 @@ on:
         required: true
 
       core-dependency:
-        description: 'If a version is provided, update AEPCore & AEPServices dependency in podspec and Package.swift'
+        description: 'If a version is provided, update AEPCore dependency in podspec and Package.swift'
         required: false
 
       edge-identity-dependency:
@@ -39,7 +39,7 @@ jobs:
         ref: ${{ github.event.inputs.branch }}
 
     - name: Update AEPEdge (with core dependency update)
-      run: (sh ./Script/update-versions.sh -n Edge -v ${{ github.event.inputs.version }} -d "AEPCore ${{ github.event.inputs.core-dependency }}, AEPServices ${{ github.event.inputs.core-dependency }}, AEPEdgeIdentity ${{ github.event.inputs.edge-identity-dependency }}")
+      run: (sh ./Script/update-versions.sh -n Edge -v ${{ github.event.inputs.version }} -d "AEPCore ${{ github.event.inputs.core-dependency }}, AEPEdgeIdentity ${{ github.event.inputs.edge-identity-dependency }}")
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4.2.3
