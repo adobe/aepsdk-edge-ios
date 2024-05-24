@@ -1554,7 +1554,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.0.1;
+				MARKETING_VERSION = 5.1.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1590,7 +1590,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.0.1;
+				MARKETING_VERSION = 5.1.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adobe.aep.edge;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
