@@ -256,9 +256,10 @@ class EdgeHitProcessor: HitProcessing {
                                  requestHeaders: headers,
                                  streaming: edgeHit.getStreamingSettings(),
                                  responseCallback: callback) { [weak self] success, retryInterval in
-            // remove any retry interval if success, otherwise add to retry mapping
-            guard let self = self else { return }
-            self.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval
+            if let self = self {
+                // remove any retry interval if success, otherwise add to retry mapping
+                self.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval
+            }
             completion(success)
         }
     }
