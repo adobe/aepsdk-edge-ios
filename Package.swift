@@ -20,13 +20,13 @@ let package = Package(
         .library(name: "AEPEdge", targets: ["AEPEdge"])
     ],
     dependencies: [
-        .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .upToNextMajor(from: "5.0.0")),
+        .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .upToNextMajor(from: "5.1.0")),
         .package(url: "https://github.com/adobe/aepsdk-edgeidentity-ios.git", .upToNextMajor(from: "5.0.0"))
     ],
     targets: [
         .target(name: "AEPEdge",
                 dependencies: [
-                    .product(name: "AEPCore", package: "aepsdk-core-ios"), 
+                    .product(name: "AEPCore", package: "aepsdk-core-ios"),
                     .product(name: "AEPEdgeIdentity", package: "aepsdk-edgeidentity-ios")
                 ],
                 path: "Sources")
