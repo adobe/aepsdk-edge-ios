@@ -79,10 +79,7 @@ class CompletionHandlersManager {
 
             guard let self = self else { return }
 
-            if edgeEventHandles[unwrappedRequestEventId] == nil {
-                edgeEventHandles[unwrappedRequestEventId] = []
-            }
-            edgeEventHandles[unwrappedRequestEventId]?.append(eventHandle)
+            edgeEventHandles[unwrappedRequestEventId, default: []].append(eventHandle)
         }
 
     }
