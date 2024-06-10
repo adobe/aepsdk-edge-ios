@@ -20,7 +20,7 @@ class CompletionHandlersManager {
     private var edgeEventHandles = [String: [EdgeEventHandle]]()
 
     static let shared = CompletionHandlersManager()
-    private let queue = DispatchQueue(label: "com.adobe.completionHandlersManager.queue")
+    private let queue = DispatchQueue(label: "com.adobe.edge.completionHandlersManager.queue")
 
     /// Registers a completion handler for the specified `requestEventId`. This handler is invoked when the Edge response content has been
     /// handled entirely by the Edge extension, containing a list of `EdgeEventHandle`(s). This list can be empty or can contain one or multiple items
