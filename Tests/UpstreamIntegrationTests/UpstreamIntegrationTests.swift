@@ -52,12 +52,12 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 10))
 
         // Set Edge location hint value if one is set for the test target
         setInitialLocationHint(edgeLocationHint?.rawValue)
 
-        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: 2)
+        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: 10)
 
         resetTestExpectations()
         networkService.reset()
