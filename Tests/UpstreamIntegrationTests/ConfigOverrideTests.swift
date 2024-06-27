@@ -54,6 +54,13 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
         networkService.reset()
     }
 
+    override func tearDown() {
+        super.tearDown()
+
+        resetTestExpectations()
+        networkService.reset()
+    }
+
     // MARK: Datastream config overrides test
 
     // Test configOverrides with valid data

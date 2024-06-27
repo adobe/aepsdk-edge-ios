@@ -63,6 +63,13 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         networkService.reset()
     }
 
+    override func tearDown() {
+        super.tearDown()
+
+        resetTestExpectations()
+        networkService.reset()
+    }
+
     // MARK: - Upstream integration test cases
 
     /// Tests that a standard sendEvent receives a single network response with HTTP code 200
