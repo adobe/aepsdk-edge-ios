@@ -45,7 +45,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 10))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 30))
 
         // Set Edge location hint value if one is set for the test target
         setInitialLocationHint(edgeLocationHint?.rawValue)
