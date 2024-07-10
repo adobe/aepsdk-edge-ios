@@ -33,6 +33,9 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         super.setUp()
 
+        resetTestExpectations()
+        networkService.reset()
+
         continueAfterFailure = true
         TestBase.debugEnabled = true
 
