@@ -67,6 +67,8 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
     }
 
     override func tearDown() {
+        EventHub.shared.shutdown()
+
         super.tearDown()
 
         resetTestExpectations()
