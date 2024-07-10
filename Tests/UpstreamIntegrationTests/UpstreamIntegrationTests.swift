@@ -193,7 +193,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
     }
 
     /// Tests that a standard sendEvent receives the expected event handles
@@ -208,7 +208,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
 
         let errorEvents = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(0, errorEvents.count)
@@ -342,7 +342,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Allows waiting for expected responses before clearing expectations
-        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 5)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
 
         resetTestExpectations()
         networkService.reset()
@@ -407,7 +407,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         }
 
         // Wait on all expectations to finish processing before clearing expectations
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
 
         // Reset all test expectations
         networkService.reset()
@@ -459,7 +459,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
 
         let errorEvents = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(0, errorEvents.count)
@@ -600,6 +600,6 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual(0, matchingResponses?.first?.data?.count)
 
         // Error event assertions
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
     }
 }
