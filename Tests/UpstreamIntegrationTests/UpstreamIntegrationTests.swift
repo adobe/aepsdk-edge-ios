@@ -474,6 +474,9 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         Edge.sendEvent(experienceEvent: experienceEvent)
 
+        // Wait for expected location hint event before extracting value
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
+
         // Extract location hint from Edge Network location hint response event
         guard let locationHintResult = getLastLocationHintResultValue() else {
             XCTFail("Unable to extract valid location hint from location hint result event handle.")
@@ -490,6 +493,9 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         // Test
         // 2nd event
         Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // Wait for expected location hint event before extracting value
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
 
         // Verify
 
