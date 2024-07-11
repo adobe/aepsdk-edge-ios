@@ -22,7 +22,7 @@ import XCTest
 class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
     private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
-    private var networkService: RealNetworkService = RealNetworkService()
+    private var networkService: LOCALRealNetworkService = LOCALRealNetworkService()
 
     let LOG_SOURCE = "ConfigOverrideTests"
 
