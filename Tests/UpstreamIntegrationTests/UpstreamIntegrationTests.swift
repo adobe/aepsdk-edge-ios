@@ -94,7 +94,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: 30)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -140,7 +140,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: 30)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -179,7 +179,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: 30)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -429,7 +429,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: 30)
         let matchingResponses = networkService.getResponses(for: locationHintNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -552,7 +552,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: 30)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -603,7 +603,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: 30)
         let matchingResponses = networkService.getResponses(for: invalidNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
