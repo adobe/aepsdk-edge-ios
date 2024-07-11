@@ -110,7 +110,7 @@ jobs:
   test-ios:
     macos:
       xcode: 15.1.0 # Specify the Xcode version to use
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
 
     steps:
       - checkout
@@ -158,7 +158,7 @@ jobs:
   test-tvos:
     macos:
       xcode: 15.1.0 # Specify the Xcode version to use
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
 
     steps:
       - checkout
