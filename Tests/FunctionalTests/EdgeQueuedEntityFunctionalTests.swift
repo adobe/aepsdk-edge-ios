@@ -68,7 +68,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         startMobileSDK()
 
         // Wait for expected network requests
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: 10)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         // Validate result - hit uses configId from Configuration shared state
@@ -108,7 +108,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         startMobileSDK()
 
         // Wait for expected network requests
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: 10)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         // Validate result
