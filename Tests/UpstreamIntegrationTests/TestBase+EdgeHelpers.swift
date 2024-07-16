@@ -43,19 +43,19 @@ extension TestBase {
     /// - Parameters:
     ///    - expectedHandleType: `String` denoting the edge handle type
     /// - Returns: List of events of the passed handle type
-    func getEdgeEventHandles(expectedHandleType: String) -> [Event] {
-        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType)
+    func getEdgeEventHandles(expectedHandleType: String, timeout: TimeInterval = 30, file: StaticString = #file, line: UInt = #line) -> [Event] {
+        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: expectedHandleType, timeout: timeout, file: file, line: line)
     }
 
     /// Gets all the dispatched `Edge` error response `Event`s
     /// - Returns: List of `Edge` error response `Event`s
-    func getEdgeResponseErrors() -> [Event] {
-        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
+    func getEdgeResponseErrors(timeout: TimeInterval = 30, file: StaticString = #file, line: UInt = #line) -> [Event] {
+        return getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, timeout: timeout, file: file, line: line)
     }
 
     /// Extracts the Edge location hint from the location hint result
-    func getLastLocationHintResultValue() -> String? {
-        let locationHintResultEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT).last
+    func getLastLocationHintResultValue(timeout: TimeInterval = 30, file: StaticString = #file, line: UInt = #line) -> String? {
+        let locationHintResultEvent = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, timeout: timeout, file: file, line: line).last
         guard let payload = locationHintResultEvent?.data?["payload"] as? [[String: Any]] else {
             return nil
         }

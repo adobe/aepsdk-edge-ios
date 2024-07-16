@@ -20,6 +20,7 @@ import XCTest
 
 /// Performs validation on integration with the Edge Network upstream service
 class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
+    private let TIMEOUT_SEC: TimeInterval = 30
     private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
     private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
 
@@ -32,6 +33,9 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         ServiceProvider.shared.networkService = networkService
 
         super.setUp()
+
+        resetTestExpectations()
+        networkService.reset()
 
         continueAfterFailure = true
         TestBase.debugEnabled = true
@@ -52,12 +56,21 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: TIMEOUT_SEC))
 
         // Set Edge location hint value if one is set for the test target
         setInitialLocationHint(edgeLocationHint?.rawValue)
 
-        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: 2)
+        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: TIMEOUT_SEC)
+
+        resetTestExpectations()
+        networkService.reset()
+    }
+
+    override func tearDown() {
+        EventHub.shared.shutdown()
+
+        super.tearDown()
 
         resetTestExpectations()
         networkService.reset()
@@ -82,7 +95,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -128,7 +141,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -167,7 +180,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -186,7 +199,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
     }
 
     /// Tests that a standard sendEvent receives the expected event handles
@@ -201,7 +214,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
 
         let errorEvents = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(0, errorEvents.count)
@@ -335,7 +348,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Allows waiting for expected responses before clearing expectations
-        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 5)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
 
         resetTestExpectations()
         networkService.reset()
@@ -400,7 +413,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         }
 
         // Wait on all expectations to finish processing before clearing expectations
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
 
         // Reset all test expectations
         networkService.reset()
@@ -417,7 +430,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: locationHintNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -437,7 +450,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 10)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
     }
 
     func testSendEventx2_doesNotReceivesErrorEvent() {
@@ -452,7 +465,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // Verify
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
 
         let errorEvents = getEdgeEventHandles(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(0, errorEvents.count)
@@ -466,6 +479,9 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
                                               data: ["data": ["test": "data"]])
 
         Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // Wait for expected location hint event before extracting value
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
 
         // Extract location hint from Edge Network location hint response event
         guard let locationHintResult = getLastLocationHintResultValue() else {
@@ -483,6 +499,9 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         // Test
         // 2nd event
         Edge.sendEvent(experienceEvent: experienceEvent)
+
+        // Wait for expected location hint event before extracting value
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
 
         // Verify
 
@@ -534,7 +553,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -585,7 +604,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: invalidNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -593,6 +612,6 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual(0, matchingResponses?.first?.data?.count)
 
         // Error event assertions
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
     }
 }

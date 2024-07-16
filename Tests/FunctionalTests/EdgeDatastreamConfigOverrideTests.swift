@@ -21,6 +21,7 @@ import XCTest
 // swiftlint:disable type_body_length
 /// Functional tests for the sendEvent API with datastreamIdOverride and datastreamConfigOverride features
 class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
+    private let TIMEOUT_SEC: TimeInterval = 2
     private let exEdgeInteractProdUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
 #if os(iOS)
@@ -79,10 +80,10 @@ class AEPEdgeDatastreamOverrideTests: TestBase, AnyCodableAsserts {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: TIMEOUT_SEC))
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "originalDatastreamId"])
 
-        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: 2)
+        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: TIMEOUT_SEC)
         resetTestExpectations()
         mockNetworkService.reset()
     }

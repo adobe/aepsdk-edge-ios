@@ -614,15 +614,15 @@
 				D4A473CF2485B86D00D31710 /* AEPEdgeFunctionalTests.swift */,
 				4CBEE60D2A156FB10084BC50 /* CompletionHandlerFunctionalTests.swift */,
 				4CBEE6182A1571DC0084BC50 /* Edge+ConsentTests.swift */,
-				2ECFB7512AB391F400653128 /* EdgeDatastreamConfigOverrideTests.swift */,
 				4CBEE61A2A1572E50084BC50 /* Edge+PublicAPITests.swift */,
+				2ECFB7512AB391F400653128 /* EdgeDatastreamConfigOverrideTests.swift */,
 				4CBEE61C2A1574CE0084BC50 /* EdgePathOverwriteTests.swift */,
+				BFDF25AA2BD02E58002114B6 /* EdgeQueuedEntityFunctionalTests.swift */,
 				4CBEE61E2A15764B0084BC50 /* IdentityStateFunctionalTests.swift */,
 				4CBEE6202A1577660084BC50 /* NetworkResponseHandlerFunctionalTests.swift */,
 				4CBEE6222A1577E40084BC50 /* NoConfigFunctionalTests.swift */,
 				4CBEE6242A157CB40084BC50 /* SampleFunctionalTests.swift */,
 				D4D5B53724325AB700CAB6E4 /* Info.plist */,
-				BFDF25AA2BD02E58002114B6 /* EdgeQueuedEntityFunctionalTests.swift */,
 			);
 			name = FunctionalTests;
 			path = Tests/FunctionalTests;
