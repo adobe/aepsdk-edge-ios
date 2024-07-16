@@ -19,7 +19,8 @@ import Foundation
 import XCTest
 
 class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
-
+    private let timeout: Double = 2
+    private let longTimeout: Double = 10
     private let exEdgeInteractProdUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
 
     private let mockNetworkService: MockNetworkService = MockNetworkService()
@@ -68,7 +69,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         startMobileSDK()
 
         // Wait for expected network requests
-        mockNetworkService.assertAllNetworkRequestExpectations(timeout: 10)
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: longTimeout)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         // Validate result - hit uses configId from Configuration shared state
@@ -108,7 +109,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         startMobileSDK()
 
         // Wait for expected network requests
-        mockNetworkService.assertAllNetworkRequestExpectations(timeout: 10)
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: longTimeout)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         // Validate result
@@ -133,10 +134,10 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: timeout))
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
-        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: 2)
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: timeout)
     }
 
     /// Add a `DataEntity` into the given `DataQueue`.

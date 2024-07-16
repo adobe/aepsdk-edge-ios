@@ -20,6 +20,7 @@ import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs with completion handlers
 class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
+    private let timeout: Double = 2
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let responseBody = "{\"test\": \"json\"}"
@@ -48,7 +49,7 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: timeout))
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
         resetTestExpectations()
@@ -82,7 +83,7 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
                                                         })
 
         mockNetworkService.assertAllNetworkRequestExpectations()
-        wait(for: [expectation], timeout: 1)
+        wait(for: [expectation], timeout: timeout)
 
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
@@ -135,7 +136,7 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
 
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
-        wait(for: [expectation1, expectation2], timeout: 1)
+        wait(for: [expectation1, expectation2], timeout: timeout)
     }
 
     func testSendEventx2_withCompletionHandler_whenServerError_callsCompletion() {
@@ -163,7 +164,7 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
                                                             expectation1.fulfill()
                                                         })
         mockNetworkService.assertAllNetworkRequestExpectations()
-        wait(for: [expectation1], timeout: 1)
+        wait(for: [expectation1], timeout: timeout)
 
         resetTestExpectations()
         mockNetworkService.reset()
@@ -178,7 +179,7 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
 
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
-        wait(for: [expectation2], timeout: 1)
+        wait(for: [expectation2], timeout: timeout)
     }
 
     func testSendEvent_withCompletionHandler_whenServerErrorAndHandle_callsCompletion() {
@@ -204,6 +205,6 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
 
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
-        wait(for: [expectation], timeout: 1)
+        wait(for: [expectation], timeout: timeout)
     }
 }
