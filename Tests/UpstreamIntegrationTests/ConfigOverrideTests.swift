@@ -20,6 +20,7 @@ import XCTest
 
 /// Performs validation on integration with the Edge Network upstream service
 class ConfigOverrideTests: TestBase, AnyCodableAsserts {
+    private let timeout: Double = 30
     private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
     private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
     private var networkService: RealNetworkService = RealNetworkService()
@@ -45,7 +46,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 30))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: timeout))
 
         // Set Edge location hint value if one is set for the test target
         setInitialLocationHint(edgeLocationHint?.rawValue)
@@ -91,7 +92,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations(timeout: 30)
+        networkService.assertAllNetworkRequestExpectations(timeout: timeout)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -123,7 +124,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations(timeout: 30)
+        networkService.assertAllNetworkRequestExpectations(timeout: timeout)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -170,7 +171,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations(timeout: 30)
+        networkService.assertAllNetworkRequestExpectations(timeout: timeout)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -217,7 +218,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations(timeout: 30)
+        networkService.assertAllNetworkRequestExpectations(timeout: timeout)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -265,7 +266,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations(timeout: 30)
+        networkService.assertAllNetworkRequestExpectations(timeout: timeout)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -290,7 +291,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations(timeout: 30)
+        networkService.assertAllNetworkRequestExpectations(timeout: timeout)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -318,7 +319,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations(timeout: 30)
+        networkService.assertAllNetworkRequestExpectations(timeout: timeout)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
