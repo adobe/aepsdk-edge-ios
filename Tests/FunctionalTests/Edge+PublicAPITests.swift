@@ -18,7 +18,7 @@ import AEPTestUtils
 import XCTest
 
 class EdgePublicAPITests: TestBase {
-    private let timeout: Double = 2
+    private let TIMEOUT_SEC: TimeInterval = 2
     private let exEdgeInteractProdUrlLocHint = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC)! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
 
@@ -47,7 +47,7 @@ class EdgePublicAPITests: TestBase {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: timeout))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: TIMEOUT_SEC))
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
         assertExpectedEvents(ignoreUnexpectedEvents: false)
@@ -118,7 +118,7 @@ class EdgePublicAPITests: TestBase {
         })
 
         // verify
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation], timeout: TIMEOUT_SEC)
     }
 
     func testGetLocationHint_withSet_returnsHint() {
@@ -132,7 +132,7 @@ class EdgePublicAPITests: TestBase {
         })
 
         // verify
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation], timeout: TIMEOUT_SEC)
     }
 
     func testGetLocationHint_clearHint_returnsNilHint() {
@@ -147,7 +147,7 @@ class EdgePublicAPITests: TestBase {
         })
 
         // verify
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation], timeout: TIMEOUT_SEC)
     }
 
     func testGetLocationHint_responseEventChainedToParentId() {
@@ -159,7 +159,7 @@ class EdgePublicAPITests: TestBase {
         })
 
         // verify
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation], timeout: TIMEOUT_SEC)
 
         let dispatchedRequests = getDispatchedEventsWith(type: EventType.edge, source: EventSource.requestIdentity)
         XCTAssertEqual(1, dispatchedRequests.count)

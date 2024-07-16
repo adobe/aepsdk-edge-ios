@@ -22,8 +22,8 @@ import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs
 class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
-    private let timeout: Double = 2
-    private let longTimeout: Double = 10
+    private let TIMEOUT_SEC: TimeInterval = 2
+    private let LONGER_TIMEOUT_SEC: TimeInterval = 10
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let exEdgeInteractProdUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
@@ -70,10 +70,10 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: timeout))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: TIMEOUT_SEC))
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
 
-        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: timeout)
+        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: TIMEOUT_SEC)
         resetTestExpectations()
         mockNetworkService.reset()
     }
@@ -91,7 +91,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             print("Extension unregistration is complete")
             waitForUnregistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForUnregistration.await(timeout: timeout))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForUnregistration.await(timeout: TIMEOUT_SEC))
     }
 
     // MARK: test request event format
@@ -599,7 +599,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
 
         let countDownLatch = CountDownLatch(1)
 
-        MobileCore.dispatch(event: edgeEvent, timeout: timeout) { responseEvent in
+        MobileCore.dispatch(event: edgeEvent, timeout: TIMEOUT_SEC) { responseEvent in
             guard let responseEvent = responseEvent else {
                 XCTFail("Dispatch with responseCallback returned nil event")
                 return
@@ -622,7 +622,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
                 pathOptions: CollectionEqualCount(scope: .subtree))
             countDownLatch.countDown()
         }
-        XCTAssertEqual(DispatchTimeoutResult.success, countDownLatch.await(timeout: timeout))
+        XCTAssertEqual(DispatchTimeoutResult.success, countDownLatch.await(timeout: TIMEOUT_SEC))
     }
 
     // MARK: Client-side store
@@ -971,7 +971,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         // Default retry time period is 5 sec - provide extra timeout buffer
-        mockNetworkService.assertAllNetworkRequestExpectations(timeout: longTimeout)
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: LONGER_TIMEOUT_SEC)
     }
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
@@ -1012,7 +1012,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         // Default retry time period is 5 sec - provide extra timeout buffer
-        mockNetworkService.assertAllNetworkRequestExpectations(timeout: longTimeout)
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: LONGER_TIMEOUT_SEC)
     }
 
     func testSendEvent_multiStatusResponse_dispatchesEvents() {
@@ -1212,7 +1212,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         // Default retry time period is 5 sec - provide extra timeout buffer
-        mockNetworkService.assertAllNetworkRequestExpectations(timeout: longTimeout)
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: LONGER_TIMEOUT_SEC)
     }
 
     func testSendEvent_unrecoverableNetworkTransportError_noRetry() {
@@ -1425,7 +1425,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent) {_ in
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation], timeout: TIMEOUT_SEC)
 
         usleep(1500000) // sleep test thread to expire received location hint
         Edge.sendEvent(experienceEvent: experienceEvent)
