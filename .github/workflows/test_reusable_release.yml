@@ -14,8 +14,8 @@ on:
         default: 'Release'
         type: choice
         options:
-          - release
-          - do_not_release
+          - 'yes'
+          - 'no'
 
       release_pod:
         description: 'Release to Cocoapods'
@@ -24,7 +24,7 @@ on:
         type: choice
         options:
           - 'yes'
-          - no
+          - 'no'
 
       library_name:
         description: 'Library name to be released (ex: AEPEdge)'
