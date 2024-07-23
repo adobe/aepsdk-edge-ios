@@ -12,7 +12,7 @@ on:
         description: 'Run full release process ("no" to skip)'
         required: true
         default: 'yes'
-        type: string
+        type: choice
         options:
           - yes
           - no
@@ -21,7 +21,7 @@ on:
         description: 'Release to Cocoapods'
         required: true
         default: 'yes'
-        type: string
+        type: choice
         options:
           - yes
           - no
