@@ -39,5 +39,4 @@ jobs:
       run_full_release: ${{ github.event.inputs.run_full_release }}
       release_pod: ${{ github.event.inputs.release_pod }}
       library_name: ${{ github.event.inputs.library_name }}
-    secrets:
-      COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+    secrets: inherited
