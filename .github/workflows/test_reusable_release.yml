@@ -11,11 +11,11 @@ on:
       run_full_release:
         description: 'Run full release process ("no" to skip)'
         required: true
-        default: 'yes'
+        default: 'Release'
         type: choice
         options:
-          - YES
-          - NO
+          - Release
+          - Dont_release
 
       release_pod:
         description: 'Release to Cocoapods'
