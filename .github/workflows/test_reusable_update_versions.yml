@@ -21,7 +21,7 @@ on:
 
 jobs:
   update-versions:
-    uses: timkimadobe/aepsdk-commons/.github/workflows/ios-reusable-release.yml@ios-reusable-workflows
+    uses: timkimadobe/aepsdk-commons/.github/workflows/ios-reusable-update-versions.yml@ios-reusable-workflows
     with:
       version: ${{ github.event.inputs.version }}
       branch: ${{ github.event.inputs.branch }}
