@@ -14,8 +14,8 @@ on:
         default: 'Release'
         type: choice
         options:
-          - Release
-          - Dont_release
+          - release
+          - do_not_release
 
       release_pod:
         description: 'Release to Cocoapods'
@@ -23,7 +23,7 @@ on:
         default: 'yes'
         type: choice
         options:
-          - yes
+          - 'yes'
           - no
 
       library_name:
