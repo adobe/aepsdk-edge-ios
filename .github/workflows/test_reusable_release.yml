@@ -1,4 +1,4 @@
-name: Reusable Release
+name: Release
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
       run_full_release:
         description: 'Run full release process ("no" to skip)'
         required: true
-        default: 'Release'
+        default: 'yes'
         type: choice
         options:
           - 'yes'
@@ -26,17 +26,12 @@ on:
           - 'yes'
           - 'no'
 
-      library_name:
-        description: 'Library name to be released (ex: AEPEdge)'
-        required: true
-        default: 'AEPEdge'
-
 jobs:
-  call-reusable-workflow:
+  release:
     uses: adobe/aepsdk-testutils-ios/.github/workflows/reusable_release.yml@test-reusable-workflows
     with:
       tag: ${{ github.event.inputs.tag }}
       run_full_release: ${{ github.event.inputs.run_full_release }}
       release_pod: ${{ github.event.inputs.release_pod }}
-      library_name: ${{ github.event.inputs.library_name }}
+      library_name: AEPEdge
     secrets: inherit
