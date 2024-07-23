@@ -19,7 +19,7 @@ on:
 
 jobs:
   call-reusable-workflow:
-    uses: adobe/aepsdk-testutils-ios/.github/workflows/reusable_update_versions.yml@test-reusable-workflows
+    uses: timkimadobe/aepsdk-commons/.github/workflows/ios-reusable-release.yml@ios-reusable-workflows
     with:
       version: ${{ github.event.inputs.version }}
       branch: ${{ github.event.inputs.branch }}
