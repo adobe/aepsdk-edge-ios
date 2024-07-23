@@ -40,5 +40,4 @@ jobs:
       release_pod: ${{ github.event.inputs.release_pod }}
       library_name: ${{ github.event.inputs.library_name }}
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
