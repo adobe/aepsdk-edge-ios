@@ -1,3 +1,5 @@
+name: Update Versions (iOS)
+
 on:
   workflow_dispatch:
     inputs:
@@ -18,7 +20,7 @@ on:
         required: false
 
 jobs:
-  call-reusable-workflow:
+  update-versions:
     uses: timkimadobe/aepsdk-commons/.github/workflows/ios-reusable-release.yml@ios-reusable-workflows
     with:
       version: ${{ github.event.inputs.version }}
