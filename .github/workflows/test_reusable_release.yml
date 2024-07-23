@@ -14,8 +14,8 @@ on:
         default: 'yes'
         type: choice
         options:
-          - yes
-          - no
+          - YES
+          - NO
 
       release_pod:
         description: 'Release to Cocoapods'
