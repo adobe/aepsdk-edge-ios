@@ -5,7 +5,7 @@ on:
 
 jobs:
   validate-code:
-
+    runs-on: macos-latest
     steps:
       - name: Install dependencies
         uses: ./.github/workflows/reusable-install-dependencies.yml
@@ -13,6 +13,7 @@ jobs:
         run: make lint
 
   test-ios-unit:
+    runs-on: macos-latest
     needs: validate-code
 
     steps:
@@ -29,6 +30,7 @@ jobs:
         run: make unit-test-ios
 
   test-ios-functional:
+    runs-on: macos-latest
     needs: validate-code
 
     steps:
@@ -44,24 +46,8 @@ jobs:
       - name: Run iOS Functional Tests
         run: make functional-test-ios
 
-  test-ios-integration:
-    needs: validate-code
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
-
-    steps:
-      - name: Install dependencies
-        uses: ./.github/workflows/reusable-install-dependencies.yml
-      - name: Preboot iOS Simulator
-        run: xcrun simctl bootstatus booted --timeout 300
-        env:
-          PLATFORM_NAME: iOS
-          DEVICE_NAME: iPhone 15
-          OS_VERSION: 17.2
-
-      - name: Run iOS Integration Tests
-        run: make test-integration-upstream
-
   test-tvos-unit:
+    runs-on: macos-latest
     needs: validate-code
 
     steps:
@@ -79,6 +65,7 @@ jobs:
         run: make unit-test-tvos
 
   test-tvos-functional:
+    runs-on: macos-latest
     needs: validate-code
 
     steps:
@@ -94,7 +81,26 @@ jobs:
       - name: Run tvOS Functional Tests
         run: make functional-test-tvos
 
+  test-ios-integration:
+    runs-on: macos-latest
+    needs: validate-code
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+
+    steps:
+      - name: Install dependencies
+        uses: ./.github/workflows/reusable-install-dependencies.yml
+      - name: Preboot iOS Simulator
+        run: xcrun simctl bootstatus booted --timeout 300
+        env:
+          PLATFORM_NAME: iOS
+          DEVICE_NAME: iPhone 15
+          OS_VERSION: 17.2
+
+      - name: Run iOS Integration Tests
+        run: make test-integration-upstream
+
   build_xcframework_and_app:
+    runs-on: macos-latest
     needs: validate-code
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
 
