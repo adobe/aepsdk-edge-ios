@@ -8,6 +8,8 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -19,6 +21,9 @@ jobs:
     needs: validate-code
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -37,6 +42,8 @@ jobs:
     needs: validate-code
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -56,6 +63,8 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -74,6 +83,8 @@ jobs:
     needs: validate-code
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -92,6 +103,8 @@ jobs:
     needs: validate-code
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -111,6 +124,8 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
