@@ -5,17 +5,19 @@ on:
 
 jobs:
   validate-code:
-    uses: ./.github/workflows/reusable-install-dependencies.yml
 
     steps:
+      - name: Install dependencies
+        uses: ./.github/workflows/reusable-install-dependencies.yml
       - name: Lint Source Code
         run: make lint
 
   test-ios-unit:
-    uses: ./.github/workflows/reusable-install-dependencies.yml
     needs: validate-code
 
     steps:
+      - name: Install dependencies
+        uses: ./.github/workflows/reusable-install-dependencies.yml
       - name: Preboot iOS Simulator
         run: xcrun simctl bootstatus booted --timeout 300
         env:
@@ -27,10 +29,11 @@ jobs:
         run: make unit-test-ios
 
   test-ios-functional:
-    uses: ./.github/workflows/reusable-install-dependencies.yml
     needs: validate-code
 
     steps:
+      - name: Install dependencies
+        uses: ./.github/workflows/reusable-install-dependencies.yml
       - name: Preboot iOS Simulator
         run: xcrun simctl bootstatus booted --timeout 300
         env:
@@ -42,11 +45,12 @@ jobs:
         run: make functional-test-ios
 
   test-ios-integration:
-    uses: ./.github/workflows/reusable-install-dependencies.yml
     needs: validate-code
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
 
     steps:
+      - name: Install dependencies
+        uses: ./.github/workflows/reusable-install-dependencies.yml
       - name: Preboot iOS Simulator
         run: xcrun simctl bootstatus booted --timeout 300
         env:
@@ -58,10 +62,12 @@ jobs:
         run: make test-integration-upstream
 
   test-tvos-unit:
-    uses: ./.github/workflows/reusable-install-dependencies.yml
     needs: validate-code
 
     steps:
+      - name: Install dependencies
+        uses: ./.github/workflows/reusable-install-dependencies.yml
+
       - name: Preboot tvOS Simulator
         run: xcrun simctl bootstatus booted --timeout 300
         env:
@@ -73,10 +79,11 @@ jobs:
         run: make unit-test-tvos
 
   test-tvos-functional:
-    uses: ./.github/workflows/reusable-install-dependencies.yml
     needs: validate-code
 
     steps:
+      - name: Install dependencies
+        uses: ./.github/workflows/reusable-install-dependencies.yml
       - name: Preboot tvOS Simulator
         run: xcrun simctl bootstatus booted --timeout 300
         env:
@@ -88,11 +95,12 @@ jobs:
         run: make functional-test-tvos
 
   build_xcframework_and_app:
-    uses: ./.github/workflows/reusable-install-dependencies.yml
     needs: validate-code
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
 
     steps:
+      - name: Install dependencies
+        uses: ./.github/workflows/reusable-install-dependencies.yml
       - name: Build XCFramework
         run: make archive
 
