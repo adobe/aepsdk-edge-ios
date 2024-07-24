@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
 
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
@@ -43,7 +43,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -84,7 +84,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -104,7 +104,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
@@ -125,7 +125,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Setup Dependencies
         uses: ./.github/actions/setup-action
 
