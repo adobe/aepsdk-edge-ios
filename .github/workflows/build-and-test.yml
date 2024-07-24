@@ -1,0 +1,100 @@
+name: Build and Test (iOS)
+
+on:
+  pull_request:
+
+jobs:
+  validate-code:
+    uses: ./.github/workflows/reusable-install-dependencies.yml
+
+    steps:
+      - name: Lint Source Code
+        run: make lint
+
+  test-ios-unit:
+    uses: ./.github/workflows/reusable-install-dependencies.yml
+    needs: validate-code
+
+    steps:
+      - name: Preboot iOS Simulator
+        run: xcrun simctl bootstatus booted --timeout 300
+        env:
+          PLATFORM_NAME: iOS
+          DEVICE_NAME: iPhone 15
+          OS_VERSION: 17.2
+
+      - name: Run iOS Unit Tests
+        run: make unit-test-ios
+
+  test-ios-functional:
+    uses: ./.github/workflows/reusable-install-dependencies.yml
+    needs: validate-code
+
+    steps:
+      - name: Preboot iOS Simulator
+        run: xcrun simctl bootstatus booted --timeout 300
+        env:
+          PLATFORM_NAME: iOS
+          DEVICE_NAME: iPhone 15
+          OS_VERSION: 17.2
+
+      - name: Run iOS Functional Tests
+        run: make functional-test-ios
+
+  test-ios-integration:
+    uses: ./.github/workflows/reusable-install-dependencies.yml
+    needs: validate-code
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+
+    steps:
+      - name: Preboot iOS Simulator
+        run: xcrun simctl bootstatus booted --timeout 300
+        env:
+          PLATFORM_NAME: iOS
+          DEVICE_NAME: iPhone 15
+          OS_VERSION: 17.2
+
+      - name: Run iOS Integration Tests
+        run: make test-integration-upstream
+
+  test-tvos-unit:
+    uses: ./.github/workflows/reusable-install-dependencies.yml
+    needs: validate-code
+
+    steps:
+      - name: Preboot tvOS Simulator
+        run: xcrun simctl bootstatus booted --timeout 300
+        env:
+          PLATFORM_NAME: tvOS
+          DEVICE_NAME: Apple TV
+          OS_VERSION: 17.2
+
+      - name: Run tvOS Unit Tests
+        run: make unit-test-tvos
+
+  test-tvos-functional:
+    uses: ./.github/workflows/reusable-install-dependencies.yml
+    needs: validate-code
+
+    steps:
+      - name: Preboot tvOS Simulator
+        run: xcrun simctl bootstatus booted --timeout 300
+        env:
+          PLATFORM_NAME: tvOS
+          DEVICE_NAME: Apple TV
+          OS_VERSION: 17.2
+
+      - name: Run tvOS Functional Tests
+        run: make functional-test-tvos
+
+  build_xcframework_and_app:
+    uses: ./.github/workflows/reusable-install-dependencies.yml
+    needs: validate-code
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+
+    steps:
+      - name: Build XCFramework
+        run: make archive
+
+      - name: Build Test App
+        run: make build-app
