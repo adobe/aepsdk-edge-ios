@@ -4,9 +4,6 @@ description: "Checkout and install dependencies"
 runs:
   using: "composite"
   steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-
     - name: Restore Gemfile Cache
       uses: actions/cache@v3
       with:
@@ -15,6 +12,7 @@ runs:
 
     - name: Verify Cocoapods Version
       run: bundle check || bundle install --path vendor/bundle
+      shell: bash
 
     - name: Save Gemfile Cache
       uses: actions/cache@v3
@@ -36,6 +34,7 @@ runs:
 
     - name: Install CocoaPods
       run: make ci-pod-install
+      shell: bash
 
     - name: Save CocoaPods Cache
       uses: actions/cache@v3
