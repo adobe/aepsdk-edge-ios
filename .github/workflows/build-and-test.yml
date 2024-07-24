@@ -6,9 +6,11 @@ on:
 jobs:
   validate-code:
     runs-on: macos-latest
+
     steps:
-      - name: Install dependencies
-        uses: ./.github/workflows/reusable-install-dependencies.yml
+      - name: Setup Dependencies
+        uses: ./.github/actions/setup-action
+
       - name: Lint Source Code
         run: make lint
 
@@ -17,8 +19,9 @@ jobs:
     needs: validate-code
 
     steps:
-      - name: Install dependencies
-        uses: ./.github/workflows/reusable-install-dependencies.yml
+      - name: Setup Dependencies
+        uses: ./.github/actions/setup-action
+
       - name: Preboot iOS Simulator
         run: xcrun simctl bootstatus booted --timeout 300
         env:
@@ -34,8 +37,9 @@ jobs:
     needs: validate-code
 
     steps:
-      - name: Install dependencies
-        uses: ./.github/workflows/reusable-install-dependencies.yml
+      - name: Setup Dependencies
+        uses: ./.github/actions/setup-action
+
       - name: Preboot iOS Simulator
         run: xcrun simctl bootstatus booted --timeout 300
         env:
@@ -46,13 +50,32 @@ jobs:
       - name: Run iOS Functional Tests
         run: make functional-test-ios
 
+  test-ios-integration:
+    runs-on: macos-latest
+    needs: validate-code
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+
+    steps:
+      - name: Setup Dependencies
+        uses: ./.github/actions/setup-action
+
+      - name: Preboot iOS Simulator
+        run: xcrun simctl bootstatus booted --timeout 300
+        env:
+          PLATFORM_NAME: iOS
+          DEVICE_NAME: iPhone 15
+          OS_VERSION: 17.2
+
+      - name: Run iOS Integration Tests
+        run: make test-integration-upstream
+
   test-tvos-unit:
     runs-on: macos-latest
     needs: validate-code
 
     steps:
-      - name: Install dependencies
-        uses: ./.github/workflows/reusable-install-dependencies.yml
+      - name: Setup Dependencies
+        uses: ./.github/actions/setup-action
 
       - name: Preboot tvOS Simulator
         run: xcrun simctl bootstatus booted --timeout 300
@@ -69,8 +92,9 @@ jobs:
     needs: validate-code
 
     steps:
-      - name: Install dependencies
-        uses: ./.github/workflows/reusable-install-dependencies.yml
+      - name: Setup Dependencies
+        uses: ./.github/actions/setup-action
+
       - name: Preboot tvOS Simulator
         run: xcrun simctl bootstatus booted --timeout 300
         env:
@@ -81,32 +105,15 @@ jobs:
       - name: Run tvOS Functional Tests
         run: make functional-test-tvos
 
-  test-ios-integration:
-    runs-on: macos-latest
-    needs: validate-code
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
-
-    steps:
-      - name: Install dependencies
-        uses: ./.github/workflows/reusable-install-dependencies.yml
-      - name: Preboot iOS Simulator
-        run: xcrun simctl bootstatus booted --timeout 300
-        env:
-          PLATFORM_NAME: iOS
-          DEVICE_NAME: iPhone 15
-          OS_VERSION: 17.2
-
-      - name: Run iOS Integration Tests
-        run: make test-integration-upstream
-
   build_xcframework_and_app:
     runs-on: macos-latest
     needs: validate-code
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
 
     steps:
-      - name: Install dependencies
-        uses: ./.github/workflows/reusable-install-dependencies.yml
+      - name: Setup Dependencies
+        uses: ./.github/actions/setup-action
+
       - name: Build XCFramework
         run: make archive
 
