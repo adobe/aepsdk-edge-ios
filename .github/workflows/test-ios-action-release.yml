@@ -35,7 +35,7 @@ jobs:
           ref: main
       
       - name: Run Release Composite Action
-        uses: timkimadobe/aepsdk-commons/.github/actions/ios-action-release.yml@ios-reusable-workflows
+        uses: timkimadobe/aepsdk-commons/.github/actions/ios_release/action.yml@ios-reusable-workflows
         with:
           tag: ${{ github.event.inputs.tag }}
           run_full_release: ${{ github.event.inputs.run_full_release }}
