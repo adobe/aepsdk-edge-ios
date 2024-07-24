@@ -1,0 +1,49 @@
+name: Release (iOS composite action)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag/version (ex: 5.0.1)'
+        required: true
+        default: '1.0.0'
+
+      run_full_release:
+        description: 'Run full release process ("no" to skip)'
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+          - 'yes'
+          - 'no'
+
+      release_pod:
+        description: 'Release to Cocoapods'
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+          - 'yes'
+          - 'no'
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4.1.7
+        with:
+          ref: main
+      
+      - name: Run Release Composite Action
+        uses: timkimadobe/aepsdk-commons/.github/actions/ios-action-release.yml@ios-reusable-workflows
+        with:
+          tag: ${{ github.event.inputs.tag }}
+          run_full_release: ${{ github.event.inputs.run_full_release }}
+          release_pod: ${{ github.event.inputs.release_pod }}
+          library_name: AEPEdge
+          scheme_name_xcframework: AEPEdgeXCF
+          test_app_ios_scheme: TestAppiOS
+          test_app_tvos_scheme: TestApptvOS
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
