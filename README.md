@@ -131,13 +131,13 @@ make setup-tools
 
 ## Related Projects
 
-| Project | Latest Release | <img src="https://img.shields.io/badge/GitHub-%23000000.svg?logo=github&logoColor=white" height="24"/> |
-|---|---|---|
-| [Core](https://developer.adobe.com/client-sdks/home/base/mobile-core/) | [![CocoaPods](https://img.shields.io/github/v/release/adobe/aepsdk-core-ios?label=CocoaPods&logo=apple&logoColor=white&color=orange&sort=semver)](https://cocoapods.org/pods/AEPCore) [![SPM](https://img.shields.io/github/v/release/adobe/aepsdk-core-ios?label=SPM&logo=apple&logoColor=white&color=orange&sort=semver)](https://github.com/adobe/aepsdk-core-ios/releases) | [Link](https://github.com/adobe/aepsdk-core-ios) |
-| [Consent for Edge Network](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network/) | [![CocoaPods](https://img.shields.io/github/v/release/adobe/aepsdk-edgeconsent-ios?label=CocoaPods&logo=apple&logoColor=white&color=orange&sort=semver)](https://cocoapods.org/pods/AEPEdgeConsent) [![SPM](https://img.shields.io/github/v/release/adobe/aepsdk-edgeconsent-ios?label=SPM&logo=apple&logoColor=white&color=orange&sort=semver)](https://github.com/adobe/aepsdk-edgeconsent-ios/releases) | [Link](https://github.com/adobe/aepsdk-edgeconsent-ios) |
-| [Lifecycle for Edge Network](https://developer.adobe.com/client-sdks/edge/lifecycle-for-edge-network/) | [![CocoaPods](https://img.shields.io/github/v/release/adobe/aepsdk-core-ios?label=CocoaPods&logo=apple&logoColor=white&color=orange&sort=semver)](https://cocoapods.org/pods/AEPLifecycle) [![SPM](https://img.shields.io/github/v/release/adobe/aepsdk-core-ios?label=SPM&logo=apple&logoColor=white&color=orange&sort=semver)](https://github.com/adobe/aepsdk-core-ios/releases) | [Link](https://github.com/adobe/aepsdk-core-ios) |
-| [Identity for Edge Network](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network/) | [![CocoaPods](https://img.shields.io/github/v/release/adobe/aepsdk-edgeidentity-ios?label=CocoaPods&logo=apple&logoColor=white&color=orange&sort=semver)](https://cocoapods.org/pods/AEPEdgeIdentity) [![SPM](https://img.shields.io/github/v/release/adobe/aepsdk-edgeidentity-ios?label=SPM&logo=apple&logoColor=white&color=orange&sort=semver)](https://github.com/adobe/aepsdk-edgeidentity-ios/releases) | [Link](https://github.com/adobe/aepsdk-edgeidentity-ios) |
-| [Adobe Experience Platform Assurance](https://developer.adobe.com/client-sdks/documentation/platform-assurance-sdk/) | [![CocoaPods](https://img.shields.io/github/v/release/adobe/aepsdk-assurance-ios?label=CocoaPods&logo=apple&logoColor=white&color=orange&sort=semver)](https://cocoapods.org/pods/AEPAssurance) [![SPM](https://img.shields.io/github/v/release/adobe/aepsdk-assurance-ios?label=SPM&logo=apple&logoColor=white&color=orange&sort=semver)](https://github.com/adobe/aepsdk-assurance-ios/releases) | [Link](https://github.com/adobe/aepsdk-assurance-ios)
+| Project | Description |
+| --- | --- |
+| [Core](https://github.com/adobe/aepsdk-core-ios) | The Core extension represents the foundation of the Adobe Experience Platform Mobile SDK. |
+| [Consent for Edge Network](https://github.com/adobe/aepsdk-edgeconsent-ios) | The Consent for Edge Network extension enables consent preferences collection from your mobile app when using the Adobe Experience Platform Mobile SDK and the Edge Network extension. |
+| [Identity for Edge Network](https://github.com/adobe/aepsdk-edgeidentity-ios) | The Identity for Edge Network extension enables handling of user identity data from a mobile app when using the Adobe Experience Platform Mobile SDK and the Edge Network extension. |
+| [Lifecycle for Edge Network](https://github.com/adobe/aepsdk-core-ios) | The Lifecycle for Edge Network extension enables application lifecycle data collection from your mobile app when using the Adobe Experience Platform Mobile SDK and the Edge Network extension. |
+| [Assurance](https://github.com/adobe/aepsdk-assurance-ios) | The Assurance extension helps you inspect, proof, simulate, and validate how you collect data or serve experiences in your mobile app. |
 
 ## Contributing
 
