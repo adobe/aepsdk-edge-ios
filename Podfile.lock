@@ -1,5 +1,5 @@
 PODS:
-  - AEPAssurance (5.0.0):
+  - AEPAssurance (5.0.1):
     - AEPCore (< 6.0.0, >= 5.0.0)
     - AEPServices (< 6.0.0, >= 5.0.0)
   - AEPCore (5.2.0):
@@ -52,7 +52,7 @@ CHECKOUT OPTIONS:
     :tag: 5.1.0
 
 SPEC CHECKSUMS:
-  AEPAssurance: 7f260ded4df38a70a06efebade8c33a3e3221984
+  AEPAssurance: df04baeace42befb0cc213fd6cdfe51651d11ba6
   AEPCore: db53082c207c28166ed6aa9ae6262a55e95c78aa
   AEPEdge: edf73ae8900016940cd7fcb29a89a576a1c6b0ae
   AEPEdgeConsent: d7db1d19eb4c1e2146360ed3c8df315f671b26d5
@@ -64,4 +64,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: fb871da67f849d9047874d1d8d3aee9c72a664e4
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2
