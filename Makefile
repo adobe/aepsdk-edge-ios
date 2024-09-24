@@ -130,7 +130,6 @@ test-integration-upstream: pod-install; \
 		echo ''; \
 	fi; \
 	xcodebuild test \
-	-quiet \
 	-workspace $(PROJECT_NAME).xcworkspace \
 	-scheme UpstreamIntegrationTests \
 	-destination 'platform=iOS Simulator,name=iPhone 15' \

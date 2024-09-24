@@ -18,7 +18,7 @@ import XCTest
 
 /// Functional test suite for tests which require no Identity shared state at startup to simulate a missing or pending state.
 class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
-
+    private let TIMEOUT_SEC: TimeInterval = 2
     private let exEdgeInteractUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
 
     private let mockNetworkService: MockNetworkService = MockNetworkService()
@@ -44,7 +44,7 @@ class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: TIMEOUT_SEC))
         MobileCore.updateConfigurationWith(configDict: ["edge.configId": "12345-example"])
         assertExpectedEvents(ignoreUnexpectedEvents: false)
         resetTestExpectations()
@@ -61,14 +61,14 @@ class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
     func testSendEvent_withPendingIdentityState_noRequestSent() {
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
-        let requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectationTimeout: 2)
+        let requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
         XCTAssertTrue(requests.isEmpty)
     }
 
     func testSendEvent_withPendingIdentityState_thenValidIdentityState_requestSentAfterChange() {
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
-        var requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectationTimeout: 2)
+        var requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
         XCTAssertTrue(requests.isEmpty) // no network request sent yet
 
         guard let responseBody = "{\"test\": \"json\"}".data(using: .utf8) else {

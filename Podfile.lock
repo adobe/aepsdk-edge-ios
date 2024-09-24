@@ -1,10 +1,10 @@
 PODS:
-  - AEPAssurance (5.0.0):
+  - AEPAssurance (5.0.1):
     - AEPCore (< 6.0.0, >= 5.0.0)
     - AEPServices (< 6.0.0, >= 5.0.0)
-  - AEPCore (5.1.0):
+  - AEPCore (5.2.0):
     - AEPRulesEngine (< 6.0.0, >= 5.0.0)
-    - AEPServices (< 6.0.0, >= 5.1.0)
+    - AEPServices (< 6.0.0, >= 5.2.0)
   - AEPEdge (5.0.2):
     - AEPCore (< 6.0.0, >= 5.1.0)
     - AEPEdgeIdentity (< 6.0.0, >= 5.0.0)
@@ -14,10 +14,10 @@ PODS:
   - AEPEdgeIdentity (5.0.0):
     - AEPCore (< 6.0.0, >= 5.0.0)
   - AEPRulesEngine (5.0.0)
-  - AEPServices (5.1.0)
-  - AEPTestUtils (5.0.0):
-    - AEPCore
-    - AEPServices
+  - AEPServices (5.2.0)
+  - AEPTestUtils (5.1.0):
+    - AEPCore (>= 5.2.0)
+    - AEPServices (>= 5.2.0)
   - SwiftLint (0.52.0)
 
 DEPENDENCIES:
@@ -26,7 +26,7 @@ DEPENDENCIES:
   - AEPEdge (from `./AEPEdge.podspec`)
   - AEPEdgeConsent
   - AEPEdgeIdentity
-  - AEPTestUtils (from `https://github.com/adobe/aepsdk-testutils-ios.git`, tag `5.0.0`)
+  - AEPTestUtils (from `https://github.com/adobe/aepsdk-testutils-ios.git`, tag `5.1.0`)
   - SwiftLint (= 0.52.0)
 
 SPEC REPOS:
@@ -44,24 +44,24 @@ EXTERNAL SOURCES:
     :path: "./AEPEdge.podspec"
   AEPTestUtils:
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
-    :tag: 5.0.0
+    :tag: 5.1.0
 
 CHECKOUT OPTIONS:
   AEPTestUtils:
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
-    :tag: 5.0.0
+    :tag: 5.1.0
 
 SPEC CHECKSUMS:
-  AEPAssurance: 7f260ded4df38a70a06efebade8c33a3e3221984
-  AEPCore: 55489e1c4e48a88659055f8e96290f2cccce9747
+  AEPAssurance: df04baeace42befb0cc213fd6cdfe51651d11ba6
+  AEPCore: db53082c207c28166ed6aa9ae6262a55e95c78aa
   AEPEdge: edf73ae8900016940cd7fcb29a89a576a1c6b0ae
   AEPEdgeConsent: d7db1d19eb4c1e2146360ed3c8df315f671b26d5
   AEPEdgeIdentity: 3161ff33434586962946912d6b8e9e8fca1c4d23
   AEPRulesEngine: fe5800653a4bee07b1e41e61b4d5551f0dba557b
-  AEPServices: c38b809c32336f10f773525e65c71a949abe54a7
-  AEPTestUtils: 20495b368da57904ca2e9f241d1d8b114f9887b5
+  AEPServices: d959143d13fde7e8464c19527df6baacdef765ce
+  AEPTestUtils: b2c941b4f72deaff090e3e82b8c1ac31fedc1c84
   SwiftLint: 13280e21cdda6786ad908dc6e416afe5acd1fcb7
 
-PODFILE CHECKSUM: 559b845c969523123ac98dd7a3e4559871b3c2aa
+PODFILE CHECKSUM: fb871da67f849d9047874d1d8d3aee9c72a664e4
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.15.2
