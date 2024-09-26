@@ -21,8 +21,7 @@ import XCTest
 /// Performs validation on integration with the Edge Network upstream service
 class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     private let TIMEOUT_SEC: TimeInterval = 30
-    private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
-    private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
+    private var edgeLocationHint: String? = TestEnvironment.defaultLocationHint
     private var networkService: RealNetworkService = RealNetworkService()
 
     let LOG_SOURCE = "ConfigOverrideTests"
@@ -40,7 +39,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
         MobileCore.setLogLevel(.trace)
 
         // Set environment file ID for specific Edge Network environment
-        MobileCore.configureWith(appId: getTagsEnvironmentFileId(for: edgeEnvironment))
+        MobileCore.configureWith(appId: TestEnvironment.defaultMobilePropertyId)
 
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
@@ -49,7 +48,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: TIMEOUT_SEC))
 
         // Set Edge location hint value if one is set for the test target
-        setInitialLocationHint(edgeLocationHint?.rawValue)
+        setInitialLocationHint(edgeLocationHint)
 
         resetTestExpectations()
         networkService.reset()
@@ -103,7 +102,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     // Test configOverrides with dummy data
     func testSendEvent_withInvalidConfigOverrides_receivesExpectedNetworkResponseError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
 
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
@@ -140,7 +139,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     // Tests ConfigOverrides with dataset not added in the datastream config and RSID not added to override setting in the Analytics upstream config
     func testSendEvent_withInvalidConfigOverrides_notConfiguredValues_receivesExpectedNetworkResponseError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let expectedErrorJSON = #"""
@@ -186,7 +185,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     // TODO: Enable after PDCL-11131 issue is fixed
     func testSendEvent_withInvalidConfigOverrides_dummyValues_receivesExpectedNetworkResponseError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let expectedErrorJSON = #"""
@@ -234,7 +233,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     // test configOverrides with valid dataset ID, one valid and one dummy value for RSIDs
     func testSendEvent_withInvalidConfigOverrides_containingValidAndDummyValues_receivesExpectedNetworkResponseError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let expectedErrorJSON = #"""
@@ -281,7 +280,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     // Test datastream ID override with valid ID string
     func testSendEvent_withValidDatastreamIDOverride_receivesExpectedNetworkResponse() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamIdOverride: "15d7bce0-3e2c-447b-bbda-129c57c60820")

@@ -21,8 +21,7 @@ import XCTest
 /// Performs validation on integration with the Edge Network upstream service
 class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
     private let TIMEOUT_SEC: TimeInterval = 30
-    private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
-    private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
+    private var edgeLocationHint: String? = TestEnvironment.defaultLocationHint
 
     private var networkService: RealNetworkService = RealNetworkService()
 
@@ -50,7 +49,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         MobileCore.setLogLevel(.trace)
 
         // Set environment file ID for specific Edge Network environment
-        MobileCore.configureWith(appId: getTagsEnvironmentFileId(for: edgeEnvironment))
+        MobileCore.configureWith(appId: TestEnvironment.defaultMobilePropertyId)
 
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
@@ -59,7 +58,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: TIMEOUT_SEC))
 
         // Set Edge location hint value if one is set for the test target
-        setInitialLocationHint(edgeLocationHint?.rawValue)
+        setInitialLocationHint(edgeLocationHint)
 
         assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: TIMEOUT_SEC)
 
@@ -82,7 +81,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
     func testSendEvent_receivesExpectedNetworkResponse() {
         // Setup
         // Note: test constructs should always be valid
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         // Setting expectation allows for both:
         // 1. Validation that the network request was sent out
         // 2. Waiting on a response for the specific network request (with timeout)
@@ -105,7 +104,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
     /// Tests that a standard sendEvent receives a single network response with HTTP code 200
     func testSendEvent_whenComplexEvent_receivesExpectedNetworkResponse() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let xdmJSON = """
@@ -151,7 +150,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
     /// Tests that a standard sendEvent () receives a single network response with HTTP code 200
     func testSendEvent_whenComplexXDMEvent_receivesExpectedNetworkResponse() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let xdmJSON = """
@@ -263,7 +262,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
     func testSendEvent_withPriorLocationHint_receivesExpectedLocationHintEventHandle() {
         // Setup
         // Uses all the valid location hint cases in random order to prevent order dependent edge cases slipping through
-        for locationHint in (EdgeLocationHint.allCases).map({ $0.rawValue }).shuffled() {
+        for locationHint in (IntegrationTestConstants.EdgeLocationHint.allCases).map({ $0.rawValue }).shuffled() {
             Edge.setLocationHint(locationHint)
 
             expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.LOCATION_HINT_RESULT, expectedCount: 1)
@@ -353,7 +352,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         resetTestExpectations()
         networkService.reset()
 
-        for locationHint in (EdgeLocationHint.allCases).map({ $0.rawValue }).shuffled() {
+        for locationHint in (IntegrationTestConstants.EdgeLocationHint.allCases).map({ $0.rawValue }).shuffled() {
             Edge.setLocationHint(locationHint)
 
             expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.STATE_STORE, expectedCount: 1)
@@ -409,7 +408,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // If there is an initial location hint value, check consistency
         if edgeLocationHint != nil {
-            XCTAssertEqual(edgeLocationHint?.rawValue, locationHintResult)
+            XCTAssertEqual(edgeLocationHint, locationHintResult)
         }
 
         // Wait on all expectations to finish processing before clearing expectations
@@ -507,7 +506,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
 
         // If there is an initial location hint value, check consistency
         if edgeLocationHint != nil {
-            XCTAssertEqual(edgeLocationHint?.rawValue, locationHintResult)
+            XCTAssertEqual(edgeLocationHint, locationHintResult)
         }
 
         // Verify location hint consistency between 1st and 2nd event handles
@@ -538,7 +537,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
     // Tests that an invalid datastream ID returns the expected error
     func testSendEvent_withInvalidDatastreamID_receivesExpectedError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
 
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
         expectEdgeEventHandle(expectedHandleType: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
