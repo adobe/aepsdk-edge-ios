@@ -44,7 +44,12 @@ struct TestEnvironment {
     ///
     /// - Returns: The mobile property ID if set in the environment, or a default value if not set.
     static var defaultMobilePropertyId: String {
-        let mobilePropertyId = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKeys.MOBILE_PROPERTY_ID) ?? IntegrationTestConstants.MobilePropertyId.PROD
+        guard let mobilePropertyId = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKeys.MOBILE_PROPERTY_ID) else {
+            return IntegrationTestConstants.MobilePropertyId.PROD
+        }
+        if mobilePropertyId.isEmpty {
+            return mobilePropertyId
+        }
         return mobilePropertyId
     }
 }
