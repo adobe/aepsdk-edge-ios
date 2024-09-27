@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'The branch to use when running integration tests.'
+        description: 'The branch to use when running the integration tests.'
         required: false
         default: 'main'
       id:

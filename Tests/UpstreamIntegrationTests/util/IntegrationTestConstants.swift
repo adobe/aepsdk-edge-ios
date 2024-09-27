@@ -39,7 +39,6 @@ enum IntegrationTestConstants {
     // options into the intended actual location hint value.
     enum LocationHintMapping {
         static let EMPTY_STRING = "Empty string: \"\""
-        static let INVALID = "Invalid"
         static let NONE = "(None)"
     }
 
