@@ -57,10 +57,10 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         })
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: TIMEOUT_SEC))
 
+        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: TIMEOUT_SEC)
+
         // Set Edge location hint value if one is set for the test target
         setInitialLocationHint(edgeLocationHint)
-
-        assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: TIMEOUT_SEC)
 
         resetTestExpectations()
         networkService.reset()
