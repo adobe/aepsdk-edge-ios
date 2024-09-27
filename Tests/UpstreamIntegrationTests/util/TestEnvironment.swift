@@ -25,7 +25,7 @@ struct TestEnvironment {
 
     /// Retrieves the Edge location hint from the shell environment.
     ///
-    /// - Returns: The Edge location hint if set in the environment, or `nil` if not set.
+    /// - Returns: The Edge location hint if set in the environment, or `""` if not set.
     static var defaultLocationHint: String? {
         guard let locationHint = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKeys.EDGE_LOCATION_HINT) else {
             return nil
