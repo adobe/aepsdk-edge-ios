@@ -31,7 +31,7 @@ struct TestEnvironment {
             return nil
         }
         switch locationHint {
-        case IntegrationTestConstants.LocationHintSpecialCases.EMPTY_STRING, "":
+        case IntegrationTestConstants.LocationHintSpecialCases.EMPTY_STRING:
             return ""
         case IntegrationTestConstants.LocationHintSpecialCases.INVALID:
             return locationHint
