@@ -33,7 +33,7 @@
 		21FFBD5925631E3E00B48A8F /* EdgeEventWarningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */; };
 		21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */; };
 		2E1810032ACCB83F0067E444 /* ConfigOverrideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1810022ACCB83F0067E444 /* ConfigOverrideTests.swift */; };
-		2E1810052ACCBA1B0067E444 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1810042ACCBA1B0067E444 /* TestHelpers.swift */; };
+		2E1810052ACCBA1B0067E444 /* TestEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1810042ACCBA1B0067E444 /* TestEnvironment.swift */; };
 		2E1810072ACCE5B00067E444 /* TestBase+EdgeHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1810062ACCE5B00067E444 /* TestBase+EdgeHelpers.swift */; };
 		2EC056EE2AB4F57100023BDE /* SDKConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC056ED2AB4F57100023BDE /* SDKConfig.swift */; };
 		2ECFB7522AB391F400653128 /* EdgeDatastreamConfigOverrideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ECFB7512AB391F400653128 /* EdgeDatastreamConfigOverrideTests.swift */; };
@@ -225,7 +225,7 @@
 		21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarningTests.swift; sourceTree = "<group>"; };
 		21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventErrorTests.swift; sourceTree = "<group>"; };
 		2E1810022ACCB83F0067E444 /* ConfigOverrideTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigOverrideTests.swift; sourceTree = "<group>"; };
-		2E1810042ACCBA1B0067E444 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		2E1810042ACCBA1B0067E444 /* TestEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEnvironment.swift; sourceTree = "<group>"; };
 		2E1810062ACCE5B00067E444 /* TestBase+EdgeHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestBase+EdgeHelpers.swift"; sourceTree = "<group>"; };
 		2EC056ED2AB4F57100023BDE /* SDKConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKConfig.swift; sourceTree = "<group>"; };
 		2ECFB7512AB391F400653128 /* EdgeDatastreamConfigOverrideTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeDatastreamConfigOverrideTests.swift; sourceTree = "<group>"; };
@@ -444,7 +444,6 @@
 				4CBEE5E929D63AFA0084BC50 /* util */,
 				2E1810022ACCB83F0067E444 /* ConfigOverrideTests.swift */,
 				4CBEE5E229D637E90084BC50 /* UpstreamIntegrationTests.swift */,
-				2E1810062ACCE5B00067E444 /* TestBase+EdgeHelpers.swift */,
 			);
 			name = UpstreamIntegrationTests;
 			path = Tests/UpstreamIntegrationTests;
@@ -453,8 +452,9 @@
 		4CBEE5E929D63AFA0084BC50 /* util */ = {
 			isa = PBXGroup;
 			children = (
-				2E1810042ACCBA1B0067E444 /* TestHelpers.swift */,
 				4CF7915D2CA526AB003C1FD8 /* IntegrationTestConstants.swift */,
+				2E1810062ACCE5B00067E444 /* TestBase+EdgeHelpers.swift */,
+				2E1810042ACCBA1B0067E444 /* TestEnvironment.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1253,7 +1253,7 @@
 				4CBEE5E629D637E90084BC50 /* UpstreamIntegrationTests.swift in Sources */,
 				2E1810032ACCB83F0067E444 /* ConfigOverrideTests.swift in Sources */,
 				2E1810072ACCE5B00067E444 /* TestBase+EdgeHelpers.swift in Sources */,
-				2E1810052ACCBA1B0067E444 /* TestHelpers.swift in Sources */,
+				2E1810052ACCBA1B0067E444 /* TestEnvironment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
