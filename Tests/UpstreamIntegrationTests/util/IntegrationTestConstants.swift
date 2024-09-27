@@ -35,7 +35,9 @@ enum IntegrationTestConstants {
         case VA6 = "va6"
     }
 
-    enum LocationHintSpecialCases {
+    // Primarily used in the context of GitHub Action workflows to transform preset location hint
+    // options into the intended actual location hint value.
+    enum LocationHintMapping {
         static let EMPTY_STRING = "Empty string: \"\""
         static let INVALID = "Invalid"
         static let NONE = "(None)"
