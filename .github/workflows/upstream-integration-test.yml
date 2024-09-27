@@ -78,7 +78,7 @@ jobs:
 
     - name: Execute Edge Network integration tests
       id: execute-integration-tests
-      run: make test-integration-upstream EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }} MOBILE_PROPERTY_ID=${{ github.event.inputs.mobile-property-id }}
+      run: make test-integration-upstream MOBILE_PROPERTY_ID=${{ github.event.inputs.mobile-property-id }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
 
     # Potential workflow solutions on job failure
     # All workflow setup step failures give exit code 2, with 3 as fallback
