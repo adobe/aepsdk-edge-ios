@@ -16,16 +16,17 @@ import AEPTestUtils
 import Foundation
 
 extension TestBase {
-
-    /// Sets the location hint with the provided value.
-    ///  - Parameter edgelocationHint: `String` denoting the location hint
-    func setInitialLocationHint(_ edgeLocationHint: String?) {
-        if edgeLocationHint != nil {
-            print("Setting Edge location hint to: \(String(describing: edgeLocationHint))")
-            Edge.setLocationHint(edgeLocationHint)
-        } else {
-            print("No preset Edge location hint is being used for this test.")
+    /// Sets the initial Edge location hint for the test suite if a valid, non-nil, and non-empty location hint is provided.
+    ///
+    /// - Parameter locationHint: An optional string representing the location hint to be set. Must be non-nil and non-empty to be applied.
+    func setInitialLocationHint(_ locationHint: String?) {
+        // Location hint is non-nil and non-empty
+        if let locationHint = locationHint, !locationHint.isEmpty {
+            print("Setting Edge location hint to: \(locationHint)")
+            Edge.setLocationHint(locationHint)
+            return
         }
+        print("No preset Edge location hint is being used for this test.")
     }
 
     /// Creates a valid interact URL using the provided location hint.
