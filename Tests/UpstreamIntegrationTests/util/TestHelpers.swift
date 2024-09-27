@@ -18,6 +18,8 @@ struct TestEnvironment {
     /// - Parameter keyName: The key for which the environment variable's value is retrieved.
     /// - Returns: The value of the environment variable if it exists, or `nil` if not found.
     static func environmentVariable(forKey keyName: String) -> String? {
+        // Note: Remember to update Scheme -> Test -> Arguments to pull in the environment variables
+        // and make them accessible here. The default value for keys if not set is the empty string `""`.
         return ProcessInfo.processInfo.environment[keyName]
     }
 
@@ -25,11 +27,11 @@ struct TestEnvironment {
     ///
     /// - Returns: The Edge location hint if set in the environment, or `nil` if not set.
     static var defaultLocationHint: String? {
-        guard let locationHint = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKeys.EDGE_LOCATION_HINT), !locationHint.isEmpty else {
+        guard let locationHint = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKeys.EDGE_LOCATION_HINT) else {
             return nil
         }
         switch locationHint {
-        case IntegrationTestConstants.LocationHintSpecialCases.EMPTY_STRING:
+        case IntegrationTestConstants.LocationHintSpecialCases.EMPTY_STRING, "":
             return ""
         case IntegrationTestConstants.LocationHintSpecialCases.INVALID:
             return locationHint
