@@ -49,7 +49,7 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         MobileCore.setLogLevel(.trace)
 
         // Set environment file ID for specific Edge Network environment
-        MobileCore.configureWith(appId: TestEnvironment.defaultMobilePropertyId)
+        MobileCore.configureWith(appId: TestEnvironment.defaultTagsMobilePropertyId)
 
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")

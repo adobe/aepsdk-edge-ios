@@ -31,27 +31,25 @@ struct TestEnvironment {
             return nil
         }
         switch locationHint {
-        case IntegrationTestConstants.LocationHintMapping.EMPTY_STRING:
-            return ""
-        case IntegrationTestConstants.LocationHintMapping.INVALID:
-            return locationHint
         case IntegrationTestConstants.LocationHintMapping.NONE:
             return nil
+        case IntegrationTestConstants.LocationHintMapping.EMPTY_STRING:
+            return ""
         default:
             return locationHint
         }
     }
 
-    /// Retrieves the mobile property ID from the shell environment.
+    /// Retrieves the tags mobile property ID from the shell environment.
     ///
-    /// - Returns: The mobile property ID if set in the environment, or a default value if not set.
-    static var defaultMobilePropertyId: String {
-        guard let mobilePropertyId = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKeys.MOBILE_PROPERTY_ID) else {
-            return IntegrationTestConstants.MobilePropertyId.PROD
+    /// - Returns: The tags mobile property ID if set in the environment, or a default value if not set.
+    static var defaultTagsMobilePropertyId: String {
+        guard let tagsMobilePropertyId = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKeys.TAGS_MOBILE_PROPERTY_ID) else {
+            return IntegrationTestConstants.TagsMobilePropertyId.PROD
         }
-        if mobilePropertyId.isEmpty {
-            return mobilePropertyId
+        if tagsMobilePropertyId.isEmpty {
+            return tagsMobilePropertyId
         }
-        return mobilePropertyId
+        return tagsMobilePropertyId
     }
 }

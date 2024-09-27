@@ -38,8 +38,8 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
         let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
 
-        // Set environment file ID for specific Edge Network environment
-        MobileCore.configureWith(appId: TestEnvironment.defaultMobilePropertyId)
+        // Set tags mobile property ID for specific Edge Network environment
+        MobileCore.configureWith(appId: TestEnvironment.defaultTagsMobilePropertyId)
 
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")

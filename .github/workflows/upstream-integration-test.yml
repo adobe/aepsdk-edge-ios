@@ -12,20 +12,20 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to use when running integration tests.'
+        description: 'The branch to use when running integration tests.'
         required: false
         default: 'main'
       id:
-        description: '(Optional) Identifier for the run.'
+        description: '(Optional) The identifier for the run.'
         required: false
-      mobile-property-id:
+      tags-mobile-property-id:
         type: string
-        description: '(Optional) Mobile property ID to use for the test. Default is used if not set.'
+        description: '(Optional) The tags mobile property ID to use for the test. A default is used if not set.'
         required: false
         default: ''
       edge-location-hint:
         type: choice
-        description: '(Optional) Edge location hint to set before each test.'
+        description: '(Optional) The Edge location hint to set before each test.'
         required: false
         default: '(None)'
         options:
@@ -73,7 +73,7 @@ jobs:
 
     - name: Execute Edge Network integration tests
       id: execute-integration-tests
-      run: make test-integration-upstream MOBILE_PROPERTY_ID=${{ github.event.inputs.mobile-property-id }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+      run: make test-integration-upstream TAGS_MOBILE_PROPERTY_ID=${{ github.event.inputs.tags-mobile-property-id }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
 
     # Potential workflow solutions on job failure
     # All workflow setup step failures give exit code 2, with 3 as fallback

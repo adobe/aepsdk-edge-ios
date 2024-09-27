@@ -15,7 +15,7 @@ import Foundation
 enum IntegrationTestConstants {
     enum EnvironmentKeys {
         static let EDGE_LOCATION_HINT = "EDGE_LOCATION_HINT"
-        static let MOBILE_PROPERTY_ID = "MOBILE_PROPERTY_ID"
+        static let TAGS_MOBILE_PROPERTY_ID = "TAGS_MOBILE_PROPERTY_ID"
     }
 
     enum EdgeLocationHint: String, CaseIterable {
@@ -43,7 +43,7 @@ enum IntegrationTestConstants {
         static let NONE = "(None)"
     }
 
-    enum MobilePropertyId {
+    enum TagsMobilePropertyId {
         static let PROD = "94f571f308d5/6b1be84da76a/launch-023a1b64f561-development"
     }
 }

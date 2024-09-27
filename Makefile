@@ -137,7 +137,7 @@ test-integration-upstream: pod-install; \
 	-resultBundlePath build/reports/iosIntegrationUpstreamResults.xcresult \
 	-enableCodeCoverage YES \
 	ADB_SKIP_LINT=YES \
-	MOBILE_PROPERTY_ID=$(MOBILE_PROPERTY_ID) \
+	TAGS_MOBILE_PROPERTY_ID=$(TAGS_MOBILE_PROPERTY_ID) \
 	EDGE_LOCATION_HINT=$(EDGE_LOCATION_HINT)
 
 install-githook:
