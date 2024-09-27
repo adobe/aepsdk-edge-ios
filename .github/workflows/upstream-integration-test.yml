@@ -45,7 +45,7 @@ run-name: ${{ inputs.id }}
 
 jobs:
   test-integration-upstream:
-    runs-on: macos-13
+    runs-on: macos-latest
     steps:
     - name: Job run identifier ${{ github.event.inputs.id }}
       id: job-run-identifier
@@ -58,14 +58,9 @@ jobs:
 
     - name: Checkout
       id: checkout
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v4.2.0
       with:
         ref: ${{ github.event.inputs.branch }}
-
-    # NOTE: on macos-13, The default is already 15.0.1
-    # - uses: maxim-lobanov/setup-xcode@v1
-    #   with:
-    #     xcode-version: '15.0.1'
 
     - name: Cache Cocoapods
       id: cache-cocoapods
