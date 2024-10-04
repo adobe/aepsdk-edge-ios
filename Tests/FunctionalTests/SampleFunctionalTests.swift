@@ -34,7 +34,7 @@ class SampleFunctionalTests: TestBase, AnyCodableAsserts {
         super.setUp()
 
         continueAfterFailure = false
-        TestBase.debugEnabled = true
+        loggingEnabled = true
 
         // hub shared state update for extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge), Edge extension, IdentityEdge XDM shared state and Config shared state updates
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)

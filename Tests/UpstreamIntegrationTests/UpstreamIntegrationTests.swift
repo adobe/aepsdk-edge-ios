@@ -37,9 +37,9 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
         networkService.reset()
 
         continueAfterFailure = true
-        TestBase.debugEnabled = true
+        loggingEnabled = true
 
-        // hub shared state update for 1) Event Hub, 2) Configuration, 3) Edge, 4) Edge Identity
+        // Hub shared state update for 1) Event Hub, 2) Configuration, 3) Edge, 4) Edge Identity
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)
         setExpectationEvent(type: TestConstants.EventType.CONFIGURATION, source: TestConstants.EventSource.REQUEST_CONTENT, expectedCount: 1)
         setExpectationEvent(type: TestConstants.EventType.CONFIGURATION, source: TestConstants.EventSource.RESPONSE_CONTENT, expectedCount: 1)
@@ -56,7 +56,6 @@ class UpstreamIntegrationTests: TestBase, AnyCodableAsserts {
             waitForRegistration.countDown()
         })
         XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: TIMEOUT_SEC))
-
         assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: TIMEOUT_SEC)
 
         // Set Edge location hint value if one is set for the test target

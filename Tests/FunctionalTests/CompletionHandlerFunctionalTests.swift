@@ -40,7 +40,7 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         super.setUp()
 
         continueAfterFailure = false
-        TestBase.debugEnabled = true
+        loggingEnabled = true
         NamedCollectionDataStore.clear()
 
         // wait for async registration because the EventHub is already started in TestBase
