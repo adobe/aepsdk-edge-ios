@@ -27,7 +27,7 @@ struct TestEnvironment {
     ///
     /// - Returns: The Edge location hint if set in the environment, or `""` if not set.
     static var defaultLocationHint: String? {
-        guard let locationHint = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKeys.EDGE_LOCATION_HINT) else {
+        guard let locationHint = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKey.EDGE_LOCATION_HINT)?.trimmingCharacters(in: .whitespacesAndNewlines), !locationHint.isEmpty else {
             return nil
         }
         switch locationHint {
@@ -44,11 +44,8 @@ struct TestEnvironment {
     ///
     /// - Returns: The tags mobile property ID if set in the environment, or a default value if not set.
     static var defaultTagsMobilePropertyId: String {
-        guard let tagsMobilePropertyId = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKeys.TAGS_MOBILE_PROPERTY_ID) else {
+        guard let tagsMobilePropertyId = environmentVariable(forKey: IntegrationTestConstants.EnvironmentKey.TAGS_MOBILE_PROPERTY_ID), !tagsMobilePropertyId.isEmpty else {
             return IntegrationTestConstants.TagsMobilePropertyId.PROD
-        }
-        if tagsMobilePropertyId.isEmpty {
-            return tagsMobilePropertyId
         }
         return tagsMobilePropertyId
     }

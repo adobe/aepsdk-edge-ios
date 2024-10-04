@@ -13,7 +13,11 @@
 import Foundation
 
 enum IntegrationTestConstants {
-    enum EnvironmentKeys {
+    enum ConfigurationKey {
+        static let EDGE_DOMAIN = "edge.domain"
+    }
+
+    enum EnvironmentKey {
         static let EDGE_LOCATION_HINT = "EDGE_LOCATION_HINT"
         static let TAGS_MOBILE_PROPERTY_ID = "TAGS_MOBILE_PROPERTY_ID"
     }
@@ -35,11 +39,19 @@ enum IntegrationTestConstants {
         case VA6 = "va6"
     }
 
+    enum ExtensionName {
+        static let CONFIGURATION = "com.adobe.module.configuration"
+    }
+
     // Primarily used in the context of GitHub Action workflows to transform preset location hint
     // options into the intended actual location hint value.
     enum LocationHintMapping {
-        static let EMPTY_STRING = "Empty string: \"\""
-        static let NONE = "(None)"
+        static let EMPTY_STRING = "EmptyString"
+        static let NONE = "None"
+    }
+
+    enum NetworkKeys {
+        static let DEFAULT_EDGE_DOMAIN = "edge.adobedc.net"
     }
 
     enum TagsMobilePropertyId {
