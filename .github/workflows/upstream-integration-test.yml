@@ -27,7 +27,7 @@ on:
         type: choice
         description: '(Optional) The Edge location hint to set before each test.'
         required: false
-        default: '(None)'
+        default: 'None'
         options:
           - 'aus3'
           - 'ind1'
@@ -36,9 +36,9 @@ on:
           - 'or2'
           - 'sgp3'
           - 'va6'
-          - 'Empty string: ""'
+          - 'EmptyString'
           - 'Invalid'
-          - '(None)'
+          - 'None'
           
 
 run-name: ${{ inputs.id }}
