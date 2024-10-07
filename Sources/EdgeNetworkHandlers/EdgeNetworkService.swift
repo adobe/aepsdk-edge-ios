@@ -27,11 +27,8 @@ enum HttpResponseCodes: Int {
     case ok = 200
     case noContent = 204
     case multiStatus = 207
-    case clientTimeout = 408
     case tooManyRequests = 429
     case badGateway = 502
-    case serviceUnavailable = 503
-    case gatewayTimeout = 504
     case insufficientStorage = 507
 }
 
@@ -40,12 +37,9 @@ class EdgeNetworkService {
     private let SELF_TAG: String = "EdgeNetworkService"
     private let DEFAULT_GENERIC_ERROR_MESSAGE = "Request to Experience Edge failed with an unknown exception"
     private let DEFAULT_GENERIC_ERROR_TITLE = "Unexpected Error"
-    private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.clientTimeout.rawValue,
-                                                       HttpResponseCodes.tooManyRequests.rawValue,
-                                                       HttpResponseCodes.badGateway.rawValue,
-                                                       HttpResponseCodes.serviceUnavailable.rawValue,
-                                                       HttpResponseCodes.gatewayTimeout.rawValue,
-                                                       HttpResponseCodes.insufficientStorage.rawValue]
+    private let recoverableNetworkErrorCodes: [Int] = NetworkServiceConstants.RECOVERABLE_ERROR_CODES + [HttpResponseCodes.tooManyRequests.rawValue,
+         HttpResponseCodes.badGateway.rawValue,
+         HttpResponseCodes.insufficientStorage.rawValue].filter { !NetworkServiceConstants.RECOVERABLE_ERROR_CODES.contains($0) }
 
     private let waitTimeout: TimeInterval = max(EdgeConstants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT, EdgeConstants.NetworkKeys.DEFAULT_READ_TIMEOUT) + 1
     private var defaultHeaders = [EdgeConstants.NetworkKeys.HEADER_KEY_ACCEPT: EdgeConstants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON,

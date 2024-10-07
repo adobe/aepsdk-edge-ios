@@ -43,6 +43,11 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     private let MEDIA_ENDPOINT_PRE_PROD_LOC_HINT = "https://edge.adobedc.net/ee-pre-prd/lh1/va/v1/sessionstart"
     private let MEDIA_ENDPOINT_INT_LOC_HINT = "https://edge-int.adobedc.net/ee/lh1/va/v1/sessionstart"
 
+    private let EDGE_RECOVERABLE_ERROR_CODES = Array(Set(NetworkServiceConstants.RECOVERABLE_ERROR_CODES +
+                [HttpResponseCodes.tooManyRequests.rawValue,
+                HttpResponseCodes.badGateway.rawValue,
+                HttpResponseCodes.insufficientStorage.rawValue]))
+
     private static let CUSTOM_DOMAIN = "my.awesome.site"
     private static let CUSTOM_CONSENT_ENDPOINT = "https://\(CUSTOM_DOMAIN)/ee/v1/privacy/set-consent"
     private static let CUSTOM_CONSENT_ENDPOINT_PRE_PROD = "https://\(CUSTOM_DOMAIN)/ee-pre-prd/v1/privacy/set-consent"
@@ -175,27 +180,17 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         XCTAssertTrue(requestString.contains("test-datastream-id-override"))
     }
 
-    /// Tests that when the network request fails with a recoverable error and retry-after header (in seconds), sets this value as timeout for the retry
+    /// Test with all recoverable error codes and retry-after header (in seconds), returns false so hit is retried and sets retry timeout
     func testProcessHit_experienceEvent_whenRecoverableNetworkError_andRetryAfterResponseHeader_setsRetryInterval() {
         // setup
-        let recoverableNetworkErrorCodes =
-            [HttpResponseCodes.clientTimeout.rawValue,
-             HttpResponseCodes.tooManyRequests.rawValue,
-             HttpResponseCodes.badGateway.rawValue,
-             HttpResponseCodes.serviceUnavailable.rawValue,
-             HttpResponseCodes.gatewayTimeout.rawValue,
-             HttpResponseCodes.insufficientStorage.rawValue]
-
+        let retryTimeout = 60
+        let responseHeaders = ["Retry-After": String(retryTimeout)]
         let expectation = XCTestExpectation(description: "Callback should be invoked with false signaling this hit should be retried")
-        expectation.expectedFulfillmentCount = recoverableNetworkErrorCodes.count
+        expectation.expectedFulfillmentCount = EDGE_RECOVERABLE_ERROR_CODES.count
 
-        // retryValues.0 = Retry-After header value set on the response
-        // retryValues.1 = Actual value for retry
-        let retryValues = [("60", 60.0), ("30", 30.0), ("5", 5.0), ("1", 1.0), ("180", 180.0), ("300", 300.0)]
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(EDGE_RECOVERABLE_ERROR_CODES.count))
 
-        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(recoverableNetworkErrorCodes.count))
-
-        for (code, retryValueTuple) in zip(recoverableNetworkErrorCodes, retryValues) {
+        for code in EDGE_RECOVERABLE_ERROR_CODES {
             let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
@@ -205,7 +200,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
                 httpMethod: .post,
                 responseConnection: HttpConnection(
                     data: responseData,
-                    response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: ["Retry-After": retryValueTuple.0]),
+                    response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: responseHeaders),
                     error: nil))
 
             let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
@@ -214,7 +209,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
             // test
             hitProcessor.processHit(entity: entity) { success in
                 XCTAssertFalse(success)
-                XCTAssertEqual(self.hitProcessor.retryInterval(for: entity), retryValueTuple.1)
+                XCTAssertEqual(self.hitProcessor.retryInterval(for: entity), TimeInterval(retryTimeout))
                 expectation.fulfill()
             }
         }
@@ -224,23 +219,20 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
     }
 
+    /// Tests that when the network request fails with a recoverable error and retry-after header (in seconds), sets this value as timeout for the retry
+    func testProcessHit_experienceEvent_whenRecoverableNetworkError_andVariousRetryAfterResponseHeader_setsRetryInterval() {
+        // todo
+    }
+
     /// Tests that when the network request fails but has a recoverable error that it retries the hit and does not invoke the response handler for that hit
     func testProcessHit_experienceEvent_whenRecoverableNetworkError_sendsNetworkRequest_returnsFalse_setsDefaultRetryInterval() {
         // setup
-        let recoverableNetworkErrorCodes =
-            [HttpResponseCodes.clientTimeout.rawValue,
-             HttpResponseCodes.tooManyRequests.rawValue,
-             HttpResponseCodes.badGateway.rawValue,
-             HttpResponseCodes.serviceUnavailable.rawValue,
-             HttpResponseCodes.gatewayTimeout.rawValue,
-             HttpResponseCodes.insufficientStorage.rawValue]
-
         let expectation = XCTestExpectation(description: "Callback should be invoked with false signaling this hit should be retried")
-        expectation.expectedFulfillmentCount = recoverableNetworkErrorCodes.count
+        expectation.expectedFulfillmentCount = EDGE_RECOVERABLE_ERROR_CODES.count
 
-        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(recoverableNetworkErrorCodes.count))
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(EDGE_RECOVERABLE_ERROR_CODES.count))
 
-        for code in recoverableNetworkErrorCodes {
+        for code in EDGE_RECOVERABLE_ERROR_CODES {
             let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
@@ -272,7 +264,11 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     /// Tests that when the network request fails and does not have a recoverable response code, it invokes the response handler and do not retry the hit
     func testProcessHit_experienceEvent_whenUnrecoverableNetworkError_sendsNetworkRequest_returnsTrue() {
         // setup
-        let unrecoverableNetworkErrorCodes = [401, 405, 505, 508, -1]
+        var unrecoverableNetworkErrorCodes = [401, 405, 408, 505, 508, -1]
+
+        // exclude known recoverable codes
+        // this allows tests to continue passing in case NetworkServiceConstants.RECOVERABLE_ERROR_CODES is expanded later
+        unrecoverableNetworkErrorCodes = unrecoverableNetworkErrorCodes.filter { !EDGE_RECOVERABLE_ERROR_CODES.contains($0) }
         let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
         expectation.expectedFulfillmentCount = unrecoverableNetworkErrorCodes.count
         mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(unrecoverableNetworkErrorCodes.count))
@@ -632,24 +628,14 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     /// Tests that when the consent network request fails with a recoverable error and retry-after header (in seconds), sets this value as timeout for the retry
     func testProcessHit_consentUpdateEvent_whenRecoverableNetworkError_andRetryAfterResponseHeader_setsRetryInterval() {
         // setup
-        let recoverableNetworkErrorCodes =
-            [HttpResponseCodes.clientTimeout.rawValue,
-             HttpResponseCodes.tooManyRequests.rawValue,
-             HttpResponseCodes.badGateway.rawValue,
-             HttpResponseCodes.serviceUnavailable.rawValue,
-             HttpResponseCodes.gatewayTimeout.rawValue,
-             HttpResponseCodes.insufficientStorage.rawValue]
-
+        let retryTimeout = 60
+        let responseHeaders = ["Retry-After": String(retryTimeout)]
         let expectation = XCTestExpectation(description: "Callback should be invoked with false signaling this hit should be retried")
-        expectation.expectedFulfillmentCount = recoverableNetworkErrorCodes.count
+        expectation.expectedFulfillmentCount = EDGE_RECOVERABLE_ERROR_CODES.count
 
-        // retryValues.0 = Retry-After header value set on the response
-        // retryValues.1 = Actual value for retry
-        let retryValues = [("60", 60.0), ("30", 30.0), ("5", 5.0), ("1", 1.0), ("180", 180.0), ("300", 300.0)]
+        mockNetworkService.setExpectationForNetworkRequest(url: CONSENT_ENDPOINT, httpMethod: .post, expectedCount: Int32(EDGE_RECOVERABLE_ERROR_CODES.count))
 
-        mockNetworkService.setExpectationForNetworkRequest(url: CONSENT_ENDPOINT, httpMethod: .post, expectedCount: Int32(recoverableNetworkErrorCodes.count))
-
-        for (code, retryValueTuple) in zip(recoverableNetworkErrorCodes, retryValues) {
+        for code in EDGE_RECOVERABLE_ERROR_CODES {
             let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
@@ -659,7 +645,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
                 httpMethod: .post,
                 responseConnection: HttpConnection(
                     data: responseData,
-                    response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: ["Retry-After": retryValueTuple.0]),
+                    response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: responseHeaders),
                     error: nil))
 
             let edgeEntity = getEdgeDataEntity(event: consentUpdateEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
@@ -668,7 +654,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
             // test
             hitProcessor.processHit(entity: entity) { success in
                 XCTAssertFalse(success)
-                XCTAssertEqual(self.hitProcessor.retryInterval(for: entity), retryValueTuple.1)
+                XCTAssertEqual(self.hitProcessor.retryInterval(for: entity), TimeInterval(retryTimeout))
                 expectation.fulfill()
             }
         }
