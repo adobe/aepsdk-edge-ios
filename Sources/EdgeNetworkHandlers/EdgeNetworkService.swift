@@ -37,7 +37,8 @@ class EdgeNetworkService {
     private let SELF_TAG: String = "EdgeNetworkService"
     private let DEFAULT_GENERIC_ERROR_MESSAGE = "Request to Experience Edge failed with an unknown exception"
     private let DEFAULT_GENERIC_ERROR_TITLE = "Unexpected Error"
-    private let recoverableNetworkErrorCodes: [Int] = NetworkServiceConstants.RECOVERABLE_ERROR_CODES + [HttpResponseCodes.tooManyRequests.rawValue,
+    private let recoverableNetworkErrorCodes: [Int] = NetworkServiceConstants.RECOVERABLE_ERROR_CODES +
+        [HttpResponseCodes.tooManyRequests.rawValue,
          HttpResponseCodes.badGateway.rawValue,
          HttpResponseCodes.insufficientStorage.rawValue].filter { !NetworkServiceConstants.RECOVERABLE_ERROR_CODES.contains($0) }
 
@@ -217,7 +218,7 @@ class EdgeNetworkService {
                 let retryHeader = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER)
                 var retryInterval = EdgeConstants.Defaults.RETRY_INTERVAL
                 // Do not currently support HTTP-date only parsing Ints for now. Konductor will only send back Retry-After as Ints.
-                if let retryHeader = retryHeader, let retryAfterInterval = TimeInterval(retryHeader) {
+                if let retryHeader = retryHeader, let retryAfterInterval = TimeInterval(retryHeader), retryAfterInterval > 0 {
                     retryInterval = retryAfterInterval
                 }
                 Log.debug(label: EdgeConstants.LOG_TAG,
