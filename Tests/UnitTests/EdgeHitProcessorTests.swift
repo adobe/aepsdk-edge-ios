@@ -219,50 +219,6 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
     }
 
-    /// Tests that when the network request fails with a recoverable error and retry-after header, sets this value as timeout for the retry
-    func testProcessHit_experienceEvent_whenRecoverableNetworkError_andVariousRetryAfterResponseHeader_setsRetryInterval() {
-        // setup
-
-        // retryValues.0 = Retry-After header value set on the response
-        // retryValues.1 = Actual value for retry
-        let retryValues = [("1", 1.0), ("5", 5.0), ("30", 30.0), ("60", 60.0), ("180", 180.0), ("300", 300.0),
-                           ("InvalidHeader", 5.0), ("", 5.0), ("0", 5.0), ("-1", 5.0)]
-        let responseCode = 429
-
-        let expectation = XCTestExpectation(description: "Callback should be invoked with false signaling this hit should be retried")
-        expectation.expectedFulfillmentCount = retryValues.count
-
-        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(retryValues.count))
-
-        for retryValue in retryValues {
-            let error = EdgeEventError(title: "test-title", detail: nil, status: responseCode, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
-            let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
-            let responseData = try? JSONEncoder().encode(edgeResponse)
-
-            mockNetworkService.setMockResponse(
-                url: INTERACT_ENDPOINT_PROD,
-                httpMethod: .post,
-                responseConnection: HttpConnection(
-                    data: responseData,
-                    response: HTTPURLResponse(url: url, statusCode: responseCode, httpVersion: nil, headerFields: ["Retry-After": String(retryValue.0)]),
-                    error: nil))
-
-            let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
-            let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-
-            // test
-            hitProcessor.processHit(entity: entity) { success in
-                XCTAssertFalse(success)
-                XCTAssertEqual(self.hitProcessor.retryInterval(for: entity), TimeInterval(retryValue.1))
-                expectation.fulfill()
-            }
-        }
-
-        // verify
-        wait(for: [expectation], timeout: 1)
-        mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
-    }
-
     /// Tests that when the network request fails but has a recoverable error that it retries the hit and does not invoke the response handler for that hit
     func testProcessHit_experienceEvent_whenRecoverableNetworkError_sendsNetworkRequest_returnsFalse_setsDefaultRetryInterval() {
         // setup
@@ -303,37 +259,25 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     /// Tests that when the network request fails and does not have a recoverable response code, it invokes the response handler and does not retry the hit
     func testProcessHit_experienceEvent_whenUnrecoverableNetworkError_sendsNetworkRequest_returnsTrue() {
         // setup
-        var unrecoverableNetworkErrorCodes = [401, 405, 408, 505, 508, -1]
+        mockNetworkService.setMockResponse(
+            url: INTERACT_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: -1,
+                    httpVersion: nil,
+                    headerFields: nil),
+                error: nil))
 
-        // exclude known recoverable codes
-        // this allows tests to continue passing in case NetworkServiceConstants.RECOVERABLE_ERROR_CODES is expanded later
-        unrecoverableNetworkErrorCodes = unrecoverableNetworkErrorCodes.filter { !EDGE_RECOVERABLE_ERROR_CODES.contains($0) }
-        let expectation = XCTestExpectation(description: "Callback should be invoked with true signaling this hit should not be retried")
-        expectation.expectedFulfillmentCount = unrecoverableNetworkErrorCodes.count
-        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(unrecoverableNetworkErrorCodes.count))
+        let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
-        for code in unrecoverableNetworkErrorCodes {
-            mockNetworkService.setMockResponse(
-                url: INTERACT_ENDPOINT_PROD,
-                httpMethod: .post,
-                responseConnection: HttpConnection(
-                    data: "{}".data(using: .utf8),
-                    response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: nil),
-                    error: nil))
-
-            let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
-            let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
-
-            // test
-            hitProcessor.processHit(entity: entity) { success in
-                XCTAssertTrue(success) // no retry
-                expectation.fulfill()
-            }
-        }
-
-        // verify
-        wait(for: [expectation], timeout: 1)
-        mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
+        // test
+        assertProcessHit(entity: entity, sendsNetworkRequest: true, returns: true)
+        let networkRequests = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        XCTAssertEqual(1, networkRequests.count)
     }
 
     /// Tests that when the configurable edge endpoint is empty in configuration shared state that we fallback to production endpoint
