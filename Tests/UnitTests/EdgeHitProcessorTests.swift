@@ -43,10 +43,10 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     private let MEDIA_ENDPOINT_PRE_PROD_LOC_HINT = "https://edge.adobedc.net/ee-pre-prd/lh1/va/v1/sessionstart"
     private let MEDIA_ENDPOINT_INT_LOC_HINT = "https://edge-int.adobedc.net/ee/lh1/va/v1/sessionstart"
 
-    private let EDGE_RECOVERABLE_ERROR_CODES = Array(Set(NetworkServiceConstants.RECOVERABLE_ERROR_CODES +
+    private let EDGE_RECOVERABLE_ERROR_CODES = Set(NetworkServiceConstants.RECOVERABLE_ERROR_CODES +
                 [HttpResponseCodes.tooManyRequests.rawValue,
                 HttpResponseCodes.badGateway.rawValue,
-                HttpResponseCodes.insufficientStorage.rawValue]))
+                HttpResponseCodes.insufficientStorage.rawValue])
 
     private static let CUSTOM_DOMAIN = "my.awesome.site"
     private static let CUSTOM_CONSENT_ENDPOINT = "https://\(CUSTOM_DOMAIN)/ee/v1/privacy/set-consent"

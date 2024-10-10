@@ -37,10 +37,10 @@ class EdgeNetworkService {
     private let SELF_TAG: String = "EdgeNetworkService"
     private let DEFAULT_GENERIC_ERROR_MESSAGE = "Request to Experience Edge failed with an unknown exception"
     private let DEFAULT_GENERIC_ERROR_TITLE = "Unexpected Error"
-    private let recoverableNetworkErrorCodes: [Int] = NetworkServiceConstants.RECOVERABLE_ERROR_CODES +
-        [HttpResponseCodes.tooManyRequests.rawValue,
-         HttpResponseCodes.badGateway.rawValue,
-         HttpResponseCodes.insufficientStorage.rawValue].filter { !NetworkServiceConstants.RECOVERABLE_ERROR_CODES.contains($0) }
+    private let recoverableNetworkErrorCodes = Set(NetworkServiceConstants.RECOVERABLE_ERROR_CODES +
+            [HttpResponseCodes.tooManyRequests.rawValue,
+             HttpResponseCodes.badGateway.rawValue,
+             HttpResponseCodes.insufficientStorage.rawValue])
 
     private let waitTimeout: TimeInterval = max(EdgeConstants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT, EdgeConstants.NetworkKeys.DEFAULT_READ_TIMEOUT) + 1
     private var defaultHeaders = [EdgeConstants.NetworkKeys.HEADER_KEY_ACCEPT: EdgeConstants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON,

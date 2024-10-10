@@ -18,10 +18,10 @@ import XCTest
 
 // swiftlint:disable type_body_length
 class EdgeNetworkServiceTests: XCTestCase {
-    private let EDGE_RECOVERABLE_ERROR_CODES = Array(Set(NetworkServiceConstants.RECOVERABLE_ERROR_CODES +
+    private let EDGE_RECOVERABLE_ERROR_CODES = Set(NetworkServiceConstants.RECOVERABLE_ERROR_CODES +
                 [HttpResponseCodes.tooManyRequests.rawValue,
                 HttpResponseCodes.badGateway.rawValue,
-                HttpResponseCodes.insufficientStorage.rawValue]))
+                HttpResponseCodes.insufficientStorage.rawValue])
 
     private let mockNetworkService: MockNetworkService = MockNetworkService()
     private var mockResponseCallback = MockResponseCallback()
