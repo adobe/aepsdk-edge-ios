@@ -15,7 +15,7 @@ import Foundation
 enum EdgeConstants {
 
     static let EXTENSION_NAME = "com.adobe.edge"
-    static let EXTENSION_VERSION = "5.0.2"
+    static let EXTENSION_VERSION = "5.0.3"
     static let FRIENDLY_NAME = "AEPEdge"
     static let LOG_TAG = FRIENDLY_NAME
 
