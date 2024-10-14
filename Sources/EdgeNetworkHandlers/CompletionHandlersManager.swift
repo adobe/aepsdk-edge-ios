@@ -15,12 +15,14 @@ import Foundation
 
 class CompletionHandlersManager {
     private let TAG = "CompletionHandlersManager"
-    private var completionHandlers = [String: (([EdgeEventHandle]) -> Void)]()
+    private var completionHandlers =
+        ThreadSafeDictionary<String, (([EdgeEventHandle]) -> Void)>(identifier: "com.adobe.edge.completionHandlers")
+
     // edge response handles for a event request id (key)
-    private var edgeEventHandles = [String: [EdgeEventHandle]]()
+    private var edgeEventHandles =
+        ThreadSafeDictionary<String, [EdgeEventHandle]>(identifier: "com.adobe.edge.edgeHandlesList")
 
     static let shared = CompletionHandlersManager()
-    private let queue = DispatchQueue(label: "com.adobe.edge.completionHandlersManager.queue")
 
     /// Registers a completion handler for the specified `requestEventId`. This handler is invoked when the Edge response content has been
     /// handled entirely by the Edge extension, containing a list of `EdgeEventHandle`(s). This list can be empty or can contain one or multiple items
@@ -36,14 +38,8 @@ class CompletionHandlersManager {
             return
         }
 
-        queue.async { [weak self] in
-
-            guard let self = self else { return }
-
-            Log.trace(label: TAG, "Registering completion handler for Edge response with request event id \(forRequestEventId).")
-            completionHandlers[forRequestEventId] = unwrappedCompletion
-        }
-
+        Log.trace(label: TAG, "Registering completion handler for Edge response with request event id \(forRequestEventId).")
+        completionHandlers[forRequestEventId] = unwrappedCompletion
     }
 
     /// Calls the registered completion handler (if any) with the collected `EdgeEventHandle`(s). After this operation,
@@ -52,20 +48,13 @@ class CompletionHandlersManager {
     func unregisterCompletionHandler(forRequestEventId: String) {
         guard !forRequestEventId.isEmpty else { return }
 
-        queue.async { [weak self] in
-
-            guard let self = self else { return }
-
-            if let completionHandler = completionHandlers[forRequestEventId] {
-                completionHandler(edgeEventHandles[forRequestEventId] ?? [])
-
-                Log.trace(label: TAG, "Removing completion handler for Edge response with request event id \(forRequestEventId).")
-                completionHandlers.removeValue(forKey: forRequestEventId)
-            }
-
-            edgeEventHandles.removeValue(forKey: forRequestEventId)
+        if let completionHandler = completionHandlers[forRequestEventId] {
+            completionHandler(edgeEventHandles[forRequestEventId] ?? [])
+            _ = completionHandlers.removeValue(forKey: forRequestEventId)
+            Log.trace(label: TAG, "Removing completion handler for Edge response with request event id \(forRequestEventId).")
         }
 
+        _ = edgeEventHandles.removeValue(forKey: forRequestEventId)
     }
 
     /// Updates the list of `EdgeEventHandle`(s) for current `requestEventId`.
@@ -74,13 +63,10 @@ class CompletionHandlersManager {
     ///   - eventHandle: newly received event handle
     func eventHandleReceived(forRequestEventId: String?, _ eventHandle: EdgeEventHandle) {
         guard let unwrappedRequestEventId = forRequestEventId, !unwrappedRequestEventId.isEmpty else { return }
-
-        queue.async {[weak self] in
-
-            guard let self = self else { return }
-
-            edgeEventHandles[unwrappedRequestEventId, default: []].append(eventHandle)
+        if edgeEventHandles[unwrappedRequestEventId] != nil {
+            edgeEventHandles[unwrappedRequestEventId]?.append(eventHandle)
+        } else {
+            edgeEventHandles[unwrappedRequestEventId] = [eventHandle]
         }
-
     }
 }
