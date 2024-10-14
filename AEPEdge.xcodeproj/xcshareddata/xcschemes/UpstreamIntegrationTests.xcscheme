@@ -43,8 +43,8 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "EDGE_ENVIRONMENT"
-            value = "$(EDGE_ENVIRONMENT)"
+            key = "TAGS_MOBILE_PROPERTY_ID"
+            value = "$(TAGS_MOBILE_PROPERTY_ID)"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

@@ -54,7 +54,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         super.setUp()
 
         continueAfterFailure = true
-        TestBase.debugEnabled = true
+        loggingEnabled = true
         NamedCollectionDataStore.clear()
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates

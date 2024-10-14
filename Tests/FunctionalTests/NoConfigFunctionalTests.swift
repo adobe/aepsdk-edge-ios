@@ -28,7 +28,7 @@ class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
 
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
-        TestBase.debugEnabled = false
+        loggingEnabled = false
 
         // event hub shared state for registered extensions (Edge, TestableEdge and InstrumentedExtension registered in TestBase)
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 2)
@@ -49,8 +49,8 @@ class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
 
     func testHandleExperienceEventRequest_withPendingConfigurationState_expectEventsQueueIsBlocked() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
-        let configState = getSharedStateFor(TestConstants.SharedState.CONFIGURATION)
-        XCTAssertNil(configState)
+        let configStatus = getSharedStateFor(extensionName: TestConstants.SharedState.CONFIGURATION)?.status
+        XCTAssertTrue(configStatus == SharedStateStatus.none || configStatus == .pending)
 
         // set expectations
         let handleExperienceEventRequestExpectation = XCTestExpectation(description: "handleExperienceEventRequest Called")

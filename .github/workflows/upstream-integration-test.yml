@@ -12,41 +12,40 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to use when running integration tests'
+        description: 'The branch to use when running the integration tests.'
         required: false
         default: 'main'
       id:
-        description: 'Identifier for the run (optional)'
+        description: '(Optional) The identifier for the run.'
         required: false
-      environment:
-        type: choice
-        description: 'Edge Network environment to test'
-        required: true
-        default: 'prod'
-        options:
-          - prod
-          - pre-prod
-          - int
-      edge-location-hint:
-        type: choice
-        description: 'Edge location hint to set before each test (optional)'
+      tags-mobile-property-id:
+        type: string
+        description: '(Optional) The tags mobile property ID to use for the test. A default is used if not set.'
         required: false
         default: ''
-        options: 
-          - '' # Interpreted in the test code as no preset location hint; any non-valid location hint string is interpreted this way
-          - 'or2'
-          - 'va6'
-          - 'irl1'
-          - 'ind1'
-          - 'jpn3'
-          - 'sgp3'
+      edge-location-hint:
+        type: choice
+        description: '(Optional) The Edge location hint to set before each test.'
+        required: false
+        default: 'None'
+        options:
           - 'aus3'
+          - 'ind1'
+          - 'irl1'
+          - 'jpn3'
+          - 'or2'
+          - 'sgp3'
+          - 'va6'
+          - 'EmptyString'
+          - 'Invalid'
+          - 'None'
+          
 
 run-name: ${{ inputs.id }}
 
 jobs:
   test-integration-upstream:
-    runs-on: macos-13
+    runs-on: macos-latest
     steps:
     - name: Job run identifier ${{ github.event.inputs.id }}
       id: job-run-identifier
@@ -59,14 +58,9 @@ jobs:
 
     - name: Checkout
       id: checkout
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v4.2.0
       with:
         ref: ${{ github.event.inputs.branch }}
-
-    # NOTE: on macos-13, The default is already 15.0.1
-    # - uses: maxim-lobanov/setup-xcode@v1
-    #   with:
-    #     xcode-version: '15.0.1'
 
     - name: Cache Cocoapods
       id: cache-cocoapods
@@ -79,7 +73,7 @@ jobs:
 
     - name: Execute Edge Network integration tests
       id: execute-integration-tests
-      run: make test-integration-upstream EDGE_ENVIRONMENT=${{ github.event.inputs.environment }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+      run: make test-integration-upstream TAGS_MOBILE_PROPERTY_ID=${{ github.event.inputs.tags-mobile-property-id }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
 
     # Potential workflow solutions on job failure
     # All workflow setup step failures give exit code 2, with 3 as fallback

@@ -30,7 +30,7 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
 
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 1)
 
-        MobileCore.registerExtensions([InstrumentedExtension.self]) // start MobileCore
+        MobileCore.registerExtensions([]) // start MobileCore
         continueAfterFailure = false
 
         assertExpectedEvents(ignoreUnexpectedEvents: false, timeout: 2)

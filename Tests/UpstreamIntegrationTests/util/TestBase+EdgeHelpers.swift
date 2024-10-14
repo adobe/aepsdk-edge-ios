@@ -13,30 +13,45 @@
 import AEPCore
 import AEPEdge
 import AEPTestUtils
-import Foundation
 
 extension TestBase {
-
-    /// Sets the location hint with the provided value.
-    ///  - Parameter edgelocationHint: `String` denoting the location hint
-    func setInitialLocationHint(_ edgeLocationHint: String?) {
-        if edgeLocationHint != nil {
-            print("Setting Edge location hint to: \(String(describing: edgeLocationHint))")
-            Edge.setLocationHint(edgeLocationHint)
-        } else {
-            print("No preset Edge location hint is being used for this test.")
+    /// Sets the initial Edge location hint for the test suite if a valid, non-nil, and non-empty location hint is provided.
+    ///
+    /// - Parameter locationHint: An optional string representing the location hint to be set. Must be non-nil and non-empty to be applied.
+    func setInitialLocationHint(_ locationHint: String?) {
+        // Location hint is non-nil and non-empty
+        if let locationHint = locationHint, !locationHint.isEmpty {
+            print("Setting Edge location hint to: \(locationHint)")
+            Edge.setLocationHint(locationHint)
+            return
         }
+        print("No preset Edge location hint is being used for this test.")
     }
 
-    /// Creates a valid interact URL using the provided location hint.
+    /// Creates a valid interact URL using the provided location hint. Requires that the Configuration shared state
+    /// containing the `edge.domain` value is available.
+    ///
     /// - Parameters:
     ///    - locationHint: The location hint String to use in the URL
     /// - Returns: The interact URL with location hint applied
     public func createInteractUrl(with locationHint: String?) -> String {
-        guard let locationHint = locationHint else {
-            return "https://obumobile5.data.adobedc.net/ee/v1/interact"
+        var edgeDomain = IntegrationTestConstants.NetworkKeys.DEFAULT_EDGE_DOMAIN
+
+        // Attempt to get Configuration shared state value for `edge.domain`
+        if let sharedStateResult = getSharedStateFor(extensionName: IntegrationTestConstants.ExtensionName.CONFIGURATION),
+           let values = sharedStateResult.value,
+           let fetchedEdgeDomain = values[IntegrationTestConstants.ConfigurationKey.EDGE_DOMAIN] as? String {
+            edgeDomain = fetchedEdgeDomain
+        } else {
+            print("WARNING: Unable to get valid Edge domain from configuration shared state. Using default edge domain: \(IntegrationTestConstants.NetworkKeys.DEFAULT_EDGE_DOMAIN)")
         }
-        return "https://obumobile5.data.adobedc.net/ee/\(locationHint)/v1/interact"
+
+        // Construct the URL based on the optional location hint
+        if let locationHint = locationHint {
+            return "https://\(edgeDomain)/ee/\(locationHint)/v1/interact"
+        } else {
+            return "https://\(edgeDomain)/ee/v1/interact"
+        }
     }
 
     /// Gets all the dispatched events of type `com.adobe.eventType.edge` and source passed.

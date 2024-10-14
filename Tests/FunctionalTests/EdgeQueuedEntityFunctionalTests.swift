@@ -31,7 +31,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         super.setUp()
 
         continueAfterFailure = true
-        TestBase.debugEnabled = true
+        loggingEnabled = true
         NamedCollectionDataStore.clear()
     }
 
