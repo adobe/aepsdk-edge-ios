@@ -10,7 +10,8 @@ project 'AEPEdge.xcodeproj'
 pod 'SwiftLint', '0.52.0'
 
 def core_pods
-  pod 'AEPCore'
+  pod 'AEPCore', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v5.3.1'
+  pod 'AEPServices', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :branch => 'dev-v5.3.1'
 end
 
 def edge_pods
@@ -25,19 +26,19 @@ end
 
 target 'UnitTests' do
   core_pods
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :tag => '5.0.0'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :tag => '5.0.2'
 end
 
 target 'UpstreamIntegrationTests' do
   core_pods
   edge_pods
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :tag => '5.0.0'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :tag => '5.0.2'
 end
 
 target 'FunctionalTests' do
   core_pods
   edge_pods
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :tag => '5.0.0'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :tag => '5.0.2'
 end
 
 target 'TestAppiOS' do
