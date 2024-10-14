@@ -40,7 +40,7 @@ class AEPEdgePathOverwriteTests: TestBase, AnyCodableAsserts {
         super.setUp()
 
         continueAfterFailure = false
-        TestBase.debugEnabled = true
+        loggingEnabled = true
         NamedCollectionDataStore.clear()
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM and Config shared state updates

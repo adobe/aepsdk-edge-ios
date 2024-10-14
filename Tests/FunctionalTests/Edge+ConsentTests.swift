@@ -67,7 +67,7 @@ class EdgeConsentTests: TestBase, AnyCodableAsserts {
         super.setUp()
 
         continueAfterFailure = false
-        TestBase.debugEnabled = true
+        loggingEnabled = true
         NamedCollectionDataStore.clear()
 
         // hub shared state update for 5 extensions (InstrumentedExtension (registered in TestBase), Configuration, Edge, Consent, Edge Identity)

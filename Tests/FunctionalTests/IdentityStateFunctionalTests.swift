@@ -29,7 +29,7 @@ class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
         super.setUp()
 
         continueAfterFailure = false // fail so nil checks stop execution
-        TestBase.debugEnabled = false
+        loggingEnabled = false
 
         // config state and 2 event hub states (Edge, TestableEdgeInternal, FakeIdentityExtension and InstrumentedExtension registered in TestBase)
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 3)
