@@ -22,42 +22,32 @@ PODS:
 
 DEPENDENCIES:
   - AEPAssurance
-  - AEPCore (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `staging`)
+  - AEPCore
   - AEPEdge (from `./AEPEdge.podspec`)
   - AEPEdgeConsent
   - AEPEdgeIdentity
-  - AEPServices (from `https://github.com/adobe/aepsdk-core-ios.git`, branch `staging`)
+  - AEPServices
   - AEPTestUtils (from `https://github.com/adobe/aepsdk-testutils-ios.git`, tag `5.0.2`)
   - SwiftLint (= 0.52.0)
 
 SPEC REPOS:
   trunk:
     - AEPAssurance
+    - AEPCore
     - AEPEdgeConsent
     - AEPEdgeIdentity
     - AEPRulesEngine
+    - AEPServices
     - SwiftLint
 
 EXTERNAL SOURCES:
-  AEPCore:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPEdge:
     :path: "./AEPEdge.podspec"
-  AEPServices:
-    :branch: staging
-    :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPTestUtils:
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
     :tag: 5.0.2
 
 CHECKOUT OPTIONS:
-  AEPCore:
-    :commit: b580cb888e0589400d577115bef5c5cc0f398d7d
-    :git: https://github.com/adobe/aepsdk-core-ios.git
-  AEPServices:
-    :commit: b580cb888e0589400d577115bef5c5cc0f398d7d
-    :git: https://github.com/adobe/aepsdk-core-ios.git
   AEPTestUtils:
     :git: https://github.com/adobe/aepsdk-testutils-ios.git
     :tag: 5.0.2
@@ -73,6 +63,6 @@ SPEC CHECKSUMS:
   AEPTestUtils: ef5a4f6cf9ef61630b7c68b5d205bb885a6f19a2
   SwiftLint: 13280e21cdda6786ad908dc6e416afe5acd1fcb7
 
-PODFILE CHECKSUM: 55059111194fd21a73943c974c56f75cbebded97
+PODFILE CHECKSUM: 648a37c0071c0965331420e7056638058b9133e8
 
 COCOAPODS: 1.14.3
