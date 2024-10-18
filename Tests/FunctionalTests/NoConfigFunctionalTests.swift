@@ -19,6 +19,8 @@ import XCTest
 
 /// Functional test suite for tests which require no SDK configuration and nil/pending configuration shared state.
 class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
+    private let TIMEOUT_SEC: TimeInterval = 1
+    private let SHORTER_TIMEOUT_SEC: TimeInterval = 0.2
     private let mockNetworkService: MockNetworkService = MockNetworkService()
 
     override func setUp() {
@@ -26,7 +28,7 @@ class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
 
         super.setUp()
         continueAfterFailure = false // fail so nil checks stop execution
-        TestBase.debugEnabled = false
+        loggingEnabled = false
 
         // event hub shared state for registered extensions (Edge, TestableEdge and InstrumentedExtension registered in TestBase)
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 2)
@@ -47,8 +49,8 @@ class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
 
     func testHandleExperienceEventRequest_withPendingConfigurationState_expectEventsQueueIsBlocked() {
         // NOTE: Configuration shared state must be PENDING (nil) for this test to be valid
-        let configState = getSharedStateFor(TestConstants.SharedState.CONFIGURATION)
-        XCTAssertNil(configState)
+        let configStatus = getSharedStateFor(extensionName: TestConstants.SharedState.CONFIGURATION)?.status
+        XCTAssertTrue(configStatus == SharedStateStatus.none || configStatus == .pending)
 
         // set expectations
         let handleExperienceEventRequestExpectation = XCTestExpectation(description: "handleExperienceEventRequest Called")
@@ -66,10 +68,10 @@ class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
         MobileCore.dispatch(event: requestEvent)
 
         // Expected readyForEvent is called
-        wait(for: [readyForEventExpectation], timeout: 1.0)
+        wait(for: [readyForEventExpectation], timeout: TIMEOUT_SEC)
 
         // Expected handleExperienceEventRequest not called
-        wait(for: [handleExperienceEventRequestExpectation], timeout: 1.0)
+        wait(for: [handleExperienceEventRequestExpectation], timeout: TIMEOUT_SEC)
     }
 
     func testCompletionHandler_withPendingConfigurationState_thenValidConfig_returnsEventHandles() {
@@ -104,7 +106,7 @@ class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
 
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
-        wait(for: [expectation], timeout: 0.2)
+        wait(for: [expectation], timeout: SHORTER_TIMEOUT_SEC)
 
         resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(2, receivedHandles.count)

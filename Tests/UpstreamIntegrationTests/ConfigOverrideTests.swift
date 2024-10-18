@@ -20,35 +20,46 @@ import XCTest
 
 /// Performs validation on integration with the Edge Network upstream service
 class ConfigOverrideTests: TestBase, AnyCodableAsserts {
-    private var edgeEnvironment: EdgeEnvironment = getEdgeEnvironment()
-    private var edgeLocationHint: EdgeLocationHint? = getLocationHint()
+    private let TIMEOUT_SEC: TimeInterval = 30
+    private var edgeLocationHint: String? = TestEnvironment.defaultLocationHint
     private var networkService: RealNetworkService = RealNetworkService()
 
     let LOG_SOURCE = "ConfigOverrideTests"
 
     // Run before each test case
     override func setUp() {
+        super.setUp()
         ServiceProvider.shared.networkService = networkService
 
-        super.setUp()
-
         continueAfterFailure = true
-        TestBase.debugEnabled = true
+        loggingEnabled = true
 
-        let waitForRegistration = CountDownLatch(1)
         MobileCore.setLogLevel(.trace)
+        // Set tags mobile property ID for specific Edge Network environment
+        MobileCore.configureWith(appId: TestEnvironment.defaultTagsMobilePropertyId)
 
-        // Set environment file ID for specific Edge Network environment
-        MobileCore.configureWith(appId: getTagsEnvironmentFileId(for: edgeEnvironment))
-
+        // Use expectation to guarantee Configuration shared state availability
+        // Required primarily by `createInteractURL`
+        setExpectationEvent(type: EventType.configuration, source: EventSource.responseContent)
+        let waitForRegistration = CountDownLatch(1)
         MobileCore.registerExtensions([Identity.self, Edge.self], {
             print("Extensions registration is complete")
             waitForRegistration.countDown()
         })
-        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: 2))
+        XCTAssertEqual(DispatchTimeoutResult.success, waitForRegistration.await(timeout: TIMEOUT_SEC))
+        assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
 
         // Set Edge location hint value if one is set for the test target
-        setInitialLocationHint(edgeLocationHint?.rawValue)
+        setInitialLocationHint(edgeLocationHint)
+
+        resetTestExpectations()
+        networkService.reset()
+    }
+
+    override func tearDown() {
+        EventHub.shared.shutdown()
+
+        super.tearDown()
 
         resetTestExpectations()
         networkService.reset()
@@ -67,7 +78,6 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
                                         "event": [
                                             "datasetId": "6515e1dbfeb3b128d19bb1e4"
                                         ]
-
                                     ]
                                 ],
                                 "com_adobe_analytics": [
@@ -82,7 +92,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -93,17 +103,17 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     // Test configOverrides with dummy data
     func testSendEvent_withInvalidConfigOverrides_receivesExpectedNetworkResponseError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
 
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
-        let expectedErrorJSON = #"""
+        let expectedErrorJSON = """
         {
             "status": 400,
             "title": "Invalid request",
             "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
         }
-        """#
+        """
 
         let configOverrides = ["test": ["key": "value"]]
 
@@ -114,7 +124,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -130,23 +140,22 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     // Tests ConfigOverrides with dataset not added in the datastream config and RSID not added to override setting in the Analytics upstream config
     func testSendEvent_withInvalidConfigOverrides_notConfiguredValues_receivesExpectedNetworkResponseError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
-        let expectedErrorJSON = #"""
+        let expectedErrorJSON = """
         {
             "status": 400,
             "title": "Invalid request",
             "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
         }
-        """#
+        """
 
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
                                             "datasetId": "6515e1f6296d1e28d3209b9f"
                                         ]
-
                                     ]
                                 ],
                                 "com_adobe_analytics": [
@@ -161,7 +170,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -176,23 +185,22 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     // TODO: Enable after PDCL-11131 issue is fixed
     func testSendEvent_withInvalidConfigOverrides_dummyValues_receivesExpectedNetworkResponseError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
-        let expectedErrorJSON = #"""
+        let expectedErrorJSON = """
         {
             "status": 400,
             "title": "Invalid request",
             "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
         }
-        """#
+        """
 
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
                                             "datasetId": "DummyDataset"
                                         ]
-
                                     ]
                                 ],
                                 "com_adobe_analytics": [
@@ -208,7 +216,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -224,23 +232,22 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     // test configOverrides with valid dataset ID, one valid and one dummy value for RSIDs
     func testSendEvent_withInvalidConfigOverrides_containingValidAndDummyValues_receivesExpectedNetworkResponseError() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
-        let expectedErrorJSON = #"""
+        let expectedErrorJSON = """
         {
             "status": 400,
             "title": "Invalid request",
             "type": "https://ns.adobe.com/aep/errors/EXEG-0113-400"
         }
-        """#
+        """
 
         let configOverrides = ["com_adobe_experience_platform": [
                                     "datasets": [
                                         "event": [
                                             "datasetId": "6515e1dbfeb3b128d19bb1e4"
                                         ]
-
                                     ]
                                 ],
                                 "com_adobe_analytics": [
@@ -256,7 +263,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -271,7 +278,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
     // Test datastream ID override with valid ID string
     func testSendEvent_withValidDatastreamIDOverride_receivesExpectedNetworkResponse() {
         // Setup
-        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint?.rawValue), httpMethod: .post)!
+        let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: edgeLocationHint), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamIdOverride: "15d7bce0-3e2c-447b-bbda-129c57c60820")
@@ -281,7 +288,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
@@ -294,13 +301,13 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
         let interactNetworkRequest = NetworkRequest(urlString: createInteractUrl(with: nil), httpMethod: .post)!
         networkService.setExpectation(for: interactNetworkRequest, expectedCount: 1)
 
-        let expectedErrorJSON = #"""
+        let expectedErrorJSON = """
         {
             "status": 400,
             "title": "Invalid datastream ID",
             "type": "https://ns.adobe.com/aep/errors/EXEG-0003-400"
         }
-        """#
+        """
 
         let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"], data: ["data": ["test": "data"]], datastreamIdOverride: "DummyDatastreamID")
 
@@ -309,7 +316,7 @@ class ConfigOverrideTests: TestBase, AnyCodableAsserts {
 
         // Verify
         // Network response assertions
-        networkService.assertAllNetworkRequestExpectations()
+        networkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let matchingResponses = networkService.getResponses(for: interactNetworkRequest)
 
         XCTAssertEqual(1, matchingResponses?.count)
