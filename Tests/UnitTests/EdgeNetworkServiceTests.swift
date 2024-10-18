@@ -18,6 +18,10 @@ import XCTest
 
 // swiftlint:disable type_body_length
 class EdgeNetworkServiceTests: XCTestCase {
+    private let EDGE_RECOVERABLE_ERROR_CODES = Set(NetworkServiceConstants.RECOVERABLE_ERROR_CODES +
+                [HttpResponseCodes.tooManyRequests.rawValue,
+                HttpResponseCodes.badGateway.rawValue,
+                HttpResponseCodes.insufficientStorage.rawValue])
 
     private let mockNetworkService: MockNetworkService = MockNetworkService()
     private var mockResponseCallback = MockResponseCallback()
@@ -195,27 +199,34 @@ class EdgeNetworkServiceTests: XCTestCase {
         // setup
         let stringResponseBody = "Service Unavailable"
         let expectation = XCTestExpectation(description: "Network callback is invoked")
+        expectation.expectedFulfillmentCount = EDGE_RECOVERABLE_ERROR_CODES.count
 
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
-                                                response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": "60"]),
-                                                error: nil)
-        mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
-        networkService.doRequest(url: url,
-                                 requestBody: edgeHitPayload,
-                                 requestHeaders: [:],
-                                 streaming: nil,
-                                 responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
-                                    // verify
-                                    XCTAssertFalse(success)
-                                    XCTAssertEqual(60.0, retryInterval)
-                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
-                                    XCTAssertEqual([], self.mockResponseCallback.onResponseJsonResponse)
-                                    expectation.fulfill()
-                                 })
+        for code in EDGE_RECOVERABLE_ERROR_CODES {
+            let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                    response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: ["Retry-After": "60"]),
+                                                    error: nil)
+            mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
+            networkService.doRequest(url: url,
+                                     requestBody: edgeHitPayload,
+                                     requestHeaders: [:],
+                                     streaming: nil,
+                                     responseCallback: mockResponseCallback,
+                                     completion: { success, retryInterval in
+                // verify
+                XCTAssertFalse(success)
+                XCTAssertEqual(60.0, retryInterval)
+                XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
+                XCTAssertEqual([], self.mockResponseCallback.onResponseJsonResponse)
+                expectation.fulfill()
+
+                // reset mocks
+                self.mockNetworkService.reset()
+                self.mockResponseCallback = MockResponseCallback()
+            })
+        }
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -276,30 +287,43 @@ class EdgeNetworkServiceTests: XCTestCase {
     }
 
     func testDoRequest_whenConnection_UnrecoverableResponseCode_WhenContentTypeJson_WithNilError_ShouldReturnGenericError() {
-        // test
-        let mockHttpConnection = HttpConnection(data: nil,
-                                                response: HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil),
-                                                error: nil)
-        let expectation = XCTestExpectation(description: "Network callback is invoked")
+        // setup
+        var unrecoverableNetworkErrorCodes = [401, 405, 505, 508, -1]
+        // exclude known recoverable codes
+        // this allows tests to continue passing in case NetworkServiceConstants.RECOVERABLE_ERROR_CODES is expanded later
+        unrecoverableNetworkErrorCodes = unrecoverableNetworkErrorCodes.filter { !EDGE_RECOVERABLE_ERROR_CODES.contains($0) }
 
-        mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
-        networkService.doRequest(url: url,
-                                 requestBody: edgeHitPayload,
-                                 requestHeaders: [:],
-                                 streaming: nil,
-                                 responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
-                                    // verify
-                                    XCTAssertTrue(success)
-                                    XCTAssertNil(retryInterval)
-                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-                                    XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
-                                    XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
-                                    let errorJson = self.mockResponseCallback.onErrorJsonError[0]
-                                    XCTAssertTrue(errorJson.contains("\"title\":\"Unexpected Error\""))
-                                    XCTAssertTrue(errorJson.contains("\"detail\":\"Request to Experience Edge failed with an unknown exception\""))
-                                    expectation.fulfill()
-                                 })
+        // test
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
+        expectation.expectedFulfillmentCount = unrecoverableNetworkErrorCodes.count
+
+        for code in unrecoverableNetworkErrorCodes {
+            let mockHttpConnection = HttpConnection(data: nil,
+                                                    response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: nil),
+                                                    error: nil)
+            mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
+            networkService.doRequest(url: url,
+                                     requestBody: edgeHitPayload,
+                                     requestHeaders: [:],
+                                     streaming: nil,
+                                     responseCallback: mockResponseCallback,
+                                     completion: { success, retryInterval in
+                // verify
+                XCTAssertTrue(success)
+                XCTAssertNil(retryInterval)
+                XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+                XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.capacity)
+                let errorJson = self.mockResponseCallback.onErrorJsonError[0]
+                XCTAssertTrue(errorJson.contains("\"title\":\"Unexpected Error\""))
+                XCTAssertTrue(errorJson.contains("\"detail\":\"Request to Experience Edge failed with an unknown exception\""))
+                expectation.fulfill()
+
+                // reset mocks
+                self.mockNetworkService.reset()
+                self.mockResponseCallback = MockResponseCallback()
+            })
+        }
 
         wait(for: [expectation], timeout: 0.5)
     }
@@ -406,34 +430,6 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
 
-    func testDoRequest_whenRequestNotProcessed_NoCallOnComplete() {
-        // setup
-        let stringResponseBody = "Service Unavailable"
-        let expectation = XCTestExpectation(description: "Network callback is invoked")
-
-        // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
-                                                response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": "60"]),
-                                                error: nil)
-        mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
-        networkService.doRequest(url: url,
-                                 requestBody: edgeHitPayload,
-                                 requestHeaders: [:],
-                                 streaming: nil,
-                                 responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
-                                    // verify
-                                    XCTAssertFalse(success)
-                                    XCTAssertEqual(60.0, retryInterval)
-                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
-                                    expectation.fulfill()
-                                 })
-
-        wait(for: [expectation], timeout: 0.5)
-    }
-
     func testDoRequest_whenRequestNotProcessed_NoCallOnComplete_noRetryAfterHeader() {
         // setup
         let stringResponseBody = "Service Unavailable"
@@ -446,8 +442,8 @@ class EdgeNetworkServiceTests: XCTestCase {
         mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
         networkService.doRequest(url: url, requestBody: edgeHitPayload, requestHeaders: [:], streaming: nil, responseCallback: mockResponseCallback, completion: { success, retryInterval in
             // verify
-            XCTAssertFalse(success)
-            XCTAssertEqual(5.0, retryInterval)
+            XCTAssertFalse(success) // retry
+            XCTAssertEqual(5.0, retryInterval) // default timeout
             XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
             XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
             XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
@@ -457,86 +453,73 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
 
-    func testDoRequest_whenRequestNotProcessed_NoCallOnComplete_emptyRetryAfterHeader() {
+    func testDoRequest_whenRequestNotProcessed_NoCallOnComplete_validRetryAfterValues() {
         // setup
         let stringResponseBody = "Service Unavailable"
+
+        // retryValues.0 = Valid value for the "Retry-After" response header
+        // retryValues.1 = Actual value for retry
+        let retryValues = [("1", 1.0), ("5", 5.0), ("30", 30.0), ("60", 60.0), ("180", 180.0), ("300", 300.0)]
+
         let expectation = XCTestExpectation(description: "Network callback is invoked")
+        expectation.expectedFulfillmentCount = retryValues.count
 
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
-                                                response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": ""]),
-                                                error: nil)
-        mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
-        networkService.doRequest(url: url,
-                                 requestBody: edgeHitPayload,
-                                 requestHeaders: [:],
-                                 streaming: nil,
-                                 responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
-                                    // verify
-                                    XCTAssertFalse(success)
-                                    XCTAssertEqual(5.0, retryInterval)
-                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
-                                    expectation.fulfill()
-                                 })
+        for retryValue in retryValues {
+            let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                    response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": retryValue.0]),
+                                                    error: nil)
+            mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
+            networkService.doRequest(url: url,
+                                     requestBody: edgeHitPayload,
+                                     requestHeaders: [:],
+                                     streaming: nil,
+                                     responseCallback: mockResponseCallback,
+                                     completion: { success, retryInterval in
+                // verify
+                XCTAssertFalse(success) // retry
+                XCTAssertEqual(retryValue.1, retryInterval) // timeout value provided by Retry-After response header
+                XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                XCTAssertFalse(self.mockResponseCallback.onCompleteCalled) // hit can be retried don't invoke onComplete
+                expectation.fulfill()
+            })
+        }
 
         wait(for: [expectation], timeout: 0.5)
     }
 
-    func testDoRequest_whenRequestNotProcessed_NoCallOnComplete_invalidRetryAfterHeader() {
+    func testDoRequest_whenRequestNotProcessed_NoCallOnComplete_invalidRetryAfterValues() {
         // setup
         let stringResponseBody = "Service Unavailable"
+
+        // Invalid values for the "Retry-After" response header
+        let retryValues = ["InvalidHeader", "", "0", "-1", "    "]
+
         let expectation = XCTestExpectation(description: "Network callback is invoked")
+        expectation.expectedFulfillmentCount = retryValues.count
 
         // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
-                                                response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": "NotAValidRetryInterval"]),
-                                                error: nil)
-        mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
-        networkService.doRequest(url: url,
-                                 requestBody: edgeHitPayload,
-                                 requestHeaders: [:],
-                                 streaming: nil,
-                                 responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
-                                    // verify
-                                    XCTAssertFalse(success)
-                                    XCTAssertEqual(5.0, retryInterval)
-                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
-                                    expectation.fulfill()
-                                 })
-
-        wait(for: [expectation], timeout: 0.5)
-    }
-
-    func testDoRequest_whenRequestNotProcessed_shouldRetry_CallsOnComplete() {
-        // setup
-        let stringResponseBody = "Service Unavailable"
-        let expectation = XCTestExpectation(description: "Network callback is invoked")
-
-        // test
-        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
-                                                response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": "60"]),
-                                                error: nil)
-        mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
-        networkService.doRequest(url: url,
-                                 requestBody: edgeHitPayload,
-                                 requestHeaders: [:],
-                                 streaming: nil,
-                                 responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
-                                    // verify
-                                    XCTAssertFalse(success)
-                                    XCTAssertEqual(60.0, retryInterval)
-                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onCompleteCalled) // hit can be retried don't invoke onComplete
-                                    expectation.fulfill()
-                                 })
+        for retryValue in retryValues {
+            let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                    response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: ["Retry-After": retryValue]),
+                                                    error: nil)
+            mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
+            networkService.doRequest(url: url,
+                                     requestBody: edgeHitPayload,
+                                     requestHeaders: [:],
+                                     streaming: nil,
+                                     responseCallback: mockResponseCallback,
+                                     completion: { success, retryInterval in
+                // verify
+                XCTAssertFalse(success) // retry
+                XCTAssertEqual(5.0, retryInterval) // default
+                XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                XCTAssertFalse(self.mockResponseCallback.onCompleteCalled)
+                expectation.fulfill()
+            })
+        }
 
         wait(for: [expectation], timeout: 0.5)
     }

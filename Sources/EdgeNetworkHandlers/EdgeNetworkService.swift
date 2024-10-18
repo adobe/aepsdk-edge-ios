@@ -27,11 +27,9 @@ enum HttpResponseCodes: Int {
     case ok = 200
     case noContent = 204
     case multiStatus = 207
-    case clientTimeout = 408
     case tooManyRequests = 429
     case badGateway = 502
-    case serviceUnavailable = 503
-    case gatewayTimeout = 504
+    case insufficientStorage = 507
 }
 
 /// Network service for requests to the Adobe Experience Edge
@@ -39,11 +37,11 @@ class EdgeNetworkService {
     private let SELF_TAG: String = "EdgeNetworkService"
     private let DEFAULT_GENERIC_ERROR_MESSAGE = "Request to Experience Edge failed with an unknown exception"
     private let DEFAULT_GENERIC_ERROR_TITLE = "Unexpected Error"
-    private let recoverableNetworkErrorCodes: [Int] = [HttpResponseCodes.clientTimeout.rawValue,
-                                                       HttpResponseCodes.tooManyRequests.rawValue,
-                                                       HttpResponseCodes.badGateway.rawValue,
-                                                       HttpResponseCodes.serviceUnavailable.rawValue,
-                                                       HttpResponseCodes.gatewayTimeout.rawValue]
+    private let recoverableNetworkErrorCodes = Set(NetworkServiceConstants.RECOVERABLE_ERROR_CODES +
+            [HttpResponseCodes.tooManyRequests.rawValue,
+             HttpResponseCodes.badGateway.rawValue,
+             HttpResponseCodes.insufficientStorage.rawValue])
+
     private let waitTimeout: TimeInterval = max(EdgeConstants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT, EdgeConstants.NetworkKeys.DEFAULT_READ_TIMEOUT) + 1
     private var defaultHeaders = [EdgeConstants.NetworkKeys.HEADER_KEY_ACCEPT: EdgeConstants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON,
                                   EdgeConstants.NetworkKeys.HEADER_KEY_CONTENT_TYPE: EdgeConstants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON]
@@ -220,7 +218,7 @@ class EdgeNetworkService {
                 let retryHeader = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER)
                 var retryInterval = EdgeConstants.Defaults.RETRY_INTERVAL
                 // Do not currently support HTTP-date only parsing Ints for now. Konductor will only send back Retry-After as Ints.
-                if let retryHeader = retryHeader, let retryAfterInterval = TimeInterval(retryHeader) {
+                if let retryHeader = retryHeader, let retryAfterInterval = TimeInterval(retryHeader), retryAfterInterval > 0 {
                     retryInterval = retryAfterInterval
                 }
                 Log.debug(label: EdgeConstants.LOG_TAG,
