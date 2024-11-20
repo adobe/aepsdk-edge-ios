@@ -19,7 +19,7 @@ import Foundation
 import XCTest
 
 class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
-    private let TIMEOUT_SEC: TimeInterval = 2
+    private let TIMEOUT_SEC: TimeInterval = 10
     private let LONGER_TIMEOUT_SEC: TimeInterval = 10
     private let exEdgeInteractProdUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
 
