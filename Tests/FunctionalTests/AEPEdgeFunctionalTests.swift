@@ -83,6 +83,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         super.tearDown()
 
         mockNetworkService.reset()
+        MobileCore.resetSDK()
     }
 
     func testUnregistered() {
