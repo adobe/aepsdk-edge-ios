@@ -17,7 +17,7 @@ on:
 
 jobs:
   build-and-test:
-    name: " "
+    name: "CI"
     uses: adobe/aepsdk-commons/.github/workflows/ios-build-and-test.yml@gha-ios-5.0.0
     with:
       ios-device-names: '["iPhone 15"]'

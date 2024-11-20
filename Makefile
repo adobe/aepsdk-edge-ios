@@ -163,7 +163,7 @@ functional-test-tvos:
 # If MOBILE_PROPERTY_ID is not specified, test target will use its default value.
 .SILENT: test-integration-upstream # Silences Makefile's automatic echo of commands
 test-integration-upstream: pod-install; \
-	@$(MAKE) clean-derived-data SCHEME=UpstreamIntegrationTests DESTINATION=$(IOS_DESTINATION)
+	$(MAKE) clean-derived-data SCHEME=UpstreamIntegrationTests DESTINATION=$(IOS_DESTINATION)
 	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
 		echo ''; \
 		echo '-------------------------- WARNING -------------------------------'; \
