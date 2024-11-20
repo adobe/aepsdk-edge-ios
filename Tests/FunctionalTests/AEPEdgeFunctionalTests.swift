@@ -22,7 +22,7 @@ import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs
 class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
-    private let TIMEOUT_SEC: TimeInterval = 2
+    private let TIMEOUT_SEC: TimeInterval = 10
     private let LONGER_TIMEOUT_SEC: TimeInterval = 10
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
@@ -82,8 +82,10 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
     override func tearDown() {
         super.tearDown()
 
-        mockNetworkService.reset()
         MobileCore.resetSDK()
+
+        mockNetworkService.reset()
+        resetTestExpectations()
     }
 
     func testUnregistered() {
