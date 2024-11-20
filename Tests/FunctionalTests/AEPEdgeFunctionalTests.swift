@@ -319,7 +319,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         // Note that `recordSeparator` is set in the format required by the JSON spec to be properly decoded,
@@ -385,7 +385,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let expectedJSON = createExpectedPayload(
@@ -452,7 +452,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let expectedJSON = createExpectedPayload(
@@ -564,7 +564,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let expectedJSON = #"""
@@ -854,7 +854,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
                                                         data: nil))
 
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         assertExpectedEvents(ignoreUnexpectedEvents: true)
 
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
@@ -911,7 +911,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"],
                                                         data: nil))
 
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         assertExpectedEvents(ignoreUnexpectedEvents: true)
 
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
@@ -957,7 +957,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
                                                     "testArray": ["arrayElem1", 2, true],
                                                     "testDictionary": ["key": "val"]])
         Edge.sendEvent(experienceEvent: experienceEvent)
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         resetTestExpectations()
         mockNetworkService.reset()
 
@@ -998,7 +998,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         resetTestExpectations()
         mockNetworkService.reset()
 
@@ -1038,7 +1038,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         assertExpectedEvents(ignoreUnexpectedEvents: false)
 
         let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE,
@@ -1119,7 +1119,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         assertExpectedEvents(ignoreUnexpectedEvents: false)
 
         let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE,
@@ -1163,7 +1163,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         assertExpectedEvents(ignoreUnexpectedEvents: false)
 
         let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE,
@@ -1198,7 +1198,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
                                                     "testArray": ["arrayElem1", 2, true],
                                                     "testDictionary": ["key": "val"]])
         Edge.sendEvent(experienceEvent: experienceEvent)
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         resetTestExpectations()
         mockNetworkService.reset()
 
@@ -1236,7 +1236,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
         Edge.sendEvent(experienceEvent: experienceEvent)
 
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         assertExpectedEvents(ignoreUnexpectedEvents: false)
 
         let resultEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE,
@@ -1268,7 +1268,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
@@ -1294,7 +1294,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
@@ -1320,7 +1320,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
@@ -1346,7 +1346,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PRE_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
@@ -1372,7 +1372,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_INTEGRATION_URL_STR, httpMethod: HttpMethod.post)
 
         let requestUrl = resultNetworkRequests[0].url
@@ -1399,7 +1399,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, resultNetworkRequests.count)
         XCTAssertTrue(resultNetworkRequests[0].url.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
@@ -1432,7 +1432,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         Edge.sendEvent(experienceEvent: experienceEvent)
 
         // verify
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(2, resultNetworkRequests.count)
         XCTAssertTrue(resultNetworkRequests[0].url.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
