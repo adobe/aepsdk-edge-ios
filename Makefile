@@ -157,6 +157,8 @@ functional-test-tvos:
 	@$(MAKE) clean-derived-data SCHEME=FunctionalTests DESTINATION=$(TVOS_DESTINATION)
 	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination $(TVOS_DESTINATION) -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
+integration-test-ios: upstream-integration-test-ios
+
 # Runs the Edge Network (Konductor) integration tests after installing pod dependencies
 # Usage: 
 # make upstream-integration-test-ios MOBILE_PROPERTY_ID=<property_id> EDGE_LOCATION_HINT=<location_hint>
