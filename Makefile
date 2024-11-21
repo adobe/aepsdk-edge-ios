@@ -159,10 +159,10 @@ functional-test-tvos:
 
 # Runs the Edge Network (Konductor) integration tests after installing pod dependencies
 # Usage: 
-# make test-integration-upstream MOBILE_PROPERTY_ID=<property_id> EDGE_LOCATION_HINT=<location_hint>
+# make upstream-integration-test-ios MOBILE_PROPERTY_ID=<property_id> EDGE_LOCATION_HINT=<location_hint>
 # If MOBILE_PROPERTY_ID is not specified, test target will use its default value.
-.SILENT: test-integration-upstream # Silences Makefile's automatic echo of commands
-test-integration-upstream: pod-install; \
+.SILENT: upstream-integration-test-ios # Silences Makefile's automatic echo of commands
+upstream-integration-test-ios: pod-install; \
 	$(MAKE) clean-derived-data SCHEME=UpstreamIntegrationTests DESTINATION=$(IOS_DESTINATION)
 	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
 		echo ''; \
