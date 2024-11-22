@@ -22,8 +22,7 @@ import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs
 class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
-    private let TIMEOUT_SEC: TimeInterval = 10
-    private let LONGER_TIMEOUT_SEC: TimeInterval = 10
+    private let TIMEOUT_SEC: TimeInterval = FunctionalTestConstants.Defaults.TIMEOUT_SEC
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let exEdgeInteractProdUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
@@ -972,7 +971,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         // Default retry time period is 5 sec - provide extra timeout buffer
-        mockNetworkService.assertAllNetworkRequestExpectations(timeout: LONGER_TIMEOUT_SEC)
+        // Make sure this timeout is at least double the retry time period
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
     }
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
@@ -1013,7 +1013,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         // Default retry time period is 5 sec - provide extra timeout buffer
-        mockNetworkService.assertAllNetworkRequestExpectations(timeout: LONGER_TIMEOUT_SEC)
+        // Make sure this timeout is at least double the retry time period
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
     }
 
     func testSendEvent_multiStatusResponse_dispatchesEvents() {
@@ -1213,7 +1214,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
 
         // Default retry time period is 5 sec - provide extra timeout buffer
-        mockNetworkService.assertAllNetworkRequestExpectations(timeout: LONGER_TIMEOUT_SEC)
+        // Make sure this timeout is at least double the retry time period
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
     }
 
     func testSendEvent_unrecoverableNetworkTransportError_noRetry() {

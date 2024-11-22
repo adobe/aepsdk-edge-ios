@@ -18,7 +18,7 @@ import XCTest
 
 /// Functional test suite for tests which require no Identity shared state at startup to simulate a missing or pending state.
 class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
-    private let TIMEOUT_SEC: TimeInterval = 10
+    private let TIMEOUT_SEC: TimeInterval = FunctionalTestConstants.Defaults.TIMEOUT_SEC
     private let exEdgeInteractUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
 
     private let mockNetworkService: MockNetworkService = MockNetworkService()

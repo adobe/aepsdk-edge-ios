@@ -19,8 +19,7 @@ import Foundation
 import XCTest
 
 class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
-    private let TIMEOUT_SEC: TimeInterval = 10
-    private let LONGER_TIMEOUT_SEC: TimeInterval = 10
+    private let TIMEOUT_SEC: TimeInterval = FunctionalTestConstants.Defaults.TIMEOUT_SEC
     private let exEdgeInteractProdUrl = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR)! // swiftlint:disable:this force_unwrapping
 
     private let mockNetworkService: MockNetworkService = MockNetworkService()
@@ -69,7 +68,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         startMobileSDK()
 
         // Wait for expected network requests
-        mockNetworkService.assertAllNetworkRequestExpectations(timeout: LONGER_TIMEOUT_SEC)
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         // Validate result - hit uses configId from Configuration shared state
@@ -109,7 +108,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         startMobileSDK()
 
         // Wait for expected network requests
-        mockNetworkService.assertAllNetworkRequestExpectations(timeout: LONGER_TIMEOUT_SEC)
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
         let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
 
         // Validate result
