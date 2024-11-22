@@ -104,7 +104,7 @@ class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
         }
         let identityMap = try? JSONSerialization.jsonObject(with: identityMapData, options: []) as? [String: Any]
         FakeIdentityExtension.setXDMSharedState(state: identityMap!)
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
 
         requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
         XCTAssertEqual(1, requests.count)
@@ -162,7 +162,7 @@ class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
 
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["test1": "xdm"], data: nil))
 
-        mockNetworkService.assertAllNetworkRequestExpectations()
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
 
         // Assert network request does not contain an ECID
         let requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
