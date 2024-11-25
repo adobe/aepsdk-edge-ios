@@ -106,7 +106,7 @@ class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
         FakeIdentityExtension.setXDMSharedState(state: identityMap!)
         mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
 
-        requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
         XCTAssertEqual(1, requests.count)
 
         let expectedJSON = """
@@ -165,7 +165,7 @@ class IdentityStateFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
 
         // Assert network request does not contain an ECID
-        let requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        let requests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
         XCTAssertEqual(1, requests.count)
 
         let expectedJSON = "{}"

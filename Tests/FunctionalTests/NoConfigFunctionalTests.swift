@@ -21,6 +21,7 @@ import XCTest
 class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
     private let TIMEOUT_SEC: TimeInterval = 1
     private let SHORTER_TIMEOUT_SEC: TimeInterval = 0.2
+    private let LONGER_TIMEOUT_SEC = FunctionalTestConstants.Defaults.TIMEOUT_SEC
     private let mockNetworkService: MockNetworkService = MockNetworkService()
 
     override func setUp() {
@@ -97,7 +98,7 @@ class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
                                                             receivedHandles = handles
                                                             expectation.fulfill()
                                                         })
-        var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: LONGER_TIMEOUT_SEC)
         XCTAssertEqual(0, resultNetworkRequests.count)
 
         // test event gets processed when config shared state is resolved\
@@ -108,7 +109,7 @@ class NoConfigFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.assertAllNetworkRequestExpectations()
         wait(for: [expectation], timeout: SHORTER_TIMEOUT_SEC)
 
-        resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: LONGER_TIMEOUT_SEC)
         XCTAssertEqual(2, receivedHandles.count)
         XCTAssertEqual("personalization:decisions", receivedHandles[0].type)
         XCTAssertEqual(1, receivedHandles[0].payload?.count)
