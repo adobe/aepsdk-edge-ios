@@ -20,6 +20,7 @@ import XCTest
 
 /// This Test class is an example of usages of the TestBase APIs
 class SampleFunctionalTests: TestBase, AnyCodableAsserts {
+    private let TIMEOUT_SEC: TimeInterval = FunctionalTestConstants.Defaults.TIMEOUT_SEC
     private let event1 = Event(name: "e1", type: "eventType", source: "eventSource", data: nil)
     private let event2 = Event(name: "e2", type: "eventType", source: "eventSource", data: nil)
     private let exEdgeInteractUrlString = "https://edge.adobedc.net/ee/v1/interact"
@@ -139,7 +140,7 @@ class SampleFunctionalTests: TestBase, AnyCodableAsserts {
 
         Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "testType", "test": "xdm"], data: nil))
 
-        let requests = mockNetworkService.getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post)
+        let requests = mockNetworkService.getNetworkRequestsWith(url: exEdgeInteractUrlString, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
 
         XCTAssertEqual(1, requests.count)
 

@@ -20,6 +20,7 @@ import XCTest
 
 /// End-to-end testing for the AEPEdge public APIs
 class AEPEdgePathOverwriteTests: TestBase, AnyCodableAsserts {
+    private let TIMEOUT_SEC: TimeInterval = FunctionalTestConstants.Defaults.TIMEOUT_SEC
     static let EDGE_MEDIA_PROD_PATH_STR = "/ee/va/v1/sessionstart"
     static let EDGE_MEDIA_PRE_PROD_PATH_STR = "/ee-pre-prd/va/v1/sessionstart"
     static let EDGE_MEDIA_INTEGRATION_PATH_STR = "/ee/va/v1/sessionstart"
@@ -87,7 +88,7 @@ class AEPEdgePathOverwriteTests: TestBase, AnyCodableAsserts {
 
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
-        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertEqual(Self.EDGE_MEDIA_PROD_PATH_STR, requestUrl.path)
@@ -163,7 +164,7 @@ class AEPEdgePathOverwriteTests: TestBase, AnyCodableAsserts {
 
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
-        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_CONSENT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
 
         let requestUrl = resultNetworkRequests[0].url
         XCTAssertEqual(Self.EDGE_CONSENT_PATH_STR, requestUrl.path)
@@ -184,7 +185,7 @@ class AEPEdgePathOverwriteTests: TestBase, AnyCodableAsserts {
 
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
-        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_MEDIA_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
 
         let expectedJSON = "{}"
         assertTypeMatch(

@@ -85,7 +85,7 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.assertAllNetworkRequestExpectations()
         wait(for: [expectation], timeout: TIMEOUT_SEC)
 
-        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post)
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
         XCTAssertEqual(1, resultNetworkRequests.count)
         XCTAssertEqual(1, receivedHandles.count)
 
