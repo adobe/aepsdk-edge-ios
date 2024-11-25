@@ -14,6 +14,48 @@ TVOS_SIMULATOR_ARCHIVE_DSYM_PATH = $(CURR_DIR)/build/tvos_simulator.xcarchive/dS
 TVOS_ARCHIVE_PATH = $(CURR_DIR)/build/tvos.xcarchive/Products/Library/Frameworks/
 TVOS_ARCHIVE_DSYM_PATH = $(CURR_DIR)/build/tvos.xcarchive/dSYMs/
 
+# Values with defaults
+IOS_DEVICE_NAME ?= iPhone 15
+# If OS version is not specified, uses the first device name match in the list of available simulators
+IOS_VERSION ?= 
+ifeq ($(strip $(IOS_VERSION)),)
+    IOS_DESTINATION = "platform=iOS Simulator,name=$(IOS_DEVICE_NAME)"
+else
+    IOS_DESTINATION = "platform=iOS Simulator,name=$(IOS_DEVICE_NAME),OS=$(IOS_VERSION)"
+endif
+
+TVOS_DEVICE_NAME ?= Apple TV
+# If OS version is not specified, uses the first device name match in the list of available simulators
+TVOS_VERSION ?=
+ifeq ($(strip $(TVOS_VERSION)),)
+	TVOS_DESTINATION = "platform=tvOS Simulator,name=$(TVOS_DEVICE_NAME)"
+else
+	TVOS_DESTINATION = "platform=tvOS Simulator,name=$(TVOS_DEVICE_NAME),OS=$(TVOS_VERSION)"
+endif
+
+clean-derived-data:
+	@if [ -z "$(SCHEME)" ]; then \
+		echo "Error: SCHEME variable is not set."; \
+		exit 1; \
+	fi; \
+	if [ -z "$(DESTINATION)" ]; then \
+		echo "Error: DESTINATION variable is not set."; \
+		exit 1; \
+	fi; \
+	echo "Cleaning derived data for scheme: $(SCHEME) with destination: $(DESTINATION)"; \
+	DERIVED_DATA_PATH=`xcodebuild -workspace $(PROJECT_NAME).xcworkspace -scheme "$(SCHEME)" -destination "$(DESTINATION)" -showBuildSettings | grep -m1 'BUILD_DIR' | awk '{print $$3}' | sed 's|/Build/Products||'`; \
+	echo "DerivedData Path: $$DERIVED_DATA_PATH"; \
+	\
+	LOGS_TEST_DIR=$$DERIVED_DATA_PATH/Logs/Test; \
+	echo "Logs Test Path: $$LOGS_TEST_DIR"; \
+	\
+	if [ -d "$$LOGS_TEST_DIR" ]; then \
+		echo "Removing existing .xcresult files in $$LOGS_TEST_DIR"; \
+		rm -rf "$$LOGS_TEST_DIR"/*.xcresult; \
+	else \
+		echo "Logs/Test directory does not exist. Skipping cleanup."; \
+	fi;
+
 setup-tools: install-githook
 
 setup:
@@ -91,37 +133,39 @@ unit-test-ios:
 	@echo "######################################################################"
 	@echo "### Unit Testing iOS"
 	@echo "######################################################################"
-	rm -rf build/reports/iosUnitResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination "platform=iOS Simulator,name=iPhone 15" -derivedDataPath build/out -resultBundlePath build/reports/iosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	@$(MAKE) clean-derived-data SCHEME=UnitTests DESTINATION=$(IOS_DESTINATION)
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination $(IOS_DESTINATION) -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 functional-test-ios:
 	@echo "######################################################################"
 	@echo "### Functional Testing iOS"
 	@echo "######################################################################"
-	rm -rf build/reports/iosFunctionalResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination "platform=iOS Simulator,name=iPhone 15" -derivedDataPath build/out -resultBundlePath build/reports/iosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	@$(MAKE) clean-derived-data SCHEME=FunctionalTests DESTINATION=$(IOS_DESTINATION)
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination $(IOS_DESTINATION) -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 unit-test-tvos:
 	@echo "######################################################################"
 	@echo "### Unit Testing tvOS"
 	@echo "######################################################################"
-	rm -rf build/reports/tvosUnitResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath build/reports/tvosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	@$(MAKE) clean-derived-data SCHEME=UnitTests DESTINATION=$(TVOS_DESTINATION)
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination $(TVOS_DESTINATION) -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
 functional-test-tvos:
 	@echo "######################################################################"
 	@echo "### Functional Testing tvOS"
 	@echo "######################################################################"
-	rm -rf build/reports/tvosFunctionalResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination 'platform=tvOS Simulator,name=Apple TV' -derivedDataPath build/out -resultBundlePath build/reports/tvosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+	@$(MAKE) clean-derived-data SCHEME=FunctionalTests DESTINATION=$(TVOS_DESTINATION)
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination $(TVOS_DESTINATION) -enableCodeCoverage YES ADB_SKIP_LINT=YES
+
+integration-test-ios: upstream-integration-test-ios
 
 # Runs the Edge Network (Konductor) integration tests after installing pod dependencies
 # Usage: 
-# make test-integration-upstream MOBILE_PROPERTY_ID=<property_id> EDGE_LOCATION_HINT=<location_hint>
+# make upstream-integration-test-ios MOBILE_PROPERTY_ID=<property_id> EDGE_LOCATION_HINT=<location_hint>
 # If MOBILE_PROPERTY_ID is not specified, test target will use its default value.
-.SILENT: test-integration-upstream # Silences Makefile's automatic echo of commands
-test-integration-upstream: pod-install; \
-	rm -rf build/reports/iosIntegrationUpstreamResults.xcresult; \
+.SILENT: upstream-integration-test-ios # Silences Makefile's automatic echo of commands
+upstream-integration-test-ios: pod-install; \
+	$(MAKE) clean-derived-data SCHEME=UpstreamIntegrationTests DESTINATION=$(IOS_DESTINATION)
 	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
 		echo ''; \
 		echo '-------------------------- WARNING -------------------------------'; \
@@ -132,9 +176,7 @@ test-integration-upstream: pod-install; \
 	xcodebuild test \
 	-workspace $(PROJECT_NAME).xcworkspace \
 	-scheme UpstreamIntegrationTests \
-	-destination 'platform=iOS Simulator,name=iPhone 15' \
-	-derivedDataPath build/out \
-	-resultBundlePath build/reports/iosIntegrationUpstreamResults.xcresult \
+	-destination $(IOS_DESTINATION) \
 	-enableCodeCoverage YES \
 	ADB_SKIP_LINT=YES \
 	TAGS_MOBILE_PROPERTY_ID=$(TAGS_MOBILE_PROPERTY_ID) \
@@ -149,15 +191,8 @@ lint-autocorrect:
 lint:
 	./Pods/SwiftLint/swiftlint lint Sources TestApps
 
-# make check-version VERSION=5.0.0
-check-version:
-	sh ./Script/version.sh $(VERSION)
-
 test-SPM-integration:
 	sh ./Script/test-SPM.sh
 
 test-podspec:
 	sh ./Script/test-podspec.sh
-
-test-version-update:
-	sh ./Script/update-versions.sh -n Edge -v 9.9.9

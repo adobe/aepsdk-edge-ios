@@ -20,7 +20,7 @@ import Foundation
 import XCTest
 
 class EdgeConsentTests: TestBase, AnyCodableAsserts {
-    private let TIMEOUT_SEC: TimeInterval = 2
+    private let TIMEOUT_SEC: TimeInterval = FunctionalTestConstants.Defaults.TIMEOUT_SEC
     private let EVENTS_COUNT: Int32 = 5
     private let experienceEvent = ExperienceEvent(xdm: ["test": "xdm"])
     private let responseBody = "\u{0000}{" +

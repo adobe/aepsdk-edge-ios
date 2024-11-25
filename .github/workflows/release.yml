@@ -1,3 +1,15 @@
+#
+# Copyright 2024 Adobe. All rights reserved.
+# This file is licensed to you under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License. You may obtain a copy
+# of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+# OF ANY KIND, either express or implied. See the License for the specific language
+# governing permissions and limitations under the License.
+#
+
 name: Release
 
 on:
@@ -29,5 +41,5 @@ jobs:
       tag: ${{ github.event.inputs.tag }}
       create-github-release: ${{ github.event.inputs.create-github-release == 'true' && 'AEPEdge' || '' }}
       pod-publish-extensions: ${{ github.event.inputs.pod-publish-extensions == 'true' && 'AEPEdge' || '' }}
-      version-validation-paths: AEPEdge.podspec, Sources/EdgeConstants.swift, AEPEdge.xcodeproj/project.pbxproj
+      version-validation-paths: AEPEdge.podspec, AEPEdge.xcodeproj/project.pbxproj, Sources/EdgeConstants.swift,
     secrets: inherit

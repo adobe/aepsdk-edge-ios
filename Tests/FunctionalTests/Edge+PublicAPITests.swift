@@ -18,7 +18,7 @@ import AEPTestUtils
 import XCTest
 
 class EdgePublicAPITests: TestBase {
-    private let TIMEOUT_SEC: TimeInterval = 2
+    private let TIMEOUT_SEC: TimeInterval = FunctionalTestConstants.Defaults.TIMEOUT_SEC
     private let exEdgeInteractProdUrlLocHint = URL(string: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR_OR2_LOC)! // swiftlint:disable:this force_unwrapping
     private let responseBody = "{\"test\": \"json\"}"
 
