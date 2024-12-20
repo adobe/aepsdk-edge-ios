@@ -77,4 +77,5 @@ jobs:
       ios-device-names: ${{ inputs.ios-device-names }}
       ios-versions: ${{ inputs.ios-versions }}
       command: make integration-test-ios TAGS_MOBILE_PROPERTY_ID=${{ github.event.inputs.tags-mobile-property-id }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
+      enable-codecov: false
     secrets: inherit
