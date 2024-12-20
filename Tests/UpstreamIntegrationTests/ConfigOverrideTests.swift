@@ -20,7 +20,7 @@ import XCTest
 
 /// Performs validation on integration with the Edge Network upstream service
 class ConfigOverrideTests: TestBase, AnyCodableAsserts {
-    private let TIMEOUT_SEC: TimeInterval = 30
+    private let TIMEOUT_SEC: TimeInterval = 45
     private var edgeLocationHint: String? = TestEnvironment.defaultLocationHint
     private var networkService: RealNetworkService = RealNetworkService()
 
