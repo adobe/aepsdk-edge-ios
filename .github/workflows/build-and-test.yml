@@ -18,7 +18,7 @@ on:
 jobs:
   build-and-test:
     name: "CI"
-    uses: adobe/aepsdk-commons/.github/workflows/ios-build-and-test.yml@gha-ios-5.0.0
+    uses: adobe/aepsdk-commons/.github/workflows/ios-build-and-test.yml@gha-ios-5.2.0
     with:
       ios-device-names: '["iPhone 15"]'
       ios-versions: '["18.1"]'

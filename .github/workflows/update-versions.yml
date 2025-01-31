@@ -42,7 +42,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: adobe/aepsdk-commons/.github/workflows/versions.yml@gha-ios-5.0.0
+    uses: adobe/aepsdk-commons/.github/workflows/versions.yml@gha-ios-5.2.0
     with:
       version: ${{ github.event.inputs.version }}
       branch: ${{ github.event.inputs.branch }}

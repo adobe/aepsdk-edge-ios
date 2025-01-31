@@ -72,7 +72,7 @@ run-name: ${{ inputs.id }}
 jobs:
   test-ios-integration:
     name: Integration Test (iOS)
-    uses: adobe/aepsdk-commons/.github/workflows/ios-custom-command-build-and-test.yml@gha-ios-5.0.0
+    uses: adobe/aepsdk-commons/.github/workflows/ios-custom-command-build-and-test.yml@gha-ios-5.2.0
     with:
       ios-device-names: ${{ inputs.ios-device-names }}
       ios-versions: ${{ inputs.ios-versions }}
