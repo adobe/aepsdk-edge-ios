@@ -14,7 +14,7 @@ TVOS_SIMULATOR_ARCHIVE_DSYM_PATH = $(CURR_DIR)/build/tvos_simulator.xcarchive/dS
 TVOS_ARCHIVE_PATH = $(CURR_DIR)/build/tvos.xcarchive/Products/Library/Frameworks/
 TVOS_ARCHIVE_DSYM_PATH = $(CURR_DIR)/build/tvos.xcarchive/dSYMs/
 
-# CI variables - using values with defaults
+# CI variables - using values with defaults. Set defaults to values that are most useful for local development.
 IOS_DEVICE_NAME ?= iPhone 15
 # If OS version is not specified, uses the first device name match in the list of available simulators
 IOS_VERSION ?= 
@@ -134,7 +134,7 @@ functional-test-tvos:
 	rm -rf build/reports/tvosFunctionalResults.xcresult
 	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination $(TVOS_DESTINATION) -derivedDataPath build/out -resultBundlePath build/reports/tvosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
 
-# CI alias for integration test
+# CI alias for build and test workflow
 integration-test-ios: upstream-integration-test-ios
 
 # Runs the Edge Network (Konductor) integration tests after installing pod dependencies
