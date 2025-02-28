@@ -143,7 +143,6 @@ integration-test-ios: upstream-integration-test-ios
 # If MOBILE_PROPERTY_ID is not specified, test target will use its default value.
 .SILENT: upstream-integration-test-ios # Silences Makefile's automatic echo of commands
 upstream-integration-test-ios: pod-install; \
-	$(MAKE) clean-derived-data SCHEME=UpstreamIntegrationTests DESTINATION=$(IOS_DESTINATION)
 	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
 		echo ''; \
 		echo '-------------------------- WARNING -------------------------------'; \
