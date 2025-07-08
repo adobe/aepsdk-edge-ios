@@ -18,12 +18,8 @@ on:
 jobs:
   build-and-test:
     name: "CI"
-    uses: adobe/aepsdk-commons/.github/workflows/ios-build-and-test.yml@gha-ios-5.2.0
+    uses: adobe/aepsdk-commons/.github/workflows/ios-build-and-test.yml@gha-ios-5.3.0
     with:
-      ios-device-names: '["iPhone 15"]'
-      ios-versions: '["18.1"]'
-      tvos-device-names: '["Apple TV"]'
-      tvos-versions: '["18.1"]'
       run-test-ios-unit: true
       run-test-ios-functional: true
       run-test-ios-integration: true
@@ -31,4 +27,5 @@ jobs:
       run-test-tvos-functional: true
       run-build-xcframework-and-app: true
       enable-codecov: true
+      result-bundle-path: build/reports
     secrets: inherit

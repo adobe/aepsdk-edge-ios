@@ -72,10 +72,9 @@ run-name: ${{ inputs.id }}
 jobs:
   test-ios-integration:
     name: Integration Test (iOS)
-    uses: adobe/aepsdk-commons/.github/workflows/ios-custom-command-build-and-test.yml@gha-ios-5.2.0
+    uses: adobe/aepsdk-commons/.github/workflows/ios-custom-command-build-and-test.yml@gha-ios-5.3.0
     with:
       ios-device-names: ${{ inputs.ios-device-names }}
       ios-versions: ${{ inputs.ios-versions }}
       command: make integration-test-ios TAGS_MOBILE_PROPERTY_ID=${{ github.event.inputs.tags-mobile-property-id }} EDGE_LOCATION_HINT=${{ github.event.inputs.edge-location-hint }}
-      enable-codecov: false
     secrets: inherit
