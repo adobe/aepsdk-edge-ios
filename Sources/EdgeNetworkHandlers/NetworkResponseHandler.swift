@@ -23,8 +23,23 @@ class NetworkResponseHandler {
     private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
     private var updateLocationHint: (String, _ ttlSeconds: TimeInterval) -> Void
 
+    /// Behaviour switch for early per-event completion (index-advance), mirroring
+    /// `aepsdk-edge-android`'s `NetworkResponseHandler.earlyPerEventCompletionEnabled`. When `true`
+    /// (default), a batched event's completion fires as soon as a response fragment for a higher
+    /// `eventIndex` is observed (all lower-index events are then known complete), instead of waiting
+    /// for the whole batch's stream to close. The highest index and anything still pending complete
+    /// at stream close (`processResponseOnComplete`), exactly as before. Only relevant to multi-event
+    /// batched responses; single events, consent, batch-of-1 are unaffected either way.
+    static var earlyPerEventCompletionEnabled = true
+
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [Event]>()
+
+    // early-completion progress, keyed by requestId: highest eventIndex observed in the response so far
+    private var highestObservedIndex = ThreadSafeDictionary<String, Int>()
+    // early-completion progress, keyed by requestId: number of leading events already completed
+    // (monotonic; guarantees each event completes exactly once)
+    private var nextCompletionIndex = ThreadSafeDictionary<String, Int>()
 
     /// Date of the last generic identity reset request event, for more info see `shouldIgnoreStorePayload`
     private var lastResetDate = Atomic<Date>(Date(timeIntervalSince1970: 0))
@@ -67,6 +82,8 @@ class NetworkResponseHandler {
     func removeWaitingEvents(requestId: String) -> [Event]? {
         guard !requestId.isEmpty else { return nil }
 
+        highestObservedIndex.removeValue(forKey: requestId)
+        nextCompletionIndex.removeValue(forKey: requestId)
         return sentEventsWaitingResponse.removeValue(forKey: requestId)
     }
 
@@ -104,6 +121,15 @@ class NetworkResponseHandler {
                                 ignoreStorePayloads: ignoreStorePayloads)
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId)
             dispatchEventWarnings(warningsArray: edgeResponse.warnings, requestId: requestId)
+
+            // Early per-event completion: now that this fragment's handles/errors/warnings are all
+            // processed and accumulated, complete every waiting event whose index is strictly below the
+            // highest index observed so far — observing index M means events 0..M-1 have no more data
+            // coming. The highest index (and anything still pending) completes at stream close in
+            // `processResponseOnComplete`.
+            if NetworkResponseHandler.earlyPerEventCompletionEnabled {
+                sweepCompletions(requestId: requestId, exclusiveUpperBound: highestObservedIndexFor(requestId: requestId))
+            }
         } else {
             Log.warning(label: LOG_TAG,
                         "processResponseOnSuccess - The conversion to JSON failed for server response: \(jsonResponse), request id \(requestId)")
@@ -135,25 +161,104 @@ class NetworkResponseHandler {
     /// Processes the "on complete" response from the network layer by:
     /// 1. Unregistering request callbacks for each event and
     /// 2. Dispatching completion events for events that have specifically requested one.
+    ///
+    /// Events already completed early (see `sweepCompletions`) are not completed again here — only
+    /// the highest-indexed event and anything still pending complete at stream close.
     /// - Parameter requestId: The network request ID used to fetch the associated request events.
     func processResponseOnComplete(requestId: String) {
+        // Capture progress BEFORE removeWaitingEvents clears it.
+        let alreadyCompleted = NetworkResponseHandler.earlyPerEventCompletionEnabled ? completedCountFor(requestId: requestId) : 0
+
         guard let removedWaitingEvents = removeWaitingEvents(requestId: requestId) else { return }
 
-        for event in removedWaitingEvents {
-            // Unregister currently known completion handlers
-            CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: event.id.uuidString)
+        guard alreadyCompleted < removedWaitingEvents.count else { return }
 
-            if sendCompletionRequested(event: event) {
-                let eventData = addEventAndRequestIdToDictionary([:], requestId: requestId, requestEventId: nil)
+        for index in alreadyCompleted..<removedWaitingEvents.count {
+            completeEvent(requestId: requestId, event: removedWaitingEvents[index])
+        }
+    }
 
-                let responseEvent = event.createResponseEvent(
-                    name: EdgeConstants.EventName.CONTENT_COMPLETE,
-                    type: EventType.edge,
-                    source: EventSource.contentComplete,
-                    data: eventData
-                )
-                MobileCore.dispatch(event: responseEvent)
+    /// - Returns: the number of leading events already early-completed for `requestId` (0 if none).
+    private func completedCountFor(requestId: String) -> Int {
+        return serialQueue.sync {
+            self.nextCompletionIndex[requestId] ?? 0
+        }
+    }
+
+    /// Completes a single waiting `event`: unregisters its completion handler and, if the event
+    /// requested it via `request.sendCompletion`, dispatches its `CONTENT_COMPLETE` response event.
+    /// This is the per-event completion action, called either early (index-advance) or at stream close.
+    private func completeEvent(requestId: String, event: Event) {
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: event.id.uuidString)
+
+        if sendCompletionRequested(event: event) {
+            let eventData = addEventAndRequestIdToDictionary([:], requestId: requestId, requestEventId: nil)
+
+            let responseEvent = event.createResponseEvent(
+                name: EdgeConstants.EventName.CONTENT_COMPLETE,
+                type: EventType.edge,
+                source: EventSource.contentComplete,
+                data: eventData
+            )
+            MobileCore.dispatch(event: responseEvent)
+        }
+    }
+
+    /// Records the highest indexed `eventIndex` observed so far for `requestId`, used to drive early
+    /// per-event completion. No-op when early completion is disabled or `index` is nil (global handles
+    /// / no-index broadcast errors — those must never advance completion).
+    ///
+    /// If an index arrives that is lower than the completion boundary already reached, that violates
+    /// the assumed grouping (data for an event that was already completed); it is logged at WARNING for
+    /// investigation and otherwise ignored (the boundary is never moved backwards, so no event is
+    /// completed twice).
+    private func recordObservedIndex(requestId: String, index: Int?) {
+        guard NetworkResponseHandler.earlyPerEventCompletionEnabled, let index = index, index >= 0 else { return }
+
+        serialQueue.sync {
+            if let completed = self.nextCompletionIndex[requestId], index < completed {
+                Log.warning(label: self.LOG_TAG,
+                            "Unexpected response ordering: eventIndex \(index) arrived for request id (\(requestId)) " +
+                            "after events through index \(completed - 1) were already completed. Not re-completing; " +
+                            "investigate response grouping/ordering.")
+                return
             }
+
+            let current = self.highestObservedIndex[requestId] ?? -1
+            if index > current {
+                self.highestObservedIndex[requestId] = index
+            }
+        }
+    }
+
+    /// - Returns: the highest indexed `eventIndex` observed so far for `requestId`, or -1 if none observed.
+    private func highestObservedIndexFor(requestId: String) -> Int {
+        return serialQueue.sync {
+            self.highestObservedIndex[requestId] ?? -1
+        }
+    }
+
+    /// Completes every waiting event for `requestId` whose position is at or after the current
+    /// completion boundary and strictly below `exclusiveUpperBound`, advancing the boundary so each
+    /// event completes exactly once.
+    /// - Parameters:
+    ///   - requestId: the batch request id
+    ///   - exclusiveUpperBound: complete events with index in `[nextCompletionIndex, min(exclusiveUpperBound, count))`
+    private func sweepCompletions(requestId: String, exclusiveUpperBound: Int) {
+        var toComplete: [Event] = []
+        serialQueue.sync {
+            guard let events = self.sentEventsWaitingResponse[requestId] else { return }
+            var next = self.nextCompletionIndex[requestId] ?? 0
+            let limit = min(exclusiveUpperBound, events.count)
+            while next < limit {
+                toComplete.append(events[next])
+                next += 1
+            }
+            self.nextCompletionIndex[requestId] = next
+        }
+
+        for event in toComplete {
+            completeEvent(requestId: requestId, event: event)
         }
     }
 
@@ -191,6 +296,18 @@ class NetworkResponseHandler {
                         handleLocationHintHandle(handle: eventHandle)
                     }
                 }
+            }
+
+            // Track the highest per-event index seen, to drive early per-event completion. Handles
+            // with no eventIndex (global handles) do not advance completion.
+            recordObservedIndex(requestId: requestId, index: eventHandle.eventIndex)
+
+            // Complete any lower-indexed events still pending BEFORE dispatching this handle's data.
+            // Observing this handle's index means every lower index has no more data coming, so their
+            // completions must fire before this handle is dispatched — not after, which would let this
+            // handle's data land ahead of a still-pending sibling's completion.
+            if NetworkResponseHandler.earlyPerEventCompletionEnabled, let eventIndex = eventHandle.eventIndex {
+                sweepCompletions(requestId: requestId, exclusiveUpperBound: eventIndex)
             }
 
             guard let eventHandleAsDictionary = eventHandle.asDictionary() else { continue }
@@ -253,7 +370,15 @@ class NetworkResponseHandler {
             if let errorAsDictionary = error.asDictionary() {
                 logErrorMessage(errorAsDictionary, isError: true, requestId: requestId)
 
-                let requestEvent = extractRequestEvent(forEventIndex: error.report?.eventIndex, requestId: requestId)
+                let eventIndex = error.report?.eventIndex
+                let requestEvent = extractRequestEvent(forEventIndex: eventIndex, requestId: requestId)
+
+                // Same ordering guarantee as processEventHandles, applied to the error channel.
+                recordObservedIndex(requestId: requestId, index: eventIndex)
+                if NetworkResponseHandler.earlyPerEventCompletionEnabled, let eventIndex = eventIndex {
+                    sweepCompletions(requestId: requestId, exclusiveUpperBound: eventIndex)
+                }
+
                 // set eventRequestId and Edge requestId on the response event and dispatch data
                 let eventData = addEventAndRequestIdToDictionary(errorAsDictionary,
                                                                  requestId: requestId,
@@ -282,7 +407,15 @@ class NetworkResponseHandler {
             if let warningsAsDictionary = warning.asDictionary() {
                 logErrorMessage(warningsAsDictionary, isError: false, requestId: requestId)
 
-                let requestEvent = extractRequestEvent(forEventIndex: warning.report?.eventIndex, requestId: requestId)
+                let eventIndex = warning.report?.eventIndex
+                let requestEvent = extractRequestEvent(forEventIndex: eventIndex, requestId: requestId)
+
+                // Same ordering guarantee as processEventHandles, applied to the warning channel.
+                recordObservedIndex(requestId: requestId, index: eventIndex)
+                if NetworkResponseHandler.earlyPerEventCompletionEnabled, let eventIndex = eventIndex {
+                    sweepCompletions(requestId: requestId, exclusiveUpperBound: eventIndex)
+                }
+
                 // set eventRequestId and Edge requestId on the response event and dispatch data
                 let eventData = addEventAndRequestIdToDictionary(warningsAsDictionary,
                                                                  requestId: requestId,

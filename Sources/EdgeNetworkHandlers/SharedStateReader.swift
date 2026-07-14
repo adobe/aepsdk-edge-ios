@@ -39,6 +39,17 @@ struct SharedStateReader {
         return edgeConfig ?? [:]
     }
 
+    /// Reads the `edge.batching.enabled` flag from the Configuration shared state for the given `event`.
+    /// - Parameter event: the `Event` used to retrieve the Configuration shared state.
+    /// - Returns: true if batching is enabled in Configuration, false if unset or the shared state is unavailable.
+    func isBatchingEnabled(event: Event) -> Bool {
+        guard let configurationState = getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME, event, false)?.value else {
+            return false
+        }
+
+        return configurationState[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool ?? false
+    }
+
     /// Get the Assurance integration ID from the Assurance shared state for the given `event`.
     /// - Parameter event: the `Event` used to retrieve the Assurance shared state.
     /// - Returns: the `integrationid` from the Assurance shared state or nil if the shared state or integration id is does not exist.

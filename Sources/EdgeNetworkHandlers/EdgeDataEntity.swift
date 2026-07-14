@@ -24,4 +24,31 @@ struct EdgeDataEntity: Codable {
 
     /// The current identity shared state at the time `Event` was queued
     let identityMap: [String: AnyCodable]
+
+    /// Whether batching was enabled (via the `edge.batching.enabled` Configuration flag) at the time `Event` was queued
+    let batchingEnabled: Bool
+
+    init(event: Event, configuration: [String: AnyCodable], identityMap: [String: AnyCodable], batchingEnabled: Bool = false) {
+        self.event = event
+        self.configuration = configuration
+        self.identityMap = identityMap
+        self.batchingEnabled = batchingEnabled
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case event
+        case configuration
+        case identityMap
+        case batchingEnabled
+    }
+
+    // Custom decoder so hits persisted before `batchingEnabled` was introduced (no such key in their
+    // stored JSON) still decode successfully, defaulting to `false` instead of failing the whole hit.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        event = try container.decode(Event.self, forKey: .event)
+        configuration = try container.decode([String: AnyCodable].self, forKey: .configuration)
+        identityMap = try container.decode([String: AnyCodable].self, forKey: .identityMap)
+        batchingEnabled = (try? container.decode(Bool.self, forKey: .batchingEnabled)) ?? false
+    }
 }

@@ -1040,6 +1040,124 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
         assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: false, returns: true)
     }
+
+    // MARK: - processBatch
+
+    /// Tests that a batch of 2 ExperienceEvents is sent as a single network request and resolves all of them.
+    func testProcessBatch_twoExperienceEvents_happy_sendsOneNetworkRequest_resolvesBoth() {
+        let edgeEntity1 = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let entity1 = DataEntity(uniqueIdentifier: "test-uuid-1", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity1))
+        let edgeEntity2 = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let entity2 = DataEntity(uniqueIdentifier: "test-uuid-2", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity2))
+
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [entity1, entity2]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(2, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
+        XCTAssertEqual(1, mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).count)
+    }
+
+    /// Regression guard for the queue-remove bug: a mixed window (ExperienceEvent then Consent) must
+    /// truncate the batch at the Consent boundary and report a resolvedCount matching only the
+    /// entities actually sent (1), not the full peeked window (2) — otherwise EdgeBatchingHitQueue's
+    /// DONE handling would remove the untouched Consent entity from the queue without ever processing it.
+    func testProcessBatch_experienceEventFollowedByConsent_resolvesOnlyLeadingExperienceRun() {
+        let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let experienceEntity = DataEntity(uniqueIdentifier: "test-uuid-exp", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+        let consentEdgeEntity = getEdgeDataEntity(event: consentUpdateEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let consentEntity = DataEntity(uniqueIdentifier: "test-uuid-consent", timestamp: Date(), data: try? JSONEncoder().encode(consentEdgeEntity))
+
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [experienceEntity, consentEntity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            // Only the leading ExperienceEvent was resolved; the Consent entity must be left untouched.
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
+        // Only one network request — for the ExperienceEvent alone; the Consent entity was never sent
+        // in this call (it is left for the next processing cycle to handle via the single-entity path).
+        XCTAssertEqual(1, mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).count)
+        XCTAssertEqual(0, mockNetworkService.getNetworkRequestsWith(url: CONSENT_ENDPOINT, httpMethod: .post).count)
+    }
+
+    /// A single ExperienceEvent given to `processBatch` (batch size 1) delegates to the existing
+    /// `processHit` path and resolves exactly 1 entity.
+    func testProcessBatch_singleExperienceEvent_delegatesToProcessHit_resolvesOne() {
+        let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [entity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
+    }
+
+    /// A head entity that fails to decode is dropped alone (resolvedCount 1) — even when the peeked
+    /// window contains more entities after it, which must be left untouched for the next cycle.
+    func testProcessBatch_headDecodeFailure_dropsOnlyHead_resolvesOne() {
+        let badEntity = DataEntity(uniqueIdentifier: "bad-uuid", timestamp: Date(), data: nil)
+        let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let goodEntity = DataEntity(uniqueIdentifier: "good-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [badEntity, goodEntity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        // The good entity must never have been sent in this call.
+        XCTAssertEqual(0, mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).count)
+    }
+
+    /// An empty entities array resolves 0 entities without crashing.
+    func testProcessBatch_emptyEntities_resolvesZero() {
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: []) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(0, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+    }
 }
 
 extension URL {

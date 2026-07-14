@@ -134,7 +134,8 @@ public class Edge: NSObject, Extension {
 
         let edgeEntity = EdgeDataEntity(event: event,
                                         configuration: AnyCodable.from(dictionary: edgeConfig) ?? [:],
-                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
+                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:],
+                                        batchingEnabled: sharedStateReader.isBatchingEnabled(event: event))
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to encode EdgeDataEntity for event with id: '\(event.id.uuidString)'.")
@@ -243,7 +244,7 @@ public class Edge: NSObject, Extension {
                                             readyForEvent: readyForEvent(_:),
                                             getImplementationDetails: getImplementationDetails,
                                             getLocationHint: getLocationHint)
-        return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
+        return EdgeBatchingHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }
 
     /// Retrieves the `ConsentStatus` from the Consent XDM Shared state for current `event`.

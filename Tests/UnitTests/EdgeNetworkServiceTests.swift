@@ -46,7 +46,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Network callback is invoked")
 
         // Test
-        networkService.doRequest(url: url, requestBody: edgeHitPayload, requestHeaders: [:], streaming: nil, responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url, requestBody: edgeHitPayload, requestHeaders: [:], streaming: nil, responseCallback: mockResponseCallback, completion: { success, retryInterval, _ in
             // Verify
             let networkRequests = self.mockNetworkService.getNetworkRequestsWith(url: self.url, httpMethod: .post)
             XCTAssertEqual(1, networkRequests.count)
@@ -83,7 +83,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  requestHeaders: testHeaders,
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval  in
+                                 completion: { success, retryInterval, _  in
             // verify
             let networkRequests = self.mockNetworkService.getNetworkRequestsWith(url: self.url, httpMethod: .post)
             guard let networkRequest = networkRequests.first else {
@@ -123,7 +123,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  requestHeaders: [:],
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
+                                 completion: { success, retryInterval, _ in
                                     // verify
                                     XCTAssertTrue(success)
                                     XCTAssertNil(retryInterval)
@@ -152,7 +152,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  requestHeaders: [:],
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
+                                 completion: { success, retryInterval, _ in
                                     // verify
                                     XCTAssertTrue(success)
                                     XCTAssertNil(retryInterval)
@@ -181,7 +181,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  requestHeaders: [:],
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
+                                 completion: { success, retryInterval, _ in
                                     // verify
                                     XCTAssertTrue(success)
                                     XCTAssertNil(retryInterval)
@@ -212,7 +212,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                      requestHeaders: [:],
                                      streaming: nil,
                                      responseCallback: mockResponseCallback,
-                                     completion: { success, retryInterval in
+                                     completion: { success, retryInterval, _ in
                 // verify
                 XCTAssertFalse(success)
                 XCTAssertEqual(60.0, retryInterval)
@@ -244,7 +244,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                      requestHeaders: [:],
                                      streaming: nil,
                                      responseCallback: mockResponseCallback,
-                                     completion: { success, retryInterval in
+                                     completion: { success, retryInterval, _ in
                                         // verify
                                         XCTAssertFalse(success)
                                         XCTAssertEqual(5.0, retryInterval)
@@ -270,7 +270,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  requestHeaders: [:],
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
+                                 completion: { success, retryInterval, _ in
                                     // verify
                                     XCTAssertTrue(success)
                                     XCTAssertNil(retryInterval)
@@ -307,7 +307,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                      requestHeaders: [:],
                                      streaming: nil,
                                      responseCallback: mockResponseCallback,
-                                     completion: { success, retryInterval in
+                                     completion: { success, retryInterval, _ in
                 // verify
                 XCTAssertTrue(success)
                 XCTAssertNil(retryInterval)
@@ -343,7 +343,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  requestHeaders: [:],
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
+                                 completion: { success, retryInterval, _ in
                                     // verify
                                     XCTAssertTrue(success)
                                     XCTAssertNil(retryInterval)
@@ -387,7 +387,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  requestHeaders: [:],
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
+                                 completion: { success, retryInterval, _ in
                                     // verify
                                     XCTAssertTrue(success)
                                     XCTAssertNil(retryInterval)
@@ -417,7 +417,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  requestHeaders: [:],
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
+                                 completion: { success, retryInterval, _ in
                                     // verify
                                     XCTAssertTrue(success)
                                     XCTAssertNil(retryInterval)
@@ -440,7 +440,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                                 response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil, headerFields: nil),
                                                 error: nil)
         mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
-        networkService.doRequest(url: url, requestBody: edgeHitPayload, requestHeaders: [:], streaming: nil, responseCallback: mockResponseCallback, completion: { success, retryInterval in
+        networkService.doRequest(url: url, requestBody: edgeHitPayload, requestHeaders: [:], streaming: nil, responseCallback: mockResponseCallback, completion: { success, retryInterval, _ in
             // verify
             XCTAssertFalse(success) // retry
             XCTAssertEqual(5.0, retryInterval) // default timeout
@@ -475,7 +475,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                      requestHeaders: [:],
                                      streaming: nil,
                                      responseCallback: mockResponseCallback,
-                                     completion: { success, retryInterval in
+                                     completion: { success, retryInterval, _ in
                 // verify
                 XCTAssertFalse(success) // retry
                 XCTAssertEqual(retryValue.1, retryInterval) // timeout value provided by Retry-After response header
@@ -510,7 +510,7 @@ class EdgeNetworkServiceTests: XCTestCase {
                                      requestHeaders: [:],
                                      streaming: nil,
                                      responseCallback: mockResponseCallback,
-                                     completion: { success, retryInterval in
+                                     completion: { success, retryInterval, _ in
                 // verify
                 XCTAssertFalse(success) // retry
                 XCTAssertEqual(5.0, retryInterval) // default

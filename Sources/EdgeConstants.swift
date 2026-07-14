@@ -37,6 +37,8 @@ enum EdgeConstants {
         static let COLLECT_CONSENT_YES = ConsentStatus.yes // used if Consent extension is not registered
         static let COLLECT_CONSENT_PENDING = ConsentStatus.pending // used when Consent encoding failed or the value different than y/n
         static let LOCATION_HINT_TTL_SEC: TimeInterval = 1800 // 30 mins in seconds
+        // Matches aepsdk-edge-android's EdgeConstants.Defaults.MAX_BATCH_SIZE
+        static let MAX_BATCH_SIZE: Int = 10
     }
 
     enum EventDataKeys {
@@ -80,6 +82,8 @@ enum EdgeConstants {
             static let ORG_ID = "experienceCloud.org"
             static let EDGE_ENVIRONMENT = "edge.environment"
             static let EDGE_DOMAIN = "edge.domain"
+            // Matches aepsdk-edge-android's EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED
+            static let EDGE_BATCHING_ENABLED = "edge.batching.enabled"
         }
 
         enum Identity {

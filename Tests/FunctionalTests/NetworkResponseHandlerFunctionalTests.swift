@@ -1610,4 +1610,115 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
             assertEqual(expected: expectedEventData, actual: completeEvent, file: file, line: line)
         }
     }
+
+    // MARK: Early per-event completion (index-advance)
+
+    /// A single streamed fragment carrying one indexed, non-global handle for `eventIndex`.
+    private func indexedHandleFragment(eventIndex: Int) -> String {
+        return """
+        {
+          "handle": [
+            { "type": "pairedeventexample", "eventIndex": \(eventIndex), "payload": [ { "id": "p\(eventIndex)" } ] }
+          ]
+        }
+        """
+    }
+
+    private func completionEvent(name: String) -> Event {
+        return Event(name: name, type: "testType", source: "testSource", data: requestSendCompletionTrueEventData)
+    }
+
+    func testEarlyCompletion_multiEventStream_completesEachEventWhenNextIndexArrives() {
+        let requestId = "req-early"
+        let e0 = completionEvent(name: "e0")
+        let e1 = completionEvent(name: "e1")
+        let e2 = completionEvent(name: "e2")
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e0, e1, e2])
+
+        // index 0 fragment: nothing completes yet (no higher index seen)
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: indexedHandleFragment(eventIndex: 0), requestId: requestId)
+        XCTAssertEqual(0, getDispatchedEventsWith(type: EventType.edge, source: TestConstants.EventSource.CONTENT_COMPLETE, timeout: 1).count)
+
+        // index 1 fragment: event 0 is now known complete
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: indexedHandleFragment(eventIndex: 1), requestId: requestId)
+        var completes = getDispatchedEventsWith(type: EventType.edge, source: TestConstants.EventSource.CONTENT_COMPLETE)
+        XCTAssertEqual(1, completes.count)
+        XCTAssertEqual(e0.id, completes[0].parentID)
+
+        // index 2 fragment: event 1 now completes
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: indexedHandleFragment(eventIndex: 2), requestId: requestId)
+        completes = getDispatchedEventsWith(type: EventType.edge, source: TestConstants.EventSource.CONTENT_COMPLETE)
+        XCTAssertEqual(2, completes.count)
+        XCTAssertEqual(e1.id, completes[1].parentID)
+
+        // stream close: the last event (index 2) completes
+        networkResponseHandler.processResponseOnComplete(requestId: requestId)
+        completes = getDispatchedEventsWith(type: EventType.edge, source: TestConstants.EventSource.CONTENT_COMPLETE)
+        XCTAssertEqual(3, completes.count)
+        XCTAssertEqual(e2.id, completes[2].parentID)
+    }
+
+    func testEarlyCompletion_completionFiresBeforeNextIndexHandleDispatch() {
+        // A completing event's downstream listeners (e.g. a caller merging accumulated response data
+        // into its own cache on completion) must never observe a higher-indexed sibling's handle data
+        // that arrived in the same response — so completion(0) must be dispatched strictly before
+        // index 1's own handle is dispatched, not after.
+        let requestId = "req-order"
+        let e0 = completionEvent(name: "e0")
+        let e1 = completionEvent(name: "e1")
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e0, e1])
+
+        var dispatchOrder: [Event] = []
+        let orderQueue = DispatchQueue(label: "test.orderQueue")
+        MobileCore.registerEventListener(type: EventType.wildcard, source: EventSource.wildcard) { event in
+            orderQueue.sync { dispatchOrder.append(event) }
+        }
+
+        // index 0 fragment: wait for its handle to be fully dispatched, then clear the capture so
+        // only the second call's events (the ones under test) remain in `dispatchOrder`.
+        setExpectationEvent(type: TestConstants.EventType.EDGE, source: "pairedeventexample", expectedCount: 1)
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: indexedHandleFragment(eventIndex: 0), requestId: requestId)
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        resetTestExpectations()
+        orderQueue.sync { dispatchOrder.removeAll() }
+
+        // index 1 fragment, in this SAME processResponseOnSuccess call: this must first complete
+        // event 0, THEN dispatch index 1's own handle — not the other way around.
+        setExpectationEvent(type: TestConstants.EventType.EDGE, source: "pairedeventexample", expectedCount: 1)
+        setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.CONTENT_COMPLETE, expectedCount: 1)
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: indexedHandleFragment(eventIndex: 1), requestId: requestId)
+        assertExpectedEvents(ignoreUnexpectedEvents: true)
+
+        let captured = orderQueue.sync { dispatchOrder }
+        let completionIndex = captured.firstIndex { $0.source == TestConstants.EventSource.CONTENT_COMPLETE && $0.parentID == e0.id }
+        let handle1Index = captured.firstIndex { $0.source == "pairedeventexample" }
+
+        XCTAssertNotNil(completionIndex, "event 0's completion must be dispatched")
+        XCTAssertNotNil(handle1Index, "index 1's handle must be dispatched")
+        if let completionIndex = completionIndex, let handle1Index = handle1Index {
+            XCTAssertLessThan(completionIndex, handle1Index,
+                              "completion for event 0 must be dispatched before index 1's handle, so a completion listener never observes index 1's data")
+        }
+    }
+
+    func testEarlyCompletionDisabled_completesAllAtStreamClose_legacyParity() {
+        NetworkResponseHandler.earlyPerEventCompletionEnabled = false
+        defer { NetworkResponseHandler.earlyPerEventCompletionEnabled = true }
+
+        let requestId = "req-legacy"
+        let e0 = completionEvent(name: "e0")
+        let e1 = completionEvent(name: "e1")
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [e0, e1])
+
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: indexedHandleFragment(eventIndex: 0), requestId: requestId)
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: indexedHandleFragment(eventIndex: 1), requestId: requestId)
+        // disabled: no completion until stream close, even though index 1 was observed
+        XCTAssertEqual(0, getDispatchedEventsWith(type: EventType.edge, source: TestConstants.EventSource.CONTENT_COMPLETE, timeout: 1).count)
+
+        networkResponseHandler.processResponseOnComplete(requestId: requestId)
+        let completes = getDispatchedEventsWith(type: EventType.edge, source: TestConstants.EventSource.CONTENT_COMPLETE)
+        XCTAssertEqual(2, completes.count)
+        XCTAssertEqual(e0.id, completes[0].parentID)
+        XCTAssertEqual(e1.id, completes[1].parentID)
+    }
 }

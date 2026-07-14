@@ -139,14 +139,57 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         assertExpectedEvents(ignoreUnexpectedEvents: true, timeout: TIMEOUT_SEC)
     }
 
+    // Tests that several ExperienceEvents already queued (snapshotted with batching enabled) before
+    // Edge starts processing are coalesced into a single network request, instead of one request per
+    // event, once the hit queue begins draining them.
+    func testQueuedDataEntities_withBatchingEnabled_areSentAsOneNetworkRequest() {
+        guard let dataQueue = getDataQueue() else {
+            XCTFail("Failed to get DataQueue.")
+            return
+        }
+
+        // `configuration` mirrors production's `SharedStateReader.getEdgeConfig` output, which is
+        // always a pure [String: String]-compatible dict (configId/environment/domain only) —
+        // `batchingEnabled` is snapshotted as its own separate top-level field, never inside `configuration`.
+        let edgeConfig: [String: AnyCodable] = ["edge.configId": AnyCodable("12345-example")]
+        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-1", batchingEnabled: true)
+        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-2", batchingEnabled: true)
+        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-3", batchingEnabled: true)
+
+        let responseConnection: HttpConnection = HttpConnection(data: "{\"test\": \"json\"}".data(using: .utf8),
+                                                                response: HTTPURLResponse(url: exEdgeInteractProdUrl,
+                                                                                          statusCode: 200,
+                                                                                          httpVersion: nil,
+                                                                                          headerFields: nil),
+                                                                error: nil)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        startMobileSDK()
+
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
+        let resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
+
+        // Exactly one request for all 3 queued events.
+        XCTAssertEqual(1, resultNetworkRequests.count)
+
+        guard let payloadJson = try? JSONSerialization.jsonObject(with: resultNetworkRequests[0].connectPayload) as? [String: Any],
+              let events = payloadJson["events"] as? [[String: Any]] else {
+            XCTFail("Failed to parse the batch request payload's events array.")
+            return
+        }
+        XCTAssertEqual(3, events.count)
+    }
+
     /// Add a `DataEntity` into the given `DataQueue`.
     /// - Parameters:
     ///   - dataQueue: the `DataQueue` to add the new entity
     ///   - edgeConfig: the Edge configuration to include with the `EdgeDataEntity`
     ///   - entityId: the UUID to identify the `DataEntity`
-    private func mockQueuedEvent(dataQueue: DataQueue, edgeConfig: [String: AnyCodable], entityId: String = "entity-uuid") {
+    ///   - batchingEnabled: whether `edge.batching.enabled` was snapshotted as true when the hit was queued
+    private func mockQueuedEvent(dataQueue: DataQueue, edgeConfig: [String: AnyCodable], entityId: String = "entity-uuid", batchingEnabled: Bool = false) {
         let experienceEvent = Event(name: "queued event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
-        let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: edgeConfig, identityMap: [:])
+        let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: edgeConfig, identityMap: [:], batchingEnabled: batchingEnabled)
         let entity = DataEntity(uniqueIdentifier: entityId, timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         dataQueue.add(dataEntity: entity)
