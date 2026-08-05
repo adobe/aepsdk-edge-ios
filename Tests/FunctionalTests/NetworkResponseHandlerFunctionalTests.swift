@@ -74,8 +74,8 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         assertEqual(expected: expected, actual: dispatchEvents[0])
     }
 
-    func testProcessResponseOnError_WhenOneEventJsonError_dispatchesEvent() {
-        setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
+    func testProcessResponseOnError_WhenOneEventJsonError_noIndexBatchOfTwo_fansOutToBothEvents() {
+        setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 2)
         let jsonError = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
             "      \"handle\": [],\n" +
@@ -91,9 +91,57 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         networkResponseHandler.addWaitingEvents(requestId: "123", batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
         let dispatchEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
+        XCTAssertEqual(2, dispatchEvents.count)
+
+        // No eventIndex on a batch of 2 -> fanned out to both waiting events
+        XCTAssertEqual(event1.id, dispatchEvents[0].parentID)
+        XCTAssertEqual(event2.id, dispatchEvents[1].parentID)
+
+        let expected_event1 = """
+        {
+          "requestEventId": "\(event1.id.uuidString)",
+          "requestId": "123",
+          "status": 500,
+          "title": "Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases",
+          "type": "https://ns.adobe.com/aep/errors/EXEG-0201-503"
+        }
+        """
+
+        assertEqual(expected: expected_event1, actual: dispatchEvents[0])
+
+        let expected_event2 = """
+        {
+          "requestEventId": "\(event2.id.uuidString)",
+          "requestId": "123",
+          "status": 500,
+          "title": "Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases",
+          "type": "https://ns.adobe.com/aep/errors/EXEG-0201-503"
+        }
+        """
+
+        assertEqual(expected: expected_event2, actual: dispatchEvents[1])
+    }
+
+    func testProcessResponseOnError_WhenOneEventJsonError_singleWaitingEvent_routesToThatEvent() {
+        setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 1)
+        let jsonError = "{\n" +
+            "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
+            "      \"handle\": [],\n" +
+            "      \"errors\": [\n" +
+            "        {\n" +
+            "          \"status\": 500,\n" +
+            "          \"type\": \"https://ns.adobe.com/aep/errors/EXEG-0201-503\",\n" +
+            "          \"title\": \"Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases\"\n"
+            +
+            "        }\n" +
+            "      ]\n" +
+            "    }"
+        networkResponseHandler.addWaitingEvents(requestId: "123", batchedEvents: [event1])
+        networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: "123")
+        let dispatchEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
         XCTAssertEqual(1, dispatchEvents.count)
 
-        // Parent ID chained to default event index 0
+        // No eventIndex, exactly one waiting event -> unambiguous; routes to it
         XCTAssertEqual(event1.id, dispatchEvents[0].parentID)
 
         let expected = """
@@ -219,8 +267,8 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
 
         assertEqual(expected: expected, actual: dispatchEvents[0])
     }
-    func testProcessResponseOnError_WhenTwoEventJsonError_dispatchesTwoEvents() {
-        setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 2)
+    func testProcessResponseOnError_WhenTwoEventJsonError_noIndexBatchOfTwo_bothErrorsFanOutToBothEvents() {
+        setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 4)
         let requestId = "123"
         let jsonError = "{\n" +
             "      \"requestId\": \"d81c93e5-7558-4996-a93c-489d550748b8\",\n" +
@@ -243,12 +291,13 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
         networkResponseHandler.processResponseOnError(jsonError: jsonError, requestId: requestId)
         let dispatchEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
-        XCTAssertEqual(2, dispatchEvents.count)
+        XCTAssertEqual(4, dispatchEvents.count)
 
-        // Event chained to event1 as default event index is 0
+        // First error: no eventIndex on a batch of 2 -> fanned out to both waiting events
         XCTAssertEqual(event1.id, dispatchEvents[0].parentID)
+        XCTAssertEqual(event2.id, dispatchEvents[1].parentID)
 
-        let expected_event1 = """
+        let expected_event1_toEvent1 = """
         {
           "requestEventId": "\(event1.id.uuidString)",
           "requestId": "\(requestId)",
@@ -257,13 +306,24 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
           "type": "https://ns.adobe.com/aep/errors/EXEG-0201-503"
         }
         """
+        assertEqual(expected: expected_event1_toEvent1, actual: dispatchEvents[0])
 
-        assertEqual(expected: expected_event1, actual: dispatchEvents[0])
+        let expected_event1_toEvent2 = """
+        {
+          "requestEventId": "\(event2.id.uuidString)",
+          "requestId": "\(requestId)",
+          "status": 0,
+          "title": "Failed due to unrecoverable system error: java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at path $.commerce.purchases",
+          "type": "https://ns.adobe.com/aep/errors/EXEG-0201-503"
+        }
+        """
+        assertEqual(expected: expected_event1_toEvent2, actual: dispatchEvents[1])
 
-        // Event chained to event1 as default event index is 0
-        XCTAssertEqual(event1.id, dispatchEvents[1].parentID)
+        // Second error: no eventIndex on a batch of 2 -> fanned out to both waiting events
+        XCTAssertEqual(event1.id, dispatchEvents[2].parentID)
+        XCTAssertEqual(event2.id, dispatchEvents[3].parentID)
 
-        let expected_event2 = """
+        let expected_event2_toEvent1 = """
         {
           "requestEventId": "\(event1.id.uuidString)",
           "requestId": "\(requestId)",
@@ -272,8 +332,18 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
           "type": "personalization"
         }
         """
+        assertEqual(expected: expected_event2_toEvent1, actual: dispatchEvents[2])
 
-        assertEqual(expected: expected_event2, actual: dispatchEvents[1])
+        let expected_event2_toEvent2 = """
+        {
+          "requestEventId": "\(event2.id.uuidString)",
+          "requestId": "\(requestId)",
+          "status": 2003,
+          "title": "Failed to process personalization event",
+          "type": "personalization"
+        }
+        """
+        assertEqual(expected: expected_event2_toEvent2, actual: dispatchEvents[3])
     }
     // MARK: processResponseOnSuccess
 
@@ -624,8 +694,8 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         dispatchEvents += getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: "identity:persist")
         XCTAssertEqual(2, dispatchEvents.count)
         // Verify event 1
-        // Event chained to event1 as default event index is 0
-        XCTAssertEqual(event1.id, dispatchEvents[0].parentID)
+        // No eventIndex in a batch of 2 -> state:store is a global handle type, broadcast with nil parent
+        XCTAssertNil(dispatchEvents[0].parentID)
 
         let expected_event1 = """
         {
@@ -636,7 +706,6 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
               "value": "MCMID|29068398647607325310376254630528178721"
             }
           ],
-          "requestEventId": "\(event1.id.uuidString)",
           "requestId": "d81c93e5-7558-4996-a93c-489d550748b8",
           "type": "state:store"
         }
@@ -645,8 +714,8 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         assertEqual(expected: expected_event1, actual: dispatchEvents[0])
 
         // Verify event 2
-        // Event chained to event1 as default event index is 0
-        XCTAssertEqual(event1.id, dispatchEvents[1].parentID)
+        // No eventIndex in a batch of 2, identity:persist is not a known global handle type -> nil parent, skipped attribution
+        XCTAssertNil(dispatchEvents[1].parentID)
 
         let expected_event2 = """
         {
@@ -658,7 +727,6 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
               }
             }
           ],
-          "requestEventId": "\(event1.id.uuidString)",
           "requestId": "d81c93e5-7558-4996-a93c-489d550748b8",
           "type": "identity:persist"
         }
@@ -704,8 +772,8 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         XCTAssertEqual(2, dispatchEvents.count)
 
         // Verify event 1
-        // Event chained to event1 as default event index is 0
-        XCTAssertEqual(event1.id, dispatchEvents[0].parentID)
+        // No eventIndex in a batch of 2 -> state:store is a global handle type, broadcast with nil parent
+        XCTAssertNil(dispatchEvents[0].parentID)
 
         let expected_event1 = """
         {
@@ -716,7 +784,6 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
               "value": "MCMID|29068398647607325310376254630528178721"
             }
           ],
-          "requestEventId": "\(event1.id.uuidString)",
           "requestId": "123",
           "type": "state:store"
         }
@@ -742,6 +809,60 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         """
 
         assertEqual(expected: expected_event2, actual: dispatchEvents[1])
+    }
+
+    func testProcessResponseOnSuccess_stateStoreHandle_noIndex_batchOfTwo_broadcastsOnce() {
+        // Global handle (state:store) with no eventIndex must be broadcast as exactly ONE event
+        // with nil parentId regardless of batch size.
+        setExpectationEvent(type: TestConstants.EventType.EDGE, source: "state:store", expectedCount: 1)
+        let requestId = "batch-state-req"
+        let jsonResponse = """
+        {
+          "requestId": "\(requestId)",
+          "handle": [
+            {
+              "type": "state:store",
+              "payload": [{"key": "kndctr_org_cluster", "value": "va6", "maxAge": 1800}]
+            }
+          ]
+        }
+        """
+
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
+
+        let dispatchEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: "state:store")
+        XCTAssertEqual(1, dispatchEvents.count)
+        XCTAssertNil(dispatchEvents[0].parentID)
+    }
+
+    func testDispatchEventWarnings_noIndex_batchOfTwo_fanOutToBothWaitingEvents() {
+        setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT, expectedCount: 2)
+        let requestId = "123"
+        let jsonResponse = """
+        {
+          "requestId": "\(requestId)",
+          "handle": [],
+          "errors": [],
+          "warnings": [
+            {
+              "type": "https://ns.adobe.com/aep/errors/EXEG-0204-200",
+              "status": 98,
+              "title": "Some Informative stuff here"
+            }
+          ]
+        }
+        """
+
+        networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2])
+        networkResponseHandler.processResponseOnSuccess(jsonResponse: jsonResponse, requestId: requestId)
+
+        let dispatchEvents = getDispatchedEventsWith(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.ERROR_RESPONSE_CONTENT)
+        XCTAssertEqual(2, dispatchEvents.count)
+
+        // No eventIndex on a batch of 2 -> fanned out to both waiting events
+        XCTAssertEqual(event1.id, dispatchEvents[0].parentID)
+        XCTAssertEqual(event2.id, dispatchEvents[1].parentID)
     }
 
     func testProcessResponseOnSuccess_WhenEventHandleWithUnknownEventIndex_dispatchesUnpairedEvent() {
