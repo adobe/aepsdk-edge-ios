@@ -132,10 +132,16 @@ public class Edge: NSObject, Extension {
             return // drop current event
         }
 
+        // Merge in the (possibly bundled-fallback) batching keys so they're snapshotted alongside the
+        // rest of the Edge configuration at enqueue time, same as edge.configId/environment/domain.
+        var combinedConfig: [String: Any] = edgeConfig
+        for (key, value) in sharedStateReader.getEdgeBatchingConfig(event: event) {
+            combinedConfig[key] = value
+        }
+
         let edgeEntity = EdgeDataEntity(event: event,
-                                        configuration: AnyCodable.from(dictionary: edgeConfig) ?? [:],
-                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:],
-                                        batchingEnabled: sharedStateReader.isBatchingEnabled(event: event))
+                                        configuration: AnyCodable.from(dictionary: combinedConfig) ?? [:],
+                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to encode EdgeDataEntity for event with id: '\(event.id.uuidString)'.")

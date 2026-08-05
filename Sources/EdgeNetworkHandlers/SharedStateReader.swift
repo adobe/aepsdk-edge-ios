@@ -39,15 +39,36 @@ struct SharedStateReader {
         return edgeConfig ?? [:]
     }
 
-    /// Reads the `edge.batching.enabled` flag from the Configuration shared state for the given `event`.
+    /// Reads the `edge.batching.enabled` and `edge.batching.eventNameAllowlist` keys for the given `event`,
+    /// mirroring `aepsdk-edge-android`'s `EventUtils.getEdgeConfiguration` batching section.
+    ///
+    /// This is a per-key fallback, not a wholesale configuration replacement: the bundled config
+    /// (`EdgeBundledBatchingConfig`) is only consulted for a given key when that key is absent from the
+    /// Configuration shared state. Any value present in the Configuration shared state - whether set
+    /// programmatically or delivered by a remote/Launch-published configuration - always wins over the
+    /// bundled file's value for that same key.
     /// - Parameter event: the `Event` used to retrieve the Configuration shared state.
-    /// - Returns: true if batching is enabled in Configuration, false if unset or the shared state is unavailable.
-    func isBatchingEnabled(event: Event) -> Bool {
-        guard let configurationState = getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME, event, false)?.value else {
-            return false
+    /// - Returns: a dictionary containing whichever of the two batching keys resolved to a value, from
+    ///   Configuration shared state or the bundled fallback.
+    func getEdgeBatchingConfig(event: Event) -> [String: Any] {
+        let configurationState = getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME, event, false)?.value ?? [:]
+        let bundledBatchingConfig = EdgeBundledBatchingConfig.get()
+
+        var batchingConfig: [String: Any] = [:]
+
+        if let enabled = configurationState[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] {
+            batchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] = enabled as? Bool ?? false
+        } else if let bundledEnabled = bundledBatchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] {
+            batchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] = bundledEnabled as? Bool ?? false
         }
 
-        return configurationState[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool ?? false
+        if let allowlist = configurationState[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] {
+            batchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] = allowlist as? [String]
+        } else if let bundledAllowlist = bundledBatchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] {
+            batchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] = bundledAllowlist as? [String]
+        }
+
+        return batchingConfig
     }
 
     /// Get the Assurance integration ID from the Assurance shared state for the given `event`.

@@ -62,8 +62,11 @@ class EdgeHitProcessor: HitProcessing {
 
         // Check which workflow is used to obtain configuration
         if !edgeEntity.configuration.isEmpty {
-            // Current workflow includes needed configuration in EdgeDataEntity before queuing hit
-            edgeConfig = AnyCodable.toAnyDictionary(dictionary: edgeEntity.configuration) as? [String: String] ?? [:]
+            // Current workflow includes needed configuration in EdgeDataEntity before queuing hit.
+            // configuration may also carry non-String batching keys (edge.batching.enabled/eventNameAllowlist),
+            // so pull out only the String-valued entries instead of a blanket cast that would fail entirely
+            // the moment a non-String key is present.
+            edgeConfig = edgeEntity.configuration.asAnyDictionary.compactMapValues { $0 as? String }
         } else {
             // Older workflow is supported in cases where persisted hits were queued before upgrade, but processed after upgrade
             // These hits will not have configuration in EdgeDataEntity, so the Configuration shared state is queried
@@ -213,10 +216,12 @@ class EdgeHitProcessor: HitProcessing {
     ///
     /// Routing rules mirror `aepsdk-edge-android`'s `EdgeHitProcessor.processBatch`:
     /// - Head is not an ExperienceEvent (Consent, Reset) -> process head alone.
+    /// - Head's event name is not in the `edge.batching.eventNameAllowlist` snapshotted at enqueue time
+    ///   -> process head alone (opt-in allowlist: `edge.batching.enabled` alone is not sufficient).
     /// - Batch size == 1 (or only the head qualifies) -> single-entity path.
-    /// - Multiple consecutive ExperienceEvents -> build one batch request; on 400, explode to individual
-    ///   sends (nothing was ingested, so every event is safe to resend); on other unrecoverable errors,
-    ///   drop all (matches the single-event path's existing behavior for the same codes).
+    /// - Multiple consecutive, allowlisted ExperienceEvents -> build one batch request; on 400, explode
+    ///   to individual sends (nothing was ingested, so every event is safe to resend); on other
+    ///   unrecoverable errors, drop all (matches the single-event path's existing behavior for the same codes).
     /// - Parameters:
     ///   - entities: ordered list of entities to process; must not be empty
     ///   - completion: completion handler invoked with a `BatchOutcome` describing how the queue should advance
@@ -238,11 +243,21 @@ class EdgeHitProcessor: HitProcessing {
             return
         }
 
+        // Events whose name isn't in the configured allowlist must also be processed alone.
+        guard isEventNameAllowlistedForBatching(headEdgeEntity) else {
+            Log.trace(label: EdgeConstants.LOG_TAG,
+                      "\(SELF_TAG) - Head entity's event name (\(headEdgeEntity.event.name)) is not in the batching allowlist; processing alone.")
+            processSingleEntity(headEntity, completion: completion)
+            return
+        }
+
         // Collect the consecutive ExperienceEvent run from the front.
         var batchEntities: [DataEntity] = []
         var batchEvents: [Event] = []
         for dataEntity in entities {
-            guard let edgeEntity = decode(dataEntity: dataEntity), edgeEntity.event.isExperienceEvent else {
+            guard let edgeEntity = decode(dataEntity: dataEntity),
+                  edgeEntity.event.isExperienceEvent,
+                  isEventNameAllowlistedForBatching(edgeEntity) else {
                 break
             }
             batchEntities.append(dataEntity)
@@ -267,7 +282,10 @@ class EdgeHitProcessor: HitProcessing {
             requestBuilder.xdmPayloads[EdgeConstants.JsonKeys.IMPLEMENTATION_DETAILS] = AnyCodable(implementationDetails)
         }
 
-        let edgeConfig = AnyCodable.toAnyDictionary(dictionary: headEdgeEntity.configuration) as? [String: String] ?? [:]
+        // configuration may also carry non-String batching keys (edge.batching.enabled/eventNameAllowlist),
+        // so pull out only the String-valued entries instead of a blanket cast that would fail entirely
+        // the moment a non-String key is present.
+        let edgeConfig = headEdgeEntity.configuration.asAnyDictionary.compactMapValues { $0 as? String }
         guard var datastreamId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !datastreamId.isEmpty else {
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Cannot process batch: Edge config ID is missing or empty, dropping \(batchEntities.count) events.")
@@ -308,6 +326,18 @@ class EdgeHitProcessor: HitProcessing {
                     headers: getRequestHeaders(headEvent),
                     batchEntities: batchEntities,
                     completion: completion)
+    }
+
+    /// Checks whether `entity`'s underlying `Event` name is present in the `edge.batching.eventNameAllowlist`
+    /// configuration snapshotted on this entity at enqueue time. An absent or empty allowlist means no event
+    /// names are eligible for batching (opt-in allowlist semantics) - `edge.batching.enabled` alone is not
+    /// sufficient to batch a given event. Mirrors `aepsdk-edge-android`'s `EdgeHitProcessor.isEventNameAllowlistedForBatching`.
+    private func isEventNameAllowlistedForBatching(_ entity: EdgeDataEntity) -> Bool {
+        guard let allowlist = entity.configuration.asAnyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] as? [String],
+              !allowlist.isEmpty else {
+            return false
+        }
+        return allowlist.contains(entity.event.name)
     }
 
     /// Delegates a single `DataEntity` to the existing `processHit` path and converts the boolean

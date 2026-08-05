@@ -145,7 +145,8 @@ class EdgeBatchingHitQueue: HitQueuing {
         guard let data = head.data, let edgeEntity = try? JSONDecoder().decode(EdgeDataEntity.self, from: data) else {
             return 1
         }
-        guard edgeEntity.batchingEnabled else { return 1 }
+        let batchingEnabled = edgeEntity.configuration.asAnyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool ?? false
+        guard batchingEnabled else { return 1 }
         return min(dataQueue.count(), EdgeConstants.Defaults.MAX_BATCH_SIZE)
     }
 }

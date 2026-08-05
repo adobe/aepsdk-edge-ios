@@ -1044,10 +1044,16 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     // MARK: - processBatch
 
     /// Tests that a batch of 2 ExperienceEvents is sent as a single network request and resolves all of them.
+    /// Batching requires the event's name to be in `edge.batching.eventNameAllowlist`, snapshotted here
+    /// alongside `edge.configId` (opt-in allowlist semantics, matching production).
     func testProcessBatch_twoExperienceEvents_happy_sendsOneNetworkRequest_resolvesBoth() {
-        let edgeEntity1 = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let batchingEdgeConfig: [String: Any] = [
+            "edge.configId": "test-config-id",
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
+        ]
+        let edgeEntity1 = getEdgeDataEntity(event: experienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
         let entity1 = DataEntity(uniqueIdentifier: "test-uuid-1", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity1))
-        let edgeEntity2 = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let edgeEntity2 = getEdgeDataEntity(event: experienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
         let entity2 = DataEntity(uniqueIdentifier: "test-uuid-2", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity2))
 
         mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)

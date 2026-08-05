@@ -12,36 +12,48 @@
 
 @testable import AEPCore
 @testable import AEPEdge
+import AEPServices
 import XCTest
 
 class EdgeDataEntityTests: XCTestCase {
     private let event = Event(name: "test-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
 
-    func testDecode_currentFormat_decodesBatchingEnabledValue() throws {
-        let entity = EdgeDataEntity(event: event, configuration: [:], identityMap: [:], batchingEnabled: true)
+    func testDecode_roundTrip_preservesEventAndConfiguration() throws {
+        let configuration: [String: AnyCodable] = ["edge.configId": AnyCodable("1234")]
+        let entity = EdgeDataEntity(event: event, configuration: configuration, identityMap: [:])
         let data = try JSONEncoder().encode(entity)
         let decoded = try JSONDecoder().decode(EdgeDataEntity.self, from: data)
 
-        XCTAssertTrue(decoded.batchingEnabled)
+        XCTAssertEqual(event.id, decoded.event.id)
+        XCTAssertEqual("1234", decoded.configuration["edge.configId"]?.stringValue)
     }
 
-    /// Simulates a hit persisted before `batchingEnabled` was introduced: the JSON has no such key.
-    /// Decoding must succeed (not throw) and default `batchingEnabled` to `false`.
-    func testDecode_oldFormatWithoutBatchingEnabledKey_defaultsToFalse() throws {
-        let entity = EdgeDataEntity(event: event, configuration: [:], identityMap: [:], batchingEnabled: true)
+    /// The batching keys (`edge.batching.enabled`, `edge.batching.eventNameAllowlist`) are snapshotted
+    /// as ordinary entries inside `configuration`, not a dedicated field, so they must round-trip
+    /// through encode/decode and be readable via `asAnyDictionary` alongside String-valued keys.
+    func testDecode_roundTrip_preservesHeterogeneousBatchingKeys() throws {
+        let configuration: [String: AnyCodable] = [
+            "edge.configId": AnyCodable("1234"),
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED: AnyCodable(true),
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: AnyCodable(["add-to-cart", "checkout"])
+        ]
+        let entity = EdgeDataEntity(event: event, configuration: configuration, identityMap: [:])
         let data = try JSONEncoder().encode(entity)
+        let decoded = try JSONDecoder().decode(EdgeDataEntity.self, from: data)
 
-        guard var json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            XCTFail("Failed to parse encoded EdgeDataEntity as a JSON object")
-            return
-        }
-        XCTAssertNotNil(json["batchingEnabled"], "Precondition: current format is expected to include the key before we strip it")
-        json.removeValue(forKey: "batchingEnabled")
+        let anyDictionary = decoded.configuration.asAnyDictionary
+        XCTAssertEqual("1234", anyDictionary["edge.configId"] as? String)
+        XCTAssertEqual(true, anyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool)
+        XCTAssertEqual(["add-to-cart", "checkout"], anyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] as? [String])
+    }
 
-        let oldFormatData = try JSONSerialization.data(withJSONObject: json)
-        let decoded = try JSONDecoder().decode(EdgeDataEntity.self, from: oldFormatData)
+    /// Simulates a hit persisted before the batching keys existed: `configuration` has neither key.
+    /// `asAnyDictionary` lookups for those keys must return nil rather than throwing or crashing.
+    func testAsAnyDictionary_missingBatchingKeys_returnsNil() throws {
+        let entity = EdgeDataEntity(event: event, configuration: ["edge.configId": AnyCodable("1234")], identityMap: [:])
 
-        XCTAssertFalse(decoded.batchingEnabled)
-        XCTAssertEqual(event.id, decoded.event.id)
+        let anyDictionary = entity.configuration.asAnyDictionary
+        XCTAssertNil(anyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED])
+        XCTAssertNil(anyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST])
     }
 }

@@ -148,13 +148,17 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
             return
         }
 
-        // `configuration` mirrors production's `SharedStateReader.getEdgeConfig` output, which is
-        // always a pure [String: String]-compatible dict (configId/environment/domain only) —
-        // `batchingEnabled` is snapshotted as its own separate top-level field, never inside `configuration`.
-        let edgeConfig: [String: AnyCodable] = ["edge.configId": AnyCodable("12345-example")]
-        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-1", batchingEnabled: true)
-        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-2", batchingEnabled: true)
-        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-3", batchingEnabled: true)
+        // `configuration` mirrors production's snapshotted Edge configuration, which now also carries
+        // the batching keys (`edge.batching.enabled`/`edge.batching.eventNameAllowlist`) alongside
+        // configId/environment/domain — batching requires both: enabled AND the event's name allowlisted.
+        let edgeConfig: [String: AnyCodable] = [
+            "edge.configId": AnyCodable("12345-example"),
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED: AnyCodable(true),
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: AnyCodable(["queued event"])
+        ]
+        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-1")
+        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-2")
+        mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-3")
 
         let responseConnection: HttpConnection = HttpConnection(data: "{\"test\": \"json\"}".data(using: .utf8),
                                                                 response: HTTPURLResponse(url: exEdgeInteractProdUrl,
@@ -186,10 +190,9 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
     ///   - dataQueue: the `DataQueue` to add the new entity
     ///   - edgeConfig: the Edge configuration to include with the `EdgeDataEntity`
     ///   - entityId: the UUID to identify the `DataEntity`
-    ///   - batchingEnabled: whether `edge.batching.enabled` was snapshotted as true when the hit was queued
-    private func mockQueuedEvent(dataQueue: DataQueue, edgeConfig: [String: AnyCodable], entityId: String = "entity-uuid", batchingEnabled: Bool = false) {
+    private func mockQueuedEvent(dataQueue: DataQueue, edgeConfig: [String: AnyCodable], entityId: String = "entity-uuid") {
         let experienceEvent = Event(name: "queued event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
-        let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: edgeConfig, identityMap: [:], batchingEnabled: batchingEnabled)
+        let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: edgeConfig, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: entityId, timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 
         dataQueue.add(dataEntity: entity)

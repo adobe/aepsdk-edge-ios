@@ -84,6 +84,8 @@ enum EdgeConstants {
             static let EDGE_DOMAIN = "edge.domain"
             // Matches aepsdk-edge-android's EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED
             static let EDGE_BATCHING_ENABLED = "edge.batching.enabled"
+            // Matches aepsdk-edge-android's EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST
+            static let EDGE_BATCHING_EVENT_NAME_ALLOWLIST = "edge.batching.eventNameAllowlist"
         }
 
         enum Identity {

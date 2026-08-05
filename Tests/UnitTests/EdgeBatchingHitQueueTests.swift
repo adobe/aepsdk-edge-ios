@@ -188,10 +188,13 @@ class EdgeBatchingHitQueueTests: XCTestCase {
             let xdmData: [String: Any] = ["test": "data"]
             let eventData: [String: Any] = ["xdm": xdmData]
             let event = Event(name: "test-event-\(i)", type: EventType.edge, source: EventSource.requestContent, data: eventData)
+            let configuration: [String: Any] = [
+                "edge.configId": "test-config-id",
+                EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED: batchingEnabled
+            ]
             let edgeEntity = EdgeDataEntity(event: event,
-                                            configuration: AnyCodable.from(dictionary: ["edge.configId": "test-config-id"]) ?? [:],
-                                            identityMap: [:],
-                                            batchingEnabled: batchingEnabled)
+                                            configuration: AnyCodable.from(dictionary: configuration) ?? [:],
+                                            identityMap: [:])
             let data = try? JSONEncoder().encode(edgeEntity)
             entities.append(DataEntity(uniqueIdentifier: "uuid-\(i)", timestamp: Date(), data: data))
         }
