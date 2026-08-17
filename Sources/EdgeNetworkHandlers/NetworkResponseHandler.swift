@@ -136,7 +136,7 @@ class NetworkResponseHandler {
         }
     }
 
-    /// Decodes the response as `EdgeResponse` and extracts the errors if possible, otherwise decodes it as `EdgeEventError` and dispatches error events for the errors/warnings
+    /// Decodes the response as `EdgeResponse` and extracts the errors if possible, otherwise decodes it as `EdgeResponseError` and dispatches error events for the errors/warnings
     /// received from the server.
     /// - Parameters:
     ///   - jsonError: JSON formatted error response received from the server
@@ -148,7 +148,7 @@ class NetworkResponseHandler {
         if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data), edgeResponse.errors != nil {
             // this is an error coming from Konductor, read the error from the errors node
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId)
-        } else if let edgeErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) {
+        } else if let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponseError.self, from: data) {
             // generic server error, return the error as is
             dispatchEventErrors(errorsArray: [edgeErrorResponse], requestId: requestId)
         } else {
@@ -322,7 +322,7 @@ class NetworkResponseHandler {
     /// Extracts the request event paired with this event handle/error handle based on the index. If no match is found, this method returns nil.
     ///
     /// - Parameters:
-    ///   - forEventIndex: the `EdgeEventHandle`/ `EdgeEventError` event index
+    ///   - forEventIndex: the `EdgeEventHandle`/ `EdgeResponseError` event index
     ///   - requestId: edge request id used to fetch the waiting events associated with it (if any)
     /// - Returns: the request event for which this event handle was received, nil if not found
     private func extractRequestEvent(forEventIndex eventIndex: Int, requestId: String) -> Event? {
@@ -409,10 +409,10 @@ class NetworkResponseHandler {
     /// Iterates over the provided `errorsArray` and dispatches a new error event to the Event Hub.
     /// It also logs each error json with the log level error.
     /// - Parameters:
-    ///   - errorsArray: `EdgeEventError` array containing all the event errors to be processed
+    ///   - errorsArray: `EdgeResponseError` array containing all the event errors to be processed
     ///   - requestId: the event request identifier, used for logging
     /// - See Also: `logErrorMessage(_ error: [String: Any], isError: Bool, requestId: String)`
-    private func dispatchEventErrors(errorsArray: [EdgeEventError]?, requestId: String) {
+    private func dispatchEventErrors(errorsArray: [EdgeResponseError]?, requestId: String) {
         guard let unwrappedErrors = errorsArray, !unwrappedErrors.isEmpty else {
             Log.trace(label: LOG_TAG, "dispatchEventErrors - Received nil/empty errors array, nothing to handle")
             return
@@ -432,6 +432,8 @@ class NetworkResponseHandler {
                     sweepCompletions(requestId: requestId, exclusiveUpperBound: eventIndex)
                 }
 
+                let publicEdgeEventError = error.asPublicEdgeEventError()
+
                 // A root-level (no-index) error on a batch of N>1 events is fanned out to every waiting
                 // event, since any of them could be the one that actually failed.
                 for requestEvent in resolveErrorRequestEvents(eventIndex: eventIndex, requestId: requestId) {
@@ -441,6 +443,7 @@ class NetworkResponseHandler {
                                                                      requestEventId: requestEvent?.id.uuidString)
                     guard !eventData.isEmpty else { continue }
                     dispatchResponseEventWithData(eventData, parentRequestEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
+                    CompletionHandlersManager.shared.eventErrorReceived(forRequestEventId: requestEvent?.id.uuidString, publicEdgeEventError)
                 }
             }
         }
@@ -579,7 +582,7 @@ class NetworkResponseHandler {
     /// - If isError is true, the message is logged as error.
     /// - If isError is false, the message is logged as warning.
     /// - Parameters:
-    ///   - error: `EdgeEventError` encoded as [String: Any] containing the event error/warning coming from server
+    ///   - error: `EdgeResponseError` encoded as [String: Any] containing the event error/warning coming from server
     ///   - isError: boolean indicating if this is an error message
     ///   - requestId: the event request identifier, used for logging
     private func logErrorMessage(_ error: [String: Any], isError: Bool, requestId: String) {

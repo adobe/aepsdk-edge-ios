@@ -39,8 +39,9 @@ struct SharedStateReader {
         return edgeConfig ?? [:]
     }
 
-    /// Reads the `edge.batching.enabled` and `edge.batching.eventNameAllowlist` keys for the given `event`,
-    /// mirroring `aepsdk-edge-android`'s `EventUtils.getEdgeConfiguration` batching section.
+    /// Reads the `edge.batching.enabled`, `edge.batching.eventNameAllowlist`, and `edge.batching.maxBatchSize`
+    /// keys for the given `event`, mirroring `aepsdk-edge-android`'s `EventUtils.getEdgeConfiguration`
+    /// batching section.
     ///
     /// This is a per-key fallback, not a wholesale configuration replacement: the bundled config
     /// (`EdgeBundledBatchingConfig`) is only consulted for a given key when that key is absent from the
@@ -48,8 +49,10 @@ struct SharedStateReader {
     /// programmatically or delivered by a remote/Launch-published configuration - always wins over the
     /// bundled file's value for that same key.
     /// - Parameter event: the `Event` used to retrieve the Configuration shared state.
-    /// - Returns: a dictionary containing whichever of the two batching keys resolved to a value, from
-    ///   Configuration shared state or the bundled fallback.
+    /// - Returns: a dictionary containing whichever of the three batching keys resolved to a value, from
+    ///   Configuration shared state or the bundled fallback. `edge.batching.maxBatchSize` is left absent
+    ///   when not present/castable as an `Int`; defaulting and clamping to the allowed range is applied
+    ///   later by `EdgeBatchingHitQueue` at batch-size computation time.
     func getEdgeBatchingConfig(event: Event) -> [String: Any] {
         let configurationState = getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME, event, false)?.value ?? [:]
         let bundledBatchingConfig = EdgeBundledBatchingConfig.get()
@@ -66,6 +69,12 @@ struct SharedStateReader {
             batchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] = allowlist as? [String]
         } else if let bundledAllowlist = bundledBatchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] {
             batchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] = bundledAllowlist as? [String]
+        }
+
+        if let maxBatchSize = configurationState[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE] {
+            batchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE] = maxBatchSize as? Int
+        } else if let bundledMaxBatchSize = bundledBatchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE] {
+            batchingConfig[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE] = bundledMaxBatchSize as? Int
         }
 
         return batchingConfig

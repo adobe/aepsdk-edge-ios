@@ -23,7 +23,7 @@ struct EdgeResponse: Codable {
     let handle: [EdgeEventHandle]?
 
     /// List of errors received from Experience Edge Network
-    let errors: [EdgeEventError]?
+    let errors: [EdgeResponseError]?
 
     /// List of warnings received from Experience Edge Network
     let warnings: [EdgeEventWarning]?

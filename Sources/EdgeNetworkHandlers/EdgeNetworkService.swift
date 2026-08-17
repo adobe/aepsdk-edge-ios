@@ -278,7 +278,7 @@ class EdgeNetworkService {
         var unwrappedErrorMessage = plainTextErrorMessage ?? DEFAULT_GENERIC_ERROR_MESSAGE
         unwrappedErrorMessage = unwrappedErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let eventError = EdgeEventError(title: DEFAULT_GENERIC_ERROR_TITLE, detail: unwrappedErrorMessage)
+        let eventError = EdgeResponseError(title: DEFAULT_GENERIC_ERROR_TITLE, detail: unwrappedErrorMessage)
 
         guard let json = try? JSONEncoder().encode(eventError) else {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to serialize the error message.")

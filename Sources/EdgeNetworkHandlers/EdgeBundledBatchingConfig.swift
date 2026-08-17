@@ -13,12 +13,12 @@
 import AEPServices
 import Foundation
 
-/// Loads a first-launch fallback for the Edge batching configuration keys (`edge.batching.enabled` and
-/// `edge.batching.eventNameAllowlist`) from a JSON file bundled in the app, mirroring
-/// `aepsdk-edge-android`'s `EdgeBundledBatchingConfig`.
+/// Loads a first-launch fallback for the Edge batching configuration keys (`edge.batching.enabled`,
+/// `edge.batching.eventNameAllowlist`, and `edge.batching.maxBatchSize`) from a JSON file bundled in the
+/// app, mirroring `aepsdk-edge-android`'s `EdgeBundledBatchingConfig`.
 ///
 /// This is a per-key fallback, not a wholesale configuration replacement: `SharedStateReader.getEdgeBatchingConfig`
-/// consults this bundled file only for whichever of the two batching keys is absent from the Configuration shared
+/// consults this bundled file only for whichever of the batching keys is absent from the Configuration shared
 /// state at the time an event is queued. Any key present in the Configuration shared state - whether set
 /// programmatically via `MobileCore.updateConfiguration()` or delivered by a remote/Launch-published configuration -
 /// always takes precedence over the bundled file's value for that same key.
@@ -59,7 +59,7 @@ enum EdgeBundledBatchingConfig {
     }
 
     private static func load() -> [String: Any] {
-        guard let content = ServiceProvider.shared.systemInfoService.getAsset(fileName: BUNDLED_CONFIG_FILE_NAME, fileType: BUNDLED_CONFIG_FILE_TYPE),
+        guard let content: String = ServiceProvider.shared.systemInfoService.getAsset(fileName: BUNDLED_CONFIG_FILE_NAME, fileType: BUNDLED_CONFIG_FILE_TYPE),
               !content.isEmpty else {
             Log.trace(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - No bundled batching config file '\(BUNDLED_CONFIG_FILE_NAME).\(BUNDLED_CONFIG_FILE_TYPE)' found; skipping.")

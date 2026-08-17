@@ -39,6 +39,8 @@ enum EdgeConstants {
         static let LOCATION_HINT_TTL_SEC: TimeInterval = 1800 // 30 mins in seconds
         // Matches aepsdk-edge-android's EdgeConstants.Defaults.MAX_BATCH_SIZE
         static let MAX_BATCH_SIZE: Int = 10
+        // Matches aepsdk-edge-android's EdgeConstants.Defaults.MAX_BATCH_SIZE_LIMIT
+        static let MAX_BATCH_SIZE_LIMIT: Int = 20
     }
 
     enum EventDataKeys {
@@ -86,6 +88,8 @@ enum EdgeConstants {
             static let EDGE_BATCHING_ENABLED = "edge.batching.enabled"
             // Matches aepsdk-edge-android's EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST
             static let EDGE_BATCHING_EVENT_NAME_ALLOWLIST = "edge.batching.eventNameAllowlist"
+            // Matches aepsdk-edge-android's EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE
+            static let EDGE_BATCHING_MAX_BATCH_SIZE = "edge.batching.maxBatchSize"
         }
 
         enum Identity {

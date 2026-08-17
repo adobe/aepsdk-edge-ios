@@ -15,7 +15,7 @@ import AEPServices
 import AEPTestUtils
 import XCTest
 
-class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
+class EdgeResponseErrorTests: XCTestCase, AnyCodableAsserts {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -36,7 +36,7 @@ class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
                       """.data(using: .utf8)
 
         // test
-        let error = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData ?? Data())
+        let error = try? JSONDecoder().decode(EdgeResponseError.self, from: jsonData ?? Data())
 
         // verify
         XCTAssertEqual(1, error?.report?.eventIndex)
@@ -69,7 +69,7 @@ class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
                       """.data(using: .utf8)
 
         // test
-        let errors = try? JSONDecoder().decode([EdgeEventError].self, from: jsonData ?? Data())
+        let errors = try? JSONDecoder().decode([EdgeResponseError].self, from: jsonData ?? Data())
 
         // verify
         XCTAssertEqual(1, errors?.first?.report?.eventIndex)
@@ -104,7 +104,7 @@ class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
                       """.data(using: .utf8)
 
         // test
-        let error = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData ?? Data())
+        let error = try? JSONDecoder().decode(EdgeResponseError.self, from: jsonData ?? Data())
 
         // verify
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0104-422", error?.type)
@@ -130,7 +130,7 @@ class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
                       """.data(using: .utf8)
 
         // test
-        let error = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData ?? Data())
+        let error = try? JSONDecoder().decode(EdgeResponseError.self, from: jsonData ?? Data())
 
         // verify
         XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0104-422", error?.type)
@@ -141,7 +141,7 @@ class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
 
     func testCanEncode_eventError_allParams() {
         let report = EdgeErrorReport(eventIndex: 1, errors: ["error1", "error2"], requestId: "1234", orgId: "abcd")
-        let error = EdgeEventError(title: "Test Error", detail: "details", status: 200, type: "error", report: report)
+        let error = EdgeResponseError(title: "Test Error", detail: "details", status: 200, type: "error", report: report)
 
         let encoded = error.asDictionary()
 
@@ -167,7 +167,7 @@ class EdgeEventErrorTests: XCTestCase, AnyCodableAsserts {
 
     func testCanEncode_eventError_emptyReportNotEncoded() {
         let report = EdgeErrorReport(eventIndex: 1, errors: nil, requestId: nil, orgId: nil)
-        let error = EdgeEventError(title: "Test Error", detail: "details", status: 200, type: "error", report: report)
+        let error = EdgeResponseError(title: "Test Error", detail: "details", status: 200, type: "error", report: report)
 
         XCTAssertFalse(report.shouldEncode()) // EdgeErrorReport is not encoded if it only contains eventIndex
 

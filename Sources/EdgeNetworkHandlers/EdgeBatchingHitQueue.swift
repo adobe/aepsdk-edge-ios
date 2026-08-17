@@ -21,7 +21,9 @@ import Foundation
 /// The effective batch size is determined at processing time from the head entity's snapshotted
 /// configuration:
 /// - batching disabled (default) -> window of 1, identical to `PersistentHitQueue`'s behavior.
-/// - batching enabled -> window of `min(queue.count(), MAX_BATCH_SIZE)`.
+/// - batching enabled -> window of `min(queue.count(), maxBatchSize)`, where `maxBatchSize` comes from
+///   the head entity's `edge.batching.maxBatchSize` value (falling back to `MAX_BATCH_SIZE` when absent
+///   or non-positive, clamped to `MAX_BATCH_SIZE_LIMIT` regardless of source).
 class EdgeBatchingHitQueue: HitQueuing {
     private let SELF_TAG = "EdgeBatchingHitQueue"
     let processor: HitProcessing
@@ -145,8 +147,19 @@ class EdgeBatchingHitQueue: HitQueuing {
         guard let data = head.data, let edgeEntity = try? JSONDecoder().decode(EdgeDataEntity.self, from: data) else {
             return 1
         }
-        let batchingEnabled = edgeEntity.configuration.asAnyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool ?? false
+        let config = edgeEntity.configuration.asAnyDictionary
+        let batchingEnabled = config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool ?? false
         guard batchingEnabled else { return 1 }
-        return min(dataQueue.count(), EdgeConstants.Defaults.MAX_BATCH_SIZE)
+        return min(dataQueue.count(), Self.maxBatchSize(from: config))
+    }
+
+    /// Resolves the configured `edge.batching.maxBatchSize`, mirroring
+    /// `aepsdk-edge-android`'s `EdgeBatchingHitQueue.getMaxBatchSize`: a value that is absent or
+    /// non-positive falls back to `MAX_BATCH_SIZE` (unclamped); a positive value is clamped only on the
+    /// high side to `MAX_BATCH_SIZE_LIMIT`.
+    private static func maxBatchSize(from config: [String: Any]) -> Int {
+        let configured = config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE] as? Int ?? EdgeConstants.Defaults.MAX_BATCH_SIZE
+        guard configured > 0 else { return EdgeConstants.Defaults.MAX_BATCH_SIZE }
+        return min(configured, EdgeConstants.Defaults.MAX_BATCH_SIZE_LIMIT)
     }
 }
