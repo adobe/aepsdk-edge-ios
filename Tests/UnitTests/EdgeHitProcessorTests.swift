@@ -1104,6 +1104,80 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         XCTAssertEqual(0, mockNetworkService.getNetworkRequestsWith(url: CONSENT_ENDPOINT, httpMethod: .post).count)
     }
 
+    /// Regression guard for `hasSameRequestConfig`: two allowlisted ExperienceEvents that share the same
+    /// Configuration snapshot but differ in their event-level `config` overrides (one has a
+    /// `datastreamIdOverride`, the other doesn't) must NOT be folded into the same batch request - a
+    /// single request is built entirely from the head's config, so silently including the second entity
+    /// would send its data to the head's datastream instead of its own override.
+    func testProcessBatch_secondEntityHasDifferentDatastreamOverride_truncatesBatchAtBoundary() {
+        let batchingEdgeConfig: [String: Any] = [
+            "edge.configId": "test-config-id",
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
+        ]
+        let headEdgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+        let headEntity = DataEntity(uniqueIdentifier: "test-uuid-head", timestamp: Date(), data: try? JSONEncoder().encode(headEdgeEntity))
+        // Same event name (so it passes the allowlist check) but a different event-level config override.
+        let overrideEdgeEntity = getEdgeDataEntity(event: experienceEventWithDatastreamIdOverride, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+        let overrideEntity = DataEntity(uniqueIdentifier: "test-uuid-override", timestamp: Date(), data: try? JSONEncoder().encode(overrideEdgeEntity))
+
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [headEntity, overrideEntity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            // Only the head was resolved; the differently-configured entity must be left untouched.
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        // Only one network request — for the head entity alone via the single-entity path; the
+        // override entity was never folded into this request.
+        XCTAssertEqual(1, mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).count)
+        let requestString = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).first?.url.absoluteString ?? ""
+        XCTAssertTrue(requestString.contains("test-config-id"))
+        XCTAssertFalse(requestString.contains("test-datastream-id-override"))
+    }
+
+    /// Regression guard for `hasSameRequestConfig`: two allowlisted ExperienceEvents enqueued under
+    /// different Configuration snapshots (e.g. `edge.configId` changed between enqueues via
+    /// `MobileCore.updateConfiguration()`) must not be folded into the same batch request.
+    func testProcessBatch_differentConfigurationSnapshot_truncatesBatchAtBoundary() {
+        let firstConfig: [String: Any] = [
+            "edge.configId": "test-config-id-1",
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
+        ]
+        let secondConfig: [String: Any] = [
+            "edge.configId": "test-config-id-2",
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
+        ]
+        let headEdgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: firstConfig, identityMap: defaultIdentityMap)
+        let headEntity = DataEntity(uniqueIdentifier: "test-uuid-head", timestamp: Date(), data: try? JSONEncoder().encode(headEdgeEntity))
+        let secondEdgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: secondConfig, identityMap: defaultIdentityMap)
+        let secondEntity = DataEntity(uniqueIdentifier: "test-uuid-second", timestamp: Date(), data: try? JSONEncoder().encode(secondEdgeEntity))
+
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [headEntity, secondEntity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        XCTAssertEqual(1, mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).count)
+        let requestString = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).first?.url.absoluteString ?? ""
+        XCTAssertTrue(requestString.contains("test-config-id-1"))
+        XCTAssertFalse(requestString.contains("test-config-id-2"))
+    }
+
     /// A single ExperienceEvent given to `processBatch` (batch size 1) delegates to the existing
     /// `processHit` path and resolves exactly 1 entity.
     func testProcessBatch_singleExperienceEvent_delegatesToProcessHit_resolvesOne() {

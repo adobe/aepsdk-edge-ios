@@ -257,7 +257,8 @@ class EdgeHitProcessor: HitProcessing {
         for dataEntity in entities {
             guard let edgeEntity = decode(dataEntity: dataEntity),
                   edgeEntity.event.isExperienceEvent,
-                  isEventNameAllowlistedForBatching(edgeEntity) else {
+                  isEventNameAllowlistedForBatching(edgeEntity),
+                  hasSameRequestConfig(edgeEntity, headEdgeEntity) else {
                 break
             }
             batchEntities.append(dataEntity)
@@ -338,6 +339,28 @@ class EdgeHitProcessor: HitProcessing {
             return false
         }
         return allowlist.contains(entity.event.name)
+    }
+
+    /// Checks whether `candidate` shares the same request-building config as `head` - the full snapshotted
+    /// Configuration map (datastream ID, environment, domain, batching keys) and the event-level `config`
+    /// overrides (`datastreamIdOverride`/`datastreamConfigOverride`). A single batch request is built
+    /// entirely from the head's config, so an entity with a different snapshot must not be silently folded
+    /// in - it would lose its own datastream/override and get sent under the head's instead. Mirrors
+    /// `aepsdk-edge-android`'s `EdgeHitProcessor.hasSameRequestConfig`.
+    ///
+    /// Compares via `NSDictionary` bridging rather than `AnyCodable`'s own `==`, since `AnyCodable.==`
+    /// only recognizes array/dictionary values typed exactly as `[AnyCodable]`/`[String: AnyCodable]` -
+    /// `edge.batching.eventNameAllowlist` decodes to a plain `[Any?]`, which falls through to `AnyCodable`'s
+    /// `default: return false` and would make this always report "different config" whenever an allowlist
+    /// is present, defeating batching entirely.
+    private func hasSameRequestConfig(_ candidate: EdgeDataEntity, _ head: EdgeDataEntity) -> Bool {
+        let candidateConfig = AnyCodable.toAnyDictionary(dictionary: candidate.configuration) ?? [:]
+        let headConfig = AnyCodable.toAnyDictionary(dictionary: head.configuration) ?? [:]
+        guard (candidateConfig as NSDictionary).isEqual(to: headConfig) else { return false }
+
+        let candidateOverrides = candidate.event.config ?? [:]
+        let headOverrides = head.event.config ?? [:]
+        return (candidateOverrides as NSDictionary).isEqual(to: headOverrides)
     }
 
     /// Delegates a single `DataEntity` to the existing `processHit` path and converts the boolean
