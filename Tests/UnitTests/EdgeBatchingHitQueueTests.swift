@@ -170,6 +170,43 @@ class EdgeBatchingHitQueueTests: XCTestCase {
         XCTAssertEqual(0, mockProcessor.processBatchCalls.count)
     }
 
+    /// Regression guard mirroring `aepsdk-edge-android`'s `EdgeBatchingHitQueueTest.
+    /// testRunBatchCycle_suspendedBeforeCycleStarts_doesNotProcess`: a `suspend()` that lands after a
+    /// cycle is enqueued on the internal serial queue but before that cycle actually starts running
+    /// must still stop it. This only holds because `suspended` is mutated under `stateLock` rather than
+    /// via `queue.async` — if it were, the flag flip would be stuck behind the already-enqueued cycle in
+    /// the same FIFO line, arriving too late to matter.
+    func testSuspend_landsWhileACycleIsEnqueuedButNotYetStarted_stopsProcessing() {
+        for entity in buildEntities(count: 1, batchingEnabled: false) {
+            _ = mockDataQueue.add(dataEntity: entity)
+        }
+        mockProcessor.outcomeProvider = { entities in .done(resolvedCount: entities.count) }
+        mockProcessor.onEachCall = { XCTFail("processBatch should not be called once suspended") }
+
+        // Occupy the internal serial queue so the cycle beginProcessing() enqueues cannot start yet.
+        let blockerStarted = DispatchSemaphore(value: 0)
+        let release = DispatchSemaphore(value: 0)
+        hitQueue.queue.async {
+            blockerStarted.signal()
+            release.wait()
+        }
+        blockerStarted.wait()
+
+        // Enqueues a cycle (queued behind the blocker), then suspends before it can run.
+        hitQueue.beginProcessing()
+        hitQueue.suspend()
+
+        release.signal()
+
+        // Marker enqueued after both above calls; once it runs, the cycle (if any) already ran too.
+        let marker = XCTestExpectation(description: "Queue drained past the blocker and any scheduled cycle")
+        hitQueue.queue.async { marker.fulfill() }
+        wait(for: [marker], timeout: 2)
+
+        XCTAssertEqual(0, mockProcessor.processBatchCalls.count)
+        XCTAssertEqual(1, mockDataQueue.count())
+    }
+
     // MARK: - Helpers
 
     /// Polls `mockDataQueue.count()` until it reaches 0, tolerating the fact that `EdgeBatchingHitQueue`
