@@ -30,17 +30,24 @@ class EdgeBatchingHitQueue: HitQueuing {
     private let edgeHitProcessor: EdgeHitProcessor
     private let dataQueue: DataQueue
 
-    // Guarded by `stateLock` rather than by running only inside `queue`'s closures: `suspend()` must
-    // take effect immediately, even ahead of a batch cycle that was already enqueued on `queue` (e.g.
-    // collect consent flipping to pending while a cycle from a just-queued event is sitting behind
-    // other work). If `suspended` were only ever mutated from within `queue.async`, its flip would be
-    // stuck in the same FIFO line as the cycle it's meant to stop, arriving too late to matter.
-    private var suspended = true
-    private var isTaskScheduled = false
-    private let stateLock = NSLock()
-    // Not `private`: exposed at module (internal) scope only so tests can occupy this queue directly
-    // to deterministically exercise the "cycle enqueued but not yet started" race window.
+    /// Guarded by `state` rather than by running only inside `queue`'s closures: `suspend()` must take
+    /// effect immediately, even ahead of a batch cycle that was already enqueued on `queue` (e.g. collect
+    /// consent flipping to pending while a cycle from a just-queued event is sitting behind other work).
+    /// If `suspended` were only ever mutated from within `queue.async`, its flip would be stuck in the
+    /// same FIFO line as the cycle it's meant to stop, arriving too late to matter.
+    private struct BatchQueueState {
+        var suspended = true
+        var isTaskScheduled = false
+    }
+    private let state = Atomic(BatchQueueState())
+
+    #if DEBUG
+    // Not `private`: exposed at module (internal) scope only in DEBUG builds so tests can occupy this
+    // queue directly to deterministically exercise the "cycle enqueued but not yet started" race window.
     let queue = DispatchQueue(label: "com.adobe.edge.batchingHitQueue")
+    #else
+    private let queue = DispatchQueue(label: "com.adobe.edge.batchingHitQueue")
+    #endif
 
     init(dataQueue: DataQueue, processor: EdgeHitProcessor) {
         self.dataQueue = dataQueue
@@ -56,16 +63,12 @@ class EdgeBatchingHitQueue: HitQueuing {
     }
 
     func beginProcessing() {
-        stateLock.lock()
-        suspended = false
-        stateLock.unlock()
+        state.mutate { $0.suspended = false }
         processNextBatch()
     }
 
     func suspend() {
-        stateLock.lock()
-        suspended = true
-        stateLock.unlock()
+        state.mutate { $0.suspended = true }
     }
 
     func clear() {
@@ -84,24 +87,25 @@ class EdgeBatchingHitQueue: HitQueuing {
     /// Schedules one batch-processing cycle if none is already running. Mirrors the guard in
     /// `PersistentHitQueue.processNextHit()`.
     ///
-    /// The `suspended`/`isTaskScheduled` check-and-set happens under `stateLock` rather than merely by
-    /// virtue of running inside this `queue.async` closure: since this closure was itself enqueued on
-    /// `queue` earlier, an intervening `suspend()` that mutated the flags directly (not via `queue.async`)
-    /// is visible here as soon as it happens, instead of being stuck behind this cycle in the same FIFO
-    /// line. This closes the window Android's `EdgeBatchingHitQueue.runBatchCycle` guards against: a
-    /// `suspend()` landing after a cycle was scheduled but before it started.
+    /// The `suspended` check happens under `state` rather than merely by virtue of running inside this
+    /// `queue.async` closure: since this closure was itself enqueued on `queue` earlier, an intervening
+    /// `suspend()` that mutated the flag directly (not via `queue.async`) is visible here as soon as it
+    /// happens, instead of being stuck behind this cycle in the same FIFO line. This closes the window
+    /// Android's `EdgeBatchingHitQueue.runBatchCycle` guards against: a `suspend()` landing after a cycle
+    /// was scheduled but before it started.
+    ///
+    /// `isTaskScheduled` is only ever mutated from within `queue`'s own closures (this method and
+    /// `handleOutcome`'s), so calls to this method never overlap with each other — it is safe to set the
+    /// flag true only once an actual batch has been found, right before dispatching it.
     private func processNextBatch() {
         queue.async {
-            self.stateLock.lock()
-            let canStart = !self.suspended && !self.isTaskScheduled
-            if canStart { self.isTaskScheduled = true }
-            self.stateLock.unlock()
+            var canStart = false
+            self.state.mutate { canStart = !$0.suspended && !$0.isTaskScheduled }
             guard canStart else { return }
 
-            guard let head = self.dataQueue.peek() else {
-                self.markTaskFinished()
-                return
-            } // nothing left in the queue, stop processing
+            guard let head = self.dataQueue.peek() else { return } // nothing left in the queue, stop processing
+
+            self.state.mutate { $0.isTaskScheduled = true }
 
             let batchSize = self.effectiveBatchSize(for: head)
             let entities: [DataEntity]
@@ -119,9 +123,14 @@ class EdgeBatchingHitQueue: HitQueuing {
     }
 
     private func markTaskFinished() {
-        stateLock.lock()
-        isTaskScheduled = false
-        stateLock.unlock()
+        state.mutate { $0.isTaskScheduled = false }
+    }
+
+    /// Clears the in-flight flag and immediately tries to schedule the next cycle. Common tail call
+    /// shared by every `handleOutcome` branch once its queue mutation (or retry wait) has settled.
+    private func finishAndScheduleNext() {
+        markTaskFinished()
+        processNextBatch()
     }
 
     private func handleOutcome(_ outcome: BatchOutcome, batchCount: Int) {
@@ -133,13 +142,11 @@ class EdgeBatchingHitQueue: HitQueuing {
             // prefix was never sent, so it must stay queued for the next cycle.
             queue.async {
                 guard resolvedCount > 0 else {
-                    self.markTaskFinished()
-                    self.processNextBatch()
+                    self.finishAndScheduleNext()
                     return
                 }
                 if self.dataQueue.remove(n: resolvedCount) {
-                    self.markTaskFinished()
-                    self.processNextBatch()
+                    self.finishAndScheduleNext()
                 } else {
                     Log.warning(label: self.SELF_TAG, "An unexpected error occurred while attempting to delete records from the database. Data processing will be paused.")
                 }
@@ -148,9 +155,7 @@ class EdgeBatchingHitQueue: HitQueuing {
         case .retryBatch(let retryInterval):
             Log.trace(label: self.SELF_TAG, "Batch of \(batchCount) will be retried in \(retryInterval) seconds.")
             queue.asyncAfter(deadline: .now() + retryInterval) { [weak self] in
-                guard let self = self else { return }
-                self.markTaskFinished()
-                self.processNextBatch()
+                self?.finishAndScheduleNext()
             }
 
         case .partialRemove(let resolvedHeadCount, let retryInterval):
@@ -161,13 +166,10 @@ class EdgeBatchingHitQueue: HitQueuing {
                 if let retryInterval = retryInterval {
                     Log.trace(label: self.SELF_TAG, "Partial removal of \(resolvedHeadCount) entities; next entity needs retry in \(retryInterval) seconds.")
                     self.queue.asyncAfter(deadline: .now() + retryInterval) { [weak self] in
-                        guard let self = self else { return }
-                        self.markTaskFinished()
-                        self.processNextBatch()
+                        self?.finishAndScheduleNext()
                     }
                 } else {
-                    self.markTaskFinished()
-                    self.processNextBatch()
+                    self.finishAndScheduleNext()
                 }
             }
         }
