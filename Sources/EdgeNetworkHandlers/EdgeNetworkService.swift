@@ -26,6 +26,7 @@ enum EdgeRequestType: String {
 enum HttpResponseCodes: Int {
     case ok = 200
     case noContent = 204
+    case badRequest = 400
     case multiStatus = 207
     case tooManyRequests = 429
     case badGateway = 502
@@ -71,17 +72,21 @@ class EdgeNetworkService {
     ///   - requestBody: `EdgeRequest` containing the encoded events
     ///   - requestHeaders: request HTTP headers
     ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
-    ///   - completion: a closure that is invoked with true if the hit should not be retried, false if the hit should be retried, along with the time interval that should elapse before retrying the hit
+    ///   - completion: a closure invoked with true if the hit should not be retried, false if the hit should be retried, along with
+    ///     the time interval that should elapse before retrying the hit, and the HTTP response code if one was received (nil if the
+    ///     request never reached the server, e.g. malformed URL or empty body). The response code lets callers that batch multiple
+    ///     events into one request (see `EdgeHitProcessor.processBatch`) distinguish a 400 (nothing ingested, safe to resend each
+    ///     event individually) from other unrecoverable errors (deliver the terminal error once, don't resend).
     func doRequest(url: URL,
                    requestBody: String?,
                    requestHeaders: [String: String]? = [:],
                    streaming: Streaming?,
                    responseCallback: ResponseCallback,
-                   completion: @escaping (Bool, TimeInterval?) -> Void) {
+                   completion: @escaping (Bool, TimeInterval?, Int?) -> Void) {
         guard let payload = requestBody, !payload.isEmpty else {
             Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Request body is nil/empty, dropping this request")
             responseCallback.onComplete()
-            completion(true, nil)
+            completion(true, nil, nil)
             return
         }
 
@@ -106,7 +111,7 @@ class EdgeNetworkService {
                        Log.debug(label: EdgeConstants.LOG_TAG,
                                  "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) \(errorMessage)). Will retry request in \(retryInterval) seconds.")
 
-                       completion(false, retryInterval) // failed, but recoverable so retry
+                       completion(false, retryInterval, nil) // failed, but recoverable so retry
                        return
                 }
 
@@ -116,7 +121,7 @@ class EdgeNetworkService {
                             "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) \(errorMessage). Dropping the request.")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
-                completion(true, nil) // don't retry
+                completion(true, nil, connection.responseCode) // don't retry
                 return
             }
 
@@ -124,7 +129,7 @@ class EdgeNetworkService {
                 Log.warning(label: EdgeConstants.LOG_TAG, "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) failed with unknown error. Dropping the request.")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
-                completion(true, nil) // failed, but unrecoverable, don't retry
+                completion(true, nil, nil) // failed, but unrecoverable, don't retry
                 return
             }
 
@@ -191,7 +196,7 @@ class EdgeNetworkService {
                                     connection: HttpConnection,
                                     streaming: Streaming?,
                                     responseCallback: ResponseCallback,
-                                    completion: @escaping (Bool, TimeInterval?) -> Void) {
+                                    completion: @escaping (Bool, TimeInterval?, Int?) -> Void) {
 
         switch responseCode {
         case HttpResponseCodes.ok.rawValue:
@@ -200,11 +205,11 @@ class EdgeNetworkService {
                                streaming: streaming,
                                responseCallback: responseCallback)
             responseCallback.onComplete()
-            completion(true, nil) // successful request, return true
+            completion(true, nil, responseCode) // successful request, return true
         case HttpResponseCodes.noContent.rawValue:
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge was successful, no content returned.")
             responseCallback.onComplete()
-            completion(true, nil) // successful request, return true
+            completion(true, nil, responseCode) // successful request, return true
         case HttpResponseCodes.multiStatus.rawValue:
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Connection to Experience Edge was successful, but encountered non-fatal errors/warnings. \(responseCode)")
@@ -212,7 +217,7 @@ class EdgeNetworkService {
                                streaming: streaming,
                                responseCallback: responseCallback)
             responseCallback.onComplete()
-            completion(true, nil) // non-fatal error, don't retry
+            completion(true, nil, responseCode) // non-fatal error, don't retry
         default:
             if self.recoverableNetworkErrorCodes.contains(responseCode) {
                 let retryHeader = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER)
@@ -223,12 +228,12 @@ class EdgeNetworkService {
                 }
                 Log.debug(label: EdgeConstants.LOG_TAG,
                           "\(SELF_TAG) - Connection to Experience Edge returned recoverable error code \(responseCode). Will retry request in \(retryInterval) seconds.")
-                completion(false, retryInterval) // failed, but recoverable so retry
+                completion(false, retryInterval, responseCode) // failed, but recoverable so retry
             } else {
                 Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge returned unrecoverable error code \(responseCode)")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
-                completion(true, nil) // failed, but unrecoverable, don't retry
+                completion(true, nil, responseCode) // failed, but unrecoverable, don't retry
             }
         }
     }
@@ -273,7 +278,7 @@ class EdgeNetworkService {
         var unwrappedErrorMessage = plainTextErrorMessage ?? DEFAULT_GENERIC_ERROR_MESSAGE
         unwrappedErrorMessage = unwrappedErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let eventError = EdgeEventError(title: DEFAULT_GENERIC_ERROR_TITLE, detail: unwrappedErrorMessage)
+        let eventError = EdgeResponseError(title: DEFAULT_GENERIC_ERROR_TITLE, detail: unwrappedErrorMessage)
 
         guard let json = try? JSONEncoder().encode(eventError) else {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to serialize the error message.")

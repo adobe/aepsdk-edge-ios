@@ -39,6 +39,32 @@ struct SharedStateReader {
         return edgeConfig ?? [:]
     }
 
+    /// Resolves the grouped `edge.batching` configuration object for the given `event`, mirroring
+    /// `aepsdk-edge-android`'s `EventUtils.getEdgeConfiguration` batching section.
+    ///
+    /// This is a *wholesale* fallback, not a per-key merge: the entire grouped object is taken from the
+    /// Configuration shared state when present (remote/Launch/programmatic), otherwise from the bundled
+    /// asset file (`EdgeBundledBatchingConfig`). Both sources use the identical grouped format, so a
+    /// single object either wins or falls back as a unit - keeping behavior predictable and making
+    /// bundled-vs-remote comparison straightforward. Parsed lazily by `EdgeBatchingConfig` at use.
+    /// - Parameter event: the `Event` used to retrieve the Configuration shared state.
+    /// - Returns: a dictionary carrying the resolved `edge.batching` object under its key, or an empty
+    ///   dictionary when no batching config is present in either source.
+    func getEdgeBatchingConfig(event: Event) -> [String: Any] {
+        let configurationState = getSharedState(EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME, event, false)?.value ?? [:]
+
+        if let remoteBatchingConfig = configurationState[EdgeConstants.SharedState.Configuration.EDGE_BATCHING] as? [String: Any] {
+            return [EdgeConstants.SharedState.Configuration.EDGE_BATCHING: remoteBatchingConfig]
+        }
+
+        let bundledBatchingConfig = EdgeBundledBatchingConfig.get()
+        if !bundledBatchingConfig.isEmpty {
+            return [EdgeConstants.SharedState.Configuration.EDGE_BATCHING: bundledBatchingConfig]
+        }
+
+        return [:]
+    }
+
     /// Get the Assurance integration ID from the Assurance shared state for the given `event`.
     /// - Parameter event: the `Event` used to retrieve the Assurance shared state.
     /// - Returns: the `integrationid` from the Assurance shared state or nil if the shared state or integration id is does not exist.

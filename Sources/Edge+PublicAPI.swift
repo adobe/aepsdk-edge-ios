@@ -39,6 +39,30 @@ public extension Edge {
         MobileCore.dispatch(event: event)
     }
 
+    /// Sends an event to Adobe Experience Edge and registers a callback for both responses and per-event errors
+    /// coming from the Edge Network.
+    /// - Parameters:
+    ///   - experienceEvent: Event to be sent to Adobe Experience Edge
+    ///   - callback: Optional callback invoked when the request is complete. `onComplete` is always invoked with
+    ///               the associated response handles received from the Adobe Experience Platform Edge Network;
+    ///               `onError` is additionally invoked if any errors were received for this event. May be invoked
+    ///               on a different thread.
+    @objc(sendExperienceEvent:callback:)
+    static func sendEvent(experienceEvent: ExperienceEvent, callback: EdgeCallbackWithError?) {
+        guard let xdmData = experienceEvent.xdm, !xdmData.isEmpty, let eventData = experienceEvent.asDictionary() else {
+            Log.debug(label: LOG_TAG, "Failed to dispatch the experience event because the XDM data was nil/empty.")
+            return
+        }
+
+        let event = Event(name: "AEP Request Event",
+                          type: EventType.edge,
+                          source: EventSource.requestContent,
+                          data: eventData)
+
+        CompletionHandlersManager.shared.registerErrorCallback(forRequestEventId: event.id.uuidString, callback: callback)
+        MobileCore.dispatch(event: event)
+    }
+
     /// Get the Edge Network location hint used in requests to the Adobe Experience Platform Edge Network.
     /// The Edge Network location hint may be used when building the URL for Adobe Experience Platform Edge Network requests to hint at the server cluster to use.
     /// Returns the Edge Network location hint, or nil if the location hint expired or is not set.

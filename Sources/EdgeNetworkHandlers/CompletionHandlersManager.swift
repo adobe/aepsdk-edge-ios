@@ -22,6 +22,14 @@ class CompletionHandlersManager {
     private var edgeEventHandles =
         ThreadSafeDictionary<String, [EdgeEventHandle]>(identifier: "com.adobe.edge.edgeHandlesList")
 
+    // callbacks registered via `Edge.sendEvent(experienceEvent:callback:)`, keyed by request event id
+    private var errorCallbacks =
+        ThreadSafeDictionary<String, EdgeCallbackWithError>(identifier: "com.adobe.edge.errorCallbacks")
+
+    // edge event errors for a event request id (key)
+    private var edgeEventErrors =
+        ThreadSafeDictionary<String, [EdgeEventError]>(identifier: "com.adobe.edge.edgeEventErrorsList")
+
     static let shared = CompletionHandlersManager()
 
     /// Registers a completion handler for the specified `requestEventId`. This handler is invoked when the Edge response content has been
@@ -42,19 +50,53 @@ class CompletionHandlersManager {
         completionHandlers[forRequestEventId] = unwrappedCompletion
     }
 
+    /// Registers an `EdgeCallbackWithError` for the specified `requestEventId`. This callback's `onComplete` is
+    /// invoked when the Edge response content has been handled entirely by the Edge extension (identical timing
+    /// and contract to `registerCompletionHandler`); its `onError` is additionally invoked if any errors were
+    /// received for this event.
+    ///
+    /// - Parameters:
+    ///   - forRequestEventId: unique event identifier for which the callback is registered; should not be empty
+    ///   - callback: the callback that needs to be registered, should not be nil
+    func registerErrorCallback(forRequestEventId: String, callback: EdgeCallbackWithError?) {
+        guard let unwrappedCallback = callback else { return }
+        guard !forRequestEventId.isEmpty else {
+            Log.warning(label: TAG, "Failed to register error callback because of empty request event id.")
+            return
+        }
+
+        Log.trace(label: TAG, "Registering error callback for Edge response with request event id \(forRequestEventId).")
+        errorCallbacks[forRequestEventId] = unwrappedCallback
+    }
+
     /// Calls the registered completion handler (if any) with the collected `EdgeEventHandle`(s). After this operation,
-    /// the associated completion handler is removed and no longer called.
+    /// the associated completion handler is removed and no longer called. If an `EdgeCallbackWithError` is registered
+    /// for this request event id, its `onComplete` is invoked the same way, and its `onError` is additionally invoked
+    /// if any errors were accumulated for this event.
     /// - Parameter forRequestEventId: unique event identifier for experience events; should not be empty
     func unregisterCompletionHandler(forRequestEventId: String) {
         guard !forRequestEventId.isEmpty else { return }
 
+        let handles = edgeEventHandles[forRequestEventId] ?? []
+
         if let completionHandler = completionHandlers[forRequestEventId] {
-            completionHandler(edgeEventHandles[forRequestEventId] ?? [])
+            completionHandler(handles)
             _ = completionHandlers.removeValue(forKey: forRequestEventId)
             Log.trace(label: TAG, "Removing completion handler for Edge response with request event id \(forRequestEventId).")
         }
 
+        if let errorCallback = errorCallbacks[forRequestEventId] {
+            errorCallback.onComplete(handles)
+            let errors = edgeEventErrors[forRequestEventId] ?? []
+            if !errors.isEmpty {
+                errorCallback.onError(errors)
+            }
+            _ = errorCallbacks.removeValue(forKey: forRequestEventId)
+            Log.trace(label: TAG, "Removing error callback for Edge response with request event id \(forRequestEventId).")
+        }
+
         _ = edgeEventHandles.removeValue(forKey: forRequestEventId)
+        _ = edgeEventErrors.removeValue(forKey: forRequestEventId)
     }
 
     /// Updates the list of `EdgeEventHandle`(s) for current `requestEventId`.
@@ -67,6 +109,20 @@ class CompletionHandlersManager {
             edgeEventHandles[unwrappedRequestEventId]?.append(eventHandle)
         } else {
             edgeEventHandles[unwrappedRequestEventId] = [eventHandle]
+        }
+    }
+
+    /// Updates the list of `EdgeEventError`(s) for the current `requestEventId`, feeding the accumulated errors
+    /// delivered to a registered `EdgeCallbackWithError`'s `onError` when the request completes.
+    /// - Parameters:
+    ///   - forRequestEventId: the request event identifier associated with this error
+    ///   - error: newly received event error
+    func eventErrorReceived(forRequestEventId: String?, _ error: EdgeEventError) {
+        guard let unwrappedRequestEventId = forRequestEventId, !unwrappedRequestEventId.isEmpty else { return }
+        if edgeEventErrors[unwrappedRequestEventId] != nil {
+            edgeEventErrors[unwrappedRequestEventId]?.append(error)
+        } else {
+            edgeEventErrors[unwrappedRequestEventId] = [error]
         }
     }
 }

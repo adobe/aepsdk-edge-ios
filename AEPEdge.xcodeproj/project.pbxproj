@@ -26,12 +26,18 @@
 		216989652554B39900B2752C /* EdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989642554B39900B2752C /* EdgeHit.swift */; };
 		216989782554B61500B2752C /* EdgeHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989772554B61500B2752C /* EdgeHitProcessor.swift */; };
 		216989B32555376A00B2752C /* EdgeHitProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */; };
+		BE3A74DB94CCBEDE9F4145DD /* EdgeBundledBatchingConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E742414B220FB400B4D6FDE5 /* EdgeBundledBatchingConfigTests.swift */; };
+		E1D6B4700000000000000202 /* EdgeBatchingConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D6B4700000000000000201 /* EdgeBatchingConfigTests.swift */; };
+		5498316E0EF96A187C554E76 /* SharedStateReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7B22645DB9C48815995C56 /* SharedStateReaderTests.swift */; };
 		2198DEE22604F8BE008ADB6A /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2198DEE12604F8BE008ADB6A /* Atomic.swift */; };
 		2198DEE826050458008ADB6A /* AtomicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2198DEE726050458008ADB6A /* AtomicTests.swift */; };
 		21C0F88A2627B9D9003872DC /* EdgeEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C0F8892627B9D9003872DC /* EdgeEndpoint.swift */; };
 		21D7B7B22562F89C0010AE25 /* EdgeEventWarning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */; };
 		21FFBD5925631E3E00B48A8F /* EdgeEventWarningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */; };
-		21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */; };
+		21FFBD6C2563321600B48A8F /* EdgeResponseErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFBD6B2563321600B48A8F /* EdgeResponseErrorTests.swift */; };
+		2D291DA2D58DFDE34F9A607D /* EdgeBatchingHitQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D4B4F8439125544300678E /* EdgeBatchingHitQueue.swift */; };
+		E1D6B4700000000000000102 /* EdgeBatchingConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D6B4700000000000000101 /* EdgeBatchingConfig.swift */; };
+		BADE531EF1F8BA6C24BF8818 /* EdgeBundledBatchingConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314D898C6438199FBCA790A7 /* EdgeBundledBatchingConfig.swift */; };
 		2E1810032ACCB83F0067E444 /* ConfigOverrideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1810022ACCB83F0067E444 /* ConfigOverrideTests.swift */; };
 		2E1810052ACCBA1B0067E444 /* TestEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1810042ACCBA1B0067E444 /* TestEnvironment.swift */; };
 		2E1810072ACCE5B00067E444 /* TestBase+EdgeHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1810062ACCE5B00067E444 /* TestBase+EdgeHelpers.swift */; };
@@ -59,6 +65,8 @@
 		4CBEE6252A157CB40084BC50 /* SampleFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEE6242A157CB40084BC50 /* SampleFunctionalTests.swift */; };
 		4CF7915E2CA526AB003C1FD8 /* IntegrationTestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF7915D2CA526AB003C1FD8 /* IntegrationTestConstants.swift */; };
 		783A5F4E903F9B6EABA50D23 /* Pods_UnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */; };
+		7C2745AEA9EC68DD877FE68B /* EdgeBatchingHitQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A321A42EE7CD7AC876A8BE8A /* EdgeBatchingHitQueueTests.swift */; };
+		AD7C4869E9DEACAFBC75A127 /* EdgeDataEntityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0A46E5E96B2F3FFF4F9B26 /* EdgeDataEntityTests.swift */; };
 		BF024B7924C6238C002131E9 /* FakeIdentityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF024B7824C6238C002131E9 /* FakeIdentityExtension.swift */; };
 		BF0C09482465E42100892B5D /* TestableEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C09472465E42100892B5D /* TestableEdge.swift */; };
 		BF0F924F27476E6C00378913 /* ImplementationDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0F924E27476E6C00378913 /* ImplementationDetails.swift */; };
@@ -101,8 +109,10 @@
 		D4C6B437251A76CB0038F4F9 /* XDMProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27CF24592B2800E912B2 /* XDMProtocols.swift */; };
 		D4C6B438251A76CB0038F4F9 /* Edge+PublicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D5B4EA242EBB1600CAB6E4 /* Edge+PublicAPI.swift */; };
 		D4C6B43A251A76CB0038F4F9 /* ExperienceEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C52458CB2300E912B2 /* ExperienceEvent.swift */; };
-		D4C6B43C251A76CB0038F4F9 /* EdgeEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */; };
+		D4C6B43C251A76CB0038F4F9 /* EdgeResponseError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553FA246B6FBC00A150E2 /* EdgeResponseError.swift */; };
 		D4C6B43D251A76CB0038F4F9 /* EdgeEventHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */; };
+		4A634C6534864EEB30CF5A69 /* EdgeEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68EF62435DADA4A4D8860D52 /* EdgeEventError.swift */; };
+		8A317937E7469F58CE8AD84C /* EdgeCallbackWithError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3157E3F5ECD3431FDBB351 /* EdgeCallbackWithError.swift */; };
 		D4C6B43E251A76CB0038F4F9 /* EdgeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF947F77243BE16C0057A6CC /* EdgeRequest.swift */; };
 		D4C6B43F251A76CB0038F4F9 /* EdgeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8DA246261E600E9321C /* EdgeResponse.swift */; };
 		D4C6B440251A76CB0038F4F9 /* EdgeNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4000F322459E2300052C536 /* EdgeNetworkService.swift */; };
@@ -131,6 +141,7 @@
 		D4F74FEB2447A94900379258 /* MockTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FEA2447A94900379258 /* MockTask.swift */; };
 		E97FFA8059E1B17324D8FFC6 /* Pods_AEPEdge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E916ED29158164BF50EBF1 /* Pods_AEPEdge.framework */; };
 		F14D1687F07BBBB83A0A2C8E /* Pods_TestAppiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 316EF062B0B622235F6BB384 /* Pods_TestAppiOS.framework */; };
+		F523011B38819380501BF58A /* BatchOutcome.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92F05877927388600B8DA62 /* BatchOutcome.swift */; };
 		F906B76A0F7C19B9067533AC /* Pods_TestApptvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F85212C814AA412355526B9F /* Pods_TestApptvOS.framework */; };
 		FCD6B046907107F7D83E41EF /* Pods_UpstreamIntegrationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 773BC882A27A812B96D9C711 /* Pods_UpstreamIntegrationTests.framework */; };
 /* End PBXBuildFile section */
@@ -219,12 +230,18 @@
 		216989642554B39900B2752C /* EdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHit.swift; sourceTree = "<group>"; };
 		216989772554B61500B2752C /* EdgeHitProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessor.swift; sourceTree = "<group>"; };
 		216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeHitProcessorTests.swift; sourceTree = "<group>"; };
+		E742414B220FB400B4D6FDE5 /* EdgeBundledBatchingConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeBundledBatchingConfigTests.swift; sourceTree = "<group>"; };
+		E1D6B4700000000000000201 /* EdgeBatchingConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeBatchingConfigTests.swift; sourceTree = "<group>"; };
+		3F7B22645DB9C48815995C56 /* SharedStateReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStateReaderTests.swift; sourceTree = "<group>"; };
 		2198DEE12604F8BE008ADB6A /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		2198DEE726050458008ADB6A /* AtomicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtomicTests.swift; sourceTree = "<group>"; };
 		21C0F8892627B9D9003872DC /* EdgeEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEndpoint.swift; sourceTree = "<group>"; };
 		21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarning.swift; sourceTree = "<group>"; };
 		21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventWarningTests.swift; sourceTree = "<group>"; };
-		21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventErrorTests.swift; sourceTree = "<group>"; };
+		21FFBD6B2563321600B48A8F /* EdgeResponseErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeResponseErrorTests.swift; sourceTree = "<group>"; };
+		24D4B4F8439125544300678E /* EdgeBatchingHitQueue.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EdgeBatchingHitQueue.swift; sourceTree = "<group>"; };
+		E1D6B4700000000000000101 /* EdgeBatchingConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EdgeBatchingConfig.swift; sourceTree = "<group>"; };
+		314D898C6438199FBCA790A7 /* EdgeBundledBatchingConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EdgeBundledBatchingConfig.swift; sourceTree = "<group>"; };
 		2E1810022ACCB83F0067E444 /* ConfigOverrideTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigOverrideTests.swift; sourceTree = "<group>"; };
 		2E1810042ACCBA1B0067E444 /* TestEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEnvironment.swift; sourceTree = "<group>"; };
 		2E1810062ACCE5B00067E444 /* TestBase+EdgeHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestBase+EdgeHelpers.swift"; sourceTree = "<group>"; };
@@ -244,6 +261,7 @@
 		4CBEE6222A1577E40084BC50 /* NoConfigFunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoConfigFunctionalTests.swift; sourceTree = "<group>"; };
 		4CBEE6242A157CB40084BC50 /* SampleFunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleFunctionalTests.swift; sourceTree = "<group>"; };
 		4CF7915D2CA526AB003C1FD8 /* IntegrationTestConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTestConstants.swift; sourceTree = "<group>"; };
+		5D0A46E5E96B2F3FFF4F9B26 /* EdgeDataEntityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EdgeDataEntityTests.swift; sourceTree = "<group>"; };
 		5DA0155731FA82D43DA47B93 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E8ABC044CA69B7B3B6DA2B8 /* Pods-UpstreamIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UpstreamIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-UpstreamIntegrationTests/Pods-UpstreamIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7276A55D4B28344E8ED9D27B /* Pods-TestAppiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppiOS.debug.xcconfig"; path = "Target Support Files/Pods-TestAppiOS/Pods-TestAppiOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -252,6 +270,7 @@
 		85E2DC7CBF2801B140FC24A9 /* Pods-KonductorIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KonductorIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-KonductorIntegrationTests/Pods-KonductorIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9CF4FC9E0341518F7ED94AED /* Pods-FunctionalTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FunctionalTests.release.xcconfig"; path = "Target Support Files/Pods-FunctionalTests/Pods-FunctionalTests.release.xcconfig"; sourceTree = "<group>"; };
 		A03EED428A1ABF9130F3BECA /* Pods-TestApptvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestApptvOS.release.xcconfig"; path = "Target Support Files/Pods-TestApptvOS/Pods-TestApptvOS.release.xcconfig"; sourceTree = "<group>"; };
+		A321A42EE7CD7AC876A8BE8A /* EdgeBatchingHitQueueTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EdgeBatchingHitQueueTests.swift; sourceTree = "<group>"; };
 		AF07B0197B2EA52E67BC99A6 /* Pods-KonductorIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KonductorIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-KonductorIntegrationTests/Pods-KonductorIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		B265C6B876BCBE382B6B8671 /* Pods-UnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.release.xcconfig"; path = "Target Support Files/Pods-UnitTests/Pods-UnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		B2A0C5E6F49BE2565DF1CA65 /* Pods-TestApptvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestApptvOS.debug.xcconfig"; path = "Target Support Files/Pods-TestApptvOS/Pods-TestApptvOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -308,7 +327,9 @@
 		D45F2E8125EE1987000AC350 /* EdgePublicAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgePublicAPITests.swift; sourceTree = "<group>"; };
 		D46553F6246A384900A150E2 /* NetworkResponseHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseHandlerTests.swift; sourceTree = "<group>"; };
 		D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventHandle.swift; sourceTree = "<group>"; };
-		D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventError.swift; sourceTree = "<group>"; };
+		68EF62435DADA4A4D8860D52 /* EdgeEventError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeEventError.swift; sourceTree = "<group>"; };
+		EE3157E3F5ECD3431FDBB351 /* EdgeCallbackWithError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeCallbackWithError.swift; sourceTree = "<group>"; };
+		D46553FA246B6FBC00A150E2 /* EdgeResponseError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeResponseError.swift; sourceTree = "<group>"; };
 		D48CBD2124A17EEA00A24BD8 /* TestXDMSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestXDMSchema.swift; sourceTree = "<group>"; };
 		D4967534251130D3001F5F95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D4A473C52485938D00D31710 /* TestConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConstants.swift; sourceTree = "<group>"; };
@@ -343,6 +364,7 @@
 		D4F74FE62447A8B800379258 /* MockNetworking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworking.swift; sourceTree = "<group>"; };
 		D4F74FE82447A92800379258 /* MockURLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLSession.swift; sourceTree = "<group>"; };
 		D4F74FEA2447A94900379258 /* MockTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTask.swift; sourceTree = "<group>"; };
+		D92F05877927388600B8DA62 /* BatchOutcome.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BatchOutcome.swift; sourceTree = "<group>"; };
 		ECE21024865660B5DB78AD82 /* Pods-E2EFunctionalTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-E2EFunctionalTests.release.xcconfig"; path = "Target Support Files/Pods-E2EFunctionalTests/Pods-E2EFunctionalTests.release.xcconfig"; sourceTree = "<group>"; };
 		F6293FCD59AB7997E527BB5A /* Pods_E2EFunctionalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_E2EFunctionalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F85212C814AA412355526B9F /* Pods_TestApptvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestApptvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -482,7 +504,7 @@
 				D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */,
 				D4145FCC25DCB3260019EA4C /* ExperienceEventsEdgeHit.swift */,
 				216989772554B61500B2752C /* EdgeHitProcessor.swift */,
-				D46553FA246B6FBC00A150E2 /* EdgeEventError.swift */,
+				D46553FA246B6FBC00A150E2 /* EdgeResponseError.swift */,
 				21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */,
 				BF947F77243BE16C0057A6CC /* EdgeRequest.swift */,
 				D447C82025C3E85D00FE12E5 /* EdgeConsentUpdate.swift */,
@@ -502,6 +524,10 @@
 				BF947F85243F24570057A6CC /* StoreResponsePayload.swift */,
 				BF947F92244126D70057A6CC /* StoreResponsePayloadManager.swift */,
 				BFDF25AC2BDB077E002114B6 /* SharedStateReader.swift */,
+				24D4B4F8439125544300678E /* EdgeBatchingHitQueue.swift */,
+				E1D6B4700000000000000101 /* EdgeBatchingConfig.swift */,
+				D92F05877927388600B8DA62 /* BatchOutcome.swift */,
+				314D898C6438199FBCA790A7 /* EdgeBundledBatchingConfig.swift */,
 			);
 			path = EdgeNetworkHandlers;
 			sourceTree = "<group>";
@@ -512,6 +538,8 @@
 				D4D5B4EA242EBB1600CAB6E4 /* Edge+PublicAPI.swift */,
 				D46553F8246B43B900A150E2 /* EdgeEventHandle.swift */,
 				1CCD27C52458CB2300E912B2 /* ExperienceEvent.swift */,
+				68EF62435DADA4A4D8860D52 /* EdgeEventError.swift */,
+				EE3157E3F5ECD3431FDBB351 /* EdgeCallbackWithError.swift */,
 			);
 			name = public;
 			sourceTree = "<group>";
@@ -580,10 +608,13 @@
 				2198DEE726050458008ADB6A /* AtomicTests.swift */,
 				D4A81DEB25658F0D0042B00A /* CompletionHandlerTests.swift */,
 				BF7E5B3A2789189D00D5E0FF /* EdgeEndpointTests.swift */,
-				21FFBD6B2563321600B48A8F /* EdgeEventErrorTests.swift */,
+				21FFBD6B2563321600B48A8F /* EdgeResponseErrorTests.swift */,
 				21FFBD5825631E3E00B48A8F /* EdgeEventWarningTests.swift */,
 				D45F2E6F25ED8EE3000AC350 /* EdgeExtensionTests.swift */,
 				216989B22555376A00B2752C /* EdgeHitProcessorTests.swift */,
+				E742414B220FB400B4D6FDE5 /* EdgeBundledBatchingConfigTests.swift */,
+				E1D6B4700000000000000201 /* EdgeBatchingConfigTests.swift */,
+				3F7B22645DB9C48815995C56 /* SharedStateReaderTests.swift */,
 				D4145F3F25D1D3200019EA4C /* EdgeHitTests.swift */,
 				D4000F34245A53FB0052C536 /* EdgeNetworkServiceTests.swift */,
 				D45F2E8125EE1987000AC350 /* EdgePublicAPITests.swift */,
@@ -599,6 +630,8 @@
 				BF947F9424414E3E0057A6CC /* StoreResponsePayloadManagerTests.swift */,
 				BF947F87243F2EF70057A6CC /* StoreResponsePayloadTests.swift */,
 				D4D5B5252432599B00CAB6E4 /* Info.plist */,
+				A321A42EE7CD7AC876A8BE8A /* EdgeBatchingHitQueueTests.swift */,
+				5D0A46E5E96B2F3FFF4F9B26 /* EdgeDataEntityTests.swift */,
 			);
 			name = UnitTests;
 			path = Tests/UnitTests;
@@ -1272,11 +1305,13 @@
 				D4AB2D7B2808894800DC39CF /* QueryOptions.swift in Sources */,
 				2198DEE22604F8BE008ADB6A /* Atomic.swift in Sources */,
 				D4C6B43A251A76CB0038F4F9 /* ExperienceEvent.swift in Sources */,
-				D4C6B43C251A76CB0038F4F9 /* EdgeEventError.swift in Sources */,
+				D4C6B43C251A76CB0038F4F9 /* EdgeResponseError.swift in Sources */,
 				D447C82725C3EF0500FE12E5 /* EdgeConsentPayload.swift in Sources */,
 				D4145FB525D5D0430019EA4C /* Event+Edge.swift in Sources */,
 				2EC056EE2AB4F57100023BDE /* SDKConfig.swift in Sources */,
 				D4C6B43D251A76CB0038F4F9 /* EdgeEventHandle.swift in Sources */,
+				4A634C6534864EEB30CF5A69 /* EdgeEventError.swift in Sources */,
+				8A317937E7469F58CE8AD84C /* EdgeCallbackWithError.swift in Sources */,
 				D4C6B43E251A76CB0038F4F9 /* EdgeRequest.swift in Sources */,
 				BF74550D28BB18CD00FF3AEC /* EdgeProperties.swift in Sources */,
 				D43BAB0325BB758400B08CC0 /* EdgeConsentStatus.swift in Sources */,
@@ -1303,6 +1338,10 @@
 				D4C6B44C251A76CB0038F4F9 /* StoreResponsePayloadManager.swift in Sources */,
 				D4C6B44D251A76CB0038F4F9 /* EdgeConstants.swift in Sources */,
 				D4C6B44E251A76CB0038F4F9 /* Edge.swift in Sources */,
+				2D291DA2D58DFDE34F9A607D /* EdgeBatchingHitQueue.swift in Sources */,
+				E1D6B4700000000000000102 /* EdgeBatchingConfig.swift in Sources */,
+				F523011B38819380501BF58A /* BatchOutcome.swift in Sources */,
+				BADE531EF1F8BA6C24BF8818 /* EdgeBundledBatchingConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1326,16 +1365,21 @@
 				D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */,
 				D4145F4025D1D3200019EA4C /* EdgeHitTests.swift in Sources */,
 				216989B32555376A00B2752C /* EdgeHitProcessorTests.swift in Sources */,
+				BE3A74DB94CCBEDE9F4145DD /* EdgeBundledBatchingConfigTests.swift in Sources */,
+				E1D6B4700000000000000202 /* EdgeBatchingConfigTests.swift in Sources */,
+				5498316E0EF96A187C554E76 /* SharedStateReaderTests.swift in Sources */,
 				D4F74FEB2447A94900379258 /* MockTask.swift in Sources */,
 				D4000F35245A53FB0052C536 /* EdgeNetworkServiceTests.swift in Sources */,
 				D46553F7246A384900A150E2 /* NetworkResponseHandlerTests.swift in Sources */,
-				21FFBD6C2563321600B48A8F /* EdgeEventErrorTests.swift in Sources */,
+				21FFBD6C2563321600B48A8F /* EdgeResponseErrorTests.swift in Sources */,
 				BF7E5B3B2789189D00D5E0FF /* EdgeEndpointTests.swift in Sources */,
 				2198DEE826050458008ADB6A /* AtomicTests.swift in Sources */,
 				BFEEB5AB28D4E35D00B668B8 /* EdgePublicAPITests.swift in Sources */,
 				D4A81DEC25658F0D0042B00A /* CompletionHandlerTests.swift in Sources */,
 				D4F74FE72447A8B800379258 /* MockNetworking.swift in Sources */,
 				1CCD27DC245A240F00E912B2 /* ExperienceEventTests.swift in Sources */,
+				7C2745AEA9EC68DD877FE68B /* EdgeBatchingHitQueueTests.swift in Sources */,
+				AD7C4869E9DEACAFBC75A127 /* EdgeDataEntityTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

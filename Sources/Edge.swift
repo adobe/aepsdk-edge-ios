@@ -132,8 +132,15 @@ public class Edge: NSObject, Extension {
             return // drop current event
         }
 
+        // Merge in the (possibly bundled-fallback) batching keys so they're snapshotted alongside the
+        // rest of the Edge configuration at enqueue time, same as edge.configId/environment/domain.
+        var combinedConfig: [String: Any] = edgeConfig
+        for (key, value) in sharedStateReader.getEdgeBatchingConfig(event: event) {
+            combinedConfig[key] = value
+        }
+
         let edgeEntity = EdgeDataEntity(event: event,
-                                        configuration: AnyCodable.from(dictionary: edgeConfig) ?? [:],
+                                        configuration: AnyCodable.from(dictionary: combinedConfig) ?? [:],
                                         identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
@@ -243,7 +250,7 @@ public class Edge: NSObject, Extension {
                                             readyForEvent: readyForEvent(_:),
                                             getImplementationDetails: getImplementationDetails,
                                             getLocationHint: getLocationHint)
-        return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
+        return EdgeBatchingHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }
 
     /// Retrieves the `ConsentStatus` from the Consent XDM Shared state for current `event`.

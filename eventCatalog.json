@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "description": "Reference catalog of xdm.eventType values dispatched across AEP iOS extensions, used to author the edge.batching allow-list. Not consumed by SDK code; documentation only. Batching matches by xdm.eventType (see EdgeBatchingConfig), not event name.",
+    "schemaVersion": 1
+  },
+  "optimize": [
+    { "xdmEventType": "decisioning.propositionFetch", "enabled": true },
+    { "xdmEventType": "decisioning.propositionDisplay", "enabled": true },
+    { "xdmEventType": "decisioning.propositionInteract", "enabled": true }
+  ],
+  "messaging": [
+    { "xdmEventType": "decisioning.propositionFetch", "enabled": true },
+    { "xdmEventType": "decisioning.propositionInteract", "enabled": true },
+    { "xdmEventType": "pushTracking.applicationOpened", "enabled": true },
+    { "xdmEventType": "pushTracking.customAction", "enabled": true }
+  ],
+  "edgeMedia": [
+    { "xdmEventType": "media.sessionStart", "enabled": true },
+    { "xdmEventType": "media.sessionComplete", "enabled": true },
+    { "xdmEventType": "media.sessionEnd", "enabled": true },
+    { "xdmEventType": "media.play", "enabled": true },
+    { "xdmEventType": "media.pauseStart", "enabled": true },
+    { "xdmEventType": "media.ping", "enabled": true },
+    { "xdmEventType": "media.error", "enabled": true },
+    { "xdmEventType": "media.bufferStart", "enabled": true },
+    { "xdmEventType": "media.bitrateChange", "enabled": true },
+    { "xdmEventType": "media.adBreakStart", "enabled": true },
+    { "xdmEventType": "media.adBreakComplete", "enabled": true },
+    { "xdmEventType": "media.adStart", "enabled": true },
+    { "xdmEventType": "media.adSkip", "enabled": true },
+    { "xdmEventType": "media.adComplete", "enabled": true },
+    { "xdmEventType": "media.chapterSkip", "enabled": true },
+    { "xdmEventType": "media.chapterStart", "enabled": true },
+    { "xdmEventType": "media.chapterComplete", "enabled": true },
+    { "xdmEventType": "media.statesUpdate", "enabled": true }
+  ]
+}

@@ -68,6 +68,11 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "/va/v1/sessionstart"]])
     let experienceEventWithDatastreamIdOverride = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "config": ["datastreamIdOverride": "test-datastream-id-override"]])
 
+    // Batching whitelists by `xdm.eventType`, so batching tests use events carrying one.
+    static let BATCH_EVENT_TYPE = "batchTestType"
+    let batchableExperienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data", "eventType": BATCH_EVENT_TYPE]])
+    let batchableExperienceEventWithDatastreamIdOverride = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data", "eventType": BATCH_EVENT_TYPE], "config": ["datastreamIdOverride": "test-datastream-id-override"]])
+
     let invalidPaths = [
         "/va/v1/sessionstart?query=value",
         "//va/v1/sessionstart",
@@ -191,7 +196,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(EDGE_RECOVERABLE_ERROR_CODES.count))
 
         for code in EDGE_RECOVERABLE_ERROR_CODES {
-            let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
+            let error = EdgeResponseError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
 
@@ -228,7 +233,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post, expectedCount: Int32(EDGE_RECOVERABLE_ERROR_CODES.count))
 
         for code in EDGE_RECOVERABLE_ERROR_CODES {
-            let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
+            let error = EdgeResponseError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
 
@@ -619,7 +624,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         mockNetworkService.setExpectationForNetworkRequest(url: CONSENT_ENDPOINT, httpMethod: .post, expectedCount: Int32(EDGE_RECOVERABLE_ERROR_CODES.count))
 
         for code in EDGE_RECOVERABLE_ERROR_CODES {
-            let error = EdgeEventError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
+            let error = EdgeResponseError(title: "test-title", detail: nil, status: code, type: "test-type", report: EdgeErrorReport(eventIndex: 0, errors: nil, requestId: nil, orgId: nil))
             let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
             let responseData = try? JSONEncoder().encode(edgeResponse)
 
@@ -885,6 +890,18 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         return EdgeDataEntity(event: event, configuration: configuration, identityMap: identityMap)
     }
 
+    /// Builds an Edge configuration snapshot carrying the given `edge.configId` and a grouped
+    /// `edge.batching` object that whitelists `Self.BATCH_EVENT_TYPE` by `xdm.eventType`.
+    private func batchingConfig(configId: String = "test-config-id", eventTypes: [String] = [EdgeHitProcessorTests.BATCH_EVENT_TYPE]) -> [String: Any] {
+        return [
+            "edge.configId": configId,
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING: [
+                EdgeConstants.Batching.ENABLED: true,
+                "events": eventTypes.map { [EdgeConstants.Batching.XDM_EVENT_TYPE: $0, EdgeConstants.Batching.ENABLED: true] }
+            ]
+        ]
+    }
+
     // MARK: - Old (v5.0.0 or less) "readyForEvent" workflow tests
 
     /// Tests that when `readyForEvent` returns true, hit is sent
@@ -1039,6 +1056,350 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         }
 
         assertProcessHit(entity: entity, urlString: CONSENT_ENDPOINT, sendsNetworkRequest: false, returns: true)
+    }
+
+    // MARK: - processBatch
+
+    /// Tests that a batch of 2 ExperienceEvents is sent as a single network request and resolves all of them.
+    /// Batching requires the event's `xdm.eventType` to be whitelisted by the `edge.batching` config,
+    /// snapshotted here alongside `edge.configId` (strict allow-list semantics, matching production).
+    func testProcessBatch_twoExperienceEvents_happy_sendsOneNetworkRequest_resolvesBoth() {
+        let batchingEdgeConfig = batchingConfig()
+        let edgeEntity1 = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+        let entity1 = DataEntity(uniqueIdentifier: "test-uuid-1", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity1))
+        let edgeEntity2 = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+        let entity2 = DataEntity(uniqueIdentifier: "test-uuid-2", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity2))
+
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [entity1, entity2]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(2, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
+        XCTAssertEqual(1, mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).count)
+    }
+
+    /// Regression guard for the queue-remove bug: a mixed window (ExperienceEvent then Consent) must
+    /// truncate the batch at the Consent boundary and report a resolvedCount matching only the
+    /// entities actually sent (1), not the full peeked window (2) — otherwise EdgeBatchingHitQueue's
+    /// DONE handling would remove the untouched Consent entity from the queue without ever processing it.
+    func testProcessBatch_experienceEventFollowedByConsent_resolvesOnlyLeadingExperienceRun() {
+        let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let experienceEntity = DataEntity(uniqueIdentifier: "test-uuid-exp", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+        let consentEdgeEntity = getEdgeDataEntity(event: consentUpdateEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let consentEntity = DataEntity(uniqueIdentifier: "test-uuid-consent", timestamp: Date(), data: try? JSONEncoder().encode(consentEdgeEntity))
+
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [experienceEntity, consentEntity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            // Only the leading ExperienceEvent was resolved; the Consent entity must be left untouched.
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
+        // Only one network request — for the ExperienceEvent alone; the Consent entity was never sent
+        // in this call (it is left for the next processing cycle to handle via the single-entity path).
+        XCTAssertEqual(1, mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).count)
+        XCTAssertEqual(0, mockNetworkService.getNetworkRequestsWith(url: CONSENT_ENDPOINT, httpMethod: .post).count)
+    }
+
+    /// Regression guard for `hasSameRequestConfig`: two whitelisted ExperienceEvents that share the same
+    /// Configuration snapshot but differ in their event-level `config` overrides (one has a
+    /// `datastreamIdOverride`, the other doesn't) must NOT be folded into the same batch request - a
+    /// single request is built entirely from the head's config, so silently including the second entity
+    /// would send its data to the head's datastream instead of its own override.
+    func testProcessBatch_secondEntityHasDifferentDatastreamOverride_truncatesBatchAtBoundary() {
+        let batchingEdgeConfig = batchingConfig()
+        let headEdgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+        let headEntity = DataEntity(uniqueIdentifier: "test-uuid-head", timestamp: Date(), data: try? JSONEncoder().encode(headEdgeEntity))
+        // Same xdm.eventType (so it passes the allow-list check) but a different event-level config override.
+        let overrideEdgeEntity = getEdgeDataEntity(event: batchableExperienceEventWithDatastreamIdOverride, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+        let overrideEntity = DataEntity(uniqueIdentifier: "test-uuid-override", timestamp: Date(), data: try? JSONEncoder().encode(overrideEdgeEntity))
+
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [headEntity, overrideEntity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            // Only the head was resolved; the differently-configured entity must be left untouched.
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        // Only one network request — for the head entity alone via the single-entity path; the
+        // override entity was never folded into this request.
+        XCTAssertEqual(1, mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).count)
+        let requestString = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).first?.url.absoluteString ?? ""
+        XCTAssertTrue(requestString.contains("test-config-id"))
+        XCTAssertFalse(requestString.contains("test-datastream-id-override"))
+    }
+
+    /// Regression guard for `hasSameRequestConfig`: two whitelisted ExperienceEvents enqueued under
+    /// different Configuration snapshots (e.g. `edge.configId` changed between enqueues via
+    /// `MobileCore.updateConfiguration()`) must not be folded into the same batch request.
+    func testProcessBatch_differentConfigurationSnapshot_truncatesBatchAtBoundary() {
+        let firstConfig = batchingConfig(configId: "test-config-id-1")
+        let secondConfig = batchingConfig(configId: "test-config-id-2")
+        let headEdgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: firstConfig, identityMap: defaultIdentityMap)
+        let headEntity = DataEntity(uniqueIdentifier: "test-uuid-head", timestamp: Date(), data: try? JSONEncoder().encode(headEdgeEntity))
+        let secondEdgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: secondConfig, identityMap: defaultIdentityMap)
+        let secondEntity = DataEntity(uniqueIdentifier: "test-uuid-second", timestamp: Date(), data: try? JSONEncoder().encode(secondEdgeEntity))
+
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [headEntity, secondEntity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        XCTAssertEqual(1, mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).count)
+        let requestString = mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).first?.url.absoluteString ?? ""
+        XCTAssertTrue(requestString.contains("test-config-id-1"))
+        XCTAssertFalse(requestString.contains("test-config-id-2"))
+    }
+
+    /// A single ExperienceEvent given to `processBatch` (batch size 1) delegates to the existing
+    /// `processHit` path and resolves exactly 1 entity.
+    func testProcessBatch_singleExperienceEvent_delegatesToProcessHit_resolvesOne() {
+        let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [entity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        mockNetworkService.assertAllNetworkRequestExpectations(ignoreUnexpectedRequests: false)
+    }
+
+    /// A head entity that fails to decode is dropped alone (resolvedCount 1) — even when the peeked
+    /// window contains more entities after it, which must be left untouched for the next cycle.
+    func testProcessBatch_headDecodeFailure_dropsOnlyHead_resolvesOne() {
+        let badEntity = DataEntity(uniqueIdentifier: "bad-uuid", timestamp: Date(), data: nil)
+        let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let goodEntity = DataEntity(uniqueIdentifier: "good-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: [badEntity, goodEntity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        // The good entity must never have been sent in this call.
+        XCTAssertEqual(0, mockNetworkService.getNetworkRequestsWith(url: INTERACT_ENDPOINT_PROD, httpMethod: .post).count)
+    }
+
+    /// An empty entities array resolves 0 entities without crashing.
+    func testProcessBatch_emptyEntities_resolvesZero() {
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+
+        hitProcessor.processBatch(entities: []) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(0, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+    }
+
+    // MARK: - processBatch: 400 explosion (real sendBatchHit/explodeAndResend, not a mock outcome)
+    //
+    // `MockNetworkService`'s response matching ignores query params (only scheme/host/path/method), so a
+    // single mocked response would apply identically to both the initial batch POST and every subsequent
+    // exploded individual resend, since they share the same endpoint. `SequencedResponseNetworkService`
+    // below returns one `HttpConnection` per call, in order, so the batch request and each individual
+    // resend can be given distinct outcomes.
+
+    /// A batch of 3 gets a 400 (nothing ingested); all 3 individual resends then succeed.
+    func testProcessBatch_threeEvents_batch400_explodesToIndividualRequests_allSucceedIndividually() {
+        let batchingEdgeConfig = batchingConfig()
+        let entities = (1...3).map { entityIndex -> DataEntity in
+            let edgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+            return DataEntity(uniqueIdentifier: "test-uuid-\(entityIndex)", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+        }
+
+        let sequencedService = SequencedResponseNetworkService(responses: [
+            httpConnection(statusCode: HttpResponseCodes.badRequest.rawValue), // batch request
+            httpConnection(statusCode: 200), // entity 1 resend
+            httpConnection(statusCode: 200), // entity 2 resend
+            httpConnection(statusCode: 200) // entity 3 resend
+        ])
+        ServiceProvider.shared.networkService = sequencedService
+
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+        hitProcessor.processBatch(entities: entities) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(3, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        XCTAssertEqual(4, sequencedService.requestCount) // 1 batch + 3 individual resends
+    }
+
+    /// A batch of 3 gets a 400; the first individual resend succeeds, the second hits a recoverable error -
+    /// explosion stops there and reports a partial removal with a retry for the remainder (entity 3 is
+    /// never sent).
+    func testProcessBatch_batch400_midExplosion_recoverableErrorOnSecondEntity_producesPartialRemoveWithRetry() {
+        let batchingEdgeConfig = batchingConfig()
+        let entities = (1...3).map { entityIndex -> DataEntity in
+            let edgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+            return DataEntity(uniqueIdentifier: "test-uuid-\(entityIndex)", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+        }
+
+        let retryTimeout = 30
+        let sequencedService = SequencedResponseNetworkService(responses: [
+            httpConnection(statusCode: HttpResponseCodes.badRequest.rawValue), // batch request
+            httpConnection(statusCode: 200), // entity 1 resend succeeds
+            httpConnection(statusCode: HttpResponseCodes.tooManyRequests.rawValue, headers: ["Retry-After": String(retryTimeout)]) // entity 2 resend, recoverable
+        ])
+        ServiceProvider.shared.networkService = sequencedService
+
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+        hitProcessor.processBatch(entities: entities) { outcome in
+            guard case .partialRemove(let resolvedHeadCount, let retryInterval) = outcome else {
+                XCTFail("Expected .partialRemove outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(1, resolvedHeadCount)
+            XCTAssertEqual(TimeInterval(retryTimeout), retryInterval)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        // 1 batch + entity 1 resend + entity 2 resend; entity 3 must never have been sent.
+        XCTAssertEqual(3, sequencedService.requestCount)
+    }
+
+    /// A batch of 3 gets a 400; the first individual resend gets a terminal (non-recoverable) error and is
+    /// dropped, but explosion continues and resolves the remaining two.
+    func testProcessBatch_batch400_terminalErrorMidExplosion_dropsEntityAndContinuesExplosion() {
+        let batchingEdgeConfig = batchingConfig()
+        let entities = (1...3).map { entityIndex -> DataEntity in
+            let edgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+            return DataEntity(uniqueIdentifier: "test-uuid-\(entityIndex)", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+        }
+
+        let sequencedService = SequencedResponseNetworkService(responses: [
+            httpConnection(statusCode: HttpResponseCodes.badRequest.rawValue), // batch request
+            httpConnection(statusCode: HttpResponseCodes.badRequest.rawValue), // entity 1 resend, terminal (dropped)
+            httpConnection(statusCode: 200), // entity 2 resend succeeds
+            httpConnection(statusCode: 200) // entity 3 resend succeeds
+        ])
+        ServiceProvider.shared.networkService = sequencedService
+
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+        hitProcessor.processBatch(entities: entities) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(3, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        XCTAssertEqual(4, sequencedService.requestCount)
+    }
+
+    /// A "batch" of exactly 1 entity never enters the explosion codepath at all - it delegates straight to
+    /// `processHit`, so a 400 is handled identically to the existing single-event 400 behavior (dropped).
+    func testProcessBatch_singleEntityBatch400_delegatesToProcessHit_dropsWithoutExploding() {
+        let sequencedService = SequencedResponseNetworkService(responses: [
+            httpConnection(statusCode: HttpResponseCodes.badRequest.rawValue)
+        ])
+        ServiceProvider.shared.networkService = sequencedService
+
+        let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        let expectation = XCTestExpectation(description: "processBatch completion invoked")
+        hitProcessor.processBatch(entities: [entity]) { outcome in
+            guard case .done(let resolvedCount) = outcome else {
+                XCTFail("Expected .done outcome, got \(outcome)")
+                return
+            }
+            XCTAssertEqual(1, resolvedCount)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+        XCTAssertEqual(1, sequencedService.requestCount)
+    }
+
+    private func httpConnection(statusCode: Int, headers: [String: String]? = nil) -> HttpConnection {
+        HttpConnection(
+            data: "{}".data(using: .utf8),
+            response: HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: headers),
+            error: nil)
+    }
+}
+
+/// A `Networking` stub that returns one `HttpConnection` per call, in the order provided - unlike
+/// `MockNetworkService`, whose response matching ignores query params and so cannot distinguish a batch
+/// request from its own exploded individual resends against the same endpoint. Calls beyond the number of
+/// provided responses repeat the last one.
+private class SequencedResponseNetworkService: Networking {
+    private let responses: [HttpConnection]
+    private(set) var requestCount = 0
+    private let lock = NSLock()
+
+    init(responses: [HttpConnection]) {
+        self.responses = responses
+    }
+
+    func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)?) {
+        lock.lock()
+        let index = min(requestCount, responses.count - 1)
+        requestCount += 1
+        lock.unlock()
+
+        completionHandler?(responses[index])
     }
 }
 

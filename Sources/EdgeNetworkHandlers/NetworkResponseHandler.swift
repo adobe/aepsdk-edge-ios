@@ -23,8 +23,23 @@ class NetworkResponseHandler {
     private let dataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
     private var updateLocationHint: (String, _ ttlSeconds: TimeInterval) -> Void
 
+    /// Behaviour switch for early per-event completion (index-advance), mirroring
+    /// `aepsdk-edge-android`'s `NetworkResponseHandler.earlyPerEventCompletionEnabled`. When `true`
+    /// (default), a batched event's completion fires as soon as a response fragment for a higher
+    /// `eventIndex` is observed (all lower-index events are then known complete), instead of waiting
+    /// for the whole batch's stream to close. The highest index and anything still pending complete
+    /// at stream close (`processResponseOnComplete`), exactly as before. Only relevant to multi-event
+    /// batched responses; single events, consent, batch-of-1 are unaffected either way.
+    static var earlyPerEventCompletionEnabled = true
+
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [Event]>()
+
+    // early-completion progress, keyed by requestId: highest eventIndex observed in the response so far
+    private var highestObservedIndex = ThreadSafeDictionary<String, Int>()
+    // early-completion progress, keyed by requestId: number of leading events already completed
+    // (monotonic; guarantees each event completes exactly once)
+    private var nextCompletionIndex = ThreadSafeDictionary<String, Int>()
 
     /// Date of the last generic identity reset request event, for more info see `shouldIgnoreStorePayload`
     private var lastResetDate = Atomic<Date>(Date(timeIntervalSince1970: 0))
@@ -67,6 +82,8 @@ class NetworkResponseHandler {
     func removeWaitingEvents(requestId: String) -> [Event]? {
         guard !requestId.isEmpty else { return nil }
 
+        highestObservedIndex.removeValue(forKey: requestId)
+        nextCompletionIndex.removeValue(forKey: requestId)
         return sentEventsWaitingResponse.removeValue(forKey: requestId)
     }
 
@@ -104,13 +121,22 @@ class NetworkResponseHandler {
                                 ignoreStorePayloads: ignoreStorePayloads)
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId)
             dispatchEventWarnings(warningsArray: edgeResponse.warnings, requestId: requestId)
+
+            // Early per-event completion: now that this fragment's handles/errors/warnings are all
+            // processed and accumulated, complete every waiting event whose index is strictly below the
+            // highest index observed so far — observing index M means events 0..M-1 have no more data
+            // coming. The highest index (and anything still pending) completes at stream close in
+            // `processResponseOnComplete`.
+            if NetworkResponseHandler.earlyPerEventCompletionEnabled {
+                sweepCompletions(requestId: requestId, exclusiveUpperBound: highestObservedIndexFor(requestId: requestId))
+            }
         } else {
             Log.warning(label: LOG_TAG,
                         "processResponseOnSuccess - The conversion to JSON failed for server response: \(jsonResponse), request id \(requestId)")
         }
     }
 
-    /// Decodes the response as `EdgeResponse` and extracts the errors if possible, otherwise decodes it as `EdgeEventError` and dispatches error events for the errors/warnings
+    /// Decodes the response as `EdgeResponse` and extracts the errors if possible, otherwise decodes it as `EdgeResponseError` and dispatches error events for the errors/warnings
     /// received from the server.
     /// - Parameters:
     ///   - jsonError: JSON formatted error response received from the server
@@ -122,7 +148,7 @@ class NetworkResponseHandler {
         if let edgeResponse = try? JSONDecoder().decode(EdgeResponse.self, from: data), edgeResponse.errors != nil {
             // this is an error coming from Konductor, read the error from the errors node
             dispatchEventErrors(errorsArray: edgeResponse.errors, requestId: requestId)
-        } else if let edgeErrorResponse = try? JSONDecoder().decode(EdgeEventError.self, from: data) {
+        } else if let edgeErrorResponse = try? JSONDecoder().decode(EdgeResponseError.self, from: data) {
             // generic server error, return the error as is
             dispatchEventErrors(errorsArray: [edgeErrorResponse], requestId: requestId)
         } else {
@@ -135,25 +161,104 @@ class NetworkResponseHandler {
     /// Processes the "on complete" response from the network layer by:
     /// 1. Unregistering request callbacks for each event and
     /// 2. Dispatching completion events for events that have specifically requested one.
+    ///
+    /// Events already completed early (see `sweepCompletions`) are not completed again here — only
+    /// the highest-indexed event and anything still pending complete at stream close.
     /// - Parameter requestId: The network request ID used to fetch the associated request events.
     func processResponseOnComplete(requestId: String) {
+        // Capture progress BEFORE removeWaitingEvents clears it.
+        let alreadyCompleted = NetworkResponseHandler.earlyPerEventCompletionEnabled ? completedCountFor(requestId: requestId) : 0
+
         guard let removedWaitingEvents = removeWaitingEvents(requestId: requestId) else { return }
 
-        for event in removedWaitingEvents {
-            // Unregister currently known completion handlers
-            CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: event.id.uuidString)
+        guard alreadyCompleted < removedWaitingEvents.count else { return }
 
-            if sendCompletionRequested(event: event) {
-                let eventData = addEventAndRequestIdToDictionary([:], requestId: requestId, requestEventId: nil)
+        for index in alreadyCompleted..<removedWaitingEvents.count {
+            completeEvent(requestId: requestId, event: removedWaitingEvents[index])
+        }
+    }
 
-                let responseEvent = event.createResponseEvent(
-                    name: EdgeConstants.EventName.CONTENT_COMPLETE,
-                    type: EventType.edge,
-                    source: EventSource.contentComplete,
-                    data: eventData
-                )
-                MobileCore.dispatch(event: responseEvent)
+    /// - Returns: the number of leading events already early-completed for `requestId` (0 if none).
+    private func completedCountFor(requestId: String) -> Int {
+        return serialQueue.sync {
+            self.nextCompletionIndex[requestId] ?? 0
+        }
+    }
+
+    /// Completes a single waiting `event`: unregisters its completion handler and, if the event
+    /// requested it via `request.sendCompletion`, dispatches its `CONTENT_COMPLETE` response event.
+    /// This is the per-event completion action, called either early (index-advance) or at stream close.
+    private func completeEvent(requestId: String, event: Event) {
+        CompletionHandlersManager.shared.unregisterCompletionHandler(forRequestEventId: event.id.uuidString)
+
+        if sendCompletionRequested(event: event) {
+            let eventData = addEventAndRequestIdToDictionary([:], requestId: requestId, requestEventId: nil)
+
+            let responseEvent = event.createResponseEvent(
+                name: EdgeConstants.EventName.CONTENT_COMPLETE,
+                type: EventType.edge,
+                source: EventSource.contentComplete,
+                data: eventData
+            )
+            MobileCore.dispatch(event: responseEvent)
+        }
+    }
+
+    /// Records the highest indexed `eventIndex` observed so far for `requestId`, used to drive early
+    /// per-event completion. No-op when early completion is disabled or `index` is nil (global handles
+    /// / no-index broadcast errors — those must never advance completion).
+    ///
+    /// If an index arrives that is lower than the completion boundary already reached, that violates
+    /// the assumed grouping (data for an event that was already completed); it is logged at WARNING for
+    /// investigation and otherwise ignored (the boundary is never moved backwards, so no event is
+    /// completed twice).
+    private func recordObservedIndex(requestId: String, index: Int?) {
+        guard NetworkResponseHandler.earlyPerEventCompletionEnabled, let index = index, index >= 0 else { return }
+
+        serialQueue.sync {
+            if let completed = self.nextCompletionIndex[requestId], index < completed {
+                Log.warning(label: self.LOG_TAG,
+                            "Unexpected response ordering: eventIndex \(index) arrived for request id (\(requestId)) " +
+                            "after events through index \(completed - 1) were already completed. Not re-completing; " +
+                            "investigate response grouping/ordering.")
+                return
             }
+
+            let current = self.highestObservedIndex[requestId] ?? -1
+            if index > current {
+                self.highestObservedIndex[requestId] = index
+            }
+        }
+    }
+
+    /// - Returns: the highest indexed `eventIndex` observed so far for `requestId`, or -1 if none observed.
+    private func highestObservedIndexFor(requestId: String) -> Int {
+        return serialQueue.sync {
+            self.highestObservedIndex[requestId] ?? -1
+        }
+    }
+
+    /// Completes every waiting event for `requestId` whose position is at or after the current
+    /// completion boundary and strictly below `exclusiveUpperBound`, advancing the boundary so each
+    /// event completes exactly once.
+    /// - Parameters:
+    ///   - requestId: the batch request id
+    ///   - exclusiveUpperBound: complete events with index in `[nextCompletionIndex, min(exclusiveUpperBound, count))`
+    private func sweepCompletions(requestId: String, exclusiveUpperBound: Int) {
+        var toComplete: [Event] = []
+        serialQueue.sync {
+            guard let events = self.sentEventsWaitingResponse[requestId] else { return }
+            var next = self.nextCompletionIndex[requestId] ?? 0
+            let limit = min(exclusiveUpperBound, events.count)
+            while next < limit {
+                toComplete.append(events[next])
+                next += 1
+            }
+            self.nextCompletionIndex[requestId] = next
+        }
+
+        for event in toComplete {
+            completeEvent(requestId: requestId, event: event)
         }
     }
 
@@ -180,7 +285,7 @@ class NetworkResponseHandler {
         Log.trace(label: LOG_TAG, "processEventHandles - Processing \(unwrappedEventHandles.count) event handle(s) for request id: \(requestId)")
 
         for eventHandle in unwrappedEventHandles {
-            let requestEvent = extractRequestEvent(forEventIndex: eventHandle.eventIndex, requestId: requestId)
+            let requestEvent = resolveHandleRequestEvent(eventIndex: eventHandle.eventIndex, handleType: eventHandle.type, requestId: requestId)
             if ignoreStorePayloads {
                 Log.debug(label: LOG_TAG, "Identities were reset recently, ignoring state:store payload for request with id: \(requestId)")
             } else {
@@ -193,6 +298,18 @@ class NetworkResponseHandler {
                 }
             }
 
+            // Track the highest per-event index seen, to drive early per-event completion. Handles
+            // with no eventIndex (global handles) do not advance completion.
+            recordObservedIndex(requestId: requestId, index: eventHandle.eventIndex)
+
+            // Complete any lower-indexed events still pending BEFORE dispatching this handle's data.
+            // Observing this handle's index means every lower index has no more data coming, so their
+            // completions must fire before this handle is dispatched — not after, which would let this
+            // handle's data land ahead of a still-pending sibling's completion.
+            if NetworkResponseHandler.earlyPerEventCompletionEnabled, let eventIndex = eventHandle.eventIndex {
+                sweepCompletions(requestId: requestId, exclusiveUpperBound: eventIndex)
+            }
+
             guard let eventHandleAsDictionary = eventHandle.asDictionary() else { continue }
             dispatchResponseEvent(handleAsDictionary: eventHandleAsDictionary,
                                   requestId: requestId,
@@ -202,23 +319,77 @@ class NetworkResponseHandler {
         }
     }
 
-    /// Extracts the request event paired with this event handle/error handle based on the index. If no match is found or the event handle index is missing, this method returns nil.
+    /// Extracts the request event paired with this event handle/error handle based on the index. If no match is found, this method returns nil.
     ///
     /// - Parameters:
-    ///   - forEventIndex: the `EdgeEventHandle`/ `EdgeEventError` event index
+    ///   - forEventIndex: the `EdgeEventHandle`/ `EdgeResponseError` event index
     ///   - requestId: edge request id used to fetch the waiting events associated with it (if any)
     /// - Returns: the request event for which this event handle was received, nil if not found
-    private func extractRequestEvent(forEventIndex: Int?, requestId: String) -> Event? {
+    private func extractRequestEvent(forEventIndex eventIndex: Int, requestId: String) -> Event? {
         guard let requestEventList = getWaitingEvents(requestId: requestId) else { return nil }
+        guard eventIndex >= 0, eventIndex < requestEventList.count else { return nil }
+        return requestEventList[eventIndex]
+    }
 
-        // Note: ExEdge does not return eventIndex when there is only one event in the request.
-        // The event handles and errors are associated to that request event, so defaulting to 0 here.
-        let index = forEventIndex ?? 0
-        guard index >= 0, index < requestEventList.count else {
-            return nil
+    /// Determines whether `handleType` is a session/batch-scoped handle type that carries no `eventIndex`
+    /// by design (`state:store`, `locationHint:result`) — these apply to the whole request rather than a
+    /// specific event, so they are broadcast rather than attributed to one event.
+    private func isGlobalHandleType(_ handleType: String?) -> Bool {
+        guard let handleType = handleType else { return false }
+        return handleType == EdgeConstants.JsonKeys.Response.EventHandleType.STORE
+            || handleType == EdgeConstants.JsonKeys.Response.EventHandleType.LOCATION_HINT
+    }
+
+    /// Resolves the request event a handle should be attributed to. Mirrors `aepsdk-edge-android`'s
+    /// routing policy for the handle channel — needed because batching means a response can now have
+    /// more than one waiting event, so a missing `eventIndex` is no longer unambiguous:
+    /// - `eventIndex` present -> the specific event at that position (`extractRequestEvent`).
+    /// - `eventIndex` absent, exactly one waiting event -> unambiguous; route to it (ExEdge omits
+    ///   `eventIndex` when the request has a single event).
+    /// - `eventIndex` absent, multiple waiting events, a global handle type (`state:store`,
+    ///   `locationHint:result`) -> broadcast: nil parent. The side effect (store payload / location hint
+    ///   update) is still applied globally regardless of attribution.
+    /// - `eventIndex` absent, multiple waiting events, any other handle type -> unexpected; nil parent,
+    ///   logged as a warning so it can be investigated.
+    private func resolveHandleRequestEvent(eventIndex: Int?, handleType: String?, requestId: String) -> Event? {
+        if let eventIndex = eventIndex {
+            return extractRequestEvent(forEventIndex: eventIndex, requestId: requestId)
         }
 
-        return requestEventList[index]
+        guard let waitingEvents = getWaitingEvents(requestId: requestId), !waitingEvents.isEmpty else { return nil }
+        if waitingEvents.count == 1 {
+            return waitingEvents.first ?? nil
+        }
+
+        if isGlobalHandleType(handleType) {
+            Log.trace(label: LOG_TAG, "Handle type '\(handleType ?? "unknown")' is a global handle (no eventIndex) - broadcasting with nil parent (requestId: \(requestId))")
+        } else {
+            Log.warning(label: LOG_TAG,
+                        "Handle type '\(handleType ?? "unknown")' has no eventIndex in a batch of \(waitingEvents.count) events " +
+                        "and is not a known global type - skipping per-event attribution (requestId: \(requestId))")
+        }
+        return nil
+    }
+
+    /// Resolves the request event(s) an error/warning should be attributed to. Mirrors
+    /// `aepsdk-edge-android`'s routing policy for the error/warning channel:
+    /// - `eventIndex` present -> a single-element result routed via `extractRequestEvent`.
+    /// - `eventIndex` absent, no waiting events registered -> a single `nil` (broadcast), preserving
+    ///   behavior for callers that never registered waiting events.
+    /// - `eventIndex` absent, one or more waiting events -> fan out: one dispatch per waiting event. A
+    ///   single waiting event naturally yields that one event (pre-batching contract unchanged); a
+    ///   root-level error/warning on a batch of N>1 is delivered to every event, since any of them could
+    ///   be the one it actually applies to.
+    private func resolveErrorRequestEvents(eventIndex: Int?, requestId: String) -> [Event?] {
+        if let eventIndex = eventIndex {
+            return [extractRequestEvent(forEventIndex: eventIndex, requestId: requestId)]
+        }
+
+        guard let waitingEvents = getWaitingEvents(requestId: requestId), !waitingEvents.isEmpty else {
+            return [nil]
+        }
+
+        return waitingEvents
     }
 
     /// Dispatches a response event with the provided event handle as `[String: Any]`, including the request event id and request identifier
@@ -238,10 +409,10 @@ class NetworkResponseHandler {
     /// Iterates over the provided `errorsArray` and dispatches a new error event to the Event Hub.
     /// It also logs each error json with the log level error.
     /// - Parameters:
-    ///   - errorsArray: `EdgeEventError` array containing all the event errors to be processed
+    ///   - errorsArray: `EdgeResponseError` array containing all the event errors to be processed
     ///   - requestId: the event request identifier, used for logging
     /// - See Also: `logErrorMessage(_ error: [String: Any], isError: Bool, requestId: String)`
-    private func dispatchEventErrors(errorsArray: [EdgeEventError]?, requestId: String) {
+    private func dispatchEventErrors(errorsArray: [EdgeResponseError]?, requestId: String) {
         guard let unwrappedErrors = errorsArray, !unwrappedErrors.isEmpty else {
             Log.trace(label: LOG_TAG, "dispatchEventErrors - Received nil/empty errors array, nothing to handle")
             return
@@ -253,13 +424,27 @@ class NetworkResponseHandler {
             if let errorAsDictionary = error.asDictionary() {
                 logErrorMessage(errorAsDictionary, isError: true, requestId: requestId)
 
-                let requestEvent = extractRequestEvent(forEventIndex: error.report?.eventIndex, requestId: requestId)
-                // set eventRequestId and Edge requestId on the response event and dispatch data
-                let eventData = addEventAndRequestIdToDictionary(errorAsDictionary,
-                                                                 requestId: requestId,
-                                                                 requestEventId: requestEvent?.id.uuidString)
-                guard !eventData.isEmpty else { continue }
-                dispatchResponseEventWithData(eventData, parentRequestEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
+                let eventIndex = error.report?.eventIndex
+
+                // Same ordering guarantee as processEventHandles, applied to the error channel.
+                recordObservedIndex(requestId: requestId, index: eventIndex)
+                if NetworkResponseHandler.earlyPerEventCompletionEnabled, let eventIndex = eventIndex {
+                    sweepCompletions(requestId: requestId, exclusiveUpperBound: eventIndex)
+                }
+
+                let publicEdgeEventError = error.asPublicEdgeEventError()
+
+                // A root-level (no-index) error on a batch of N>1 events is fanned out to every waiting
+                // event, since any of them could be the one that actually failed.
+                for requestEvent in resolveErrorRequestEvents(eventIndex: eventIndex, requestId: requestId) {
+                    // set eventRequestId and Edge requestId on the response event and dispatch data
+                    let eventData = addEventAndRequestIdToDictionary(errorAsDictionary,
+                                                                     requestId: requestId,
+                                                                     requestEventId: requestEvent?.id.uuidString)
+                    guard !eventData.isEmpty else { continue }
+                    dispatchResponseEventWithData(eventData, parentRequestEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
+                    CompletionHandlersManager.shared.eventErrorReceived(forRequestEventId: requestEvent?.id.uuidString, publicEdgeEventError)
+                }
             }
         }
     }
@@ -282,13 +467,24 @@ class NetworkResponseHandler {
             if let warningsAsDictionary = warning.asDictionary() {
                 logErrorMessage(warningsAsDictionary, isError: false, requestId: requestId)
 
-                let requestEvent = extractRequestEvent(forEventIndex: warning.report?.eventIndex, requestId: requestId)
-                // set eventRequestId and Edge requestId on the response event and dispatch data
-                let eventData = addEventAndRequestIdToDictionary(warningsAsDictionary,
-                                                                 requestId: requestId,
-                                                                 requestEventId: requestEvent?.id.uuidString)
-                guard !eventData.isEmpty else { return }
-                dispatchResponseEventWithData(eventData, parentRequestEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
+                let eventIndex = warning.report?.eventIndex
+
+                // Same ordering guarantee as processEventHandles, applied to the warning channel.
+                recordObservedIndex(requestId: requestId, index: eventIndex)
+                if NetworkResponseHandler.earlyPerEventCompletionEnabled, let eventIndex = eventIndex {
+                    sweepCompletions(requestId: requestId, exclusiveUpperBound: eventIndex)
+                }
+
+                // A root-level (no-index) warning on a batch of N>1 events is fanned out to every
+                // waiting event, since any of them could be the one it actually applies to.
+                for requestEvent in resolveErrorRequestEvents(eventIndex: eventIndex, requestId: requestId) {
+                    // set eventRequestId and Edge requestId on the response event and dispatch data
+                    let eventData = addEventAndRequestIdToDictionary(warningsAsDictionary,
+                                                                     requestId: requestId,
+                                                                     requestEventId: requestEvent?.id.uuidString)
+                    guard !eventData.isEmpty else { continue }
+                    dispatchResponseEventWithData(eventData, parentRequestEvent: requestEvent, isErrorResponseEvent: true, eventSource: nil)
+                }
             }
         }
     }
@@ -386,7 +582,7 @@ class NetworkResponseHandler {
     /// - If isError is true, the message is logged as error.
     /// - If isError is false, the message is logged as warning.
     /// - Parameters:
-    ///   - error: `EdgeEventError` encoded as [String: Any] containing the event error/warning coming from server
+    ///   - error: `EdgeResponseError` encoded as [String: Any] containing the event error/warning coming from server
     ///   - isError: boolean indicating if this is an error message
     ///   - requestId: the event request identifier, used for logging
     private func logErrorMessage(_ error: [String: Any], isError: Bool, requestId: String) {
