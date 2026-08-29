@@ -63,7 +63,7 @@ class EdgeHitProcessor: HitProcessing {
         // Check which workflow is used to obtain configuration
         if !edgeEntity.configuration.isEmpty {
             // Current workflow includes needed configuration in EdgeDataEntity before queuing hit.
-            // configuration may also carry non-String batching keys (edge.batching.enabled/eventNameAllowlist),
+            // configuration may also carry the non-String `edge.batching` object (a nested map),
             // so pull out only the String-valued entries instead of a blanket cast that would fail entirely
             // the moment a non-String key is present.
             edgeConfig = edgeEntity.configuration.asAnyDictionary.compactMapValues { $0 as? String }
@@ -216,8 +216,8 @@ class EdgeHitProcessor: HitProcessing {
     ///
     /// Routing rules mirror `aepsdk-edge-android`'s `EdgeHitProcessor.processBatch`:
     /// - Head is not an ExperienceEvent (Consent, Reset) -> process head alone.
-    /// - Head's event name is not in the `edge.batching.eventNameAllowlist` snapshotted at enqueue time
-    ///   -> process head alone (opt-in allowlist: `edge.batching.enabled` alone is not sufficient).
+    /// - Head's `xdm.eventType` is not whitelisted by the `edge.batching` config snapshotted at enqueue
+    ///   time -> process head alone (strict allow-list: `enabled` alone is not sufficient).
     /// - Batch size == 1 (or only the head qualifies) -> single-entity path.
     /// - Multiple consecutive, allowlisted ExperienceEvents -> build one batch request; on 400, explode
     ///   to individual sends (nothing was ingested, so every event is safe to resend); on other
@@ -243,22 +243,26 @@ class EdgeHitProcessor: HitProcessing {
             return
         }
 
-        // Events whose name isn't in the configured allowlist must also be processed alone.
-        guard isEventNameAllowlistedForBatching(headEdgeEntity) else {
+        // Events whose xdm.eventType isn't whitelisted by the batching config must also be processed alone.
+        let headBatchingConfig = EdgeBatchingConfig.from(headEdgeEntity.configuration.asAnyDictionary)
+        guard headBatchingConfig.isEventTypeBatchable(xdmEventType(from: headEdgeEntity.event)) else {
             Log.trace(label: EdgeConstants.LOG_TAG,
-                      "\(SELF_TAG) - Head entity's event name (\(headEdgeEntity.event.name)) is not in the batching allowlist; processing alone.")
+                      "\(SELF_TAG) - Head entity's xdm.eventType (\(xdmEventType(from: headEdgeEntity.event) ?? "nil")) is not whitelisted for batching; processing alone.")
             processSingleEntity(headEntity, completion: completion)
             return
         }
 
-        // Collect the consecutive ExperienceEvent run from the front.
+        // Collect the consecutive ExperienceEvent run from the front. `hasSameRequestConfig` is checked
+        // first since it's cheap and, once true, guarantees the candidate's batching config snapshot is
+        // identical to the head's - so the head's already-parsed `headBatchingConfig` can be reused
+        // instead of re-decoding/re-parsing each candidate's config from scratch.
         var batchEntities: [DataEntity] = []
         var batchEvents: [Event] = []
         for dataEntity in entities {
             guard let edgeEntity = decode(dataEntity: dataEntity),
                   edgeEntity.event.isExperienceEvent,
-                  isEventNameAllowlistedForBatching(edgeEntity),
-                  hasSameRequestConfig(edgeEntity, headEdgeEntity) else {
+                  hasSameRequestConfig(edgeEntity, headEdgeEntity),
+                  headBatchingConfig.isEventTypeBatchable(xdmEventType(from: edgeEntity.event)) else {
                 break
             }
             batchEntities.append(dataEntity)
@@ -283,7 +287,7 @@ class EdgeHitProcessor: HitProcessing {
             requestBuilder.xdmPayloads[EdgeConstants.JsonKeys.IMPLEMENTATION_DETAILS] = AnyCodable(implementationDetails)
         }
 
-        // configuration may also carry non-String batching keys (edge.batching.enabled/eventNameAllowlist),
+        // configuration may also carry the non-String `edge.batching` object (a nested map),
         // so pull out only the String-valued entries instead of a blanket cast that would fail entirely
         // the moment a non-String key is present.
         let edgeConfig = headEdgeEntity.configuration.asAnyDictionary.compactMapValues { $0 as? String }
@@ -329,30 +333,30 @@ class EdgeHitProcessor: HitProcessing {
                     completion: completion)
     }
 
-    /// Checks whether `entity`'s underlying `Event` name is present in the `edge.batching.eventNameAllowlist`
-    /// configuration snapshotted on this entity at enqueue time. An absent or empty allowlist means no event
-    /// names are eligible for batching (opt-in allowlist semantics) - `edge.batching.enabled` alone is not
-    /// sufficient to batch a given event. Mirrors `aepsdk-edge-android`'s `EdgeHitProcessor.isEventNameAllowlistedForBatching`.
-    private func isEventNameAllowlistedForBatching(_ entity: EdgeDataEntity) -> Bool {
-        guard let allowlist = entity.configuration.asAnyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] as? [String],
-              !allowlist.isEmpty else {
-            return false
+    /// Extracts `xdm.eventType` from the event's data, used as the batching whitelist key. Returns nil
+    /// when the event has no XDM or no `eventType`. Mirrors `aepsdk-edge-android`'s `EventUtils.getXdmEventType`.
+    private func xdmEventType(from event: Event) -> String? {
+        guard let xdm = event.data?[EdgeConstants.JsonKeys.XDM] as? [String: Any] else {
+            return nil
         }
-        return allowlist.contains(entity.event.name)
+        return xdm[EdgeConstants.JsonKeys.EVENT_TYPE] as? String
     }
 
     /// Checks whether `candidate` shares the same request-building config as `head` - the full snapshotted
-    /// Configuration map (datastream ID, environment, domain, batching keys) and the event-level `config`
-    /// overrides (`datastreamIdOverride`/`datastreamConfigOverride`). A single batch request is built
-    /// entirely from the head's config, so an entity with a different snapshot must not be silently folded
-    /// in - it would lose its own datastream/override and get sent under the head's instead. Mirrors
-    /// `aepsdk-edge-android`'s `EdgeHitProcessor.hasSameRequestConfig`.
+    /// Configuration map (datastream ID, environment, domain, batching keys), the event-level `config`
+    /// overrides (`datastreamIdOverride`/`datastreamConfigOverride`), and the event's custom
+    /// `data.request.path` override. A single batch request is built entirely from the head's config
+    /// (including its custom path, see `getRequestProperties`), so an entity with a different snapshot -
+    /// or a different intended request path - must not be silently folded in: it would lose its own
+    /// datastream/override, or be sent to the wrong endpoint, under the head's instead. Loosely mirrors
+    /// `aepsdk-edge-android`'s `EdgeHitProcessor.hasSameRequestConfig`, with the additional path check.
     ///
     /// Compares via `NSDictionary` bridging rather than `AnyCodable`'s own `==`, since `AnyCodable.==`
     /// only recognizes array/dictionary values typed exactly as `[AnyCodable]`/`[String: AnyCodable]` -
-    /// `edge.batching.eventNameAllowlist` decodes to a plain `[Any?]`, which falls through to `AnyCodable`'s
-    /// `default: return false` and would make this always report "different config" whenever an allowlist
-    /// is present, defeating batching entirely.
+    /// the nested `edge.batching` object (with its grouped arrays of event maps) decodes to plain
+    /// `[String: Any]`/`[Any?]`, which falls through to `AnyCodable`'s `default: return false` and would
+    /// make this always report "different config" whenever a batching config is present, defeating
+    /// batching entirely.
     private func hasSameRequestConfig(_ candidate: EdgeDataEntity, _ head: EdgeDataEntity) -> Bool {
         let candidateConfig = AnyCodable.toAnyDictionary(dictionary: candidate.configuration) ?? [:]
         let headConfig = AnyCodable.toAnyDictionary(dictionary: head.configuration) ?? [:]
@@ -360,7 +364,9 @@ class EdgeHitProcessor: HitProcessing {
 
         let candidateOverrides = candidate.event.config ?? [:]
         let headOverrides = head.event.config ?? [:]
-        return (candidateOverrides as NSDictionary).isEqual(to: headOverrides)
+        guard (candidateOverrides as NSDictionary).isEqual(to: headOverrides) else { return false }
+
+        return getCustomRequestPath(from: candidate.event) == getCustomRequestPath(from: head.event)
     }
 
     /// Delegates a single `DataEntity` to the existing `processHit` path and converts the boolean

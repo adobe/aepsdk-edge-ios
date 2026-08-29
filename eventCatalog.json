@@ -1,276 +1,37 @@
 {
-  "edge": [
-    {
-      "name": "AEP Request Event",
-      "enabled": true
-    },
-    {
-      "name": "Edge Request Location Hint",
-      "enabled": true
-    },
-    {
-      "name": "Edge Update Location Hint",
-      "enabled": true
-    },
-    {
-      "name": "Edge Location Hint Response",
-      "enabled": true
-    },
-    {
-      "name": "AEP Response Complete",
-      "enabled": true
-    },
-    {
-      "name": "AEP Response Event Handle",
-      "enabled": true
-    },
-    {
-      "name": "AEP Error Response",
-      "enabled": true
-    }
-  ],
+  "_meta": {
+    "description": "Reference catalog of xdm.eventType values dispatched across AEP iOS extensions, used to author the edge.batching allow-list. Not consumed by SDK code; documentation only. Batching matches by xdm.eventType (see EdgeBatchingConfig), not event name.",
+    "schemaVersion": 1
+  },
   "optimize": [
-    {
-      "name": "Optimize Update Propositions Request",
-      "enabled": true
-    },
-    {
-      "name": "Optimize Get Propositions Request",
-      "enabled": true
-    },
-    {
-      "name": "Optimize Clear Propositions Request",
-      "enabled": true
-    },
-    {
-      "name": "Optimize Track Propositions Request",
-      "enabled": true
-    },
-    {
-      "name": "Edge Optimize Personalization Request",
-      "enabled": true
-    },
-    {
-      "name": "Optimize Update Propositions Complete",
-      "enabled": true
-    },
-    {
-      "name": "Optimize Notification",
-      "enabled": true
-    },
-    {
-      "name": "Edge Optimize Proposition Interaction Request",
-      "enabled": true
-    },
-    {
-      "name": "Optimize Response",
-      "enabled": true
-    }
+    { "xdmEventType": "decisioning.propositionFetch", "enabled": true },
+    { "xdmEventType": "decisioning.propositionDisplay", "enabled": true },
+    { "xdmEventType": "decisioning.propositionInteract", "enabled": true }
   ],
   "messaging": [
-    {
-      "name": "Push to in-app",
-      "enabled": true
-    },
-    {
-      "name": "Push notification interaction event",
-      "enabled": true
-    },
-    {
-      "name": "Update propositions",
-      "enabled": true
-    },
-    {
-      "name": "Get propositions",
-      "enabled": true
-    },
-    {
-      "name": "Track propositions",
-      "enabled": true
-    },
-    {
-      "name": "Write IAM event to history",
-      "enabled": true
-    },
-    {
-      "name": "Refresh in-app messages",
-      "enabled": true
-    },
-    {
-      "name": "Push tracking edge event",
-      "enabled": true
-    },
-    {
-      "name": "Push notification token profile Edge event",
-      "enabled": true
-    },
-    {
-      "name": "Messaging interaction event",
-      "enabled": true
-    },
-    {
-      "name": "Push tracking status event",
-      "enabled": true
-    },
-    {
-      "name": "Retrieve message definitions",
-      "enabled": true
-    },
-    {
-      "name": "Finalize propositions response",
-      "enabled": true
-    },
-    {
-      "name": "Message propositions notification",
-      "enabled": true
-    },
-    {
-      "name": "Message propositions response",
-      "enabled": true
-    },
-    {
-      "name": "Seed content cards",
-      "enabled": false
-    },
-    {
-      "name": "Push Identifier Re-sync",
-      "enabled": true
-    },
-    {
-      "name": "Live Activity push-to-start token (Batched) Re-sync",
-      "enabled": true
-    },
-    {
-      "name": "Live Activity push-to-start token (Batched)",
-      "enabled": true
-    },
-    {
-      "name": "Live Activity update token",
-      "enabled": true
-    },
-    {
-      "name": "Live Activity start event",
-      "enabled": true
-    },
-    {
-      "name": "Live Activity {state}",
-      "enabled": true
-    },
-    {
-      "name": "Live Activity updated",
-      "enabled": true
-    },
-    {
-      "name": "Live Activity Schema ({attributeTypeName})",
-      "enabled": true
-    },
-    {
-      "name": "Live Activity push-to-start token to Edge",
-      "enabled": true
-    },
-    {
-      "name": "Live Activity start to Edge",
-      "enabled": true
-    },
-    {
-      "name": "Live Activity update token to Edge",
-      "enabled": true
-    }
-  ],
-  "media": [
-    {
-      "name": "Media::SessionCreated",
-      "enabled": true
-    },
-    {
-      "name": "Media::CreateTrackerRequest",
-      "enabled": true
-    },
-    {
-      "name": "Media::TrackMedia",
-      "enabled": true
-    }
+    { "xdmEventType": "decisioning.propositionFetch", "enabled": true },
+    { "xdmEventType": "decisioning.propositionInteract", "enabled": true },
+    { "xdmEventType": "pushTracking.applicationOpened", "enabled": true },
+    { "xdmEventType": "pushTracking.customAction", "enabled": true }
   ],
   "edgeMedia": [
-    {
-      "name": "Media::CreateTrackerRequest",
-      "enabled": true
-    },
-    {
-      "name": "Media::TrackMedia",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.sessionStart",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.sessionComplete",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.sessionEnd",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.play",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.pauseStart",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.ping",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.error",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.bufferStart",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.bitrateChange",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.adBreakStart",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.adBreakComplete",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.adStart",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.adSkip",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.adComplete",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.chapterSkip",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.chapterStart",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.chapterComplete",
-      "enabled": true
-    },
-    {
-      "name": "MediaEdge event - media.statesUpdate",
-      "enabled": true
-    }
+    { "xdmEventType": "media.sessionStart", "enabled": true },
+    { "xdmEventType": "media.sessionComplete", "enabled": true },
+    { "xdmEventType": "media.sessionEnd", "enabled": true },
+    { "xdmEventType": "media.play", "enabled": true },
+    { "xdmEventType": "media.pauseStart", "enabled": true },
+    { "xdmEventType": "media.ping", "enabled": true },
+    { "xdmEventType": "media.error", "enabled": true },
+    { "xdmEventType": "media.bufferStart", "enabled": true },
+    { "xdmEventType": "media.bitrateChange", "enabled": true },
+    { "xdmEventType": "media.adBreakStart", "enabled": true },
+    { "xdmEventType": "media.adBreakComplete", "enabled": true },
+    { "xdmEventType": "media.adStart", "enabled": true },
+    { "xdmEventType": "media.adSkip", "enabled": true },
+    { "xdmEventType": "media.adComplete", "enabled": true },
+    { "xdmEventType": "media.chapterSkip", "enabled": true },
+    { "xdmEventType": "media.chapterStart", "enabled": true },
+    { "xdmEventType": "media.chapterComplete", "enabled": true },
+    { "xdmEventType": "media.statesUpdate", "enabled": true }
   ]
 }

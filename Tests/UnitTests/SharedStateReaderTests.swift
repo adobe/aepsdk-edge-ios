@@ -39,64 +39,60 @@ class SharedStateReaderTests: XCTestCase {
         })
     }
 
-    func testGetEdgeBatchingConfig_keyAbsentFromConfigState_fallsBackToBundledEnabled() {
-        stubSystemInfoService.asset = "{\"edge.batching.enabled\": true}"
-        let config = reader(configurationState: [:]).getEdgeBatchingConfig(event: event)
-
-        XCTAssertEqual(true, config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool)
+    /// Convenience: extracts the resolved `edge.batching` object from a `getEdgeBatchingConfig` result.
+    private func batchingObject(_ config: [String: Any]) -> [String: Any]? {
+        config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING] as? [String: Any]
     }
 
-    func testGetEdgeBatchingConfig_keyPresentInConfigState_bundledIgnored() {
-        stubSystemInfoService.asset = "{\"edge.batching.enabled\": false}"
-        let config = reader(configurationState: [EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED: true])
+    func testGetEdgeBatchingConfig_absentFromConfigState_fallsBackToBundledWholesale() {
+        stubSystemInfoService.asset = "{\"enabled\": true, \"maxBatchSize\": 15, \"events\": [{\"xdmEventType\": \"a\", \"enabled\": true}]}"
+        let config = reader(configurationState: [:]).getEdgeBatchingConfig(event: event)
+
+        let batching = batchingObject(config)
+        XCTAssertEqual(true, batching?[EdgeConstants.Batching.ENABLED] as? Bool)
+        XCTAssertEqual(15, batching?[EdgeConstants.Batching.MAX_BATCH_SIZE] as? Int)
+        XCTAssertNotNil(batching?["events"])
+    }
+
+    func testGetEdgeBatchingConfig_presentInConfigState_winsWholesale_bundledIgnored() {
+        // Bundled says disabled; Configuration says enabled — Configuration wins in its entirety.
+        stubSystemInfoService.asset = "{\"enabled\": false}"
+        let remoteBatching: [String: Any] = [EdgeConstants.Batching.ENABLED: true, EdgeConstants.Batching.MAX_BATCH_SIZE: 7]
+        let config = reader(configurationState: [EdgeConstants.SharedState.Configuration.EDGE_BATCHING: remoteBatching])
             .getEdgeBatchingConfig(event: event)
 
-        XCTAssertEqual(true, config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool)
+        let batching = batchingObject(config)
+        XCTAssertEqual(true, batching?[EdgeConstants.Batching.ENABLED] as? Bool)
+        XCTAssertEqual(7, batching?[EdgeConstants.Batching.MAX_BATCH_SIZE] as? Int)
     }
 
-    func testGetEdgeBatchingConfig_eventNameAllowlist_bundledFallback() {
-        stubSystemInfoService.asset = "{\"edge.batching.eventNameAllowlist\": [\"a\", \"b\"]}"
-        let config = reader(configurationState: [:]).getEdgeBatchingConfig(event: event)
-
-        XCTAssertEqual(["a", "b"], config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] as? [String])
-    }
-
-    func testGetEdgeBatchingConfig_maxBatchSize_bundledFallback() {
-        stubSystemInfoService.asset = "{\"edge.batching.maxBatchSize\": 15}"
-        let config = reader(configurationState: [:]).getEdgeBatchingConfig(event: event)
-
-        XCTAssertEqual(15, config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE] as? Int)
-    }
-
-    func testGetEdgeBatchingConfig_maxBatchSize_configStateWins() {
-        stubSystemInfoService.asset = "{\"edge.batching.maxBatchSize\": 20}"
-        let config = reader(configurationState: [EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE: 5])
+    func testGetEdgeBatchingConfig_wholesale_configStateWins_bundledKeysNotMerged() {
+        // Configuration object has no maxBatchSize; the bundled file's maxBatchSize must NOT be merged in
+        // (wholesale resolution, not per-key), so it stays absent.
+        stubSystemInfoService.asset = "{\"enabled\": false, \"maxBatchSize\": 20}"
+        let remoteBatching: [String: Any] = [EdgeConstants.Batching.ENABLED: true]
+        let config = reader(configurationState: [EdgeConstants.SharedState.Configuration.EDGE_BATCHING: remoteBatching])
             .getEdgeBatchingConfig(event: event)
 
-        XCTAssertEqual(5, config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE] as? Int)
+        let batching = batchingObject(config)
+        XCTAssertEqual(true, batching?[EdgeConstants.Batching.ENABLED] as? Bool)
+        XCTAssertNil(batching?[EdgeConstants.Batching.MAX_BATCH_SIZE])
     }
 
-    func testGetEdgeBatchingConfig_allKeysAbsent_returnsEmptyDictionary() {
+    func testGetEdgeBatchingConfig_absentFromBothSources_returnsEmptyDictionary() {
         stubSystemInfoService.asset = nil
         let config = reader(configurationState: [:]).getEdgeBatchingConfig(event: event)
 
         XCTAssertTrue(config.isEmpty)
     }
 
-    func testGetEdgeBatchingConfig_maxBatchSize_wrongType_notSurfaced() {
-        stubSystemInfoService.asset = nil
-        let config = reader(configurationState: [EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE: "not-a-number"])
-            .getEdgeBatchingConfig(event: event)
-
-        XCTAssertNil(config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE])
-    }
-
     func testGetEdgeBatchingConfig_nilConfigurationSharedState_fallsBackToBundled() {
-        stubSystemInfoService.asset = "{\"edge.batching.enabled\": true, \"edge.batching.maxBatchSize\": 12}"
+        stubSystemInfoService.asset = "{\"enabled\": true, \"maxBatchSize\": 12}"
         let config = reader(configurationState: nil).getEdgeBatchingConfig(event: event)
 
-        XCTAssertEqual(true, config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool)
-        XCTAssertEqual(12, config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE] as? Int)
+        let batching = batchingObject(config)
+        XCTAssertEqual(true, batching?[EdgeConstants.Batching.ENABLED] as? Bool)
+        XCTAssertEqual(12, batching?[EdgeConstants.Batching.MAX_BATCH_SIZE] as? Int)
     }
 }
 

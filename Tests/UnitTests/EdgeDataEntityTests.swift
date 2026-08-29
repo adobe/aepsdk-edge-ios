@@ -28,14 +28,18 @@ class EdgeDataEntityTests: XCTestCase {
         XCTAssertEqual("1234", decoded.configuration["edge.configId"]?.stringValue)
     }
 
-    /// The batching keys (`edge.batching.enabled`, `edge.batching.eventNameAllowlist`) are snapshotted
-    /// as ordinary entries inside `configuration`, not a dedicated field, so they must round-trip
-    /// through encode/decode and be readable via `asAnyDictionary` alongside String-valued keys.
-    func testDecode_roundTrip_preservesHeterogeneousBatchingKeys() throws {
+    /// The grouped `edge.batching` object is snapshotted as an ordinary nested entry inside
+    /// `configuration`, not a dedicated field, so it must round-trip through encode/decode and be
+    /// readable via `asAnyDictionary` alongside String-valued keys.
+    func testDecode_roundTrip_preservesNestedBatchingObject() throws {
+        let batching: [String: Any] = [
+            EdgeConstants.Batching.ENABLED: true,
+            EdgeConstants.Batching.MAX_BATCH_SIZE: 12,
+            "edgeMedia": [[EdgeConstants.Batching.XDM_EVENT_TYPE: "media.play", EdgeConstants.Batching.ENABLED: true]]
+        ]
         let configuration: [String: AnyCodable] = [
             "edge.configId": AnyCodable("1234"),
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED: AnyCodable(true),
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: AnyCodable(["add-to-cart", "checkout"])
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING: AnyCodable(batching)
         ]
         let entity = EdgeDataEntity(event: event, configuration: configuration, identityMap: [:])
         let data = try JSONEncoder().encode(entity)
@@ -43,17 +47,18 @@ class EdgeDataEntityTests: XCTestCase {
 
         let anyDictionary = decoded.configuration.asAnyDictionary
         XCTAssertEqual("1234", anyDictionary["edge.configId"] as? String)
-        XCTAssertEqual(true, anyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool)
-        XCTAssertEqual(["add-to-cart", "checkout"], anyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST] as? [String])
+        let decodedBatching = anyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING] as? [String: Any]
+        XCTAssertEqual(true, decodedBatching?[EdgeConstants.Batching.ENABLED] as? Bool)
+        XCTAssertEqual(12, decodedBatching?[EdgeConstants.Batching.MAX_BATCH_SIZE] as? Int)
+        XCTAssertNotNil(decodedBatching?["edgeMedia"])
     }
 
-    /// Simulates a hit persisted before the batching keys existed: `configuration` has neither key.
-    /// `asAnyDictionary` lookups for those keys must return nil rather than throwing or crashing.
-    func testAsAnyDictionary_missingBatchingKeys_returnsNil() throws {
+    /// Simulates a hit persisted before the batching object existed: `configuration` has no `edge.batching`
+    /// key. `asAnyDictionary` lookups for it must return nil rather than throwing or crashing.
+    func testAsAnyDictionary_missingBatchingObject_returnsNil() throws {
         let entity = EdgeDataEntity(event: event, configuration: ["edge.configId": AnyCodable("1234")], identityMap: [:])
 
         let anyDictionary = entity.configuration.asAnyDictionary
-        XCTAssertNil(anyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED])
-        XCTAssertNil(anyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST])
+        XCTAssertNil(anyDictionary[EdgeConstants.SharedState.Configuration.EDGE_BATCHING])
     }
 }

@@ -68,6 +68,11 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     let experienceEventWithOverwritePath = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "request": ["path": "/va/v1/sessionstart"]])
     let experienceEventWithDatastreamIdOverride = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"], "config": ["datastreamIdOverride": "test-datastream-id-override"]])
 
+    // Batching whitelists by `xdm.eventType`, so batching tests use events carrying one.
+    static let BATCH_EVENT_TYPE = "batchTestType"
+    let batchableExperienceEvent = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data", "eventType": BATCH_EVENT_TYPE]])
+    let batchableExperienceEventWithDatastreamIdOverride = Event(name: "test-experience-event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data", "eventType": BATCH_EVENT_TYPE], "config": ["datastreamIdOverride": "test-datastream-id-override"]])
+
     let invalidPaths = [
         "/va/v1/sessionstart?query=value",
         "//va/v1/sessionstart",
@@ -885,6 +890,18 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         return EdgeDataEntity(event: event, configuration: configuration, identityMap: identityMap)
     }
 
+    /// Builds an Edge configuration snapshot carrying the given `edge.configId` and a grouped
+    /// `edge.batching` object that whitelists `Self.BATCH_EVENT_TYPE` by `xdm.eventType`.
+    private func batchingConfig(configId: String = "test-config-id", eventTypes: [String] = [EdgeHitProcessorTests.BATCH_EVENT_TYPE]) -> [String: Any] {
+        return [
+            "edge.configId": configId,
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING: [
+                EdgeConstants.Batching.ENABLED: true,
+                "events": eventTypes.map { [EdgeConstants.Batching.XDM_EVENT_TYPE: $0, EdgeConstants.Batching.ENABLED: true] }
+            ]
+        ]
+    }
+
     // MARK: - Old (v5.0.0 or less) "readyForEvent" workflow tests
 
     /// Tests that when `readyForEvent` returns true, hit is sent
@@ -1044,16 +1061,13 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     // MARK: - processBatch
 
     /// Tests that a batch of 2 ExperienceEvents is sent as a single network request and resolves all of them.
-    /// Batching requires the event's name to be in `edge.batching.eventNameAllowlist`, snapshotted here
-    /// alongside `edge.configId` (opt-in allowlist semantics, matching production).
+    /// Batching requires the event's `xdm.eventType` to be whitelisted by the `edge.batching` config,
+    /// snapshotted here alongside `edge.configId` (strict allow-list semantics, matching production).
     func testProcessBatch_twoExperienceEvents_happy_sendsOneNetworkRequest_resolvesBoth() {
-        let batchingEdgeConfig: [String: Any] = [
-            "edge.configId": "test-config-id",
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
-        ]
-        let edgeEntity1 = getEdgeDataEntity(event: experienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+        let batchingEdgeConfig = batchingConfig()
+        let edgeEntity1 = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
         let entity1 = DataEntity(uniqueIdentifier: "test-uuid-1", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity1))
-        let edgeEntity2 = getEdgeDataEntity(event: experienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+        let edgeEntity2 = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
         let entity2 = DataEntity(uniqueIdentifier: "test-uuid-2", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity2))
 
         mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
@@ -1104,20 +1118,17 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         XCTAssertEqual(0, mockNetworkService.getNetworkRequestsWith(url: CONSENT_ENDPOINT, httpMethod: .post).count)
     }
 
-    /// Regression guard for `hasSameRequestConfig`: two allowlisted ExperienceEvents that share the same
+    /// Regression guard for `hasSameRequestConfig`: two whitelisted ExperienceEvents that share the same
     /// Configuration snapshot but differ in their event-level `config` overrides (one has a
     /// `datastreamIdOverride`, the other doesn't) must NOT be folded into the same batch request - a
     /// single request is built entirely from the head's config, so silently including the second entity
     /// would send its data to the head's datastream instead of its own override.
     func testProcessBatch_secondEntityHasDifferentDatastreamOverride_truncatesBatchAtBoundary() {
-        let batchingEdgeConfig: [String: Any] = [
-            "edge.configId": "test-config-id",
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
-        ]
-        let headEdgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+        let batchingEdgeConfig = batchingConfig()
+        let headEdgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
         let headEntity = DataEntity(uniqueIdentifier: "test-uuid-head", timestamp: Date(), data: try? JSONEncoder().encode(headEdgeEntity))
-        // Same event name (so it passes the allowlist check) but a different event-level config override.
-        let overrideEdgeEntity = getEdgeDataEntity(event: experienceEventWithDatastreamIdOverride, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+        // Same xdm.eventType (so it passes the allow-list check) but a different event-level config override.
+        let overrideEdgeEntity = getEdgeDataEntity(event: batchableExperienceEventWithDatastreamIdOverride, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
         let overrideEntity = DataEntity(uniqueIdentifier: "test-uuid-override", timestamp: Date(), data: try? JSONEncoder().encode(overrideEdgeEntity))
 
         mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
@@ -1142,21 +1153,15 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         XCTAssertFalse(requestString.contains("test-datastream-id-override"))
     }
 
-    /// Regression guard for `hasSameRequestConfig`: two allowlisted ExperienceEvents enqueued under
+    /// Regression guard for `hasSameRequestConfig`: two whitelisted ExperienceEvents enqueued under
     /// different Configuration snapshots (e.g. `edge.configId` changed between enqueues via
     /// `MobileCore.updateConfiguration()`) must not be folded into the same batch request.
     func testProcessBatch_differentConfigurationSnapshot_truncatesBatchAtBoundary() {
-        let firstConfig: [String: Any] = [
-            "edge.configId": "test-config-id-1",
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
-        ]
-        let secondConfig: [String: Any] = [
-            "edge.configId": "test-config-id-2",
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
-        ]
-        let headEdgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: firstConfig, identityMap: defaultIdentityMap)
+        let firstConfig = batchingConfig(configId: "test-config-id-1")
+        let secondConfig = batchingConfig(configId: "test-config-id-2")
+        let headEdgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: firstConfig, identityMap: defaultIdentityMap)
         let headEntity = DataEntity(uniqueIdentifier: "test-uuid-head", timestamp: Date(), data: try? JSONEncoder().encode(headEdgeEntity))
-        let secondEdgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: secondConfig, identityMap: defaultIdentityMap)
+        let secondEdgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: secondConfig, identityMap: defaultIdentityMap)
         let secondEntity = DataEntity(uniqueIdentifier: "test-uuid-second", timestamp: Date(), data: try? JSONEncoder().encode(secondEdgeEntity))
 
         mockNetworkService.setExpectationForNetworkRequest(url: INTERACT_ENDPOINT_PROD, httpMethod: .post)
@@ -1249,12 +1254,9 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
     /// A batch of 3 gets a 400 (nothing ingested); all 3 individual resends then succeed.
     func testProcessBatch_threeEvents_batch400_explodesToIndividualRequests_allSucceedIndividually() {
-        let batchingEdgeConfig: [String: Any] = [
-            "edge.configId": "test-config-id",
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
-        ]
+        let batchingEdgeConfig = batchingConfig()
         let entities = (1...3).map { entityIndex -> DataEntity in
-            let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+            let edgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
             return DataEntity(uniqueIdentifier: "test-uuid-\(entityIndex)", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
         }
 
@@ -1284,12 +1286,9 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     /// explosion stops there and reports a partial removal with a retry for the remainder (entity 3 is
     /// never sent).
     func testProcessBatch_batch400_midExplosion_recoverableErrorOnSecondEntity_producesPartialRemoveWithRetry() {
-        let batchingEdgeConfig: [String: Any] = [
-            "edge.configId": "test-config-id",
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
-        ]
+        let batchingEdgeConfig = batchingConfig()
         let entities = (1...3).map { entityIndex -> DataEntity in
-            let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+            let edgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
             return DataEntity(uniqueIdentifier: "test-uuid-\(entityIndex)", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
         }
 
@@ -1320,12 +1319,9 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     /// A batch of 3 gets a 400; the first individual resend gets a terminal (non-recoverable) error and is
     /// dropped, but explosion continues and resolves the remaining two.
     func testProcessBatch_batch400_terminalErrorMidExplosion_dropsEntityAndContinuesExplosion() {
-        let batchingEdgeConfig: [String: Any] = [
-            "edge.configId": "test-config-id",
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: [experienceEvent.name]
-        ]
+        let batchingEdgeConfig = batchingConfig()
         let entities = (1...3).map { entityIndex -> DataEntity in
-            let edgeEntity = getEdgeDataEntity(event: experienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
+            let edgeEntity = getEdgeDataEntity(event: batchableExperienceEvent, configuration: batchingEdgeConfig, identityMap: defaultIdentityMap)
             return DataEntity(uniqueIdentifier: "test-uuid-\(entityIndex)", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
         }
 

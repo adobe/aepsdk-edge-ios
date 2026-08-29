@@ -13,20 +13,21 @@
 import AEPServices
 import Foundation
 
-/// Loads a first-launch fallback for the Edge batching configuration keys (`edge.batching.enabled`,
-/// `edge.batching.eventNameAllowlist`, and `edge.batching.maxBatchSize`) from a JSON file bundled in the
-/// app, mirroring `aepsdk-edge-android`'s `EdgeBundledBatchingConfig`.
+/// Loads the bundled fallback for the Edge batching configuration (`edge.batching`) from a JSON file
+/// bundled in the app, mirroring `aepsdk-edge-android`'s `EdgeBundledBatchingConfig`. The file uses the
+/// same grouped format as the Configuration shared-state value (see `EdgeBatchingConfig`), so both are
+/// parsed identically.
 ///
-/// This is a per-key fallback, not a wholesale configuration replacement: `SharedStateReader.getEdgeBatchingConfig`
-/// consults this bundled file only for whichever of the batching keys is absent from the Configuration shared
-/// state at the time an event is queued. Any key present in the Configuration shared state - whether set
-/// programmatically via `MobileCore.updateConfiguration()` or delivered by a remote/Launch-published configuration -
-/// always takes precedence over the bundled file's value for that same key.
+/// This is a *wholesale* fallback, not a per-key merge: `SharedStateReader.getEdgeBatchingConfig` uses
+/// this bundled object only when `edge.batching` is absent from the Configuration shared state at the
+/// time an event is queued. A batching config present in the Configuration shared state - whether set
+/// programmatically via `MobileCore.updateConfiguration()` or delivered by a remote/Launch-published
+/// configuration - wins in its entirety over the bundled file.
 enum EdgeBundledBatchingConfig {
     private static let SELF_TAG = "EdgeBundledBatchingConfig"
 
     /// Name (without extension) of the JSON file expected in the app bundle.
-    static let BUNDLED_CONFIG_FILE_NAME = "adb_edgeBatchingConfig"
+    static let BUNDLED_CONFIG_FILE_NAME = "ADBMobileEdgeBatchingConfig"
     static let BUNDLED_CONFIG_FILE_TYPE = "json"
 
     private static let loadLock = NSLock()

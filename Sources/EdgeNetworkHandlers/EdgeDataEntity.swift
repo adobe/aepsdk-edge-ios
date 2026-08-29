@@ -20,7 +20,7 @@ struct EdgeDataEntity: Codable {
     let event: Event
 
     /// The current configuration shared state at the time `Event` was queued. May also contain the
-    /// `edge.batching.enabled`/`edge.batching.eventNameAllowlist` keys snapshotted at enqueue time
+    /// grouped `edge.batching` configuration object snapshotted at enqueue time
     /// (see `SharedStateReader.getEdgeBatchingConfig`).
     let configuration: [String: AnyCodable]
 

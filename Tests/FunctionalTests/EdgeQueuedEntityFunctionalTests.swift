@@ -149,12 +149,14 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
         }
 
         // `configuration` mirrors production's snapshotted Edge configuration, which now also carries
-        // the batching keys (`edge.batching.enabled`/`edge.batching.eventNameAllowlist`) alongside
-        // configId/environment/domain — batching requires both: enabled AND the event's name allowlisted.
+        // the grouped `edge.batching` object alongside configId/environment/domain — batching requires
+        // both: enabled AND the event's `xdm.eventType` whitelisted (see `mockQueuedEvent`'s eventType).
         let edgeConfig: [String: AnyCodable] = [
             "edge.configId": AnyCodable("12345-example"),
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED: AnyCodable(true),
-            EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST: AnyCodable(["queued event"])
+            EdgeConstants.SharedState.Configuration.EDGE_BATCHING: AnyCodable([
+                EdgeConstants.Batching.ENABLED: true,
+                "events": [[EdgeConstants.Batching.XDM_EVENT_TYPE: "queuedTestType", EdgeConstants.Batching.ENABLED: true]]
+            ] as [String: Any])
         ]
         mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-1")
         mockQueuedEvent(dataQueue: dataQueue, edgeConfig: edgeConfig, entityId: "entity-uuid-2")
@@ -191,7 +193,7 @@ class EdgeQueuedEntityFunctionalTests: TestBase, AnyCodableAsserts {
     ///   - edgeConfig: the Edge configuration to include with the `EdgeDataEntity`
     ///   - entityId: the UUID to identify the `DataEntity`
     private func mockQueuedEvent(dataQueue: DataQueue, edgeConfig: [String: AnyCodable], entityId: String = "entity-uuid") {
-        let experienceEvent = Event(name: "queued event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data"]])
+        let experienceEvent = Event(name: "queued event", type: EventType.edge, source: EventSource.requestContent, data: ["xdm": ["test": "data", "eventType": "queuedTestType"]])
         let edgeEntity = EdgeDataEntity(event: experienceEvent, configuration: edgeConfig, identityMap: [:])
         let entity = DataEntity(uniqueIdentifier: entityId, timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
 

@@ -43,6 +43,18 @@ enum EdgeConstants {
         static let MAX_BATCH_SIZE_LIMIT: Int = 20
     }
 
+    /// Reserved keys within the `edge.batching` configuration object. Any top-level key in that
+    /// object that is *not* one of these is treated as an extension group: an array of event
+    /// objects (`{xdmEventType, enabled}`). Mirrors aepsdk-edge-android's `EdgeConstants.Batching`.
+    /// See `EdgeBatchingConfig`.
+    enum Batching {
+        static let ENABLED = "enabled"
+        static let MAX_BATCH_SIZE = "maxBatchSize"
+        static let WILDCARDS = "wildcards"
+        static let META = "_meta"
+        static let XDM_EVENT_TYPE = "xdmEventType"
+    }
+
     enum EventDataKeys {
         static let EDGE_REQUEST_ID = "requestId"
         static let REQUEST_EVENT_ID = "requestEventId"
@@ -84,12 +96,11 @@ enum EdgeConstants {
             static let ORG_ID = "experienceCloud.org"
             static let EDGE_ENVIRONMENT = "edge.environment"
             static let EDGE_DOMAIN = "edge.domain"
-            // Matches aepsdk-edge-android's EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED
-            static let EDGE_BATCHING_ENABLED = "edge.batching.enabled"
-            // Matches aepsdk-edge-android's EdgeConstants.SharedState.Configuration.EDGE_BATCHING_EVENT_NAME_ALLOWLIST
-            static let EDGE_BATCHING_EVENT_NAME_ALLOWLIST = "edge.batching.eventNameAllowlist"
-            // Matches aepsdk-edge-android's EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE
-            static let EDGE_BATCHING_MAX_BATCH_SIZE = "edge.batching.maxBatchSize"
+            // Single nested object holding the entire batching configuration. The same grouped format
+            // is used whether it arrives via Configuration shared state (remote/Launch) or the bundled
+            // asset file, so parsing is identical and the two are directly comparable.
+            // Matches aepsdk-edge-android's EdgeConstants.SharedState.Configuration.EDGE_BATCHING
+            static let EDGE_BATCHING = "edge.batching"
         }
 
         enum Identity {
@@ -123,6 +134,8 @@ enum EdgeConstants {
 
     enum JsonKeys {
         static let XDM = "xdm"
+        // `xdm.eventType`, the batching allow-list key. Mirrors aepsdk-edge-android's EdgeJson.Event.Xdm.EVENT_TYPE.
+        static let EVENT_TYPE = "eventType"
         static let DATA = "data"
         static let QUERY = "query"
         static let ECID = "ECID"

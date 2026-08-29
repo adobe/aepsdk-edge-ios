@@ -19,11 +19,11 @@ import Foundation
 /// `EdgeBatchingHitQueue`.
 ///
 /// The effective batch size is determined at processing time from the head entity's snapshotted
-/// configuration:
+/// `edge.batching` configuration (parsed by `EdgeBatchingConfig`):
 /// - batching disabled (default) -> window of 1, identical to `PersistentHitQueue`'s behavior.
 /// - batching enabled -> window of `min(queue.count(), maxBatchSize)`, where `maxBatchSize` comes from
-///   the head entity's `edge.batching.maxBatchSize` value (falling back to `MAX_BATCH_SIZE` when absent
-///   or non-positive, clamped to `MAX_BATCH_SIZE_LIMIT` regardless of source).
+///   the head entity's `edge.batching` object (falling back to `MAX_BATCH_SIZE` when absent or
+///   non-positive, clamped to `MAX_BATCH_SIZE_LIMIT` regardless of source).
 class EdgeBatchingHitQueue: HitQueuing {
     private let SELF_TAG = "EdgeBatchingHitQueue"
     let processor: HitProcessing
@@ -175,25 +175,17 @@ class EdgeBatchingHitQueue: HitQueuing {
         }
     }
 
-    /// Returns the number of entities to include in the next batch, based on the `edge.batching.enabled`
-    /// flag snapshotted in the head entity's configuration.
+    /// Returns the number of entities to include in the next batch, based on the `enabled` flag and
+    /// `maxBatchSize` from the `edge.batching` configuration snapshotted in the head entity's
+    /// configuration (parsed by `EdgeBatchingConfig`). `maxBatchSize` is already clamped to a positive
+    /// value no greater than `EdgeConstants.Defaults.MAX_BATCH_SIZE_LIMIT`, so a misconfigured value
+    /// can't grow the batch (and the request payload) unbounded.
     private func effectiveBatchSize(for head: DataEntity) -> Int {
         guard let data = head.data, let edgeEntity = try? JSONDecoder().decode(EdgeDataEntity.self, from: data) else {
             return 1
         }
-        let config = edgeEntity.configuration.asAnyDictionary
-        let batchingEnabled = config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED] as? Bool ?? false
-        guard batchingEnabled else { return 1 }
-        return min(dataQueue.count(), Self.maxBatchSize(from: config))
-    }
-
-    /// Resolves the configured `edge.batching.maxBatchSize`, mirroring
-    /// `aepsdk-edge-android`'s `EdgeBatchingHitQueue.getMaxBatchSize`: a value that is absent or
-    /// non-positive falls back to `MAX_BATCH_SIZE` (unclamped); a positive value is clamped only on the
-    /// high side to `MAX_BATCH_SIZE_LIMIT`.
-    private static func maxBatchSize(from config: [String: Any]) -> Int {
-        let configured = config[EdgeConstants.SharedState.Configuration.EDGE_BATCHING_MAX_BATCH_SIZE] as? Int ?? EdgeConstants.Defaults.MAX_BATCH_SIZE
-        guard configured > 0 else { return EdgeConstants.Defaults.MAX_BATCH_SIZE }
-        return min(configured, EdgeConstants.Defaults.MAX_BATCH_SIZE_LIMIT)
+        let batchingConfig = EdgeBatchingConfig.from(edgeEntity.configuration.asAnyDictionary)
+        guard batchingConfig.isEnabled else { return 1 }
+        return min(dataQueue.count(), batchingConfig.maxBatchSize)
     }
 }

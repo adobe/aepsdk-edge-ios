@@ -16,8 +16,8 @@ import AEPServices
 import AEPTestUtils
 import XCTest
 
-/// Tests for `EdgeBatchingHitQueue` — window-size selection based on the `edge.batching.enabled`
-/// flag snapshotted on the head entity, and queue peek/remove behavior driven by `BatchOutcome`.
+/// Tests for `EdgeBatchingHitQueue` — window-size selection based on the `edge.batching` config's
+/// `enabled` flag snapshotted on the head entity, and queue peek/remove behavior driven by `BatchOutcome`.
 class EdgeBatchingHitQueueTests: XCTestCase {
     private var mockDataQueue: MockDataQueue!
     private var mockProcessor: MockBatchProcessor!
@@ -227,7 +227,9 @@ class EdgeBatchingHitQueueTests: XCTestCase {
             let event = Event(name: "test-event-\(i)", type: EventType.edge, source: EventSource.requestContent, data: eventData)
             let configuration: [String: Any] = [
                 "edge.configId": "test-config-id",
-                EdgeConstants.SharedState.Configuration.EDGE_BATCHING_ENABLED: batchingEnabled
+                EdgeConstants.SharedState.Configuration.EDGE_BATCHING: [
+                    EdgeConstants.Batching.ENABLED: batchingEnabled
+                ]
             ]
             let edgeEntity = EdgeDataEntity(event: event,
                                             configuration: AnyCodable.from(dictionary: configuration) ?? [:],

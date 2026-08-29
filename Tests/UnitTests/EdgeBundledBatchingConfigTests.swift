@@ -30,14 +30,15 @@ class EdgeBundledBatchingConfigTests: XCTestCase {
         EdgeBundledBatchingConfig.resetForTesting()
     }
 
-    func testGet_validJson_returnsParsedDictionary() {
-        stubSystemInfoService.asset = "{\"edge.batching.enabled\": true, \"edge.batching.eventNameAllowlist\": [\"a\", \"b\"], \"edge.batching.maxBatchSize\": 15}"
+    func testGet_validJson_returnsParsedGroupedDictionary() {
+        stubSystemInfoService.asset = "{\"enabled\": true, \"maxBatchSize\": 15, \"wildcards\": [{\"xdmEventType\": \"media.*\", \"enabled\": false}], \"edgeMedia\": [{\"xdmEventType\": \"media.play\", \"enabled\": true}]}"
 
         let config = EdgeBundledBatchingConfig.get()
 
-        XCTAssertEqual(true, config["edge.batching.enabled"] as? Bool)
-        XCTAssertEqual(["a", "b"], config["edge.batching.eventNameAllowlist"] as? [String])
-        XCTAssertEqual(15, config["edge.batching.maxBatchSize"] as? Int)
+        XCTAssertEqual(true, config["enabled"] as? Bool)
+        XCTAssertEqual(15, config["maxBatchSize"] as? Int)
+        XCTAssertNotNil(config["wildcards"])
+        XCTAssertNotNil(config["edgeMedia"])
     }
 
     func testGet_missingFile_returnsEmptyDictionary() {
@@ -65,29 +66,29 @@ class EdgeBundledBatchingConfigTests: XCTestCase {
     }
 
     func testGet_calledTwice_readsAssetOnlyOnce() {
-        stubSystemInfoService.asset = "{\"edge.batching.enabled\": true}"
+        stubSystemInfoService.asset = "{\"enabled\": true}"
 
         let firstResult = EdgeBundledBatchingConfig.get()
 
         // Changing the underlying asset after the first read must not affect subsequent reads - the
         // parsed result is cached the first time `get()` is called.
-        stubSystemInfoService.asset = "{\"edge.batching.enabled\": false}"
+        stubSystemInfoService.asset = "{\"enabled\": false}"
         let secondResult = EdgeBundledBatchingConfig.get()
 
-        XCTAssertEqual(true, firstResult["edge.batching.enabled"] as? Bool)
-        XCTAssertEqual(true, secondResult["edge.batching.enabled"] as? Bool)
+        XCTAssertEqual(true, firstResult["enabled"] as? Bool)
+        XCTAssertEqual(true, secondResult["enabled"] as? Bool)
         XCTAssertEqual(1, stubSystemInfoService.getAssetCallCount)
     }
 
     func testResetForTesting_forcesReload() {
-        stubSystemInfoService.asset = "{\"edge.batching.enabled\": true}"
+        stubSystemInfoService.asset = "{\"enabled\": true}"
         _ = EdgeBundledBatchingConfig.get()
 
-        stubSystemInfoService.asset = "{\"edge.batching.enabled\": false}"
+        stubSystemInfoService.asset = "{\"enabled\": false}"
         EdgeBundledBatchingConfig.resetForTesting()
         let result = EdgeBundledBatchingConfig.get()
 
-        XCTAssertEqual(false, result["edge.batching.enabled"] as? Bool)
+        XCTAssertEqual(false, result["enabled"] as? Bool)
         XCTAssertEqual(2, stubSystemInfoService.getAssetCallCount)
     }
 }
