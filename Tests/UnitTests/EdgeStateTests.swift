@@ -32,6 +32,7 @@ class EdgeStateTests: XCTestCase {
         mockHitProcessor = MockHitProcessor()
 
         edgeState = EdgeState(hitQueue: PersistentHitQueue(dataQueue: mockDataQueue, processor: mockHitProcessor),
+                              bypassConsentHitQueue: PersistentHitQueue(dataQueue: MockDataQueue(), processor: mockHitProcessor),
                               edgeProperties: EdgeProperties())
     }
 

@@ -21,6 +21,7 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
     var mockRuntime: TestableExtensionRuntime!
     var edge: Edge!
     var mockDataQueue: MockDataQueue!
+    var mockBypassConsentDataQueue: MockDataQueue!
     var mockHitProcessor: MockHitProcessor!
 
     #if os(iOS)
@@ -33,10 +34,12 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         ServiceProvider.shared.namedKeyValueService = MockDataStore()
         mockRuntime = TestableExtensionRuntime()
         mockDataQueue = MockDataQueue()
+        mockBypassConsentDataQueue = MockDataQueue()
         mockHitProcessor = MockHitProcessor()
 
         edge = Edge(runtime: mockRuntime)
         edge.state = EdgeState(hitQueue: PersistentHitQueue(dataQueue: mockDataQueue, processor: mockHitProcessor),
+                               bypassConsentHitQueue: PersistentHitQueue(dataQueue: mockBypassConsentDataQueue, processor: mockHitProcessor),
                                edgeProperties: EdgeProperties())
         edge.onRegistered()
     }
@@ -446,6 +449,60 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         // no consent shared state for current event
         mockRuntime.simulateComingEvents(experienceEvent)
 
+        XCTAssertEqual(0, mockDataQueue.count())
+    }
+
+    // MARK: Bypass consent event tests
+
+    /// `isBypassConsentEvent` must be true only for the dedicated `edgeBypassConsent` type paired with `requestContent`.
+    func testIsBypassConsentEvent_trueOnlyForBypassConsentTypeAndRequestContentSource() {
+        let bypassEvent = Event(name: "bypass",
+                                type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                                source: EventSource.requestContent,
+                                data: nil)
+        XCTAssertTrue(bypassEvent.isBypassConsentEvent)
+
+        // Correct type but wrong source
+        let wrongSource = Event(name: "wrong source",
+                                type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                                source: EventSource.responseContent,
+                                data: nil)
+        XCTAssertFalse(wrongSource.isBypassConsentEvent)
+
+        // Correct source but wrong type (standard experience event)
+        let experience = Event(name: "experience",
+                               type: EventType.edge,
+                               source: EventSource.requestContent,
+                               data: nil)
+        XCTAssertFalse(experience.isBypassConsentEvent)
+        XCTAssertTrue(experience.isExperienceEvent)
+    }
+
+    /// A bypass-consent event must be queued on the dedicated bypass-consent queue (not the primary queue)
+    /// and must not be gated by collect consent = no.
+    func testHandleBypassConsentRequest_queuesOnBypassConsentQueue_notPrimaryQueue_regardlessOfCollectConsentNo() {
+        // Configuration and Identity shared states required for readyForEvent to pass
+        mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                           data: ([:], .set))
+        mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
+                                        data: ([EdgeConstants.SharedState.Configuration.CONFIG_ID: "12345-example"], .set))
+        // Collect consent = no: bypass-consent events must NOT be gated by it
+        mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME,
+                                           data: (["consents": ["collect": ["val": "n"]]], .set))
+        edge.state?.updateCurrentConsent(status: ConsentStatus.no)
+
+        // Suspend both queues so the queued hit is captured before being processed/dequeued
+        edge.state?.hitQueue.suspend()
+        edge.state?.bypassConsentHitQueue.suspend()
+
+        let bypassEvent = Event(name: "Bypass consent event",
+                                type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                                source: EventSource.requestContent,
+                                data: ["app": ["identifier": "com.example.app"]])
+        mockRuntime.simulateComingEvents(bypassEvent)
+
+        // Verify queued on the bypass-consent queue only
+        XCTAssertEqual(1, mockBypassConsentDataQueue.count())
         XCTAssertEqual(0, mockDataQueue.count())
     }
 

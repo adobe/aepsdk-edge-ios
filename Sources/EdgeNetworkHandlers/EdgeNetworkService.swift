@@ -17,14 +17,18 @@ import Foundation
 /// Edge Network request type:
 ///     - interact - makes request and expects a response
 ///     - consent - sets user consent and expects a response
+///     - deviceAttributes - registers device/profile operational data (push/live-activity tokens, timezone),
+///       consent-independent path handled via the consent-override queue
 enum EdgeRequestType: String {
     case interact
     case consent = "privacy/set-consent"
+    case deviceAttributes = "mobile/device-attributes"
 }
 
 /// Convenience enum for the known error codes
 enum HttpResponseCodes: Int {
     case ok = 200
+    case accepted = 202
     case noContent = 204
     case multiStatus = 207
     case tooManyRequests = 429
@@ -196,6 +200,13 @@ class EdgeNetworkService {
         switch responseCode {
         case HttpResponseCodes.ok.rawValue:
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge was successful.")
+            self.handleContent(connection: connection,
+                               streaming: streaming,
+                               responseCallback: responseCallback)
+            responseCallback.onComplete()
+            completion(true, nil) // successful request, return true
+        case HttpResponseCodes.accepted.rawValue:
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge was successful, request accepted for processing.")
             self.handleContent(connection: connection,
                                streaming: streaming,
                                responseCallback: responseCallback)

@@ -96,6 +96,8 @@ class EdgeHitProcessor: HitProcessing {
             let storeResponsePayloadManager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
             storeResponsePayloadManager.deleteAllStorePayloads()
             completion(true)
+        } else if event.isBypassConsentEvent {
+            processBypassConsent(entityId: entity.uniqueIdentifier, event: event, edgeConfig: edgeConfig, requestBuilder: requestBuilder, completion: completion)
         }
     }
 
@@ -204,6 +206,43 @@ class EdgeHitProcessor: HitProcessing {
                                          requestProperties: nil,
                                          locationHint: locationHint)
         let edgeHit = ConsentEdgeHit(endpoint: endpoint, datastreamId: datastreamId, consents: consentPayload)
+        networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
+        sendHit(entityId: entityId, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
+    }
+
+    /// Processes bypass-consent (device-attributes) events. These arrive only via the dedicated
+    /// bypass-consent queue and are intentionally NOT gated by collect consent. Builds the
+    /// device-attributes payload and sends it to the `mobile/device-attributes` endpoint, using the
+    /// same Edge configuration (datastream id, environment, domain, location hint) as other paths.
+    /// - Parameters:
+    ///   - entityId: unique id of the `DataEntity` used when the hit needs to be retried.
+    ///   - event: the bypass-consent event to process.
+    ///   - edgeConfig: configuration data for this event.
+    ///   - requestBuilder: the `RequestBuilder` used to build the request payload.
+    ///   - completion: completion handler to notify the caller about the hit response.
+    private func processBypassConsent(entityId: String, event: Event, edgeConfig: [String: String], requestBuilder: RequestBuilder, completion: @escaping (Bool) -> Void) {
+        guard let datastreamId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !datastreamId.isEmpty else {
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)' " +
+                            "due to missing or empty edge.configId in configuration.")
+            completion(true)
+            return // drop current event
+        }
+
+        guard let payload = requestBuilder.generateNoConsentPayload(event, implementationDetails: getImplementationDetails()) else {
+            Log.debug(label: EdgeConstants.LOG_TAG,
+                      "\(SELF_TAG) - Failed to build the device-attributes payload, dropping event '\(event.id.uuidString)'.")
+            completion(true)
+            return
+        }
+
+        let endpoint = buildEdgeEndpoint(config: edgeConfig,
+                                         requestType: EdgeRequestType.deviceAttributes,
+                                         requestProperties: nil,
+                                         locationHint: getLocationHint())
+        let edgeHit = NoConsentEdgeHit(endpoint: endpoint,
+                                       datastreamId: datastreamId,
+                                       payload: payload)
         networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
         sendHit(entityId: entityId, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
     }

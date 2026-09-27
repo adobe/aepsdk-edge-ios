@@ -195,6 +195,35 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
 
+    func testDoRequest_whenConnection_ResponseCode202_CallsCompletionTrue_AndResponseCallback_AndNotErrorCallback() {
+        // setup
+        let stringResponseBody = "Accepted"
+        let expectation = XCTestExpectation(description: "Network callback is invoked")
+
+        // test
+        let mockHttpConnection = HttpConnection(data: stringResponseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 202, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+        mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: mockHttpConnection)
+        networkService.doRequest(url: url,
+                                 requestBody: edgeHitPayload,
+                                 requestHeaders: [:],
+                                 streaming: nil,
+                                 responseCallback: mockResponseCallback,
+                                 completion: { success, retryInterval in
+                                    // verify: 202 Accepted is treated as success, hit completes and is not retried nor errored
+                                    XCTAssertTrue(success)
+                                    XCTAssertNil(retryInterval)
+                                    XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
+                                    XCTAssertEqual([stringResponseBody], self.mockResponseCallback.onResponseJsonResponse)
+                                    expectation.fulfill()
+                                 })
+
+        wait(for: [expectation], timeout: 0.5)
+    }
+
     func testDoRequest_whenConnection_RecoverableResponseCode_CallsCompletionFalse_AndNoResponseCallback_AndNoErrorCallback() {
         // setup
         let stringResponseBody = "Service Unavailable"

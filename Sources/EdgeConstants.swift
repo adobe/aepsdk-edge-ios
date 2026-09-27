@@ -23,6 +23,13 @@ enum EdgeConstants {
         static let ERROR_RESPONSE_CONTENT = "com.adobe.eventSource.errorResponseContent"
     }
 
+    enum EventType {
+        // Dedicated event type for the consent-independent device/profile registration path,
+        // produced by the Launch Rules Engine forward-operational-data consequence. Paired with
+        // the standard `EventSource.requestContent` and routed to the separate registration queue.
+        static let EDGE_BYPASS_CONSENT = "com.adobe.eventType.edgeBypassConsent"
+    }
+
     enum EventName {
         static let CONTENT_COMPLETE = "AEP Response Complete"
         static let REQUEST_CONTENT = "AEP Request Event"
@@ -58,6 +65,12 @@ enum EdgeConstants {
             // sendCompletion - boolean flag to determine if a "complete" event is requested
             static let SEND_COMPLETION = "sendCompletion"
         }
+    }
+
+    enum DataQueueLabels {
+        // Suffix appended to the Edge extension name to label the dedicated queue used for
+        // consent-independent hits so it is stored separately from the consent-governed queue.
+        static let BYPASS_CONSENT_SUFFIX = ".bypassConsent"
     }
 
     enum DataStoreKeys {

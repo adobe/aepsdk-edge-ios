@@ -37,8 +37,10 @@ public class Edge: NSObject, Extension {
 
         // set default on init for register/unregister use-case
         networkResponseHandler = NetworkResponseHandler(updateLocationHint: setLocationHint)
-        if let hitQueue = setupHitQueue() {
-            state = EdgeState(hitQueue: hitQueue, edgeProperties: EdgeProperties())
+        if let hitQueues = setupHitQueue() {
+            state = EdgeState(hitQueue: hitQueues.primary,
+                              bypassConsentHitQueue: hitQueues.bypassConsent,
+                              edgeProperties: EdgeProperties())
         }
     }
 
@@ -61,17 +63,21 @@ public class Edge: NSObject, Extension {
         registerListener(type: EventType.genericIdentity,
                          source: EventSource.requestReset,
                          listener: handleIdentitiesReset)
+        registerListener(type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                         source: EventSource.requestContent,
+                         listener: handleBypassConsentRequest)
     }
 
     public func onUnregistered() {
         state?.hitQueue.close()
+        state?.bypassConsentHitQueue.close()
         print("Extension unregistered from MobileCore: \(EdgeConstants.FRIENDLY_NAME)")
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
         guard canProcessEvents(event: event) else { return false }
 
-        if event.isExperienceEvent || event.isUpdateConsentEvent {
+        if event.isExperienceEvent || event.isUpdateConsentEvent || event.isBypassConsentEvent {
             let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
             let identitySharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
@@ -102,13 +108,20 @@ public class Edge: NSObject, Extension {
         processAndQueueEvent(event: event)
     }
 
+    /// Handles the dedicated device/profile registration event. Routed to the separate registration
+    /// queue and not subject to the collect-consent gate applied to experience events.
+    /// - Parameter event: current event to process
+    func handleBypassConsentRequest(_ event: Event) {
+        processAndQueueEvent(event: event, bypassConsent: true)
+    }
+
     /// Handles the Consent Update event
     /// - Parameter event: current event to process
     func handleConsentUpdate(_ event: Event) {
         processAndQueueEvent(event: event)
     }
 
-    private func processAndQueueEvent(event: Event) {
+    private func processAndQueueEvent(event: Event, bypassConsent: Bool = false) {
         guard let data = event.data, !data.isEmpty else {
             Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Event with id \(event.id.uuidString) contains no data, ignoring.")
             return
@@ -141,9 +154,15 @@ public class Edge: NSObject, Extension {
             return
         }
 
-        Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Queuing event with id \(event.id.uuidString).")
         let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
-        state?.hitQueue.queue(entity: entity)
+        if bypassConsent {
+            Log.debug(label: EdgeConstants.LOG_TAG,
+                      "\(SELF_TAG) - Queuing event \(event.id.uuidString) on the device registration queue.")
+            state?.bypassConsentHitQueue.queue(entity: entity)
+        } else {
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Queuing event with id \(event.id.uuidString).")
+            state?.hitQueue.queue(entity: entity)
+        }
     }
 
     /// Handles the `EventType.consent` -`EventSource.responseContent` event for the collect consent change
@@ -226,8 +245,9 @@ public class Edge: NSObject, Extension {
     }
 
     /// Sets up the `PersistentHitQueue` to handle `EdgeHit`s
-    private func setupHitQueue() -> HitQueuing? {
-        guard let dataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: name) else {
+    private func setupHitQueue() -> (primary: HitQueuing, bypassConsent: HitQueuing)? {
+        guard let dataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: name),
+              let bypassConsentDataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: "\(name)\(EdgeConstants.DataQueueLabels.BYPASS_CONSENT_SUFFIX)") else {
             Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to create DataQueue, Edge could not be initialized")
             return nil
         }
@@ -243,7 +263,8 @@ public class Edge: NSObject, Extension {
                                             readyForEvent: readyForEvent(_:),
                                             getImplementationDetails: getImplementationDetails,
                                             getLocationHint: getLocationHint)
-        return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
+        return (primary: PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor),
+                bypassConsent: PersistentHitQueue(dataQueue: bypassConsentDataQueue, processor: hitProcessor))
     }
 
     /// Retrieves the `ConsentStatus` from the Consent XDM Shared state for current `event`.

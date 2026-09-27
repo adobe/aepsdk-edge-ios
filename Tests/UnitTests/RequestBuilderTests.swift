@@ -388,6 +388,69 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         assertExactMatch(expected: expectedJSON, actual: requestPayload?.events?[0])
     }
 
+    func testGenerateNoConsentPayload_containsProducerPassthrough_xdmImplementationDetailsAndIdentityMap_andMetaState() {
+        // Store payload used to populate meta.state
+        let manager = StoreResponsePayloadManager(testDataStoreName)
+        manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))])
+
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
+        request.xdmPayloads = AnyCodable.from(dictionary: buildIdentityMap())!
+
+        let implementationDetails: [String: Any] = [
+            "name": "https://ns.adobe.com/experience/mobilesdk/ios",
+            "environment": "app",
+            "version": "5.0.0+1.0.0"
+        ]
+
+        // Producer event data is passed through unchanged (app / timezone / ...)
+        let event = Event(name: "Bypass consent event",
+                          type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                          source: EventSource.requestContent,
+                          data: ["app": ["identifier": "com.example.app"],
+                                 "timezone": "America/Los_Angeles"])
+
+        guard let payload = request.generateNoConsentPayload(event, implementationDetails: implementationDetails) else {
+            XCTFail("Expected non-nil device-attributes payload")
+            return
+        }
+
+        let expectedJSON = #"""
+        {
+          "app": {
+            "identifier": "com.example.app"
+          },
+          "timezone": "America/Los_Angeles",
+          "xdm": {
+            "implementationDetails": {
+              "name": "https://ns.adobe.com/experience/mobilesdk/ios",
+              "environment": "app",
+              "version": "5.0.0+1.0.0"
+            },
+            "identityMap": {
+              "ECID": [
+                {
+                  "id": "ecid"
+                }
+              ]
+            }
+          },
+          "meta": {
+            "state": {
+              "entries": [
+                {
+                  "key": "key",
+                  "value": "value",
+                  "maxAge": 3600
+                }
+              ]
+            }
+          }
+        }
+        """#
+
+        assertExactMatch(expected: expectedJSON, actual: payload)
+    }
+
     private func buildIdentityMap() -> [String: Any]? {
         guard let identityMapData = """
         {

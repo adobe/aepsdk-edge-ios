@@ -36,4 +36,11 @@ extension Event {
         return data?[EdgeConstants.EventDataKeys.Config.KEY] as? [String: Any]
     }
 
+    /// Returns true if this `Event` has the dedicated `edgeBypassConsent` type and the standard
+    /// `EventSource.requestContent` source. Such events are routed to the separate registration queue
+    /// and are not subject to the collect-consent gate.
+    var isBypassConsentEvent: Bool {
+        return type == EdgeConstants.EventType.EDGE_BYPASS_CONSENT && source == EventSource.requestContent
+    }
+
 }

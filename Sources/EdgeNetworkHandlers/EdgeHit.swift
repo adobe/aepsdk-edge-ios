@@ -11,6 +11,7 @@
 //
 
 import AEPCore
+import AEPServices
 import Foundation
 
 /// Protocol used for defining hits to Experience Edge service
@@ -30,4 +31,28 @@ protocol EdgeHit {
 
     /// Retrieves the `Streaming` settings for this `EdgeHit` or nil if not enabled
     func getStreamingSettings() -> Streaming?
+}
+
+/// `EdgeHit` for the consent-override (device‑attributes) path. Unlike `ExperienceEventsEdgeHit`,
+/// its body is a dynamic dictionary produced by `RequestBuilder.generateNoConsentPayload`, so any
+/// producer field flows through without a typed model. Response streaming is not used.
+struct NoConsentEdgeHit: EdgeHit {
+    let endpoint: EdgeEndpoint
+    let datastreamId: String
+    let requestId: String = UUID().uuidString
+
+    /// The fully-formed request body (producer `app`/`tokens`/`timezone` + SDK `xdm`/`meta`).
+    let payload: [String: AnyCodable]
+
+    func getPayload() -> String? {
+        guard !payload.isEmpty else { return nil }
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted]
+        guard let data = try? encoder.encode(payload) else { return nil }
+        return String(decoding: data, as: UTF8.self)
+    }
+
+    func getStreamingSettings() -> Streaming? {
+        return nil
+    }
 }

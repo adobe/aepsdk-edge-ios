@@ -104,6 +104,44 @@ class RequestBuilder {
                                                               value: AnyCodable.from(dictionary: consents))])
     }
 
+    /// Builds the device-attributes (consent-override) request body. The producer's event data
+    /// (e.g. `app`, `tokens`, `timezone`) is passed through unchanged, and the SDK enriches it with
+    /// two owned keys: `xdm` (implementationDetails + identityMap) and `meta.state`. Because the body
+    /// is dynamic, any new producer field flows through with no change here.
+    /// - Parameters:
+    ///   - event: the consent-override event whose data forms the base of the request body
+    ///   - implementationDetails: the SDK `implementationDetails` to attach under `xdm`
+    /// - Returns: the request body as `[String: AnyCodable]`, or nil if there is nothing to send
+    func generateNoConsentPayload(_ event: Event, implementationDetails: [String: Any]?) -> [String: AnyCodable]? {
+        guard let data = event.data, !data.isEmpty else { return nil }
+
+        // Start from the entire producer payload (app / tokens / timezone / ...).
+        var payload: [String: AnyCodable] = AnyCodable.from(dictionary: data) ?? [:]
+
+        // SDK-owned key #1: xdm { implementationDetails, identityMap }
+        var xdm = [String: Any]()
+        if let implementationDetails = implementationDetails {
+            xdm[EdgeConstants.JsonKeys.IMPLEMENTATION_DETAILS] = implementationDetails
+        }
+        if let identityMap = xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP]?.dictionaryValue {
+            xdm[EdgeConstants.SharedState.Identity.IDENTITY_MAP] = identityMap
+        }
+        if !xdm.isEmpty {
+            payload[EdgeConstants.JsonKeys.XDM] = AnyCodable(xdm)
+        }
+
+        // SDK-owned key #2: meta.state — same shape sent to the interact endpoint (reuses StateMetadata,
+        // so entries carry the full state:store format incl. maxAge).
+        let storedPayloads = storeResponsePayloadManager.getActivePayloadList()
+        if !storedPayloads.isEmpty,
+           let stateData = try? JSONEncoder().encode(StateMetadata(payload: storedPayloads)),
+           let stateDict = try? JSONSerialization.jsonObject(with: stateData) as? [String: Any] {
+            payload[EdgeConstants.JsonKeys.META] = AnyCodable(["state": stateDict])
+        }
+
+        return payload.isEmpty ? nil : payload
+    }
+
     /// Extract the `ExperienceEvent` from each `Event` and return as a list of maps.
     /// The timestamp for each `Event` is set as the timestamp for its contained `ExperienceEvent`.
     /// The unique identifier for each `Event` is set as the event ID for its contained `ExperienceEvent`.

@@ -36,6 +36,9 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
     private let INTERACT_ENDPOINT_PRE_PROD_LOCATION_HINT = "https://edge.adobedc.net/ee-pre-prd/lh1/v1/interact"
     private let INTERACT_ENDPOINT_INT_LOCATION_HINT = "https://edge-int.adobedc.net/ee/lh1/v1/interact"
 
+    private let DEVICE_ATTRIBUTES_ENDPOINT_PROD = "https://edge.adobedc.net/ee/v1/mobile/device-attributes"
+    private let DEVICE_ATTRIBUTES_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/v1/mobile/device-attributes"
+
     private let MEDIA_ENDPOINT = "https://edge.adobedc.net/ee/va/v1/sessionstart"
     private let MEDIA_ENDPOINT_PRE_PROD = "https://edge.adobedc.net/ee-pre-prd/va/v1/sessionstart"
     private let MEDIA_ENDPOINT_INTEGRATION = "https://edge-int.adobedc.net/ee/va/v1/sessionstart"
@@ -84,6 +87,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
         "/va/v1/session~start_123"
     ]
 
+    let bypassConsentEvent = Event(name: "test-bypass-consent-event", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT, source: EventSource.requestContent, data: ["app": ["identifier": "com.example.app"]])
     let consentUpdateEvent = Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]]])
     let consentUpdateEventWithOverwritePath = Event(name: "test-consent-event", type: EventType.edge, source: EventSource.updateConsent, data: ["consents": ["collect": ["val": "y"]], "request": ["path": "va/v1/sessionstart"]])
     let url = URL(string: "adobe.com")! // swiftlint:disable:this force_unwrapping
@@ -795,6 +799,83 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
                                             "xdm.implementationDetails.environment",
                                          "xdm.implementationDetails.name",
                                          "xdm.implementationDetails.version"))
+    }
+
+    // MARK: - Bypass Consent (device-attributes)
+
+    /// Tests that a bypass-consent event builds a `.deviceAttributes` endpoint and uses the datastream id from config.
+    func testProcessHit_bypassConsentEvent_buildsDeviceAttributesEndpoint_usesConfigDatastreamId() {
+        // setup
+        mockNetworkService.setMockResponse(
+            url: DEVICE_ATTRIBUTES_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil),
+                error: nil))
+
+        let edgeEntity = getEdgeDataEntity(event: bypassConsentEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        // test
+        assertProcessHit(entity: entity, urlString: DEVICE_ATTRIBUTES_ENDPOINT_PROD, sendsNetworkRequest: true, returns: true)
+
+        // verify: URL path targets the device-attributes endpoint and carries the config datastream id
+        guard let requestUrl = mockNetworkService.getNetworkRequestsWith(url: DEVICE_ATTRIBUTES_ENDPOINT_PROD, httpMethod: .post).first?.url else {
+            XCTFail("Unable to find valid network request.")
+            return
+        }
+        XCTAssertTrue(requestUrl.absoluteString.contains("mobile/device-attributes"))
+        XCTAssertEqual("test-config-id", requestUrl["configId"])
+    }
+
+    /// Tests that the bypass-consent endpoint maps `edge.environment` = "pre-prod" to the pre-production path.
+    func testProcessHit_bypassConsentEvent_preProdEnvironment_buildsPreProdDeviceAttributesEndpoint() {
+        // setup
+        let config = [self.EDGE_CONFIG_ID: "test-config-id", self.EDGE_ENV: "pre-prod"]
+        mockNetworkService.setMockResponse(
+            url: DEVICE_ATTRIBUTES_ENDPOINT_PRE_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil),
+                error: nil))
+
+        let edgeEntity = getEdgeDataEntity(event: bypassConsentEvent, configuration: config, identityMap: defaultIdentityMap)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        // test
+        assertProcessHit(entity: entity, urlString: DEVICE_ATTRIBUTES_ENDPOINT_PRE_PROD, sendsNetworkRequest: true, returns: true)
+        let actualUrl = mockNetworkService.getNetworkRequestsWith(url: DEVICE_ATTRIBUTES_ENDPOINT_PRE_PROD, httpMethod: .post).first?.url.absoluteString ?? ""
+        XCTAssertTrue(actualUrl.starts(with: DEVICE_ATTRIBUTES_ENDPOINT_PRE_PROD))
+    }
+
+    /// Tests that a bypass-consent event with a 202 Accepted response is treated as success (hit completes, not retried).
+    func testProcessHit_bypassConsentEvent_whenResponse202_returnsTrue() {
+        // setup
+        mockNetworkService.setMockResponse(
+            url: DEVICE_ATTRIBUTES_ENDPOINT_PROD,
+            httpMethod: .post,
+            responseConnection: HttpConnection(
+                data: "{}".data(using: .utf8),
+                response: HTTPURLResponse(url: url, statusCode: 202, httpVersion: nil, headerFields: nil),
+                error: nil))
+
+        let edgeEntity = getEdgeDataEntity(event: bypassConsentEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        // test: returns true (success, not retried)
+        assertProcessHit(entity: entity, urlString: DEVICE_ATTRIBUTES_ENDPOINT_PROD, sendsNetworkRequest: true, returns: true)
+    }
+
+    /// Tests that a bypass-consent event without an edge config id is dropped (no network request).
+    func testProcessHit_bypassConsentEvent_noEdgeConfigId_dropsHit() {
+        // setup
+        let edgeEntity = getEdgeDataEntity(event: bypassConsentEvent, configuration: ["edge.environment": "prod"], identityMap: defaultIdentityMap)
+        let entity = DataEntity(uniqueIdentifier: "test-uuid", timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+
+        // test
+        assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: true)
     }
 
     func assertProcessHit(entity: DataEntity, urlString: String? = nil, sendsNetworkRequest: Bool, returns: Bool, file: StaticString = #file, line: UInt = #line) {
