@@ -234,7 +234,8 @@ public class Edge: NSObject, Extension {
 
     /// Sets up the `PersistentHitQueue` to handle `EdgeHit`s
     private func setupHitQueue() -> HitQueuing? {
-        guard let dataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: name) else {
+        let dataQueueConfig = DataQueueConfig(journalMode: .wal)
+        guard let dataQueue = ServiceProvider.shared.dataQueueService.getDataQueue(label: name, config: dataQueueConfig) else {
             Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to create DataQueue, Edge could not be initialized")
             return nil
         }
