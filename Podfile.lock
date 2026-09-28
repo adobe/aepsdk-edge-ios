@@ -1,20 +1,20 @@
 PODS:
-  - AEPAssurance (5.0.1):
+  - AEPAssurance (5.0.3):
     - AEPCore (< 6.0.0, >= 5.0.0)
     - AEPServices (< 6.0.0, >= 5.0.0)
-  - AEPCore (5.3.1):
+  - AEPCore (5.12.0):
     - AEPRulesEngine (< 6.0.0, >= 5.0.0)
-    - AEPServices (< 6.0.0, >= 5.3.1)
-  - AEPEdge (5.0.3):
-    - AEPCore (< 6.0.0, >= 5.3.1)
+    - AEPServices (< 6.0.0, >= 5.12.0)
+  - AEPEdge (5.1.1):
+    - AEPCore (< 6.0.0, >= 5.12.0)
     - AEPEdgeIdentity (< 6.0.0, >= 5.0.0)
-  - AEPEdgeConsent (5.0.0):
+  - AEPEdgeConsent (5.0.2):
     - AEPCore (< 6.0.0, >= 5.0.0)
     - AEPEdge (< 6.0.0, >= 5.0.0)
-  - AEPEdgeIdentity (5.0.0):
-    - AEPCore (< 6.0.0, >= 5.0.0)
+  - AEPEdgeIdentity (5.1.0):
+    - AEPCore (< 6.0.0, >= 5.10.0)
   - AEPRulesEngine (5.0.0)
-  - AEPServices (5.3.1)
+  - AEPServices (5.12.0)
   - AEPTestUtils (5.2.2):
     - AEPCore (< 6.0.0, >= 5.2.0)
     - AEPServices (< 6.0.0, >= 5.2.0)
@@ -52,16 +52,16 @@ CHECKOUT OPTIONS:
     :tag: testutils-5.2.2
 
 SPEC CHECKSUMS:
-  AEPAssurance: df04baeace42befb0cc213fd6cdfe51651d11ba6
-  AEPCore: 28191f2df03225a5e88b6f8f343f7e18a604c9ef
-  AEPEdge: 105afc7958acd7c016d57f7ac1d6f632bf05e6ee
-  AEPEdgeConsent: d7db1d19eb4c1e2146360ed3c8df315f671b26d5
-  AEPEdgeIdentity: 3161ff33434586962946912d6b8e9e8fca1c4d23
+  AEPAssurance: 3ab00d47a40bc6c6cb2000689e0dcfa595cda250
+  AEPCore: ec8e326c5bb86c74bfda2de6055bbb82d25cbba6
+  AEPEdge: b4fe28a3d6ebbc2ed553e51bb1268ceddfda4fa9
+  AEPEdgeConsent: b5a54985b79ee0222b1f1fc4b0859f8b8afed07a
+  AEPEdgeIdentity: 66f3314af3729c15d398fd71662a7702cb1e8cdf
   AEPRulesEngine: fe5800653a4bee07b1e41e61b4d5551f0dba557b
-  AEPServices: fcba979e90f6916b066aa66f016700d7b7534d96
+  AEPServices: 62db5f1060752a890f990b6bbb3a4c893d698476
   AEPTestUtils: 61de2086056f4aa3223dc7d035991ef4fdacbfdb
   SwiftLint: 13280e21cdda6786ad908dc6e416afe5acd1fcb7
 
 PODFILE CHECKSUM: 4837da7fb6019ebb291c28bffd4cd772e0899dc5
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.17.0
