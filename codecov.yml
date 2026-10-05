@@ -22,6 +22,8 @@ coverage:
     - "./Tests/**/*"
     - "./Tests/.*"
     - "./TestApps"
+    - "./build"
+    - "./Documentation"
 
 parsers:
   gcov:

@@ -1,0 +1,98 @@
+#
+# Copyright 2026 Adobe. All rights reserved.
+# This file is licensed to you under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License. You may obtain a copy
+# of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+# OF ANY KIND, either express or implied. See the License for the specific language
+# governing permissions and limitations under the License.
+#
+
+version: 2.1
+
+orbs:
+  macos: circleci/macos@2
+
+workflows:
+  version: 2
+  build-test:
+    jobs:
+      - validate-code
+      - test-spm-integration:
+          requires:
+            - validate-code
+      - archive-xcframework:
+          requires:
+            - validate-code
+          filters:
+            branches:
+              only:
+                - main
+                - staging
+                - /dev-.*/
+
+commands:
+  install_dependencies:
+    steps:
+      - run:
+          name: Install swiftlint
+          command: brew install swiftlint
+
+      - run:
+          name: Resolve Swift packages
+          command: make setup
+
+  prestart_ios_simulator:
+    steps:
+      - macos/preboot-simulator:
+          platform: "iOS"
+          device: "iPhone 16"
+          version: "18.6"
+
+  prestart_tvos_simulator:
+    steps:
+      - macos/preboot-simulator:
+          platform: "tvOS"
+          device: "Apple TV"
+          version: "18.5"
+
+jobs:
+  validate-code:
+    resource_class: m4pro.medium
+    macos:
+      xcode: 26.3.0
+
+    steps:
+      - checkout
+      - install_dependencies
+      - run:
+          name: Lint source code
+          command: make lint
+
+  test-spm-integration:
+    resource_class: m4pro.medium
+    macos:
+      xcode: 26.3.0
+
+    steps:
+      - checkout
+      - install_dependencies
+      - prestart_ios_simulator
+      - prestart_tvos_simulator
+      - run:
+          name: Test SPM integration
+          command: make test-SPM-integration
+
+  archive-xcframework:
+    resource_class: m4pro.medium
+    macos:
+      xcode: 26.3.0
+
+    steps:
+      - checkout
+      - install_dependencies
+      - run:
+          name: Build XCFramework
+          command: make ci-archive

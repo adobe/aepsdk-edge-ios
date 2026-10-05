@@ -36,44 +36,26 @@ endif
 setup-tools: install-githook
 
 setup:
-	pod install
+	xcrun swift package resolve
 
 clean:
 	rm -rf build
 
-pod-install:
-	pod install --repo-update
-
 open:
 	open $(PROJECT_NAME).xcworkspace
 
-pod-repo-update:
-	pod repo update
+ci-archive: setup _archive
 
-pod-update: pod-repo-update
-	pod update
-
-ci-pod-repo-update:
-	bundle exec pod repo update
-
-ci-pod-install:
-	bundle exec pod install --repo-update
-
-ci-pod-update: ci-pod-repo-update
-	bundle exec pod update
-
-ci-archive: ci-pod-install _archive
-
-archive: pod-install _archive
+archive: setup _archive
 
 _archive: clean build-ios build-tvos
 	@echo "######################################################################"
 	@echo "### Generating iOS and tvOS Frameworks for $(PROJECT_NAME)"
 	@echo "######################################################################"
-	xcodebuild -create-xcframework -framework $(IOS_SIMULATOR_ARCHIVE_PATH)$(PROJECT_NAME).framework -debug-symbols $(IOS_SIMULATOR_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM \
-	-framework $(TVOS_SIMULATOR_ARCHIVE_PATH)$(PROJECT_NAME).framework -debug-symbols $(TVOS_SIMULATOR_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM \
-	-framework $(IOS_ARCHIVE_PATH)$(PROJECT_NAME).framework -debug-symbols $(IOS_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM \
-	-framework $(TVOS_ARCHIVE_PATH)$(PROJECT_NAME).framework -debug-symbols $(TVOS_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM -output ./build/$(PROJECT_NAME).xcframework
+	xcodebuild -create-xcframework -framework "$(IOS_SIMULATOR_ARCHIVE_PATH)$(PROJECT_NAME).framework" -debug-symbols "$(IOS_SIMULATOR_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM" \
+	-framework "$(TVOS_SIMULATOR_ARCHIVE_PATH)$(PROJECT_NAME).framework" -debug-symbols "$(TVOS_SIMULATOR_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM" \
+	-framework "$(IOS_ARCHIVE_PATH)$(PROJECT_NAME).framework" -debug-symbols "$(IOS_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM" \
+	-framework "$(TVOS_ARCHIVE_PATH)$(PROJECT_NAME).framework" -debug-symbols "$(TVOS_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM" -output ./build/$(PROJECT_NAME).xcframework
 	
 build-ios:
 	@echo "######################################################################"
@@ -91,7 +73,7 @@ build-tvos:
 
 zip:
 	cd build && zip -r -X $(PROJECT_NAME).xcframework.zip $(PROJECT_NAME).xcframework/
-	swift package compute-checksum build/$(PROJECT_NAME).xcframework.zip
+	xcrun swift package compute-checksum build/$(PROJECT_NAME).xcframework.zip
 
 build-app: setup
 	@echo "######################################################################"
@@ -104,45 +86,17 @@ build-app: setup
 	@echo "######################################################################"
 	xcodebuild clean build -workspace $(PROJECT_NAME).xcworkspace -scheme $(TEST_APP_TVOS_SCHEME) -destination 'generic/platform=tvOS Simulator'
 
-test: unit-test-ios functional-test-ios unit-test-tvos functional-test-tvos
-
-unit-test-ios:
-	@echo "######################################################################"
-	@echo "### Unit Testing iOS"
-	@echo "######################################################################"
-	rm -rf build/reports/iosUnitResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination $(IOS_DESTINATION) -derivedDataPath build/out -resultBundlePath build/reports/iosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
-
-functional-test-ios:
-	@echo "######################################################################"
-	@echo "### Functional Testing iOS"
-	@echo "######################################################################"
-	rm -rf build/reports/iosFunctionalResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination $(IOS_DESTINATION) -derivedDataPath build/out -resultBundlePath build/reports/iosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
-
-unit-test-tvos:
-	@echo "######################################################################"
-	@echo "### Unit Testing tvOS"
-	@echo "######################################################################"
-	rm -rf build/reports/tvosUnitResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "UnitTests" -destination $(TVOS_DESTINATION) -derivedDataPath build/out -resultBundlePath build/reports/tvosUnitResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
-
-functional-test-tvos:
-	@echo "######################################################################"
-	@echo "### Functional Testing tvOS"
-	@echo "######################################################################"
-	rm -rf build/reports/tvosFunctionalResults.xcresult
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme "FunctionalTests" -destination $(TVOS_DESTINATION) -derivedDataPath build/out -resultBundlePath build/reports/tvosFunctionalResults.xcresult -enableCodeCoverage YES ADB_SKIP_LINT=YES
+test: test-SPM-integration
 
 # CI alias for build and test workflow
 integration-test-ios: upstream-integration-test-ios
 
-# Runs the Edge Network (Konductor) integration tests after installing pod dependencies
+# Runs the Edge Network (Konductor) integration tests after resolving SPM dependencies
 # Usage: 
 # make upstream-integration-test-ios MOBILE_PROPERTY_ID=<property_id> EDGE_LOCATION_HINT=<location_hint>
 # If MOBILE_PROPERTY_ID is not specified, test target will use its default value.
 .SILENT: upstream-integration-test-ios # Silences Makefile's automatic echo of commands
-upstream-integration-test-ios: pod-install; \
+upstream-integration-test-ios: setup; \
 	if [ -z "$$EDGE_ENVIRONMENT" ]; then \
 		echo ''; \
 		echo '-------------------------- WARNING -------------------------------'; \
@@ -165,13 +119,10 @@ install-githook:
 	git config core.hooksPath .githooks
 
 lint-autocorrect:
-	./Pods/SwiftLint/swiftlint --fix
+	swiftlint --fix
 
 lint:
-	./Pods/SwiftLint/swiftlint lint Sources TestApps
+	swiftlint lint Sources TestApps
 
 test-SPM-integration:
 	sh ./Script/test-SPM.sh
-
-test-podspec:
-	sh ./Script/test-podspec.sh

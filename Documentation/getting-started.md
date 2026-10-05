@@ -69,25 +69,6 @@ targets: [
 ]
 ```
 
-#### Using CocoaPods
-
-1. Add the Mobile Core and Identity for Edge Network extensions to your project using CocoaPods. Add the following pods in your `Podfile`:
-
-  ```ruby
-  use_frameworks!
-  target 'YourTargetApp' do
-     pod 'AEPCore'
-     pod 'AEPEdge'
-     pod 'AEPEdgeIdentity'
-  end
-  ```
-
-2. Install [CocoaPods](https://cocoapods.org/) dependencies. Replace `YourTargetApp` and then, in the `Podfile` directory, type:
-
-  ```bash
-  $ pod install
-  ```
-
 ### Import and register Edge extension
 
 Import the Mobile Core, Edge Network, and Identity for Edge Network libraries and register the Edge Network and Identity for Edge Network extensions with MobileCore:
