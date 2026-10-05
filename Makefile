@@ -52,10 +52,10 @@ _archive: clean build-ios build-tvos
 	@echo "######################################################################"
 	@echo "### Generating iOS and tvOS Frameworks for $(PROJECT_NAME)"
 	@echo "######################################################################"
-	xcodebuild -create-xcframework -framework $(IOS_SIMULATOR_ARCHIVE_PATH)$(PROJECT_NAME).framework -debug-symbols $(IOS_SIMULATOR_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM \
-	-framework $(TVOS_SIMULATOR_ARCHIVE_PATH)$(PROJECT_NAME).framework -debug-symbols $(TVOS_SIMULATOR_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM \
-	-framework $(IOS_ARCHIVE_PATH)$(PROJECT_NAME).framework -debug-symbols $(IOS_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM \
-	-framework $(TVOS_ARCHIVE_PATH)$(PROJECT_NAME).framework -debug-symbols $(TVOS_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM -output ./build/$(PROJECT_NAME).xcframework
+	xcodebuild -create-xcframework -framework "$(IOS_SIMULATOR_ARCHIVE_PATH)$(PROJECT_NAME).framework" -debug-symbols "$(IOS_SIMULATOR_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM" \
+	-framework "$(TVOS_SIMULATOR_ARCHIVE_PATH)$(PROJECT_NAME).framework" -debug-symbols "$(TVOS_SIMULATOR_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM" \
+	-framework "$(IOS_ARCHIVE_PATH)$(PROJECT_NAME).framework" -debug-symbols "$(IOS_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM" \
+	-framework "$(TVOS_ARCHIVE_PATH)$(PROJECT_NAME).framework" -debug-symbols "$(TVOS_ARCHIVE_DSYM_PATH)$(PROJECT_NAME).framework.dSYM" -output ./build/$(PROJECT_NAME).xcframework
 	
 build-ios:
 	@echo "######################################################################"

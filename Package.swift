@@ -21,7 +21,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/shushinde/aepsdk-core-ios.git", .upToNextMajor(from: "5.13.0")),
-        .package(url: "https://github.com/shushinde/aepsdk-edgeidentity-ios.git", .upToNextMajor(from: "5.2.0")),
+        .package(url: "https://github.com/shushinde/aepsdk-edgeidentity-ios.git", .upToNextMajor(from: "5.1.0")),
         .package(url: "https://github.com/shushinde/aepsdk-testutils-ios.git", .upToNextMajor(from: "5.2.3"))
     ],
     targets: [
@@ -31,7 +31,8 @@ let package = Package(
                     .product(name: "AEPServices", package: "aepsdk-core-ios"),
                     .product(name: "AEPEdgeIdentity", package: "aepsdk-edgeidentity-ios")
                 ],
-                path: "Sources"),
+                path: "Sources",
+                exclude: ["Info.plist"]),
         .testTarget(name: "AEPEdgeUnitTests",
                     dependencies: [
                         "AEPEdge",

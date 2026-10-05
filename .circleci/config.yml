@@ -83,7 +83,7 @@ jobs:
       - prestart_tvos_simulator
       - run:
           name: Test SPM integration
-          command: make test
+          command: make test-SPM-integration
 
   archive-xcframework:
     resource_class: m4pro.medium

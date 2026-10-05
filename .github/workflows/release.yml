@@ -21,7 +21,7 @@ on:
         required: true
 
       create-github-release:
-        description: 'Create a source-only GitHub release for the tag (no binary artifacts). SPM consumers build from source via this tag. If the provided `tag` does not exist, it will be created.'
+        description: 'Create a GitHub release with uploaded XCFramework artifacts. SPM consumers can also build from source via this tag. If the provided `tag` does not exist, it will be created.'
         type: boolean
         required: true
         default: true
@@ -35,7 +35,7 @@ jobs:
       tag: ${{ github.event.inputs.tag }}
       xcode-version: '26.3.0'
       create-github-release: ${{ github.event.inputs.create-github-release == 'true' && 'AEPEdge' || '' }}
-      tag-only: true
+      tag-only: false
       simulator-platforms: 'iOS, tvOS'
       version-validation-paths: AEPEdge.xcodeproj/project.pbxproj, Sources/EdgeConstants.swift
     secrets: inherit

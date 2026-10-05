@@ -1676,7 +1676,7 @@
 			repositoryURL = "https://github.com/shushinde/aepsdk-edgeidentity-ios";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 5.2.0;
+				minimumVersion = 5.1.0;
 			};
 		};
 		9482A7F9305C318E00B34623 /* XCRemoteSwiftPackageReference "aepsdk-assurance-ios" */ = {

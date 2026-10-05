@@ -18,7 +18,7 @@ For more details, see the [Adobe Experience Platform Edge Network](https://devel
 
 ## Installation
 
-The following installation option is currently supported:
+Swift Package Manager source distribution and XCFramework binary distribution are supported:
 
 ### Swift Package Manager
 
@@ -60,18 +60,26 @@ make archive
 
 The generated xcframework will be located in the `build` folder. Drag and drop the `.xcframeworks` into the app target in Xcode.
 
+The XCFramework includes iOS and tvOS device and simulator slices with debug symbols. To package it for distribution and print its SwiftPM checksum, run:
+
+```shell
+make zip
+```
+
+The archive is written to `build/AEPEdge.xcframework.zip`. The Release workflow builds and attaches this binary when `create-github-release` is enabled; source-based SPM distribution remains available through the same tag.
+
 ## Development
 
 To set up the environment after cloning or downloading the project for the first time, run the following command from the root directory:
 
 ```shell
-make pod-install
+make setup
 ```
 
-To update the environment, use the following command:
+To update the resolved Swift package dependencies, use the following command:
 
 ```shell
-make pod-update
+xcrun swift package update
 ```
 
 ### Open the Xcode workspace
@@ -84,11 +92,23 @@ make open
 
 ### Command line integration
 
-To run all test suites from the command line, use the following command:
+To validate SPM consumer integration for iOS and tvOS from the command line, use the following command:
 
 ```shell
 make test
 ```
+
+This command builds and archives a consumer package; it does not execute the unit or functional test targets declared in `Package.swift`. CircleCI invokes the explicit `make test-SPM-integration` target for this check.
+
+### Remaining migration work
+
+The migration is not yet complete:
+
+- The package unit and functional suites pass on iOS and tvOS with Core 5.13.0 (`5304424`) and EdgeIdentity 5.1.0 (`92dc9d1`). These results used unchanged release checkouts as local workspace overrides; remote resolution on the validation machine remains blocked by Git's `safe.bareRepository=explicit` setting. The suites still need to be wired into Makefile and CI; consumer integration builds do not execute them.
+- `Tests/FunctionalTests/Edge+ConsentTests.swift` remains excluded from the package tests. Consent depends on Edge, so these tests need a separate consumer test graph and a compatible Consent dependency.
+- TestApps remain in the library's Xcode project, and the tutorials still use CocoaPods. Their migration is deferred until compatible Consent and Assurance forks are available.
+
+XCFramework generation and release publishing remain supported independently of these pending tasks.
 
 ### Code style
 
