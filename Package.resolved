@@ -1,0 +1,43 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "AEPCore",
+        "repositoryURL": "https://github.com/shushinde/aepsdk-core-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "83e82b7ae6dfe4adb55bc9f24d3c67e23c62ef21",
+          "version": "5.13.0"
+        }
+      },
+      {
+        "package": "AEPEdgeIdentity",
+        "repositoryURL": "https://github.com/shushinde/aepsdk-edgeidentity-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "92dc9d14c6199abb03cc3b69690a05aecc15972a",
+          "version": "5.1.0"
+        }
+      },
+      {
+        "package": "AEPRulesEngine",
+        "repositoryURL": "https://github.com/adobe/aepsdk-rulesengine-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "514d2b3787c545bfa6749ffce5dd3e6f560c9319",
+          "version": "5.0.0"
+        }
+      },
+      {
+        "package": "AEPTestUtils",
+        "repositoryURL": "https://github.com/shushinde/aepsdk-testutils-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "aac0948e0b3ddffbee2758b1c4e61ad6992dbf8a",
+          "version": "5.2.3"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

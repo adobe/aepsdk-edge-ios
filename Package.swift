@@ -20,15 +20,39 @@ let package = Package(
         .library(name: "AEPEdge", targets: ["AEPEdge"])
     ],
     dependencies: [
-        .package(url: "https://github.com/adobe/aepsdk-core-ios.git", .upToNextMajor(from: "5.12.0")),
-        .package(url: "https://github.com/adobe/aepsdk-edgeidentity-ios.git", .upToNextMajor(from: "5.0.0"))
+        .package(url: "https://github.com/shushinde/aepsdk-core-ios.git", .upToNextMajor(from: "5.13.0")),
+        .package(url: "https://github.com/shushinde/aepsdk-edgeidentity-ios.git", .upToNextMajor(from: "5.1.0")),
+        .package(url: "https://github.com/shushinde/aepsdk-testutils-ios.git", .upToNextMajor(from: "5.2.3"))
     ],
     targets: [
         .target(name: "AEPEdge",
                 dependencies: [
                     .product(name: "AEPCore", package: "aepsdk-core-ios"),
+                    .product(name: "AEPServices", package: "aepsdk-core-ios"),
                     .product(name: "AEPEdgeIdentity", package: "aepsdk-edgeidentity-ios")
                 ],
-                path: "Sources")
+                path: "Sources",
+                exclude: ["Info.plist"]),
+        .testTarget(name: "AEPEdgeUnitTests",
+                    dependencies: [
+                        "AEPEdge",
+                        .product(name: "AEPCore", package: "aepsdk-core-ios"),
+                        .product(name: "AEPServices", package: "aepsdk-core-ios"),
+                        .product(name: "AEPTestUtils", package: "aepsdk-testutils-ios")
+                    ],
+                    path: "Tests",
+                    exclude: ["FunctionalTests", "TestUtils", "UpstreamIntegrationTests", "UnitTests/Info.plist"],
+                    sources: ["UnitTests"]),
+        .testTarget(name: "AEPEdgeFunctionalTests",
+                    dependencies: [
+                        "AEPEdge",
+                        .product(name: "AEPCore", package: "aepsdk-core-ios"),
+                        .product(name: "AEPServices", package: "aepsdk-core-ios"),
+                        .product(name: "AEPEdgeIdentity", package: "aepsdk-edgeidentity-ios"),
+                        .product(name: "AEPTestUtils", package: "aepsdk-testutils-ios")
+                    ],
+                    path: "Tests",
+                    exclude: ["UnitTests", "UpstreamIntegrationTests", "FunctionalTests/Info.plist", "FunctionalTests/Edge+ConsentTests.swift"],
+                    sources: ["FunctionalTests", "TestUtils"])
     ]
 )

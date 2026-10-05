@@ -26,13 +26,13 @@ on:
         required: true
 
       core-dependency:
-        description: 'If a version is provided, update AEPCore dependency in podspec and Package.swift.'
+        description: 'If a version is provided, update AEPCore dependency in Package.swift.'
         type: string
         required: false
         default: ''
 
       edge-identity-dependency:
-        description: 'If a version is provided, update AEPEdgeIdentity dependency in podspec and Package.swift.'
+        description: 'If a version is provided, update AEPEdgeIdentity dependency in Package.swift.'
         type: string
         required: false
         default: ''
@@ -42,10 +42,10 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: adobe/aepsdk-commons/.github/workflows/versions.yml@gha-ios-5.3.0
+    uses: shushinde/aepsdk-commons/.github/workflows/versions.yml@main
     with:
       version: ${{ github.event.inputs.version }}
       branch: ${{ github.event.inputs.branch }}
       dependencies: AEPCore ${{ github.event.inputs.core-dependency }}, AEPEdgeIdentity ${{ github.event.inputs.edge-identity-dependency }}
-      paths: Package.swift:swift_spm, AEPEdge.podspec, AEPEdge.xcodeproj/project.pbxproj, Sources/EdgeConstants.swift
+      paths: Package.swift:swift_spm, AEPEdge.xcodeproj/project.pbxproj, Sources/EdgeConstants.swift
       update: true
