@@ -75,16 +75,19 @@ class EdgeNetworkService {
     ///   - requestBody: `EdgeRequest` containing the encoded events
     ///   - requestHeaders: request HTTP headers
     ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
+    ///   - bypassResult: Optional final HTTP outcome for the bypass path. Not invoked on retry.
     ///   - completion: a closure that is invoked with true if the hit should not be retried, false if the hit should be retried, along with the time interval that should elapse before retrying the hit
     func doRequest(url: URL,
                    requestBody: String?,
                    requestHeaders: [String: String]? = [:],
                    streaming: Streaming?,
                    responseCallback: ResponseCallback,
+                   bypassResult: ((Bool, Int?) -> Void)? = nil,
                    completion: @escaping (Bool, TimeInterval?) -> Void) {
         guard let payload = requestBody, !payload.isEmpty else {
             Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Request body is nil/empty, dropping this request")
             responseCallback.onComplete()
+            bypassResult?(false, nil)
             completion(true, nil)
             return
         }
@@ -120,6 +123,7 @@ class EdgeNetworkService {
                             "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) \(errorMessage). Dropping the request.")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
+                bypassResult?(false, connection.responseCode)
                 completion(true, nil) // don't retry
                 return
             }
@@ -128,15 +132,26 @@ class EdgeNetworkService {
                 Log.warning(label: EdgeConstants.LOG_TAG, "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) failed with unknown error. Dropping the request.")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
+                bypassResult?(false, nil)
                 completion(true, nil) // failed, but unrecoverable, don't retry
                 return
             }
 
+            if let bypassResult = bypassResult, (200..<300).contains(responseCode) {
+                self.handleContent(connection: connection, streaming: streaming, responseCallback: responseCallback)
+                responseCallback.onComplete()
+                bypassResult(true, responseCode)
+                completion(true, nil)
+                return
+            }
             self.handleResponseWith(responseCode: responseCode,
                                     connection: connection,
                                     streaming: streaming,
                                     responseCallback: responseCallback,
-                                    completion: completion)
+                                    completion: { finished, retryInterval in
+                                        if finished { bypassResult?(false, responseCode) }
+                                        completion(finished, retryInterval)
+                                    })
         }
     }
 

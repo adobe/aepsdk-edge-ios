@@ -43,4 +43,23 @@ extension Event {
         return type == EdgeConstants.EventType.EDGE_BYPASS_CONSENT && source == EventSource.requestContent
     }
 
+    func createBypassResult(status: String, reason: String? = nil, httpStatus: Int? = nil) -> Event {
+        var data: [String: Any] = ["status": status]
+        if let reason = reason { data["reason"] = reason }
+        if let httpStatus = httpStatus { data["httpStatus"] = httpStatus }
+        return createChainedEvent(name: "Edge bypass result",
+                                  type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                                  source: EventSource.responseContent,
+                                  data: data)
+    }
+
+    /// A corrupt hit has no usable Event; its persisted identifier still identifies the request to drop.
+    static func createBypassDropResult(requestEventId: String) -> Event {
+        return Event(name: "Edge bypass result",
+                     type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                     source: EventSource.responseContent,
+                     data: ["status": "dropped", "reason": "invalidPayload",
+                            EdgeConstants.EventDataKeys.REQUEST_EVENT_ID: requestEventId])
+    }
+
 }

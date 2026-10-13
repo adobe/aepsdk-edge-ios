@@ -23,6 +23,7 @@ class EdgeHitProcessor: HitProcessing {
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
     private var getLocationHint: () -> String?
+    private let onDecodeFailure: ((DataEntity) -> Void)?
     private let entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
     private let VALID_PATH_REGEX_PATTERN = "^\\/[/.a-zA-Z0-9-~_]+$"
 
@@ -31,13 +32,15 @@ class EdgeHitProcessor: HitProcessing {
          sharedStateReader: SharedStateReader,
          readyForEvent: @escaping (Event) -> Bool,
          getImplementationDetails: @escaping () -> [String: Any]?,
-         getLocationHint: @escaping () -> String?) {
+         getLocationHint: @escaping () -> String?,
+         onDecodeFailure: ((DataEntity) -> Void)? = nil) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
         self.sharedStateReader = sharedStateReader
         self.readyForEvent = readyForEvent
         self.getImplementationDetails = getImplementationDetails
         self.getLocationHint = getLocationHint
+        self.onDecodeFailure = onDecodeFailure
     }
 
     // MARK: HitProcessing
@@ -53,6 +56,7 @@ class EdgeHitProcessor: HitProcessing {
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
         guard let edgeEntity = decode(dataEntity: entity) else {
             // can't convert data to hit, unrecoverable error, move to next hit
+            onDecodeFailure?(entity)
             completion(true)
             return
         }
@@ -225,6 +229,7 @@ class EdgeHitProcessor: HitProcessing {
             Log.warning(label: EdgeConstants.LOG_TAG,
                         "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)' " +
                             "due to missing or empty edge.configId in configuration.")
+            MobileCore.dispatch(event: event.createBypassResult(status: "dropped", reason: "missingConfig"))
             completion(true)
             return // drop current event
         }
@@ -232,6 +237,7 @@ class EdgeHitProcessor: HitProcessing {
         guard let payload = requestBuilder.generateNoConsentPayload(event, implementationDetails: getImplementationDetails()) else {
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Failed to build the device-attributes payload, dropping event '\(event.id.uuidString)'.")
+            MobileCore.dispatch(event: event.createBypassResult(status: "dropped", reason: "invalidPayload"))
             completion(true)
             return
         }
@@ -244,7 +250,7 @@ class EdgeHitProcessor: HitProcessing {
                                        datastreamId: datastreamId,
                                        payload: payload)
         networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
-        sendHit(entityId: entityId, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
+        sendHit(entityId: entityId, edgeHit: edgeHit, headers: getRequestHeaders(event), bypassEvent: event, completion: completion)
     }
 
     /// Builds the endpoint based on the provided config info and `EdgeRequestType`
@@ -279,22 +285,35 @@ class EdgeHitProcessor: HitProcessing {
     ///   - edgeHit: the hit to be sent
     ///   - headers: headers for the request
     ///   - completion: completion handler for the hit processor
-    private func sendHit(entityId: String, edgeHit: EdgeHit, headers: [String: String], completion: @escaping (Bool) -> Void) {
+    private func sendHit(entityId: String, edgeHit: EdgeHit, headers: [String: String],
+                         bypassEvent: Event? = nil, completion: @escaping (Bool) -> Void) {
         guard let url = networkService.buildUrl(endpoint: edgeHit.endpoint,
                                                 datastreamId: edgeHit.datastreamId,
                                                 requestId: edgeHit.requestId) else {
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Failed to build the URL, dropping request with id '\(edgeHit.requestId)'.")
+            if let event = bypassEvent {
+                MobileCore.dispatch(event: event.createBypassResult(status: "dropped", reason: "invalidPayload"))
+                _ = networkResponseHandler.removeWaitingEvents(requestId: edgeHit.requestId)
+            }
             completion(true)
             return
         }
 
         let callback = NetworkResponseCallback(requestId: edgeHit.requestId, responseHandler: networkResponseHandler)
+        let bypassResult: ((Bool, Int?) -> Void)? = bypassEvent.map { event in
+            return { success, httpStatus in
+                MobileCore.dispatch(event: event.createBypassResult(status: success ? "success" : "failed",
+                                                                  reason: success ? nil : "network",
+                                                                  httpStatus: httpStatus))
+            }
+        }
         networkService.doRequest(url: url,
                                  requestBody: edgeHit.getPayload(),
                                  requestHeaders: headers,
                                  streaming: edgeHit.getStreamingSettings(),
-                                 responseCallback: callback) { [weak self] success, retryInterval in
+                                 responseCallback: callback,
+                                 bypassResult: bypassResult) { [weak self] success, retryInterval in
             if let self = self {
                 // remove any retry interval if success, otherwise add to retry mapping
                 self.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval

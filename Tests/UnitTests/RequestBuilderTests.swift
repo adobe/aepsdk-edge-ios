@@ -451,6 +451,28 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         assertExactMatch(expected: expectedJSON, actual: payload)
     }
 
+    func testGenerateNoConsentPayloadPreservesAppEmptyTokenAndTimezoneWithoutEventsEnvelope() throws {
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
+        let attributes: [String: Any] = [
+            "app": ["id": "com.example.app", "platform": "apnsSandbox"],
+            "timezone": "Europe/London",
+            "tokens": [
+                "pushNotification": "",
+                "liveActivityStart": [["attributeType": "A", "value": "start"]],
+                "liveActivityUpdate": []
+            ]
+        ]
+        let event = Event(name: "device attributes", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                          source: EventSource.requestContent, data: attributes)
+        let payload = try XCTUnwrap(request.generateNoConsentPayload(event, implementationDetails: nil))
+        let decoded = try XCTUnwrap(try JSONSerialization.jsonObject(with: JSONEncoder().encode(payload)) as? [String: Any])
+        XCTAssertEqual(attributes["app"] as? NSDictionary, decoded["app"] as? NSDictionary)
+        XCTAssertEqual(attributes["tokens"] as? NSDictionary, decoded["tokens"] as? NSDictionary)
+        XCTAssertEqual("", (decoded["tokens"] as? [String: Any])?["pushNotification"] as? String)
+        XCTAssertEqual("Europe/London", decoded["timezone"] as? String)
+        XCTAssertNil(decoded["events"])
+    }
+
     private func buildIdentityMap() -> [String: Any]? {
         guard let identityMapData = """
         {
