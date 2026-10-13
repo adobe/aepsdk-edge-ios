@@ -150,7 +150,7 @@ jobs:
   validate-code:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.3.0
+      xcode: 26.6.0
 
     steps:
       - checkout
@@ -162,7 +162,7 @@ jobs:
   test-ios-unit:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.3.0
+      xcode: 26.6.0
 
     environment:
       IOS_DEVICE_NAME: "iPhone 16"
@@ -182,7 +182,7 @@ jobs:
   test-ios-functional:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.3.0
+      xcode: 26.6.0
 
     environment:
       IOS_DEVICE_NAME: "iPhone 16"
@@ -202,7 +202,7 @@ jobs:
   test-ios-integration:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.3.0
+      xcode: 26.6.0
 
     environment:
       IOS_DEVICE_NAME: "iPhone 16"
@@ -222,7 +222,7 @@ jobs:
   test-tvos-unit:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.3.0
+      xcode: 26.6.0
 
     environment:
       TVOS_DEVICE_NAME: "Apple TV"
@@ -242,7 +242,7 @@ jobs:
   test-tvos-functional:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.3.0
+      xcode: 26.6.0
 
     environment:
       TVOS_DEVICE_NAME: "Apple TV"
@@ -262,7 +262,7 @@ jobs:
   build-xcframework-and-app:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.3.0
+      xcode: 26.6.0
 
     steps:
       - checkout
