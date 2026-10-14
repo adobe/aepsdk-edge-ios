@@ -530,12 +530,16 @@ extension EdgeExtensionTests {
         func getDataQueue(label: String) -> DataQueue? {
             return label == EdgeConstants.EXTENSION_NAME ? primary : nil
         }
+        func getDataQueue(label: String, config: DataQueueConfig) -> DataQueue? {
+            return getDataQueue(label: label)
+        }
     }
 
     func testBypassQueueCreationFailurePreservesOrdinaryStartupAndQueuing() throws {
         let configuredEdge = Edge(runtime: mockRuntime, dataQueueService: SelectiveDataQueueService(primary: mockDataQueue))
         defer { configuredEdge.onUnregistered() }
         let state = try XCTUnwrap(configuredEdge.state)
+        XCTAssertTrue(state.hitQueue is EdgeBatchingHitQueue)
         XCTAssertNil(state.bypassConsentHitQueue)
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: (["edge.configId": "config"], .set))
@@ -628,6 +632,8 @@ extension EdgeExtensionTests {
         }
         let state = try XCTUnwrap(configuredEdge.state)
         let bypassQueue = try XCTUnwrap(state.bypassConsentHitQueue)
+        XCTAssertTrue(state.hitQueue is EdgeBatchingHitQueue)
+        XCTAssertTrue(bypassQueue is PersistentHitQueue)
         let corruptedData: [Data?] = [nil, Data("{".utf8), Data("{}".utf8)]
         let requestIds = corruptedData.map { _ in UUID().uuidString }
         let result = expectation(description: "Only corrupted bypass hits produce terminal drops")

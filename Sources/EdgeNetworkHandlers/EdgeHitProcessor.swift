@@ -254,6 +254,8 @@ class EdgeHitProcessor: HitProcessing {
                                        payload: payload)
         networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
         sendHit(entityId: entityId, edgeHit: edgeHit, headers: getRequestHeaders(event), bypassEvent: event, completion: completion)
+    }
+
     /// Processes a batch of `DataEntity`s as a single network request when the batch contains more than
     /// one ExperienceEvent; otherwise delegates to the existing single-entity `processHit` path.
     ///
@@ -563,7 +565,7 @@ class EdgeHitProcessor: HitProcessing {
                                  requestHeaders: headers,
                                  streaming: edgeHit.getStreamingSettings(),
                                  responseCallback: callback,
-                                 bypassResult: bypassResult) { [weak self] success, retryInterval in
+                                 bypassResult: bypassResult) { [weak self] success, retryInterval, _ in
             if let self = self {
                 // remove any retry interval if success, otherwise add to retry mapping
                 self.entityRetryIntervalMapping[entityId] = success ? nil : retryInterval

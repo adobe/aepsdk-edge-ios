@@ -77,19 +77,20 @@ class EdgeNetworkService {
     ///   - requestHeaders: request HTTP headers
     ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
     ///   - bypassResult: Optional final HTTP outcome for the bypass path. Not invoked on retry.
-    ///   - completion: a closure that is invoked with true if the hit should not be retried, false if the hit should be retried, along with the time interval that should elapse before retrying the hit
+    ///   - completion: a closure invoked with whether the hit is finished, the retry interval, and the HTTP response code
+    ///     (nil when no response was received). Batching uses the response code to distinguish a 400, which can be resent individually.
     func doRequest(url: URL,
                    requestBody: String?,
                    requestHeaders: [String: String]? = [:],
                    streaming: Streaming?,
                    responseCallback: ResponseCallback,
                    bypassResult: ((Bool, Int?) -> Void)? = nil,
-                   completion: @escaping (Bool, TimeInterval?) -> Void) {
+                   completion: @escaping (Bool, TimeInterval?, Int?) -> Void) {
         guard let payload = requestBody, !payload.isEmpty else {
             Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Request body is nil/empty, dropping this request")
             responseCallback.onComplete()
             bypassResult?(false, nil)
-            completion(true, nil)
+            completion(true, nil, nil)
             return
         }
 
@@ -125,7 +126,7 @@ class EdgeNetworkService {
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
                 bypassResult?(false, connection.responseCode)
-                completion(true, nil) // don't retry
+                completion(true, nil, connection.responseCode) // don't retry
                 return
             }
 
@@ -134,7 +135,7 @@ class EdgeNetworkService {
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
                 bypassResult?(false, nil)
-                completion(true, nil) // failed, but unrecoverable, don't retry
+                completion(true, nil, nil) // failed, but unrecoverable, don't retry
                 return
             }
 
@@ -142,16 +143,16 @@ class EdgeNetworkService {
                 self.handleContent(connection: connection, streaming: streaming, responseCallback: responseCallback)
                 responseCallback.onComplete()
                 bypassResult(true, responseCode)
-                completion(true, nil)
+                completion(true, nil, responseCode)
                 return
             }
             self.handleResponseWith(responseCode: responseCode,
                                     connection: connection,
                                     streaming: streaming,
                                     responseCallback: responseCallback,
-                                    completion: { finished, retryInterval in
+                                    completion: { finished, retryInterval, responseCode in
                                         if finished { bypassResult?(false, responseCode) }
-                                        completion(finished, retryInterval)
+                                        completion(finished, retryInterval, responseCode)
                                     })
         }
     }
@@ -220,14 +221,14 @@ class EdgeNetworkService {
                                streaming: streaming,
                                responseCallback: responseCallback)
             responseCallback.onComplete()
-            completion(true, nil) // successful request, return true
+            completion(true, nil, responseCode) // successful request, return true
         case HttpResponseCodes.accepted.rawValue:
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge was successful, request accepted for processing.")
             self.handleContent(connection: connection,
                                streaming: streaming,
                                responseCallback: responseCallback)
             responseCallback.onComplete()
-            completion(true, nil) // successful request, return true
+            completion(true, nil, responseCode) // successful request, return true
         case HttpResponseCodes.noContent.rawValue:
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge was successful, no content returned.")
             responseCallback.onComplete()

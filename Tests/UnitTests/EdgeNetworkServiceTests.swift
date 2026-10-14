@@ -211,10 +211,11 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  requestHeaders: [:],
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
-                                 completion: { success, retryInterval in
+                                 completion: { success, retryInterval, responseCode in
                                     // verify: 202 Accepted is treated as success, hit completes and is not retried nor errored
                                     XCTAssertTrue(success)
                                     XCTAssertNil(retryInterval)
+                                    XCTAssertEqual(202, responseCode)
                                     XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
                                     XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
                                     XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
@@ -824,9 +825,10 @@ extension EdgeNetworkServiceTests {
             networkService.doRequest(url: url,
                                      requestBody: "{}",
                                      streaming: nil,
-                                     responseCallback: mockResponseCallback) { finished, retry in
+                                     responseCallback: mockResponseCallback) { finished, retry, responseCode in
                 XCTAssertTrue(finished)
                 XCTAssertNil(retry)
+                XCTAssertEqual(code, responseCode)
                 XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
                 XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
                 completed.fulfill()
@@ -847,9 +849,10 @@ extension EdgeNetworkServiceTests {
                                  bypassResult: { accepted, status in
             outcomes.append(accepted)
             statuses.append(status)
-        }, completion: { finished, retry in
+        }, completion: { finished, retry, responseCode in
             XCTAssertEqual(success != nil, finished, file: file, line: line)
             XCTAssertEqual(retryInterval, retry, file: file, line: line)
+            XCTAssertEqual(connection.responseCode, responseCode, file: file, line: line)
             if let success = success {
                 XCTAssertEqual([success], outcomes, file: file, line: line)
                 XCTAssertEqual(1, statuses.count, file: file, line: line)
@@ -924,9 +927,10 @@ extension EdgeNetworkServiceTests {
                                      bypassResult: { accepted, status in
                 outcomes.append(accepted)
                 XCTAssertNil(status)
-            }, completion: { processed, retry in
+            }, completion: { processed, retry, responseCode in
                 finished = processed
                 XCTAssertNil(retry)
+                XCTAssertNil(responseCode)
             })
             XCTAssertEqual([false], outcomes)
             XCTAssertEqual(true, finished)
