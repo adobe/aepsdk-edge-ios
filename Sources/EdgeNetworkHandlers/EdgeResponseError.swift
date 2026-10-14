@@ -13,7 +13,7 @@
 import Foundation
 
 /// Error information for a sent EdgeRequest
-struct EdgeEventError: Codable, Equatable {
+struct EdgeResponseError: Codable, Equatable {
     /// Error message
     let title: String?
 

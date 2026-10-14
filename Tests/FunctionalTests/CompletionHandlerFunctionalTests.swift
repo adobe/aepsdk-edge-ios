@@ -111,6 +111,38 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         assertEqual(expected: expectedJSON, actual: receivedHandles[0].payload?[0])
     }
 
+    func testSendEvent_withEdgeCallbackWithError_whenHandleAndEventError_deliversBothCallbacks() {
+        // One 200 response for a single event carrying BOTH a handle and a per-event error. The public
+        // EdgeCallbackWithError must receive its handle via onComplete AND its error via onError — the
+        // merged index-ordered processing keeps both from being dropped.
+        // swiftlint:disable:next line_length
+        let responseBodyWithHandleAndEventError = "\u{0000}{\"requestId\": \"0ee43289-4a4e-469a-bf5c-1d8186919a29\",\"handle\": [{\"payload\": [{\"id\": \"AT:eyJhY3Rpdml0eUlkIjoiMTE3NTg4IiwiZXhwZXJpZW5jZUlkIjoiMSJ9\",\"scope\": \"buttonColor\",\"items\": [{\"schema\": \"https://ns.adobe.com/personalization/json-content-item\",\"data\": {\"content\": {\"value\": \"#D41DBA\"}}}]}],\"type\": \"personalization:decisions\"}],\"errors\": [{\"type\": \"https://ns.adobe.com/aep/errors/EXEG-0201-503\",\"status\": 503,\"title\": \"Service Unavailable\",\"detail\": \"The service is temporarily unavailable\",\"report\": {\"eventIndex\": 0}}]}\n"
+        let httpConnection: HttpConnection = HttpConnection(data: responseBodyWithHandleAndEventError.data(using: .utf8),
+                                                            response: HTTPURLResponse(url: edgeUrl,
+                                                                                      statusCode: 200,
+                                                                                      httpVersion: nil,
+                                                                                      headerFields: nil),
+                                                            error: nil)
+        mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: httpConnection)
+        mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
+
+        let completeExpectation = self.expectation(description: "onComplete called")
+        let errorExpectation = self.expectation(description: "onError called")
+        let callback = LatchingEdgeCallbackWithError(onCompleteExpectation: completeExpectation, onErrorExpectation: errorExpectation)
+
+        Edge.sendEvent(experienceEvent: ExperienceEvent(xdm: ["eventType": "personalizationEvent", "test": "xdm"], data: nil),
+                       callback: callback)
+
+        mockNetworkService.assertAllNetworkRequestExpectations()
+        wait(for: [completeExpectation, errorExpectation], timeout: TIMEOUT_SEC)
+
+        XCTAssertEqual(1, callback.receivedHandles.count)
+        XCTAssertEqual("personalization:decisions", callback.receivedHandles.first?.type)
+        XCTAssertEqual(1, callback.receivedErrors.count)
+        XCTAssertEqual("https://ns.adobe.com/aep/errors/EXEG-0201-503", callback.receivedErrors.first?.type)
+        XCTAssertEqual(503, callback.receivedErrors.first?.status)
+    }
+
     func testSendEventx2_withCompletionHandler_whenResponseHandle_callsCompletionCorrectly() {
         let httpConnection: HttpConnection = HttpConnection(data: responseBodyWithHandle.data(using: .utf8),
                                                             response: HTTPURLResponse(url: edgeUrl,
@@ -206,5 +238,28 @@ class CompletionHandlerFunctionalTests: TestBase, AnyCodableAsserts {
         // verify
         mockNetworkService.assertAllNetworkRequestExpectations()
         wait(for: [expectation], timeout: TIMEOUT_SEC)
+    }
+}
+
+/// Fulfills the given expectations (and captures the payloads) when its callbacks are invoked.
+private class LatchingEdgeCallbackWithError: EdgeCallbackWithError {
+    private let onCompleteExpectation: XCTestExpectation
+    private let onErrorExpectation: XCTestExpectation
+    var receivedHandles: [EdgeEventHandle] = []
+    var receivedErrors: [EdgeEventError] = []
+
+    init(onCompleteExpectation: XCTestExpectation, onErrorExpectation: XCTestExpectation) {
+        self.onCompleteExpectation = onCompleteExpectation
+        self.onErrorExpectation = onErrorExpectation
+    }
+
+    func onComplete(_ handles: [EdgeEventHandle]) {
+        receivedHandles.append(contentsOf: handles)
+        onCompleteExpectation.fulfill()
+    }
+
+    func onError(_ errors: [EdgeEventError]) {
+        receivedErrors.append(contentsOf: errors)
+        onErrorExpectation.fulfill()
     }
 }

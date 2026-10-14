@@ -1,0 +1,22 @@
+{
+  "_meta": { "schemaVersion": 1 },
+  "enabled": true,
+  "maxBatchSize": 10,
+  "wildcards": [
+    { "xdmEventType": "media.*", "enabled": true },
+    { "xdmEventType": "*.suffixProbe", "enabled": true }
+  ],
+  "optimize": [
+    { "xdmEventType": "decisioning.propositionFetch", "enabled": true },
+    { "xdmEventType": "decisioning.propositionInteract", "enabled": true }
+  ],
+  "messaging": [
+    { "xdmEventType": "decisioning.propositionFetch", "enabled": true },
+    { "xdmEventType": "decisioning.propositionInteract", "enabled": true },
+    { "xdmEventType": "pushTracking.applicationOpened", "enabled": true },
+    { "xdmEventType": "pushTracking.customAction", "enabled": true }
+  ],
+  "batchTest": [
+    { "xdmEventType": "batchingManualTest", "enabled": true }
+  ]
+}

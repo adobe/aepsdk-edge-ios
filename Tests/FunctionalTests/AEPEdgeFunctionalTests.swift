@@ -935,7 +935,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
     // MARK: test persisted hits
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersisting() {
-        let error = EdgeEventError(title: nil, detail: "X service is temporarily unable to serve this request. Please try again later.", status: 503, type: "test-type", report: nil)
+        let error = EdgeResponseError(title: nil, detail: "X service is temporarily unable to serve this request. Please try again later.", status: 503, type: "test-type", report: nil)
         let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
         let responseData = try? JSONEncoder().encode(edgeResponse)
 
@@ -976,7 +976,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
     }
 
     func testSendEvent_withXDMData_sendsExEdgeNetworkRequest_afterPersistingMultipleHits() {
-        let error = EdgeEventError(title: nil, detail: "X service is temporarily unable to serve this request. Please try again later.", status: 503, type: nil, report: nil)
+        let error = EdgeResponseError(title: nil, detail: "X service is temporarily unable to serve this request. Please try again later.", status: 503, type: nil, report: nil)
         let edgeResponse = EdgeResponse(requestId: "test-req-id", handle: nil, errors: [error], warnings: nil)
         let responseData = try? JSONEncoder().encode(edgeResponse)
 
@@ -1131,10 +1131,10 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         }
 
         let jsonData = try! JSONSerialization.data(withJSONObject: eventDataDict)
-        let expectedEdgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: response.data(using: .utf8)!)
-        let edgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData)
+        let expectedEdgeResponseError = try? JSONDecoder().decode(EdgeResponseError.self, from: response.data(using: .utf8)!)
+        let edgeResponseError = try? JSONDecoder().decode(EdgeResponseError.self, from: jsonData)
 
-        XCTAssertEqual(expectedEdgeEventError, edgeEventError)
+        XCTAssertEqual(expectedEdgeResponseError, edgeResponseError)
     }
 
     func testSendEvent_fatalError400() {
@@ -1175,10 +1175,10 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         }
 
         let jsonData = try! JSONSerialization.data(withJSONObject: eventDataDict)
-        let expectedEdgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: response.data(using: .utf8)!)
-        let edgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData)
+        let expectedEdgeResponseError = try? JSONDecoder().decode(EdgeResponseError.self, from: response.data(using: .utf8)!)
+        let edgeResponseError = try? JSONDecoder().decode(EdgeResponseError.self, from: jsonData)
 
-        XCTAssertEqual(expectedEdgeEventError, edgeEventError)
+        XCTAssertEqual(expectedEdgeResponseError, edgeResponseError)
     }
 
     func testSendEvent_recoverableNetworkTransportError_retries() {
@@ -1249,10 +1249,10 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         }
 
         let jsonData = try! JSONSerialization.data(withJSONObject: eventDataDict)
-        let expectedEdgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: response.data(using: .utf8)!)
-        let edgeEventError = try? JSONDecoder().decode(EdgeEventError.self, from: jsonData)
+        let expectedEdgeResponseError = try? JSONDecoder().decode(EdgeResponseError.self, from: response.data(using: .utf8)!)
+        let edgeResponseError = try? JSONDecoder().decode(EdgeResponseError.self, from: jsonData)
 
-        XCTAssertEqual(expectedEdgeEventError, edgeEventError)
+        XCTAssertEqual(expectedEdgeResponseError, edgeResponseError)
     }
 
     // MARK: Test Send Event with Configurable Endpoint
@@ -1441,7 +1441,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         XCTAssertTrue(resultNetworkRequests[1].url.absoluteURL.absoluteString.hasPrefix(TestConstants.EX_EDGE_INTERACT_PROD_URL_STR))
     }
 
-    func getEdgeEventError(message: String, code: String) -> EdgeEventError {
+    func getEdgeResponseError(message: String, code: String) -> EdgeResponseError {
         let data = """
              {
                 "message": "\(message)",
@@ -1449,10 +1449,10 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
              }
          """.data(using: .utf8)
         let decoder = JSONDecoder()
-        return try! decoder.decode(EdgeEventError.self, from: data!) // swiftlint:disable:this force_unwrapping
+        return try! decoder.decode(EdgeResponseError.self, from: data!) // swiftlint:disable:this force_unwrapping
     }
 
-    func getEdgeEventError(message: String, code: String, namespace: String, index: Int) -> EdgeEventError {
+    func getEdgeResponseError(message: String, code: String, namespace: String, index: Int) -> EdgeResponseError {
         let data = """
              {
                 "message": "\(message)",
@@ -1462,7 +1462,7 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
              }
          """.data(using: .utf8)
         let decoder = JSONDecoder()
-        return try! decoder.decode(EdgeEventError.self, from: data!) // swiftlint:disable:this force_unwrapping
+        return try! decoder.decode(EdgeResponseError.self, from: data!) // swiftlint:disable:this force_unwrapping
     }
 
     /// Generates a JSON string representing a network request payload. It

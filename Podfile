@@ -25,19 +25,19 @@ end
 
 target 'UnitTests' do
   core_pods
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :tag => 'testutils-5.2.2'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :tag => 'testutils-5.6.0'
 end
 
 target 'UpstreamIntegrationTests' do
   core_pods
   edge_pods
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :tag => 'testutils-5.2.2'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :tag => 'testutils-5.6.0'
 end
 
 target 'FunctionalTests' do
   core_pods
   edge_pods
-  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :tag => 'testutils-5.2.2'
+  pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :tag => 'testutils-5.6.0'
 end
 
 target 'TestAppiOS' do

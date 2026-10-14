@@ -30,6 +30,7 @@ enum HttpResponseCodes: Int {
     case ok = 200
     case accepted = 202
     case noContent = 204
+    case badRequest = 400
     case multiStatus = 207
     case tooManyRequests = 429
     case badGateway = 502
@@ -113,7 +114,7 @@ class EdgeNetworkService {
                        Log.debug(label: EdgeConstants.LOG_TAG,
                                  "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) \(errorMessage)). Will retry request in \(retryInterval) seconds.")
 
-                       completion(false, retryInterval) // failed, but recoverable so retry
+                       completion(false, retryInterval, nil) // failed, but recoverable so retry
                        return
                 }
 
@@ -210,7 +211,7 @@ class EdgeNetworkService {
                                     connection: HttpConnection,
                                     streaming: Streaming?,
                                     responseCallback: ResponseCallback,
-                                    completion: @escaping (Bool, TimeInterval?) -> Void) {
+                                    completion: @escaping (Bool, TimeInterval?, Int?) -> Void) {
 
         switch responseCode {
         case HttpResponseCodes.ok.rawValue:
@@ -230,7 +231,7 @@ class EdgeNetworkService {
         case HttpResponseCodes.noContent.rawValue:
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge was successful, no content returned.")
             responseCallback.onComplete()
-            completion(true, nil) // successful request, return true
+            completion(true, nil, responseCode) // successful request, return true
         case HttpResponseCodes.multiStatus.rawValue:
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Connection to Experience Edge was successful, but encountered non-fatal errors/warnings. \(responseCode)")
@@ -238,7 +239,7 @@ class EdgeNetworkService {
                                streaming: streaming,
                                responseCallback: responseCallback)
             responseCallback.onComplete()
-            completion(true, nil) // non-fatal error, don't retry
+            completion(true, nil, responseCode) // non-fatal error, don't retry
         default:
             if self.recoverableNetworkErrorCodes.contains(responseCode) {
                 let retryHeader = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER)
@@ -249,12 +250,12 @@ class EdgeNetworkService {
                 }
                 Log.debug(label: EdgeConstants.LOG_TAG,
                           "\(SELF_TAG) - Connection to Experience Edge returned recoverable error code \(responseCode). Will retry request in \(retryInterval) seconds.")
-                completion(false, retryInterval) // failed, but recoverable so retry
+                completion(false, retryInterval, responseCode) // failed, but recoverable so retry
             } else {
                 Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge returned unrecoverable error code \(responseCode)")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
-                completion(true, nil) // failed, but unrecoverable, don't retry
+                completion(true, nil, responseCode) // failed, but unrecoverable, don't retry
             }
         }
     }
@@ -299,7 +300,7 @@ class EdgeNetworkService {
         var unwrappedErrorMessage = plainTextErrorMessage ?? DEFAULT_GENERIC_ERROR_MESSAGE
         unwrappedErrorMessage = unwrappedErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let eventError = EdgeEventError(title: DEFAULT_GENERIC_ERROR_TITLE, detail: unwrappedErrorMessage)
+        let eventError = EdgeResponseError(title: DEFAULT_GENERIC_ERROR_TITLE, detail: unwrappedErrorMessage)
 
         guard let json = try? JSONEncoder().encode(eventError) else {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to serialize the error message.")
