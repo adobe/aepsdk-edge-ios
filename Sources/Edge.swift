@@ -165,8 +165,15 @@ public class Edge: NSObject, Extension {
             return // drop current event
         }
 
+        // Merge in the (possibly bundled-fallback) batching keys so they're snapshotted alongside the
+        // rest of the Edge configuration at enqueue time, same as edge.configId/environment/domain.
+        var combinedConfig: [String: Any] = edgeConfig
+        for (key, value) in sharedStateReader.getEdgeBatchingConfig(event: event) {
+            combinedConfig[key] = value
+        }
+
         let edgeEntity = EdgeDataEntity(event: event,
-                                        configuration: AnyCodable.from(dictionary: edgeConfig) ?? [:],
+                                        configuration: AnyCodable.from(dictionary: combinedConfig) ?? [:],
                                         identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
@@ -269,9 +276,10 @@ public class Edge: NSObject, Extension {
         return true
     }
 
-    /// Sets up the `PersistentHitQueue` to handle `EdgeHit`s
+    /// Sets up the primary batching queue and the separate consent-bypass queue to handle `EdgeHit`s.
     private func setupHitQueue(dataQueueService: DataQueuing) -> (primary: HitQueuing, bypassConsent: HitQueuing?)? {
-        guard let dataQueue = dataQueueService.getDataQueue(label: name) else {
+        let dataQueueConfig = DataQueueConfig(journalMode: .wal)
+        guard let dataQueue = dataQueueService.getDataQueue(label: name, config: dataQueueConfig) else {
             Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to create DataQueue, Edge could not be initialized")
             return nil
         }
@@ -287,7 +295,7 @@ public class Edge: NSObject, Extension {
                                             readyForEvent: readyForEvent(_:),
                                             getImplementationDetails: getImplementationDetails,
                                             getLocationHint: getLocationHint)
-        let primaryQueue = PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
+        let primaryQueue = EdgeBatchingHitQueue(dataQueue: dataQueue, processor: hitProcessor)
         guard let bypassConsentDataQueue = dataQueueService.getDataQueue(label: "\(name)\(EdgeConstants.DataQueueLabels.BYPASS_CONSENT_SUFFIX)") else {
             Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Device attributes queue is unavailable; ordinary Edge remains initialized.")
             return (primary: primaryQueue, bypassConsent: nil)
