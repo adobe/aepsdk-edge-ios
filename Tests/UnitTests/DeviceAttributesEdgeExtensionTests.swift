@@ -225,9 +225,10 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         XCTAssertEqual(1, bypassQueue.beginProcessingCount)
     }
 
-    func testMissingStateReadinessExceptionAppliesOnlyToBypass() {
+    func testReadyForEvent_missingState_blocksBypassLikeOtherEvents() {
+        simulateConfigAndIdentity()
         edge.state = nil
-        XCTAssertTrue(edge.readyForEvent(makeRequest()))
+        XCTAssertFalse(edge.readyForEvent(makeRequest()))
         XCTAssertFalse(edge.readyForEvent(experienceEvent))
     }
 
@@ -286,6 +287,7 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         XCTAssertTrue(state.hitQueue is EdgeBatchingHitQueue)
 
         let request = makeRequest()
+        simulateConfigAndIdentity()
         XCTAssertTrue(configuredEdge.readyForEvent(request))
         configuredEdge.handleBypassConsentRequest(request)
 

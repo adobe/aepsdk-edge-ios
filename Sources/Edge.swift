@@ -80,13 +80,9 @@ public class Edge: NSObject, Extension {
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
-        if event.isBypassConsentEvent {
-            return readyForBypassConsentEvent(event)
-        }
-
         guard canProcessEvents(event: event) else { return false }
 
-        if event.isExperienceEvent || event.isUpdateConsentEvent {
+        if event.isExperienceEvent || event.isUpdateConsentEvent || event.isBypassConsentEvent {
             let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
             let identitySharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
@@ -270,19 +266,6 @@ public class Edge: NSObject, Extension {
     }
 
     // MARK: - Device attributes (consent-independent)
-
-    /// Readiness for device attributes request events. When the device attributes queue is unavailable the event is let
-    /// through so `handleBypassConsentRequest` can report the failure; otherwise Configuration and Identity shared states are required.
-    private func readyForBypassConsentEvent(_ event: Event) -> Bool {
-        guard state?.bypassConsentHitQueue != nil else { return true }
-        guard canProcessEvents(event: event) else { return false }
-
-        let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
-                                                      event: event)
-        let identitySharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
-                                                    event: event)
-        return configurationSharedState?.status == .set && identitySharedState?.status == .set
-    }
 
     /// Handles device attributes request events. They are queued on the dedicated device attributes queue, which is not
     /// subject to collect consent, and always result in exactly one device attributes response event.
