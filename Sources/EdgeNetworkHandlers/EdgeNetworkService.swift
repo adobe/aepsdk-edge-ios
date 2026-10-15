@@ -17,8 +17,7 @@ import Foundation
 /// Edge Network request type:
 ///     - interact - makes request and expects a response
 ///     - consent - sets user consent and expects a response
-///     - deviceAttributes - registers device/profile operational data (push/live-activity tokens, timezone),
-///       consent-independent path handled via the consent-override queue
+///     - deviceAttributes - registers device attributes, independent of collect consent (see `DeviceAttributesHitProcessor`)
 enum EdgeRequestType: String {
     case interact
     case consent = "privacy/set-consent"
@@ -28,7 +27,6 @@ enum EdgeRequestType: String {
 /// Convenience enum for the known error codes
 enum HttpResponseCodes: Int {
     case ok = 200
-    case accepted = 202
     case noContent = 204
     case badRequest = 400
     case multiStatus = 207
@@ -76,20 +74,20 @@ class EdgeNetworkService {
     ///   - requestBody: `EdgeRequest` containing the encoded events
     ///   - requestHeaders: request HTTP headers
     ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
-    ///   - bypassResult: Optional final HTTP outcome for device attributes. Only 200, 202, and 204 are success. Not invoked on retry.
-    ///   - completion: a closure invoked with whether the hit is finished, the retry interval, and the HTTP response code
-    ///     (nil when no response was received). Batching uses the response code to distinguish a 400, which can be resent individually.
+    ///   - completion: a closure invoked with true if the hit should not be retried, false if the hit should be retried, along with
+    ///     the time interval that should elapse before retrying the hit, and the HTTP response code if one was received (nil if the
+    ///     request never reached the server, e.g. malformed URL or empty body). The response code lets callers that batch multiple
+    ///     events into one request (see `EdgeHitProcessor.processBatch`) distinguish a 400 (nothing ingested, safe to resend each
+    ///     event individually) from other unrecoverable errors (deliver the terminal error once, don't resend).
     func doRequest(url: URL,
                    requestBody: String?,
                    requestHeaders: [String: String]? = [:],
                    streaming: Streaming?,
                    responseCallback: ResponseCallback,
-                   bypassResult: ((Bool, Int?) -> Void)? = nil,
                    completion: @escaping (Bool, TimeInterval?, Int?) -> Void) {
         guard let payload = requestBody, !payload.isEmpty else {
             Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Request body is nil/empty, dropping this request")
             responseCallback.onComplete()
-            bypassResult?(false, nil)
             completion(true, nil, nil)
             return
         }
@@ -125,7 +123,6 @@ class EdgeNetworkService {
                             "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) \(errorMessage). Dropping the request.")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
-                bypassResult?(false, connection.responseCode)
                 completion(true, nil, connection.responseCode) // don't retry
                 return
             }
@@ -134,27 +131,15 @@ class EdgeNetworkService {
                 Log.warning(label: EdgeConstants.LOG_TAG, "\(self.SELF_TAG) - Edge request with url:\(url.absoluteString) failed with unknown error. Dropping the request.")
                 self.handleError(connection: connection, responseCallback: responseCallback)
                 responseCallback.onComplete()
-                bypassResult?(false, nil)
                 completion(true, nil, nil) // failed, but unrecoverable, don't retry
                 return
             }
 
-            if let bypassResult = bypassResult,
-               [HttpResponseCodes.ok.rawValue, HttpResponseCodes.accepted.rawValue, HttpResponseCodes.noContent.rawValue].contains(responseCode) {
-                self.handleContent(connection: connection, streaming: streaming, responseCallback: responseCallback)
-                responseCallback.onComplete()
-                bypassResult(true, responseCode)
-                completion(true, nil, responseCode)
-                return
-            }
             self.handleResponseWith(responseCode: responseCode,
                                     connection: connection,
                                     streaming: streaming,
                                     responseCallback: responseCallback,
-                                    completion: { finished, retryInterval, responseCode in
-                                        if finished { bypassResult?(false, responseCode) }
-                                        completion(finished, retryInterval, responseCode)
-                                    })
+                                    completion: completion)
         }
     }
 

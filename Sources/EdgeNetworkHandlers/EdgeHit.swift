@@ -11,7 +11,6 @@
 //
 
 import AEPCore
-import AEPServices
 import Foundation
 
 /// Protocol used for defining hits to Experience Edge service

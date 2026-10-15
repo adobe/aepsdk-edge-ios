@@ -21,9 +21,7 @@ class EdgeState {
     private var _implementationDetails: [String: Any]?
     private var _consentStatus: ConsentStatus
     private(set) var hitQueue: HitQueuing
-    /// Dedicated queue for hits that must be sent regardless of collect consent status.
-    /// It is started once at init and is intentionally NOT wired to consent changes, so it is never
-    /// suspended or cleared by `handleCollectConsentChange`.
+    /// Device attributes queue. Never receives collect consent changes; started once bootup completes.
     private(set) var bypassConsentHitQueue: HitQueuing?
     private(set) var hasBooted = false
 
@@ -42,16 +40,13 @@ class EdgeState {
     #endif
 
     /// Creates a new `EdgeState` and initializes the required properties and sets the initial collect consent
-    init(hitQueue: HitQueuing, bypassConsentHitQueue: HitQueuing?, edgeProperties: EdgeProperties) {
+    init(hitQueue: HitQueuing, bypassConsentHitQueue: HitQueuing? = nil, edgeProperties: EdgeProperties) {
         self.edgeProperties = edgeProperties
         self.queue = DispatchQueue(label: "com.adobe.edgestate.queue")
         self.hitQueue = hitQueue
         self.bypassConsentHitQueue = bypassConsentHitQueue
         self._consentStatus = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
         hitQueue.handleCollectConsentChange(status: currentCollectConsent)
-        // The bypass-consent queue is intentionally started unconditionally and never receives
-        // consent updates, so essential hits are delivered regardless of collect consent.
-        bypassConsentHitQueue?.beginProcessing()
     }
 
     /// Completes init for the `Edge` extension.
@@ -94,6 +89,8 @@ class EdgeState {
         createSharedState(edgeProperties.toEventData(), nil)
 
         hasBooted = true
+        // Started after persisted properties and implementationDetails are loaded, so restored hits use them.
+        bypassConsentHitQueue?.beginProcessing()
         Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Edge has successfully booted up")
     }
 

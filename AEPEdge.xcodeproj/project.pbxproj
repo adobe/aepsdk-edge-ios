@@ -21,6 +21,16 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		DA0A02000000000000000000 /* DeviceAttributesConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01000000000000000000 /* DeviceAttributesConstants.swift */; };
+		DA0A02010000000000000000 /* Event+DeviceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01010000000000000000 /* Event+DeviceAttributes.swift */; };
+		DA0A02020000000000000000 /* DeviceAttributesRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */; };
+		DA0A02030000000000000000 /* DeviceAttributesNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */; };
+		DA0A02040000000000000000 /* DeviceAttributesResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01040000000000000000 /* DeviceAttributesResponseHandler.swift */; };
+		DA0A02050000000000000000 /* DeviceAttributesHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */; };
+		DA0A02060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift */; };
+		DA0A02070000000000000000 /* DeviceAttributesEdgeStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01070000000000000000 /* DeviceAttributesEdgeStateTests.swift */; };
+		DA0A02080000000000000000 /* DeviceAttributesHitProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01080000000000000000 /* DeviceAttributesHitProcessorTests.swift */; };
+		DA0A02090000000000000000 /* DeviceAttributesRequestBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01090000000000000000 /* DeviceAttributesRequestBuilderTests.swift */; };
 		1CCD27DC245A240F00E912B2 /* ExperienceEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */; };
 		211BCB8126030DCD00AACFEF /* EdgeDataEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211BCB8026030DCD00AACFEF /* EdgeDataEntity.swift */; };
 		216989652554B39900B2752C /* EdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989642554B39900B2752C /* EdgeHit.swift */; };
@@ -90,7 +100,6 @@
 		D4145FB525D5D0430019EA4C /* Event+Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145FB425D5D0430019EA4C /* Event+Edge.swift */; };
 		D4145FCD25DCB3270019EA4C /* ExperienceEventsEdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145FCC25DCB3260019EA4C /* ExperienceEventsEdgeHit.swift */; };
 		D4145FD325DCB3890019EA4C /* ConsentEdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */; };
-		E6A1D5390000000000000002 /* NoConsentEdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A1D5390000000000000001 /* NoConsentEdgeHit.swift */; };
 		D42F36BA251C185000490C0D /* AEPEdge.h in Headers */ = {isa = PBXBuildFile; fileRef = D4D66AA2251910FB00B4866D /* AEPEdge.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D42FB8E124635FA200E9321C /* MockResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8E024635FA200E9321C /* MockResponseCallback.swift */; };
 		D43BAB0325BB758400B08CC0 /* EdgeConsentStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43BAB0225BB758300B08CC0 /* EdgeConsentStatus.swift */; };
@@ -222,6 +231,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DA0A01000000000000000000 /* DeviceAttributesConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesConstants.swift; sourceTree = "<group>"; };
+		DA0A01010000000000000000 /* Event+DeviceAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Event+DeviceAttributes.swift"; sourceTree = "<group>"; };
+		DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesRequestBuilder.swift; sourceTree = "<group>"; };
+		DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesNetworkService.swift; sourceTree = "<group>"; };
+		DA0A01040000000000000000 /* DeviceAttributesResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesResponseHandler.swift; sourceTree = "<group>"; };
+		DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesHitProcessor.swift; sourceTree = "<group>"; };
+		DA0A01060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesEdgeExtensionTests.swift; sourceTree = "<group>"; };
+		DA0A01070000000000000000 /* DeviceAttributesEdgeStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesEdgeStateTests.swift; sourceTree = "<group>"; };
+		DA0A01080000000000000000 /* DeviceAttributesHitProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesHitProcessorTests.swift; sourceTree = "<group>"; };
+		DA0A01090000000000000000 /* DeviceAttributesRequestBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesRequestBuilderTests.swift; sourceTree = "<group>"; };
 		04A228C42686D67347C85BEA /* Pods-TestAppiOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppiOS.release.xcconfig"; path = "Target Support Files/Pods-TestAppiOS/Pods-TestAppiOS.release.xcconfig"; sourceTree = "<group>"; };
 		0B13510405D14B13EFD1B58A /* Pods_FunctionalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FunctionalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CCD27C52458CB2300E912B2 /* ExperienceEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceEvent.swift; sourceTree = "<group>"; };
@@ -313,7 +332,6 @@
 		D4145FB425D5D0430019EA4C /* Event+Edge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Event+Edge.swift"; sourceTree = "<group>"; };
 		D4145FCC25DCB3260019EA4C /* ExperienceEventsEdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceEventsEdgeHit.swift; sourceTree = "<group>"; };
 		D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentEdgeHit.swift; sourceTree = "<group>"; };
-		E6A1D5390000000000000001 /* NoConsentEdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConsentEdgeHit.swift; sourceTree = "<group>"; };
 		D42FB8D124610A0000E9321C /* ResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallback.swift; sourceTree = "<group>"; };
 		D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionHandlersManager.swift; sourceTree = "<group>"; };
 		D42FB8DA246261E600E9321C /* EdgeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeResponse.swift; sourceTree = "<group>"; };
@@ -431,6 +449,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DA0A03000000000000000000 /* DeviceAttributes */ = {
+			isa = PBXGroup;
+			children = (
+				DA0A01000000000000000000 /* DeviceAttributesConstants.swift */,
+				DA0A01010000000000000000 /* Event+DeviceAttributes.swift */,
+				DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */,
+				DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */,
+				DA0A01040000000000000000 /* DeviceAttributesResponseHandler.swift */,
+				DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */,
+			);
+			path = DeviceAttributes;
+			sourceTree = "<group>";
+		};
 		1CCD27CD24592B2800E912B2 /* xdm */ = {
 			isa = PBXGroup;
 			children = (
@@ -505,7 +536,6 @@
 				211BCB8026030DCD00AACFEF /* EdgeDataEntity.swift */,
 				D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */,
 				D4145FCC25DCB3260019EA4C /* ExperienceEventsEdgeHit.swift */,
-				E6A1D5390000000000000001 /* NoConsentEdgeHit.swift */,
 				216989772554B61500B2752C /* EdgeHitProcessor.swift */,
 				D46553FA246B6FBC00A150E2 /* EdgeResponseError.swift */,
 				21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */,
@@ -589,6 +619,7 @@
 			children = (
 				1CCD27CD24592B2800E912B2 /* xdm */,
 				D42FB8D52462159300E9321C /* public */,
+				DA0A03000000000000000000 /* DeviceAttributes */,
 				D42FB8D02461086200E9321C /* EdgeNetworkHandlers */,
 				D43BAB0225BB758300B08CC0 /* EdgeConsentStatus.swift */,
 				BF947F63243565CC0057A6CC /* EdgeConstants.swift */,
@@ -623,6 +654,10 @@
 				D45F2E8125EE1987000AC350 /* EdgePublicAPITests.swift */,
 				BF947F9F244569190057A6CC /* EdgeRequestTests.swift */,
 				BF74551028BC649A00FF3AEC /* EdgeStateTests.swift */,
+				DA0A01060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift */,
+				DA0A01070000000000000000 /* DeviceAttributesEdgeStateTests.swift */,
+				DA0A01080000000000000000 /* DeviceAttributesHitProcessorTests.swift */,
+				DA0A01090000000000000000 /* DeviceAttributesRequestBuilderTests.swift */,
 				1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */,
 				BF0F92502756A3EF00378913 /* ImplementationDetailsTests.swift */,
 				BF947F73243BA0E10057A6CC /* KonductorConfigTests.swift */,
@@ -1301,6 +1336,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4EC0DBB25E73FF10026EBAA /* EdgeState.swift in Sources */,
+				DA0A02000000000000000000 /* DeviceAttributesConstants.swift in Sources */,
+				DA0A02010000000000000000 /* Event+DeviceAttributes.swift in Sources */,
+				DA0A02020000000000000000 /* DeviceAttributesRequestBuilder.swift in Sources */,
+				DA0A02030000000000000000 /* DeviceAttributesNetworkService.swift in Sources */,
+				DA0A02040000000000000000 /* DeviceAttributesResponseHandler.swift in Sources */,
+				DA0A02050000000000000000 /* DeviceAttributesHitProcessor.swift in Sources */,
 				BFDF25AD2BDB077E002114B6 /* SharedStateReader.swift in Sources */,
 				BF0F924F27476E6C00378913 /* ImplementationDetails.swift in Sources */,
 				D4C6B437251A76CB0038F4F9 /* XDMProtocols.swift in Sources */,
@@ -1324,7 +1365,6 @@
 				21C0F88A2627B9D9003872DC /* EdgeEndpoint.swift in Sources */,
 				D4145FD325DCB3890019EA4C /* ConsentEdgeHit.swift in Sources */,
 				D4145FCD25DCB3270019EA4C /* ExperienceEventsEdgeHit.swift in Sources */,
-				E6A1D5390000000000000002 /* NoConsentEdgeHit.swift in Sources */,
 				D4C6B443251A76CB0038F4F9 /* NetworkResponseCallback.swift in Sources */,
 				D4C6B444251A76CB0038F4F9 /* NetworkResponseHandler.swift in Sources */,
 				D4C6B445251A76CB0038F4F9 /* RequestBuilder.swift in Sources */,
@@ -1366,6 +1406,10 @@
 				BF0F92522756A57800378913 /* ImplementationDetailsTests.swift in Sources */,
 				BF947F74243BA0E10057A6CC /* KonductorConfigTests.swift in Sources */,
 				BF74551128BC649A00FF3AEC /* EdgeStateTests.swift in Sources */,
+				DA0A02060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift in Sources */,
+				DA0A02070000000000000000 /* DeviceAttributesEdgeStateTests.swift in Sources */,
+				DA0A02080000000000000000 /* DeviceAttributesHitProcessorTests.swift in Sources */,
+				DA0A02090000000000000000 /* DeviceAttributesRequestBuilderTests.swift in Sources */,
 				D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */,
 				D4145F4025D1D3200019EA4C /* EdgeHitTests.swift in Sources */,
 				216989B32555376A00B2752C /* EdgeHitProcessorTests.swift in Sources */,
