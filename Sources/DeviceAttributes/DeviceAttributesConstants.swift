@@ -12,21 +12,28 @@
 
 import Foundation
 
-// Constants owned by the consent-independent device-attributes (bypass) path.
-// Declared as extensions so the shared `EdgeConstants.swift` is left untouched.
+// Constants owned by the consent-independent device-attributes path.
+// Declared as an extension so the shared `EdgeConstants.swift` is left untouched.
 
 extension EdgeConstants {
-    enum EventType {
-        /// Request (E3, `requestContent`) and result (E4, `responseContent`) event type for the device-attributes path.
-        static let EDGE_BYPASS_CONSENT = "com.adobe.eventType.edgeBypassConsent"
-    }
-
-    enum DataQueueLabels {
+    enum DeviceAttributes {
+        /// Request (E3, `requestContent`) and response (E4, `responseContent`) event type for the device-attributes path.
+        static let EVENT_TYPE = "com.adobe.eventType.edgeBypassConsent"
+        /// Name of the device-attributes response event (E4).
+        static let EVENT_NAME_RESPONSE = "Device Attributes Response"
         /// Suffix appended to the Edge extension name to label the dedicated device-attributes queue.
-        static let BYPASS_CONSENT_SUFFIX = ".bypassConsent"
-    }
+        static let DATA_QUEUE_SUFFIX = ".deviceAttributes"
+        /// HTTP status codes treated as a successful device-attributes request.
+        static let SUCCESS_RESPONSE_CODES: Set<Int> = [200, 202]
+        static let EDGE_NETWORK_SCOPE = "EdgeNetwork"
 
-    enum BypassResult {
+        enum EventDataKeys {
+            static let STATUS = "status"
+            static let REASON = "reason"
+            static let HTTP_STATUS = "httpStatus"
+            static let REQUEST_EVENT_ID = EdgeConstants.EventDataKeys.REQUEST_EVENT_ID
+        }
+
         enum Status {
             static let SUCCESS = "success"
             static let FAILED = "failed"
@@ -38,13 +45,8 @@ extension EdgeConstants {
             static let INVALID_PAYLOAD = "invalidPayload"
             static let QUEUE_UNAVAILABLE = "queueUnavailable"
             static let NETWORK = "network"
+            static let IDENTITY_CHANGED = "identityChanged"
         }
-    }
-
-    enum DeviceAttributes {
-        /// HTTP status codes treated as a successful device-attributes request.
-        static let SUCCESS_RESPONSE_CODES: Set<Int> = [200, 202]
-        static let EDGE_NETWORK_SCOPE = "EdgeNetwork"
 
         enum ResponseKeys {
             static let HANDLE = "handle"
@@ -54,18 +56,5 @@ extension EdgeConstants {
             static let REPORT = "report"
             static let ERRORS = "errors"
         }
-    }
-}
-
-extension EdgeConstants.EventName {
-    static let BYPASS_RESULT = "Device Attributes Response"
-}
-
-extension EdgeConstants.EventDataKeys {
-    enum BypassResult {
-        static let STATUS = "status"
-        static let REASON = "reason"
-        static let HTTP_STATUS = "httpStatus"
-        static let REQUEST_EVENT_ID = EdgeConstants.EventDataKeys.REQUEST_EVENT_ID
     }
 }

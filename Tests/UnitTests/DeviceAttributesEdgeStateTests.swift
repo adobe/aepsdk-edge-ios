@@ -54,24 +54,24 @@ class DeviceAttributesEdgeStateTests: XCTestCase {
         ServiceProvider.shared.namedKeyValueService = MockDataStore()
     }
 
-    func testInit_doesNotStartBypassQueue() {
+    func testInit_doesNotStartDeviceAttributesQueue() {
         let primaryQueue = RecordingHitQueue()
-        let bypassQueue = RecordingHitQueue()
+        let deviceAttributesQueue = RecordingHitQueue()
 
-        let state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
+        let state = EdgeState(hitQueue: primaryQueue, deviceAttributesHitQueue: deviceAttributesQueue, edgeProperties: EdgeProperties())
 
         XCTAssertEqual(.pending, state.currentCollectConsent)
         XCTAssertEqual([.suspend], primaryQueue.operations)
-        XCTAssertEqual([], bypassQueue.operations)
+        XCTAssertEqual([], deviceAttributesQueue.operations)
     }
 
-    func testBootup_startsBypassQueueOnceAfterImplementationDetailsAndPropertiesAreLoaded() {
-        let bypassQueue = RecordingHitQueue()
-        let state = EdgeState(hitQueue: RecordingHitQueue(), bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
+    func testBootup_startsDeviceAttributesQueueOnceAfterImplementationDetailsAndPropertiesAreLoaded() {
+        let deviceAttributesQueue = RecordingHitQueue()
+        let state = EdgeState(hitQueue: RecordingHitQueue(), deviceAttributesHitQueue: deviceAttributesQueue, edgeProperties: EdgeProperties())
         var implementationDetailsAtStart: [String: Any]?
         var sharedStateCreatedAtStart = false
         var sharedStateCreated = false
-        bypassQueue.onBeginProcessing = {
+        deviceAttributesQueue.onBeginProcessing = {
             implementationDetailsAtStart = state.implementationDetails
             sharedStateCreatedAtStart = sharedStateCreated
         }
@@ -86,38 +86,38 @@ class DeviceAttributesEdgeStateTests: XCTestCase {
         }
 
         XCTAssertTrue(state.hasBooted)
-        XCTAssertEqual([.beginProcessing], bypassQueue.operations)
+        XCTAssertEqual([.beginProcessing], deviceAttributesQueue.operations)
         XCTAssertNotNil(implementationDetailsAtStart)
         XCTAssertTrue(sharedStateCreatedAtStart)
     }
 
-    func testCollectConsentChanges_doNotAffectBypassQueue() {
+    func testCollectConsentChanges_doNotAffectDeviceAttributesQueue() {
         let primaryQueue = RecordingHitQueue()
-        let bypassQueue = RecordingHitQueue()
-        let state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
+        let deviceAttributesQueue = RecordingHitQueue()
+        let state = EdgeState(hitQueue: primaryQueue, deviceAttributesHitQueue: deviceAttributesQueue, edgeProperties: EdgeProperties())
         state.bootupIfNeeded(event: bootEvent, getSharedState: { _, _, _ in nil }, createSharedState: { _, _ in })
         let entity = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: Data())
-        XCTAssertTrue(bypassQueue.queue(entity: entity))
+        XCTAssertTrue(deviceAttributesQueue.queue(entity: entity))
 
         for status in [ConsentStatus.pending, .no, .yes] {
             state.updateCurrentConsent(status: status)
         }
 
         XCTAssertEqual(.yes, state.currentCollectConsent)
-        XCTAssertEqual([.beginProcessing], bypassQueue.operations)
-        XCTAssertEqual(1, bypassQueue.count())
+        XCTAssertEqual([.beginProcessing], deviceAttributesQueue.operations)
+        XCTAssertEqual(1, deviceAttributesQueue.count())
         XCTAssertTrue(primaryQueue.operations.contains(.clear))
     }
 
-    func testMissingBypassQueue_doesNotChangePrimaryConsentLifecycle() {
+    func testMissingDeviceAttributesQueue_doesNotChangePrimaryConsentLifecycle() {
         let primaryQueue = RecordingHitQueue()
-        let state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: nil, edgeProperties: EdgeProperties())
+        let state = EdgeState(hitQueue: primaryQueue, deviceAttributesHitQueue: nil, edgeProperties: EdgeProperties())
 
         state.updateCurrentConsent(status: .yes)
         state.updateCurrentConsent(status: .pending)
         state.updateCurrentConsent(status: .no)
 
-        XCTAssertNil(state.bypassConsentHitQueue)
+        XCTAssertNil(state.deviceAttributesHitQueue)
         XCTAssertEqual(.no, state.currentCollectConsent)
         XCTAssertEqual([.suspend, .beginProcessing, .suspend, .clear, .beginProcessing], primaryQueue.operations)
     }

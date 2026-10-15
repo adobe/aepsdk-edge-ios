@@ -25,6 +25,7 @@
 		DA0A02010000000000000000 /* Event+DeviceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01010000000000000000 /* Event+DeviceAttributes.swift */; };
 		DA0A02020000000000000000 /* DeviceAttributesRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */; };
 		DA0A02030000000000000000 /* DeviceAttributesNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */; };
+		DA0A020A0000000000000000 /* DeviceAttributesNetworkResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A010A0000000000000000 /* DeviceAttributesNetworkResult.swift */; };
 		DA0A02040000000000000000 /* DeviceAttributesResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01040000000000000000 /* DeviceAttributesResponseHandler.swift */; };
 		DA0A02050000000000000000 /* DeviceAttributesHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */; };
 		DA0A02060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift */; };
@@ -235,6 +236,7 @@
 		DA0A01010000000000000000 /* Event+DeviceAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Event+DeviceAttributes.swift"; sourceTree = "<group>"; };
 		DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesRequestBuilder.swift; sourceTree = "<group>"; };
 		DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesNetworkService.swift; sourceTree = "<group>"; };
+		DA0A010A0000000000000000 /* DeviceAttributesNetworkResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesNetworkResult.swift; sourceTree = "<group>"; };
 		DA0A01040000000000000000 /* DeviceAttributesResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesResponseHandler.swift; sourceTree = "<group>"; };
 		DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesHitProcessor.swift; sourceTree = "<group>"; };
 		DA0A01060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesEdgeExtensionTests.swift; sourceTree = "<group>"; };
@@ -456,6 +458,7 @@
 				DA0A01010000000000000000 /* Event+DeviceAttributes.swift */,
 				DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */,
 				DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */,
+				DA0A010A0000000000000000 /* DeviceAttributesNetworkResult.swift */,
 				DA0A01040000000000000000 /* DeviceAttributesResponseHandler.swift */,
 				DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */,
 			);
@@ -1340,6 +1343,7 @@
 				DA0A02010000000000000000 /* Event+DeviceAttributes.swift in Sources */,
 				DA0A02020000000000000000 /* DeviceAttributesRequestBuilder.swift in Sources */,
 				DA0A02030000000000000000 /* DeviceAttributesNetworkService.swift in Sources */,
+				DA0A020A0000000000000000 /* DeviceAttributesNetworkResult.swift in Sources */,
 				DA0A02040000000000000000 /* DeviceAttributesResponseHandler.swift in Sources */,
 				DA0A02050000000000000000 /* DeviceAttributesHitProcessor.swift in Sources */,
 				BFDF25AD2BDB077E002114B6 /* SharedStateReader.swift in Sources */,

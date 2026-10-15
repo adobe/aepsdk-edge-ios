@@ -22,7 +22,7 @@ class EdgeState {
     private var _consentStatus: ConsentStatus
     private(set) var hitQueue: HitQueuing
     /// Device attributes queue. Never receives collect consent changes; started once bootup completes.
-    private(set) var bypassConsentHitQueue: HitQueuing?
+    private(set) var deviceAttributesHitQueue: HitQueuing?
     private(set) var hasBooted = false
 
     var currentCollectConsent: ConsentStatus {
@@ -40,11 +40,11 @@ class EdgeState {
     #endif
 
     /// Creates a new `EdgeState` and initializes the required properties and sets the initial collect consent
-    init(hitQueue: HitQueuing, bypassConsentHitQueue: HitQueuing? = nil, edgeProperties: EdgeProperties) {
+    init(hitQueue: HitQueuing, deviceAttributesHitQueue: HitQueuing? = nil, edgeProperties: EdgeProperties) {
         self.edgeProperties = edgeProperties
         self.queue = DispatchQueue(label: "com.adobe.edgestate.queue")
         self.hitQueue = hitQueue
-        self.bypassConsentHitQueue = bypassConsentHitQueue
+        self.deviceAttributesHitQueue = deviceAttributesHitQueue
         self._consentStatus = EdgeConstants.Defaults.COLLECT_CONSENT_PENDING
         hitQueue.handleCollectConsentChange(status: currentCollectConsent)
     }
@@ -90,7 +90,7 @@ class EdgeState {
 
         hasBooted = true
         // Started after persisted properties and implementationDetails are loaded, so restored hits use them.
-        bypassConsentHitQueue?.beginProcessing()
+        deviceAttributesHitQueue?.beginProcessing()
         Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Edge has successfully booted up")
     }
 

@@ -53,6 +53,7 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
     private var currentLocationHint: String?
     private var implementationDetails: [String: Any]? = ["name": "https://ns.adobe.com/experience/mobilesdk/ios", "environment": "app", "version": "5.0.0"]
     private var assuranceIntegrationId: String?
+    private var latestIdentity: [String: Any]?
     private var processor: DeviceAttributesHitProcessor!
 
     override func setUp() {
@@ -63,6 +64,7 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
         locationHintUpdates = []
         currentLocationHint = nil
         assuranceIntegrationId = nil
+        latestIdentity = defaultIdentityMap
         processor = makeProcessor()
     }
 
@@ -273,20 +275,9 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
         XCTAssertTrue(StoreResponsePayloadManager(testStoreName).getActivePayloadList().isEmpty)
     }
 
-    // MARK: Identities reset
+    // MARK: ECID check
 
-    func testProcessHit_queuedBeforeReset_isDiscardedWithoutRequestOrResult() {
-        let (_, entity) = makeEntity(timestamp: Date(timeIntervalSinceNow: -60))
-        setResetDate(Date())
-
-        XCTAssertTrue(process(entity))
-
-        XCTAssertTrue(stubNetworking.requests.isEmpty)
-        XCTAssertTrue(dispatchedEvents.isEmpty)
-    }
-
-    func testProcessHit_queuedAfterReset_isSent() throws {
-        setResetDate(Date(timeIntervalSinceNow: -60))
+    func testProcessHit_sameEcid_isSent() throws {
         stubNetworking.responses = [response(200, body: nil)]
         let (event, entity) = makeEntity()
 
@@ -296,30 +287,68 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
         try assertSingleResult(for: event, status: "success", reason: nil, httpStatus: 200)
     }
 
-    func testProcessHit_resetWhileWaitingForRetry_isDiscardedOnNextAttempt() {
-        stubNetworking.responses = [response(503, body: nil)]
-        let (_, entity) = makeEntity(timestamp: Date(timeIntervalSinceNow: -60))
+    func testProcessHit_changedEcid_dispatchesDroppedIdentityChangedWithoutRequest() throws {
+        latestIdentity = identityState(ecids: ["new-ecid"])
+        let (event, entity) = makeEntity()
 
-        XCTAssertFalse(process(entity))
-        setResetDate(Date())
         XCTAssertTrue(process(entity))
 
-        XCTAssertEqual(1, stubNetworking.requests.count)
+        XCTAssertTrue(stubNetworking.requests.isEmpty)
+        try assertSingleResult(for: event, status: "dropped", reason: "identityChanged", httpStatus: nil)
+    }
+
+    func testProcessHit_latestIdentityUnavailable_retriesWithoutRequestOrResult() {
+        latestIdentity = nil
+        let (_, entity) = makeEntity()
+
+        XCTAssertFalse(process(entity))
+
+        XCTAssertTrue(stubNetworking.requests.isEmpty)
         XCTAssertTrue(dispatchedEvents.isEmpty)
     }
 
-    func testProcessHit_resetWhileInFlight_dispatchesResultButIgnoresStoreHandles() throws {
-        let (event, entity) = makeEntity(timestamp: Date(timeIntervalSinceNow: -60))
-        let networking = ResetDuringRequestNetworking(response: response(200, body: successBody)) { [weak self] in
-            self?.setResetDate(Date())
+    func testProcessHit_ecidChangesBetweenRetries_isDroppedOnNextAttempt() throws {
+        stubNetworking.responses = [response(503, body: nil)]
+        let (event, entity) = makeEntity()
+
+        XCTAssertFalse(process(entity))
+        XCTAssertTrue(dispatchedEvents.isEmpty)
+        latestIdentity = identityState(ecids: ["new-ecid"])
+        XCTAssertTrue(process(entity))
+
+        XCTAssertEqual(1, stubNetworking.requests.count)
+        try assertSingleResult(for: event, status: "dropped", reason: "identityChanged", httpStatus: nil)
+    }
+
+    func testProcessHit_ecidChangesDuringRequest_dispatchesResponseAndLocationHintButIgnoresStoreHandles() throws {
+        let (event, entity) = makeEntity()
+        ServiceProvider.shared.networkService = OnRequestNetworking(response: response(200, body: successBody)) { [weak self] in
+            self?.latestIdentity = self?.identityState(ecids: ["new-ecid"])
         }
-        ServiceProvider.shared.networkService = networking
 
         XCTAssertTrue(process(entity))
 
         XCTAssertTrue(StoreResponsePayloadManager(testStoreName).getActivePayloadList().isEmpty)
         XCTAssertEqual(1, locationHintUpdates.count)
+        XCTAssertEqual("or2", locationHintUpdates.first?.hint)
         try assertSingleResult(for: event, status: "success", reason: nil, httpStatus: 200)
+    }
+
+    func testProcessHit_legacyEcidAtIndexOne_doesNotAffectComparison() throws {
+        for (snapshot, latest) in [(["test-ecid", "legacy-ecid"], ["test-ecid", "other-legacy-ecid"]),
+                                   (["test-ecid", "legacy-ecid"], ["test-ecid"]),
+                                   (["test-ecid"], ["test-ecid", "legacy-ecid"])] {
+            setUp()
+            latestIdentity = identityState(ecids: latest)
+            stubNetworking.responses = [response(200, body: successBody)]
+            let (event, entity) = makeEntity(identityMap: identityState(ecids: snapshot))
+
+            XCTAssertTrue(process(entity))
+
+            XCTAssertEqual(1, stubNetworking.requests.count)
+            XCTAssertEqual(1, StoreResponsePayloadManager(testStoreName).getActivePayloadList().count)
+            try assertSingleResult(for: event, status: "success", reason: nil, httpStatus: 200)
+        }
     }
 
     // MARK: Drops
@@ -338,6 +367,7 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
     func testProcessHit_emptyPayload_dispatchesDroppedInvalidPayload() throws {
         implementationDetails = nil
+        latestIdentity = [:]
         processor = makeProcessor()
         let (event, entity) = makeEntity(eventData: ["xdm": ["producer": "value"]], identityMap: [:])
 
@@ -359,7 +389,7 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
             let result = try XCTUnwrap(dispatchedEvents.first)
             XCTAssertNil(result.parentID)
             XCTAssertEqual("Device Attributes Response", result.name)
-            XCTAssertEqual(EdgeConstants.EventType.EDGE_BYPASS_CONSENT, result.type)
+            XCTAssertEqual(EdgeConstants.DeviceAttributes.EVENT_TYPE, result.type)
             XCTAssertEqual(EventSource.responseContent, result.source)
             XCTAssertEqual(["status": "dropped", "reason": "invalidPayload", "requestEventId": "stored-request-id"] as NSDictionary,
                            result.data as NSDictionary?)
@@ -368,8 +398,8 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
     // MARK: Helpers
 
-    /// Persists the identities reset date while the request is in flight.
-    private final class ResetDuringRequestNetworking: Networking {
+    /// Runs `onRequest` while the request is in flight, then replies with `response`.
+    private final class OnRequestNetworking: Networking {
         let response: HttpConnection
         let onRequest: () -> Void
         init(response: HttpConnection, onRequest: @escaping () -> Void) {
@@ -390,6 +420,7 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
             }),
             getImplementationDetails: { [weak self] in self?.implementationDetails },
             getLocationHint: { [weak self] in self?.currentLocationHint },
+            getLatestIdentityMap: { [weak self] in self?.latestIdentity },
             updateLocationHint: { [weak self] hint, ttl in self?.locationHintUpdates.append((hint, ttl)) },
             dispatch: { [weak self] event in self?.dispatchedEvents.append(event) },
             storeDataStoreName: testStoreName)
@@ -397,17 +428,16 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
     private func makeEntity(eventData: [String: Any]? = nil,
                             config: [String: Any]? = nil,
-                            identityMap: [String: Any]? = nil,
-                            timestamp: Date = Date()) -> (Event, DataEntity) {
+                            identityMap: [String: Any]? = nil) -> (Event, DataEntity) {
         let event = Event(name: "Device Attributes Request",
-                          type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                          type: EdgeConstants.DeviceAttributes.EVENT_TYPE,
                           source: EventSource.requestContent,
                           data: eventData ?? defaultEventData)
         let edgeEntity = EdgeDataEntity(event: event,
                                         configuration: AnyCodable.from(dictionary: config ?? defaultConfig) ?? [:],
                                         identityMap: AnyCodable.from(dictionary: identityMap ?? defaultIdentityMap) ?? [:])
         let data = try? JSONEncoder().encode(edgeEntity)
-        return (event, DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: timestamp, data: data))
+        return (event, DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: Date(), data: data))
     }
 
     private func process(_ entity: DataEntity) -> Bool {
@@ -424,9 +454,9 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
                               error: nil)
     }
 
-    private func setResetDate(_ date: Date) {
-        NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
-            .set(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE, value: date.timeIntervalSince1970)
+    /// Edge Identity XDM shared state with the given ECIDs; index 0 is the current ECID, later entries are legacy ECIDs.
+    private func identityState(ecids: [String]) -> [String: Any] {
+        return ["identityMap": ["ECID": ecids.map { ["id": $0, "authenticatedState": "ambiguous", "primary": false] }]]
     }
 
     private func assertSingleResult(for request: Event, status: String, reason: String?, httpStatus: Int?,
@@ -434,7 +464,7 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
         XCTAssertEqual(1, dispatchedEvents.count, file: file, line: line)
         let result = try XCTUnwrap(dispatchedEvents.first, file: file, line: line)
         XCTAssertEqual("Device Attributes Response", result.name, file: file, line: line)
-        XCTAssertEqual(EdgeConstants.EventType.EDGE_BYPASS_CONSENT, result.type, file: file, line: line)
+        XCTAssertEqual(EdgeConstants.DeviceAttributes.EVENT_TYPE, result.type, file: file, line: line)
         XCTAssertEqual(EventSource.responseContent, result.source, file: file, line: line)
         XCTAssertEqual(request.id, result.parentID, file: file, line: line)
         var expected: [String: Any] = ["status": status]

@@ -34,7 +34,7 @@ class DeviceAttributesResponseHandler {
     /// Parses `responseBody` and applies the supported handles.
     /// - Parameters:
     ///   - responseBody: plain JSON response body
-    ///   - applyStorePayloads: false to ignore `state:store` handles (e.g. the identities were reset while the request was in flight)
+    ///   - applyStorePayloads: false to ignore `state:store` handles (the ECID changed while the request was in flight)
     func handle(responseBody: String?, applyStorePayloads: Bool) {
         typealias Keys = EdgeConstants.DeviceAttributes.ResponseKeys
         guard let responseBody = responseBody, !responseBody.isEmpty else {
@@ -58,7 +58,7 @@ class DeviceAttributesResponseHandler {
                 if applyStorePayloads {
                     handleStorePayloads(payload: payload)
                 } else {
-                    Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Identities were reset, ignoring state:store handle.")
+                    Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - ECID changed during the request, ignoring state:store handle.")
                 }
             default:
                 continue

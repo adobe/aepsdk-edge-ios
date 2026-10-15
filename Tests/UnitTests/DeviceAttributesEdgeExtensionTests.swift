@@ -21,17 +21,17 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
     private var mockRuntime: TestableExtensionRuntime!
     private var edge: Edge!
     private var mockDataQueue: MockDataQueue!
-    private var mockBypassDataQueue: MockDataQueue!
+    private var mockDeviceAttributesDataQueue: MockDataQueue!
 
     override func setUp() {
         ServiceProvider.shared.namedKeyValueService = MockDataStore()
         mockRuntime = TestableExtensionRuntime()
         mockDataQueue = MockDataQueue()
-        mockBypassDataQueue = MockDataQueue()
+        mockDeviceAttributesDataQueue = MockDataQueue()
 
         edge = Edge(runtime: mockRuntime)
         edge.state = EdgeState(hitQueue: PersistentHitQueue(dataQueue: mockDataQueue, processor: MockHitProcessor()),
-                               bypassConsentHitQueue: PersistentHitQueue(dataQueue: mockBypassDataQueue, processor: MockHitProcessor()),
+                               deviceAttributesHitQueue: PersistentHitQueue(dataQueue: mockDeviceAttributesDataQueue, processor: MockHitProcessor()),
                                edgeProperties: EdgeProperties())
         edge.onRegistered()
     }
@@ -42,17 +42,17 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
 
     // MARK: Helpers
 
-    private final class BypassDataQueueService: NSObject, DataQueuing {
-        let bypassQueue: DataQueue?
+    private final class DeviceAttributesDataQueueService: NSObject, DataQueuing {
+        let deviceAttributesQueue: DataQueue?
         private(set) var requestedLabels: [String] = []
 
-        init(bypassQueue: DataQueue?) {
-            self.bypassQueue = bypassQueue
+        init(deviceAttributesQueue: DataQueue?) {
+            self.deviceAttributesQueue = deviceAttributesQueue
         }
 
         func getDataQueue(label: String) -> DataQueue? {
             requestedLabels.append(label)
-            return label == "com.adobe.edge.bypassConsent" ? bypassQueue : nil
+            return label == "com.adobe.edge.deviceAttributes" ? deviceAttributesQueue : nil
         }
 
         func getDataQueue(label: String, config: DataQueueConfig) -> DataQueue? {
@@ -95,7 +95,7 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
 
     private func makeRequest(data: [String: Any]? = ["timezone": "Europe/London"]) -> Event {
         return Event(name: "device attributes",
-                     type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                     type: EdgeConstants.DeviceAttributes.EVENT_TYPE,
                      source: EventSource.requestContent,
                      data: data)
     }
@@ -106,75 +106,75 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME, data: (identity, .set))
     }
 
-    private func bypassResults() -> [Event] {
+    private func deviceAttributesResponses() -> [Event] {
         return mockRuntime.dispatchedEvents.filter {
-            $0.type == EdgeConstants.EventType.EDGE_BYPASS_CONSENT && $0.source == EventSource.responseContent
+            $0.type == EdgeConstants.DeviceAttributes.EVENT_TYPE && $0.source == EventSource.responseContent
         }
     }
 
-    private func assertBypassResult(for request: Event, status: String, reason: String,
+    private func assertDeviceAttributesResponse(for request: Event, status: String, reason: String,
                                     file: StaticString = #filePath, line: UInt = #line) throws {
-        let results = bypassResults()
+        let results = deviceAttributesResponses()
         XCTAssertEqual(1, results.count, file: file, line: line)
         let result = try XCTUnwrap(results.first, file: file, line: line)
         XCTAssertEqual(request.id, result.parentID, file: file, line: line)
         XCTAssertNil(result.responseID, file: file, line: line)
         XCTAssertEqual(status, result.data?["status"] as? String, file: file, line: line)
         XCTAssertEqual(reason, result.data?["reason"] as? String, file: file, line: line)
-        XCTAssertEqual(0, mockBypassDataQueue.count(), file: file, line: line)
+        XCTAssertEqual(0, mockDeviceAttributesDataQueue.count(), file: file, line: line)
         XCTAssertEqual(0, mockDataQueue.count(), file: file, line: line)
     }
 
     // MARK: Event classification and wiring
 
-    func testIsBypassConsentEvent_trueOnlyForBypassConsentTypeAndRequestContentSource() {
-        XCTAssertTrue(makeRequest().isBypassConsentEvent)
+    func testIsDeviceAttributesRequestEvent_trueOnlyForDeviceAttributesTypeAndRequestContentSource() {
+        XCTAssertTrue(makeRequest().isDeviceAttributesRequestEvent)
 
-        let wrongSource = Event(name: "wrong source", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT, source: EventSource.responseContent, data: nil)
-        XCTAssertFalse(wrongSource.isBypassConsentEvent)
+        let wrongSource = Event(name: "wrong source", type: EdgeConstants.DeviceAttributes.EVENT_TYPE, source: EventSource.responseContent, data: nil)
+        XCTAssertFalse(wrongSource.isDeviceAttributesRequestEvent)
 
-        XCTAssertFalse(experienceEvent.isBypassConsentEvent)
+        XCTAssertFalse(experienceEvent.isDeviceAttributesRequestEvent)
         XCTAssertTrue(experienceEvent.isExperienceEvent)
     }
 
-    func testOnRegistered_registersBypassListener() {
-        XCTAssertNotNil(mockRuntime.getListener(type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT, source: EventSource.requestContent))
+    func testOnRegistered_registersDeviceAttributesListener() {
+        XCTAssertNotNil(mockRuntime.getListener(type: EdgeConstants.DeviceAttributes.EVENT_TYPE, source: EventSource.requestContent))
     }
 
-    func testSetupBypassConsentHitQueue_usesDedicatedLabelAndProcessor() throws {
-        let service = BypassDataQueueService(bypassQueue: MockDataQueue())
-        let bypassQueue = try XCTUnwrap(edge.setupBypassConsentHitQueue(dataQueueService: service) as? PersistentHitQueue)
+    func testSetupDeviceAttributesHitQueue_usesDedicatedLabelAndProcessor() throws {
+        let service = DeviceAttributesDataQueueService(deviceAttributesQueue: MockDataQueue())
+        let deviceAttributesQueue = try XCTUnwrap(edge.setupDeviceAttributesHitQueue(dataQueueService: service) as? PersistentHitQueue)
 
-        XCTAssertEqual(["com.adobe.edge.bypassConsent"], service.requestedLabels)
-        XCTAssertTrue(bypassQueue.processor is DeviceAttributesHitProcessor)
+        XCTAssertEqual(["com.adobe.edge.deviceAttributes"], service.requestedLabels)
+        XCTAssertTrue(deviceAttributesQueue.processor is DeviceAttributesHitProcessor)
     }
 
-    func testInit_createsPrimaryAndBypassQueues() throws {
+    func testInit_createsPrimaryAndDeviceAttributesQueues() throws {
         let state = try XCTUnwrap(Edge(runtime: mockRuntime).state)
 
         XCTAssertTrue(state.hitQueue is EdgeBatchingHitQueue)
-        let bypassQueue = try XCTUnwrap(state.bypassConsentHitQueue as? PersistentHitQueue)
-        XCTAssertTrue(bypassQueue.processor is DeviceAttributesHitProcessor)
+        let deviceAttributesQueue = try XCTUnwrap(state.deviceAttributesHitQueue as? PersistentHitQueue)
+        XCTAssertTrue(deviceAttributesQueue.processor is DeviceAttributesHitProcessor)
     }
 
     // MARK: Queueing
 
-    func testHandleBypassConsentRequest_queuesOnBypassQueueOnly_regardlessOfCollectConsentNo() throws {
+    func testHandleDeviceAttributesRequest_queuesOnDeviceAttributesQueueOnly_regardlessOfCollectConsentNo() throws {
         simulateConfigAndIdentity(identity: ["identityMap": ["ECID": [["id": "ecid"]]]])
         mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Consent.SHARED_OWNER_NAME,
                                            data: (["consents": ["collect": ["val": "n"]]], .set))
         edge.state?.updateCurrentConsent(status: ConsentStatus.no)
         edge.state?.hitQueue.suspend()
-        edge.state?.bypassConsentHitQueue?.suspend()
+        edge.state?.deviceAttributesHitQueue?.suspend()
 
         let request = makeRequest(data: ["app": ["identifier": "com.example.app"]])
         mockRuntime.simulateComingEvents(request)
 
-        XCTAssertEqual(1, mockBypassDataQueue.count())
+        XCTAssertEqual(1, mockDeviceAttributesDataQueue.count())
         XCTAssertEqual(0, mockDataQueue.count())
-        XCTAssertTrue(bypassResults().isEmpty)
+        XCTAssertTrue(deviceAttributesResponses().isEmpty)
 
-        let entity = try XCTUnwrap(mockBypassDataQueue.peek())
+        let entity = try XCTUnwrap(mockDeviceAttributesDataQueue.peek())
         XCTAssertEqual(request.id.uuidString, entity.uniqueIdentifier)
         XCTAssertEqual(request.timestamp, entity.timestamp)
         let decoded = try JSONDecoder().decode(EdgeDataEntity.self, from: try XCTUnwrap(entity.data))
@@ -183,10 +183,10 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         assertExactMatch(expected: #"{"identityMap":{"ECID":[{"id":"ecid"}]}}"#, actual: decoded.identityMap)
     }
 
-    func testBypassRequestUsesDedicatedQueueForEveryCollectConsent() {
+    func testDeviceAttributesRequestUsesDedicatedQueueForEveryCollectConsent() {
         let primaryQueue = RecordingHitQueue()
-        let bypassQueue = RecordingHitQueue()
-        edge.state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
+        let deviceAttributesQueue = RecordingHitQueue()
+        edge.state = EdgeState(hitQueue: primaryQueue, deviceAttributesHitQueue: deviceAttributesQueue, edgeProperties: EdgeProperties())
         simulateConfigAndIdentity()
         XCTAssertTrue(edge.readyForEvent(experienceEvent))
 
@@ -195,17 +195,17 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
             let request = makeRequest()
             XCTAssertTrue(edge.readyForEvent(request))
             mockRuntime.simulateComingEvents(request)
-            XCTAssertEqual(index + 1, bypassQueue.count())
-            XCTAssertEqual(request.id.uuidString, bypassQueue.entities.last?.uniqueIdentifier)
+            XCTAssertEqual(index + 1, deviceAttributesQueue.count())
+            XCTAssertEqual(request.id.uuidString, deviceAttributesQueue.entities.last?.uniqueIdentifier)
             XCTAssertEqual(0, primaryQueue.count())
         }
-        XCTAssertEqual(0, bypassQueue.clearCount)
-        XCTAssertTrue(bypassResults().isEmpty)
+        XCTAssertEqual(0, deviceAttributesQueue.clearCount)
+        XCTAssertTrue(deviceAttributesResponses().isEmpty)
     }
 
     // MARK: Readiness and bootup
 
-    func testReadyForEvent_bypassRequiresConfigurationAndIdentity() {
+    func testReadyForEvent_deviceAttributesRequiresConfigurationAndIdentity() {
         let request = makeRequest()
         XCTAssertFalse(edge.readyForEvent(request))
 
@@ -217,20 +217,20 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         XCTAssertTrue(edge.readyForEvent(request))
     }
 
-    func testReadyForEvent_bootsStateAndStartsBypassQueueOnce() {
-        let bypassQueue = RecordingHitQueue()
-        edge.state = EdgeState(hitQueue: RecordingHitQueue(), bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
-        XCTAssertEqual(0, bypassQueue.beginProcessingCount)
+    func testReadyForEvent_bootsStateAndStartsDeviceAttributesQueueOnce() {
+        let deviceAttributesQueue = RecordingHitQueue()
+        edge.state = EdgeState(hitQueue: RecordingHitQueue(), deviceAttributesHitQueue: deviceAttributesQueue, edgeProperties: EdgeProperties())
+        XCTAssertEqual(0, deviceAttributesQueue.beginProcessingCount)
 
         simulateConfigAndIdentity()
         XCTAssertTrue(edge.readyForEvent(makeRequest()))
         XCTAssertTrue(edge.readyForEvent(experienceEvent))
 
         XCTAssertEqual(true, edge.state?.hasBooted)
-        XCTAssertEqual(1, bypassQueue.beginProcessingCount)
+        XCTAssertEqual(1, deviceAttributesQueue.beginProcessingCount)
     }
 
-    func testReadyForEvent_missingState_blocksBypassLikeOtherEvents() {
+    func testReadyForEvent_missingState_blocksDeviceAttributesLikeOtherEvents() {
         simulateConfigAndIdentity()
         edge.state = nil
         XCTAssertFalse(edge.readyForEvent(makeRequest()))
@@ -239,44 +239,44 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
 
     // MARK: Identity reset
 
-    func testHandleIdentitiesReset_doesNotTouchBypassQueue() throws {
+    func testHandleIdentitiesReset_doesNotTouchDeviceAttributesQueue() throws {
         let primaryQueue = RecordingHitQueue()
-        let bypassQueue = RecordingHitQueue()
-        edge.state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
-        let bypassEntity = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: Data())
-        XCTAssertTrue(bypassQueue.queue(entity: bypassEntity))
+        let deviceAttributesQueue = RecordingHitQueue()
+        edge.state = EdgeState(hitQueue: primaryQueue, deviceAttributesHitQueue: deviceAttributesQueue, edgeProperties: EdgeProperties())
+        let deviceAttributesEntity = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: Data())
+        XCTAssertTrue(deviceAttributesQueue.queue(entity: deviceAttributesEntity))
 
         let reset = Event(name: "Reset Event", type: EventType.genericIdentity, source: EventSource.requestReset, data: nil)
         mockRuntime.simulateComingEvents(reset)
 
-        XCTAssertEqual(0, bypassQueue.clearCount)
-        XCTAssertEqual([bypassEntity.uniqueIdentifier], bypassQueue.entities.map { $0.uniqueIdentifier })
+        XCTAssertEqual(0, deviceAttributesQueue.clearCount)
+        XCTAssertEqual([deviceAttributesEntity.uniqueIdentifier], deviceAttributesQueue.entities.map { $0.uniqueIdentifier })
         XCTAssertEqual(1, primaryQueue.count())
         let resetEntity = try XCTUnwrap(primaryQueue.entities.first)
         XCTAssertEqual(reset.id.uuidString, resetEntity.uniqueIdentifier)
-        XCTAssertTrue(bypassResults().isEmpty)
+        XCTAssertTrue(deviceAttributesResponses().isEmpty)
     }
 
-    func testBypassQueueAcceptsNewIdentityRequestsAfterReset() throws {
+    func testDeviceAttributesQueueAcceptsNewIdentityRequestsAfterReset() throws {
         edge.state?.hitQueue.suspend()
-        edge.state?.bypassConsentHitQueue?.suspend()
+        edge.state?.deviceAttributesHitQueue?.suspend()
         simulateConfigAndIdentity(identity: ["identityMap": ["ECID": [["id": "old-ecid"]]]])
-        edge.handleBypassConsentRequest(makeRequest())
+        edge.handleDeviceAttributesRequest(makeRequest())
 
         let reset = Event(name: "Reset Event", type: EventType.genericIdentity, source: EventSource.requestReset, data: nil)
         edge.handleIdentitiesReset(reset)
-        XCTAssertEqual(1, mockBypassDataQueue.count())
+        XCTAssertEqual(1, mockDeviceAttributesDataQueue.count())
         XCTAssertEqual(1, mockDataQueue.count())
 
         mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
                                            data: (["identityMap": ["ECID": [["id": "new-ecid"]]]], .set))
         let newRequest = makeRequest(data: ["timezone": "Asia/Kolkata"])
-        edge.handleBypassConsentRequest(newRequest)
+        edge.handleDeviceAttributesRequest(newRequest)
 
-        XCTAssertEqual(2, mockBypassDataQueue.count())
+        XCTAssertEqual(2, mockDeviceAttributesDataQueue.count())
         XCTAssertEqual(1, mockDataQueue.count())
-        _ = mockBypassDataQueue.remove()
-        let entity = try XCTUnwrap(mockBypassDataQueue.peek())
+        _ = mockDeviceAttributesDataQueue.remove()
+        let entity = try XCTUnwrap(mockDeviceAttributesDataQueue.peek())
         XCTAssertEqual(newRequest.id.uuidString, entity.uniqueIdentifier)
         let decoded = try JSONDecoder().decode(EdgeDataEntity.self, from: try XCTUnwrap(entity.data))
         assertExactMatch(expected: #"{"identityMap":{"ECID":[{"id":"new-ecid"}]}}"#, actual: decoded.identityMap)
@@ -284,63 +284,63 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
 
     // MARK: Failure and drop results
 
-    func testBypassQueueCreationFailurePreservesOrdinaryQueueing() throws {
-        let failingService = BypassDataQueueService(bypassQueue: nil)
-        XCTAssertNil(edge.setupBypassConsentHitQueue(dataQueueService: failingService))
+    func testDeviceAttributesQueueCreationFailurePreservesOrdinaryQueueing() throws {
+        let failingService = DeviceAttributesDataQueueService(deviceAttributesQueue: nil)
+        XCTAssertNil(edge.setupDeviceAttributesHitQueue(dataQueueService: failingService))
         let primaryQueue = RecordingHitQueue()
         edge.state = EdgeState(hitQueue: primaryQueue,
-                               bypassConsentHitQueue: edge.setupBypassConsentHitQueue(dataQueueService: failingService),
+                               deviceAttributesHitQueue: edge.setupDeviceAttributesHitQueue(dataQueueService: failingService),
                                edgeProperties: EdgeProperties())
 
         let request = makeRequest()
         simulateConfigAndIdentity()
         XCTAssertTrue(edge.readyForEvent(request))
-        edge.handleBypassConsentRequest(request)
+        edge.handleDeviceAttributesRequest(request)
         edge.handleExperienceEventRequest(experienceEvent)
 
         XCTAssertEqual(1, primaryQueue.count())
-        try assertBypassResult(for: request, status: "failed", reason: "queueUnavailable")
+        try assertDeviceAttributesResponse(for: request, status: "failed", reason: "queueUnavailable")
     }
 
-    func testBypassMissingQueueProducesCorrelatedFailure() throws {
+    func testDeviceAttributesMissingQueueProducesCorrelatedFailure() throws {
         edge.state = nil
         let request = makeRequest()
         mockRuntime.simulateComingEvents(request)
-        try assertBypassResult(for: request, status: "failed", reason: "queueUnavailable")
+        try assertDeviceAttributesResponse(for: request, status: "failed", reason: "queueUnavailable")
     }
 
-    func testBypassFailedEnqueueProducesCorrelatedFailure() throws {
+    func testDeviceAttributesFailedEnqueueProducesCorrelatedFailure() throws {
         simulateConfigAndIdentity()
         let primary = try XCTUnwrap(edge.state?.hitQueue)
         let rejectingQueue = RejectingHitQueue()
-        edge.state = EdgeState(hitQueue: primary, bypassConsentHitQueue: rejectingQueue, edgeProperties: EdgeProperties())
+        edge.state = EdgeState(hitQueue: primary, deviceAttributesHitQueue: rejectingQueue, edgeProperties: EdgeProperties())
         let request = makeRequest()
         mockRuntime.simulateComingEvents(request)
         XCTAssertEqual(1, rejectingQueue.enqueueAttempts)
-        try assertBypassResult(for: request, status: "failed", reason: "queueUnavailable")
+        try assertDeviceAttributesResponse(for: request, status: "failed", reason: "queueUnavailable")
     }
 
-    func testOrdinaryFailedEnqueueDoesNotProduceBypassResult() throws {
+    func testOrdinaryFailedEnqueueDoesNotProduceDeviceAttributesResponse() throws {
         simulateConfigAndIdentity()
-        let bypassQueue = try XCTUnwrap(edge.state?.bypassConsentHitQueue)
+        let deviceAttributesQueue = try XCTUnwrap(edge.state?.deviceAttributesHitQueue)
         let rejectingQueue = RejectingHitQueue()
-        edge.state = EdgeState(hitQueue: rejectingQueue, bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
+        edge.state = EdgeState(hitQueue: rejectingQueue, deviceAttributesHitQueue: deviceAttributesQueue, edgeProperties: EdgeProperties())
         mockRuntime.simulateComingEvents(experienceEvent)
         XCTAssertEqual(1, rejectingQueue.enqueueAttempts)
-        XCTAssertTrue(bypassResults().isEmpty)
+        XCTAssertTrue(deviceAttributesResponses().isEmpty)
     }
 
-    func testBypassEmptyPayloadProducesCorrelatedDrop() throws {
+    func testDeviceAttributesEmptyPayloadProducesCorrelatedDrop() throws {
         simulateConfigAndIdentity()
         for data in [nil, [:]] as [[String: Any]?] {
             mockRuntime.resetDispatchedEventAndCreatedSharedStates()
             let request = makeRequest(data: data)
             mockRuntime.simulateComingEvents(request)
-            try assertBypassResult(for: request, status: "dropped", reason: "invalidPayload")
+            try assertDeviceAttributesResponse(for: request, status: "dropped", reason: "invalidPayload")
         }
     }
 
-    func testBypassMissingConfigurationProducesCorrelatedDrop() throws {
+    func testDeviceAttributesMissingConfigurationProducesCorrelatedDrop() throws {
         mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME, data: ([:], .set))
         let configurations: [[String: Any]] = [[:], [EdgeConstants.SharedState.Configuration.CONFIG_ID: ""]]
         for config in configurations {
@@ -348,42 +348,42 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
             mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME, data: (config, .set))
             let request = makeRequest()
             mockRuntime.simulateComingEvents(request)
-            try assertBypassResult(for: request, status: "dropped", reason: "missingConfig")
+            try assertDeviceAttributesResponse(for: request, status: "dropped", reason: "missingConfig")
         }
     }
 
-    func testBypassMissingIdentityProducesCorrelatedDrop() throws {
+    func testDeviceAttributesMissingIdentityProducesCorrelatedDrop() throws {
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: ([EdgeConstants.SharedState.Configuration.CONFIG_ID: "config"], .set))
         let request = makeRequest()
         mockRuntime.simulateComingEvents(request)
-        try assertBypassResult(for: request, status: "dropped", reason: "invalidPayload")
+        try assertDeviceAttributesResponse(for: request, status: "dropped", reason: "invalidPayload")
     }
 
-    func testBypassUnencodablePayloadProducesCorrelatedDrop() throws {
+    func testDeviceAttributesUnencodablePayloadProducesCorrelatedDrop() throws {
         simulateConfigAndIdentity()
         let request = makeRequest(data: ["invalid": Double.nan])
         mockRuntime.simulateComingEvents(request)
-        try assertBypassResult(for: request, status: "dropped", reason: "invalidPayload")
+        try assertDeviceAttributesResponse(for: request, status: "dropped", reason: "invalidPayload")
     }
 
     // MARK: Decode failure
 
-    func testDecodeFailure_producesUnchainedDropOnlyForBypassQueue() throws {
+    func testDecodeFailure_producesUnchainedDropOnlyForDeviceAttributesQueue() throws {
         let primaryProcessor = try XCTUnwrap(Edge(runtime: mockRuntime).state?.hitQueue.processor)
-        let bypassQueue = try XCTUnwrap(edge.setupBypassConsentHitQueue(dataQueueService: BypassDataQueueService(bypassQueue: MockDataQueue())))
+        let deviceAttributesQueue = try XCTUnwrap(edge.setupDeviceAttributesHitQueue(dataQueueService: DeviceAttributesDataQueueService(deviceAttributesQueue: MockDataQueue())))
         let corruptedData: [Data?] = [nil, Data("{".utf8), Data("{}".utf8)]
         var requestIds: [String] = []
 
         for data in corruptedData {
             let ordinary = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: data)
             primaryProcessor.processHit(entity: ordinary) { finished in XCTAssertTrue(finished) }
-            let bypass = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: data)
-            requestIds.append(bypass.uniqueIdentifier)
-            bypassQueue.processor.processHit(entity: bypass) { finished in XCTAssertTrue(finished) }
+            let deviceAttributesEntity = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: data)
+            requestIds.append(deviceAttributesEntity.uniqueIdentifier)
+            deviceAttributesQueue.processor.processHit(entity: deviceAttributesEntity) { finished in XCTAssertTrue(finished) }
         }
 
-        let results = bypassResults()
+        let results = deviceAttributesResponses()
         XCTAssertEqual(corruptedData.count, results.count)
         XCTAssertEqual(results.count, mockRuntime.dispatchedEvents.count)
         for (result, requestId) in zip(results, requestIds) {
@@ -394,15 +394,15 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         }
     }
 
-    // MARK: Result event contract
+    // MARK: Response event contract
 
-    func testBypassResultsRetainRequestCorrelation() {
-        typealias Status = EdgeConstants.BypassResult.Status
+    func testDeviceAttributesResponsesRetainRequestCorrelation() {
+        typealias Status = EdgeConstants.DeviceAttributes.Status
         let request = makeRequest()
-        let listener = EventListenerContainer(listener: { _ in }, type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+        let listener = EventListenerContainer(listener: { _ in }, type: EdgeConstants.DeviceAttributes.EVENT_TYPE,
                                               source: EventSource.responseContent, triggerEventId: nil, timeoutTask: nil)
         for (status, expectedStatus) in [(Status.SUCCESS, "success"), (Status.FAILED, "failed"), (Status.DROPPED, "dropped")] {
-            let result = request.createBypassResult(status: status)
+            let result = request.createDeviceAttributesResponse(status: status)
             XCTAssertTrue(listener.shouldNotify(result))
             XCTAssertEqual("Device Attributes Response", result.name)
             XCTAssertEqual("com.adobe.eventType.edgeBypassConsent", result.type)
@@ -411,27 +411,27 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
             XCTAssertNil(result.responseID)
             XCTAssertEqual(["status": expectedStatus] as NSDictionary, result.data as NSDictionary?)
         }
-        let result = request.createBypassResult(status: Status.FAILED, reason: EdgeConstants.BypassResult.Reason.NETWORK, httpStatus: 404)
+        let result = request.createDeviceAttributesResponse(status: Status.FAILED, reason: EdgeConstants.DeviceAttributes.Reason.NETWORK, httpStatus: 404)
         XCTAssertEqual(["status": "failed", "reason": "network", "httpStatus": 404] as NSDictionary, result.data as NSDictionary?)
     }
 
-    func testBypassResultConstantsPreserveWireValues() {
-        typealias Keys = EdgeConstants.EventDataKeys.BypassResult
-        typealias Status = EdgeConstants.BypassResult.Status
-        typealias Reason = EdgeConstants.BypassResult.Reason
+    func testDeviceAttributesResponseConstantsPreserveWireValues() {
+        typealias Keys = EdgeConstants.DeviceAttributes.EventDataKeys
+        typealias Status = EdgeConstants.DeviceAttributes.Status
+        typealias Reason = EdgeConstants.DeviceAttributes.Reason
 
-        XCTAssertEqual("com.adobe.eventType.edgeBypassConsent", EdgeConstants.EventType.EDGE_BYPASS_CONSENT)
+        XCTAssertEqual("com.adobe.eventType.edgeBypassConsent", EdgeConstants.DeviceAttributes.EVENT_TYPE)
         XCTAssertEqual(["status", "reason", "httpStatus", "requestEventId"],
                        [Keys.STATUS, Keys.REASON, Keys.HTTP_STATUS, Keys.REQUEST_EVENT_ID])
         XCTAssertEqual(["success", "failed", "dropped"], [Status.SUCCESS, Status.FAILED, Status.DROPPED])
-        XCTAssertEqual(["missingConfig", "invalidPayload", "queueUnavailable", "network"],
-                       [Reason.MISSING_CONFIG, Reason.INVALID_PAYLOAD, Reason.QUEUE_UNAVAILABLE, Reason.NETWORK])
-        XCTAssertEqual("Device Attributes Response", EdgeConstants.EventName.BYPASS_RESULT)
+        XCTAssertEqual(["missingConfig", "invalidPayload", "queueUnavailable", "network", "identityChanged"],
+                       [Reason.MISSING_CONFIG, Reason.INVALID_PAYLOAD, Reason.QUEUE_UNAVAILABLE, Reason.NETWORK, Reason.IDENTITY_CHANGED])
+        XCTAssertEqual("Device Attributes Response", EdgeConstants.DeviceAttributes.EVENT_NAME_RESPONSE)
     }
 
-    func testBypassDecodeDropPreservesUnchainedWireContract() {
+    func testDeviceAttributesDecodeDropPreservesUnchainedWireContract() {
         let requestId = UUID().uuidString
-        let result = Event.createBypassDropResult(requestEventId: requestId)
+        let result = Event.createDeviceAttributesDroppedResponse(requestEventId: requestId)
 
         XCTAssertEqual("Device Attributes Response", result.name)
         XCTAssertEqual("com.adobe.eventType.edgeBypassConsent", result.type)

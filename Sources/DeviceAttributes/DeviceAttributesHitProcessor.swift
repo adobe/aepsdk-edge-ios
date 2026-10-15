@@ -16,8 +16,8 @@ import Foundation
 
 /// Processes hits from the consent-independent device-attributes queue.
 /// Fully separate from `EdgeHitProcessor`: it does not use `NetworkResponseHandler` and never dispatches Edge
-/// response/error events. Every request event (E3) yields exactly one result event (E4), except hits queued
-/// before an identities reset, which are discarded silently.
+/// response/error events. Every request event (E3) yields exactly one response event (E4). Before each send attempt
+/// the ECID queued with the hit is compared with the latest Edge Identity ECID; a hit whose ECID has changed is dropped.
 class DeviceAttributesHitProcessor: HitProcessing {
     private let SELF_TAG = "DeviceAttributesHitProcessor"
     private let networkService: DeviceAttributesNetworkService
@@ -25,9 +25,9 @@ class DeviceAttributesHitProcessor: HitProcessing {
     private let sharedStateReader: SharedStateReader
     private let getImplementationDetails: () -> [String: Any]?
     private let getLocationHint: () -> String?
+    private let getLatestIdentityMap: () -> [String: Any]?
     private let dispatch: (Event) -> Void
     private let storeDataStoreName: String
-    private let edgeDataStore = NamedCollectionDataStore(name: EdgeConstants.EXTENSION_NAME)
     private let entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
 
     /// - Parameters:
@@ -35,13 +35,15 @@ class DeviceAttributesHitProcessor: HitProcessing {
     ///   - sharedStateReader: used to read the Assurance integration id
     ///   - getImplementationDetails: returns the current `implementationDetails`
     ///   - getLocationHint: returns the current Edge Network location hint
+    ///   - getLatestIdentityMap: returns the latest Edge Identity XDM shared state (containing `identityMap`), or nil if unavailable
     ///   - updateLocationHint: sets the Edge Network location hint received in the response
-    ///   - dispatch: dispatches the result event (E4)
+    ///   - dispatch: dispatches the response event (E4)
     ///   - storeDataStoreName: data store holding the `state:store` payloads
     init(networkService: DeviceAttributesNetworkService = DeviceAttributesNetworkService(),
          sharedStateReader: SharedStateReader,
          getImplementationDetails: @escaping () -> [String: Any]?,
          getLocationHint: @escaping () -> String?,
+         getLatestIdentityMap: @escaping () -> [String: Any]?,
          updateLocationHint: @escaping (String, TimeInterval) -> Void,
          dispatch: @escaping (Event) -> Void,
          storeDataStoreName: String = EdgeConstants.DataStoreKeys.STORE_NAME) {
@@ -50,6 +52,7 @@ class DeviceAttributesHitProcessor: HitProcessing {
         self.sharedStateReader = sharedStateReader
         self.getImplementationDetails = getImplementationDetails
         self.getLocationHint = getLocationHint
+        self.getLatestIdentityMap = getLatestIdentityMap
         self.dispatch = dispatch
         self.storeDataStoreName = storeDataStoreName
     }
@@ -63,34 +66,59 @@ class DeviceAttributesHitProcessor: HitProcessing {
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
         guard let data = entity.data, let edgeEntity = try? JSONDecoder().decode(EdgeDataEntity.self, from: data) else {
             Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Dropping undecodable device attributes hit '\(entity.uniqueIdentifier)'.")
-            dispatch(Event.createBypassDropResult(requestEventId: entity.uniqueIdentifier))
+            dispatch(Event.createDeviceAttributesDroppedResponse(requestEventId: entity.uniqueIdentifier))
             complete(entity: entity, completion: completion)
             return
         }
 
         let event = edgeEntity.event
+        let snapshotIdentity = AnyCodable.toAnyDictionary(dictionary: edgeEntity.identityMap)
 
         // Checked on every attempt so hits waiting in retry backoff or restored after relaunch are covered.
-        if isQueuedBeforeIdentitiesReset(entity) {
-            // Identity already reports the reset to the requester, so no result event is dispatched.
+        guard let latestIdentity = getLatestIdentityMap() else {
             Log.debug(label: EdgeConstants.LOG_TAG,
-                      "\(SELF_TAG) - Discarding device attributes hit '\(entity.uniqueIdentifier)' queued before identities reset.")
-            complete(entity: entity, completion: completion)
+                      "\(SELF_TAG) - Latest Identity shared state is unavailable, will retry device attributes hit '\(entity.uniqueIdentifier)'.")
+            entityRetryIntervalMapping[entity.uniqueIdentifier] = nil
+            completion(false)
             return
         }
 
+        let snapshotEcid = ecid(from: snapshotIdentity)
+        guard snapshotEcid == ecid(from: latestIdentity) else {
+            Log.debug(label: EdgeConstants.LOG_TAG,
+                      "\(SELF_TAG) - ECID changed since device attributes hit '\(entity.uniqueIdentifier)' was queued, dropping.")
+            finish(entity: entity,
+                   event: event,
+                   response: event.createDeviceAttributesResponse(status: EdgeConstants.DeviceAttributes.Status.DROPPED,
+                                                                  reason: EdgeConstants.DeviceAttributes.Reason.IDENTITY_CHANGED),
+                   completion: completion)
+            return
+        }
+
+        sendRequest(entity: entity, edgeEntity: edgeEntity, snapshotIdentity: snapshotIdentity, snapshotEcid: snapshotEcid, completion: completion)
+    }
+
+    // MARK: Private
+
+    /// Builds and sends the device-attributes request for a hit that passed the ECID check.
+    private func sendRequest(entity: DataEntity,
+                             edgeEntity: EdgeDataEntity,
+                             snapshotIdentity: [String: Any]?,
+                             snapshotEcid: String?,
+                             completion: @escaping (Bool) -> Void) {
+        let event = edgeEntity.event
         let edgeConfig = edgeEntity.configuration.asAnyDictionary.compactMapValues { $0 as? String }
         guard let datastreamId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !datastreamId.isEmpty else {
             Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Missing datastream id, dropping device attributes hit '\(entity.uniqueIdentifier)'.")
             finish(entity: entity,
                    event: event,
-                   result: event.createBypassResult(status: EdgeConstants.BypassResult.Status.DROPPED,
-                                                    reason: EdgeConstants.BypassResult.Reason.MISSING_CONFIG),
+                   response: event.createDeviceAttributesResponse(status: EdgeConstants.DeviceAttributes.Status.DROPPED,
+                                                                  reason: EdgeConstants.DeviceAttributes.Reason.MISSING_CONFIG),
                    completion: completion)
             return
         }
 
-        let identityMap = AnyCodable.toAnyDictionary(dictionary: edgeEntity.identityMap)?[EdgeConstants.SharedState.Identity.IDENTITY_MAP] as? [String: Any]
+        let identityMap = snapshotIdentity?[EdgeConstants.SharedState.Identity.IDENTITY_MAP] as? [String: Any]
         let requestBuilder = DeviceAttributesRequestBuilder(dataStoreName: storeDataStoreName)
         let endpoint = EdgeEndpoint(requestType: .deviceAttributes,
                                     environmentType: EdgeEnvironmentType(optionalRawValue: edgeConfig[EdgeConstants.SharedState.Configuration.EDGE_ENVIRONMENT]),
@@ -104,8 +132,8 @@ class DeviceAttributesHitProcessor: HitProcessing {
             Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Unable to build device attributes request, dropping hit '\(entity.uniqueIdentifier)'.")
             finish(entity: entity,
                    event: event,
-                   result: event.createBypassResult(status: EdgeConstants.BypassResult.Status.DROPPED,
-                                                    reason: EdgeConstants.BypassResult.Reason.INVALID_PAYLOAD),
+                   response: event.createDeviceAttributesResponse(status: EdgeConstants.DeviceAttributes.Status.DROPPED,
+                                                                  reason: EdgeConstants.DeviceAttributes.Reason.INVALID_PAYLOAD),
                    completion: completion)
             return
         }
@@ -115,20 +143,23 @@ class DeviceAttributesHitProcessor: HitProcessing {
                 completion(false)
                 return
             }
-            self.handle(result: result, entity: entity, event: event, completion: completion)
+            self.handleNetworkResult(result, entity: entity, event: event, snapshotEcid: snapshotEcid, completion: completion)
         }
     }
 
-    // MARK: Private
-
-    private func handle(result: DeviceAttributesNetworkResult, entity: DataEntity, event: Event, completion: @escaping (Bool) -> Void) {
+    private func handleNetworkResult(_ result: DeviceAttributesNetworkResult,
+                                     entity: DataEntity,
+                                     event: Event,
+                                     snapshotEcid: String?,
+                                     completion: @escaping (Bool) -> Void) {
         switch result {
         case let .success(httpStatus, body):
-            // Mirrors the interact path: state:store from a request sent before a reset must not overwrite post-reset state.
-            responseHandler.handle(responseBody: body, applyStorePayloads: !isQueuedBeforeIdentitiesReset(entity))
+            // state:store from a request sent for a previous ECID must not overwrite the state of the current one.
+            let ecidUnchanged = snapshotEcid == ecid(from: getLatestIdentityMap())
+            responseHandler.handle(responseBody: body, applyStorePayloads: ecidUnchanged)
             finish(entity: entity,
                    event: event,
-                   result: event.createBypassResult(status: EdgeConstants.BypassResult.Status.SUCCESS, httpStatus: httpStatus),
+                   response: event.createDeviceAttributesResponse(status: EdgeConstants.DeviceAttributes.Status.SUCCESS, httpStatus: httpStatus),
                    completion: completion)
         case let .retry(interval):
             entityRetryIntervalMapping[entity.uniqueIdentifier] = interval
@@ -136,16 +167,16 @@ class DeviceAttributesHitProcessor: HitProcessing {
         case let .failed(httpStatus):
             finish(entity: entity,
                    event: event,
-                   result: event.createBypassResult(status: EdgeConstants.BypassResult.Status.FAILED,
-                                                    reason: EdgeConstants.BypassResult.Reason.NETWORK,
-                                                    httpStatus: httpStatus),
+                   response: event.createDeviceAttributesResponse(status: EdgeConstants.DeviceAttributes.Status.FAILED,
+                                                                  reason: EdgeConstants.DeviceAttributes.Reason.NETWORK,
+                                                                  httpStatus: httpStatus),
                    completion: completion)
         }
     }
 
-    /// Dispatches the terminal result event and removes the hit from the queue.
-    private func finish(entity: DataEntity, event: Event, result: Event, completion: @escaping (Bool) -> Void) {
-        dispatch(result)
+    /// Dispatches the terminal response event and removes the hit from the queue.
+    private func finish(entity: DataEntity, event: Event, response: Event, completion: @escaping (Bool) -> Void) {
+        dispatch(response)
         complete(entity: entity, completion: completion)
     }
 
@@ -154,10 +185,12 @@ class DeviceAttributesHitProcessor: HitProcessing {
         completion(true)
     }
 
-    /// Reads the identities reset date persisted by `NetworkResponseHandler.setLastReset` (read-only).
-    private func isQueuedBeforeIdentitiesReset(_ entity: DataEntity) -> Bool {
-        guard let resetTimestamp = edgeDataStore.getDouble(key: EdgeConstants.DataStoreKeys.RESET_IDENTITIES_DATE) else { return false }
-        return entity.timestamp < Date(timeIntervalSince1970: resetTimestamp)
+    /// Returns `identityMap.ECID[0].id` from an Edge Identity XDM shared state. Index 0 is Edge Identity's current ECID;
+    /// a legacy ECID, if any, follows it and is not compared.
+    private func ecid(from identityState: [String: Any]?) -> String? {
+        let identityMap = identityState?[EdgeConstants.SharedState.Identity.IDENTITY_MAP] as? [String: Any]
+        let ecids = identityMap?[EdgeConstants.JsonKeys.ECID] as? [[String: Any]]
+        return ecids?.first?["id"] as? String
     }
 
     /// Adds the Assurance integration id header when Assurance is enabled.
