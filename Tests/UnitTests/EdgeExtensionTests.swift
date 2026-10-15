@@ -654,6 +654,20 @@ extension EdgeExtensionTests {
         func close() {}
     }
 
+    private final class RecordingHitQueue: HitQueuing {
+        let processor: HitProcessing = MockHitProcessor()
+        private(set) var entities: [DataEntity] = []
+        func queue(entity: DataEntity) -> Bool {
+            entities.append(entity)
+            return true
+        }
+        func beginProcessing() {}
+        func suspend() {}
+        func clear() { entities.removeAll() }
+        func count() -> Int { return entities.count }
+        func close() {}
+    }
+
     func testBypassFailedEnqueueProducesCorrelatedFailure() throws {
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: (["edge.configId": "config"], .set))
@@ -788,18 +802,24 @@ extension EdgeExtensionTests {
     }
 
     func testBypassRequestUsesDedicatedQueueForEveryCollectConsent() {
+        let primaryQueue = RecordingHitQueue()
+        let bypassQueue = RecordingHitQueue()
+        edge.state?.hitQueue.close()
+        edge.state?.bypassConsentHitQueue?.close()
+        edge.state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
         mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME, data: ([:], .set))
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                         data: (["edge.configId": "config"], .set))
-        edge.state?.hitQueue.suspend()
-        edge.state?.bypassConsentHitQueue?.suspend()
+        XCTAssertTrue(edge.readyForEvent(experienceEvent))
         for (index, consent) in [ConsentStatus.no, .pending, .yes].enumerated() {
             edge.state?.updateCurrentConsent(status: consent)
+            XCTAssertEqual(consent, edge.state?.currentCollectConsent)
             let request = Event(name: "device attributes", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
                                 source: EventSource.requestContent, data: ["timezone": "Europe/London"])
             mockRuntime.simulateComingEvents(request)
-            XCTAssertEqual(index + 1, mockBypassConsentDataQueue.count())
-            XCTAssertEqual(0, mockDataQueue.count())
+            XCTAssertEqual(index + 1, bypassQueue.count())
+            XCTAssertEqual(request.id.uuidString, bypassQueue.entities.last?.uniqueIdentifier)
+            XCTAssertEqual(0, primaryQueue.count())
         }
         XCTAssertNotNil(mockRuntime.getListener(type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT, source: EventSource.requestContent))
     }
