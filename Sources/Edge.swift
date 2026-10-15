@@ -140,31 +140,9 @@ public class Edge: NSObject, Extension {
     }
 
     private func processAndQueueEvent(event: Event) {
-        guard let entity = prepareDataEntity(event: event) else { return }
-        Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Queuing event with id \(event.id.uuidString).")
-        state?.hitQueue.queue(entity: entity)
-    }
-
-    private func processAndQueueBypassConsentEvent(event: Event) {
-        guard let entity = prepareDataEntity(event: event, onDrop: { reason in
-            self.dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.DROPPED, reason: reason))
-        }) else { return }
-
-        Log.debug(label: EdgeConstants.LOG_TAG,
-                  "\(SELF_TAG) - Queuing event \(event.id.uuidString) on the device registration queue.")
-        guard state?.bypassConsentHitQueue?.queue(entity: entity) == true else {
-            Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to persist device attributes event \(event.id.uuidString).")
-            dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.FAILED,
-                                                   reason: EdgeConstants.BypassResult.Reason.QUEUE_UNAVAILABLE))
-            return
-        }
-    }
-
-    private func prepareDataEntity(event: Event, onDrop: ((String) -> Void)? = nil) -> DataEntity? {
         guard let data = event.data, !data.isEmpty else {
             Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Event with id \(event.id.uuidString) contains no data, ignoring.")
-            onDrop?(EdgeConstants.BypassResult.Reason.INVALID_PAYLOAD)
-            return nil
+            return
         }
 
         // get Configuration shared state, this should be resolved based on readyForEvent check
@@ -172,8 +150,7 @@ public class Edge: NSObject, Extension {
         guard let configId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !configId.isEmpty else {
             Log.warning(label: EdgeConstants.LOG_TAG,
                         "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', configuration 'edge.configId' is missing or empty.")
-            onDrop?(EdgeConstants.BypassResult.Reason.MISSING_CONFIG)
-            return nil // drop current event
+            return // drop current event
         }
 
         // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
@@ -183,8 +160,7 @@ public class Edge: NSObject, Extension {
             Log.warning(label: EdgeConstants.LOG_TAG,
                         "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', " +
                             "Identity shared state is nil.")
-            onDrop?(EdgeConstants.BypassResult.Reason.INVALID_PAYLOAD)
-            return nil // drop current event
+            return // drop current event
         }
 
         // Merge in the (possibly bundled-fallback) batching keys so they're snapshotted alongside the
@@ -200,11 +176,74 @@ public class Edge: NSObject, Extension {
 
         guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to encode EdgeDataEntity for event with id: '\(event.id.uuidString)'.")
-            onDrop?(EdgeConstants.BypassResult.Reason.INVALID_PAYLOAD)
-            return nil
+            return
         }
 
-        return DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
+        Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Queuing event with id \(event.id.uuidString).")
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
+        state?.hitQueue.queue(entity: entity)
+    }
+
+    private func processAndQueueBypassConsentEvent(event: Event) {
+        let entity: DataEntity
+        switch prepareBypassConsentDataEntity(event: event) {
+        case .success(let preparedEntity):
+            entity = preparedEntity
+        case .failure(let failure):
+            let reason = failure == .missingConfiguration ? EdgeConstants.BypassResult.Reason.MISSING_CONFIG : EdgeConstants.BypassResult.Reason.INVALID_PAYLOAD
+            self.dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.DROPPED, reason: reason))
+            return
+        }
+
+        Log.debug(label: EdgeConstants.LOG_TAG,
+                  "\(SELF_TAG) - Queuing event \(event.id.uuidString) on the device registration queue.")
+        guard state?.bypassConsentHitQueue?.queue(entity: entity) == true else {
+            Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to persist device attributes event \(event.id.uuidString).")
+            dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.FAILED,
+                                                   reason: EdgeConstants.BypassResult.Reason.QUEUE_UNAVAILABLE))
+            return
+        }
+    }
+
+    private enum EventPreparationFailure: Error {
+        case missingConfiguration
+        case invalidPayload
+    }
+
+    private func prepareBypassConsentDataEntity(event: Event) -> Result<DataEntity, EventPreparationFailure> {
+        guard let data = event.data, !data.isEmpty else {
+            Log.trace(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Event with id \(event.id.uuidString) contains no data, ignoring.")
+            return .failure(.invalidPayload)
+        }
+
+        // get Configuration shared state, this should be resolved based on readyForEvent check
+        let edgeConfig = sharedStateReader.getEdgeConfig(event: event)
+        guard let configId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !configId.isEmpty else {
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', configuration 'edge.configId' is missing or empty.")
+            return .failure(.missingConfiguration)
+        }
+
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState =
+                getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                  event: event)?.value else {
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)', " +
+                            "Identity shared state is nil.")
+            return .failure(.invalidPayload)
+        }
+
+        let edgeEntity = EdgeDataEntity(event: event,
+                                        configuration: AnyCodable.from(dictionary: edgeConfig) ?? [:],
+                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
+
+        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
+            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to encode EdgeDataEntity for event with id: '\(event.id.uuidString)'.")
+            return .failure(.invalidPayload)
+        }
+
+        return .success(DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData))
     }
 
     /// Handles the `EventType.consent` -`EventSource.responseContent` event for the collect consent change
@@ -331,7 +370,7 @@ public class Edge: NSObject, Extension {
                                                       Log.error(label: EdgeConstants.LOG_TAG, "Dropping undecodable device attributes hit \(entity.uniqueIdentifier).")
                                                       MobileCore.dispatch(event: Event.createBypassDropResult(requestEventId: entity.uniqueIdentifier))
                                                   })
-        return PersistentHitQueue(dataQueue: bypassConsentDataQueue, processor: bypassHitProcessor)
+        return BypassConsentHitQueue(dataQueue: bypassConsentDataQueue, processor: bypassHitProcessor)
     }
 
     /// Retrieves the `ConsentStatus` from the Consent XDM Shared state for current `event`.

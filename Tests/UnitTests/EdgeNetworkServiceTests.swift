@@ -869,27 +869,24 @@ extension EdgeNetworkServiceTests {
         mockResponseCallback = MockResponseCallback()
         mockNetworkService.setMockResponse(url: url, httpMethod: .post, responseConnection: connection)
         let completed = expectation(description: "Network processing completes")
-        var outcomes: [Bool] = []
-        var statuses: [Int?] = []
-        networkService.doRequest(url: url, requestBody: "{}", streaming: nil, responseCallback: mockResponseCallback,
-                                 bypassResult: { accepted, status in
-            outcomes.append(accepted)
-            statuses.append(status)
-        }, completion: { finished, retry, responseCode in
-            XCTAssertEqual(success != nil, finished, file: file, line: line)
-            XCTAssertEqual(retryInterval, retry, file: file, line: line)
-            XCTAssertEqual(connection.responseCode, responseCode, file: file, line: line)
-            if let success = success {
-                XCTAssertEqual([success], outcomes, file: file, line: line)
-                XCTAssertEqual(1, statuses.count, file: file, line: line)
-                XCTAssertEqual(httpStatus, statuses.first ?? nil, file: file, line: line)
-                XCTAssertTrue(self.mockResponseCallback.onCompleteCalled, file: file, line: line)
+        completed.assertForOverFulfill = true
+        let expected: BypassConsentNetworkOutcome
+        if let success = success {
+            if success, let httpStatus = httpStatus {
+                expected = .success(httpStatus: httpStatus)
             } else {
-                XCTAssertTrue(outcomes.isEmpty, file: file, line: line)
-                XCTAssertFalse(self.mockResponseCallback.onCompleteCalled, file: file, line: line)
+                expected = .failure(httpStatus: httpStatus)
             }
+        } else if let retryInterval = retryInterval {
+            expected = .retry(after: retryInterval)
+        } else {
+            XCTFail("Retry outcome requires an interval", file: file, line: line)
+            return
+        }
+        networkService.doBypassConsentRequest(url: url, requestBody: "{}") { outcome in
+            XCTAssertEqual(expected, outcome, file: file, line: line)
             completed.fulfill()
-        })
+        }
         wait(for: [completed], timeout: 1)
     }
 
@@ -899,7 +896,6 @@ extension EdgeNetworkServiceTests {
                                             response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: nil),
                                             error: nil)
             assertBypassOutcome(connection: connection, success: true, httpStatus: code)
-            XCTAssertFalse(mockResponseCallback.onErrorCalled)
         }
     }
 
@@ -909,20 +905,15 @@ extension EdgeNetworkServiceTests {
                                             response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: nil),
                                             error: nil)
             assertBypassOutcome(connection: connection, success: false, httpStatus: code)
-            if code != 207 {
-                XCTAssertTrue(mockResponseCallback.onErrorCalled)
-            }
         }
     }
 
-    func testBypass207ForwardsResponseErrorsAndReportsFailure() {
+    func testBypass207ReportsFailureIndependentlyOfResponseBody() {
         let responseBody = #"{"errors":[{"status":400,"title":"Device attribute rejected","report":{"eventIndex":0}}]}"#
         let connection = HttpConnection(data: responseBody.data(using: .utf8),
                                         response: HTTPURLResponse(url: url, statusCode: 207, httpVersion: nil, headerFields: nil),
                                         error: nil)
         assertBypassOutcome(connection: connection, success: false, httpStatus: 207)
-        XCTAssertEqual([responseBody], mockResponseCallback.onResponseJsonResponse)
-        XCTAssertFalse(mockResponseCallback.onErrorCalled)
     }
 
     func testBypassPermanentHTTPFailuresAreNotSuccessEvenWhenTheHitFinishes() {
@@ -931,7 +922,6 @@ extension EdgeNetworkServiceTests {
                                             response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: nil),
                                             error: nil)
             assertBypassOutcome(connection: connection, success: false, httpStatus: code)
-            XCTAssertTrue(mockResponseCallback.onErrorCalled)
         }
     }
 
@@ -969,21 +959,46 @@ extension EdgeNetworkServiceTests {
         for body in [nil, ""] as [String?] {
             mockNetworkService.reset()
             mockResponseCallback = MockResponseCallback()
-            var outcomes: [Bool] = []
-            var finished: Bool?
-            networkService.doRequest(url: url, requestBody: body, streaming: nil, responseCallback: mockResponseCallback,
-                                     bypassResult: { accepted, status in
-                outcomes.append(accepted)
-                XCTAssertNil(status)
-            }, completion: { processed, retry, responseCode in
-                finished = processed
-                XCTAssertNil(retry)
-                XCTAssertNil(responseCode)
-            })
-            XCTAssertEqual([false], outcomes)
-            XCTAssertEqual(true, finished)
-            XCTAssertTrue(mockResponseCallback.onCompleteCalled)
+            var outcomes: [BypassConsentNetworkOutcome] = []
+            networkService.doBypassConsentRequest(url: url, requestBody: body) { outcomes.append($0) }
+            XCTAssertEqual([.failure(httpStatus: nil)], outcomes)
             XCTAssertTrue(mockNetworkService.getNetworkRequestsWith(url: url, httpMethod: .post).isEmpty)
         }
+    }
+
+    func testBypassHTTPOutcomeDoesNotDependOnBodyParsing() {
+        for code in [200, 202, 204, 207, 400] {
+            for body in ["{", #"{"errors":[{"status":400}]}"#] {
+                let connection = HttpConnection(data: Data(body.utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: nil),
+                                                error: nil)
+                assertBypassOutcome(connection: connection, success: [200, 202, 204].contains(code), httpStatus: code)
+            }
+        }
+    }
+
+    func testBypassInvalidRetryAfterUsesExistingDefault() {
+        for header in ["0", "-1", "invalid", "Wed, 21 Oct 2026 07:28:00 GMT"] {
+            let connection = HttpConnection(data: nil,
+                                            response: HTTPURLResponse(url: url, statusCode: 503, httpVersion: nil,
+                                                                      headerFields: ["Retry-After": header]),
+                                            error: nil)
+            assertBypassOutcome(connection: connection, success: nil, httpStatus: nil,
+                                retryInterval: EdgeConstants.Defaults.RETRY_INTERVAL)
+        }
+    }
+
+    func testBypassSharesTransportHeadersAndTimeouts() throws {
+        let completed = expectation(description: "Bypass transport completes")
+        networkService.doBypassConsentRequest(url: url, requestBody: "{}", requestHeaders: ["X-Adobe-AEP-Validation-Token": "assurance"]) { _ in
+            completed.fulfill()
+        }
+        wait(for: [completed], timeout: 1)
+        let request = try XCTUnwrap(mockNetworkService.getNetworkRequestsWith(url: url, httpMethod: .post).first)
+        XCTAssertEqual("application/json", request.httpHeaders["accept"])
+        XCTAssertEqual("application/json", request.httpHeaders["Content-Type"])
+        XCTAssertEqual("assurance", request.httpHeaders["X-Adobe-AEP-Validation-Token"])
+        XCTAssertEqual(EdgeConstants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT, request.connectTimeout)
+        XCTAssertEqual(EdgeConstants.NetworkKeys.DEFAULT_READ_TIMEOUT, request.readTimeout)
     }
 }

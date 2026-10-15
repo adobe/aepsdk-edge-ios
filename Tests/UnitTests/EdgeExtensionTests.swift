@@ -717,7 +717,7 @@ extension EdgeExtensionTests {
         let state = try XCTUnwrap(configuredEdge.state)
         let bypassQueue = try XCTUnwrap(state.bypassConsentHitQueue)
         XCTAssertTrue(state.hitQueue is EdgeBatchingHitQueue)
-        XCTAssertTrue(bypassQueue is PersistentHitQueue)
+        XCTAssertTrue(bypassQueue is BypassConsentHitQueue)
         let corruptedData: [Data?] = [nil, Data("{".utf8), Data("{}".utf8)]
         let requestIds = corruptedData.map { _ in UUID().uuidString }
         let result = expectation(description: "Only corrupted bypass hits produce terminal drops")
@@ -801,7 +801,7 @@ extension EdgeExtensionTests {
                        result.data as NSDictionary?)
     }
 
-    func testBypassRequestUsesDedicatedQueueForEveryCollectConsent() {
+    func testBypassRequestUsesDedicatedQueueForEveryCollectConsent() throws {
         let primaryQueue = RecordingHitQueue()
         let bypassQueue = RecordingHitQueue()
         edge.state?.hitQueue.close()
@@ -809,7 +809,7 @@ extension EdgeExtensionTests {
         edge.state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
         mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME, data: ([:], .set))
         mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
-                                        data: (["edge.configId": "config"], .set))
+                                        data: (["edge.configId": "config", "edge.batching": ["enabled": true, "maxBatchSize": 10]], .set))
         XCTAssertTrue(edge.readyForEvent(experienceEvent))
         for (index, consent) in [ConsentStatus.no, .pending, .yes].enumerated() {
             edge.state?.updateCurrentConsent(status: consent)
@@ -819,6 +819,9 @@ extension EdgeExtensionTests {
             mockRuntime.simulateComingEvents(request)
             XCTAssertEqual(index + 1, bypassQueue.count())
             XCTAssertEqual(request.id.uuidString, bypassQueue.entities.last?.uniqueIdentifier)
+            let data = try XCTUnwrap(bypassQueue.entities.last?.data)
+            let persisted = try JSONDecoder().decode(EdgeDataEntity.self, from: data)
+            XCTAssertNil(persisted.configuration["edge.batching"])
             XCTAssertEqual(0, primaryQueue.count())
         }
         XCTAssertNotNil(mockRuntime.getListener(type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT, source: EventSource.requestContent))

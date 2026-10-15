@@ -894,6 +894,7 @@ class EdgeHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
     func assertProcessHit(entity: DataEntity, urlString: String? = nil, sendsNetworkRequest: Bool, returns: Bool, file: StaticString = #file, line: UInt = #line) {
         let expectation = XCTestExpectation(description: "Callback should be invoked signaling if the hit was processed or not")
+        expectation.assertForOverFulfill = true
 
         if sendsNetworkRequest {
             mockNetworkService.setExpectationForNetworkRequest(
@@ -1601,27 +1602,76 @@ extension EdgeHitProcessorTests {
         wait(for: [result], timeout: 2)
     }
 
-    func testBypass207SurfacesResponseErrorsAndDispatchesFailedResult() {
+    func testBypassResultsDoNotDispatchStandardResponseErrorOrCompletionEvents() throws {
         defer { EventHub.reset() }
-        let result = expectBypassResult(for: bypassConsentEvent, status: "failed", httpStatus: 207, reason: "network")
-        let errorReceived = expectation(description: "Partial error is surfaced")
-        errorReceived.assertForOverFulfill = true
-        MobileCore.registerEventListener(type: EventType.edge, source: EdgeConstants.EventSource.ERROR_RESPONSE_CONTENT) { event in
-            XCTAssertEqual(self.bypassConsentEvent.id, event.parentID)
-            XCTAssertEqual(400, event.data?["status"] as? Int)
-            XCTAssertEqual("Device attribute rejected", event.data?["title"] as? String)
-            errorReceived.fulfill()
+        let request = Event(name: "device attributes", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                            source: EventSource.requestContent,
+                            data: ["app": ["identifier": "example"], "request": ["sendCompletion": true]])
+        let body = #"""
+        {"handle":[{"type":"device-attributes:result","eventIndex":0,"payload":[{"id":"registered"}]}],
+         "errors":[{"status":400,"title":"Device attribute rejected","report":{"eventIndex":0}}],
+         "warnings":[{"status":400,"title":"Warning","report":{"eventIndex":0}}]}
+        """#
+        for code in [200, 202, 204, 207, 400] {
+            let status = [200, 202, 204].contains(code) ? "success" : "failed"
+            let result = expectBypassResult(for: request, status: status, httpStatus: code,
+                                           reason: status == "failed" ? "network" : nil)
+            let standardEvent = expectation(description: "Bypass must not dispatch ordinary Edge events")
+            standardEvent.isInverted = true
+            MobileCore.registerEventListener(type: EventType.edge, source: EventSource.wildcard) { event in
+                if event.parentID == request.id { standardEvent.fulfill() }
+            }
+            mockNetworkService.reset()
+            mockNetworkService.setMockResponse(
+                url: DEVICE_ATTRIBUTES_ENDPOINT_PROD, httpMethod: .post,
+                responseConnection: HttpConnection(data: body.data(using: .utf8),
+                                                    response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: nil),
+                                                    error: nil))
+            let edgeEntity = getEdgeDataEntity(event: request, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+            let entity = DataEntity(uniqueIdentifier: request.id.uuidString, timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+            assertProcessHit(entity: entity, urlString: DEVICE_ATTRIBUTES_ENDPOINT_PROD, sendsNetworkRequest: true, returns: true)
+            let networkRequest = try XCTUnwrap(mockNetworkService.getNetworkRequestsWith(url: DEVICE_ATTRIBUTES_ENDPOINT_PROD, httpMethod: .post).first)
+            let requestId = try XCTUnwrap(networkRequest.url["requestId"])
+            XCTAssertNil(networkResponseHandler.getWaitingEvents(requestId: requestId))
+            wait(for: [result, standardEvent], timeout: 0.5)
         }
-        let responseBody = #"{"errors":[{"status":400,"title":"Device attribute rejected","report":{"eventIndex":0}}]}"#
+    }
+
+    func testBypassLegacyConfigurationNotReadyCompletesForRetry() {
+        mockReadyForEvent = { _ in false }
+        let edgeEntity = getEdgeDataEntity(event: bypassConsentEvent, configuration: [:], identityMap: defaultIdentityMap)
+        let entity = DataEntity(uniqueIdentifier: bypassConsentEvent.id.uuidString, timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+        assertProcessHit(entity: entity, sendsNetworkRequest: false, returns: false)
+    }
+
+    func testBypassResponseDoesNotMutatePrimaryStateOrLocationHint() {
+        let manager = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        manager.deleteAllStorePayloads()
+        defer { manager.deleteAllStorePayloads() }
+        manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "existing", value: "preserved", maxAge: 3600))])
+        let locationUpdated = expectation(description: "Bypass must not update the primary location hint")
+        locationUpdated.isInverted = true
+        networkResponseHandler = NetworkResponseHandler(updateLocationHint: { _, _ in locationUpdated.fulfill() })
+        hitProcessor = EdgeHitProcessor(networkService: networkService,
+                                        networkResponseHandler: networkResponseHandler,
+                                        sharedStateReader: SharedStateReader(getSharedState: { _, _, _ in nil }),
+                                        readyForEvent: { _ in true },
+                                        getImplementationDetails: { nil },
+                                        getLocationHint: { nil })
+        let body = #"""
+        {"handle":[{"type":"state:store","payload":[{"key":"existing","value":"replaced","maxAge":3600}]},
+                   {"type":"locationHint:result","payload":[{"scope":"EdgeNetwork","hint":"new-hint","ttlSeconds":3600}]}]}
+        """#
         mockNetworkService.setMockResponse(
             url: DEVICE_ATTRIBUTES_ENDPOINT_PROD, httpMethod: .post,
-            responseConnection: HttpConnection(data: responseBody.data(using: .utf8),
-                                                response: HTTPURLResponse(url: url, statusCode: 207, httpVersion: nil, headerFields: nil),
+            responseConnection: HttpConnection(data: Data(body.utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil),
                                                 error: nil))
-        let edgeEntity = getEdgeDataEntity(event: bypassConsentEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
-        let entity = DataEntity(uniqueIdentifier: bypassConsentEvent.id.uuidString, timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+        let entity = DataEntity(uniqueIdentifier: bypassConsentEvent.id.uuidString, timestamp: Date(),
+                                data: try? JSONEncoder().encode(getEdgeDataEntity(event: bypassConsentEvent)))
         assertProcessHit(entity: entity, urlString: DEVICE_ATTRIBUTES_ENDPOINT_PROD, sendsNetworkRequest: true, returns: true)
-        wait(for: [result, errorReceived], timeout: 2)
+        wait(for: [locationUpdated], timeout: 0.5)
+        XCTAssertEqual("preserved", manager.getActiveStores()["existing"]?.payload.value)
     }
 
     func testBypassMissingConfigDispatchesDropWithoutNetworkRequest() {
