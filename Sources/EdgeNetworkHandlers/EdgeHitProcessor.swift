@@ -23,6 +23,7 @@ class EdgeHitProcessor: HitProcessing {
     private var readyForEvent: (Event) -> Bool
     private var getImplementationDetails: () -> [String: Any]?
     private var getLocationHint: () -> String?
+    private let onDecodeFailure: ((DataEntity) -> Void)?
     private let entityRetryIntervalMapping = ThreadSafeDictionary<String, TimeInterval>()
     private let VALID_PATH_REGEX_PATTERN = "^\\/[/.a-zA-Z0-9-~_]+$"
 
@@ -31,13 +32,15 @@ class EdgeHitProcessor: HitProcessing {
          sharedStateReader: SharedStateReader,
          readyForEvent: @escaping (Event) -> Bool,
          getImplementationDetails: @escaping () -> [String: Any]?,
-         getLocationHint: @escaping () -> String?) {
+         getLocationHint: @escaping () -> String?,
+         onDecodeFailure: ((DataEntity) -> Void)? = nil) {
         self.networkService = networkService
         self.networkResponseHandler = networkResponseHandler
         self.sharedStateReader = sharedStateReader
         self.readyForEvent = readyForEvent
         self.getImplementationDetails = getImplementationDetails
         self.getLocationHint = getLocationHint
+        self.onDecodeFailure = onDecodeFailure
     }
 
     // MARK: HitProcessing
@@ -53,11 +56,16 @@ class EdgeHitProcessor: HitProcessing {
     func processHit(entity: DataEntity, completion: @escaping (Bool) -> Void) {
         guard let edgeEntity = decode(dataEntity: entity) else {
             // can't convert data to hit, unrecoverable error, move to next hit
+            onDecodeFailure?(entity)
             completion(true)
             return
         }
 
         let event = edgeEntity.event
+        if event.isBypassConsentEvent {
+            processBypassConsentHit(entityId: entity.uniqueIdentifier, edgeEntity: edgeEntity, completion: completion)
+            return
+        }
         var edgeConfig: [String: String]
 
         // Check which workflow is used to obtain configuration
@@ -209,6 +217,60 @@ class EdgeHitProcessor: HitProcessing {
         let edgeHit = ConsentEdgeHit(endpoint: endpoint, datastreamId: datastreamId, consents: consentPayload)
         networkResponseHandler.addWaitingEvent(requestId: edgeHit.requestId, event: event)
         sendHit(entityId: entityId, edgeHit: edgeHit, headers: getRequestHeaders(event), completion: completion)
+    }
+
+    /// Processes bypass-consent (device-attributes) events. These arrive only via the dedicated
+    /// bypass-consent queue and are intentionally NOT gated by collect consent. Builds the
+    /// device-attributes payload and sends it to the `mobile/device-attributes` endpoint, using the
+    /// same Edge configuration (datastream id, environment, domain, location hint) as other paths.
+    /// - Parameters:
+    ///   - entityId: unique id of the `DataEntity` used when the hit needs to be retried.
+    ///   - edgeEntity: the persisted bypass event and its configuration/identity snapshots.
+    ///   - completion: completion handler to notify the caller about the hit response.
+    private func processBypassConsentHit(entityId: String, edgeEntity: EdgeDataEntity, completion: @escaping (Bool) -> Void) {
+        let event = edgeEntity.event
+        let edgeConfig: [String: String]
+        if !edgeEntity.configuration.isEmpty {
+            edgeConfig = edgeEntity.configuration.asAnyDictionary.compactMapValues { $0 as? String }
+        } else {
+            guard readyForEvent(event) else {
+                Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Device attributes event '\(event.id)' is not ready. Will retry.")
+                completion(false)
+                return
+            }
+            edgeConfig = sharedStateReader.getEdgeConfig(event: event)
+        }
+        guard let datastreamId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !datastreamId.isEmpty else {
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)' " +
+                            "due to missing or empty edge.configId in configuration.")
+            MobileCore.dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.DROPPED,
+                                                                reason: EdgeConstants.BypassResult.Reason.MISSING_CONFIG))
+            completion(true)
+            return // drop current event
+        }
+
+        let requestBuilder = RequestBuilder()
+        let identityState = AnyCodable.toAnyDictionary(dictionary: edgeEntity.identityMap)
+        requestBuilder.xdmPayloads[EdgeConstants.SharedState.Identity.IDENTITY_MAP] =
+            AnyCodable(identityState?[EdgeConstants.SharedState.Identity.IDENTITY_MAP])
+        guard let payload = requestBuilder.generateNoConsentPayload(event, implementationDetails: getImplementationDetails()) else {
+            Log.debug(label: EdgeConstants.LOG_TAG,
+                      "\(SELF_TAG) - Failed to build the device-attributes payload, dropping event '\(event.id.uuidString)'.")
+            MobileCore.dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.DROPPED,
+                                                                reason: EdgeConstants.BypassResult.Reason.INVALID_PAYLOAD))
+            completion(true)
+            return
+        }
+
+        let endpoint = buildEdgeEndpoint(config: edgeConfig,
+                                         requestType: EdgeRequestType.deviceAttributes,
+                                         requestProperties: nil,
+                                         locationHint: getLocationHint())
+        let edgeHit = NoConsentEdgeHit(endpoint: endpoint,
+                                       datastreamId: datastreamId,
+                                       payload: payload)
+        sendBypassConsentHit(entityId: entityId, edgeHit: edgeHit, event: event, completion: completion)
     }
 
     /// Processes a batch of `DataEntity`s as a single network request when the batch contains more than
@@ -521,6 +583,37 @@ class EdgeHitProcessor: HitProcessing {
                 }
             }
             completion(success)
+        }
+    }
+
+    private func sendBypassConsentHit(entityId: String, edgeHit: NoConsentEdgeHit, event: Event,
+                                      completion: @escaping (Bool) -> Void) {
+        guard let url = networkService.buildUrl(endpoint: edgeHit.endpoint,
+                                                datastreamId: edgeHit.datastreamId,
+                                                requestId: edgeHit.requestId) else {
+            Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Invalid device attributes URL, dropping event '\(event.id)'.")
+            MobileCore.dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.DROPPED,
+                                                                reason: EdgeConstants.BypassResult.Reason.INVALID_PAYLOAD))
+            completion(true)
+            return
+        }
+
+        networkService.doBypassConsentRequest(url: url, requestBody: edgeHit.getPayload(), requestHeaders: getRequestHeaders(event)) { [weak self] outcome in
+            switch outcome {
+            case .retry(let interval):
+                self?.entityRetryIntervalMapping[entityId] = interval
+                completion(false)
+            case .success(let status):
+                self?.entityRetryIntervalMapping[entityId] = nil
+                MobileCore.dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.SUCCESS, httpStatus: status))
+                completion(true)
+            case .failure(let status):
+                self?.entityRetryIntervalMapping[entityId] = nil
+                MobileCore.dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.FAILED,
+                                                                    reason: EdgeConstants.BypassResult.Reason.NETWORK,
+                                                                    httpStatus: status))
+                completion(true)
+            }
         }
     }
 

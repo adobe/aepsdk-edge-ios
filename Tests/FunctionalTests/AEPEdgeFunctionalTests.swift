@@ -55,6 +55,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         continueAfterFailure = true
         loggingEnabled = true
         NamedCollectionDataStore.clear()
+        // TestUtils' default cache list predates the bypass queue.
+        FileManager.default.clearCache([(name: "\(EdgeConstants.EXTENSION_NAME)\(EdgeConstants.DataQueueLabels.BYPASS_CONSENT_SUFFIX)", isDirectory: false)])
 
         // hub shared state update for 1 extension versions (InstrumentedExtension (registered in TestBase), IdentityEdge, Edge) IdentityEdge XDM, Config, and Edge shared state updates
         setExpectationEvent(type: TestConstants.EventType.HUB, source: TestConstants.EventSource.SHARED_STATE, expectedCount: 4)
@@ -94,6 +96,63 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
             waitForUnregistration.countDown()
         })
         XCTAssertEqual(DispatchTimeoutResult.success, waitForUnregistration.await(timeout: TIMEOUT_SEC))
+    }
+
+    func testBypassSuccessUsesOnlyDedicatedResultsAndAdvancesQueue() throws {
+        try assertBypassOnlyResults(httpStatus: 202, expectedStatus: "success")
+    }
+
+    func testBypassPermanentFailureUsesOnlyDedicatedResultsAndAdvancesQueue() throws {
+        try assertBypassOnlyResults(httpStatus: 207, expectedStatus: "failed")
+    }
+
+    private func assertBypassOnlyResults(httpStatus: Int, expectedStatus: String) throws {
+        let endpoint = try XCTUnwrap(URL(string: "https://edge.adobedc.net/ee/v1/mobile/device-attributes"))
+        let body = #"""
+        {"handle":[{"type":"device-attributes:result","eventIndex":0,"payload":[{"id":"registered"}]}],
+         "errors":[{"status":400,"title":"Device attribute rejected","report":{"eventIndex":0}}],
+         "warnings":[{"status":400,"title":"Warning","report":{"eventIndex":0}}]}
+        """#
+        mockNetworkService.setMockResponse(url: endpoint, httpMethod: .post,
+                                           responseConnection: HttpConnection(data: Data(body.utf8),
+                                                                               response: HTTPURLResponse(url: endpoint, statusCode: httpStatus,
+                                                                                                         httpVersion: nil, headerFields: nil),
+                                                                               error: nil))
+        mockNetworkService.setExpectationForNetworkRequest(url: endpoint.absoluteString, httpMethod: .post, expectedCount: 2)
+        let requests = (0..<2).map { index in
+            Event(name: "device attributes \(index)", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                  source: EventSource.requestContent,
+                  data: ["timezone": "Europe/London", "request": ["sendCompletion": true]])
+        }
+        let requestIds = Set(requests.map(\.id))
+        let receivedIds = ThreadSafeArray<UUID>()
+        let results = expectation(description: "Both queued bypass requests produce terminal results")
+        results.expectedFulfillmentCount = 2
+        results.assertForOverFulfill = true
+        let standardEvent = expectation(description: "Bypass never dispatches standard Edge events")
+        standardEvent.isInverted = true
+        MobileCore.registerEventListener(type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT, source: EventSource.responseContent) { event in
+            XCTAssertEqual(expectedStatus, event.data?["status"] as? String)
+            XCTAssertEqual(httpStatus, event.data?["httpStatus"] as? Int)
+            XCTAssertNil(event.responseID)
+            if let parent = event.parentID {
+                XCTAssertTrue(requestIds.contains(parent))
+                receivedIds.append(parent)
+            } else {
+                XCTFail("Expected a correlated bypass result")
+            }
+            results.fulfill()
+        }
+        MobileCore.registerEventListener(type: EventType.edge, source: EventSource.wildcard) { event in
+            if let parent = event.parentID, requestIds.contains(parent) { standardEvent.fulfill() }
+        }
+        for request in requests {
+            MobileCore.dispatch(event: request)
+        }
+        wait(for: [results], timeout: TIMEOUT_SEC)
+        wait(for: [standardEvent], timeout: 0.5)
+        XCTAssertEqual(requestIds, Set(receivedIds.shallowCopy))
+        mockNetworkService.assertAllNetworkRequestExpectations(timeout: TIMEOUT_SEC)
     }
 
     // MARK: test request event format
@@ -781,7 +840,8 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         XCTAssertNotNil(requestUrl.queryParam("requestId"))
     }
 
-    func testSendEvent_twoConsecutiveCalls_resetInBetween_doesNotAppendReceivedClientSideStore() {
+    func testSendEvent_twoConsecutiveCalls_resetInBetween_doesNotAppendReceivedClientSideStore() throws {
+        let requestTimeout: TimeInterval = 30
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         // swiftlint:disable:next line_length
         let storeResponseBody = "\u{0000}{\"requestId\": \"0000-4a4e-1111-bf5c-abcd\",\"handle\": [{\"payload\": [{\"key\": \"kndctr_testOrg_AdobeOrg_identity\",\"value\": \"hashed_value\",\"maxAge\": 34128000},{\"key\": \"kndctr_testOrg_AdobeOrg_consent_check\",\"value\": \"1\",\"maxAge\": 7200},{\"key\": \"expired_key\",\"value\": \"1\",\"maxAge\": 0}],\"type\": \"state:store\"}]}\n"
@@ -794,22 +854,26 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
 
         let experienceEvent = ExperienceEvent(xdm: ["testString": "xdm"], data: nil)
+        let firstResponseCompleted = expectation(description: "First response stores client-side state before reset")
         // first network call, no stored data
-        Edge.sendEvent(experienceEvent: experienceEvent)
+        Edge.sendEvent(experienceEvent: experienceEvent) { handles in
+            XCTAssertTrue(handles.contains { $0.type == "state:store" })
+            firstResponseCompleted.fulfill()
+        }
 
         // Validate
-        var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
+        var resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: requestTimeout)
         XCTAssertEqual(1, resultNetworkRequests.count)
+        let firstRequest = try XCTUnwrap(resultNetworkRequests.first)
+        wait(for: [firstResponseCompleted], timeout: requestTimeout)
 
         assertTypeMatch(
             expected: createExpectedPayload(),
-            actual: resultNetworkRequests[0],
+            actual: firstRequest,
             pathOptions: CollectionEqualCount(scope: .subtree))
 
         resetTestExpectations()
         mockNetworkService.reset()
-
-        sleep(1)
 
         // send the reset event between causing state store to be reset
         let resetEvent = Event(name: "reset event", type: EventType.genericIdentity, source: EventSource.requestReset, data: nil)
@@ -818,15 +882,20 @@ class AEPEdgeFunctionalTests: TestBase, AnyCodableAsserts {
         // send a new event, should NOT contain previously stored store data due to reset event
         mockNetworkService.setExpectationForNetworkRequest(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, expectedCount: 1)
         mockNetworkService.setMockResponse(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, responseConnection: responseConnection)
-        Edge.sendEvent(experienceEvent: experienceEvent)
+        let secondResponseCompleted = expectation(description: "Post-reset response completes")
+        Edge.sendEvent(experienceEvent: experienceEvent) { _ in
+            secondResponseCompleted.fulfill()
+        }
 
         // Validate
-        resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: TIMEOUT_SEC)
+        resultNetworkRequests = mockNetworkService.getNetworkRequestsWith(url: TestConstants.EX_EDGE_INTERACT_PROD_URL_STR, httpMethod: HttpMethod.post, timeout: requestTimeout)
         XCTAssertEqual(1, resultNetworkRequests.count)
+        let secondRequest = try XCTUnwrap(resultNetworkRequests.first)
+        wait(for: [secondResponseCompleted], timeout: requestTimeout)
 
         assertTypeMatch(
             expected: createExpectedPayload(),
-            actual: resultNetworkRequests[0],
+            actual: secondRequest,
             pathOptions: CollectionEqualCount(scope: .subtree),
             ValueTypeMatch(paths: "meta.konductorConfig.streaming.recordSeparator", scope: .subtree))
     }

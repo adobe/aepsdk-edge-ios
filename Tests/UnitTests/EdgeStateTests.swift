@@ -26,12 +26,108 @@ class EdgeStateTests: XCTestCase {
         return ServiceProvider.shared.namedKeyValueService as! MockDataStore
     }
 
+    private final class RecordingHitQueue: HitQueuing {
+        enum Operation: Equatable {
+            case beginProcessing
+            case suspend
+            case clear
+            case close
+        }
+
+        let processor: HitProcessing = MockHitProcessor()
+        private(set) var operations: [Operation] = []
+        private var entities: [DataEntity] = []
+
+        func queue(entity: DataEntity) -> Bool {
+            entities.append(entity)
+            return true
+        }
+
+        func beginProcessing() { operations.append(.beginProcessing) }
+        func suspend() { operations.append(.suspend) }
+        func clear() {
+            operations.append(.clear)
+            entities.removeAll()
+        }
+        func count() -> Int { return entities.count }
+        func close() { operations.append(.close) }
+    }
+
+    func testInitializationStartsBypassQueueAndSuspendsOnlyPrimaryQueue() {
+        let primaryQueue = RecordingHitQueue()
+        let bypassQueue = RecordingHitQueue()
+        let state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
+
+        XCTAssertEqual(.pending, state.currentCollectConsent)
+        XCTAssertEqual([.suspend], primaryQueue.operations)
+        XCTAssertEqual([.beginProcessing], bypassQueue.operations)
+    }
+
+    func testCollectConsentChangesAffectOnlyPrimaryQueueAndPreserveBypassHits() {
+        let primaryQueue = RecordingHitQueue()
+        let bypassQueue = RecordingHitQueue()
+        let state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
+        let entity = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: Data())
+        XCTAssertTrue(primaryQueue.queue(entity: entity))
+        XCTAssertTrue(bypassQueue.queue(entity: entity))
+
+        state.updateCurrentConsent(status: .pending)
+        XCTAssertEqual([.suspend, .suspend], primaryQueue.operations)
+        XCTAssertEqual(1, primaryQueue.count())
+        XCTAssertEqual([.beginProcessing], bypassQueue.operations)
+        XCTAssertEqual(1, bypassQueue.count())
+
+        state.updateCurrentConsent(status: .no)
+        XCTAssertEqual([.suspend, .suspend, .clear, .beginProcessing], primaryQueue.operations)
+        XCTAssertEqual(0, primaryQueue.count())
+        XCTAssertEqual([.beginProcessing], bypassQueue.operations)
+        XCTAssertEqual(1, bypassQueue.count())
+
+        state.updateCurrentConsent(status: .yes)
+        XCTAssertEqual([.suspend, .suspend, .clear, .beginProcessing, .beginProcessing], primaryQueue.operations)
+        XCTAssertEqual(.yes, state.currentCollectConsent)
+        XCTAssertEqual([.beginProcessing], bypassQueue.operations)
+        XCTAssertEqual(1, bypassQueue.count())
+    }
+
+    func testBootupDoesNotRestartBypassQueue() {
+        let primaryQueue = RecordingHitQueue()
+        let bypassQueue = RecordingHitQueue()
+        let state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: bypassQueue, edgeProperties: EdgeProperties())
+        var sharedStateCreationCount = 0
+
+        for _ in 0..<2 {
+            state.bootupIfNeeded(event: experienceEvent,
+                                getSharedState: { _, _, _ in nil },
+                                createSharedState: { _, _ in sharedStateCreationCount += 1 })
+        }
+
+        XCTAssertTrue(state.hasBooted)
+        XCTAssertEqual(1, sharedStateCreationCount)
+        XCTAssertEqual([.suspend, .beginProcessing], primaryQueue.operations)
+        XCTAssertEqual([.beginProcessing], bypassQueue.operations)
+    }
+
+    func testMissingBypassQueueDoesNotChangePrimaryConsentLifecycle() {
+        let primaryQueue = RecordingHitQueue()
+        let state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: nil, edgeProperties: EdgeProperties())
+
+        state.updateCurrentConsent(status: .yes)
+        state.updateCurrentConsent(status: .pending)
+        state.updateCurrentConsent(status: .no)
+
+        XCTAssertNil(state.bypassConsentHitQueue)
+        XCTAssertEqual(.no, state.currentCollectConsent)
+        XCTAssertEqual([.suspend, .beginProcessing, .suspend, .clear, .beginProcessing], primaryQueue.operations)
+    }
+
     override func setUp() {
         ServiceProvider.shared.namedKeyValueService = MockDataStore()
         mockDataQueue = MockDataQueue()
         mockHitProcessor = MockHitProcessor()
 
         edgeState = EdgeState(hitQueue: PersistentHitQueue(dataQueue: mockDataQueue, processor: mockHitProcessor),
+                              bypassConsentHitQueue: PersistentHitQueue(dataQueue: MockDataQueue(), processor: mockHitProcessor),
                               edgeProperties: EdgeProperties())
     }
 

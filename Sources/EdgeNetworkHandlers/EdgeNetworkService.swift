@@ -17,20 +17,30 @@ import Foundation
 /// Edge Network request type:
 ///     - interact - makes request and expects a response
 ///     - consent - sets user consent and expects a response
+///     - deviceAttributes - registers device/profile operational data (push/live-activity tokens, timezone),
+///       consent-independent path handled via the consent-override queue
 enum EdgeRequestType: String {
     case interact
     case consent = "privacy/set-consent"
+    case deviceAttributes = "mobile/device-attributes"
 }
 
 /// Convenience enum for the known error codes
 enum HttpResponseCodes: Int {
     case ok = 200
+    case accepted = 202
     case noContent = 204
     case badRequest = 400
     case multiStatus = 207
     case tooManyRequests = 429
     case badGateway = 502
     case insufficientStorage = 507
+}
+
+enum BypassConsentNetworkOutcome: Equatable {
+    case success(httpStatus: Int)
+    case failure(httpStatus: Int?)
+    case retry(after: TimeInterval)
 }
 
 /// Network service for requests to the Adobe Experience Edge
@@ -139,6 +149,77 @@ class EdgeNetworkService {
                                     responseCallback: responseCallback,
                                     completion: completion)
         }
+    }
+
+    /// Sends a non-streaming device-attributes request without entering primary Edge response handling.
+    func doBypassConsentRequest(url: URL,
+                               requestBody: String?,
+                               requestHeaders: [String: String]? = [:],
+                               completion: @escaping (BypassConsentNetworkOutcome) -> Void) {
+        guard let payload = requestBody, !payload.isEmpty else {
+            Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Device attributes request body is nil/empty, dropping this request")
+            completion(.failure(httpStatus: nil))
+            return
+        }
+
+        performRequest(url: url, payload: payload, requestHeaders: requestHeaders) { connection in
+            self.handleBypassConsentConnection(connection, completion: completion)
+        }
+    }
+
+    private func performRequest(url: URL, payload: String, requestHeaders: [String: String]?,
+                                completion: @escaping (HttpConnection) -> Void) {
+        let headers = defaultHeaders.merging(requestHeaders ?? [:]) { _, new in new }
+        let request = NetworkRequest(url: url,
+                                     httpMethod: .post,
+                                     connectPayload: payload,
+                                     httpHeaders: headers,
+                                     connectTimeout: EdgeConstants.NetworkKeys.DEFAULT_CONNECT_TIMEOUT,
+                                     readTimeout: EdgeConstants.NetworkKeys.DEFAULT_READ_TIMEOUT)
+        Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Sending request to URL \(url.absoluteString) with headers: \(headers) and body: \n\(payload)")
+        ServiceProvider.shared.networkService.connectAsync(networkRequest: request, completionHandler: completion)
+    }
+
+    private func handleBypassConsentConnection(_ connection: HttpConnection,
+                                               completion: @escaping (BypassConsentNetworkOutcome) -> Void) {
+        if let error = connection.error {
+            if let urlError = error as? URLError, urlError.isRecoverable {
+                Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Recoverable device attributes transport error: \(error). Will retry.")
+                completion(.retry(after: EdgeConstants.Defaults.RETRY_INTERVAL))
+            } else {
+                Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Device attributes transport failed: \(error). Dropping the request.")
+                completion(.failure(httpStatus: connection.responseCode))
+            }
+            return
+        }
+
+        guard let responseCode = connection.responseCode else {
+            Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Device attributes request returned no HTTP status. Dropping the request.")
+            completion(.failure(httpStatus: nil))
+            return
+        }
+
+        switch responseCode {
+        case HttpResponseCodes.ok.rawValue, HttpResponseCodes.accepted.rawValue, HttpResponseCodes.noContent.rawValue:
+            completion(.success(httpStatus: responseCode))
+        default:
+            if let retryInterval = retryInterval(for: connection, responseCode: responseCode) {
+                Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Device attributes HTTP \(responseCode) is recoverable. Will retry.")
+                completion(.retry(after: retryInterval))
+            } else {
+                Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Device attributes HTTP \(responseCode) failed. Dropping the request.")
+                completion(.failure(httpStatus: responseCode))
+            }
+        }
+    }
+
+    private func retryInterval(for connection: HttpConnection, responseCode: Int) -> TimeInterval? {
+        guard recoverableNetworkErrorCodes.contains(responseCode) else { return nil }
+        if let header = connection.responseHttpHeader(forKey: EdgeConstants.NetworkKeys.HEADER_KEY_RETRY_AFTER),
+           let interval = TimeInterval(header), interval > 0 {
+            return interval
+        }
+        return EdgeConstants.Defaults.RETRY_INTERVAL
     }
 
     /// Attempts the read the response from the `connection`and return the content via the `responseCallback`. This method should be used for handling 2xx server responses.

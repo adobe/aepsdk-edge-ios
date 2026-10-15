@@ -1857,24 +1857,30 @@ class NetworkResponseHandlerFunctionalTests: TestBase, AnyCodableAsserts {
 
         var dispatchOrder: [Event] = []
         let orderQueue = DispatchQueue(label: "test.orderQueue")
+        let firstHandleReceived = expectation(description: "Ordering listener receives index 0 handle")
+        let nextEventsReceived = expectation(description: "Ordering listener receives completion and index 1 handle")
+        nextEventsReceived.expectedFulfillmentCount = 2
         MobileCore.registerEventListener(type: EventType.wildcard, source: EventSource.wildcard) { event in
+            guard event.type == EventType.edge else { return }
+            if event.source == "pairedeventexample", event.parentID == e0.id {
+                firstHandleReceived.fulfill()
+                return
+            }
+            let isCompletion = event.source == TestConstants.EventSource.CONTENT_COMPLETE && event.parentID == e0.id
+            let isNextHandle = event.source == "pairedeventexample" && event.parentID == e1.id
+            guard isCompletion || isNextHandle else { return }
             orderQueue.sync { dispatchOrder.append(event) }
+            nextEventsReceived.fulfill()
         }
 
-        // index 0 fragment: wait for its handle to be fully dispatched, then clear the capture so
-        // only the second call's events (the ones under test) remain in `dispatchOrder`.
-        setExpectationEvent(type: TestConstants.EventType.EDGE, source: "pairedeventexample", expectedCount: 1)
+        // Synchronize with the ordering listener itself, not a separate event-capture listener.
         networkResponseHandler.processResponseOnSuccess(jsonResponse: indexedHandleFragment(eventIndex: 0), requestId: requestId)
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
-        resetTestExpectations()
-        orderQueue.sync { dispatchOrder.removeAll() }
+        wait(for: [firstHandleReceived], timeout: 5)
 
         // index 1 fragment, in this SAME processResponseOnSuccess call: this must first complete
         // event 0, THEN dispatch index 1's own handle — not the other way around.
-        setExpectationEvent(type: TestConstants.EventType.EDGE, source: "pairedeventexample", expectedCount: 1)
-        setExpectationEvent(type: TestConstants.EventType.EDGE, source: TestConstants.EventSource.CONTENT_COMPLETE, expectedCount: 1)
         networkResponseHandler.processResponseOnSuccess(jsonResponse: indexedHandleFragment(eventIndex: 1), requestId: requestId)
-        assertExpectedEvents(ignoreUnexpectedEvents: true)
+        wait(for: [nextEventsReceived], timeout: 5)
 
         let captured = orderQueue.sync { dispatchOrder }
         let completionIndex = captured.firstIndex { $0.source == TestConstants.EventSource.CONTENT_COMPLETE && $0.parentID == e0.id }
