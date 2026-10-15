@@ -509,6 +509,76 @@ class EdgeExtensionTests: XCTestCase, AnyCodableAsserts {
 
     // MARK: Identities reset event tests
 
+    func testHandleIdentitiesResetClearsBypassHitsAndPreservesPrimaryHits() throws {
+        let state = try XCTUnwrap(edge.state)
+        let bypassQueue = try XCTUnwrap(state.bypassConsentHitQueue)
+        state.hitQueue.suspend()
+        bypassQueue.suspend()
+        let primaryEntity = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: Data())
+        let bypassEntity = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: Data())
+        XCTAssertTrue(state.hitQueue.queue(entity: primaryEntity))
+        XCTAssertTrue(bypassQueue.queue(entity: bypassEntity))
+        XCTAssertEqual(1, mockDataQueue.count())
+        XCTAssertEqual(1, mockBypassConsentDataQueue.count())
+
+        let reset = Event(name: "Reset Event", type: EventType.genericIdentity, source: EventSource.requestReset, data: nil)
+        edge.handleIdentitiesReset(reset)
+
+        XCTAssertEqual(0, mockBypassConsentDataQueue.count())
+        XCTAssertEqual(2, mockDataQueue.count())
+        XCTAssertEqual(primaryEntity.uniqueIdentifier, mockDataQueue.peek()?.uniqueIdentifier)
+        XCTAssertFalse(mockRuntime.dispatchedEvents.contains { $0.type == EdgeConstants.EventType.EDGE_BYPASS_CONSENT })
+    }
+
+    func testBypassQueueAcceptsNewIdentityRequestsAfterReset() throws {
+        let state = try XCTUnwrap(edge.state)
+        let bypassQueue = try XCTUnwrap(state.bypassConsentHitQueue)
+        state.hitQueue.suspend()
+        bypassQueue.suspend()
+        mockRuntime.simulateSharedState(for: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
+                                        data: (["edge.configId": "config"], .set))
+        mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                           data: (["identityMap": ["ECID": [["id": "old-ecid"]]]], .set))
+        let oldRequest = Event(name: "device attributes", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                               source: EventSource.requestContent, data: ["timezone": "Europe/London"])
+        edge.handleBypassConsentRequest(oldRequest)
+        XCTAssertEqual(1, mockBypassConsentDataQueue.count())
+
+        let reset = Event(name: "Reset Event", type: EventType.genericIdentity, source: EventSource.requestReset, data: nil)
+        edge.handleIdentitiesReset(reset)
+        XCTAssertEqual(0, mockBypassConsentDataQueue.count())
+
+        mockRuntime.simulateXDMSharedState(for: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                           data: (["identityMap": ["ECID": [["id": "new-ecid"]]]], .set))
+        let newRequest = Event(name: "device attributes", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                               source: EventSource.requestContent, data: ["timezone": "Asia/Kolkata"])
+        edge.handleBypassConsentRequest(newRequest)
+
+        XCTAssertEqual(1, mockBypassConsentDataQueue.count())
+        XCTAssertEqual(1, mockDataQueue.count())
+        let entity = try XCTUnwrap(mockBypassConsentDataQueue.peek())
+        XCTAssertEqual(newRequest.id.uuidString, entity.uniqueIdentifier)
+        let data = try XCTUnwrap(entity.data)
+        let decoded = try JSONDecoder().decode(EdgeDataEntity.self, from: data)
+        let expectedIdentity = #"{"identityMap":{"ECID":[{"id":"new-ecid"}]}}"#
+        assertExactMatch(expected: expectedIdentity, actual: decoded.identityMap)
+    }
+
+    func testHandleIdentitiesResetWithoutBypassQueuePreservesPrimaryResetFlow() throws {
+        let primaryQueue = try XCTUnwrap(edge.state?.hitQueue)
+        edge.state = EdgeState(hitQueue: primaryQueue, bypassConsentHitQueue: nil, edgeProperties: EdgeProperties())
+        primaryQueue.suspend()
+        let primaryEntity = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: Data())
+        XCTAssertTrue(primaryQueue.queue(entity: primaryEntity))
+
+        let reset = Event(name: "Reset Event", type: EventType.genericIdentity, source: EventSource.requestReset, data: nil)
+        edge.handleIdentitiesReset(reset)
+
+        XCTAssertNil(edge.state?.bypassConsentHitQueue)
+        XCTAssertEqual(2, mockDataQueue.count())
+        XCTAssertEqual(primaryEntity.uniqueIdentifier, mockDataQueue.peek()?.uniqueIdentifier)
+    }
+
     func testHandleIdentitiesReset() {
         let event = Event(name: "Reset Event",
                           type: EventType.genericIdentity,
@@ -672,19 +742,49 @@ extension EdgeExtensionTests {
     }
 
     func testBypassResultsReachDedicatedListenersAndRetainRequestCorrelation() {
+        typealias Status = EdgeConstants.BypassResult.Status
         let request = Event(name: "device attributes", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
                             source: EventSource.requestContent, data: ["timezone": "Europe/London"])
         let listener = EventListenerContainer(listener: { _ in }, type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
                                               source: EventSource.responseContent, triggerEventId: nil, timeoutTask: nil)
-        for status in ["success", "failed", "dropped"] {
+        for (status, expectedStatus) in [(Status.SUCCESS, "success"), (Status.FAILED, "failed"), (Status.DROPPED, "dropped")] {
             let result = request.createBypassResult(status: status)
             XCTAssertTrue(listener.shouldNotify(result))
+            XCTAssertEqual("Edge bypass result", result.name)
+            XCTAssertEqual("com.adobe.eventType.edgeBypassConsent", result.type)
+            XCTAssertEqual("com.adobe.eventSource.responseContent", result.source)
             XCTAssertEqual(request.id, result.parentID)
             XCTAssertNil(result.responseID)
-            XCTAssertEqual(["status": status] as NSDictionary, result.data as NSDictionary?)
+            XCTAssertEqual(["status": expectedStatus] as NSDictionary, result.data as NSDictionary?)
         }
-        let result = request.createBypassResult(status: "failed", reason: "network", httpStatus: 404)
+        let result = request.createBypassResult(status: Status.FAILED, reason: EdgeConstants.BypassResult.Reason.NETWORK, httpStatus: 404)
         XCTAssertEqual(["status": "failed", "reason": "network", "httpStatus": 404] as NSDictionary, result.data as NSDictionary?)
+    }
+
+    func testBypassResultConstantsPreserveWireValues() {
+        typealias Keys = EdgeConstants.EventDataKeys.BypassResult
+        typealias Status = EdgeConstants.BypassResult.Status
+        typealias Reason = EdgeConstants.BypassResult.Reason
+
+        XCTAssertEqual(["status", "reason", "httpStatus", "requestEventId"],
+                       [Keys.STATUS, Keys.REASON, Keys.HTTP_STATUS, Keys.REQUEST_EVENT_ID])
+        XCTAssertEqual(["success", "failed", "dropped"], [Status.SUCCESS, Status.FAILED, Status.DROPPED])
+        XCTAssertEqual(["missingConfig", "invalidPayload", "queueUnavailable", "network"],
+                       [Reason.MISSING_CONFIG, Reason.INVALID_PAYLOAD, Reason.QUEUE_UNAVAILABLE, Reason.NETWORK])
+        XCTAssertEqual("Edge bypass result", EdgeConstants.EventName.BYPASS_RESULT)
+    }
+
+    func testBypassDecodeDropPreservesUnchainedWireContract() {
+        let requestId = UUID().uuidString
+        let result = Event.createBypassDropResult(requestEventId: requestId)
+
+        XCTAssertEqual("Edge bypass result", result.name)
+        XCTAssertEqual("com.adobe.eventType.edgeBypassConsent", result.type)
+        XCTAssertEqual("com.adobe.eventSource.responseContent", result.source)
+        XCTAssertNil(result.parentID)
+        XCTAssertNil(result.responseID)
+        XCTAssertEqual(["status": "dropped", "reason": "invalidPayload", "requestEventId": requestId] as NSDictionary,
+                       result.data as NSDictionary?)
     }
 
     func testBypassRequestUsesDedicatedQueueForEveryCollectConsent() {

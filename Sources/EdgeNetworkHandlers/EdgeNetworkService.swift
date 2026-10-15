@@ -76,7 +76,7 @@ class EdgeNetworkService {
     ///   - requestBody: `EdgeRequest` containing the encoded events
     ///   - requestHeaders: request HTTP headers
     ///   - responseCallback: `ResponseCallback` to be invoked once the server response is received
-    ///   - bypassResult: Optional final HTTP outcome for the bypass path. Not invoked on retry.
+    ///   - bypassResult: Optional final HTTP outcome for device attributes. Only 200, 202, and 204 are success. Not invoked on retry.
     ///   - completion: a closure invoked with whether the hit is finished, the retry interval, and the HTTP response code
     ///     (nil when no response was received). Batching uses the response code to distinguish a 400, which can be resent individually.
     func doRequest(url: URL,
@@ -139,7 +139,8 @@ class EdgeNetworkService {
                 return
             }
 
-            if let bypassResult = bypassResult, (200..<300).contains(responseCode) {
+            if let bypassResult = bypassResult,
+               [HttpResponseCodes.ok.rawValue, HttpResponseCodes.accepted.rawValue, HttpResponseCodes.noContent.rawValue].contains(responseCode) {
                 self.handleContent(connection: connection, streaming: streaming, responseCallback: responseCallback)
                 responseCallback.onComplete()
                 bypassResult(true, responseCode)
@@ -217,13 +218,6 @@ class EdgeNetworkService {
         switch responseCode {
         case HttpResponseCodes.ok.rawValue:
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge was successful.")
-            self.handleContent(connection: connection,
-                               streaming: streaming,
-                               responseCallback: responseCallback)
-            responseCallback.onComplete()
-            completion(true, nil, responseCode) // successful request, return true
-        case HttpResponseCodes.accepted.rawValue:
-            Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Connection to Experience Edge was successful, request accepted for processing.")
             self.handleContent(connection: connection,
                                streaming: streaming,
                                responseCallback: responseCallback)

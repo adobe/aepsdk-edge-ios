@@ -388,7 +388,7 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         assertExactMatch(expected: expectedJSON, actual: requestPayload?.events?[0])
     }
 
-    func testGenerateNoConsentPayload_containsProducerPassthrough_xdmImplementationDetailsAndIdentityMap_andMetaState() {
+    func testGenerateNoConsentPayload_usesSdkXdmAndMetaInsteadOfProducerValues() {
         // Store payload used to populate meta.state
         let manager = StoreResponsePayloadManager(testDataStoreName)
         manager.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "key", value: "value", maxAge: 3600))])
@@ -407,7 +407,9 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
                           type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
                           source: EventSource.requestContent,
                           data: ["app": ["identifier": "com.example.app"],
-                                 "timezone": "America/Los_Angeles"])
+                                 "timezone": "America/Los_Angeles",
+                                 "xdm": ["identityMap": ["ECID": [["id": "producer-ecid"]]], "producerField": true],
+                                 "meta": ["configOverrides": ["datastreamIdOverride": "producer-datastream"]]])
 
         guard let payload = request.generateNoConsentPayload(event, implementationDetails: implementationDetails) else {
             XCTFail("Expected non-nil device-attributes payload")
@@ -471,6 +473,38 @@ class RequestBuilderTests: XCTestCase, AnyCodableAsserts {
         XCTAssertEqual("", (decoded["tokens"] as? [String: Any])?["pushNotification"] as? String)
         XCTAssertEqual("Europe/London", decoded["timezone"] as? String)
         XCTAssertNil(decoded["events"])
+    }
+
+    func testGenerateNoConsentPayloadDiscardsProducerXdmAndMetaWithoutSdkEnrichment() throws {
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
+        let attributes: [String: Any] = [
+            "app": ["id": "com.example.app", "newAttribute": ["enabled": true]],
+            "timezone": "Europe/London",
+            "newBackendAttribute": ["values": [1, 2], "label": "dynamic"]
+        ]
+        var producerData = attributes
+        producerData["xdm"] = ["identityMap": ["ECID": [["id": "producer-ecid"]]]]
+        producerData["meta"] = ["configOverrides": ["datastreamIdOverride": "producer-datastream"]]
+        let event = Event(name: "device attributes", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                          source: EventSource.requestContent, data: producerData)
+
+        let payload = try XCTUnwrap(request.generateNoConsentPayload(event, implementationDetails: nil))
+        let decoded = try XCTUnwrap(try JSONSerialization.jsonObject(with: JSONEncoder().encode(payload)) as? [String: Any])
+
+        XCTAssertEqual(attributes as NSDictionary, decoded as NSDictionary)
+        XCTAssertNil(decoded["xdm"])
+        XCTAssertNil(decoded["meta"])
+        XCTAssertNotNil(event.data?["xdm"])
+        XCTAssertNotNil(event.data?["meta"])
+    }
+
+    func testGenerateNoConsentPayloadWithOnlyProducerSdkFieldsAndNoEnrichmentReturnsNil() {
+        let request = RequestBuilder(dataStoreName: testDataStoreName)
+        let event = Event(name: "device attributes", type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
+                          source: EventSource.requestContent,
+                          data: ["xdm": ["producerField": "value"], "meta": ["producerField": "value"]])
+
+        XCTAssertNil(request.generateNoConsentPayload(event, implementationDetails: nil))
     }
 
     private func buildIdentityMap() -> [String: Any]? {

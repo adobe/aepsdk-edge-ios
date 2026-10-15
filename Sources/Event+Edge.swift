@@ -44,10 +44,11 @@ extension Event {
     }
 
     func createBypassResult(status: String, reason: String? = nil, httpStatus: Int? = nil) -> Event {
-        var data: [String: Any] = ["status": status]
-        if let reason = reason { data["reason"] = reason }
-        if let httpStatus = httpStatus { data["httpStatus"] = httpStatus }
-        return createChainedEvent(name: "Edge bypass result",
+        typealias Keys = EdgeConstants.EventDataKeys.BypassResult
+        var data: [String: Any] = [Keys.STATUS: status]
+        if let reason = reason { data[Keys.REASON] = reason }
+        if let httpStatus = httpStatus { data[Keys.HTTP_STATUS] = httpStatus }
+        return createChainedEvent(name: EdgeConstants.EventName.BYPASS_RESULT,
                                   type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
                                   source: EventSource.responseContent,
                                   data: data)
@@ -55,11 +56,13 @@ extension Event {
 
     /// A corrupt hit has no usable Event; its persisted identifier still identifies the request to drop.
     static func createBypassDropResult(requestEventId: String) -> Event {
-        return Event(name: "Edge bypass result",
+        typealias Keys = EdgeConstants.EventDataKeys.BypassResult
+        return Event(name: EdgeConstants.EventName.BYPASS_RESULT,
                      type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT,
                      source: EventSource.responseContent,
-                     data: ["status": "dropped", "reason": "invalidPayload",
-                            EdgeConstants.EventDataKeys.REQUEST_EVENT_ID: requestEventId])
+                     data: [Keys.STATUS: EdgeConstants.BypassResult.Status.DROPPED,
+                            Keys.REASON: EdgeConstants.BypassResult.Reason.INVALID_PAYLOAD,
+                            Keys.REQUEST_EVENT_ID: requestEventId])
     }
 
 }

@@ -196,7 +196,7 @@ class EdgeNetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.5)
     }
 
-    func testDoRequest_whenConnection_ResponseCode202_CallsCompletionTrue_AndResponseCallback_AndNotErrorCallback() {
+    func testDoRequest_whenConnection_ResponseCode202_CallsErrorCallback_AndCompletesWithoutRetry() {
         // setup
         let stringResponseBody = "Accepted"
         let expectation = XCTestExpectation(description: "Network callback is invoked")
@@ -212,14 +212,14 @@ class EdgeNetworkServiceTests: XCTestCase {
                                  streaming: nil,
                                  responseCallback: mockResponseCallback,
                                  completion: { success, retryInterval, responseCode in
-                                    // verify: 202 Accepted is treated as success, hit completes and is not retried nor errored
                                     XCTAssertTrue(success)
                                     XCTAssertNil(retryInterval)
                                     XCTAssertEqual(202, responseCode)
-                                    XCTAssertTrue(self.mockResponseCallback.onResponseCalled)
-                                    XCTAssertFalse(self.mockResponseCallback.onErrorCalled)
+                                    XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                                    XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
                                     XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
-                                    XCTAssertEqual([stringResponseBody], self.mockResponseCallback.onResponseJsonResponse)
+                                    XCTAssertTrue(self.mockResponseCallback.onResponseJsonResponse.isEmpty)
+                                    XCTAssertEqual(1, self.mockResponseCallback.onErrorJsonError.count)
                                     expectation.fulfill()
                                  })
 
@@ -811,8 +811,33 @@ class EdgeNetworkServiceTests: XCTestCase {
 }
 
 extension EdgeNetworkServiceTests {
+    func testInteractAndConsent202WithoutResponseBodyReportErrors() throws {
+        for path in ["interact", "privacy/set-consent"] {
+            let requestURL = try XCTUnwrap(URL(string: "https://edge.adobedc.net/ee/v1/\(path)"))
+            mockNetworkService.reset()
+            mockResponseCallback = MockResponseCallback()
+            mockNetworkService.setMockResponse(
+                url: requestURL,
+                httpMethod: .post,
+                responseConnection: HttpConnection(data: nil,
+                                                   response: HTTPURLResponse(url: requestURL, statusCode: 202, httpVersion: nil, headerFields: nil),
+                                                   error: nil))
+            let completed = expectation(description: "Ordinary 202 reports an error")
+            networkService.doRequest(url: requestURL, requestBody: "{}", streaming: nil, responseCallback: mockResponseCallback) { finished, retry, responseCode in
+                XCTAssertTrue(finished)
+                XCTAssertNil(retry)
+                XCTAssertEqual(202, responseCode)
+                XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
+                XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
+                XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
+                completed.fulfill()
+            }
+            wait(for: [completed], timeout: 1)
+        }
+    }
+
     func testOrdinaryRequestsDoNotAdoptBypassOnlyHTTP2xxHandling() {
-        for code in [201, 206, 299] {
+        for code in [201, 202, 206, 299] {
             mockNetworkService.reset()
             mockResponseCallback = MockResponseCallback()
             mockNetworkService.setMockResponse(
@@ -829,6 +854,7 @@ extension EdgeNetworkServiceTests {
                 XCTAssertTrue(finished)
                 XCTAssertNil(retry)
                 XCTAssertEqual(code, responseCode)
+                XCTAssertFalse(self.mockResponseCallback.onResponseCalled)
                 XCTAssertTrue(self.mockResponseCallback.onErrorCalled)
                 XCTAssertTrue(self.mockResponseCallback.onCompleteCalled)
                 completed.fulfill()
@@ -867,14 +893,36 @@ extension EdgeNetworkServiceTests {
         wait(for: [completed], timeout: 1)
     }
 
-    func testBypassEveryHTTP2xxProducesOneSuccessOutcome() {
-        for code in 200..<300 {
+    func testBypassOnly200202204ProduceOneSuccessOutcome() {
+        for code in [200, 202, 204] {
             let connection = HttpConnection(data: nil,
                                             response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: nil),
                                             error: nil)
             assertBypassOutcome(connection: connection, success: true, httpStatus: code)
             XCTAssertFalse(mockResponseCallback.onErrorCalled)
         }
+    }
+
+    func testBypassOtherHTTP2xxProduceFailureOutcome() {
+        for code in 200..<300 where ![200, 202, 204].contains(code) {
+            let connection = HttpConnection(data: nil,
+                                            response: HTTPURLResponse(url: url, statusCode: code, httpVersion: nil, headerFields: nil),
+                                            error: nil)
+            assertBypassOutcome(connection: connection, success: false, httpStatus: code)
+            if code != 207 {
+                XCTAssertTrue(mockResponseCallback.onErrorCalled)
+            }
+        }
+    }
+
+    func testBypass207ForwardsResponseErrorsAndReportsFailure() {
+        let responseBody = #"{"errors":[{"status":400,"title":"Device attribute rejected","report":{"eventIndex":0}}]}"#
+        let connection = HttpConnection(data: responseBody.data(using: .utf8),
+                                        response: HTTPURLResponse(url: url, statusCode: 207, httpVersion: nil, headerFields: nil),
+                                        error: nil)
+        assertBypassOutcome(connection: connection, success: false, httpStatus: 207)
+        XCTAssertEqual([responseBody], mockResponseCallback.onResponseJsonResponse)
+        XCTAssertFalse(mockResponseCallback.onErrorCalled)
     }
 
     func testBypassPermanentHTTPFailuresAreNotSuccessEvenWhenTheHitFinishes() {

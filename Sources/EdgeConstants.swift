@@ -31,6 +31,7 @@ enum EdgeConstants {
     }
 
     enum EventName {
+        static let BYPASS_RESULT = "Edge bypass result"
         static let CONTENT_COMPLETE = "AEP Response Complete"
         static let REQUEST_CONTENT = "AEP Request Event"
         static let RESPONSE_CONTENT = "AEP Response Event Handle"
@@ -69,6 +70,13 @@ enum EdgeConstants {
         static let CONSENTS = "consents"
         static let LOCATION_HINT = "locationHint"
 
+        enum BypassResult {
+            static let STATUS = "status"
+            static let REASON = "reason"
+            static let HTTP_STATUS = "httpStatus"
+            static let REQUEST_EVENT_ID = EdgeConstants.EventDataKeys.REQUEST_EVENT_ID
+        }
+
         enum Config {
             static let KEY = "config"
             static let DATASTREAM_ID_OVERRIDE = "datastreamIdOverride"
@@ -87,6 +95,21 @@ enum EdgeConstants {
         // Suffix appended to the Edge extension name to label the dedicated queue used for
         // consent-independent hits so it is stored separately from the consent-governed queue.
         static let BYPASS_CONSENT_SUFFIX = ".bypassConsent"
+    }
+
+    enum BypassResult {
+        enum Status {
+            static let SUCCESS = "success"
+            static let FAILED = "failed"
+            static let DROPPED = "dropped"
+        }
+
+        enum Reason {
+            static let MISSING_CONFIG = "missingConfig"
+            static let INVALID_PAYLOAD = "invalidPayload"
+            static let QUEUE_UNAVAILABLE = "queueUnavailable"
+            static let NETWORK = "network"
+        }
     }
 
     enum DataStoreKeys {

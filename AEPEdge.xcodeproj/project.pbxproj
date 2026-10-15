@@ -90,6 +90,7 @@
 		D4145FB525D5D0430019EA4C /* Event+Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145FB425D5D0430019EA4C /* Event+Edge.swift */; };
 		D4145FCD25DCB3270019EA4C /* ExperienceEventsEdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145FCC25DCB3260019EA4C /* ExperienceEventsEdgeHit.swift */; };
 		D4145FD325DCB3890019EA4C /* ConsentEdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */; };
+		E6A1D5390000000000000002 /* NoConsentEdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A1D5390000000000000001 /* NoConsentEdgeHit.swift */; };
 		D42F36BA251C185000490C0D /* AEPEdge.h in Headers */ = {isa = PBXBuildFile; fileRef = D4D66AA2251910FB00B4866D /* AEPEdge.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D42FB8E124635FA200E9321C /* MockResponseCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42FB8E024635FA200E9321C /* MockResponseCallback.swift */; };
 		D43BAB0325BB758400B08CC0 /* EdgeConsentStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43BAB0225BB758300B08CC0 /* EdgeConsentStatus.swift */; };
@@ -312,6 +313,7 @@
 		D4145FB425D5D0430019EA4C /* Event+Edge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Event+Edge.swift"; sourceTree = "<group>"; };
 		D4145FCC25DCB3260019EA4C /* ExperienceEventsEdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceEventsEdgeHit.swift; sourceTree = "<group>"; };
 		D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentEdgeHit.swift; sourceTree = "<group>"; };
+		E6A1D5390000000000000001 /* NoConsentEdgeHit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConsentEdgeHit.swift; sourceTree = "<group>"; };
 		D42FB8D124610A0000E9321C /* ResponseCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCallback.swift; sourceTree = "<group>"; };
 		D42FB8D324610F3C00E9321C /* CompletionHandlersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionHandlersManager.swift; sourceTree = "<group>"; };
 		D42FB8DA246261E600E9321C /* EdgeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeResponse.swift; sourceTree = "<group>"; };
@@ -503,6 +505,7 @@
 				211BCB8026030DCD00AACFEF /* EdgeDataEntity.swift */,
 				D4145FD225DCB3890019EA4C /* ConsentEdgeHit.swift */,
 				D4145FCC25DCB3260019EA4C /* ExperienceEventsEdgeHit.swift */,
+				E6A1D5390000000000000001 /* NoConsentEdgeHit.swift */,
 				216989772554B61500B2752C /* EdgeHitProcessor.swift */,
 				D46553FA246B6FBC00A150E2 /* EdgeResponseError.swift */,
 				21D7B7B12562F89C0010AE25 /* EdgeEventWarning.swift */,
@@ -1321,6 +1324,7 @@
 				21C0F88A2627B9D9003872DC /* EdgeEndpoint.swift in Sources */,
 				D4145FD325DCB3890019EA4C /* ConsentEdgeHit.swift in Sources */,
 				D4145FCD25DCB3270019EA4C /* ExperienceEventsEdgeHit.swift in Sources */,
+				E6A1D5390000000000000002 /* NoConsentEdgeHit.swift in Sources */,
 				D4C6B443251A76CB0038F4F9 /* NetworkResponseCallback.swift in Sources */,
 				D4C6B444251A76CB0038F4F9 /* NetworkResponseHandler.swift in Sources */,
 				D4C6B445251A76CB0038F4F9 /* RequestBuilder.swift in Sources */,

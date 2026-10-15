@@ -1561,7 +1561,8 @@ extension EdgeHitProcessorTests {
 
     func testBypassNetworkSuccessAndPermanentFailureDispatchCorrelatedResults() {
         defer { EventHub.reset() }
-        for (code, status) in [(200, "success"), (202, "success"), (204, "success"), (400, "failed")] {
+        for (code, status) in [(200, "success"), (202, "success"), (204, "success"),
+                               (201, "failed"), (206, "failed"), (207, "failed"), (299, "failed"), (400, "failed")] {
             let result = expectBypassResult(for: bypassConsentEvent, status: status, httpStatus: code,
                                            reason: status == "failed" ? "network" : nil)
             mockNetworkService.reset()
@@ -1598,6 +1599,29 @@ extension EdgeHitProcessorTests {
                                                 error: nil))
         assertProcessHit(entity: entity, urlString: DEVICE_ATTRIBUTES_ENDPOINT_PROD, sendsNetworkRequest: true, returns: true)
         wait(for: [result], timeout: 2)
+    }
+
+    func testBypass207SurfacesResponseErrorsAndDispatchesFailedResult() {
+        defer { EventHub.reset() }
+        let result = expectBypassResult(for: bypassConsentEvent, status: "failed", httpStatus: 207, reason: "network")
+        let errorReceived = expectation(description: "Partial error is surfaced")
+        errorReceived.assertForOverFulfill = true
+        MobileCore.registerEventListener(type: EventType.edge, source: EdgeConstants.EventSource.ERROR_RESPONSE_CONTENT) { event in
+            XCTAssertEqual(self.bypassConsentEvent.id, event.parentID)
+            XCTAssertEqual(400, event.data?["status"] as? Int)
+            XCTAssertEqual("Device attribute rejected", event.data?["title"] as? String)
+            errorReceived.fulfill()
+        }
+        let responseBody = #"{"errors":[{"status":400,"title":"Device attribute rejected","report":{"eventIndex":0}}]}"#
+        mockNetworkService.setMockResponse(
+            url: DEVICE_ATTRIBUTES_ENDPOINT_PROD, httpMethod: .post,
+            responseConnection: HttpConnection(data: responseBody.data(using: .utf8),
+                                                response: HTTPURLResponse(url: url, statusCode: 207, httpVersion: nil, headerFields: nil),
+                                                error: nil))
+        let edgeEntity = getEdgeDataEntity(event: bypassConsentEvent, configuration: defaultEdgeConfig, identityMap: defaultIdentityMap)
+        let entity = DataEntity(uniqueIdentifier: bypassConsentEvent.id.uuidString, timestamp: Date(), data: try? JSONEncoder().encode(edgeEntity))
+        assertProcessHit(entity: entity, urlString: DEVICE_ATTRIBUTES_ENDPOINT_PROD, sendsNetworkRequest: true, returns: true)
+        wait(for: [result, errorReceived], timeout: 2)
     }
 
     func testBypassMissingConfigDispatchesDropWithoutNetworkRequest() {

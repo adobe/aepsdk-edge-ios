@@ -105,9 +105,9 @@ class RequestBuilder {
     }
 
     /// Builds the device-attributes (consent-override) request body. The producer's event data
-    /// (e.g. `app`, `tokens`, `timezone`) is passed through unchanged, and the SDK enriches it with
-    /// two owned keys: `xdm` (implementationDetails + identityMap) and `meta.state`. Because the body
-    /// is dynamic, any new producer field flows through with no change here.
+    /// (e.g. `app`, `tokens`, `timezone`) is passed through except for SDK-owned `xdm` and `meta`.
+    /// The SDK adds `xdm` (implementationDetails + identityMap) and `meta.state` when available.
+    /// Core rules own the attribute allow-list; new producer attributes require no schema change here.
     /// - Parameters:
     ///   - event: the consent-override event whose data forms the base of the request body
     ///   - implementationDetails: the SDK `implementationDetails` to attach under `xdm`
@@ -115,8 +115,11 @@ class RequestBuilder {
     func generateNoConsentPayload(_ event: Event, implementationDetails: [String: Any]?) -> [String: AnyCodable]? {
         guard let data = event.data, !data.isEmpty else { return nil }
 
-        // Start from the entire producer payload (app / tokens / timezone / ...).
-        var payload: [String: AnyCodable] = AnyCodable.from(dictionary: data) ?? [:]
+        let producerData = data.filter { $0.key != EdgeConstants.JsonKeys.XDM && $0.key != EdgeConstants.JsonKeys.META }
+        if producerData.count != data.count {
+            Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Ignoring producer-supplied SDK-owned xdm/meta fields for device attributes.")
+        }
+        var payload: [String: AnyCodable] = AnyCodable.from(dictionary: producerData) ?? [:]
 
         // SDK-owned key #1: xdm { implementationDetails, identityMap }
         var xdm = [String: Any]()

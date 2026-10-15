@@ -232,7 +232,8 @@ class EdgeHitProcessor: HitProcessing {
             Log.warning(label: EdgeConstants.LOG_TAG,
                         "\(SELF_TAG) - Unable to process the event '\(event.id.uuidString)' " +
                             "due to missing or empty edge.configId in configuration.")
-            MobileCore.dispatch(event: event.createBypassResult(status: "dropped", reason: "missingConfig"))
+            MobileCore.dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.DROPPED,
+                                                              reason: EdgeConstants.BypassResult.Reason.MISSING_CONFIG))
             completion(true)
             return // drop current event
         }
@@ -240,7 +241,8 @@ class EdgeHitProcessor: HitProcessing {
         guard let payload = requestBuilder.generateNoConsentPayload(event, implementationDetails: getImplementationDetails()) else {
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Failed to build the device-attributes payload, dropping event '\(event.id.uuidString)'.")
-            MobileCore.dispatch(event: event.createBypassResult(status: "dropped", reason: "invalidPayload"))
+            MobileCore.dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.DROPPED,
+                                                              reason: EdgeConstants.BypassResult.Reason.INVALID_PAYLOAD))
             completion(true)
             return
         }
@@ -545,7 +547,8 @@ class EdgeHitProcessor: HitProcessing {
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - Failed to build the URL, dropping request with id '\(edgeHit.requestId)'.")
             if let event = bypassEvent {
-                MobileCore.dispatch(event: event.createBypassResult(status: "dropped", reason: "invalidPayload"))
+                MobileCore.dispatch(event: event.createBypassResult(status: EdgeConstants.BypassResult.Status.DROPPED,
+                                                                  reason: EdgeConstants.BypassResult.Reason.INVALID_PAYLOAD))
                 _ = networkResponseHandler.removeWaitingEvents(requestId: edgeHit.requestId)
             }
             completion(true)
@@ -555,8 +558,8 @@ class EdgeHitProcessor: HitProcessing {
         let callback = NetworkResponseCallback(requestId: edgeHit.requestId, responseHandler: networkResponseHandler)
         let bypassResult: ((Bool, Int?) -> Void)? = bypassEvent.map { event in
             return { success, httpStatus in
-                MobileCore.dispatch(event: event.createBypassResult(status: success ? "success" : "failed",
-                                                                  reason: success ? nil : "network",
+                MobileCore.dispatch(event: event.createBypassResult(status: success ? EdgeConstants.BypassResult.Status.SUCCESS : EdgeConstants.BypassResult.Status.FAILED,
+                                                                  reason: success ? nil : EdgeConstants.BypassResult.Reason.NETWORK,
                                                                   httpStatus: httpStatus))
             }
         }
