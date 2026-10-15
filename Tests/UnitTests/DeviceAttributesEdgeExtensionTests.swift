@@ -141,15 +141,20 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         XCTAssertNotNil(mockRuntime.getListener(type: EdgeConstants.EventType.EDGE_BYPASS_CONSENT, source: EventSource.requestContent))
     }
 
-    func testInit_createsBypassQueueWithDedicatedLabel() throws {
+    func testSetupBypassConsentHitQueue_usesDedicatedLabelAndProcessor() throws {
         let service = BypassDataQueueService(bypassQueue: MockDataQueue())
-        let configuredEdge = Edge(runtime: mockRuntime, bypassConsentDataQueueService: service)
-        defer { configuredEdge.onUnregistered() }
+        let bypassQueue = try XCTUnwrap(edge.setupBypassConsentHitQueue(dataQueueService: service) as? PersistentHitQueue)
 
         XCTAssertEqual(["com.adobe.edge.bypassConsent"], service.requestedLabels)
-        let bypassQueue = try XCTUnwrap(configuredEdge.state?.bypassConsentHitQueue as? PersistentHitQueue)
         XCTAssertTrue(bypassQueue.processor is DeviceAttributesHitProcessor)
-        XCTAssertTrue(configuredEdge.state?.hitQueue is EdgeBatchingHitQueue)
+    }
+
+    func testInit_createsPrimaryAndBypassQueues() throws {
+        let state = try XCTUnwrap(Edge(runtime: mockRuntime).state)
+
+        XCTAssertTrue(state.hitQueue is EdgeBatchingHitQueue)
+        let bypassQueue = try XCTUnwrap(state.bypassConsentHitQueue as? PersistentHitQueue)
+        XCTAssertTrue(bypassQueue.processor is DeviceAttributesHitProcessor)
     }
 
     // MARK: Queueing
@@ -280,17 +285,20 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
     // MARK: Failure and drop results
 
     func testBypassQueueCreationFailurePreservesOrdinaryQueueing() throws {
-        let configuredEdge = Edge(runtime: mockRuntime, bypassConsentDataQueueService: BypassDataQueueService(bypassQueue: nil))
-        defer { configuredEdge.onUnregistered() }
-        let state = try XCTUnwrap(configuredEdge.state)
-        XCTAssertNil(state.bypassConsentHitQueue)
-        XCTAssertTrue(state.hitQueue is EdgeBatchingHitQueue)
+        let failingService = BypassDataQueueService(bypassQueue: nil)
+        XCTAssertNil(edge.setupBypassConsentHitQueue(dataQueueService: failingService))
+        let primaryQueue = RecordingHitQueue()
+        edge.state = EdgeState(hitQueue: primaryQueue,
+                               bypassConsentHitQueue: edge.setupBypassConsentHitQueue(dataQueueService: failingService),
+                               edgeProperties: EdgeProperties())
 
         let request = makeRequest()
         simulateConfigAndIdentity()
-        XCTAssertTrue(configuredEdge.readyForEvent(request))
-        configuredEdge.handleBypassConsentRequest(request)
+        XCTAssertTrue(edge.readyForEvent(request))
+        edge.handleBypassConsentRequest(request)
+        edge.handleExperienceEventRequest(experienceEvent)
 
+        XCTAssertEqual(1, primaryQueue.count())
         try assertBypassResult(for: request, status: "failed", reason: "queueUnavailable")
     }
 
@@ -362,16 +370,14 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
     // MARK: Decode failure
 
     func testDecodeFailure_producesUnchainedDropOnlyForBypassQueue() throws {
-        let configuredEdge = Edge(runtime: mockRuntime, bypassConsentDataQueueService: BypassDataQueueService(bypassQueue: MockDataQueue()))
-        defer { configuredEdge.onUnregistered() }
-        let state = try XCTUnwrap(configuredEdge.state)
-        let bypassQueue = try XCTUnwrap(state.bypassConsentHitQueue)
+        let primaryProcessor = try XCTUnwrap(Edge(runtime: mockRuntime).state?.hitQueue.processor)
+        let bypassQueue = try XCTUnwrap(edge.setupBypassConsentHitQueue(dataQueueService: BypassDataQueueService(bypassQueue: MockDataQueue())))
         let corruptedData: [Data?] = [nil, Data("{".utf8), Data("{}".utf8)]
         var requestIds: [String] = []
 
         for data in corruptedData {
             let ordinary = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: data)
-            state.hitQueue.processor.processHit(entity: ordinary) { finished in XCTAssertTrue(finished) }
+            primaryProcessor.processHit(entity: ordinary) { finished in XCTAssertTrue(finished) }
             let bypass = DataEntity(uniqueIdentifier: UUID().uuidString, timestamp: Date(), data: data)
             requestIds.append(bypass.uniqueIdentifier)
             bypassQueue.processor.processHit(entity: bypass) { finished in XCTAssertTrue(finished) }

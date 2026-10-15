@@ -29,12 +29,7 @@ public class Edge: NSObject, Extension {
     public let metadata: [String: String]? = nil
     public let runtime: ExtensionRuntime
 
-    public required convenience init(runtime: ExtensionRuntime) {
-        self.init(runtime: runtime, bypassConsentDataQueueService: ServiceProvider.shared.dataQueueService)
-    }
-
-    /// - Parameter bypassConsentDataQueueService: provides the data queue backing the device attributes queue
-    init(runtime: ExtensionRuntime, bypassConsentDataQueueService: DataQueuing) {
+    public required init(runtime: ExtensionRuntime) {
         self.runtime = runtime
         self.sharedStateReader = SharedStateReader(getSharedState: runtime.getSharedState(extensionName:event:barrier:))
 
@@ -44,7 +39,7 @@ public class Edge: NSObject, Extension {
         networkResponseHandler = NetworkResponseHandler(updateLocationHint: setLocationHint)
         if let hitQueue = setupHitQueue() {
             state = EdgeState(hitQueue: hitQueue,
-                              bypassConsentHitQueue: setupBypassConsentHitQueue(dataQueueService: bypassConsentDataQueueService),
+                              bypassConsentHitQueue: setupBypassConsentHitQueue(dataQueueService: ServiceProvider.shared.dataQueueService),
                               edgeProperties: EdgeProperties())
         }
     }
@@ -324,7 +319,7 @@ public class Edge: NSObject, Extension {
     }
 
     /// Sets up the `PersistentHitQueue` for device attributes hits. It is independent of the primary queue and of collect consent.
-    private func setupBypassConsentHitQueue(dataQueueService: DataQueuing) -> HitQueuing? {
+    func setupBypassConsentHitQueue(dataQueueService: DataQueuing) -> HitQueuing? {
         guard let dataQueue = dataQueueService.getDataQueue(label: name + EdgeConstants.DataQueueLabels.BYPASS_CONSENT_SUFFIX,
                                                             config: DataQueueConfig(journalMode: .wal)) else {
             Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to create the device attributes DataQueue.")
