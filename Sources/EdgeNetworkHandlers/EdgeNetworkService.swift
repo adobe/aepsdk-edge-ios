@@ -17,9 +17,11 @@ import Foundation
 /// Edge Network request type:
 ///     - interact - makes request and expects a response
 ///     - consent - sets user consent and expects a response
+///     - deviceAttributes - registers device attributes, independent of collect consent (see `DeviceAttributesHitProcessor`)
 enum EdgeRequestType: String {
     case interact
     case consent = "privacy/set-consent"
+    case deviceAttributes = "mobile/device-attributes"
 }
 
 /// Convenience enum for the known error codes
