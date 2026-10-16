@@ -330,7 +330,6 @@ public class Edge: NSObject, Extension {
                                                         getImplementationDetails: getImplementationDetails,
                                                         getLocationHint: getLocationHint,
                                                         getLatestIdentityMap: getLatestIdentityMap,
-                                                        updateLocationHint: setLocationHint,
                                                         dispatch: { [weak self] event in self?.dispatch(event: event) })
         return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
     }

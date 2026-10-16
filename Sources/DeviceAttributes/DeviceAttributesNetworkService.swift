@@ -28,8 +28,9 @@ class DeviceAttributesNetworkService {
                                   EdgeConstants.NetworkKeys.HEADER_KEY_CONTENT_TYPE: EdgeConstants.NetworkKeys.HEADER_VALUE_APPLICATION_JSON]
 
     /// Builds the device-attributes URL: `<endpoint>?configId=<datastreamId>&requestId=<requestId>`.
+    /// Returns nil when the endpoint has no valid host (e.g. an invalid `edge.domain`); before iOS 17 `URLComponents` drops an invalid host instead of returning nil.
     func buildUrl(endpoint: EdgeEndpoint, datastreamId: String, requestId: String) -> URL? {
-        guard let url = endpoint.url,
+        guard let url = endpoint.url, url.host?.isEmpty == false,
               var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         urlComponents.queryItems = [
             URLQueryItem(name: EdgeConstants.NetworkKeys.REQUEST_PARAM_CONFIG_ID, value: datastreamId),

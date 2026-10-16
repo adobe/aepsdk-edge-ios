@@ -36,7 +36,6 @@ class DeviceAttributesHitProcessor: HitProcessing {
     ///   - getImplementationDetails: returns the current `implementationDetails`
     ///   - getLocationHint: returns the current Edge Network location hint
     ///   - getLatestIdentityMap: returns the latest Edge Identity XDM shared state (containing `identityMap`), or nil if unavailable
-    ///   - updateLocationHint: sets the Edge Network location hint received in the response
     ///   - dispatch: dispatches the response event (E4)
     ///   - storeDataStoreName: data store holding the `state:store` payloads
     init(networkService: DeviceAttributesNetworkService = DeviceAttributesNetworkService(),
@@ -44,11 +43,10 @@ class DeviceAttributesHitProcessor: HitProcessing {
          getImplementationDetails: @escaping () -> [String: Any]?,
          getLocationHint: @escaping () -> String?,
          getLatestIdentityMap: @escaping () -> [String: Any]?,
-         updateLocationHint: @escaping (String, TimeInterval) -> Void,
          dispatch: @escaping (Event) -> Void,
          storeDataStoreName: String = EdgeConstants.DataStoreKeys.STORE_NAME) {
         self.networkService = networkService
-        self.responseHandler = DeviceAttributesResponseHandler(dataStoreName: storeDataStoreName, updateLocationHint: updateLocationHint)
+        self.responseHandler = DeviceAttributesResponseHandler(dataStoreName: storeDataStoreName)
         self.sharedStateReader = sharedStateReader
         self.getImplementationDetails = getImplementationDetails
         self.getLocationHint = getLocationHint

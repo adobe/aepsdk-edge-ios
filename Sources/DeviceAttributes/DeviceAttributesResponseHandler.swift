@@ -16,19 +16,14 @@ import Foundation
 
 /// Handles the plain JSON success response of the `mobile/device-attributes` endpoint:
 /// `{"requestId": "...", "handle": [{"type": "...", "payload": [...]}]}`.
-/// Only `locationHint:result` (scope `EdgeNetwork`) and `state:store` handles are applied; no events are dispatched.
+/// Only `state:store` handles are applied; other handles (including location hints) are ignored and no events are dispatched.
 class DeviceAttributesResponseHandler {
     private let SELF_TAG = "DeviceAttributesResponseHandler"
-    private let updateLocationHint: (String, TimeInterval) -> Void
     private let storeResponsePayloadManager: StoreResponsePayloadManager
 
-    /// - Parameters:
-    ///   - dataStoreName: data store holding the `state:store` payloads
-    ///   - updateLocationHint: sets the Edge Network location hint and its TTL in seconds
-    init(dataStoreName: String = EdgeConstants.DataStoreKeys.STORE_NAME,
-         updateLocationHint: @escaping (String, TimeInterval) -> Void) {
+    /// - Parameter dataStoreName: data store holding the `state:store` payloads
+    init(dataStoreName: String = EdgeConstants.DataStoreKeys.STORE_NAME) {
         self.storeResponsePayloadManager = StoreResponsePayloadManager(dataStoreName)
-        self.updateLocationHint = updateLocationHint
     }
 
     /// Parses `responseBody` and applies the supported handles.
@@ -48,34 +43,13 @@ class DeviceAttributesResponseHandler {
         guard let handles = json[Keys.HANDLE] as? [[String: Any]] else { return }
 
         for handle in handles {
-            guard let type = handle[Keys.TYPE] as? String,
+            guard let type = handle[Keys.TYPE] as? String, type == EdgeConstants.JsonKeys.Response.EventHandleType.STORE,
                   let payload = handle[Keys.PAYLOAD] as? [[String: Any]] else { continue }
-
-            switch type {
-            case EdgeConstants.JsonKeys.Response.EventHandleType.LOCATION_HINT:
-                handleLocationHint(payload: payload)
-            case EdgeConstants.JsonKeys.Response.EventHandleType.STORE:
-                if applyStorePayloads {
-                    handleStorePayloads(payload: payload)
-                } else {
-                    Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - ECID changed during the request, ignoring state:store handle.")
-                }
-            default:
-                continue
+            if applyStorePayloads {
+                handleStorePayloads(payload: payload)
+            } else {
+                Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - ECID changed during the request, ignoring state:store handle.")
             }
-        }
-    }
-
-    /// Applies the first `EdgeNetwork` scoped location hint, mirroring `NetworkResponseHandler`.
-    private func handleLocationHint(payload: [[String: Any]]) {
-        typealias Keys = EdgeConstants.JsonKeys.Response.LocationHint
-        for locationHint in payload {
-            guard let scope = locationHint[Keys.SCOPE] as? String, scope == EdgeConstants.DeviceAttributes.EDGE_NETWORK_SCOPE else { continue }
-            if let hint = locationHint[Keys.HINT] as? String, !hint.isEmpty,
-               let ttlSeconds = locationHint[Keys.TTL_SECONDS] as? Int {
-                updateLocationHint(hint, TimeInterval(ttlSeconds))
-            }
-            break
         }
     }
 

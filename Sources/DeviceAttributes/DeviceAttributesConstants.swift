@@ -25,7 +25,6 @@ extension EdgeConstants {
         static let DATA_QUEUE_SUFFIX = ".deviceAttributes"
         /// HTTP status codes treated as a successful device-attributes request.
         static let SUCCESS_RESPONSE_CODES: Set<Int> = [200, 202]
-        static let EDGE_NETWORK_SCOPE = "EdgeNetwork"
 
         enum EventDataKeys {
             static let STATUS = "status"

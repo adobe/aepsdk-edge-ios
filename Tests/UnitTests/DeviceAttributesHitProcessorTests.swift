@@ -49,7 +49,6 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
     private var stubNetworking: StubNetworking!
     private var dispatchedEvents: [Event] = []
-    private var locationHintUpdates: [(hint: String, ttl: TimeInterval)] = []
     private var currentLocationHint: String?
     private var implementationDetails: [String: Any]? = ["name": "https://ns.adobe.com/experience/mobilesdk/ios", "environment": "app", "version": "5.0.0"]
     private var assuranceIntegrationId: String?
@@ -61,7 +60,6 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
         stubNetworking = StubNetworking()
         ServiceProvider.shared.networkService = stubNetworking
         dispatchedEvents = []
-        locationHintUpdates = []
         currentLocationHint = nil
         assuranceIntegrationId = nil
         latestIdentity = defaultIdentityMap
@@ -111,7 +109,6 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
         XCTAssertTrue(process(entity))
 
         try assertSingleResult(for: event, status: "failed", reason: "network", httpStatus: 400)
-        XCTAssertTrue(locationHintUpdates.isEmpty)
     }
 
     func testProcessHit_recoverableCodes_retryWithoutResultEvent() {
@@ -234,15 +231,16 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
     // MARK: Response handles
 
-    func testProcessHit_success_appliesLocationHintAndStoreHandlesOnly() throws {
+    func testProcessHit_success_appliesStoreHandlesOnly() throws {
+        currentLocationHint = "va6"
         stubNetworking.responses = [response(200, body: successBody)]
         let (event, entity) = makeEntity()
 
         XCTAssertTrue(process(entity))
 
-        XCTAssertEqual(1, locationHintUpdates.count)
-        XCTAssertEqual("or2", locationHintUpdates.first?.hint)
-        XCTAssertEqual(1800, locationHintUpdates.first?.ttl)
+        // The request uses the stored hint and the response location hint handle ("or2") is ignored
+        XCTAssertEqual("/ee/va6/v1/mobile/device-attributes", try XCTUnwrap(stubNetworking.requests.first).url.path)
+        XCTAssertEqual("va6", currentLocationHint)
         let stored = StoreResponsePayloadManager(testStoreName).getActivePayloadList()
         XCTAssertEqual(1, stored.count)
         XCTAssertEqual("kndctr_cookie", stored.first?.key)
@@ -252,14 +250,13 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
     }
 
     func testProcessHit_successWithMalformedOrEmptyBody_stillSucceeds() throws {
-        for body in ["", "not json", "{}", #"{"handle": "invalid"}"#, #"{"handle": [{"type": "locationHint:result", "payload": [{"scope": "EdgeNetwork", "hint": ""}]}]}"#] {
+        for body in ["", "not json", "{}", #"{"handle": "invalid"}"#, #"{"handle": [{"type": "state:store", "payload": "invalid"}]}"#] {
             setUp()
             stubNetworking.responses = [response(200, body: body)]
             let (event, entity) = makeEntity()
 
             XCTAssertTrue(process(entity))
 
-            XCTAssertTrue(locationHintUpdates.isEmpty, body)
             XCTAssertTrue(StoreResponsePayloadManager(testStoreName).getActivePayloadList().isEmpty, body)
             try assertSingleResult(for: event, status: "success", reason: nil, httpStatus: 200)
         }
@@ -271,7 +268,6 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
         XCTAssertTrue(process(entity))
 
-        XCTAssertTrue(locationHintUpdates.isEmpty)
         XCTAssertTrue(StoreResponsePayloadManager(testStoreName).getActivePayloadList().isEmpty)
     }
 
@@ -320,7 +316,7 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
         try assertSingleResult(for: event, status: "dropped", reason: "identityChanged", httpStatus: nil)
     }
 
-    func testProcessHit_ecidChangesDuringRequest_dispatchesResponseAndLocationHintButIgnoresStoreHandles() throws {
+    func testProcessHit_ecidChangesDuringRequest_dispatchesResponseButIgnoresStoreHandles() throws {
         let (event, entity) = makeEntity()
         ServiceProvider.shared.networkService = OnRequestNetworking(response: response(200, body: successBody)) { [weak self] in
             self?.latestIdentity = self?.identityState(ecids: ["new-ecid"])
@@ -329,8 +325,6 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
         XCTAssertTrue(process(entity))
 
         XCTAssertTrue(StoreResponsePayloadManager(testStoreName).getActivePayloadList().isEmpty)
-        XCTAssertEqual(1, locationHintUpdates.count)
-        XCTAssertEqual("or2", locationHintUpdates.first?.hint)
         try assertSingleResult(for: event, status: "success", reason: nil, httpStatus: 200)
     }
 
@@ -370,6 +364,16 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
         latestIdentity = [:]
         processor = makeProcessor()
         let (event, entity) = makeEntity(eventData: ["xdm": ["producer": "value"]], identityMap: [:])
+
+        XCTAssertTrue(process(entity))
+
+        XCTAssertTrue(stubNetworking.requests.isEmpty)
+        try assertSingleResult(for: event, status: "dropped", reason: "invalidPayload", httpStatus: nil)
+    }
+
+    func testProcessHit_invalidDomain_dispatchesDroppedInvalidPayloadWithoutRequest() throws {
+        // A host containing a space is invalid: `URLComponents` returns a nil URL (iOS 17+) or drops the host (earlier), so `buildUrl` returns nil
+        let (event, entity) = makeEntity(config: ["edge.configId": "test-config-id", "edge.domain": "invalid domain.com"])
 
         XCTAssertTrue(process(entity))
 
@@ -421,7 +425,6 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
             getImplementationDetails: { [weak self] in self?.implementationDetails },
             getLocationHint: { [weak self] in self?.currentLocationHint },
             getLatestIdentityMap: { [weak self] in self?.latestIdentity },
-            updateLocationHint: { [weak self] hint, ttl in self?.locationHintUpdates.append((hint, ttl)) },
             dispatch: { [weak self] event in self?.dispatchedEvents.append(event) },
             storeDataStoreName: testStoreName)
     }
