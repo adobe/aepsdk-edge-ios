@@ -30,7 +30,7 @@ class NetworkResponseHandler {
     /// for the whole batch's stream to close. The highest index and anything still pending complete
     /// at stream close (`processResponseOnComplete`), exactly as before. Only relevant to multi-event
     /// batched responses; single events, consent, batch-of-1 are unaffected either way.
-    static var earlyPerEventCompletionEnabled = true
+    nonisolated(unsafe) static var earlyPerEventCompletionEnabled = true
 
     // the order of the request events matter for matching them with the response events
     private var sentEventsWaitingResponse = ThreadSafeDictionary<String, [Event]>()

@@ -5,7 +5,7 @@ PODS:
   - AEPCore (5.12.0):
     - AEPRulesEngine (< 6.0.0, >= 5.0.0)
     - AEPServices (< 6.0.0, >= 5.12.0)
-  - AEPEdge (5.1.1):
+  - AEPEdge (5.2.0):
     - AEPCore (< 6.0.0, >= 5.12.0)
     - AEPEdgeIdentity (< 6.0.0, >= 5.0.0)
   - AEPEdgeConsent (5.0.2):
@@ -54,7 +54,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   AEPAssurance: 3ab00d47a40bc6c6cb2000689e0dcfa595cda250
   AEPCore: ec8e326c5bb86c74bfda2de6055bbb82d25cbba6
-  AEPEdge: b4fe28a3d6ebbc2ed553e51bb1268ceddfda4fa9
+  AEPEdge: 4583fd61cddb4785d8391b70417e597509d12934
   AEPEdgeConsent: b5a54985b79ee0222b1f1fc4b0859f8b8afed07a
   AEPEdgeIdentity: 66f3314af3729c15d398fd71662a7702cb1e8cdf
   AEPRulesEngine: fe5800653a4bee07b1e41e61b4d5551f0dba557b
@@ -62,6 +62,6 @@ SPEC CHECKSUMS:
   AEPTestUtils: 2bbed995c8974f6f6d92058db88d6cd2e4a7f869
   SwiftLint: 13280e21cdda6786ad908dc6e416afe5acd1fcb7
 
-PODFILE CHECKSUM: 92bb69895448b79aa523a99f61cda67f43890e00
+PODFILE CHECKSUM: 36aa15c92787a4e5ae2af17173c30bab00d9c2c5
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.17.0
