@@ -48,9 +48,6 @@ extension EdgeConstants {
         }
 
         enum ResponseKeys {
-            static let HANDLE = "handle"
-            static let TYPE = "type"
-            static let PAYLOAD = "payload"
             static let TITLE = "title"
             static let REPORT = "report"
             static let ERRORS = "errors"

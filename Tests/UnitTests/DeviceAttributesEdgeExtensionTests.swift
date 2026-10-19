@@ -93,6 +93,19 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         func close() {}
     }
 
+    /// Records requests and replies synchronously with `response`.
+    private final class RecordingNetworking: Networking {
+        let response: HttpConnection
+        private(set) var requests: [NetworkRequest] = []
+        init(response: HttpConnection) {
+            self.response = response
+        }
+        func connectAsync(networkRequest: NetworkRequest, completionHandler: ((HttpConnection) -> Void)?) {
+            requests.append(networkRequest)
+            completionHandler?(response)
+        }
+    }
+
     private func makeRequest(data: [String: Any]? = ["timezone": "Europe/London"]) -> Event {
         return Event(name: "device attributes",
                      type: EdgeConstants.DeviceAttributes.EVENT_TYPE,
@@ -392,6 +405,57 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
             XCTAssertEqual(["status": "dropped", "reason": "invalidPayload", "requestEventId": requestId] as NSDictionary,
                            result.data as NSDictionary?)
         }
+    }
+
+    // MARK: Device attributes response handles
+
+    func testDeviceAttributesHit_responseDoesNotUpdateEdgeLocationHintOrStore() throws {
+        let identity: [String: Any] = ["identityMap": ["ECID": [["id": "ecid", "authenticatedState": "ambiguous", "primary": false]]]]
+        simulateConfigAndIdentity(identity: identity)
+        let state = try XCTUnwrap(edge.state)
+        state.setLocationHint(hint: "va6", ttlSeconds: 1800, createSharedState: { _, _ in })
+        XCTAssertEqual("va6", state.getLocationHint())
+        let edgeStore = StoreResponsePayloadManager(EdgeConstants.DataStoreKeys.STORE_NAME)
+        edgeStore.saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "kndctr_cookie", value: "edge-value", maxAge: 1800))])
+
+        let responseBody = #"""
+        {"requestId": "id", "handle": [
+          {"type": "locationHint:result", "payload": [{"scope": "EdgeNetwork", "hint": "or2", "ttlSeconds": 1800}]},
+          {"type": "state:store", "payload": [{"key": "kndctr_new", "value": "new-value", "maxAge": 1800}]}
+        ]}
+        """#
+        let url = URL(string: "https://edge.adobedc.net/ee/v1/mobile/device-attributes")!
+        let networking = RecordingNetworking(response: HttpConnection(data: responseBody.data(using: .utf8),
+                                                                      response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil),
+                                                                      error: nil))
+        let previousNetworkService = ServiceProvider.shared.networkService
+        ServiceProvider.shared.networkService = networking
+        defer { ServiceProvider.shared.networkService = previousNetworkService }
+
+        let queue = try XCTUnwrap(edge.setupDeviceAttributesHitQueue(dataQueueService: DeviceAttributesDataQueueService(deviceAttributesQueue: MockDataQueue())))
+        let request = makeRequest()
+        let edgeEntity = EdgeDataEntity(event: request,
+                                        configuration: AnyCodable.from(dictionary: [EdgeConstants.SharedState.Configuration.CONFIG_ID: "config"]) ?? [:],
+                                        identityMap: AnyCodable.from(dictionary: identity) ?? [:])
+        let entity = DataEntity(uniqueIdentifier: request.id.uuidString, timestamp: Date(), data: try JSONEncoder().encode(edgeEntity))
+        let sharedStateCount = mockRuntime.createdSharedStates.count
+        var finished: Bool?
+        queue.processor.processHit(entity: entity) { finished = $0 }
+        XCTAssertEqual(true, finished)
+
+        // The request still uses the current Edge location hint
+        XCTAssertEqual("/ee/va6/v1/mobile/device-attributes", try XCTUnwrap(networking.requests.first).url.path)
+
+        // The response handles change neither the Edge location hint nor the Edge store
+        XCTAssertEqual("va6", state.getLocationHint())
+        XCTAssertEqual(["kndctr_cookie"], edgeStore.getActivePayloadList().map { $0.key })
+        XCTAssertEqual("edge-value", edgeStore.getActivePayloadList().first?.value)
+        XCTAssertEqual(sharedStateCount, mockRuntime.createdSharedStates.count)
+        let results = deviceAttributesResponses()
+        XCTAssertEqual(1, results.count)
+        XCTAssertEqual(request.id, results.first?.parentID)
+        XCTAssertEqual(["status": "success", "httpStatus": 200] as NSDictionary, results.first?.data as NSDictionary?)
+        XCTAssertEqual(results.count, mockRuntime.dispatchedEvents.count)
     }
 
     // MARK: Response event contract

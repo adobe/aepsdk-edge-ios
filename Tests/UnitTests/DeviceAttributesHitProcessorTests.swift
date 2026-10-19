@@ -231,22 +231,30 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
 
     // MARK: Response handles
 
-    func testProcessHit_success_appliesStoreHandlesOnly() throws {
-        currentLocationHint = "va6"
-        stubNetworking.responses = [response(200, body: successBody)]
-        let (event, entity) = makeEntity()
+    func testProcessHit_responseHandles_areIgnored() throws {
+        for code in [200, 400] {
+            setUp()
+            currentLocationHint = "va6"
+            StoreResponsePayloadManager(testStoreName)
+                .saveStorePayloads([StoreResponsePayload(payload: StorePayload(key: "existing", value: "existing-value", maxAge: 1800))])
+            stubNetworking.responses = [response(code, body: successBody)]
+            let (event, entity) = makeEntity()
 
-        XCTAssertTrue(process(entity))
+            XCTAssertTrue(process(entity))
 
-        // The request uses the stored hint and the response location hint handle ("or2") is ignored
-        XCTAssertEqual("/ee/va6/v1/mobile/device-attributes", try XCTUnwrap(stubNetworking.requests.first).url.path)
-        XCTAssertEqual("va6", currentLocationHint)
-        let stored = StoreResponsePayloadManager(testStoreName).getActivePayloadList()
-        XCTAssertEqual(1, stored.count)
-        XCTAssertEqual("kndctr_cookie", stored.first?.key)
-        XCTAssertEqual("cookie-value", stored.first?.value)
-        // Only the result event is dispatched (no Edge response, error or complete events)
-        try assertSingleResult(for: event, status: "success", reason: nil, httpStatus: 200)
+            // The request uses the stored hint; the response locationHint:result ("or2") and state:store handles are ignored
+            XCTAssertEqual("/ee/va6/v1/mobile/device-attributes", try XCTUnwrap(stubNetworking.requests.first).url.path)
+            XCTAssertEqual("va6", currentLocationHint)
+            let stored = StoreResponsePayloadManager(testStoreName).getActivePayloadList()
+            XCTAssertEqual(["existing"], stored.map { $0.key }, "HTTP \(code)")
+            XCTAssertEqual("existing-value", stored.first?.value)
+            // Only the result event is dispatched (no Edge response, error or complete events)
+            if code == 200 {
+                try assertSingleResult(for: event, status: "success", reason: nil, httpStatus: 200)
+            } else {
+                try assertSingleResult(for: event, status: "failed", reason: "network", httpStatus: 400)
+            }
+        }
     }
 
     func testProcessHit_successWithMalformedOrEmptyBody_stillSucceeds() throws {
@@ -260,15 +268,6 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
             XCTAssertTrue(StoreResponsePayloadManager(testStoreName).getActivePayloadList().isEmpty, body)
             try assertSingleResult(for: event, status: "success", reason: nil, httpStatus: 200)
         }
-    }
-
-    func testProcessHit_failure_doesNotApplyResponseHandles() {
-        stubNetworking.responses = [response(400, body: successBody)]
-        let (_, entity) = makeEntity()
-
-        XCTAssertTrue(process(entity))
-
-        XCTAssertTrue(StoreResponsePayloadManager(testStoreName).getActivePayloadList().isEmpty)
     }
 
     // MARK: ECID check
@@ -316,7 +315,7 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
         try assertSingleResult(for: event, status: "dropped", reason: "identityChanged", httpStatus: nil)
     }
 
-    func testProcessHit_ecidChangesDuringRequest_dispatchesResponseButIgnoresStoreHandles() throws {
+    func testProcessHit_ecidChangesDuringRequest_dispatchesResponse() throws {
         let (event, entity) = makeEntity()
         ServiceProvider.shared.networkService = OnRequestNetworking(response: response(200, body: successBody)) { [weak self] in
             self?.latestIdentity = self?.identityState(ecids: ["new-ecid"])
@@ -340,7 +339,6 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
             XCTAssertTrue(process(entity))
 
             XCTAssertEqual(1, stubNetworking.requests.count)
-            XCTAssertEqual(1, StoreResponsePayloadManager(testStoreName).getActivePayloadList().count)
             try assertSingleResult(for: event, status: "success", reason: nil, httpStatus: 200)
         }
     }

@@ -14,8 +14,8 @@ import Foundation
 
 /// Outcome of a device-attributes network request.
 enum DeviceAttributesNetworkResult: Equatable {
-    /// The request was accepted (HTTP 200 or 202); `body` is the plain JSON response body, if any.
-    case success(httpStatus: Int, body: String?)
+    /// The request was accepted (HTTP 200 or 202). The response body is not used.
+    case success(httpStatus: Int)
     /// The request failed with a recoverable error and should be retried after `interval` seconds.
     case retry(interval: TimeInterval)
     /// The request failed with an unrecoverable error; `httpStatus` is nil when no response code was received.

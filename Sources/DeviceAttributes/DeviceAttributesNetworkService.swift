@@ -14,7 +14,7 @@ import AEPServices
 import Foundation
 
 /// Network sender for the `mobile/device-attributes` endpoint. Independent of `EdgeNetworkService`:
-/// the response is plain (non-streamed) JSON and has no interact error/207 semantics.
+/// the outcome is decided by the status code only (the body is read only to log problem details) and has no interact error/207 semantics.
 class DeviceAttributesNetworkService {
     private let SELF_TAG = "DeviceAttributesNetworkService"
 
@@ -83,7 +83,7 @@ class DeviceAttributesNetworkService {
 
         if EdgeConstants.DeviceAttributes.SUCCESS_RESPONSE_CODES.contains(responseCode) {
             Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Device attributes request was successful (\(responseCode)).")
-            return .success(httpStatus: responseCode, body: connection.responseString)
+            return .success(httpStatus: responseCode)
         }
 
         if recoverableResponseCodes.contains(responseCode) {

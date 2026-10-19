@@ -16,12 +16,13 @@ import Foundation
 
 /// Processes hits from the consent-independent device-attributes queue.
 /// Fully separate from `EdgeHitProcessor`: it does not use `NetworkResponseHandler` and never dispatches Edge
-/// response/error events. Every request event (E3) yields exactly one response event (E4). Before each send attempt
+/// response/error events. The response body is not parsed: the outcome is decided by the status code only, and response
+/// handles such as `locationHint:result` and `state:store` are ignored, so the Edge location hint and stored payloads are
+/// never updated by this flow. Every request event (E3) yields exactly one response event (E4). Before each send attempt
 /// the ECID queued with the hit is compared with the latest Edge Identity ECID; a hit whose ECID has changed is dropped.
 class DeviceAttributesHitProcessor: HitProcessing {
     private let SELF_TAG = "DeviceAttributesHitProcessor"
     private let networkService: DeviceAttributesNetworkService
-    private let responseHandler: DeviceAttributesResponseHandler
     private let sharedStateReader: SharedStateReader
     private let getImplementationDetails: () -> [String: Any]?
     private let getLocationHint: () -> String?
@@ -37,7 +38,7 @@ class DeviceAttributesHitProcessor: HitProcessing {
     ///   - getLocationHint: returns the current Edge Network location hint
     ///   - getLatestIdentityMap: returns the latest Edge Identity XDM shared state (containing `identityMap`), or nil if unavailable
     ///   - dispatch: dispatches the response event (E4)
-    ///   - storeDataStoreName: data store holding the `state:store` payloads
+    ///   - storeDataStoreName: data store holding the `state:store` payloads sent as `meta.state`
     init(networkService: DeviceAttributesNetworkService = DeviceAttributesNetworkService(),
          sharedStateReader: SharedStateReader,
          getImplementationDetails: @escaping () -> [String: Any]?,
@@ -46,7 +47,6 @@ class DeviceAttributesHitProcessor: HitProcessing {
          dispatch: @escaping (Event) -> Void,
          storeDataStoreName: String = EdgeConstants.DataStoreKeys.STORE_NAME) {
         self.networkService = networkService
-        self.responseHandler = DeviceAttributesResponseHandler(dataStoreName: storeDataStoreName)
         self.sharedStateReader = sharedStateReader
         self.getImplementationDetails = getImplementationDetails
         self.getLocationHint = getLocationHint
@@ -81,8 +81,7 @@ class DeviceAttributesHitProcessor: HitProcessing {
             return
         }
 
-        let snapshotEcid = ecid(from: snapshotIdentity)
-        guard snapshotEcid == ecid(from: latestIdentity) else {
+        guard ecid(from: snapshotIdentity) == ecid(from: latestIdentity) else {
             Log.debug(label: EdgeConstants.LOG_TAG,
                       "\(SELF_TAG) - ECID changed since device attributes hit '\(entity.uniqueIdentifier)' was queued, dropping.")
             finish(entity: entity,
@@ -93,7 +92,7 @@ class DeviceAttributesHitProcessor: HitProcessing {
             return
         }
 
-        sendRequest(entity: entity, edgeEntity: edgeEntity, snapshotIdentity: snapshotIdentity, snapshotEcid: snapshotEcid, completion: completion)
+        sendRequest(entity: entity, edgeEntity: edgeEntity, snapshotIdentity: snapshotIdentity, completion: completion)
     }
 
     // MARK: Private
@@ -102,7 +101,6 @@ class DeviceAttributesHitProcessor: HitProcessing {
     private func sendRequest(entity: DataEntity,
                              edgeEntity: EdgeDataEntity,
                              snapshotIdentity: [String: Any]?,
-                             snapshotEcid: String?,
                              completion: @escaping (Bool) -> Void) {
         let event = edgeEntity.event
         let edgeConfig = edgeEntity.configuration.asAnyDictionary.compactMapValues { $0 as? String }
@@ -141,20 +139,16 @@ class DeviceAttributesHitProcessor: HitProcessing {
                 completion(false)
                 return
             }
-            self.handleNetworkResult(result, entity: entity, event: event, snapshotEcid: snapshotEcid, completion: completion)
+            self.handleNetworkResult(result, entity: entity, event: event, completion: completion)
         }
     }
 
     private func handleNetworkResult(_ result: DeviceAttributesNetworkResult,
                                      entity: DataEntity,
                                      event: Event,
-                                     snapshotEcid: String?,
                                      completion: @escaping (Bool) -> Void) {
         switch result {
-        case let .success(httpStatus, body):
-            // state:store from a request sent for a previous ECID must not overwrite the state of the current one.
-            let ecidUnchanged = snapshotEcid == ecid(from: getLatestIdentityMap())
-            responseHandler.handle(responseBody: body, applyStorePayloads: ecidUnchanged)
+        case let .success(httpStatus):
             finish(entity: entity,
                    event: event,
                    response: event.createDeviceAttributesResponse(status: EdgeConstants.DeviceAttributes.Status.SUCCESS, httpStatus: httpStatus),
