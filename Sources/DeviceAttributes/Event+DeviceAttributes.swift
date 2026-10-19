@@ -16,12 +16,12 @@ import Foundation
 extension Event {
     /// Returns true if this `Event` has the dedicated device-attributes event type (`EdgeConstants.DeviceAttributes.EVENT_TYPE`) and the standard
     /// `EventSource.requestContent` source. Such events are routed to the separate device-attributes queue
-    /// and are not subject to the collect-consent gate.
+    /// and are sent regardless of collect consent.
     var isDeviceAttributesRequestEvent: Bool {
         return type == EdgeConstants.DeviceAttributes.EVENT_TYPE && source == EventSource.requestContent
     }
 
-    /// Creates the device-attributes response event (E4) chained to this request event (E3).
+    /// Creates the device attributes response event for this request event, linked to it via `parentID`.
     func createDeviceAttributesResponse(status: String, reason: String? = nil, httpStatus: Int? = nil) -> Event {
         typealias Keys = EdgeConstants.DeviceAttributes.EventDataKeys
         var data: [String: Any] = [Keys.STATUS: status]
@@ -33,7 +33,8 @@ extension Event {
                                   data: data)
     }
 
-    /// A corrupt hit has no usable Event; its persisted identifier still identifies the request to drop.
+    /// Creates the `dropped` device attributes response event for a hit that can't be decoded. With no request event to
+    /// link to, it carries the request event id in `requestEventId`.
     static func createDeviceAttributesDroppedResponse(requestEventId: String) -> Event {
         typealias Keys = EdgeConstants.DeviceAttributes.EventDataKeys
         return Event(name: EdgeConstants.DeviceAttributes.EVENT_NAME_RESPONSE,

@@ -248,7 +248,7 @@ class DeviceAttributesHitProcessorTests: XCTestCase, AnyCodableAsserts {
             let stored = StoreResponsePayloadManager(testStoreName).getActivePayloadList()
             XCTAssertEqual(["existing"], stored.map { $0.key }, "HTTP \(code)")
             XCTAssertEqual("existing-value", stored.first?.value)
-            // Only the result event is dispatched (no Edge response, error or complete events)
+            // Only the device attributes response event is dispatched (no Edge response, error or complete events)
             if code == 200 {
                 try assertSingleResult(for: event, status: "success", reason: nil, httpStatus: 200)
             } else {

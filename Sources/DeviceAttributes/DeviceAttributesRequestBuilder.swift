@@ -15,7 +15,7 @@ import AEPServices
 import Foundation
 
 /// Builds the flat request body for the `mobile/device-attributes` endpoint.
-/// Producer data (e.g. `app`, `tokens`, `timezone`) is passed through as-is; the SDK owns `xdm` and `meta`.
+/// Request event data (e.g. `app`, `tokens`, `timezone`) is passed through as-is; the SDK owns `xdm` and `meta`.
 class DeviceAttributesRequestBuilder {
     private let SELF_TAG = "DeviceAttributesRequestBuilder"
 
@@ -26,10 +26,10 @@ class DeviceAttributesRequestBuilder {
         storeResponsePayloadManager = StoreResponsePayloadManager(dataStoreName)
     }
 
-    /// Builds the device-attributes request body. Producer-supplied `xdm` and `meta` are ignored.
+    /// Builds the device-attributes request body. `xdm` and `meta` in the event data are ignored.
     /// The SDK adds `xdm` (implementationDetails + identityMap) and `meta.state` when available.
     /// - Parameters:
-    ///   - eventData: the request event (E3) data forming the base of the request body
+    ///   - eventData: the device attributes request event data forming the base of the request body
     ///   - implementationDetails: the SDK `implementationDetails` to attach under `xdm`
     ///   - identityMap: the identity map to attach under `xdm`
     /// - Returns: the request body, or nil if there is nothing to send

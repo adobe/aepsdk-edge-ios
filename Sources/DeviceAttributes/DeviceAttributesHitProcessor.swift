@@ -18,7 +18,7 @@ import Foundation
 /// Fully separate from `EdgeHitProcessor`: it does not use `NetworkResponseHandler` and never dispatches Edge
 /// response/error events. The response body is not parsed: the outcome is decided by the status code only, and response
 /// handles such as `locationHint:result` and `state:store` are ignored, so the Edge location hint and stored payloads are
-/// never updated by this flow. Every request event (E3) yields exactly one response event (E4). Before each send attempt
+/// never updated by this flow. Every device attributes request event yields exactly one device attributes response event. Before each send attempt
 /// the ECID queued with the hit is compared with the latest Edge Identity ECID; a hit whose ECID has changed is dropped.
 class DeviceAttributesHitProcessor: HitProcessing {
     private let SELF_TAG = "DeviceAttributesHitProcessor"
@@ -37,7 +37,7 @@ class DeviceAttributesHitProcessor: HitProcessing {
     ///   - getImplementationDetails: returns the current `implementationDetails`
     ///   - getLocationHint: returns the current Edge Network location hint
     ///   - getLatestIdentityMap: returns the latest Edge Identity XDM shared state (containing `identityMap`), or nil if unavailable
-    ///   - dispatch: dispatches the response event (E4)
+    ///   - dispatch: dispatches the device attributes response event
     ///   - storeDataStoreName: data store holding the `state:store` payloads sent as `meta.state`
     init(networkService: DeviceAttributesNetworkService = DeviceAttributesNetworkService(),
          sharedStateReader: SharedStateReader,
@@ -166,7 +166,7 @@ class DeviceAttributesHitProcessor: HitProcessing {
         }
     }
 
-    /// Dispatches the terminal response event and removes the hit from the queue.
+    /// Dispatches the device attributes response event and removes the hit from the queue.
     private func finish(entity: DataEntity, event: Event, response: Event, completion: @escaping (Bool) -> Void) {
         dispatch(response)
         complete(entity: entity, completion: completion)

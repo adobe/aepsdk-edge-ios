@@ -295,7 +295,7 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         assertExactMatch(expected: #"{"identityMap":{"ECID":[{"id":"new-ecid"}]}}"#, actual: decoded.identityMap)
     }
 
-    // MARK: Failure and drop results
+    // MARK: Failed and dropped responses
 
     func testDeviceAttributesQueueCreationFailurePreservesOrdinaryQueueing() throws {
         let failingService = DeviceAttributesDataQueueService(deviceAttributesQueue: nil)

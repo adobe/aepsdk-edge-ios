@@ -17,9 +17,9 @@ import Foundation
 
 extension EdgeConstants {
     enum DeviceAttributes {
-        /// Request (E3, `requestContent`) and response (E4, `responseContent`) event type for the device-attributes path.
+        /// Event type of the device attributes request (`requestContent`) and response (`responseContent`) events.
         static let EVENT_TYPE = "com.adobe.eventType.edgeBypassConsent"
-        /// Name of the device-attributes response event (E4).
+        /// Name of the device attributes response event.
         static let EVENT_NAME_RESPONSE = "Device Attributes Response"
         /// Suffix appended to the Edge extension name to label the dedicated device-attributes queue.
         static let DATA_QUEUE_SUFFIX = ".deviceAttributes"
