@@ -141,4 +141,47 @@ class DeviceAttributesRequestBuilderTests: XCTestCase, AnyCodableAsserts {
         let builder = DeviceAttributesRequestBuilder(dataStoreName: testDataStoreName)
         XCTAssertNil(builder.buildRequestBody(eventData: ["invalid": Double.nan], implementationDetails: nil, identityMap: nil))
     }
+
+    func testBuildRequestBody_multipleEcids_retainsCurrentMetadataAndOtherNamespacesWithoutMutatingInput() throws {
+        let builder = DeviceAttributesRequestBuilder(dataStoreName: testDataStoreName)
+        let current: [String: Any] = ["id": "current-ecid", "authenticatedState": "ambiguous", "primary": false]
+        let email: [[String: Any]] = [["id": "test@example.com", "authenticatedState": "authenticated", "primary": true]]
+        let identities: [String: Any] = [
+            "ECID": [current, ["id": "legacy-ecid"], ["id": "another-ecid"]],
+            "Email": email
+        ]
+        let original = identities as NSDictionary
+
+        let body = try XCTUnwrap(builder.buildRequestBody(eventData: ["timezone": "Europe/Rome"],
+                                                          implementationDetails: nil,
+                                                          identityMap: identities))
+        let data = try XCTUnwrap(body.data(using: .utf8))
+        let decoded = try XCTUnwrap(try JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let xdm = try XCTUnwrap(decoded["xdm"] as? [String: Any])
+        let requestIdentities = try XCTUnwrap(xdm["identityMap"] as? [String: Any])
+        let ecids = try XCTUnwrap(requestIdentities["ECID"] as? [[String: Any]])
+
+        XCTAssertEqual(ecids.count, 1)
+        XCTAssertEqual(ecids[0] as NSDictionary, current as NSDictionary)
+        XCTAssertEqual(requestIdentities["Email"] as? NSArray, email as NSArray)
+        XCTAssertEqual(identities as NSDictionary, original)
+        XCTAssertEqual((identities["ECID"] as? [[String: Any]])?.count, 3)
+    }
+
+    func testBuildPayload_singleEcid_preservesIdentityMap() throws {
+        let builder = DeviceAttributesRequestBuilder(dataStoreName: testDataStoreName)
+        let identities: [String: Any] = [
+            "ECID": [["id": "current-ecid", "authenticatedState": "ambiguous", "primary": false]],
+            "Email": [["id": "test@example.com"]]
+        ]
+
+        let payload = try XCTUnwrap(builder.buildPayload(eventData: ["timezone": "Europe/Rome"],
+                                                         implementationDetails: nil,
+                                                         identityMap: identities))
+        let data = try JSONEncoder().encode(payload)
+        let decoded = try XCTUnwrap(try JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let xdm = try XCTUnwrap(decoded["xdm"] as? [String: Any])
+
+        XCTAssertEqual(xdm["identityMap"] as? NSDictionary, identities as NSDictionary)
+    }
 }

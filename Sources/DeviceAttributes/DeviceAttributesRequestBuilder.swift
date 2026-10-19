@@ -31,7 +31,7 @@ class DeviceAttributesRequestBuilder {
     /// - Parameters:
     ///   - eventData: the device attributes request event data forming the base of the request body
     ///   - implementationDetails: the SDK `implementationDetails` to attach under `xdm`
-    ///   - identityMap: the identity map to attach under `xdm`
+    ///   - identityMap: the identity map to attach under `xdm`, retaining only the current ECID
     /// - Returns: the request body, or nil if there is nothing to send
     func buildPayload(eventData: [String: Any]?,
                       implementationDetails: [String: Any]?,
@@ -49,7 +49,12 @@ class DeviceAttributesRequestBuilder {
             xdm[EdgeConstants.JsonKeys.IMPLEMENTATION_DETAILS] = implementationDetails
         }
         if let identityMap = identityMap {
-            xdm[EdgeConstants.SharedState.Identity.IDENTITY_MAP] = identityMap
+            var requestIdentityMap = identityMap
+            if let ecids = identityMap["ECID"] as? [[String: Any]], ecids.count > 1 {
+                // Edge Identity's current ECID is first; this endpoint does not accept additional legacy ECIDs.
+                requestIdentityMap["ECID"] = [ecids[0]]
+            }
+            xdm[EdgeConstants.SharedState.Identity.IDENTITY_MAP] = requestIdentityMap
         }
         if !xdm.isEmpty {
             payload[EdgeConstants.JsonKeys.XDM] = AnyCodable(xdm)
