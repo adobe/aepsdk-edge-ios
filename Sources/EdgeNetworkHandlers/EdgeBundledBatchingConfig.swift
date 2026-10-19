@@ -31,8 +31,8 @@ enum EdgeBundledBatchingConfig {
     static let BUNDLED_CONFIG_FILE_TYPE = "json"
 
     private static let loadLock = NSLock()
-    private static var cachedConfig: [String: Any]?
-    private static var loadAttempted = false
+    nonisolated(unsafe) private static var cachedConfig: [String: Any]?
+    nonisolated(unsafe) private static var loadAttempted = false
 
     /// Returns the parsed contents of the bundled batching config file, loading and caching it the
     /// first time this is called. Subsequent calls return the cached result without re-reading the

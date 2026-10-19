@@ -21,7 +21,7 @@ import UIKit
 import AEPAssurance
 #endif
 
-@UIApplicationMain
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     // TODO: Set up the Environment File ID from your Launch property for the preferred environment
     private let LAUNCH_ENVIRONMENT_FILE_ID = ""

@@ -30,7 +30,7 @@ class CompletionHandlersManager {
     private var edgeEventErrors =
         ThreadSafeDictionary<String, [EdgeEventError]>(identifier: "com.adobe.edge.edgeEventErrorsList")
 
-    static let shared = CompletionHandlersManager()
+    nonisolated(unsafe) static let shared = CompletionHandlersManager()
 
     /// Registers a completion handler for the specified `requestEventId`. This handler is invoked when the Edge response content has been
     /// handled entirely by the Edge extension, containing a list of `EdgeEventHandle`(s). This list can be empty or can contain one or multiple items
