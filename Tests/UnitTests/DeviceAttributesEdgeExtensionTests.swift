@@ -469,7 +469,7 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
             let result = request.createDeviceAttributesResponse(status: status)
             XCTAssertTrue(listener.shouldNotify(result))
             XCTAssertEqual("Device Attributes Response", result.name)
-            XCTAssertEqual("com.adobe.eventType.edgeBypassConsent", result.type)
+            XCTAssertEqual("com.adobe.eventType.edgeDeviceAttributes", result.type)
             XCTAssertEqual("com.adobe.eventSource.responseContent", result.source)
             XCTAssertEqual(request.id, result.parentID)
             XCTAssertNil(result.responseID)
@@ -484,7 +484,7 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         typealias Status = EdgeConstants.DeviceAttributes.Status
         typealias Reason = EdgeConstants.DeviceAttributes.Reason
 
-        XCTAssertEqual("com.adobe.eventType.edgeBypassConsent", EdgeConstants.DeviceAttributes.EVENT_TYPE)
+        XCTAssertEqual("com.adobe.eventType.edgeDeviceAttributes", EdgeConstants.DeviceAttributes.EVENT_TYPE)
         XCTAssertEqual(["status", "reason", "httpStatus", "requestEventId"],
                        [Keys.STATUS, Keys.REASON, Keys.HTTP_STATUS, Keys.REQUEST_EVENT_ID])
         XCTAssertEqual(["success", "failed", "dropped"], [Status.SUCCESS, Status.FAILED, Status.DROPPED])
@@ -498,7 +498,7 @@ class DeviceAttributesEdgeExtensionTests: XCTestCase, AnyCodableAsserts {
         let result = Event.createDeviceAttributesDroppedResponse(requestEventId: requestId)
 
         XCTAssertEqual("Device Attributes Response", result.name)
-        XCTAssertEqual("com.adobe.eventType.edgeBypassConsent", result.type)
+        XCTAssertEqual("com.adobe.eventType.edgeDeviceAttributes", result.type)
         XCTAssertEqual("com.adobe.eventSource.responseContent", result.source)
         XCTAssertNil(result.parentID)
         XCTAssertNil(result.responseID)
