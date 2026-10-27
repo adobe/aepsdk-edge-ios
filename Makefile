@@ -15,7 +15,7 @@ TVOS_ARCHIVE_PATH = $(CURR_DIR)/build/tvos.xcarchive/Products/Library/Frameworks
 TVOS_ARCHIVE_DSYM_PATH = $(CURR_DIR)/build/tvos.xcarchive/dSYMs/
 
 # CI variables - using values with defaults. Set defaults to values that are most useful for local development.
-IOS_DEVICE_NAME ?= iPhone 17 Pro
+IOS_DEVICE_NAME ?= iPhone 18 Pro
 # If OS version is not specified, uses the first device name match in the list of available simulators
 IOS_VERSION ?= 
 ifeq ($(strip $(IOS_VERSION)),)
@@ -24,7 +24,7 @@ else
     IOS_DESTINATION = "platform=iOS Simulator,name=$(IOS_DEVICE_NAME),OS=$(IOS_VERSION)"
 endif
 
-TVOS_DEVICE_NAME ?= Apple TV 4K
+TVOS_DEVICE_NAME ?= Apple TV 4K (3rd generation)
 # If OS version is not specified, uses the first device name match in the list of available simulators
 TVOS_VERSION ?=
 ifeq ($(strip $(TVOS_VERSION)),)

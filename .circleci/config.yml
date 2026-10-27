@@ -85,14 +85,14 @@ commands:
     steps:
       - macos/preboot-simulator:
           platform: "iOS"
-          device: "iPhone 17 Pro"
+          device: "iPhone 18 Pro"
           version: "27.0"
 
   prestart_tvos_simulator:
     steps:
       - macos/preboot-simulator:
           platform: "tvOS"
-          device: "Apple TV 4K"
+          device: "Apple TV 4K (3rd generation)"
           version: "27.0"
 
   parse_and_upload_coverage:
@@ -165,7 +165,7 @@ jobs:
       xcode: 27.0.0
 
     environment:
-      IOS_DEVICE_NAME: "iPhone 17 Pro"
+      IOS_DEVICE_NAME: "iPhone 18 Pro"
       IOS_VERSION: "27.0"
 
     steps:
@@ -185,7 +185,7 @@ jobs:
       xcode: 27.0.0
 
     environment:
-      IOS_DEVICE_NAME: "iPhone 17 Pro"
+      IOS_DEVICE_NAME: "iPhone 18 Pro"
       IOS_VERSION: "27.0"
 
     steps:
@@ -205,7 +205,7 @@ jobs:
       xcode: 27.0.0
 
     environment:
-      IOS_DEVICE_NAME: "iPhone 17 Pro"
+      IOS_DEVICE_NAME: "iPhone 18 Pro"
       IOS_VERSION: "27.0"
 
     steps:
@@ -225,7 +225,7 @@ jobs:
       xcode: 27.0.0
 
     environment:
-      TVOS_DEVICE_NAME: "Apple TV 4K"
+      TVOS_DEVICE_NAME: "Apple TV 4K (3rd generation)"
       TVOS_VERSION: "27.0"
 
     steps:
@@ -245,7 +245,7 @@ jobs:
       xcode: 27.0.0
 
     environment:
-      TVOS_DEVICE_NAME: "Apple TV 4K"
+      TVOS_DEVICE_NAME: "Apple TV 4K (3rd generation)"
       TVOS_VERSION: "27.0"
 
     steps:
