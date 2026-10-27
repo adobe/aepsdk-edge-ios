@@ -21,16 +21,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		DA0A02000000000000000000 /* DeviceAttributesConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01000000000000000000 /* DeviceAttributesConstants.swift */; };
-		DA0A02010000000000000000 /* Event+DeviceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01010000000000000000 /* Event+DeviceAttributes.swift */; };
-		DA0A02020000000000000000 /* DeviceAttributesRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */; };
-		DA0A02030000000000000000 /* DeviceAttributesNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */; };
-		DA0A020A0000000000000000 /* DeviceAttributesNetworkResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A010A0000000000000000 /* DeviceAttributesNetworkResult.swift */; };
-		DA0A02050000000000000000 /* DeviceAttributesHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */; };
-		DA0A02060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift */; };
-		DA0A02070000000000000000 /* DeviceAttributesEdgeStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01070000000000000000 /* DeviceAttributesEdgeStateTests.swift */; };
-		DA0A02080000000000000000 /* DeviceAttributesHitProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01080000000000000000 /* DeviceAttributesHitProcessorTests.swift */; };
-		DA0A02090000000000000000 /* DeviceAttributesRequestBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01090000000000000000 /* DeviceAttributesRequestBuilderTests.swift */; };
 		1CCD27DC245A240F00E912B2 /* ExperienceEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCD27C82458CB8000E912B2 /* ExperienceEventTests.swift */; };
 		211BCB8126030DCD00AACFEF /* EdgeDataEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211BCB8026030DCD00AACFEF /* EdgeDataEntity.swift */; };
 		216989652554B39900B2752C /* EdgeHit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216989642554B39900B2752C /* EdgeHit.swift */; };
@@ -147,6 +137,16 @@
 		D4F74FE72447A8B800379258 /* MockNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE62447A8B800379258 /* MockNetworking.swift */; };
 		D4F74FE92447A92800379258 /* MockURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FE82447A92800379258 /* MockURLSession.swift */; };
 		D4F74FEB2447A94900379258 /* MockTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F74FEA2447A94900379258 /* MockTask.swift */; };
+		DA0A02000000000000000000 /* DeviceAttributesConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01000000000000000000 /* DeviceAttributesConstants.swift */; };
+		DA0A02010000000000000000 /* Event+DeviceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01010000000000000000 /* Event+DeviceAttributes.swift */; };
+		DA0A02020000000000000000 /* DeviceAttributesRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */; };
+		DA0A02030000000000000000 /* DeviceAttributesNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */; };
+		DA0A02050000000000000000 /* DeviceAttributesHitProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */; };
+		DA0A02060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift */; };
+		DA0A02070000000000000000 /* DeviceAttributesEdgeStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01070000000000000000 /* DeviceAttributesEdgeStateTests.swift */; };
+		DA0A02080000000000000000 /* DeviceAttributesHitProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01080000000000000000 /* DeviceAttributesHitProcessorTests.swift */; };
+		DA0A02090000000000000000 /* DeviceAttributesRequestBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A01090000000000000000 /* DeviceAttributesRequestBuilderTests.swift */; };
+		DA0A020A0000000000000000 /* DeviceAttributesNetworkResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0A010A0000000000000000 /* DeviceAttributesNetworkResult.swift */; };
 		E1D6B4700000000000000102 /* EdgeBatchingConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D6B4700000000000000101 /* EdgeBatchingConfig.swift */; };
 		E1D6B4700000000000000202 /* EdgeBatchingConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D6B4700000000000000201 /* EdgeBatchingConfigTests.swift */; };
 		E97FFA8059E1B17324D8FFC6 /* Pods_AEPEdge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E916ED29158164BF50EBF1 /* Pods_AEPEdge.framework */; };
@@ -231,16 +231,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		DA0A01000000000000000000 /* DeviceAttributesConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesConstants.swift; sourceTree = "<group>"; };
-		DA0A01010000000000000000 /* Event+DeviceAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Event+DeviceAttributes.swift"; sourceTree = "<group>"; };
-		DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesRequestBuilder.swift; sourceTree = "<group>"; };
-		DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesNetworkService.swift; sourceTree = "<group>"; };
-		DA0A010A0000000000000000 /* DeviceAttributesNetworkResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesNetworkResult.swift; sourceTree = "<group>"; };
-		DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesHitProcessor.swift; sourceTree = "<group>"; };
-		DA0A01060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesEdgeExtensionTests.swift; sourceTree = "<group>"; };
-		DA0A01070000000000000000 /* DeviceAttributesEdgeStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesEdgeStateTests.swift; sourceTree = "<group>"; };
-		DA0A01080000000000000000 /* DeviceAttributesHitProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesHitProcessorTests.swift; sourceTree = "<group>"; };
-		DA0A01090000000000000000 /* DeviceAttributesRequestBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesRequestBuilderTests.swift; sourceTree = "<group>"; };
 		04A228C42686D67347C85BEA /* Pods-TestAppiOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestAppiOS.release.xcconfig"; path = "Target Support Files/Pods-TestAppiOS/Pods-TestAppiOS.release.xcconfig"; sourceTree = "<group>"; };
 		0B13510405D14B13EFD1B58A /* Pods_FunctionalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FunctionalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CCD27C52458CB2300E912B2 /* ExperienceEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceEvent.swift; sourceTree = "<group>"; };
@@ -381,6 +371,16 @@
 		D4F74FE82447A92800379258 /* MockURLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLSession.swift; sourceTree = "<group>"; };
 		D4F74FEA2447A94900379258 /* MockTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTask.swift; sourceTree = "<group>"; };
 		D92F05877927388600B8DA62 /* BatchOutcome.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BatchOutcome.swift; sourceTree = "<group>"; };
+		DA0A01000000000000000000 /* DeviceAttributesConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesConstants.swift; sourceTree = "<group>"; };
+		DA0A01010000000000000000 /* Event+DeviceAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Event+DeviceAttributes.swift"; sourceTree = "<group>"; };
+		DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesRequestBuilder.swift; sourceTree = "<group>"; };
+		DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesNetworkService.swift; sourceTree = "<group>"; };
+		DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesHitProcessor.swift; sourceTree = "<group>"; };
+		DA0A01060000000000000000 /* DeviceAttributesEdgeExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesEdgeExtensionTests.swift; sourceTree = "<group>"; };
+		DA0A01070000000000000000 /* DeviceAttributesEdgeStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesEdgeStateTests.swift; sourceTree = "<group>"; };
+		DA0A01080000000000000000 /* DeviceAttributesHitProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesHitProcessorTests.swift; sourceTree = "<group>"; };
+		DA0A01090000000000000000 /* DeviceAttributesRequestBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesRequestBuilderTests.swift; sourceTree = "<group>"; };
+		DA0A010A0000000000000000 /* DeviceAttributesNetworkResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributesNetworkResult.swift; sourceTree = "<group>"; };
 		E1D6B4700000000000000101 /* EdgeBatchingConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EdgeBatchingConfig.swift; sourceTree = "<group>"; };
 		E1D6B4700000000000000201 /* EdgeBatchingConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeBatchingConfigTests.swift; sourceTree = "<group>"; };
 		E742414B220FB400B4D6FDE5 /* EdgeBundledBatchingConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeBundledBatchingConfigTests.swift; sourceTree = "<group>"; };
@@ -449,19 +449,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		DA0A03000000000000000000 /* DeviceAttributes */ = {
-			isa = PBXGroup;
-			children = (
-				DA0A01000000000000000000 /* DeviceAttributesConstants.swift */,
-				DA0A01010000000000000000 /* Event+DeviceAttributes.swift */,
-				DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */,
-				DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */,
-				DA0A010A0000000000000000 /* DeviceAttributesNetworkResult.swift */,
-				DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */,
-			);
-			path = DeviceAttributes;
-			sourceTree = "<group>";
-		};
 		1CCD27CD24592B2800E912B2 /* xdm */ = {
 			isa = PBXGroup;
 			children = (
@@ -730,6 +717,19 @@
 				D44BBB972492F5C900775DAC /* UnitTestAssertions.swift */,
 			);
 			name = utils;
+			sourceTree = "<group>";
+		};
+		DA0A03000000000000000000 /* DeviceAttributes */ = {
+			isa = PBXGroup;
+			children = (
+				DA0A01000000000000000000 /* DeviceAttributesConstants.swift */,
+				DA0A01010000000000000000 /* Event+DeviceAttributes.swift */,
+				DA0A01020000000000000000 /* DeviceAttributesRequestBuilder.swift */,
+				DA0A01030000000000000000 /* DeviceAttributesNetworkService.swift */,
+				DA0A010A0000000000000000 /* DeviceAttributesNetworkResult.swift */,
+				DA0A01050000000000000000 /* DeviceAttributesHitProcessor.swift */,
+			);
+			path = DeviceAttributes;
 			sourceTree = "<group>";
 		};
 		E5239B915F53B993A1976FC4 /* Pods */ = {
@@ -1026,13 +1026,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-UnitTests/Pods-UnitTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-UnitTests/Pods-UnitTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1069,13 +1065,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-FunctionalTests/Pods-FunctionalTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-FunctionalTests/Pods-FunctionalTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1152,13 +1144,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-UpstreamIntegrationTests/Pods-UpstreamIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-UpstreamIntegrationTests/Pods-UpstreamIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1195,13 +1183,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TestApptvOS/Pods-TestApptvOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TestApptvOS/Pods-TestApptvOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1289,13 +1273,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TestAppiOS/Pods-TestAppiOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TestAppiOS/Pods-TestAppiOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
