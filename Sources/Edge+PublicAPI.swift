@@ -24,7 +24,7 @@ public extension Edge {
     ///   - completion: Optional completion handler to be invoked when the request is complete, returning the associated response handles
     ///                 received from the Adobe Experience Edge. It may be invoked on a different thread.
     @objc(sendExperienceEvent:completion:)
-    static func sendEvent(experienceEvent: ExperienceEvent, _ completion: (([EdgeEventHandle]) -> Void)? = nil) {
+    @preconcurrency static func sendEvent(experienceEvent: ExperienceEvent, _ completion: (@Sendable ([EdgeEventHandle]) -> Void)? = nil) {
         guard let xdmData = experienceEvent.xdm, !xdmData.isEmpty, let eventData = experienceEvent.asDictionary() else {
             Log.debug(label: LOG_TAG, "Failed to dispatch the experience event because the XDM data was nil/empty.")
             return
@@ -68,7 +68,7 @@ public extension Edge {
     /// Returns the Edge Network location hint, or nil if the location hint expired or is not set.
     /// - Parameter completion: A completion handler invoked with the location hint, or an 'AEPError' if the request times out or an unexpected error occurs.
     @objc(getLocationHint:)
-    static func getLocationHint(_ completion: @escaping (String?, Error?) -> Void) {
+    @preconcurrency static func getLocationHint(_ completion: @escaping @Sendable (String?, Error?) -> Void) {
         let event = Event(name: "Edge Request Location Hint",
                           type: EventType.edge,
                           source: EventSource.requestIdentity,

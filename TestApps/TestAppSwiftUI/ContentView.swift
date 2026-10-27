@@ -98,24 +98,28 @@ struct ContentView: View {
                     let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                                           data: ["data": ["test": "data"]])
                     Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
-                        let encoder = JSONEncoder()
-                        encoder.outputFormatting = .prettyPrinted
-                        guard let data = try? encoder.encode(handles) else {
-                            self.dataContent = "failed to encode EdgeEventHandle"
-                            return
+                        DispatchQueue.main.async {
+                            let encoder = JSONEncoder()
+                            encoder.outputFormatting = .prettyPrinted
+                            guard let data = try? encoder.encode(handles) else {
+                                self.dataContent = "failed to encode EdgeEventHandle"
+                                return
+                            }
+                            self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
                         }
-                        self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
                     })
                 }).padding()
 
                 HStack {
                     Button("Get Location Hint", action: {
                         Edge.getLocationHint({ hint, error in
-                            if error != nil {
-                                dataContent = "Received error '\((error as? AEPError)?.localizedDescription ?? "nil")"
-                            } else {
-                                dataContent = "Location hint: '\(hint ?? "nil")'"
-                                selectedRegion = RegionId(rawValue: hint ?? "nil") ?? .nil_value
+                            DispatchQueue.main.async {
+                                if error != nil {
+                                    dataContent = "Received error '\((error as? AEPError)?.localizedDescription ?? "nil")"
+                                } else {
+                                    dataContent = "Location hint: '\(hint ?? "nil")'"
+                                    selectedRegion = RegionId(rawValue: hint ?? "nil") ?? .nil_value
+                                }
                             }
                         })
                     }).padding()
@@ -252,12 +256,14 @@ struct ContentView: View {
 
     private func getECID() {
         Identity.getExperienceCloudId { value, error in
-            if error != nil {
-                self.ecid = ""
-                return
-            }
+            DispatchQueue.main.async {
+                if error != nil {
+                    self.ecid = ""
+                    return
+                }
 
-            self.ecid = value ?? ""
+                self.ecid = value ?? ""
+            }
         }
     }
 
@@ -294,10 +300,12 @@ struct ContentView: View {
 
     private func getConsents() {
         Consent.getConsents { consents, error in
-            guard error == nil, let consents = consents else { return }
-            guard let jsonData = try? JSONSerialization.data(withJSONObject: consents, options: .prettyPrinted) else { return }
-            guard let jsonStr = String(data: jsonData, encoding: .utf8) else { return }
-            self.dataContent = jsonStr
+            DispatchQueue.main.async {
+                guard error == nil, let consents = consents else { return }
+                guard let jsonData = try? JSONSerialization.data(withJSONObject: consents, options: .prettyPrinted) else { return }
+                guard let jsonStr = String(data: jsonData, encoding: .utf8) else { return }
+                self.dataContent = jsonStr
+            }
         }
     }
 

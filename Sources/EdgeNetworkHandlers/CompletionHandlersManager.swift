@@ -16,7 +16,7 @@ import Foundation
 class CompletionHandlersManager {
     private let TAG = "CompletionHandlersManager"
     private var completionHandlers =
-        ThreadSafeDictionary<String, (([EdgeEventHandle]) -> Void)>(identifier: "com.adobe.edge.completionHandlers")
+        ThreadSafeDictionary<String, (@Sendable ([EdgeEventHandle]) -> Void)>(identifier: "com.adobe.edge.completionHandlers")
 
     // edge response handles for a event request id (key)
     private var edgeEventHandles =
@@ -39,7 +39,7 @@ class CompletionHandlersManager {
     /// - Parameters:
     ///   - forRequestEventId: unique event identifier for which the completion handler is registered; should not be empty
     ///   - completionHandler: the completion handler that needs to be registered, should not be nil
-    func registerCompletionHandler(forRequestEventId: String, completion: (([EdgeEventHandle]) -> Void)?) {
+    func registerCompletionHandler(forRequestEventId: String, completion: (@Sendable ([EdgeEventHandle]) -> Void)?) {
         guard let unwrappedCompletion = completion else { return }
         guard !forRequestEventId.isEmpty else {
             Log.warning(label: TAG, "Failed to register completion handler because of empty request event id.")
