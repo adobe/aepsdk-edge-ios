@@ -20,6 +20,12 @@
 
 The following events are handled by the Edge extension client-side.
 
+For the isolated `mobile/device-attributes` endpoint, Edge builds the SDK-owned
+`xdm.identityMap` from Edge Identity shared state. If it contains multiple ECIDs,
+only the first (current) ECID is sent because this endpoint requires exactly one
+ECID. The current entry's metadata and other identity namespaces are preserved.
+The shared-state identity map and ordinary `interact` requests are unchanged.
+
 ### Edge consent response content
 
 This event contains the latest consent preferences synced with the SDK. The Edge Network extension reads the current data collection consent settings stored in the `collect` property and adjusts its internal queueing behavior based on the value as follows:
