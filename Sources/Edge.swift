@@ -38,7 +38,9 @@ public class Edge: NSObject, Extension {
         // set default on init for register/unregister use-case
         networkResponseHandler = NetworkResponseHandler(updateLocationHint: setLocationHint)
         if let hitQueue = setupHitQueue() {
-            state = EdgeState(hitQueue: hitQueue, edgeProperties: EdgeProperties())
+            state = EdgeState(hitQueue: hitQueue,
+                              deviceAttributesHitQueue: setupDeviceAttributesHitQueue(dataQueueService: ServiceProvider.shared.dataQueueService),
+                              edgeProperties: EdgeProperties())
         }
     }
 
@@ -61,17 +63,21 @@ public class Edge: NSObject, Extension {
         registerListener(type: EventType.genericIdentity,
                          source: EventSource.requestReset,
                          listener: handleIdentitiesReset)
+        registerListener(type: EdgeConstants.DeviceAttributes.EVENT_TYPE,
+                         source: EventSource.requestContent,
+                         listener: handleDeviceAttributesRequest)
     }
 
     public func onUnregistered() {
         state?.hitQueue.close()
+        state?.deviceAttributesHitQueue?.close()
         print("Extension unregistered from MobileCore: \(EdgeConstants.FRIENDLY_NAME)")
     }
 
     public func readyForEvent(_ event: Event) -> Bool {
         guard canProcessEvents(event: event) else { return false }
 
-        if event.isExperienceEvent || event.isUpdateConsentEvent {
+        if event.isExperienceEvent || event.isUpdateConsentEvent || event.isDeviceAttributesRequestEvent {
             let configurationSharedState = getSharedState(extensionName: EdgeConstants.SharedState.Configuration.STATE_OWNER_NAME,
                                                           event: event)
             let identitySharedState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
@@ -252,6 +258,92 @@ public class Edge: NSObject, Extension {
                                             getImplementationDetails: getImplementationDetails,
                                             getLocationHint: getLocationHint)
         return EdgeBatchingHitQueue(dataQueue: dataQueue, processor: hitProcessor)
+    }
+
+    // MARK: - Device attributes (consent-independent)
+
+    /// Handles device attributes request events. They are queued on the dedicated device attributes queue, which is not
+    /// subject to collect consent, and always result in exactly one device attributes response event.
+    /// - Parameter event: the device attributes request event
+    func handleDeviceAttributesRequest(_ event: Event) {
+        guard let deviceAttributesHitQueue = state?.deviceAttributesHitQueue else {
+            Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Device attributes queue is unavailable, dropping event \(event.id.uuidString).")
+            dispatchDeviceAttributesResponse(for: event, status: EdgeConstants.DeviceAttributes.Status.FAILED, reason: EdgeConstants.DeviceAttributes.Reason.QUEUE_UNAVAILABLE)
+            return
+        }
+
+        guard let data = event.data, !data.isEmpty else {
+            Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Device attributes event \(event.id.uuidString) contains no data, dropping.")
+            dispatchDeviceAttributesResponse(for: event, status: EdgeConstants.DeviceAttributes.Status.DROPPED, reason: EdgeConstants.DeviceAttributes.Reason.INVALID_PAYLOAD)
+            return
+        }
+
+        // get Configuration shared state, this should be resolved based on readyForEvent check
+        let edgeConfig = sharedStateReader.getEdgeConfig(event: event)
+        guard let configId = edgeConfig[EdgeConstants.SharedState.Configuration.CONFIG_ID], !configId.isEmpty else {
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process device attributes event '\(event.id.uuidString)', configuration 'edge.configId' is missing or empty.")
+            dispatchDeviceAttributesResponse(for: event, status: EdgeConstants.DeviceAttributes.Status.DROPPED, reason: EdgeConstants.DeviceAttributes.Reason.MISSING_CONFIG)
+            return
+        }
+
+        // get IdentityMap from Identity shared state, this should be resolved based on readyForEvent check
+        guard let identityState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                                    event: event)?.value else {
+            Log.warning(label: EdgeConstants.LOG_TAG,
+                        "\(SELF_TAG) - Unable to process device attributes event '\(event.id.uuidString)', Identity shared state is nil.")
+            dispatchDeviceAttributesResponse(for: event, status: EdgeConstants.DeviceAttributes.Status.DROPPED, reason: EdgeConstants.DeviceAttributes.Reason.INVALID_PAYLOAD)
+            return
+        }
+
+        let edgeEntity = EdgeDataEntity(event: event,
+                                        configuration: AnyCodable.from(dictionary: edgeConfig) ?? [:],
+                                        identityMap: AnyCodable.from(dictionary: identityState) ?? [:])
+        guard let entityData = try? JSONEncoder().encode(edgeEntity) else {
+            Log.warning(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to encode device attributes event '\(event.id.uuidString)', dropping.")
+            dispatchDeviceAttributesResponse(for: event, status: EdgeConstants.DeviceAttributes.Status.DROPPED, reason: EdgeConstants.DeviceAttributes.Reason.INVALID_PAYLOAD)
+            return
+        }
+
+        let entity = DataEntity(uniqueIdentifier: event.id.uuidString, timestamp: event.timestamp, data: entityData)
+        guard deviceAttributesHitQueue.queue(entity: entity) else {
+            Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to persist device attributes event \(event.id.uuidString).")
+            dispatchDeviceAttributesResponse(for: event, status: EdgeConstants.DeviceAttributes.Status.FAILED, reason: EdgeConstants.DeviceAttributes.Reason.QUEUE_UNAVAILABLE)
+            return
+        }
+        Log.debug(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Queued device attributes event \(event.id.uuidString).")
+    }
+
+    private func dispatchDeviceAttributesResponse(for event: Event, status: String, reason: String) {
+        dispatch(event: event.createDeviceAttributesResponse(status: status, reason: reason))
+    }
+
+    /// Sets up the `PersistentHitQueue` for device attributes hits. It is independent of the primary queue and of collect consent.
+    func setupDeviceAttributesHitQueue(dataQueueService: DataQueuing) -> HitQueuing? {
+        guard let dataQueue = dataQueueService.getDataQueue(label: name + EdgeConstants.DeviceAttributes.DATA_QUEUE_SUFFIX,
+                                                            config: DataQueueConfig(journalMode: .wal)) else {
+            Log.error(label: EdgeConstants.LOG_TAG, "\(SELF_TAG) - Failed to create the device attributes DataQueue.")
+            return nil
+        }
+
+        let hitProcessor = DeviceAttributesHitProcessor(sharedStateReader: sharedStateReader,
+                                                        getImplementationDetails: getImplementationDetails,
+                                                        getLocationHint: getLocationHint,
+                                                        getLatestIdentityMap: getLatestIdentityMap,
+                                                        dispatch: { [weak self] event in self?.dispatch(event: event) })
+        return PersistentHitQueue(dataQueue: dataQueue, processor: hitProcessor)
+    }
+
+    /// Returns the latest set Edge Identity XDM shared state, independent of any event, or nil if it is not available.
+    private func getLatestIdentityMap() -> [String: Any]? {
+        guard let identityState = getXDMSharedState(extensionName: EdgeConstants.SharedState.Identity.STATE_OWNER_NAME,
+                                                    event: nil,
+                                                    barrier: false,
+                                                    resolution: .any),
+              identityState.status == .set else {
+            return nil
+        }
+        return identityState.value
     }
 
     /// Retrieves the `ConsentStatus` from the Consent XDM Shared state for current `event`.
