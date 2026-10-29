@@ -98,14 +98,17 @@ struct ContentView: View {
                     let experienceEvent = ExperienceEvent(xdm: ["xdmtest": "data"],
                                                           data: ["data": ["test": "data"]])
                     Edge.sendEvent(experienceEvent: experienceEvent, { (handles: [EdgeEventHandle]) in
+                        // Encode on the callback queue; only the String crosses to the main queue.
+                        let encoder = JSONEncoder()
+                        encoder.outputFormatting = .prettyPrinted
+                        let text: String
+                        if let data = try? encoder.encode(handles) {
+                            text = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+                        } else {
+                            text = "failed to encode EdgeEventHandle"
+                        }
                         DispatchQueue.main.async {
-                            let encoder = JSONEncoder()
-                            encoder.outputFormatting = .prettyPrinted
-                            guard let data = try? encoder.encode(handles) else {
-                                self.dataContent = "failed to encode EdgeEventHandle"
-                                return
-                            }
-                            self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+                            self.dataContent = text
                         }
                     })
                 }).padding()
@@ -147,8 +150,9 @@ struct ContentView: View {
                             return
                         }
 
+                        let text = "Completion Event received: \(String(describing: responseEvent.data))"
                         DispatchQueue.main.async {
-                            self.dataContent = "Completion Event received: \(String(describing: responseEvent.data))"
+                            self.dataContent = text
                         }
                     }
                 }).padding()
@@ -284,26 +288,30 @@ struct ContentView: View {
 
     private func getIdentities() {
         Identity.getIdentities { identityMap, _ in
+            let text: String
             if let identityMap = identityMap {
                 let encoder = JSONEncoder()
                 encoder.outputFormatting = .prettyPrinted
-                guard let data = try? encoder.encode(identityMap) else {
-                    self.dataContent = "failed to encode IdentityMap"
-                    return
+                if let data = try? encoder.encode(identityMap) {
+                    text = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
+                } else {
+                    text = "failed to encode IdentityMap"
                 }
-                self.dataContent = String(data: data, encoding: .utf8) ?? "failed to encode JSON to string"
             } else {
-                self.dataContent = "IdentityMap was nil"
+                text = "IdentityMap was nil"
+            }
+            DispatchQueue.main.async {
+                self.dataContent = text
             }
         }
     }
 
     private func getConsents() {
         Consent.getConsents { consents, error in
+            guard error == nil, let consents = consents else { return }
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: consents, options: .prettyPrinted) else { return }
+            guard let jsonStr = String(data: jsonData, encoding: .utf8) else { return }
             DispatchQueue.main.async {
-                guard error == nil, let consents = consents else { return }
-                guard let jsonData = try? JSONSerialization.data(withJSONObject: consents, options: .prettyPrinted) else { return }
-                guard let jsonStr = String(data: jsonData, encoding: .utf8) else { return }
                 self.dataContent = jsonStr
             }
         }
