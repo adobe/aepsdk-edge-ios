@@ -173,5 +173,22 @@ lint:
 test-SPM-integration:
 	sh ./Script/test-SPM.sh
 
+# Builds the SDK sources in Swift 6 language mode (checked-in targets remain
+# SWIFT_VERSION = 5.0; this overrides for continuous Swift 6 coverage).
+build-swift6:
+	xcodebuild build -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'generic/platform=iOS Simulator' SWIFT_VERSION=6.0 ADB_SKIP_LINT=YES
+	xcodebuild build -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'generic/platform=tvOS Simulator' SWIFT_VERSION=6.0 ADB_SKIP_LINT=YES
+
+# Builds a minimal Swift 6 consumer that calls the public completion-handler
+# APIs with plain closures from @MainActor code (protects the @Sendable contract).
+test-swift6-consumer:
+	sh ./Script/test-swift6-consumer.sh
+
+# Compile-only build on the minimum supported toolchain (Xcode 15.3+/Swift 5.10).
+build-min-toolchain:
+	xcodebuild build -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'generic/platform=iOS Simulator' ADB_SKIP_LINT=YES
+	xcodebuild build -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'generic/platform=tvOS Simulator' ADB_SKIP_LINT=YES
+
+
 test-podspec:
 	sh ./Script/test-podspec.sh
