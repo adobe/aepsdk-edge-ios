@@ -281,10 +281,12 @@ jobs:
           command: make build-app
 
   # Swift 6 language-mode coverage. Selecting Xcode 27 does not select Swift 6
-  # mode (checked-in targets are SWIFT_VERSION = 5.0), so these lanes explicitly
-  # build the SDK in Swift 6 and compile a Swift 6 consumer that calls the public
-  # completion-handler APIs with plain closures from @MainActor code. This
-  # continuously protects the @Sendable / @preconcurrency boundary this PR adds.
+  # mode (checked-in targets are SWIFT_VERSION = 5.0), so this lane compiles a
+  # Swift 6 consumer that calls the public completion-handler APIs with plain
+  # closures from @MainActor code. AEPEdge and its dependencies keep their own
+  # declared language modes (matching a real Swift 6 app), so this does not force
+  # unreleased dependencies into Swift 6. This continuously protects the
+  # @Sendable / @preconcurrency boundary this PR adds.
   # The full Swift 6 consumer *runtime* probe lands with the dependency-minimum
   # bump, once the fixed @Sendable AEPCore / AEPEdgeIdentity releases are published.
   build-swift6:
@@ -295,9 +297,6 @@ jobs:
     steps:
       - checkout
       - install_dependencies
-      - run:
-          name: Build SDK in Swift 6 language mode
-          command: make build-swift6
       - run:
           name: Build Swift 6 consumer (plain closures from @MainActor)
           command: make test-swift6-consumer
