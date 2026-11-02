@@ -173,11 +173,16 @@ lint:
 test-SPM-integration:
 	sh ./Script/test-SPM.sh
 
+# Builds the AEPEdge target in Swift 6 language mode. AEPEDGE_SWIFT_VERSION is
+# only referenced by the AEPEdge target, so dependency pods keep their own modes.
+build-swift6:
+	xcodebuild build -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'generic/platform=iOS Simulator' AEPEDGE_SWIFT_VERSION=6.0 ADB_SKIP_LINT=YES
+	xcodebuild build -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'generic/platform=tvOS Simulator' AEPEDGE_SWIFT_VERSION=6.0 ADB_SKIP_LINT=YES
+
 # Compiles a Swift 6 consumer that calls the public completion-handler APIs with
 # plain closures from @MainActor code (protects the @Sendable contract). The
 # consumer target is built in Swift 6 language mode; AEPEdge and its dependencies
 # keep their own declared language modes, matching a real Swift 6 app's build.
-build-swift6: test-swift6-consumer
 
 test-swift6-consumer:
 	sh ./Script/test-swift6-consumer.sh
