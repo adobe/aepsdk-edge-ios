@@ -22,7 +22,7 @@ targets:
     type: framework
     sources: Sources
     platform: iOS
-    deploymentTarget: "12.0"
+    deploymentTarget: "15.0"
     settings:
       GENERATE_INFOPLIST_FILE: YES
 " >>project.yml
@@ -82,7 +82,7 @@ targets:
     type: framework
     sources: Sources
     platform: tvOS
-    deploymentTarget: "12.0"
+    deploymentTarget: "15.0"
     settings:
       GENERATE_INFOPLIST_FILE: YES
 " >>project.yml

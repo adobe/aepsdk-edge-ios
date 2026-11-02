@@ -113,6 +113,7 @@ class NetworkResponseHandlerTests: XCTestCase {
         }
     }
 
+    @MainActor
     func testAddRemoveWaitingEvents_noConcurrencyCrash_whenCalledFromDifferentThreads() {
         let requestId = "test"
         let dispatchQueue1 = DispatchQueue(label: "test.queue1", attributes: .concurrent)
@@ -121,22 +122,20 @@ class NetworkResponseHandlerTests: XCTestCase {
         expectation.expectedFulfillmentCount = 100
         expectation.assertForOverFulfill = true
 
+        nonisolated(unsafe) let handler = networkResponseHandler
+        let event1 = self.event1
+        let event2 = self.event2
+
         for _ in 1...100 {
             let rand = Int.random(in: 1..<100)
             if rand % 2 == 0 {
-                dispatchQueue1.async { [weak self] in
-                    guard let self = self else {
-                        return
-                    }
-                    XCTAssertNoThrow(self.networkResponseHandler.addWaitingEvents(requestId: requestId, batchedEvents: [self.event1, self.event2]))
+                dispatchQueue1.async {
+                    XCTAssertNoThrow(handler.addWaitingEvents(requestId: requestId, batchedEvents: [event1, event2]))
                     expectation.fulfill()
                 }
             } else {
-                dispatchQueue2.async { [weak self] in
-                    guard let self = self else {
-                        return
-                    }
-                    XCTAssertNoThrow(self.networkResponseHandler.removeWaitingEvents(requestId: requestId))
+                dispatchQueue2.async {
+                    XCTAssertNoThrow(handler.removeWaitingEvents(requestId: requestId))
                     expectation.fulfill()
                 }
             }

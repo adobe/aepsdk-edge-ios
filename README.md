@@ -14,8 +14,8 @@ The Edge Network mobile extension is part of the [Adobe Experience Platform Mobi
 For more details, see the [Adobe Experience Platform Edge Network](https://developer.adobe.com/client-sdks/documentation/edge-network/) documentation.
 
 ## Requirements
-- Xcode 15 (or newer)
-- Swift 5.1 (or newer)
+- Xcode 15.3 (or newer)
+- Swift 5.10 (or newer)
 
 ## Installation
 

@@ -16,8 +16,8 @@ import XCTest
 
 /// Spy  class used for testing and inspecting `Edge`.
 class TestableEdge: Edge {
-    static public var readyForEventExpectation: XCTestExpectation?
-    static public var handleExperienceEventRequestExpectation: XCTestExpectation?
+    static nonisolated(unsafe) public var readyForEventExpectation: XCTestExpectation?
+    static nonisolated(unsafe) public var handleExperienceEventRequestExpectation: XCTestExpectation?
 
     override func handleExperienceEventRequest(_ event: Event) {
         if let expectation = TestableEdge.handleExperienceEventRequestExpectation {

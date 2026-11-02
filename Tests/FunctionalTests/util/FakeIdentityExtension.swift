@@ -29,7 +29,7 @@ class FakeIdentityExtension: NSObject, Extension {
 
     var friendlyName: String = "Identity"
 
-    static var extensionVersion: String = "1.0.0"
+    nonisolated(unsafe) static var extensionVersion: String = "1.0.0"
 
     var metadata: [String: String]?
 

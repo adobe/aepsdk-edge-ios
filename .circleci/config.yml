@@ -38,6 +38,12 @@ workflows:
       - build-xcframework-and-app:
           requires:
             - validate-code
+      - build-swift6:
+          requires:
+            - validate-code
+      - build-min-toolchain:
+          requires:
+            - validate-code
 
 commands:
   install_dependencies:
@@ -85,15 +91,15 @@ commands:
     steps:
       - macos/preboot-simulator:
           platform: "iOS"
-          device: "iPhone 16"
-          version: "18.6"
+          device: "iPhone 18 Pro"
+          version: "27.0"
 
   prestart_tvos_simulator:
     steps:
       - macos/preboot-simulator:
           platform: "tvOS"
-          device: "Apple TV"
-          version: "18.5"
+          device: "Apple TV 4K (3rd generation)"
+          version: "27.0"
 
   parse_and_upload_coverage:
     description: "Convert .xcresult → Cobertura XML and upload to Codecov"
@@ -150,7 +156,7 @@ jobs:
   validate-code:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.6.0
+      xcode: 27.0.0
 
     steps:
       - checkout
@@ -162,11 +168,11 @@ jobs:
   test-ios-unit:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.6.0
+      xcode: 27.0.0
 
     environment:
-      IOS_DEVICE_NAME: "iPhone 16"
-      IOS_VERSION: "18.6"
+      IOS_DEVICE_NAME: "iPhone 18 Pro"
+      IOS_VERSION: "27.0"
 
     steps:
       - checkout
@@ -182,11 +188,11 @@ jobs:
   test-ios-functional:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.6.0
+      xcode: 27.0.0
 
     environment:
-      IOS_DEVICE_NAME: "iPhone 16"
-      IOS_VERSION: "18.6"
+      IOS_DEVICE_NAME: "iPhone 18 Pro"
+      IOS_VERSION: "27.0"
 
     steps:
       - checkout
@@ -202,11 +208,11 @@ jobs:
   test-ios-integration:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.6.0
+      xcode: 27.0.0
 
     environment:
-      IOS_DEVICE_NAME: "iPhone 16"
-      IOS_VERSION: "18.6"
+      IOS_DEVICE_NAME: "iPhone 18 Pro"
+      IOS_VERSION: "27.0"
 
     steps:
       - checkout
@@ -222,11 +228,11 @@ jobs:
   test-tvos-unit:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.6.0
+      xcode: 27.0.0
 
     environment:
-      TVOS_DEVICE_NAME: "Apple TV"
-      TVOS_VERSION: "18.5"
+      TVOS_DEVICE_NAME: "Apple TV 4K (3rd generation)"
+      TVOS_VERSION: "27.0"
 
     steps:
       - checkout
@@ -242,11 +248,11 @@ jobs:
   test-tvos-functional:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.6.0
+      xcode: 27.0.0
 
     environment:
-      TVOS_DEVICE_NAME: "Apple TV"
-      TVOS_VERSION: "18.5"
+      TVOS_DEVICE_NAME: "Apple TV 4K (3rd generation)"
+      TVOS_VERSION: "27.0"
 
     steps:
       - checkout
@@ -262,7 +268,7 @@ jobs:
   build-xcframework-and-app:
     resource_class: m4pro.medium
     macos:
-      xcode: 26.6.0
+      xcode: 27.0.0
 
     steps:
       - checkout
@@ -273,3 +279,44 @@ jobs:
       - run:
           name: Build Test App
           command: make build-app
+
+  # Swift 6 language-mode coverage. Selecting Xcode 27 does not select Swift 6
+  # mode (checked-in targets are SWIFT_VERSION = 5.0), so this lane builds the
+  # AEPEdge target in Swift 6 via AEPEDGE_SWIFT_VERSION (referenced only by that
+  # target), then compiles a Swift 6 consumer that calls the public
+  # completion-handler APIs with plain closures from @MainActor code. Dependencies
+  # keep their own declared language modes (matching a real Swift 6 app), so this
+  # does not force unreleased dependencies into Swift 6. This continuously protects the
+  # @Sendable / @preconcurrency boundary this PR adds.
+  # The full Swift 6 consumer *runtime* probe lands with the dependency-minimum
+  # bump, once the fixed @Sendable AEPCore / AEPEdgeIdentity releases are published.
+  build-swift6:
+    resource_class: m4pro.medium
+    macos:
+      xcode: 27.0.0
+
+    steps:
+      - checkout
+      - install_dependencies
+      - run:
+          name: Build AEPEdge in Swift 6 language mode (dependencies keep their modes)
+          command: make build-swift6
+      - run:
+          name: Build Swift 6 consumer (plain closures from @MainActor)
+          command: make test-swift6-consumer
+
+  # Minimum-supported-toolchain coverage. README advertises Xcode 15.3+ / Swift
+  # 5.10 as the floor; 15.4 is the oldest 15.x image CircleCI still hosts and
+  # ships the same Swift 5.10 compiler. Compile-only (no iOS 27 runtime) to catch
+  # accidental use of APIs/features newer than the advertised minimum.
+  build-min-toolchain:
+    resource_class: m4pro.medium
+    macos:
+      xcode: 15.4.0
+
+    steps:
+      - checkout
+      - install_dependencies
+      - run:
+          name: Build SDK on minimum supported toolchain (Xcode 15.4 / Swift 5.10)
+          command: make build-min-toolchain
